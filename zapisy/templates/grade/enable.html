@@ -1,6 +1,10 @@
 {% extends "grade/base.html" %}
 
+{% load compressed %}
+
 {% block styles %}
+    {% compressed_css 'gradebase' %}
+
     <link rel="stylesheet" href="/site_media/css/common/mainPage.css" type="text/css" />
     <link rel="stylesheet" href="/site_media/css/grade/poll.css" type="text/css" />
     <link rel="stylesheet" href="/site_media/css/grade/results.css" type="text/css" />
@@ -23,6 +27,7 @@
                 {% for semester in semesters %}
                     <tr>
                     <form action="{% if semester.is_grade_active %}{% url grade-disable-grade %}{% else %}{% url grade-enable-grade %}{% endif %}" method="POST">
+                        {% csrf_token %}
                         <input type="hidden" name="semester_id" value="{{ semester.id }}">
                         <td>{{ semester }}</td>
                         <td><button type="submit" class="btn{% if not semester.is_grade_active %} success{% else %} delete{% endif %}">{% if semester.is_grade_active %}Zamknij{% else %}Otwórz{% endif %} ocenę</button></td>

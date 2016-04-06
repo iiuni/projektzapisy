@@ -32,7 +32,7 @@
 
 
 {% block content %}
-	<div id="enr-group-view">
+    <div id="enr-group-view">
 
 
         <h2>{{ group.course }}</h2>
@@ -42,14 +42,7 @@
 
         <hr>
 
-		{% include "records/records_list.html" %}
+        {% include "records/records_list.html" %}
 
-        {% if request.user.is_staff or request.user.employee %}
-            <ul>
-                <li><a href="{% url records-pdf group.id %}">{% trans "Ściągnij jako pdf" %}</a></li>
-                <li><a href="{% url records-csv group.id %}">{% trans "Ściągnij jako csv" %}</a></li>
-            </ul>{% endif %}
-	</div>
-
-
+    </div>
 {% endblock %}
