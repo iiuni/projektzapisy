@@ -161,6 +161,8 @@ apt-get -y install tk-dev
 apt-get -y install libjpeg62-dev
 apt-get -y install libfreetype6-dev
 apt-get -y install liblcms1-dev
+apt-get -y install xvfb
+apt-get -y install firefox
 
 # download and hack broken zlib
 apt-get -y install zlib1g-dev
