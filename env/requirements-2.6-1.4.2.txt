@@ -1,3 +1,4 @@
+# Packages from our development environment
 Django==1.4.2
 Fabric==1.5.1
 South==0.7.6
@@ -11,17 +12,56 @@ django-modeltranslation==0.6.1
 django-pipeline==1.2.21
 django-timedeltafield==0.6.7
 docutils==0.9.1
-html5lib==0.95
 ipdb==0.7
 ipython==0.13.1
 paramiko==1.9.0
 psycopg2==2.4.5
 pyPdf==1.13
 pycrypto==2.6
-python-memcached==1.48
 six==1.2.0
 wsgiref==0.1.2
 yolk==0.4.3
 django-paranoid-sessions==0.2.0
 
-unicodecsv==0.14.1
+# Additional packages on production environment
+distribute==0.6.14
+gunicorn==0.14.6
+lxml==3.0.1
+python-dateutil==2.1
+reportlab==2.6
+
+# Packages which have version in both environments
+#   I am choosing to install versions from production environment.
+#   Development: 
+# unicodecsv==0.14.1
+# html5lib==0.95
+#   Production:
+unicodecsv==0.9.4
+html5lib==0.90
+
+# On production: 0.8.1c, but this version has problems with installation
+vobject==0.8.2
+
+# On production: 1.45, but this version is no longer available
+python-memcached==1.48
+
+# On production, but we are using PostgreSQL
+# MySQL-python==1.2.2
+
+# This package is no longer available at all
+# GnuPGInterface==0.3.2
+
+# On production: PIL==1.1.7, but this version is no longer available
+Pillow==1.1
+
+# On production: 0.4, but it's only monitoring tool, may safely ignore
+# iotop==0.4
+
+# On production, but I don't even want to know what we were using it for
+# python-apt==0.7.100.1-squeeze1
+
+# On production, but one would need to find suitable version.
+xhtml2pdf==0.0.5
+
+# This one has to be installed manually
+# django-endless-pagination==1.1
