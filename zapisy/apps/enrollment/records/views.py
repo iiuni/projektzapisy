@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import StringIO
 import csv
+import re
 
 from django.conf import settings
 
@@ -230,12 +231,13 @@ def records(request, group_id):
             context_instance=RequestContext(request))
 
 @employee_required
-def records_csv(request, group_id):
+def records_group_csv(request, group_id):
     try:
         students_in_group = Record.get_students_in_group(group_id)
+        group = Group.objects.get(id=group_id)
 
         response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=group'+ str(group_id) +'.csv'
+        response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.csv'
 
         writer = UnicodeWriter(response)
         for s in students_in_group:
@@ -243,9 +245,26 @@ def records_csv(request, group_id):
 
         return response
 
-    except NonGroupException:
+    except (NonGroupException, ObjectDoesNotExist):
         raise Http404
 
+@employee_required
+def records_queue_csv(request, group_id):
+    try:
+        students_in_queue = Queue.get_students_in_queue(group_id)
+        group = Group.objects.get(id=group_id)
+
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.csv'
+
+        writer = UnicodeWriter(response)
+        for s in students_in_queue:
+            writer.writerow([s.user.first_name, s.user.last_name, s.matricula, s.user.email])
+
+        return response
+
+    except (NonGroupException, ObjectDoesNotExist):
+        raise Http404
 
 @login_required
 def own(request):
@@ -366,7 +385,7 @@ def schedule_prototype(request):
         data, context_instance = RequestContext(request))
 
 @employee_required
-def records_pdf(request, group_id):
+def records_group_pdf(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
     except ObjectDoesNotExist:
@@ -375,7 +394,6 @@ def records_pdf(request, group_id):
     data = {
         'group': group,
         'students_in_group': Record.get_students_in_group(group_id),
-        'students_in_queue': Queue.get_students_in_queue(group_id), #TODO: change localization
         'pagesize': 'A4',
         'report': True
     }
@@ -387,7 +405,31 @@ def records_pdf(request, group_id):
 
     pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), mimetype='application/pdf')
-    import re
-    response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '_sklad.pdf'
+    response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
+
+    return response
+
+@employee_required
+def records_queue_pdf(request, group_id):
+    try:
+        group = Group.objects.get(id=group_id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    data = {
+        'group': group,
+        'students_in_queue': Queue.get_students_in_queue(group_id),
+        'pagesize': 'A4',
+        'report': True
+    }
+    context = Context(data)
+
+    template = get_template('records/queue_pdf.html')
+    html  = template.render(context)
+    result = StringIO.StringIO()
+
+    pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    response = HttpResponse(result.getvalue(), mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
 
     return response

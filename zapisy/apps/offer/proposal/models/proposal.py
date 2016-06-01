@@ -26,6 +26,7 @@ class FiltredManager(models.Manager):
     def get_query_set(self):
         return super(FiltredManager, self).get_query_set().filter(deleted=False, for_student=True)
 
+# TO BE DELETED
 class Przedmiot(models.Model):
     kod_uz = models.IntegerField()
     nazwa = models.TextField()
@@ -48,6 +49,8 @@ class Przedmiot(models.Model):
     class Meta:
         app_label = 'proposal'
 
+
+# TO BE DELETED
 class Proposal( models.Model ):
     """
         Proposal of course

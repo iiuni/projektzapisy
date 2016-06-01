@@ -50,6 +50,14 @@ def employee_required(function=None,
         return _CheckProfileOr403(function, test_f, redirect_to)
     return lambda f: _CheckProfileOr403(f, test_f, redirect_to)
 
+def offer_manager_required(function=None,
+                      redirect_to=None):
+    def test_f(user):
+        return user.username == 'przemka'
+    if function:
+        return _CheckProfileOr403(function, test_f, redirect_to)
+    return lambda f: _CheckProfileOr403(f, test_f, redirect_to)
+
 class _CheckProfileOr403(object):
     """
     Class that checks that the user passes the given test,

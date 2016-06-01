@@ -9,8 +9,10 @@ search_index/*
 *.log
 *~
 .idea/
-settings_local.py
+zapisy/settings/__init__.py
 /apache
 .idea/
 .rvmrc
 static/
+.vagrant/
+a_dump_20160301.sql

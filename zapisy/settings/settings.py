@@ -3,7 +3,7 @@
 import os
 import logging
 
-PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 DEBUG = False
 
@@ -219,6 +219,7 @@ MIDDLEWARE_CLASSES = (
     #'middleware.mobileMiddleware.SubdomainMiddleware',
     'middleware.error_handling.ErrorHandlerMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -339,7 +340,7 @@ LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
 
 SKIP_SOUTH_TESTS = True # wylacza wbudowane testy south
-
+SOUTH_TESTS_MIGRATE = False
 
 #TODO: udokumentowac zaleznosci!
 #TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.run_tests'
@@ -426,5 +427,6 @@ STATICFILES_DIRS = (
 local_settings_file = os.path.join(PROJECT_PATH, 'settings_local.py')
 if os.path.isfile(local_settings_file):
     execfile(local_settings_file)
+
 
 

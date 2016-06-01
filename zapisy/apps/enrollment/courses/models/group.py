@@ -99,6 +99,22 @@ class Group(models.Model):
         """return all terms of current group""" 
         return self.term.all()
 
+    def human_readable_type(self):
+        types = {
+            '1':  'Wykład',
+            '9':  'Repetytorium',
+            '2':  'Ćwiczenia',
+            '3':  'Pracownia',
+            '4':  'Ćwiczenia (poziom zaawansowany)',
+            '5':  'Ćwiczenio-pracownia',
+            '6':  'Seminarium',
+            '7':  'Lektorat',
+            '8':  'Zajęcia sportowe',
+           ' 10': 'Projekt', 
+        }
+        return types[self.type]
+
+
     def get_terms_as_string(self):
       return ",".join(map(lambda x: "%s %s-%s" % (x.get_dayOfWeek_display(), x.start_time.hour, x.end_time.hour), self.term.all()))
     get_terms_as_string.short_description = 'Terminy zajęć'
@@ -183,19 +199,24 @@ class Group(models.Model):
 
     def _remove_from_other_groups(self, student):
         from apps.enrollment.records.models import Record, STATUS_ENROLLED, STATUS_REMOVED
+        from apps.enrollment.records.utils import run_rearanged
+
         result = None
         for record in Record.get_student_records_for_group_type(student, self):
             result = record.group
             record.student_remove(student)
+            run_rearanged(None, result)
 
         return result or True
 
     def _remove_from_all_groups(self, student):
         from apps.enrollment.records.models import Record, STATUS_ENROLLED, STATUS_REMOVED
+        from apps.enrollment.records.utils import run_rearanged
 
         records = Record.get_student_records_for_course(student, self.course)
         for record in records:
             record.student_remove(student)
+            run_rearanged(None, record.group)
 
         return records or True
 

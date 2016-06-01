@@ -58,6 +58,10 @@
                     <th scope="row">Plan semestru z pliku xml</th>
                     <td><a href="{{ model.admin_url }}import_semester" class="addlink">Importuj</a></td>
                 </tr>            
+                <tr>
+                    <th scope="row">Odśwież ręcznie czasy otwarcia</th>
+                    <td><a href="{{ model.admin_url }}refresh_semester" class="addlink">Odśwież</a></td>
+                </tr>
             </table>
         </div>
         {% endif %}

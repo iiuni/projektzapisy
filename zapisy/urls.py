@@ -18,7 +18,6 @@ urlpatterns = patterns('',
     (r'^help/', include('apps.help.urls')),
     #Z
     #url('^enrollment/$', 'apps.enrollment.courses.views.main', name='enrollment-main'),
-    url('^gdzie_ma_rimmon/$', 'apps.users.views.rimmon', name='rimmon'), #easter egg
     (r'^courses/', include('apps.enrollment.courses.urls')),
     (r'^records/', include('apps.enrollment.records.urls')),
     (r'^statistics/', include('apps.statistics.urls', namespace='statistics')),
@@ -37,6 +36,7 @@ urlpatterns = patterns('',
 
     (r'^fereol_admin/courses/import_semester', 'apps.enrollment.courses.admin.views.import_semester'),
     (r'^fereol_admin/courses/import_schedule', 'apps.enrollment.courses.admin.views.import_schedule'),
+    (r'^fereol_admin/courses/refresh_semester', 'apps.enrollment.courses.admin.views.refresh_semester'),
     url(r'^fereol_admin/courses/group/change_limit', 'apps.enrollment.courses.admin.views.change_group_limit', name='change-group-limit'),
     (r'^fereol_admin/courses/group/remove_student', 'apps.enrollment.courses.admin.views.remove_student'),
     (r'^fereol_admin/courses/group/add_student', 'apps.enrollment.courses.admin.views.add_student'),
@@ -63,14 +63,14 @@ if not settings.RELEASE:
     # OD
     #url('^offer/$', 'apps.offer.proposal.views.main', name='offer-main'),
     # OCENA ZAJĘĆ
-    
+
     (r'^site_media/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'site_media')})
 
     #
 
     #CHANGE TO apps.mobile
     #url(r'^mobile/$', 'apps.mobile.views.onMobile', name = 'on-mobile'),
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
+    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

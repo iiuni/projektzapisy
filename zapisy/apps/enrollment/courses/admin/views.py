@@ -8,7 +8,7 @@ import codecs
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db import transaction
+from django.db import transaction, connection
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
@@ -112,16 +112,16 @@ class SemesterImportForm(forms.Form):
 def import_semester(request):
     if request.method == 'POST':
         form = SemesterImportForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
             xmlfile = NamedTemporaryFile();
-        
+
             for chunk in request.FILES['file'].chunks():
                 xmlfile.write(chunk)
-                
+
             xmlfile.seek(0)
-            
-            try:    
+
+            try:
                 import_semester_schedule(xmlfile)
     	    except Exception:
                 errormsg = unicode(exc_info()[0]) + ' ' + unicode(exc_info()[1]) + '\n\n'
@@ -131,9 +131,9 @@ def import_semester(request):
             else:
                 errormsg = None
                 messages.success(request, u"Plik został zaimportowany.")
-            finally:    
+            finally:
                 xmlfile.close()
-        
+
             return render_to_response(
                 'enrollment/courses/admin/import_semester.html',
                 {'form': form,
@@ -150,9 +150,9 @@ def import_semester(request):
         },
         RequestContext(request, {}),
     )
-    
-    
-    
+
+
+
 class ScheduleImportForm(forms.Form):
     file = forms.FileField(max_length=255, label='Plik z planem zajęć')
 
@@ -178,6 +178,13 @@ def import_schedule(request):
 
     return TemplateResponse(request, 'enrollment/courses/admin/import_schedule.html', locals())
 
+@staff_member_required
+def refresh_semester(request):
+    semester = Semester.objects.filter(records_closing__gt=datetime.datetime.now())[0]
+    cursor = connection.cursor()
+    cursor.execute("SELECT users_openingtimesview_refresh_for_semester(%s);" % str(semester.id))
+    connection.commit()
+    return HttpResponseRedirect('/fereol_admin/courses')
 
 @staff_member_required
 def finish_import_schedule(request):
