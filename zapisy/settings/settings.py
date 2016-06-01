@@ -219,6 +219,7 @@ MIDDLEWARE_CLASSES = (
     #'middleware.mobileMiddleware.SubdomainMiddleware',
     'middleware.error_handling.ErrorHandlerMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -426,5 +427,6 @@ STATICFILES_DIRS = (
 local_settings_file = os.path.join(PROJECT_PATH, 'settings_local.py')
 if os.path.isfile(local_settings_file):
     execfile(local_settings_file)
+
 
 
