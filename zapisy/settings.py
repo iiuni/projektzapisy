@@ -82,10 +82,10 @@ EMAIL_COURSE_PREFIX = '[System Zapisow] ' # please don't remove the trailing spa
 
 #loggin settings:
 
-#LOG_FILE = os.path.join(PROJECT_PATH, "logs/log.log")
-#LOG_LEVEL = logging.NOTSET 
-#INTERNAL_IPS = ('127.0.0.1',)
-#logging.basicConfig(level=LOG_LEVEL, filename=LOG_FILE, format = '%(asctime)s | %(levelname)s | %(message)s')
+LOG_FILE = os.path.join(PROJECT_PATH, "logs/log.log")
+LOG_LEVEL = logging.NOTSET
+INTERNAL_IPS = ('127.0.0.1',)
+logging.basicConfig(level=LOG_LEVEL, filename=LOG_FILE, format = '%(asctime)s | %(levelname)s | %(message)s')
 
 LOGGING = {
     'version': 1,
@@ -322,7 +322,9 @@ INSTALLED_APPS = (
     'django_filters',
     'autoslug',
     'endless_pagination',
-    'apps.notifications'
+    'apps.notifications',
+
+    'testapp'
 )
 
 AUTHENTICATION_BACKENDS = (
