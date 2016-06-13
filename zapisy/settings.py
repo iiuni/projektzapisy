@@ -322,7 +322,9 @@ INSTALLED_APPS = (
     'django_filters',
     'autoslug',
     'endless_pagination',
-    'apps.notifications'
+    'apps.notifications',
+
+    'test_app'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -339,7 +341,7 @@ LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
 
 SKIP_SOUTH_TESTS = True # wylacza wbudowane testy south
-
+SOUTH_TESTS_MIGRATE = False
 
 #TODO: udokumentowac zaleznosci!
 #TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.run_tests'

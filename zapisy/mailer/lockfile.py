@@ -245,7 +245,7 @@ class LinkFileLock(LockBase):
         while True:
             # Try and create a hard link to it.
             try:
-                os.link(self.unique_name, self.lock_file)
+                os.symlink(self.unique_name, self.lock_file)
             except OSError:
                 # Link creation failed.  Maybe we've double-locked?
                 nlinks = os.stat(self.unique_name).st_nlink

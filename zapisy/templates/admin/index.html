@@ -57,7 +57,11 @@
                 <tr>
                     <th scope="row">Plan semestru z pliku xml</th>
                     <td><a href="{{ model.admin_url }}import_semester" class="addlink">Importuj</a></td>
-                </tr>            
+                </tr>
+                <tr>
+                    <th scope="row">Odśwież ręcznie czasy otwarcia</th>
+                    <td><a href="{{ model.admin_url }}refresh_semester" class="addlink">Odśwież</a></td>
+                </tr>
             </table>
         </div>
         {% endif %}
@@ -72,15 +76,24 @@
                 <tr>
                     <th scope="row">Importuj nowych studentów</th>
                     <td><a href="{{ model.admin_url }}import_new_zamawiani" class="addlink">Importuj</a></td>
-                </tr>                
+                </tr>
                 <tr>
                     <th scope="row">Eksportuj dane</th>
                     <td><a href="{{ model.admin_url }}export_zamawiani" class="addlink">Eksportuj</a></td>
-                </tr>            
+                </tr>
             </table>
         </div>
-        {% endif %}        
-        
+        {% endif %}
+        {% if app.name == 'Notifications' %}
+        <div class="module">
+            <table>
+                <tr>
+                    <th>Wysyłka powiadomień</th>
+                    <td><a href="{% url notifications:index %}">TUTAJ</a></td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
     {% endfor %}
 {% else %}
     <p>{% trans "You don't have permission to edit anything." %}</p>

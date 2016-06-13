@@ -31,7 +31,7 @@
                                     <td style="width:400px;"><a href="{% url offer-page vote.entity.slug %}">{{ vote.entity.name }}</a> </td>
 {#                                    <td>{{ vote.in_semester|yesno:"Tak,Nie,Nie wiadomo" }}</td>#}
                                     <td>{{ vote.value }}</td>
-                                    <td>{% if vote.in_semester %}{{ vote.correction }}{% else %}--{% endif %}</td>
+                                    <td>{{ vote.correction }}</td>
                                 </tr>
 
                     		{% endfor %}

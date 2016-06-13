@@ -21,6 +21,9 @@
     {% if user.employee %}
     <li{% block enrollment_menu_courses %}{% endblock %}><a
             href="{% url my-proposal %}">Moje Propozycje</a></li>{% endif %}
+    {% if perms.proposal.can_create_offer %}
+    <li><a href="{% url manage %}">Zarządzaj</a></li>
+    {% endif %}
     {% if user.employee %}
     <li{% block enrollment_preferences %}{% endblock %}><a
             href="{% url prefs-default-view %}">Preferencje</a></li>{% endif %}

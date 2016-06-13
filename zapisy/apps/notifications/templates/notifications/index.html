@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% load url from future %}
+{% load fereol_common %}
+{% load compressed %}
+{% block main-subtitle %}Powiadomienia{% endblock %}
+
+{% block head_extra %}
+<style>
+  li.send-notification
+  {
+    line-height: 35px;
+  }
+</style>
+{% endblock %}
+
+{% block content-class %}narrow{% endblock %}
+
+{% block bread %}
+    <a href="/">Strona główna</a>  &raquo;
+    Powiadomienia
+{% endblock %}
+
+{% block content %}
+    <h2>Powiadomienia</h2>
+    <div id="notifications-content">
+        <ul>
+            <li class="send-notification">
+                Rozpoczęcie głosowania:
+                <br>
+                <form method="post" action="{% url 'notifications:vote_start' %}">
+                    {% csrf_token %}
+
+                    <p>
+                        Rok akademicki:
+                        <input type="number" id="year" name="year" class="small" value="{{ year }}" />
+                    </p>
+
+                    <p>
+                        Rodzaj głosowania:
+                        <select name="which" id="which" class="small">
+                            <option value="main">Główne</option>
+                            <option value="winter">Korekta zimowa</option>
+                            <option value="summer">Korekta letnia</option>
+                        </select>
+                    </p>
+
+                    <input type="submit" value="Wyślij" class="btn" onclick="return confirm('Czy na pewno wysłać powiadomienia?')" />
+                </form>
+            </li>
+            <li class="send-notification">
+                Rozpoczęcie oceny zajęć:
+                <a class="btn" onclick="return confirm('Czy na pewno wysłać powiadomienie?')" href="{% url 'notifications:grade_start' %}">Wyślij</a><br>
+            </li>
+            <li class="send-notification">
+                Podniesiono limit ECTS:
+                <a class="btn" onclick="return confirm('Czy na pewno wysłać powiadomienia?')" href="{% url 'notifications:enrollment_limit' %}">Wyślij</a><br>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

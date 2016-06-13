@@ -294,6 +294,15 @@ def get_semester():
 def get_course(name):
     return Course.objects.get(id=przedmioty[name])
 
+# for running scheduleimport.py from tests
+def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):
+    global SCHEDULE_FILE, przedmioty, TECH, SEMESTERID
+    SCHEDULE_FILE = TEST_SCHEDULE_FILE
+    przedmioty = test_przedmioty
+    TECH = TEST_TECH
+    SEMESTERID = TEST_SEMESTERID
+    run()
+
 def run():
     semester = get_semester()
     print 'Przenosimy na semestr <%s>' % semester

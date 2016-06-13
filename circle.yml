@@ -1,0 +1,17 @@
+general:
+  build_dir: zapisy
+
+machine:
+  python:
+    version: 2.6.8
+
+dependencies:
+  override:
+    - pip install -r ../env/requirements-2.6-1.4.2.txt
+    - pip install selenium
+    - cd /home/ubuntu && wget -q https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/django-endless-pagination/django-endless-pagination-1.1.tar.gz && tar -zxf django-endless-pagination-1.1.tar.gz && cd django-endless-pagination-1.1 && python setup.py build && python setup.py install
+
+test:
+  override:
+    - python manage.py test test_app
+    - python manage.py test news

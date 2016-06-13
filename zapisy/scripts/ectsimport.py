@@ -38,6 +38,12 @@ def import_ects(file):
     for key, value in students.items():
         refresh(key, value)
 
+# for running ectsimport.py from tests
+def run_test(TEST_ECTS_FILE):
+    global ECTS_FILE
+    ECTS_FILE = TEST_ECTS_FILE
+    run()
+
 def run():
     file = open(ECTS_FILE)
     import_ects(file)

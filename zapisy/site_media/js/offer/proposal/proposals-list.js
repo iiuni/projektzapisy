@@ -134,7 +134,7 @@ ProposalsList.initFilter = function()
 
    		var course = element.data;
        if(!value){
-                return course.status == 3;
+                return course.status == 2;
        }
    		return true;
    	}));

@@ -17,7 +17,7 @@ class Command(BaseCommand):
                                           Q(day__lte=semester.lectures_ending))\
                           .values_list('day', flat=True)
         changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms    = T.objects.filter(group__course__semester=semester).select_related('group', 'group__course', 'group__course__courseentity')
+        terms = T.objects.filter(group__course__semester=semester).select_related('group', 'group__course', 'group__course__courseentity')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
         day = semester.lectures_beginning
@@ -41,24 +41,20 @@ class Command(BaseCommand):
 
 
         for t in terms:
-            ev = Event()
-            ev.group  = t.group
-            ev.course = t.group.course
-            ev.title  = ev.course.entity.get_short_name()
-            ev.type   = '3'
-            ev.visible = True
-            ev.status  = '1'
-            ev.author_id = 1
-            ev.save()
+            ev = Event.objects.get_or_create(
+                group=t.group, 
+                course=t.group.course,
+                title=t.group.course.entity.get_short_name(),
+                type='3',
+                visible=True,
+                status='1',
+                defaults={'author_id': 1})[0]
 
             for room in t.classrooms.all():
                 for day in days[int(t.dayOfWeek)-1]:
-                    newTerm = Term()
-                    newTerm.event = ev
-                    newTerm.day = day
-                    newTerm.start = timedelta(hours=t.start_time.hour, minutes=t.start_time.minute)
-                    newTerm.end = timedelta(hours=t.end_time.hour, minutes=t.end_time.minute)
-                    newTerm.room = room
-                    newTerm.save()
-
-
+                    Term.objects.get_or_create(
+                        event = ev,
+                        day = day,
+                        start = timedelta(hours=t.start_time.hour, minutes=t.start_time.minute),
+                        end = timedelta(hours=t.end_time.hour, minutes=t.end_time.minute),
+                        room = room)

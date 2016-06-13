@@ -30,7 +30,7 @@ class NewsManager(models.Manager):
         return self.category(category).filter(date__gte=begin).count()
     def get_successive_news(self, category, beginwith, quantity=1):
         """
-            Get a number of news 
+            Get a number of news
         """
         return self.category(category)[beginwith:(beginwith+quantity)]
 
@@ -39,8 +39,7 @@ class NewsManager(models.Manager):
             Return news tagged with a given tag.
         """
         return self.filter(category = category)
-              
-        
+
 # suggested news items categories - not enforced
 CATEGORIES = (
     ('-', 'Hidden'),
@@ -63,14 +62,29 @@ class News(models.Model):
                                 verbose_name=u'Kategoria',
                                 choices=CATEGORIES,
                                 default='-')
-    
+
     objects = NewsManager()
-    
+
+    def save(self, *args, **kwargs):
+        from apps.notifications.models import Notification
+        try:
+            old = News.objects.get(pk=self.pk)
+        except News.DoesNotExist:
+            old = None
+
+        super(News, self).save(*args, **kwargs)
+
+        if self.is_published() and (old and not old.is_published() or not old):
+            Notification.send_notifications('send-news')
+
+    def is_published(self):
+        return self.category != '-'
+
     class Meta:
         get_latest_by = 'date'
         ordering = ['-date', '-id']
         verbose_name = u'Ogłoszenie'
         verbose_name_plural = u'Ogłoszenia'
-    
+
     def __unicode__(self):
         return self.title

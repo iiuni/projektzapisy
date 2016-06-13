@@ -159,9 +159,10 @@ def save_private_keys(polls_private_keys):
                             private_key = key)
         pkey.save()
 
-def generate_keys_for_polls():
+def generate_keys_for_polls(semester=None):
     from apps.enrollment.courses.models import Semester
-    semester = Semester.get_current_semester()
+    if not semester:
+       semester = Semester.get_current_semester()
     poll_list = Poll.get_polls_without_keys(semester)
     pub_list  = []
     priv_list = []

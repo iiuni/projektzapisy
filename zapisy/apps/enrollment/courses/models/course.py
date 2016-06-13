@@ -57,7 +57,7 @@ class StatisticsManager(models.Manager):
 
         #TODO: po przeniesieniu wszystkich metod do managerów filtrowanie na
         #  status powinno byc  z dziedziczenia
-        return self.get_query_set().filter(status=3)\
+        return self.get_query_set().filter(status=2)\
             .select_related('type', 'owner', 'owner__user')\
             .order_by('name')\
             .extra(
@@ -81,8 +81,8 @@ class StatisticsManager(models.Manager):
             )
 
 
-statuses = ((0, u'Wersja robocza'), (1, u'W ofercie'), (2, u'Poddana pod głosowanie'),
-            (4, u'Wycofany z oferty'),)
+statuses = ((0, u'Propozycja'), (1, u'W ofercie'), (2, u'Poddana pod głosowanie'),
+            (4, u'Wycofany z oferty'), (5, 'Do poprawienia'), )
 semesters = (('u', 'nieoznaczony'), ('z', 'zimowy'), ('l', 'letni'))
 ectslist = [(x, str(x)) for x in range(1, 16)]
 
@@ -99,8 +99,8 @@ class CourseEntity(models.Model):
                                  verbose_name='skrócona nazwa',
                                  null=True, blank=True,
                                  help_text=u'Opcjonalna skrócona nazwa, używana na np. planie. Przykłady: JFiZO, AiSD')
-    status = models.IntegerField(choices=statuses, default=1,
-                                 help_text=u'Wersja robocza widoczna jest jedynie dla jej autora')
+
+    status = models.IntegerField(choices=statuses, default=0)
 
     semester = models.CharField(max_length=1, choices=semesters, default='u', verbose_name='semestr')
 
@@ -158,7 +158,7 @@ class CourseEntity(models.Model):
         return self.lectures + self.information.lectures
 
     def get_exercises(self):
-        return self.lectures + self.information.lectures
+        return self.exercises + self.information.exercises
 
     def get_laboratories(self):
         return self.laboratories + self.information.laboratories
@@ -174,6 +174,24 @@ class CourseEntity(models.Model):
 
     #
 
+    def get_status(self):
+        return self.status
+
+    def effects_count(self):
+        return self.effects.count()
+
+    def mark_as_accepted(self):
+        self.status = 1
+
+    def mark_for_review(self):
+        self.status = 5
+
+    def mark_for_voting(self):
+        self.status = 2
+
+    def is_proposal(self):
+        return (self.status == 0) or (self.status == 5)
+
     def save(self, *args, **kwargs):
         """
         Overloaded save method - during save autocreate slug field
@@ -186,8 +204,7 @@ class CourseEntity(models.Model):
 
         if not self.slug:
             self.slug = slugify('%d_%s' % (self.pk, self.name,))
-
-        super(CourseEntity, self).save(*args, **kwargs)
+            self.save()
 
     def __unicode__(self):
         return '%s' % (self.name, )
@@ -318,6 +335,9 @@ class CourseEntity(models.Model):
         """
         return self.semester == 'z'
 
+    def is_in_voting(self):
+        return self.status == 2
+
     def get_all_voters(self, year=None):
         from apps.offer.vote.models.single_vote import SingleVote
         from apps.offer.vote.models.system_state import SystemState
@@ -334,7 +354,7 @@ class CourseEntity(models.Model):
 
     @staticmethod
     def get_vote():
-        return CourseEntity.noremoved.filter(status=3)
+        return CourseEntity.noremoved.filter(status=2)
 
     @staticmethod
     def get_voters():
@@ -394,7 +414,7 @@ class VisibleManager(Related):
 
 class Course(models.Model):
     """
-    Instacja Przedmiotu w danym przedmiocie
+    Instacja Przedmiotu w danym semestrze
     """
     entity = models.ForeignKey(CourseEntity, verbose_name='podstawa przedmiotu')
     information = models.ForeignKey('CourseDescription', verbose_name='opis', null=True, blank=True)
@@ -561,10 +581,11 @@ class Course(models.Model):
         return self.information.requirements
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify('%d %s %s' % (self.pk, self.entity.name))
-
         super(Course, self).save(*args, **kwargs)
+
+        if not self.slug:
+            self.slug = slugify('%d %s' % (self.pk, self.entity.name))
+            self.save()
 
     def get_absolute_url(self):
         return reverse('course-page', args=[str(self.slug)])
@@ -756,7 +777,6 @@ class CourseDescription(models.Model):
 
     created = models.DateTimeField(auto_now_add=True, auto_now=True)
 
-
     class Meta:
         verbose_name = 'opis przedmiotu'
         verbose_name_plural = 'opisy przedmiotu'
@@ -767,6 +787,10 @@ class CourseDescription(models.Model):
         if self and self.author:
             title = title + smart_unicode(self.author)
         return title
+
+    def save_as_copy(self):
+        self.id = None
+        self.save(force_insert=True)        
 
 class TagCourseEntity(models.Model):
     tag = models.ForeignKey(Tag)

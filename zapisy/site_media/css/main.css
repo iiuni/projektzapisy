@@ -469,3 +469,37 @@ input[type=checkbox].partialCheck
 	margin: 5px;
 }
 /*** WIDOK PROFILU UŻYTKOWNIKA  - koniec ***/
+
+
+.modal.proposal-details .modal-body {
+	max-height: 400px;
+	overflow-y: scroll;
+}
+
+.modal.proposal-details form {
+	display: inline-block;
+}
+
+.modal-header .my-close {
+  color: #999999;
+  font-size: 18px;
+  line-height: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+form#courses-in-voting select
+{
+	display: block;
+	height:300px;
+}
+
+.bootstrap-duallistbox-container .box1, .bootstrap-duallistbox-container .box2 {
+	display: inline-block;
+	margin-right:50px;
+}
+
+.topbar {
+	z-index: 999;
+}

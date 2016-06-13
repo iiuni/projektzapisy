@@ -410,23 +410,3 @@ def create_ical_file(request):
     response = HttpResponse(cal_str, content_type='application/calendar')
     response['Content-Disposition'] = 'attachment; filename=schedule.ical'
     return response    
-
-
-def rimmon(request):
-    """
-    Easter egg
-    """
-    student = Student.objects.select_related('user').get(user__first_name='Marek', user__last_name='Rybak')
-    courses = prepare_schedule_courses(request, for_student=student)
-    student.user.last_name = '-<-@'
-    student.user.first_name = 'Rimmon'
-    student.program = Program(name='Imperial Academy')
-
-    data = prepare_schedule_data(request, courses)
-    data.update({
-        'courses': courses,
-        'student': student
-    })
-
-    return render_to_response('users/student_profile.html', data, context_instance=RequestContext(request))
-

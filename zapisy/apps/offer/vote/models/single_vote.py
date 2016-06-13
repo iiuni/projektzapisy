@@ -169,7 +169,7 @@ class SingleVote ( models.Model ):
 
         year = year if year else date.today().year
 
-        proposals     = CourseEntity.objects.filter(status=3, deleted=False)
+        proposals     = CourseEntity.objects.filter(status=2, deleted=False)
         current_state = SystemState.get_state(year)
 
         old_votes = SingleVote.objects.\

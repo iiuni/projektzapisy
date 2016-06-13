@@ -1,0 +1,66 @@
+{% load i18n %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//PL">
+
+<html xmlns:pdf="">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    </head>
+    <style>
+        @font-face { font-family: Helvetica; src: url("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf");}
+
+        html {
+            font-family: Helvetica, sans-serif;
+            font-size: 8pt;
+            }
+
+        th { font-size: 12px;}
+        table { border: 1px #000000 solid;}
+        a { text-decoration: none; color: #000000;}
+        td, th { text-align: left; padding-top: 3px; padding-left: 3px;}
+    </style>
+    <body>
+    <h2>{{ group.course }}</h2>
+
+    <h4>{{group.get_type_display}}: {{group.get_teacher_full_name}}</h4>
+    <h6>{% for term in group.term.all %}{{ term }} {% endfor %}</h6>
+
+        <hr>
+            <p> {% trans "Liczba osób oczekujących na zapis" %}: {{students_in_queue|length}} </p>
+
+            {% if students_in_queue %}
+                <table class="zebra-striped">
+                    <thead>
+                        <th style="width:80px;">{% trans "Imię" %}</th>
+                        <th>{% trans "Nazwisko" %}</th>
+                        {# Translators: numer albumu #}
+                        <th style="width:60px;">{% trans "index" %}</th>
+                        <th>{% trans "Rodzaj studiów" %}</th>
+                        {# Translators: numer semestru #}
+                        <th style="width:30px;">{% trans "Sem." %}</th>
+                        <th>{% trans "Uwagi" %}</th>
+                    </thead>
+                    <tbody>
+                        {% for student in students_in_queue %}
+                            <tr>
+                                <td><a href="{% url student-profile student.user.id %}" class="person">
+                                    {{student.user.first_name}}</a></td>
+                                <td><a href="{% url student-profile student.user.id %}" class="person">
+                                    {{student.user.last_name}}</a></td>
+                                <td style="width:60px;">{{student.matricula}}</td>
+                                <td style="font-size: 5px;">
+                                    {{student.program}}
+                                </td>
+                                <td style="width:30px;">{{student.semestr}}</td>
+                            <td></td>
+                            </tr>
+
+                        {% empty %}
+                            {# Translators: jeśli kolejka pusta #}
+                            {% trans "Brak zapisanych osób" %}.
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+    </body>
+</html>

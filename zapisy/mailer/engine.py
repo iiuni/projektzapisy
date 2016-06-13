@@ -19,6 +19,7 @@ EMPTY_QUEUE_SLEEP = getattr(settings, "MAILER_EMPTY_QUEUE_SLEEP", 30)
 # default behavior is to never wait for the lock to be available.
 LOCK_WAIT_TIMEOUT = getattr(settings, "MAILER_LOCK_WAIT_TIMEOUT", -1)
 
+EMAIL_SUBJECT_TEMPLATE = getattr(settings, "EMAIL_SUBJECT_TEMPLATE", "[ZAPISY] %s")
 
 def prioritize():
     """
@@ -64,6 +65,7 @@ def send_all():
     
     try:
         for message in prioritize():
+            subject = EMAIL_SUBJECT_TEMPLATE % message.subject
             if DontSendEntry.objects.has_address(message.to_address):
                 logger.info("skipping email to %s as on don't send list " % message.to_address.encode("utf-8"))
                 MessageLog.objects.log(message, 2) # @@@ avoid using literal result code
@@ -71,11 +73,11 @@ def send_all():
                 dont_send += 1
             else:
                 try:
-                    logger.info("sending message '%s' to %s" % (message.subject.encode("utf-8"), message.to_address.encode("utf-8")))
+                    logger.info("sending message '%s' to %s" % (subject.encode("utf-8"), message.to_address.encode("utf-8")))
                     if not message.message_body_html:
-                        core_send_mail(message.subject, message.message_body, message.from_address, [message.to_address])
+                        core_send_mail(subject, message.message_body, message.from_address, [message.to_address])
                     else:
-                        email = EmailMultiAlternatives(message.subject, message.message_body, message.from_address, [message.to_address])
+                        email = EmailMultiAlternatives(subject, message.message_body, message.from_address, [message.to_address])
                         email.attach_alternative(message.message_body_html, "text/html")
                         email.send()
                     MessageLog.objects.log(message, 1) # @@@ avoid using literal result code

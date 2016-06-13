@@ -3,7 +3,6 @@
 from django.test import TestCase
 
 from apps.offer.proposal.models import Proposal
-from apps.offer.preferences.utils import *
 from apps.users.models import Employee
 
 class GetEmployeesUnsetTest(TestCase):
