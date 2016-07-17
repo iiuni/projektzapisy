@@ -48,6 +48,13 @@ class UserProfile(models.Model):
         default=settings.LANGUAGES[0][0],
         verbose_name="preferowany język Systemu Zapisów")
 
+    def clean(self):
+        super(UserProfile, self).clean()
+        if not (self.is_employee or self.is_student) or (self.is_student and self.is_employee):
+            raise ValidationError(
+                message={'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
+            )
+
 
 class BaseUser(models.Model):
     '''
