@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase
 from zapisy.apps.schedule.models import SpecialReservation, Event, Term as EventTerm
 from apps.enrollment.courses.models import Semester, Classroom, Term
@@ -35,7 +36,7 @@ class SpecialReservationTestCase(TestCase):
         reservation.save()
 
         reservation_2 = SpecialReservation(semester=semester,
-                                          title='Anoter reservation',
+                                          title=u'ąęłżóćśśń',
                                           classroom=room110,
                                           dayOfWeek=common.THURSDAY,
                                           start_time=time(15),

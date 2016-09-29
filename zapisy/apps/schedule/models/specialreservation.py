@@ -186,8 +186,5 @@ class SpecialReservation(models.Model):
         self.create_event()
 
     def __unicode__(self):
-        return unicode('{0:s}: {1:s} - {2:s} {3:s} - {4:s}'.format(self.semester,
-                                                                   self.title,
-                                                                   self.get_dayOfWeek_display(),
-                                                                   self.start_time,
-                                                                   self.end_time))
+        return u'%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),
+                                         self.start_time, self.end_time)
