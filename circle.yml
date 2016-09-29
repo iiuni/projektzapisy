@@ -14,3 +14,5 @@ test:
     - mkdir logs
     - python manage.py test test_app
     - python manage.py test news
+    - python manage.py test schedule
+    - python manage.py test courses
