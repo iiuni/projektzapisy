@@ -66,7 +66,7 @@ class Group(models.Model):
     limit   = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
     limit_zamawiane = models.PositiveSmallIntegerField(default=0, verbose_name='miejsca dla zamawianych 2009', help_text='miejsca gwarantowane dla studentów zamawianych 2009')
     limit_zamawiane2012 = models.PositiveSmallIntegerField(default=0, verbose_name='miejsca dla zamawianych 2012', help_text='miejsca gwarantowane dla studentów zamawianych 2012')
-    limit_isim = models.PositiveSmallIntegerField(default=0, verbose_name='miejsca dla zamawianych 2012', help_text='miejsca gwarantowane dla studentów isim')
+    limit_isim = models.PositiveSmallIntegerField(default=0, verbose_name='miejsca dla ISIM', help_text='miejsca gwarantowane dla studentów isim')
     extra = models.CharField(max_length=20, choices=GROUP_EXTRA_CHOICES, verbose_name='dodatkowe informacje', default='', blank=True)
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
 
