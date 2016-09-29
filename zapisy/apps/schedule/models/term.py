@@ -48,7 +48,7 @@ class Term(models.Model):
     def validate_against_course_terms(self):
         assert(self.room is not None)
         semester = Semester.get_semester(self.day)
-
+        if not semester: return
         if semester.lectures_beginning <= self.day and self.day <= semester.lectures_ending:
 
             course_terms = CourseTerm.get_terms_for_semester(semester=semester,
