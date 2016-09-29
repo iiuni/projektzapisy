@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase
 from zapisy.apps.schedule.models import SpecialReservation, Event, Term as EventTerm
 from apps.enrollment.courses.models import Semester, Classroom, Term
@@ -118,8 +119,8 @@ class EventTestCase(TestCase):
 
         teacher = User.objects.all()[0]
         event = Event(
-            title='an event',
-            description='an event',
+            title='Żółta żaba żarła żur',
+            description='ąęńółść',
             type=Event.TYPE_GENERIC,
             status=Event.STATUS_ACCEPTED,
             author=teacher,
@@ -173,3 +174,8 @@ class EventTestCase(TestCase):
         event.delete()
         terms = EventTerm.objects.all()
         self.assertFalse(terms)
+
+    def test_event_unicode_method(self):
+        events = Event.objects.all()
+        for event in events:
+            unicode(event)

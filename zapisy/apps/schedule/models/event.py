@@ -258,5 +258,4 @@ class Event(models.Model):
         return self.interested.values_list('email', flat=True)
 
     def __unicode__(self):
-        return '{0:s} ({1:s})'.format(smart_unicode(self.title),
-                                      smart_unicode(self.description))
+        return u'%s %s' % (self.title, self.description)
