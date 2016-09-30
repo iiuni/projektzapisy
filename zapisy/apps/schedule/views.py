@@ -119,28 +119,28 @@ def history(request):
 
 @require_POST
 def decision(request, event_id):
-	from apps.schedule.models import Event
-	from .models.message import EventModerationMessage
+    from apps.schedule.models import Event
+    from .models.message import EventModerationMessage
 
-	event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
+    event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
 
-	form = DecisionForm(request.POST, instance=event)
-	
-	event_status = event.status
-	
-	if form.is_valid():
-		if event_status == form.cleaned_data['status']:
-			messages.error(request, u'Status wydarzenia nie został zmieniony')
-		else:
-			event_obj = form.save()
-			msg = EventModerationMessage()
-			msg.author = request.user
-			msg.message = u'Status wydarzenia został zmieniony na ' + unicode(event_obj.get_status_display())
-			msg.event = event_obj
-			msg.save()
-			messages.success(request, u'Status wydarzenia został zmieniony')
-	
-	return redirect(reverse('events:show', args=[str(event.id)]))
+    form = DecisionForm(request.POST, instance=event)
+
+    event_status = event.status
+
+    if form.is_valid():
+        if event_status == form.cleaned_data['status']:
+            messages.error(request, u'Status wydarzenia nie został zmieniony')
+        else:
+            event_obj = form.save()
+            msg = EventModerationMessage()
+            msg.author = request.user
+            msg.message = u'Status wydarzenia został zmieniony na ' + unicode(event_obj.get_status_display())
+            msg.event = event_obj
+            msg.save()
+            messages.success(request, u'Status wydarzenia został zmieniony')
+
+    return redirect(reverse('events:show', args=[str(event.id)]))
 
 
 def events(request):
