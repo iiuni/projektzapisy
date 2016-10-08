@@ -266,16 +266,16 @@ class GroupAdmin(admin.ModelAdmin):
         return super(GroupAdmin, self).response_change(request, obj)
 
     def save_model(self, request, obj, form, change):
-        rearrange = obj.queued > 0 and obj.enrolled < obj.limit
+
         if obj.pk:
+            rearrange = obj.queued > 0 and obj.enrolled < obj.limit
             old = Group.objects.get(pk=obj.pk)
             rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit_zamawiane != old.limit_zamawiane or
                                        obj.limit_zamawiane2012 != old.limit_zamawiane2012 or obj.limit != old.limit)
-
-        if rearrange:
-            from ...records.utils import run_rearanged
-            for _ in range(obj.limit - obj.enrolled):
-                run_rearanged(None, obj)
+            if rearrange:
+                from ...records.utils import run_rearanged
+                for _ in range(obj.limit - obj.enrolled):
+                    run_rearanged(None, obj)
 
         obj.save()
 
