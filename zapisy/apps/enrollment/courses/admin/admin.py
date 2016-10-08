@@ -265,6 +265,20 @@ class GroupAdmin(admin.ModelAdmin):
         obj = self.after_saving_model_and_related_inlines(obj)
         return super(GroupAdmin, self).response_change(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        rearrange = obj.queued > 0 and obj.enrolled < obj.limit
+        if obj.pk:
+            old = Group.objects.get(pk=obj.pk)
+            rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit_zamawiane != old.limit_zamawiane or
+                                       obj.limit_zamawiane2012 != old.limit_zamawiane2012 or obj.limit != old.limit)
+
+        if rearrange:
+            from ...records.utils import run_rearanged
+            for _ in range(obj.limit - obj.enrolled):
+                run_rearanged(None, obj)
+
+        obj.save()
+
     def after_saving_model_and_related_inlines(self, obj):
         from apps.enrollment.courses.models import Term as T
         from apps.schedule.models import Event, Term
