@@ -83,6 +83,30 @@ class Group(models.Model):
 
     disable_update_signal = False
 
+    # mutex
+    is_saving = False
+
+    def save(self, *args, **kwargs):
+
+        # determine if we should rearange:
+
+        rearange = self.queued > 0 and self.enrolled < self.limit
+        if self.pk:
+            old = Group.objects.get(pk=self.pk)
+            rearange = rearange and (self.limit_isim != old.limit_isim or self.limit_zamawiane != old.limit_zamawiane or
+                                     self.limit_zamawiane2012 != old.limit_zamawiane2012)
+
+        # ensure we dont recurse back to this section
+
+        if rearange and not self.is_saving:
+            self.is_saving = True
+            from ...records.utils import run_rearanged
+            for _ in range(self.limit - self.enrolled):
+                run_rearanged(None, self)
+            self.is_saving = False
+
+        super(Group, self).save(*args, **kwargs)
+
     usos_nr = models.IntegerField(null=True, blank=True, verbose_name=u'Nr grupy w usos', help_text='UWAGA! Nie edytuj tego pola sam!')
 
     objects = models.Manager()
@@ -491,11 +515,6 @@ class Group(models.Model):
         }
         
         return data
-
-    def enrollment_are_open(self):
-        semester = self.course.semester
-
-        return True
 
     class Meta:
         verbose_name = 'grupa'
