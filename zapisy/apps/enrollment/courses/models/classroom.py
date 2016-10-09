@@ -11,7 +11,6 @@ floors = [(0, 'Parter'), (1, 'I piętro'), (2, 'II Piętro'), (3, 'III piętro')
 types = [(0, u'Sala wykładowa'), (1, u'Sala ćwiczeniowa'), (2, u'Pracownia komputerowa - Windows'), (3, u'Pracownia komputerowa - Linux')]
 
 
-
 class Classroom( models.Model ):
     """classroom in institute"""
     type = models.IntegerField(choices=types, default=1, verbose_name='typ')
@@ -59,24 +58,21 @@ class Classroom( models.Model ):
         if not ajax:
             return rooms
 
-        # build a dictionary
-
         result = {}
 
         for room in rooms:
 
             if room.number not in result:
-                result[room.number] = {'id'       : room.id,
-                                       'number'  : room.number,
+                result[room.number] = {'id': room.id,
+                                       'number': room.number,
                                        'capacity': room.capacity,
                                        'type': room.get_type_display(),
                                        'description': room.description,
                                        'title': room.number,
                                        'terms': []}
 
-        # fill event terms
-
         terms = EventTerm.objects.filter(day=date, room__in=rooms, event__status='1').select_related('room', 'event')
+
         def make_dict(start_time,end_time,title):
             return {'begin': ':'.join(str(start_time).split(':')[:2]),
                     'end': ':'.join(str(end_time).split(':')[:2]),
@@ -87,21 +83,15 @@ class Classroom( models.Model ):
 
         if not Freeday.is_free(date):
 
-            # get weekday and semester
-
             weekday = ChangedDay.get_day_of_week(date)
             selected_semester = Semester.get_semester(date)
 
             if selected_semester is None:
                 return
 
-            # get courses data
-
             course_terms = Term.objects.filter(dayOfWeek=weekday,
                                                group__course__semester=selected_semester)\
                 .select_related('classroom', 'group').prefetch_related('classrooms')
-
-            # fill courses data
 
             for course_term in course_terms:
                 for classroom in course_term.classrooms.all():
@@ -116,7 +106,6 @@ class Classroom( models.Model ):
                                                                                course_term.end_time,
                                                                                course_term.group.course.name))
         return json.dumps(result)
-
 
     @classmethod
     def get_in_institute(cls, reservation=False):

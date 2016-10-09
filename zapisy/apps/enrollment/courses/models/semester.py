@@ -60,7 +60,6 @@ class Semester( models.Model ):
         else:
             return settings.ECTS_FINAL_LIMIT
 
-
     def get_courses(self):
         """ gets all courses linked to semester """
         return Course.objects.filter(semester=self.pk)
@@ -115,7 +114,6 @@ class Semester( models.Model ):
     def get_by_id(id):
         return Semester.objects.get(id=id)
 
-
     @staticmethod
     def get_by_id_or_default(id=None):
         if id:
@@ -151,7 +149,6 @@ class Semester( models.Model ):
             date = start_date
         python_weekday = Term.get_python_day_of_week(day_of_week)
 
-        # ensure first date in while loop is a candidate
         if date.weekday() < python_weekday:
             date += timedelta(days=python_weekday - date.weekday())
         elif date.weekday() == python_weekday:
@@ -159,17 +156,12 @@ class Semester( models.Model ):
         else:
             date += timedelta(days=7 - date.weekday() + python_weekday)
 
-        assert(Term.get_day_of_week(date) == day_of_week)
-
         dates = []
         while date <= self.lectures_ending:
-            # if its not a free day
             if not Freeday.is_free(date):
-                # if it wasnt changed
                 if ChangedDay.get_day_of_week(date) == day_of_week:
-                    # add to list
                     dates.append(date)
-            # move date to next week
+
             date += timedelta(days=7)
 
         dates.extend(self.get_all_added_days_of_week(day_of_week, start_date))
@@ -178,8 +170,8 @@ class Semester( models.Model ):
 
     def get_all_added_days_of_week(self, day_of_week, start_date=None):
         """
-        Gets dates of all weekdays changed from another weekday to specvified weekday in this semester, starting from
-        the specified date or the beggining of the semester
+        Gets dates of all weekdays changed from another weekday to specified weekday in this semester, starting from
+        the specified date or the beginning of the semester
 
         :param day_of_week: common.DAYS_OF_WEEK
         :param start_date: datetime.date
@@ -191,6 +183,7 @@ class Semester( models.Model ):
         added_days = ChangedDay.get_added_days_of_week(from_date,
                                                        self.lectures_ending,
                                                        day_of_week)
+
         return map(lambda x: x.day, added_days)
 
     @staticmethod
@@ -205,7 +198,12 @@ class Semester( models.Model ):
 
     @staticmethod
     def get_default_semester():
-        """Jeżeli istnieje semestr na który zapisy są otwarte, zwracany jest ten semestr, jeżeli taki nie istnieje zwracany jest semestr, który obecnie trwa. W przypadku gdy nie trwa żaden semestr, zwracany jest najbliższy semestr na który będzie można się zapisać lub None w przypadku braku takiego semestru """
+        """
+        If there is a semester with open enrollment, return this semester, otherwise return current semester. If there
+        is no current semester return a future semester, for which enrollment can be opened. If none of those exist,
+        return None.
+        @return: Semester
+        """
         now = datetime.now()
         now_date = now.date()
         semesters = list(Semester.objects.filter(
@@ -237,10 +235,8 @@ class Semester( models.Model ):
 
     @staticmethod
     def is_visible(id):
-        """ Answers if course is sat as visible (displayed on course lists) """
-        param = id
-        return Semester.objects.get(id = param).visible
-
+        """ Answers if course is set as visible (displayed on course lists) """
+        return Semester.objects.get(id=id).visible
 
     class Meta:
         verbose_name = 'semestr'
@@ -252,16 +248,12 @@ class Semester( models.Model ):
     def __unicode__(self):
         return self.get_name()
 
+
 class Freeday(models.Model):
     day = models.DateField(verbose_name='dzień wolny')
 
     @classmethod
     def is_free(cls, date):
-        """
-        Returns true if date is a free day
-
-        :param date: datetime.date
-        """
         free = cls.objects.filter(day=date)
         if free:
             return True
@@ -302,10 +294,9 @@ class ChangedDay(models.Model):
     @staticmethod
     def get_added_days_of_week(start_date, end_date, day_of_week=None):
         added_days = ChangedDay.objects.filter(day__gte=start_date, day__lte=end_date)
-        if day_of_week is None:
-            return added_days
-        else:
+        if day_of_week:
             return added_days.filter(weekday=day_of_week)
+        return added_days
 
     def __unicode__(self):
         return str(self.day) + ' -> ' + str(self.get_weekday_display())
