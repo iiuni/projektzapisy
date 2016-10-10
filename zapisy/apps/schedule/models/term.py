@@ -30,7 +30,6 @@ class Term(models.Model):
     place = models.CharField(max_length=255, null=True, blank=True, verbose_name=u'Miejsce')
 
     def validate_against_event_terms(self):
-        assert(self.room is not None)
         terms = Term.get_terms_for_dates(dates=[self.day],
                                          classroom=self.room,
                                          start_time=self.start,
@@ -46,7 +45,6 @@ class Term(models.Model):
                 code='overlap')
 
     def validate_against_course_terms(self):
-        assert(self.room is not None)
         semester = Semester.get_semester(self.day)
 
         course_terms = CourseTerm.get_terms_for_semester(semester=semester,
@@ -147,14 +145,7 @@ class Term(models.Model):
 
     @classmethod
     def get_terms_for_dates(cls, dates, classroom, start_time=None, end_time=None):
-        """
-        Gets terms in specified classroom on specified days
 
-        :param end_time: datetime.time
-        :param start_time: datetime.time
-        :param classroom: enrollment.courses.models.Classroom
-        :param dates: datetime.date list
-        """
         if start_time is None:
             start_time = time(8)
         if end_time is None:

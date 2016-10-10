@@ -71,16 +71,11 @@ class SpecialReservation(models.Model):
 
     @classmethod
     def get_reservations_for_semester(cls, semester, day=None, classrooms=None, start_time=None, end_time=None):
-        """
-        A versatile function returning SpecialReservations. day is either datetime.date or string
-
-        :param semester: enrollment.courses.model.Semester
-        :param day: common.DAYS_OF_WEEK or datetime.date
-        """
+        """ A versatile function returning SpecialReservations. day is either datetime.date or string """
 
         query = cls.objects.any_semester(semester)
 
-        if day is not None:
+        if day:
             if isinstance(day, date):
                 day_of_week = CourseTerm.get_day_of_week(day)
             else:
