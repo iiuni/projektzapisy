@@ -100,5 +100,6 @@ cd lxml-3.0.1
 python setup.py build
 python setup.py install
 
+pip install rollbar
 
 echo "Python-2.6 environment set up."

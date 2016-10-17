@@ -95,6 +95,9 @@ class Classroom( models.Model ):
             if selected_semester is None:
                 return
 
+            if selected_semester.lectures_beginning > date or date > selected_semester.lectures_ending:
+                return json.dumps(result)
+
             # get courses data
 
             course_terms = Term.objects.filter(dayOfWeek=weekday,

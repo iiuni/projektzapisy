@@ -49,18 +49,19 @@ class Term(models.Model):
         assert(self.room is not None)
         semester = Semester.get_semester(self.day)
 
-        course_terms = CourseTerm.get_terms_for_semester(semester=semester,
-                                                         day=self.day,
-                                                         classrooms=[self.room],
-                                                         start_time=self.start,
-                                                         end_time=self.end)
+        if semester.lectures_beginning <= self.day and self.day <= semester.lectures_ending:
 
-        if course_terms:
-            raise ValidationError(
-                message={'__all__': [u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
-                                     course_terms[0].group.course.name + ' ' + unicode(course_terms[0])]},
-                code='overlap'
-            )
+            course_terms = CourseTerm.get_terms_for_semester(semester=semester,
+                                                             day=self.day,
+                                                             classrooms=[self.room],
+                                                             start_time=self.start,
+                                                             end_time=self.end)
+            if course_terms:
+                raise ValidationError(
+                    message={'__all__': [u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
+                                         course_terms[0].group.course.name + ' ' + unicode(course_terms[0])]},
+                    code='overlap'
+                )
 
     def clean(self):
         """
