@@ -70,8 +70,6 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
-            print Course.objects.filter(teachers=user.employee)
-
         self.fields['title'].widget.attrs.update({'class' : 'span7'})
         self.fields['type'].widget.attrs.update({'class' : 'span7'})
         self.fields['course'].widget.attrs.update({'class' : 'span7'})
