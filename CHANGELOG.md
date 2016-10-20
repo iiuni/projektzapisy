@@ -1,5 +1,15 @@
 # projektzapisy Changelog
 
+# Version 1.3 (current)
+
+* Fixed an issue with dev env
+* Added working tests to CI
+* Fixed decision form for good
+* Fixed displayed name of limit_isim field in Group model
+* Fixed an issue with unicode method of Event model
+* Fixed an issue with invalid user profiles
+* Fixed an issue with queues not updating when changing limits of a group
+
 # Version 1.2 (23.09.2016)
 
 * Temporary fix for decision form
