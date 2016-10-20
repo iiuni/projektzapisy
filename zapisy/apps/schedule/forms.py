@@ -59,13 +59,18 @@ class EventForm(forms.ModelForm):
 
             previous_semester = Semester.get_semester(datetime.now().date() - timedelta(days=30))
 
-            qs  = Course.objects.filter(semester__in=[semester, previous_semester]). \
+            queryset = Course.objects.filter(semester__in=[semester, previous_semester]). \
                 select_related('semester', 'entity'). \
                 order_by('semester')
-            if not user.has_perm('schedule.manage_events'):
-                qs = qs.filter(teachers=user.employee)
 
-            self.fields['course'].queryset = qs
+            if not user.has_perm('schedule.manage_events'):
+                queryset = Course.objects.filter(groups__type='1',
+                                                 groups__teacher=user.employee,
+                                                 semester__in=[semester, previous_semester])
+
+            self.fields['course'].queryset = queryset
+
+            print Course.objects.filter(teachers=user.employee)
 
         self.fields['title'].widget.attrs.update({'class' : 'span7'})
         self.fields['type'].widget.attrs.update({'class' : 'span7'})
