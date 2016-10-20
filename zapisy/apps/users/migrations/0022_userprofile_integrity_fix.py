@@ -17,6 +17,15 @@ class Migration(SchemaMigration):
                    "set is_employee = true, is_student = false "
                    "where user_id in "
                    "(select user_id from users_employee)")
+                   
+        db.execute("update users_userprofile "
+                   "set is_zamawiany = true "
+                   "where user_id in "
+                   "(select user_id from users_student "
+                   "where " 
+                   "(id in (select student_id from users_studiazamawiane)) "
+                   "or " 
+                   "(id in (select student_id from users_studiazamawiane2012))) ")
 
     def backwards(self, orm):
         pass
