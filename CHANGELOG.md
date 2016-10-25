@@ -1,6 +1,6 @@
 # projektzapisy Changelog
 
-# Version 1.3 (current)
+# Current version
 
 * Fixed an issue with dev env
 * Added working tests to CI
@@ -9,12 +9,13 @@
 * Fixed an issue with unicode method of Event model
 * Fixed an issue with invalid user profiles
 * Fixed an issue with queues not updating when changing limits of a group
+* Lecturers can now add exams
 
-# Version 1.2 (23.09.2016)
+# Version 23.09.2016
 
 * Temporary fix for decision form
 
-# Version 1.1 (20.09.2016)
+# Version 20.09.2016
 
 * Created unified dev environment with Vagrant
 * Fixed template for enabling grade
@@ -29,6 +30,6 @@
 * Fixed cyclical reservations
 * Fixed email notifications
 
-# Version 1.0 (10.02.2016)
+# Version 10.02.2016
 
 * First version recovered from BitBucket
