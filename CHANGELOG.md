@@ -11,11 +11,11 @@
 * Fixed an issue with queues not updating when changing limits of a group
 * Lecturers can now add exams
 
-# Version 23.09.2016
+# Version 16.9.23
 
 * Temporary fix for decision form
 
-# Version 20.09.2016
+# Version 16.9.20
 
 * Created unified dev environment with Vagrant
 * Fixed template for enabling grade
@@ -30,6 +30,6 @@
 * Fixed cyclical reservations
 * Fixed email notifications
 
-# Version 10.02.2016
+# Version 16.2.10
 
 * First version recovered from BitBucket
