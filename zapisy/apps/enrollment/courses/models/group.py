@@ -182,9 +182,7 @@ class Group(models.Model):
         if Record.objects.filter(student=student, group=self, status=STATUS_ENROLLED).update(status=STATUS_REMOVED) > 0:
             message = [u'Student wypisany z grupy']
 
-            lecture_records = Record.objects.filter(student=student, status=STATUS_ENROLLED, group__course=self.course,
-                                                    group__type=settings.LETURE_TYPE)
-            if self.type == settings.LETURE_TYPE and len(lecture_records) == 1:
+            if self.type == settings.LETURE_TYPE:
                 result = self._remove_from_all_groups(student)
                 message.append(u'Automatycznie wypisano również z pozostałych grup')
 
