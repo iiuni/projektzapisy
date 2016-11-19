@@ -27,7 +27,6 @@ class TermForm(forms.ModelForm):
 
 TermFormSet = inlineformset_factory(Event, Term, extra=0, form=TermForm)
 
-
 class EventForm(forms.ModelForm):
 
     class Meta:
@@ -40,6 +39,7 @@ class EventForm(forms.ModelForm):
             data = deepcopy(data)
             if 'type' not in data:
                 data['type'] = '2'
+
 
         super(EventForm, self).__init__(data, **kwargs)
 
@@ -59,31 +59,31 @@ class EventForm(forms.ModelForm):
 
             previous_semester = Semester.get_semester(datetime.now().date() - timedelta(days=30))
 
-            queryset = Course.objects.filter(semester__in=[semester, previous_semester]). \
+            qs  = Course.objects.filter(semester__in=[semester, previous_semester]). \
                 select_related('semester', 'entity'). \
                 order_by('semester')
-            if not user.has_perm('schedule.manage_events'):
-                queryset = queryset.filter(teachers=user.employee)
 
-            self.fields['course'].queryset = queryset
+            if not user.has_perm('schedule.manage_events'):
+                queryset = Course.objects.filter(groups__type='1',
+                                                 groups__teacher=user.employee,
+                                                 semester__in=[semester, previous_semester])
+
+            self.fields['course'].queryset = qs
 
         self.fields['title'].widget.attrs.update({'class' : 'span7'})
         self.fields['type'].widget.attrs.update({'class' : 'span7'})
         self.fields['course'].widget.attrs.update({'class' : 'span7'})
         self.fields['description'].widget.attrs.update({'class' : 'span7', 'required': 'required'})
 
-
 class EventModerationMessageForm(forms.ModelForm):
     class Meta:
         model = EventModerationMessage
         fields = ('message', )
 
-
 class EventMessageForm(forms.ModelForm):
     class Meta:
         model = EventMessage
         fields = ('message', )
-
 
 class DecisionForm(forms.ModelForm):
     class Meta:
