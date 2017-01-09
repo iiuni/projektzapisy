@@ -11,6 +11,10 @@ from django.shortcuts import render_to_response
 from django.contrib.admin.views.decorators import staff_member_required
 from apps.users.decorators import employee_required
 
+from rq import Queue
+from redis import Redis
+from .tasks import dummy_task
+
 def main_page( request ):
     return render_to_response('help/base.html', {}, context_instance = RequestContext(request))
 
@@ -37,6 +41,12 @@ def offer( request ):
 
 def errorpage( request ):
     raise Exception('Example exception')
+
+def rqtestpage( request ):
+    redis_conn = Redis()
+    queue = Queue(connection = redis_conn)
+    job = queue.enqueue(dummy_task, 5)
+    return HttpResponse("Dodalem do kolejki taska")
 
 @staff_member_required
 def admin( request ):

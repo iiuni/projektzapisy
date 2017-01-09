@@ -12,4 +12,5 @@ urlpatterns = patterns('apps.help.views',
     #url(r'^employee/$', 'employee', name='help-employee'),
     #url(r'^offer/$', 'offer', name='help-offer'),
     url(r'^errorpage/$', 'errorpage', name='help-errorpage'),
+    url(r'^rqtestpage/$', 'rqtestpage', name='help-rqtestpage'),
 )
