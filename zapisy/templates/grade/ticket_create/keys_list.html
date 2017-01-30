@@ -1,8 +1,9 @@
 {% extends "grade/base.html" %}
+{% load i18n %}
 
 {% block main-navigation %}
-	<a href="/">Strona główna</a>  &raquo;
-	<a href="{% url grade-main %}">Ocena zajęć</a> &raquo;
+	<a href="/">{% trans "Strona główna" %}</a>  &raquo;
+	<a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a> &raquo;
     Lista kluczy publicznych
 {% endblock %}
 

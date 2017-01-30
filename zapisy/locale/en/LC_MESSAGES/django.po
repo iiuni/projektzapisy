@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-09 11:27+0000\n"
+"POT-Creation-Date: 2017-01-29 10:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,53 +28,55 @@ msgstr ""
 #: apps/enrollment/records/templates/records/group_pdf.html:29
 #: apps/enrollment/records/templates/records/records_list.html:5
 msgid "Zapisanych w ramach limitu studiów zamawianych"
-msgstr ""
+msgstr "Recorded from the ordered studies"
 
 #. Translators: limit dodatkowy to ten poza limitem dla zamawianych
 #: apps/enrollment/records/templates/records/group_pdf.html:33
 #: apps/enrollment/records/templates/records/records_list.html:10
 msgid "Zapisanych w ramach limitu dodatkowego"
-msgstr ""
+msgstr "Recorded from an additional limit"
 
 #: apps/enrollment/records/templates/records/group_pdf.html:38
 #: apps/enrollment/records/templates/records/records_list.html:25
 msgid "Liczba zapisanych osób"
-msgstr ""
+msgstr "The number of recorded people"
 
 #: apps/enrollment/records/templates/records/group_pdf.html:46
 #: apps/enrollment/records/templates/records/queue_pdf.html:33
 #: templates/enrollment/records/students_list.html:5
+#: templates/offer/vote/proposal_summary.html:27
 msgid "Imię"
-msgstr ""
+msgstr "Name"
 
 #: apps/enrollment/records/templates/records/group_pdf.html:47
 #: apps/enrollment/records/templates/records/queue_pdf.html:34
 #: templates/enrollment/records/students_list.html:6
+#: templates/offer/vote/proposal_summary.html:28
 msgid "Nazwisko"
-msgstr ""
+msgstr "Surname"
 
 #. Translators: numer albumu
 #: apps/enrollment/records/templates/records/group_pdf.html:49
 #: apps/enrollment/records/templates/records/queue_pdf.html:36
 msgid "index"
-msgstr ""
+msgstr "Student number"
 
 #: apps/enrollment/records/templates/records/group_pdf.html:50
 #: apps/enrollment/records/templates/records/queue_pdf.html:37
 #: templates/enrollment/records/students_list.html:8
 msgid "Rodzaj studiów"
-msgstr ""
+msgstr "Type of studies"
 
 #. Translators: numer semestru
 #: apps/enrollment/records/templates/records/group_pdf.html:52
 #: apps/enrollment/records/templates/records/queue_pdf.html:39
 msgid "Sem."
-msgstr ""
+msgstr "Number of Semester"
 
 #: apps/enrollment/records/templates/records/group_pdf.html:53
 #: apps/enrollment/records/templates/records/queue_pdf.html:40
 msgid "Uwagi"
-msgstr ""
+msgstr "Remarks"
 
 #. Translators: jeśli grupa pusta
 #. Translators: jeśli kolejka pusta
@@ -82,62 +84,78 @@ msgstr ""
 #: apps/enrollment/records/templates/records/queue_pdf.html:59
 #: templates/enrollment/records/students_list.html:31
 msgid "Brak zapisanych osób"
-msgstr ""
+msgstr "Nobody was recorded"
 
 #: apps/enrollment/records/templates/records/queue_pdf.html:28
 #: apps/enrollment/records/templates/records/records_list.html:51
 msgid "Liczba osób oczekujących na zapis"
-msgstr ""
+msgstr "The number of people waiting to record"
 
 #: apps/enrollment/records/templates/records/records_list.html:3
 msgid "Lista osób zapisanych na przedmiot"
-msgstr ""
+msgstr "List of people registered on the subject"
 
 #. Translators: tekst przy linku mailto
 #: apps/enrollment/records/templates/records/records_list.html:32
 msgid "Wyślij wiadomość do grupy"
-msgstr ""
+msgstr "Send a message to the group"
 
 #: apps/enrollment/records/templates/records/records_list.html:34
 #: apps/enrollment/records/templates/records/records_list.html:57
 msgid "udostępniając adresy mailowe studentów"
-msgstr ""
+msgstr "sharing e-mail addresses of students"
 
 #: apps/enrollment/records/templates/records/records_list.html:35
 #: apps/enrollment/records/templates/records/records_list.html:58
 msgid "ukrywając adresy mailowe studentów"
-msgstr ""
+msgstr "hiding the email addresses of students"
 
 #: apps/enrollment/records/templates/records/records_list.html:39
 msgid "Ściągnij listę studentów z grupy jako"
-msgstr ""
+msgstr "Download the list of students in a group as"
 
 #: apps/enrollment/records/templates/records/records_list.html:50
 msgid "Lista osób oczekujących na zapis"
-msgstr ""
+msgstr "List of people waiting to record"
 
 #. Translators: tekst przy linku mailto
 #: apps/enrollment/records/templates/records/records_list.html:55
 msgid "Wyślij wiadomość do kolejki"
-msgstr ""
+msgstr "Send a message to the queue"
 
 #: apps/enrollment/records/templates/records/records_list.html:62
 msgid "Ściągnij listę studentów z kolejki jako"
-msgstr ""
+msgstr "Download the list of students from the queue as"
+
+#: apps/users/templates/users/email_students.html:17
+msgid "Lista adresów wszystkich aktywnych studentów"
+msgstr "The list addresses of all active students"
 
 #: apps/users/templates/users/import_zamawiani.html:5
 #: templates/enrollment/courses/admin/import_schedule.html:5
 #: templates/enrollment/courses/admin/import_schedule_step2.html:5
 #: templates/enrollment/courses/admin/import_semester.html:5
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: apps/users/templates/users/my_profile.html:180
 msgid "Ustawienie preferencji językowych"
-msgstr ""
+msgstr "Setting language preferences"
 
 #: apps/users/templates/users/my_profile.html:186
 msgid "Select language"
+msgstr "Select language"
+
+#: templates/404.html:5
+msgid "Błąd 404"
+msgstr ""
+
+#: templates/404.html:9 templates/405.html:15
+msgid "Powrót do strony głównej"
+msgstr ""
+
+#: templates/405.html:12
+msgid "Błąd 405"
 msgstr ""
 
 #: templates/base.html:78
@@ -145,9 +163,8 @@ msgid ""
 "System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza "
 "zgodę na ich zapis lub odczyt według ustawień przeglądarki."
 msgstr ""
-"The Enrollment System makes use of cookies. Using this website means "
-"that you accept storing and reading cookies on your device by your "
-"web browser."
+"The Enrollment System makes use of cookies. Using this website means that "
+"you accept storing and reading cookies on your device by your web browser."
 
 #: templates/admin/base_site.html:4
 msgid "Fereol site admin"
@@ -204,6 +221,94 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
+#: templates/common/coursesitebar.html:8
+msgid "Dodaj nową"
+msgstr ""
+
+#: templates/common/coursesitebar.html:35
+msgid " - przedmiot poddany pod głosowanie "
+msgstr ""
+
+#: templates/common/coursesitebar.html:38
+msgid "- przedmiot w ofercie"
+msgstr ""
+
+#: templates/common/coursesitebar.html:42
+msgid " - przedmiot wycofany z oferty "
+msgstr ""
+
+#: templates/common/coursesitebar.html:46
+msgid " - przedmiot w wersji roboczej"
+msgstr ""
+
+#: templates/common/error.html:5
+msgid "Błąd"
+msgstr ""
+
+#: templates/common/index.html:10 templates/email_change/base.html:5
+#: templates/enrollment/main.html:11
+#: templates/enrollment/courses/course.html:19
+#: templates/enrollment/courses/course_consultations.html:10
+#: templates/enrollment/courses/courses_list.html:7
+#: templates/enrollment/courses/voters.html:24
+#: templates/enrollment/records/records_list.html:18
+#: templates/enrollment/records/schedule.html:87
+#: templates/enrollment/records/schedule_prototype.html:18
+#: templates/grade/base.html:17 templates/grade/poll/poll_answer.html:9
+#: templates/grade/poll/poll_edit.html:5
+#: templates/grade/poll/poll_manage.html:5
+#: templates/grade/poll/polls_for_user.html:95
+#: templates/grade/poll/tickets_enter.html:9
+#: templates/grade/poll/user_is_authenticated.html:7
+#: templates/grade/ticket_create/connection_choice.html:17
+#: templates/grade/ticket_create/keys_list.html:5
+#: templates/news/confirm_delete.html:11
+#: templates/news/confirm_delete_all.html:11 templates/news/form.html:13
+#: templates/news/form_all.html:13 templates/offer/main.html:9
+#: templates/offer/offer.html:81 templates/offer/vote/form.html:11
+#: templates/offer/vote/index.html:10
+#: templates/offer/vote/proposal_summary.html:7
+#: templates/offer/vote/summary.html:13 templates/offer/vote/view.html:8
+msgid "Strona główna"
+msgstr "Main page"
+
+#: templates/common/index.html:13 templates/news/confirm_delete_all.html:12
+#: templates/news/form_all.html:14 templates/news/list_all.html:50
+msgid "Aktualności"
+msgstr ""
+
+#: templates/common/index.html:24 templates/enrollment/courses/course.html:20
+#: templates/enrollment/courses/courses_list.html:8
+#: templates/enrollment/courses/voters.html:25
+msgid "System Zapisów"
+msgstr "Enrollment system"
+
+#: templates/common/index.html:30
+msgid "Oferta Dydaktyczna"
+msgstr ""
+
+#: templates/common/index.html:36 templates/grade/poll/poll_answer.html:10
+#: templates/grade/poll/poll_edit.html:6
+#: templates/grade/poll/poll_manage.html:6
+#: templates/grade/poll/poll_results.html:124
+#: templates/grade/poll/tickets_enter.html:10
+#: templates/grade/poll/user_is_authenticated.html:8
+#: templates/grade/ticket_create/connection_choice.html:18
+#: templates/grade/ticket_create/keys_list.html:6
+#: templates/grade/ticket_create/tickets_save.html:11
+#: templates/help/grade.html:5
+msgid "Ocena zajęć"
+msgstr "Course evaluation"
+
+#: templates/common/index_m.html:19 templates/common/indexm.html:16
+#: templates/offer/main.html:16
+msgid "Kształtowanie oferty dydaktycznej"
+msgstr ""
+
+#: templates/email_change/base.html:6
+msgid "Moje konto"
+msgstr ""
+
 #: templates/email_change/email_verify.html:4
 msgid "Email confirmation"
 msgstr ""
@@ -231,40 +336,29 @@ msgstr ""
 #: templates/enrollment/base.html:12
 #: templates/enrollment/records/schedule.html:98
 msgid "Plan zajęć"
-msgstr ""
+msgstr "Schedule"
 
 #: templates/enrollment/base.html:15
 #: templates/enrollment/records/schedule_prototype.html:20
 msgid "Prototyp planu"
-msgstr ""
+msgstr "The prototype of schedule"
 
 #: templates/enrollment/base.html:16
 msgid "Pracownicy"
-msgstr ""
+msgstr "Employees"
 
 #: templates/enrollment/base.html:18
 msgid "Studenci"
-msgstr ""
+msgstr "Students"
 
 #: templates/enrollment/base.html:23
 msgid "Statystyki"
-msgstr ""
+msgstr "Statistics"
 
 #: templates/enrollment/email_queue_html.html:4
 #: templates/enrollment/email_queue_plaintext.html:4
 msgid "Zostałaś/eś przepisana/y z kolejki do grupy"
-msgstr ""
-
-#: templates/enrollment/main.html:11
-#: templates/enrollment/courses/course.html:19
-#: templates/enrollment/courses/course_consultations.html:10
-#: templates/enrollment/courses/courses_list.html:7
-#: templates/enrollment/courses/voters.html:24
-#: templates/enrollment/records/records_list.html:18
-#: templates/enrollment/records/schedule.html:87
-#: templates/enrollment/records/schedule_prototype.html:18
-msgid "Strona główna"
-msgstr ""
+msgstr "You have been rewritten from the queue to group"
 
 #: templates/enrollment/main.html:12
 #: templates/enrollment/courses/course_consultations.html:11
@@ -272,28 +366,33 @@ msgstr ""
 #: templates/enrollment/records/schedule.html:88
 #: templates/enrollment/records/schedule_prototype.html:19
 msgid "Zapisy"
-msgstr ""
+msgstr "Enrollment"
 
-#: templates/enrollment/main.html:18
+#: templates/enrollment/main.html:18 templates/help/base.html:46
+#: templates/help/enrollment.html:5
 msgid "System zapisów"
-msgstr ""
+msgstr "Enrollment system"
 
 #: templates/enrollment/main.html:19
 msgid ""
 "System zapisów na zajęcia w Instytucie Informatyki Uniwersytetu Wrocławskiego"
 msgstr ""
+"The enrollment system for classes at the Institute of Informatics at Wroclaw "
+"University"
 
-#: templates/enrollment/courses/base.html:17
+#: templates/enrollment/courses/base.html:17 templates/offer/offer.html:18
+#: templates/offer/vote/form.html:30
 msgid "Filtrowanie"
-msgstr ""
+msgstr "Filtration"
 
-#: templates/enrollment/courses/base.html:24
+#: templates/enrollment/courses/base.html:24 templates/offer/offer.html:26
+#: templates/offer/vote/form.html:37
 msgid "Rodzaj przedmiotu"
-msgstr ""
+msgstr "Type of course"
 
 #: templates/enrollment/courses/base.html:34
 msgid "Inne"
-msgstr ""
+msgstr "Other"
 
 #. Translators: Tytuł nad sidebarem
 #. Translators: tytuł nad sidebarem
@@ -302,35 +401,32 @@ msgstr ""
 #: templates/enrollment/records/schedule_prototype.html:109
 #: templates/enrollment/records/students_list.html:9
 msgid "Semestr"
-msgstr ""
+msgstr "Semester"
 
 #. Translators: Filtrowanie -> tytuł kawałka z opcjami gettext('Inne') XXXXXXXXXXXXXXXX
 #: templates/enrollment/courses/base.html:45
 #: templates/enrollment/courses/base.html:47
 #: templates/enrollment/records/schedule_prototype.html:44
+#: templates/offer/offer.html:58
 msgid "Schowaj przedmioty, na które byłem zapisany"
-msgstr ""
+msgstr "Hide items on which I was recorded"
 
 #: templates/enrollment/courses/base.html:49
 #: templates/enrollment/records/schedule_prototype.html:45
+#: templates/offer/offer.html:63
 msgid "Pokaż przedmioty prowadzone w j.angielskim"
-msgstr ""
+msgstr "Show courses in english"
 
 #: templates/enrollment/courses/base.html:50
 #: templates/enrollment/records/schedule_prototype.html:46
+#: templates/offer/offer.html:68
 msgid "Pokaż przedmioty kończące się egzaminem"
-msgstr ""
+msgstr "Show courses with an examination"
 
 #: templates/enrollment/courses/base.html:51
 #: templates/enrollment/records/schedule_prototype.html:47
 msgid "Pokaż tylko przedmioty zalecane dla 1 roku"
-msgstr ""
-
-#: templates/enrollment/courses/course.html:20
-#: templates/enrollment/courses/courses_list.html:8
-#: templates/enrollment/courses/voters.html:25
-msgid "System Zapisów"
-msgstr ""
+msgstr "Show only courses recommended for 1st year"
 
 #: templates/enrollment/courses/course.html:21
 #: templates/enrollment/courses/course_consultations.html:12
@@ -339,13 +435,13 @@ msgstr ""
 #: templates/enrollment/courses/voters.html:26
 #: templates/enrollment/records/records_list.html:20
 msgid "Przedmioty"
-msgstr ""
+msgstr "Courses"
 
 #. Translators: chodzi o zmianę, nie o odsłonę
 #: templates/enrollment/courses/course.html:24
 #: templates/enrollment/records/records_list.html:28
 msgid "Edycja"
-msgstr ""
+msgstr "Edition"
 
 #: templates/enrollment/courses/course.html:45
 #, python-format
@@ -358,56 +454,57 @@ msgstr ""
 #: templates/enrollment/courses/course.html:52
 #: templates/enrollment/courses/course_consultations.html:34
 #: templates/enrollment/courses/course_head.html:13
+#: templates/offer/offer.html:39
 msgid "Prowadzący"
-msgstr ""
+msgstr "Presenter"
 
 #: templates/enrollment/courses/course.html:53
 msgid "Termin zajęć"
-msgstr ""
+msgstr "Timetabling"
 
 #: templates/enrollment/courses/course.html:54
 msgid "Limit"
-msgstr ""
+msgstr "Limit"
 
 #: templates/enrollment/courses/course.html:55
 msgid "Zapisani"
-msgstr ""
+msgstr "Recorded"
 
 #: templates/enrollment/courses/course.html:56
 msgid "Kolejka"
-msgstr ""
+msgstr "Queue"
 
 #: templates/enrollment/courses/course.html:59
 msgid "Priorytet"
-msgstr ""
+msgstr "Priority"
 
 #: templates/enrollment/courses/course.html:72
 msgid "(nieznany prowadzący)"
-msgstr ""
+msgstr "(unknown presenter)"
 
 #: templates/enrollment/courses/course.html:117
 #: templates/enrollment/courses/course.html:140
 msgid "wypisz"
-msgstr ""
+msgstr "unsubscribe"
 
 #: templates/enrollment/courses/course.html:123
 msgid "zapisz"
-msgstr ""
+msgstr "record"
 
 #: templates/enrollment/courses/course.html:127
 msgid "wypisz z kolejki"
-msgstr ""
+msgstr "unsubscribe from the queue"
 
 #: templates/enrollment/courses/course.html:132
 msgid "zapisz do kolejki"
-msgstr ""
+msgstr "record to the queue"
 
 #: templates/enrollment/courses/course.html:147
 #: templates/enrollment/courses/course_head.html:102
 msgid "lista"
-msgstr ""
+msgstr "list"
 
-#: templates/enrollment/courses/course.html:185
+#: templates/enrollment/courses/course.html:185 templates/offer/offer.html:99
 msgid ""
 "Przedmiot współfinansowany ze środków Unii Europejskiej w ramach "
 "Europejskiego Funduszu Społecznego"
@@ -419,12 +516,12 @@ msgstr ""
 #: templates/enrollment/courses/course_consultations.html:88
 #: templates/enrollment/courses/course_head.html:97
 msgid "Konsultacje"
-msgstr ""
+msgstr "Consultations"
 
 #: templates/enrollment/courses/course_consultations.html:29
 msgctxt "typ kursu"
 msgid "Rodzaj"
-msgstr ""
+msgstr "Type"
 
 #: templates/enrollment/courses/course_consultations.html:42
 #, python-format
@@ -434,116 +531,116 @@ msgstr ""
 #: templates/enrollment/courses/course_consultations.html:48
 #: templates/enrollment/courses/course_head.html:29
 msgid "Liczba godzin"
-msgstr ""
+msgstr "Number of hours"
 
 #: templates/enrollment/courses/course_consultations.html:49
 msgid "(wyk)"
-msgstr ""
+msgstr "lection"
 
 #: templates/enrollment/courses/course_consultations.html:50
 msgid "(rep)"
-msgstr ""
+msgstr "repertory"
 
 #: templates/enrollment/courses/course_consultations.html:51
 msgid "(ćw)"
-msgstr ""
+msgstr "practice"
 
 #: templates/enrollment/courses/course_consultations.html:52
 msgid "(prac)"
-msgstr ""
+msgstr "lab"
 
 #: templates/enrollment/courses/course_consultations.html:57
 msgid "Strona www"
-msgstr ""
+msgstr "Page www"
 
 #: templates/enrollment/courses/course_consultations.html:63
 #: templates/enrollment/courses/course_head.html:91
 msgctxt "zależności przedmiotu"
 msgid "Wymagane"
-msgstr ""
+msgstr "Required"
 
 #: templates/enrollment/courses/course_consultations.html:69
 #: templates/enrollment/courses/course_head.html:98
 msgid "link"
-msgstr ""
+msgstr "Link"
 
 #: templates/enrollment/courses/course_consultations.html:79
 msgid "Konsultacje prowadzących"
-msgstr ""
+msgstr "Consultation"
 
 #: templates/enrollment/courses/course_consultations.html:86
 msgid "Imię i nazwisko"
-msgstr ""
+msgstr "Name and Surname"
 
 #: templates/enrollment/courses/course_consultations.html:87
 msgid "Pokój"
-msgstr ""
+msgstr "Room"
 
 #: templates/enrollment/courses/course_consultations.html:102
 msgid "Brak prowadzących"
-msgstr ""
+msgstr "None presenters"
 
 #: templates/enrollment/courses/course_head.html:8
 msgctxt "rodzaj kursu"
 msgid "Rodzaj"
-msgstr ""
+msgstr "Type"
 
 #: templates/enrollment/courses/course_head.html:23
 msgid "Punkty ECTS"
-msgstr ""
+msgstr "Punkts ECTS"
 
 #: templates/enrollment/courses/course_head.html:45
 msgctxt "tagi przedmiotu"
 msgid "Tagi"
-msgstr ""
+msgstr "Tags"
 
 #: templates/enrollment/courses/course_head.html:57
 msgctxt "Grupa efektów kształcenia"
 msgid "Grupa efektów kształcenia"
-msgstr ""
+msgstr "Learning outcomes"
 
 #: templates/enrollment/courses/course_head.html:69
 msgid "Przedmiot prowadzony w j.angielskim"
-msgstr ""
+msgstr "Course in english"
 
 #: templates/enrollment/courses/course_head.html:70
 #: templates/enrollment/courses/course_head.html:77
 #: templates/enrollment/courses/course_head.html:82
 msgid "Tak"
-msgstr ""
+msgstr "Yes"
 
 #: templates/enrollment/courses/course_head.html:76
 msgid "Przedmiot przyjazny dla I roku"
-msgstr ""
+msgstr "Course recomended for first year"
 
 #: templates/enrollment/courses/course_head.html:81
 msgid "Egzamin"
-msgstr ""
+msgstr "Exam"
 
 #: templates/enrollment/courses/course_head.html:86
 msgid "Strona WWW"
-msgstr ""
+msgstr "Page www"
 
 #: templates/enrollment/courses/course_head.html:101
 msgid "Oddane głosy"
-msgstr ""
+msgstr "Votes cast"
 
 #: templates/enrollment/courses/course_head.html:107
 msgctxt "czas zapisów"
 msgid "Możesz zapisać się od"
-msgstr ""
+msgstr "You can record from"
 
 #: templates/enrollment/courses/course_head.html:117
 msgid "Opis przedmiotu"
-msgstr ""
+msgstr "Course description"
 
 #: templates/enrollment/courses/course_head.html:121
 msgid "Brak"
-msgstr ""
+msgstr "None"
 
 #: templates/enrollment/courses/courses_list.html:18
 msgid "Wybierz przedmiot z listy"
-msgstr ""
+msgstr "Select a course from the list"
 
 #: templates/enrollment/courses/voters.html:6
 #, python-format
@@ -552,35 +649,35 @@ msgstr ""
 
 #: templates/enrollment/courses/voters.html:28
 msgid "Głosy"
-msgstr ""
+msgstr "Votes"
 
 #: templates/enrollment/courses/voters.html:45
 msgid "Lista osób głosujących na przedmiot"
-msgstr ""
+msgstr "The list of people who vote on the subject"
 
 #: templates/enrollment/courses/voters.html:52
 msgid "Nikt nie oddał głosu"
-msgstr ""
+msgstr "No one voted"
 
 #: templates/enrollment/records/schedule.html:108
 msgid "Zajęcia, na które jesteś zapisany"
-msgstr ""
+msgstr "The courses, which have been recorded"
 
 #. Translators: Tytuł kolumny w tabelce
 #: templates/enrollment/records/schedule.html:113
-#: templates/offer/preferences/base.html:76
+#: templates/offer/preferences/base.html:76 templates/offer/vote/view.html:25
 msgid "Przedmiot"
-msgstr ""
+msgstr "Course"
 
 #. Translators: Tytuł kolumny w tabelce
 #: templates/enrollment/records/schedule.html:116
 msgid "ECTS"
-msgstr ""
+msgstr "ECTS"
 
 #. Translators: Tytuł kolumny w tabelce
 #: templates/enrollment/records/schedule.html:119
 msgid "Godziny"
-msgstr ""
+msgstr "Hours"
 
 #: templates/enrollment/records/schedule_prototype.html:72
 msgid ""
@@ -590,15 +687,15 @@ msgstr ""
 
 #: templates/enrollment/records/schedule_prototype.html:82
 msgid "jesteś zapisany do tej grupy"
-msgstr ""
+msgstr "Recorded to this group"
 
 #: templates/enrollment/records/schedule_prototype.html:85
 msgid "jesteś w kolejce do tej grupy"
-msgstr ""
+msgstr "you are in line to this group"
 
 #: templates/enrollment/records/schedule_prototype.html:88
 msgid "grupa przypięta do prototypu"
-msgstr ""
+msgstr "group pinned to the schedule prototype"
 
 #: templates/enrollment/records/schedule_prototype.html:91
 msgid ""
@@ -626,32 +723,730 @@ msgstr ""
 
 #: templates/enrollment/records/students_list.html:7
 msgid "Nr indeksu"
+msgstr "Student number"
+
+#: templates/grade/base.html:24 templates/help/rules.html:5
+msgid "Zasady"
+msgstr "Rules"
+
+#: templates/grade/base.html:29
+msgid "Grupy bez ankiet"
+msgstr "Groups withpout questionnaires"
+
+#: templates/grade/base.html:35
+msgid "Oceń zajęcia"
+msgstr "Evaluate course"
+
+#: templates/grade/base.html:38
+msgid "Otwórz ocenę"
+msgstr "Open evaluation"
+
+#: templates/grade/base.html:41
+msgid "Wygeneruj klucze"
+msgstr "Generate a key"
+
+#: templates/grade/base.html:44 templates/grade/poll/poll_results.html:125
+msgid "Wyniki oceny"
+msgstr "Evaluation results"
+
+#: templates/grade/main.html:12
+msgid " Zasady oceny "
+msgstr "Evaluation rules"
+
+#: templates/grade/main.html:15
+msgid " Cele "
+msgstr "Purposes"
+
+#: templates/grade/main.html:16
+msgid ""
+"\n"
+"                           Ocena zajęć ma na celu w pełni anonimowe zebranie "
+"informacji na temat zajęć prowadzonych w Instytucie Informatyki UWr. "
+"Posiadając takie informacje, jesteśmy w stanie pracować nad poprawą jakości "
+"naszych studiów.\n"
+"                       "
+msgstr ""
+"\n"
+"Course evaluation is to fully anonymousInformation about courses run at the "
+"Institute of Informatics at University of Wroclaw.With this information, we "
+"are able to work on improving qualityof our studies.                       "
+
+#: templates/grade/main.html:20 templates/offer/vote/index.html:37
+msgid "Przebieg"
+msgstr "Evaluation run"
+
+#: templates/grade/main.html:21
+msgid ""
+"Student po zalogowaniu powinien pobrać klucze, które umożliwią mu "
+"wypełnienie ankiet oceniających zajęcia, na które był zapisany w danym "
+"semestrze. Klucze (które są fragmentem tekstu) są tworzone przez aplikację "
+"działającą po stronie klienta i nie są w żaden sposób powiązane z "
+"użytkownikiem. Należy je skopiować z okna przeglądarki i zapisać w "
+"bezpiecznym miejscu. W czasie, gdy ocena jest aktywna, każdy użytkownik "
+"może, używając swoich kluczy, dokonać oceny (oczywiście bez logowania się do "
+"systemu). Operację tę można wykonywać wielokrotnie, dodając nowe oceny i "
+"ewentualnie zmieniając swoje poprzednie wpisy."
+msgstr ""
+"After log in student should get keys, that allow him tocomplete evaluation "
+"questionnaire for courses, on which student was recorded in the "
+"currentsemester. The keys (which are a fragment of text) are created by the "
+"applicationthat acting on the client side and has no relation withuser. You "
+"should copy keys from the browser and saveat the safe place. At time when "
+"the system is active, each usermay, using his keys evaluate the course "
+"( without log in tothe system). This operation can be performed several "
+"times, adding new evaluation and optionally changing their previous entries. "
+
+#: templates/grade/main.html:24
+msgid "Bonus"
+msgstr "Bonus"
+
+#: templates/grade/main.html:26
+msgid ""
+"Każdy udział w ocenie daje *24 godzinny bonus* do otwarcia zapisów na "
+"zajęcia w kolejnym roku akademickim (maksymalnie 48 godzin). Ponieważ ocena "
+"jest anonimowa, nie jesteśmy w stanie zapamiętać rzeczywistego udziału w "
+"ocenie, pamiętamy zatem jedynie fakt pobrania kluczy -- niemniej jednak "
+"gorąco apelujemy, by każdy pobierający klucze rzeczywiście je wykorzystał do "
+"przeprowadzenia oceny."
+msgstr ""
+"Every participation in Course evaluation gives you an extra 24 hours * bonus "
+"* before open classes enrollment in the next academic year (maximum 48 "
+"hours). As the evaluationis anonymous, we can't remember the actual "
+"participation in theCourse evaluation, therefore, we remember only the fact "
+"that keys are download.However, we are strongly urge everyone to use their "
+"pickup the keysto evaluate courses. "
+
+#: templates/grade/main.html:33
+msgid "Ocena nie jest w tej chwili aktywna"
+msgstr "The evaluation system is not currently active"
+
+#: templates/grade/poll/poll_answer.html:11
+#: templates/grade/poll/polls_for_user.html:124
+msgid "Twoje ankiety"
+msgstr "Your questionnaire"
+
+#: templates/grade/poll/poll_create.html:8
+msgid "Tworzenie ankiet"
+msgstr "Questionnaires creation "
+
+#: templates/grade/poll/poll_create.html:108
+msgid " (Przeciągnij, aby zmienić kolejność) "
+msgstr "(Drag to change the order)"
+
+#: templates/grade/poll/poll_create.html:125
+msgid "Trwa generowanie kluczy"
+msgstr "Keys generating"
+
+#: templates/grade/poll/poll_create.html:129
+msgid "(Kliknięcie ukrywa ten komunikat. Nie przerywa jednak procesu.)"
+msgstr "(Clicking hides that message. But do not interrupt the process.)"
+
+#: templates/grade/poll/poll_detailed_results.html:11
+msgid "Powiązane odpowiedzi"
+msgstr "Related answers"
+
+#: templates/grade/poll/poll_detailed_results.html:23
+msgid "Pierwsza odpowiedź"
+msgstr "The first answer"
+
+#: templates/grade/poll/poll_detailed_results.html:31
+msgid "Ostatnia odpowiedź"
+msgstr "The last answer"
+
+#: templates/grade/poll/poll_edit.html:7
+msgid "Edycja sekcji"
+msgstr "Edit section"
+
+#: templates/grade/poll/poll_manage.html:7
+msgid "Zarządzanie ankietami"
+msgstr "Questionnaires management"
+
+#: templates/grade/poll/poll_manage.html:13
+msgid "Utwórz nową sekcję"
+msgstr "Create a new section"
+
+#: templates/grade/poll/poll_results.html:123
+#: templates/grade/ticket_create/tickets_save.html:10
+msgid "Strona Główna"
+msgstr "Main Page"
+
+#: templates/grade/poll/poll_results.html:155
+msgid "Ankiety - przedmioty"
+msgstr "Questionnairies - courses"
+
+#: templates/grade/poll/poll_results.html:173
+msgid "Ankiety - osoby"
+msgstr "Questionnairies - persons"
+
+#: templates/grade/poll/poll_total_results.html:89
+msgid "Wybierz ankietę z menu po prawej"
+msgstr "Select a questionnaire from the menu on the right"
+
+#: templates/grade/poll/polls_for_user.html:127
+msgid "Ankiety"
+msgstr "Questionnairies"
+
+#: templates/grade/poll/polls_for_user.html:141
+msgid "Ankiety zakończone"
+msgstr "Questionnairies completed"
+
+#: templates/grade/poll/section_as_edit.html:24
+msgid "Treść pytania:"
+msgstr "Your question:"
+
+#: templates/grade/poll/section_as_edit.html:30
+msgid "Opis pytania:"
+msgstr "Description of a question:"
+
+#: templates/grade/poll/section_as_edit.html:36
+msgid "Typ pytania:"
+msgstr "Type of q question"
+
+#: templates/grade/poll/managment/templates_confirm_use.html:5
+msgid "Czy na pewno chcesz zastosować poniższe szablony?"
+msgstr "Do you want to use these templates?"
+
+#: templates/grade/ticket_create/connection_choice.html:37
+msgid "Pobieranie kluczy do następujących ankiety:"
+msgstr "Getting keys to the following questionnairies:"
+
+#: templates/grade/ticket_create/connection_choice.html:40
+msgid "Ankiety przypisane do przedmiotu:"
+msgstr "Questionnairies assigned to the course:"
+
+#: templates/grade/ticket_create/connection_choice.html:53
+#: templates/grade/ticket_create/connection_choice.html:63
+msgid "Brak ankiet"
+msgstr "No questionnairies"
+
+#: templates/grade/ticket_create/connection_choice.html:55
+msgid "Ankiety ogólne:"
+msgstr "General questionnairies"
+
+#: templates/grade/ticket_create/tickets_save.html:18
+msgid "Pobierz klucze"
+msgstr "Download keys"
+
+#: templates/grade/ticket_create/tickets_save.html:24
+msgid "Pomyślnie wygenerowano klucze."
+msgstr "Successfully generated keys."
+
+#: templates/grade/ticket_create/tickets_save.html:24
+msgid ""
+"Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</"
+"strong>."
+msgstr ""
+"Save it in a safe place - <strong>there is no return to this screen</strong>."
+
+#: templates/grade/ticket_create/tickets_save.html:37
+msgid ""
+"<strong> Uwaga! </strong> Niestety nie możesz pobrać żadnych kluczy..\n"
+"        "
+msgstr ""
+"<strong> Warning! </strong> Unfortunately, you can't download any keys\n"
+"        "
+
+#: templates/help/base.html:17
+msgid "- czyli zapisywaniu się na zajęcia"
+msgstr "- or for recording on courses"
+
+#: templates/help/base.html:19
+msgid ""
+"Kształtowaniu oferty dydaktycznej - zgłaszaniu i głosowaniu na propozycje "
+"przedmiotów, które będą wykładane w kolejnym roku akademickim"
+msgstr ""
+"The formation of educational offer - reporting and voting on suggestted "
+"courses that will be run in the next academic year"
+
+#: templates/help/base.html:21
+msgid ""
+"Ocenie zajęć - anonimowej ankiecie na temat zajęć, na które student "
+"uczęszczał"
+msgstr ""
+"Course evaluation - an anonymous questionnaire about courses that student "
+"has attended"
+
+#: templates/help/base.html:23
+msgid ""
+"Udział w głosowaniu na ofertę dydaktyczną oraz ocenie zajęć umożliwia "
+"studentowi wcześniejsze zapisywanie się na zajęcia w Zapisach"
+msgstr ""
+"Participation in the vote on educational offer and courses evaluation givesa "
+"priority for student at courses record"
+
+#: templates/help/base.html:25
+msgid "Na rysunku poniżej został przedstawiony "
+msgstr "The figure below is presented"
+
+#: templates/help/base.html:29
+msgid ""
+" Przed rozpoczęciem roku akademickiego (i w trakcie trwania poprzedniego "
+"roku) składane są propozycje dotyczące oferty dydaktycznej (zgłaszanie "
+"przedmiotów i pomysłów na przedmioty). Propozycje te to także poprzednie "
+"oferty dydaktyczne - czyli z lat wcześniejszych. "
+msgstr ""
+"Before the start of the academic year (and during the previousyear) "
+"proposals for the educational offer are submitted courses and ideas about "
+"courses). These proposals are alsoeducational offers - from previous years."
+
+#: templates/help/base.html:30
+msgid ""
+" W pewnym momencie utworzona w ten sposób Proponowana Oferta trafia pod "
+"głosowanie studentów, w wyniku czego powstaje Oferta Dydaktyczna. "
+msgstr ""
+
+#: templates/help/base.html:31
+msgid ""
+" Oferta Dydaktyczna jest łączona ze zbieranymi dotychczas preferencjami "
+"prowadzących (kadry instytutu) i przekształca się w Ofertę wraz z "
+"Przydziałami Prowadzących. "
+msgstr ""
+
+#: templates/help/base.html:32
+msgid ""
+" Po dodaniu terminów zajęć oraz sal, w których będą one prowadzone, Oferta "
+"wraz z Przydziałami staje się Planem Zajęć. "
+msgstr ""
+
+#: templates/help/base.html:33
+msgid ""
+" Plan zajęć zostaje przedstawiony studentom, a ci się zapisują na zajęcia. "
+"Po zamknięciu zapisów otrzymujemy Plany Studentów. "
+msgstr ""
+
+#: templates/help/base.html:34
+msgid ""
+" Co semestr następuje ocena zajęć. Wyniki tej oceny (anonimowe) trafiają - "
+"razem z ocenianymi przedmiotami - do Historii Zajęć. "
+msgstr ""
+
+#: templates/help/enrollment.html:9
+msgid "Zapisywanie się na zajęcia"
+msgstr ""
+
+#: templates/help/enrollment.html:10
+msgid "Wybieramy "
+msgstr ""
+
+#: templates/help/enrollment.html:12
+msgid ""
+"Wybieramy interesujący nas przedmiot (w tym miejscu warto użyć filtrów "
+"znajdujących się w górnej części ekranu)"
+msgstr ""
+
+#: templates/help/enrollment.html:14
+msgid "Wybieramy przycisk "
+msgstr ""
+
+#: templates/help/enrollment.html:16
+msgid "Z zajęć można wypisać się wybierając przycisk \"Wypisz\" "
+msgstr ""
+
+#: templates/help/enrollment.html:19
+msgid "Wyświetlanie swojego planu zajęć:"
+msgstr ""
+
+#: templates/help/enrollment.html:22
+msgid "Tak powinien wyglądać plan: "
+msgstr ""
+
+#: templates/help/enrollment.html:24
+msgid "Plan zajęć można pobrać w formacie ical"
+msgstr ""
+
+#: templates/help/enrollment.html:28
+msgid ""
+"Prototyp planu służy do wygodnego planowania swoich zajęć. Korzystając z "
+"dostępnych filtrów można wyświetlać wybrane grupy przedmiotów lub konkretne "
+"przedmioty."
+msgstr ""
+
+#: templates/help/enrollment.html:31
+msgid "Możemy w nim wybrać pewne przedmioty:"
+msgstr ""
+
+#: templates/help/enrollment.html:33
+msgid ""
+"Które wyświetlą się w prototypie. Możemy teraz je przypiąć - jest to jedynie "
+"informacja dla użytkownika o tym, że ten przedmiot uważa za interesujący, "
+"NIE JEST równoważna z zapisaniem się na zajęcia. Przedmioty można przypinać "
+"przed otwarciem zapisów."
+msgstr ""
+
+#: templates/help/enrollment.html:35
+msgid ""
+"Można się też zapisywać na przedmioty(po otwarciu zapisów), używając ikonki "
+"długopisu:"
+msgstr ""
+
+#: templates/help/enrollment.html:37
+msgid ""
+"Zablokowanie planu - nie można po nim dokonywać zmian w "
+"planie(zabezpieczenie przed przypadkowym wypisywaniem się z zajęć). "
+"Blokujemy jedynie interfejs użytkownika, jeżeli jest on zapisany do kolejki, "
+"to system przepisze go do grupy gdy zwolni się w niej miejsce. Plan można "
+"też samemu odblokować."
+msgstr ""
+
+#: templates/help/enrollment.html:39
+msgid "Wyświetlanie planu pracownika:"
+msgstr ""
+
+#: templates/help/enrollment.html:42
+msgid "Wybieramy interesującego nas pracownika:"
+msgstr ""
+
+#: templates/help/enrollment.html:44 templates/help/enrollment.html.py:51
+msgid "Oglądamy jego plan:"
+msgstr ""
+
+#: templates/help/enrollment.html:46
+msgid "Wyświetlanie planu studenta:"
+msgstr ""
+
+#: templates/help/enrollment.html:47
+msgid "Wybieramy \"Studenci\":"
+msgstr ""
+
+#: templates/help/enrollment.html:49
+msgid "Wybieramy interesującego nas studenta:"
+msgstr ""
+
+#: templates/help/export.html:5
+msgid "Plan zajęć można wyeksportować do pliku w formacie"
+msgstr ""
+
+#: templates/help/rules.html:9
+msgid "Godzina otwarcia zapisów dla studenta zależy od:"
+msgstr ""
+
+#: templates/help/rules.html:11
+msgid ""
+"ilości zarejestrowanych w systemie punktów ECTS (5 minut bonusu za każdy "
+"punkt),"
+msgstr ""
+
+#: templates/help/rules.html:12
+msgid ""
+"udziału w ocenie zajęć (24h bonusu za ocenianie zajęć z poprzedniego "
+"semestru),"
+msgstr ""
+
+#: templates/help/rules.html:13
+msgid "udziału w głosowaniu na ofertę dydaktyczną."
+msgstr ""
+
+#: templates/help/rules.html:13
+msgid ""
+"Każdy punkt przydzielony danemu przedmiotowi podczas głosowania daje "
+"otwarcie zapisów na ten przedmiot 24h wcześniej (jednemu przedmiotowi można "
+"przydzielić maksymalnie 3 takie punkty)."
+msgstr ""
+
+#: templates/help/rules.html:15
+msgid ""
+"Na początku zapisów (około tygodnia od otwarcia systemu) obowiązuje limit 40 "
+"punktów ECTS przy zapisach na zajęcia. Oznacza to, że nie można wybrać "
+"przedmiotów, których suma wartości w punktach ECTS przekracza 40. Limit ten "
+"jest odblokowywany po pewnym czasie od otwarcia zapisów dla ostatniego "
+"studenta."
+msgstr ""
+
+#: templates/help/rules.html:16
+msgid ""
+"Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00."
+msgstr ""
+
+#: templates/help/rules.html:18
+msgid "Zasady w kolejkach"
+msgstr ""
+
+#: templates/help/rules.html:20
+msgid ""
+"Kolejki w systemie zapisów służą do zapamiętywania użytkowników, którzy "
+"chcieli zapisać się do danej grupy zajęciowej, która była pełna."
+msgstr ""
+
+#: templates/help/rules.html:21
+msgid ""
+"Jeżeli wszystkie miejsca na wybranych zajęciach są zajęte, użytkownik "
+"otrzymuje możliwość dopisania się do kolejki."
+msgstr ""
+
+#: templates/help/rules.html:22
+msgid ""
+"W momencie zwolnienia miejsca w grupie, pierwsza osoba z kolejki zostaje "
+"zapisana do grupy."
+msgstr ""
+
+#: templates/help/rules.html:23
+msgid ""
+"Użytkownik ma możliwość zapisania się do kilku kolejek na zajęcia tego "
+"samego typu, prowadzone dla tego samego przedmiotu."
+msgstr ""
+
+#: templates/help/rules.html:24
+msgid ""
+"Każdej z kolejek może przyporządkować priorytet z zakresu 1 (słabo) - 5 "
+"(bardzo). Różnica wartości priorytetów nie jest istotna, ważny jest ich "
+"porządek."
+msgstr ""
+
+#: templates/help/rules.html:25
+msgid ""
+"Gdy w pewnej grupie zwalnia się miejsce (lub zostaje zwiększony limit), a w "
+"kolejce do niej jest zapisany użytkownik, zostaje wtedy przepisany do grupy, "
+"a jego kolejki o niższych lub takich samych priorytetach zostają usunięte (w "
+"ramach jednego przedmiotu i rodzaju zajęć)."
+msgstr ""
+
+#: templates/help/rules.html:26
+msgid "W kolejkach obowiązuje zasada \"kto pierwszy, ten lepszy\"."
+msgstr ""
+
+#: templates/help/rules.html:27
+msgid ""
+"Do kolejki można zapisać się dopiero po otwarciu zapisów na wybrany "
+"przedmiot."
+msgstr ""
+
+#: templates/help/rules.html:28
+msgid ""
+"Jeżeli w grupie pojawi się wolne miejsce, system podejmie próbę wpisania na "
+"to miejsce osoby, która znajduje się na pierwszym miejscu kolejki. Próba ta "
+"może się nie powieść: tak będzie wówczas, gdy  obowiązuje limit 40 p. ECTS, "
+"a wpisanie na przedmiot spowodowałoby przekroczenie tego limitu. W takiej "
+"sytuacji dana osoba zostaje wypisana z kolejki."
+msgstr ""
+
+#: templates/help/rules.html:32
+msgid ""
+"Niektóre z przedmiotów prowadzonych w II UWr. są przygotowane z myślą o "
+"studentach programu studiów zamawianych."
+msgstr ""
+
+#: templates/help/rules.html:33
+msgid ""
+"Na takich przedmiotach obowiązuje dodatkowy limit określający ilość miejsc "
+"zamawianych. Na przykład w grupie jest 18 miejsc, z czego 4 zamawiane."
+msgstr ""
+
+#: templates/help/rules.html:34
+msgid "Studenci zamawiani mogą zapisywać się na "
+msgstr ""
+
+#: templates/help/rules.html:35
+msgid ""
+"Studenci innych programów nie mogą korzystać z miejsc zarezerwowanych dla "
+"zamawianych, jednak w przypadku małego zainteresowania daną grupą limity "
+"mogą zostać zniesione (około tygodnia po rozpoczęciu semestru)."
+msgstr ""
+
+#: templates/help/terms.html:5
+msgid "Terminy"
+msgstr ""
+
+#: templates/help/terms.html:11
+msgid "Kiedy kończy się i zaczyna nowy semestr?"
+msgstr ""
+
+#: templates/help/terms.html:12
+msgid "Kiedy jest upubliczniana wersja wstępna planu zajęć?"
+msgstr ""
+
+#: templates/help/terms.html:13
+msgid "Do kiedy i komu można zgłaszać poprawki do planu zajęć?"
+msgstr ""
+
+#: templates/help/terms.html:14
+msgid "Kiedy otwierają się i zamykają zapisy?"
+msgstr ""
+
+#: templates/help/terms.html:15
+msgid "Kiedy jest limit 40ects zniesiony?"
+msgstr ""
+
+#: templates/help/terms.html:16
+msgid ""
+"Do kiedy należy zgłaszać propozycje przedmiotów, by były uwzględnione w "
+"następnym roku?"
+msgstr ""
+
+#: templates/help/terms.html:17
+msgid "Od kiedy do kiedy jest otwarta ocena zajęć?"
+msgstr ""
+
+#: templates/help/terms.html:18
+msgid "Od kiedy do kiedy jest otwarte głosowanie?"
+msgstr ""
+
+#: templates/help/terms.html:19
+msgid "Od kiedy do kiedy jest otwarta korekta głosowania?"
+msgstr ""
+
+#: templates/news/ajax_list.html:22 templates/news/list_all.html:79
+msgid "Nie ma ogłoszeń pasujących do zapytania"
+msgstr ""
+
+#: templates/news/confirm_delete.html:18
+#: templates/news/confirm_delete_all.html:13
+msgid "Usuń ogłoszenie"
+msgstr ""
+
+#: templates/news/form.html:21 templates/news/form_all.html:16
+msgid "Dodaj ogłoszenie"
+msgstr ""
+
+#: templates/news/form.html:23 templates/news/form_all.html:18
+msgid "Edytuj ogłoszenie"
+msgstr ""
+
+#: templates/offer/base.html:6 templates/offer/offer.html:83
+#: templates/offer/vote/form.html:12 templates/offer/vote/index.html:11
+#: templates/offer/vote/summary.html:14 templates/offer/vote/view.html:9
+msgid "Oferta dydaktyczna"
+msgstr ""
+
+#: templates/offer/base.html:21 templates/offer/main.html:10
+msgid "Oferta"
+msgstr ""
+
+#: templates/offer/base.html:24
+msgid "Moje Propozycje"
+msgstr ""
+
+#: templates/offer/base.html:26
+msgid "Zarządzaj"
+msgstr ""
+
+#: templates/offer/base.html:30
+msgid "Preferencje"
+msgstr ""
+
+#: templates/offer/base.html:33 templates/offer/vote/form.html:13
+#: templates/offer/vote/index.html:12
+#: templates/offer/vote/proposal_summary.html:9
+#: templates/offer/vote/summary.html:15 templates/offer/vote/view.html:10
+msgid "Głosowanie"
+msgstr ""
+
+#: templates/offer/offer.html:41
+msgid "dowolny"
 msgstr ""
 
 #: templates/offer/preferences/base.html:77
 msgid "Wykład"
-msgstr ""
+msgstr "Lecture"
 
 #: templates/offer/preferences/base.html:77
 msgid "Seminarium"
-msgstr ""
+msgstr "Seminar"
 
 #: templates/offer/preferences/base.html:78
 msgid "Ćwiczenia"
-msgstr ""
+msgstr "Practice"
 
 #: templates/offer/preferences/base.html:79
 msgid "Pracownia"
-msgstr ""
+msgstr "Lab"
 
 #: templates/offer/preferences/base.html:79
 msgid "Ćwiczenio-Pracownia"
-msgstr ""
+msgstr "Workshop"
 
 #: templates/offer/preferences/base.html:80
 msgid "Repetytorium"
-msgstr ""
+msgstr "Repetitory course"
 
 #: templates/offer/preferences/base.html:81
 msgid "Ukryte"
+msgstr "Hide"
+
+#: templates/offer/vote/form.html:60
+msgid "Maksymalna liczba punktów do wykorzystania"
+msgstr ""
+
+#: templates/offer/vote/index.html:38
+#, python-format
+msgid ""
+" Student może przyznać każdemu przedmiotowi <strong>0-1-2-3 punkty</strong>, "
+"sygnalizując swoje zainteresowanie przedmiotem.\n"
+"                            Suma przyznanych punktów nie może przekroczyć "
+"<strong>%(max_points)s</strong>. Swój głos można zmieniać do czasu "
+"zakończenia głosowania.\n"
+"                        "
+msgstr ""
+
+#: templates/offer/vote/index.html:42
+msgid "Bonus/marchewka"
+msgstr ""
+
+#: templates/offer/vote/index.html:43
+msgid ""
+"Każdy oddany punkt na przedmiot daje <strong>24 godzinny bonus</strong> "
+"(maksymalnie 72 godziny) otwarcia zapisów na niego."
+msgstr ""
+
+#: templates/offer/vote/index.html:46
+msgid ""
+"Przed rozpoczęciem semestru odbędzie się korekta, podczas której można "
+"będzie ponownie przydzielić punkty, które zostały przyznane na przedmioty,\n"
+"                        które nie będą prowadzone w tym roku."
+msgstr ""
+
+#: templates/offer/vote/index.html:61
+msgid "Podsumowanie głosowania"
+msgstr ""
+
+#: templates/offer/vote/index.html:62
+msgid "Pokaż mój głos"
+msgstr ""
+
+#: templates/offer/vote/proposal_summary.html:10
+msgid "Podsumowanie"
+msgstr ""
+
+#: templates/offer/vote/proposal_summary.html:18
+#, python-format
+msgid ""
+"\n"
+"\t\t\tNa ten przedmiot zagłosowało osób: <strong>%(votes)s</strong>;\n"
+"\t\t\toddając punktów: <strong>%(points)s</strong>.\n"
+"\t\t"
+msgstr ""
+
+#: templates/offer/vote/proposal_summary.html:45
+msgid "Nikt nie zagłosował na ten przedmiot"
+msgstr ""
+
+#: templates/offer/vote/view.html:15
+msgid "Mój głos"
+msgstr ""
+
+#: templates/offer/vote/view.html:27
+msgid "Punkty w głosowaniu"
+msgstr ""
+
+#: templates/offer/vote/view.html:28
+msgid "Punkty w korekcie"
+msgstr ""
+
+#: templates/offer/vote/view.html:44
+msgid "Nie zagłosowałeś jeszcze na żaden przedmiot"
+msgstr ""
+
+#: templates/offer/vote/view.html:48
+msgid ""
+"\n"
+"            <strong>Każdy przyznany punkt</strong> daje bonus 24 godzin do "
+"zapisów na dany przedmiot.\n"
+"        "
+msgstr ""
+
+#: templates/offer/vote/view.html:51
+msgid ""
+"\n"
+"            Domyślną wartością w korekcie jest wartość przydzielona w "
+"głosowaniu.\n"
+"        "
 msgstr ""

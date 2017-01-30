@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% load compressed %}
 
@@ -6,10 +7,10 @@
     {% compressed_css 'mainpage' %}
 {% endblock %}
 
- {% block main-subtitle %}Strona główna{% endblock %}
+ {% block main-subtitle %}{% trans "Strona główna" %}{% endblock %}
 
 {% block center %}
-    <h1>Aktualności</h1>
+    <h1>{% trans "Aktualności" %}</h1>
     <div class="hero-unit">
       <h3>{{ news.title }}</h3>
       <h5>{{ news.date|date:"l, d.m.Y - G:i" }} - {{ news.author.get_full_name }}</h5>
@@ -20,19 +21,19 @@
     <!-- Example row of columns -->
     <div class="row space">
       <div class="span-one-third">
-        <h2>System Zapisów</h2>
+        <h2>{% trans "System Zapisów" %}</h2>
         <p>System zapisów na zajęcia w Instytucie Informatyki
 				Uniwersytetu Wrocławskiego.</p>
         <p><a class="btn" href="{% url enrollment-main %}">Przejdź &raquo;</a></p>
       </div>
       <div class="span-one-third">
-        <h2>Oferta Dydaktyczna</h2>
+        <h2>{% trans "Oferta Dydaktyczna" %}</h2>
          <p>System kształtowania oferty dydaktycznej w Instytucie
 				Informatyki.</p>
         <p><a class="btn" href="{% url offer-main %}">Przejdź &raquo;</a></p>
      </div>
       <div class="span-one-third">
-        <h2>Ocena zajęć</h2>
+        <h2>{% trans "Ocena zajęć" %}</h2>
         <p>System oceny zajęć w Instytucie
 				Informatyki Uniwersytetu Wrocławskiego.</p>
         <p><a class="btn" href="{% url grade-main %}">Przejdź &raquo;</a></p>

@@ -1,13 +1,14 @@
 {% extends "grade/poll/polls_for_user.html" %}
 {% load poll_answers_extra %}
+{% load i18n %}
 
 
 {% block main-subtitle %}Ankiety{% endblock %}
 
 {% block main-navigation %}
-	<li><a href="/">Strona główna</a></li>
-	<li><a href="{% url grade-main %}">Ocena zajęć</a></li>
-	<li><a href="{% url grade-poll-polls-for-user slug %}">Twoje ankiety</a></li>
+	<li><a href="/">{% trans "Strona główna" %}</a></li>
+	<li><a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a></li>
+	<li><a href="{% url grade-poll-polls-for-user slug %}">{% trans "Twoje ankiety" %}</a></li>
     <li>{{ link_name }}</li>
 {% endblock %}
 
@@ -18,7 +19,7 @@
         {% if form.instance.group %}
             <h2>{{ form.instance.group.course }}</h2>
         {% else %}
-            <h2>Ankieta Ogólna</h2>
+            <h2>{% trans "Ankieta Ogólna" }</h2>
         {% endif %}
         <h3>{{ title }}</h3>
         <span>{{ desc }}</span>

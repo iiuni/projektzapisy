@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url my-profile %}">Moje konto</a> &raquo;
+    <a href="/">{% trans "Strona główna" %}</a> &raquo;
+    <a href="{% url my-profile %}">{% trans "Moje konto" %}</a> &raquo;
 Zmień e-mail
 {% endblock %}

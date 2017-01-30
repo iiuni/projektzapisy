@@ -1,7 +1,8 @@
 {% extends "grade/poll/managment/base.html" %}
+{% load i18n %}
 
 {% block poll-managment %}
-    Czy na pewno chcesz zastosować poniższe szablony?
+    {% trans "Czy na pewno chcesz zastosować poniższe szablony?" %}
     <form action="{% url grade-poll-use-template %}" method="POST">{% csrf_token %}
         {% if semester %}
             <input type="hidden" name="semester" value="{{ semester.id }}">

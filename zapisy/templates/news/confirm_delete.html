@@ -1,4 +1,5 @@
 {% extends "offer/base.html" %}
+{% load i18n %}
 
 {% load fereol_common %}
 
@@ -7,14 +8,14 @@
 {% endblock %}
 
 {% block main-navigation %}
-    <li><a href="/">Strona główna</a></li>
+    <li><a href="/">{% trans "Strona główna" %}</a></li>
     <li><a href="{% url latest_news category %}">
 		{% ifequal category "enrollment" %}Zapisy{% endifequal %}
         {% ifequal category "offer" %}Oferta{% endifequal %}
         {% ifequal category "grade" %}Ocena zajęć{% endifequal %}
         </a>
 	</li>
-	<li>Usuń ogłoszenie</li>
+	<li>{% trans "Usuń ogłoszenie" %}</li>
 {% endblock %}
 
 {% block content-class %}narrow{% endblock %}

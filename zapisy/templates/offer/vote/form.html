@@ -1,4 +1,5 @@
 {% extends "offer/vote/index.html" %}
+{% load i18n %}
 
 {% load compressed %}
 
@@ -7,9 +8,9 @@
 
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url offer-main %}">Oferta dydaktyczna</a> &raquo;
-    <a href="{% url vote-main %}">Głosowanie</a> &raquo;
+    <a href="/">{% trans "Strona główna" %}</a> &raquo;
+    <a href="{% url offer-main %}">{% trans "Oferta dydaktyczna" %}</a> &raquo;
+    <a href="{% url vote-main %}">{% trans "Głosowanie" %}</a> &raquo;
     <h2>Oddaj głos</h2>
     {# end bread #}
 {% endblock %}
@@ -26,14 +27,14 @@
 {% block filter %}
     <div id="od-vote-top-bar" class="main-top-bar" style="display: none">
         <fieldset id="od-vote-filter">
-            <legend><span>Filtrowanie</span></legend>
+            <legend><span>{% trans "Filtrowanie" %}</span></legend>
             <div class="main-filter-input">
                 <input class="text filter-phrase" type="text"/>
                 <input class="reset filter-phrase-reset" type="button" value="X" style="display:none;"/>
             </div>
         </fieldset>
         <fieldset class="course-type-filter">
-            <legend><span>Rodzaj przedmiotu</span></legend>
+            <legend><span>{% trans "Rodzaj przedmiotu" %}</span></legend>
             {% for type in proposalTypes %}
                 <span class="checkbox">
 					<input type="checkbox" checked="checked"
@@ -56,7 +57,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="od-vote-maxPoints">Maksymalna liczba punktów do wykorzystania: <span>{{ formset.points_limit }}</span></div>
+    <div id="od-vote-maxPoints">{% trans "Maksymalna liczba punktów do wykorzystania" %}: <span>{{ formset.points_limit }}</span></div>
     <form action="" method="post" id="od-vote-form">{% csrf_token %}
         {{ formset.winter.formset.management_form }}
         {{ formset.summer.formset.management_form }}

@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load compressed %}
+{% load i18n %}
 
 
-{% block title %}Oferta dydaktyczna{% endblock %}
+{% block title %}{% trans "Oferta dydaktyczna" }{% endblock %}
 
 {% block js %}
     {% compressed_js 'proposal' %}
@@ -17,19 +18,19 @@
 {% block offer_active %} class="active"{% endblock %}
 
 {% block system_menu %}
-    <li{% block offer_menu_offer %}{% endblock %}><a href="{% url offer-main %}">Oferta</a></li>
+    <li{% block offer_menu_offer %}{% endblock %}><a href="{% url offer-main %}">{% trans "Oferta" %}</a></li>
     {% if user.employee %}
     <li{% block enrollment_menu_courses %}{% endblock %}><a
-            href="{% url my-proposal %}">Moje Propozycje</a></li>{% endif %}
+            href="{% url my-proposal %}">{% trans "Moje Propozycje" %}</a></li>{% endif %}
     {% if perms.proposal.can_create_offer %}
-    <li><a href="{% url manage %}">Zarządzaj</a></li>
+    <li><a href="{% url manage %}">{% trans "Zarządzaj" %}</a></li>
     {% endif %}
     {% if user.employee %}
     <li{% block enrollment_preferences %}{% endblock %}><a
-            href="{% url prefs-default-view %}">Preferencje</a></li>{% endif %}
+            href="{% url prefs-default-view %}">{% trans "Preferencje" %}</a></li>{% endif %}
     {% if user.employee or user.student %}
     <li{% block offer_menu_vote %}{% endblock %}><a
-            href="{% url vote-main %}">Głosowanie</a></li>{% endif %}
+            href="{% url vote-main %}">{% trans "Głosowanie" %}</a></li>{% endif %}
 
     {# end system_menu #}
 {% endblock %}

@@ -1,9 +1,10 @@
 {% extends "grade/poll/polls_for_user.html" %}
+{% load i18n %}
 
 {% block main-navigation %}
-	<li><a href="/">Strona główna</a></li>
-	<li><a href="{% url grade-main %}">Ocena zajęć</a></li>
-	<li>Edycja sekcji</li>
+	<li><a href="/">{% trans "Strona główna" %}</a></li>
+	<li><a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a></li>
+	<li>{% trans "Edycja sekcji" %}</li>
 {% endblock %}
 
 

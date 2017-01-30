@@ -1,4 +1,5 @@
 {% extends "common/index.html" %}
+{% load i18n %}
 
 {% block styles %}
 	<link rel="stylesheet" href="/site_media/css/news.css" type="text/css" />
@@ -9,12 +10,12 @@
 {% endblock %}
 
 {% block main-navigation %}
-    <li><a href="/">Strona główna</a></li>
-    <li><a href="{% url news-all %}">Aktualności</a></li>
+    <li><a href="/">{% trans "Strona główna" %}</a></li>
+    <li><a href="{% url news-all %}">{% trans "Aktualności" %}</a></li>
 	{% if adding %}
-		<li>Dodaj ogłoszenie</li>
+		<li>{% trans "Dodaj ogłoszenie" %}</li>
 	{% else %}
-		<li>Edytuj ogłoszenie</li>
+		<li>{% trans "Edytuj ogłoszenie" %}</li>
 	{% endif %}
 {% endblock %}
 

@@ -1,37 +1,38 @@
 {% extends "help/base.html" %}
+{% load i18n %}
 
 {% block content %} 
-<h2>Zasady</h2><br/>
+<h2>{% trans "Zasady" %}</h2><br/>
 
     <h3>Zasady zapisów</h3>
     <ul>
-        <li>Godzina otwarcia zapisów dla studenta zależy od:
+        <li>{% trans "Godzina otwarcia zapisów dla studenta zależy od:" %}
         <ul>
-            <li>ilości zarejestrowanych w systemie punktów ECTS (5 minut bonusu za każdy punkt),</li>
-            <li>udziału w ocenie zajęć (24h bonusu za ocenianie zajęć z poprzedniego semestru),</li>
-            <li>udziału w głosowaniu na ofertę dydaktyczną.<br/> Każdy punkt przydzielony danemu przedmiotowi podczas głosowania daje otwarcie zapisów na ten przedmiot 24h wcześniej (jednemu przedmiotowi można przydzielić maksymalnie 3 takie punkty).</li>
+            <li>{% trans "ilości zarejestrowanych w systemie punktów ECTS (5 minut bonusu za każdy punkt)," %}</li>
+            <li>{% trans "udziału w ocenie zajęć (24h bonusu za ocenianie zajęć z poprzedniego semestru)," %}</li>
+            <li>{% trans "udziału w głosowaniu na ofertę dydaktyczną." %}<br/>{% trans "Każdy punkt przydzielony danemu przedmiotowi podczas głosowania daje otwarcie zapisów na ten przedmiot 24h wcześniej (jednemu przedmiotowi można przydzielić maksymalnie 3 takie punkty)." %}</li>
         </ul>
-        <li>Na początku zapisów (około tygodnia od otwarcia systemu) obowiązuje limit 40 punktów ECTS przy zapisach na zajęcia. Oznacza to, że nie można wybrać przedmiotów, których suma wartości w punktach ECTS przekracza 40. Limit ten jest odblokowywany po pewnym czasie od otwarcia zapisów dla ostatniego studenta.</li>
-        <li>Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00.</li>
+        <li>{% trans "Na początku zapisów (około tygodnia od otwarcia systemu) obowiązuje limit 40 punktów ECTS przy zapisach na zajęcia. Oznacza to, że nie można wybrać przedmiotów, których suma wartości w punktach ECTS przekracza 40. Limit ten jest odblokowywany po pewnym czasie od otwarcia zapisów dla ostatniego studenta." %}</li>
+        <li>{% trans "Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00." %}</li>
     </ul><br/>
-    <h3>Zasady w kolejkach</h3>
-    <ul>
-        Kolejki w systemie zapisów służą do zapamiętywania użytkowników, którzy chcieli zapisać się do danej grupy zajęciowej, która była pełna.<br/><br/>
-        <li>Jeżeli wszystkie miejsca na wybranych zajęciach są zajęte, użytkownik otrzymuje możliwość dopisania się do kolejki.</li>
-        <li>W momencie zwolnienia miejsca w grupie, pierwsza osoba z kolejki zostaje zapisana do grupy.</li>
-        <li>Użytkownik ma możliwość zapisania się do kilku kolejek na zajęcia tego samego typu, prowadzone dla tego samego przedmiotu.</li>
-        <li>Każdej z kolejek może przyporządkować priorytet z zakresu 1 (słabo) - 5 (bardzo). Różnica wartości priorytetów nie jest istotna, ważny jest ich porządek.
-        <li>Gdy w pewnej grupie zwalnia się miejsce (lub zostaje zwiększony limit), a w kolejce do niej jest zapisany użytkownik, zostaje wtedy przepisany do grupy, a jego kolejki o niższych lub takich samych priorytetach zostają usunięte (w ramach jednego przedmiotu i rodzaju zajęć).</li>
-        <li>W kolejkach obowiązuje zasada "kto pierwszy, ten lepszy".</li>
-        <li>Do kolejki można zapisać się dopiero po otwarciu zapisów na wybrany przedmiot.</li>
-        <li>Jeżeli w grupie pojawi się wolne miejsce, system podejmie próbę wpisania na to miejsce osoby, która znajduje się na pierwszym miejscu kolejki. Próba ta może się nie powieść: tak będzie wówczas, gdy  obowiązuje limit 40 p. ECTS, a wpisanie na przedmiot spowodowałoby przekroczenie tego limitu. W takiej sytuacji dana osoba zostaje wypisana z kolejki.</li>
+    <h3>{% trans "Zasady w kolejkach" %}</h3>
+    <ul> 
+        {% trans "Kolejki w systemie zapisów służą do zapamiętywania użytkowników, którzy chcieli zapisać się do danej grupy zajęciowej, która była pełna." %}<br/><br/>
+        <li>{% trans "Jeżeli wszystkie miejsca na wybranych zajęciach są zajęte, użytkownik otrzymuje możliwość dopisania się do kolejki." %}</li>
+        <li>{% trans "W momencie zwolnienia miejsca w grupie, pierwsza osoba z kolejki zostaje zapisana do grupy." %}</li>
+        <li>{% trans "Użytkownik ma możliwość zapisania się do kilku kolejek na zajęcia tego samego typu, prowadzone dla tego samego przedmiotu." %}</li>
+        <li>{% trans "Każdej z kolejek może przyporządkować priorytet z zakresu 1 (słabo) - 5 (bardzo). Różnica wartości priorytetów nie jest istotna, ważny jest ich porządek." %}
+        <li>{% trans "Gdy w pewnej grupie zwalnia się miejsce (lub zostaje zwiększony limit), a w kolejce do niej jest zapisany użytkownik, zostaje wtedy przepisany do grupy, a jego kolejki o niższych lub takich samych priorytetach zostają usunięte (w ramach jednego przedmiotu i rodzaju zajęć)." %}</li>
+        <li>{% trans 'W kolejkach obowiązuje zasada "kto pierwszy, ten lepszy".' %}</li>
+        <li>{% trans "Do kolejki można zapisać się dopiero po otwarciu zapisów na wybrany przedmiot." %}</li>
+        <li>{% trans "Jeżeli w grupie pojawi się wolne miejsce, system podejmie próbę wpisania na to miejsce osoby, która znajduje się na pierwszym miejscu kolejki. Próba ta może się nie powieść: tak będzie wówczas, gdy  obowiązuje limit 40 p. ECTS, a wpisanie na przedmiot spowodowałoby przekroczenie tego limitu. W takiej sytuacji dana osoba zostaje wypisana z kolejki." %}</li>
     </ul><br/>
     <h3>Studenci zamawiani</h3>
     <ul>
-        Niektóre z przedmiotów prowadzonych w II UWr. są przygotowane z myślą o studentach programu studiów zamawianych.<br/><br/>
-        <li>Na takich przedmiotach obowiązuje dodatkowy limit określający ilość miejsc zamawianych. Na przykład w grupie jest 18 miejsc, z czego 4 zamawiane.</li>
-        <li>Studenci zamawiani mogą zapisywać się na "zwykłe" miejsca, jednak w pierwszej kolejności zajmują miejsca zamawiane (system na podstawie informacji o użytkowniku przydziela go do odpowiedniej części grupy).</li>
-        <li>Studenci innych programów nie mogą korzystać z miejsc zarezerwowanych dla zamawianych, jednak w przypadku małego zainteresowania daną grupą limity mogą zostać zniesione (około tygodnia po rozpoczęciu semestru).</li>
+        {% trans "Niektóre z przedmiotów prowadzonych w II UWr. są przygotowane z myślą o studentach programu studiów zamawianych." %}<br/><br/>
+        <li>{% trans "Na takich przedmiotach obowiązuje dodatkowy limit określający ilość miejsc zamawianych. Na przykład w grupie jest 18 miejsc, z czego 4 zamawiane." %}</li>
+        <li>{% trans "Studenci zamawiani mogą zapisywać się na "zwykłe" miejsca, jednak w pierwszej kolejności zajmują miejsca zamawiane (system na podstawie informacji o użytkowniku przydziela go do odpowiedniej części grupy)." %}</li>
+        <li>{% trans "Studenci innych programów nie mogą korzystać z miejsc zarezerwowanych dla zamawianych, jednak w przypadku małego zainteresowania daną grupą limity mogą zostać zniesione (około tygodnia po rozpoczęciu semestru)." %}</li>
     </ul><br/>
 
 

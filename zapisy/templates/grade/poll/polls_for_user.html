@@ -1,6 +1,8 @@
 {% extends "grade/base.html" %}
 {% load compressed %}
 {% block js %}
+{% load i18n %}
+
     {% compressed_js "gradeuserpoll" %}
 {% endblock %}
 
@@ -90,7 +92,7 @@
 {% endblock %}
 
 {% block main-navigation %}
-    <li><a href="/">Strona główna</a></li>
+    <li><a href="/">{% trans "Strona główna" %}</a></li>
     <li><a href="{% url grade-main %}">Ocena zajęć</a></li>
     <li>Twoje ankiety</li>
 {% endblock %}
@@ -119,10 +121,10 @@ Zakończono <span id="finished-polls">{{finished_polls}}</span> spośród <span 
 {% block sidebar %}
 <div>
 {% if polls or finished %}
-    <h3>Twoje ankiety</h3>
+    <h3>{% trans "Twoje ankiety" %}</h3>
 {% endif %}
 {% if polls %}
-    <h4>Ankiety</h4>
+    <h4>{% trans "Ankiety" %}</h4>
     <ul class="sitemap">
     {% for poll_sub in polls %}
         <li><a class="grade-fillable-poll-link" href="{% url grade-poll-polls-for-user poll_sub.0.1 %}">{{ poll_sub.0.0 }}</a>
@@ -136,7 +138,7 @@ Zakończono <span id="finished-polls">{{finished_polls}}</span> spośród <span 
     </ul>
 {% endif %}
 {% if finished %}
-    <h4>Ankiety zakończone</h4>
+    <h4>{% trans "Ankiety zakończone" %}</h4>
     <ul class="sitemap">
     {% for fin_sub in finished %}
         <li><a class="grade-fillable-poll-link"  href="{% url grade-poll-polls-for-user fin_sub.0.1 %}">{{ fin_sub.0.0 }}</a>

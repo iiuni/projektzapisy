@@ -1,4 +1,5 @@
 {% extends "grade/poll/poll_results.html" %}
+{% load i18n %}
 
 {% block results %}
     {% if form %}
@@ -7,7 +8,7 @@
         {{ form.as_divs }}
         
         {% if connected %}
-        <a class="connected-link">Powiązane odpowiedzi</a>
+        <a class="connected-link">{% trans "Powiązane odpowiedzi" %}</a>
         <hr/>
         <div class="connected-polls">
             <br/><br/>
@@ -19,7 +20,7 @@
         
         <div class="pages">
             <span class="beglink">
-                <a href="{% url grade-poll-poll-results-detailed-semester semester.id link_mode pid first %}">Pierwsza odpowiedź</a>
+                <a href="{% url grade-poll-poll-results-detailed-semester semester.id link_mode pid first %}">{% trans "Pierwsza odpowiedź" %}</a>
             </span>
             {% for pg in pages %}
                 <span class="page-link {% if pg.0 == page %}active{%endif%}">
@@ -27,7 +28,7 @@
                 </span>
             {% endfor %}
             <span class="endlink">
-                <a href="{% url grade-poll-poll-results-detailed-semester semester.id link_mode pid last %}">Ostatnia odpowiedź</a>
+                <a href="{% url grade-poll-poll-results-detailed-semester semester.id link_mode pid last %}">{% trans "Ostatnia odpowiedź" %}</a>
             </span>
         </div>
     {% endif %}

@@ -1,4 +1,5 @@
 {% extends "grade/base.html" %}
+{% load i18n %}
 {% load compressed %}
 {% block styles %}
     {% compressed_css 'connectionchoice' %}
@@ -13,8 +14,8 @@
 {% block main-subtitle %}Pobieranie kluczy{% endblock %}
 
 {% block bread %}
-	<a href="/">Strona główna</a> &raquo;
-	<a href="{% url grade-main %}">Ocena zajęć</a> &raquo;
+	<a href="/">{% trans "Strona główna" %}</a> &raquo;
+	<a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a> &raquo;
 	Pobieranie kluczy
 {% endblock %}
 
@@ -33,10 +34,10 @@
 	<div id="grade-connection-choice">
 	<form method="post" id="connection_choice">{% csrf_token %}
 	<h2>
-		Pobieranie kluczy do następujących ankiety:
+		{% trans "Pobieranie kluczy do następujących ankiety:" %}
 	</h2>
 
-    <h4>Ankiety przypisane do przedmiotu:</h4>
+    <h4>{% trans "Ankiety przypisane do przedmiotu:" %}</h4>
 	<table id = "grade-connection-choice-form">
         {% for k, poll in polls.items %}
             <ul>
@@ -49,7 +50,7 @@
                 </li>
             </ul>
         {% empty %}
-            <h6>Brak ankiet</h6>
+            <h6>{% trans "Brak ankiet" %}</h6>
         {% endfor %}
     <h4>Ankiety ogólne:</h4>
         {% if general_polls %}
@@ -59,7 +60,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <h6>Brak ankiet</h6>
+            <h6>{% trans "Brak ankiet" %}</h6>
         {% endif %}
 	</table>
         {% if general_polls or polls %}

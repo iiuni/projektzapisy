@@ -1,6 +1,7 @@
 ﻿{% extends "grade/base.html" %}
 {% load staticfiles %}
 {% load compressed %}
+{% load i18n %}
 
 {% block  main-subtitle %}Wyniki Oceny{% endblock %}
 {% block grade_result %} class="active"{% endblock %}
@@ -119,9 +120,9 @@
 {% load news_extras %}
 
 {% block main-navigation %}
-    <li><a href="/">Strona Główna</a></li>
-    <li><a href="{% url grade-main %}">Ocena zajęć</a></li>
-    <li>Wyniki oceny</li>
+    <li><a href="/">{% trans "Strona Główna" %}</a></li>
+    <li><a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a></li>
+    <li>{% trans "Wyniki oceny" %}</li>
 {% endblock %}
 
 
@@ -151,7 +152,7 @@
                 </form>
 
 
-                    <h4>Ankiety - przedmioty</h4>
+                    <h4>{% trans "Ankiety - przedmioty" %}</h4>
 
                     <ul class="sitemap">
                         {% for poll_list in polls_by_course %}
@@ -169,7 +170,7 @@
                         </ul></li>
                         {% endfor %}
                     </ul>
-                    <h4>Ankiety - osoby</h4>
+                    <h4>{% trans "Ankiety - osoby" %}</h4>
 
                     <ul class="sitemap">
                         {% for poll_list in polls_by_teacher %}

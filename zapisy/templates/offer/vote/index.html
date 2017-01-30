@@ -1,4 +1,5 @@
 {% extends "offer/base.html" %}
+{% load i18n %}
 {% load compressed %}
 
 {% block main-subtitle %}Głosowanie{% endblock %}
@@ -6,9 +7,9 @@
 {% block offer_menu_vote %} class="active"{% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url offer-main %}">Oferta dydaktyczna</a> &raquo;
-    <h2>Głosowanie</h2>
+    <a href="/">{% trans "Strona główna" %}</a> &raquo;
+    <a href="{% url offer-main %}">{% trans "Oferta dydaktyczna" %}</a> &raquo;
+    <h2>{% trans "Głosowanie" %}</h2>
     {# end bread #}
 {% endblock %}
 
@@ -29,21 +30,21 @@
 			<div id="od-vote-main-rules">
 				<ol>
                     <li><h4>Cele</h4>
-                        <p>
-                            Głosowanie ma na celu wybór przedmiotów na przyszły rok akademicki oraz zoptymalizowanie planu.
+                        <p>{% trans "
+                            Głosowanie ma na celu wybór przedmiotów na przyszły rok akademicki oraz zoptymalizowanie planu" %}.
                         </p>
                     </li>
-                    <li><h4>Przebieg</h4>
-                        <p>Student może przyznać każdemu przedmiotowi <strong>0-1-2-3 punkty</strong>, sygnalizując swoje zainteresowanie przedmiotem.
+                    <li><h4>{% trans "Przebieg" %}</h4>
+                        <p>{% blocktrans %} Student może przyznać każdemu przedmiotowi <strong>0-1-2-3 punkty</strong>, sygnalizując swoje zainteresowanie przedmiotem.
                             Suma przyznanych punktów nie może przekroczyć <strong>{{ max_points }}</strong>. Swój głos można zmieniać do czasu zakończenia głosowania.
-                        </p>
+                        {% endblocktrans %}</p>
                     </li>
-                    <li><h4>Bonus/marchewka</h4>
-                        <p>Każdy oddany punkt na przedmiot daje <strong>24 godzinny bonus</strong> (maksymalnie 72 godziny) otwarcia zapisów na niego.</p>
+                    <li><h4>{% trans "Bonus/marchewka" %}</h4>
+                        <p>{% blocktrans %}Każdy oddany punkt na przedmiot daje <strong>24 godzinny bonus</strong> (maksymalnie 72 godziny) otwarcia zapisów na niego.{% endblocktrans %}</p>
                     </li>
                     <li><h4>Przedmioty 'przegrane'</h4>
-                        <p>Przed rozpoczęciem semestru odbędzie się korekta, podczas której można będzie ponownie przydzielić punkty, które zostały przyznane na przedmioty,
-                        które nie będą prowadzone w tym roku.</p>
+                        <p>{% blocktrans %}Przed rozpoczęciem semestru odbędzie się korekta, podczas której można będzie ponownie przydzielić punkty, które zostały przyznane na przedmioty,
+                        które nie będą prowadzone w tym roku.{% endblocktrans %}</p>
                     </li>
 				</ol>
 			</div>
@@ -57,7 +58,7 @@
 			<p class="disabled-link">Głosowanie nie jest w tej chwili aktywne.</p>
 		{% endif %}
 
-		<p class="link"><a href="{% url vote-summary %}">Podsumowanie głosowania</a></p>
-        {% if user.student %}<p class="link"><a href="{% url vote-view %}">Pokaż mój głos</a></p>{% endif %}
+		<p class="link"><a href="{% url vote-summary %}">{% trans "Podsumowanie głosowania" %}</a></p>
+        {% if user.student %}<p class="link"><a href="{% url vote-view %}">{% trans "Pokaż mój głos" %}</a></p>{% endif %}
 	</div>
 {% endblock %}

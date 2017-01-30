@@ -1,4 +1,5 @@
 {% load fereol_common %}
+{% load i18n %}
 
 {% if object_list %}
 <div class="od-news-list">
@@ -18,5 +19,5 @@
   {% endfor %}
 </div>
 {% else %}
-<p>Nie ma ogłoszeń pasujących do zapytania.</p>
+<p>{% trans "Nie ma ogłoszeń pasujących do zapytania" %}.</p>
 {% endif %}

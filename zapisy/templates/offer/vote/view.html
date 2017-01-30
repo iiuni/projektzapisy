@@ -1,17 +1,18 @@
 {% extends "offer/vote/summary.html" %}
+{% load i18n %}
 
 {% block main-subtitle %}Pokaż mój głos{% endblock %}
 
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url offer-main %}">Oferta dydaktyczna</a> &raquo;
-    <a href="{% url vote-main %}">Głosowanie</a> &raquo;
+    <a href="/">{% trans "Strona główna" %}</a> &raquo;
+    <a href="{% url offer-main %}">{% trans "Oferta dydaktyczna" %}</a> &raquo;
+    <a href="{% url vote-main %}">{% trans "Głosowanie" %}</a> &raquo;
     {# end bread #}
 {% endblock %}
 
 {% block content %}
-    <div class="span15" style="margin-bottom: 30px;"><h2>Mój głos {% if is_voting_active %}(<a href="{% url vote %}">głosuj</a>){% endif %}</h2></div>
+    <div class="span15" style="margin-bottom: 30px;"><h2>{% trans "Mój głos" %} {% if is_voting_active %}(<a href="{% url vote %}">głosuj</a>){% endif %}</h2></div>
 
 
 		{% if votes %}
@@ -21,10 +22,10 @@
                     <h3>Semestr {{ semester.grouper }}</h3>
                         <table>
                     	    <thead><tr>
-                                <th style="width:400px;">Przedmiot</th>
-{#                                <th>Prowadzony w tym roku?</th>#}
-                                <th>Punkty w głosowaniu</th>
-                                <th>Punkty w korekcie</th>
+                                <th style="width:400px;">{% trans "Przedmiot" %}</th>
+{#                                <th>{% trans "Prowadzony w tym roku?" %}</th>#}
+                                <th>{% trans "Punkty w głosowaniu" %}</th>
+                                <th>{% trans "Punkty w korekcie" %}</th>
                     	    </tr></thead>
                     		{% for vote in semester.list %}
                                 <tr>
@@ -40,16 +41,16 @@
                 {% endfor %}
 		{% else %}
             <div class="span15">
-			    <p class="emptyList">Nie zagłosowałeś jeszcze na żaden przedmiot.</p>
+			    <p class="emptyList">{% trans "Nie zagłosowałeś jeszcze na żaden przedmiot" %}.</p>
             </div>
 		{% endif %}
         <div class="span15">
-        <p>
+        <p>{% blocktrans %}
             <strong>Każdy przyznany punkt</strong> daje bonus 24 godzin do zapisów na dany przedmiot.
-        </p>
-        <p>
+        {% endblocktrans %}</p>
+        <p>{% blocktrans %}
             Domyślną wartością w korekcie jest wartość przydzielona w głosowaniu.
-        </p>
+        {% endblocktrans %}</p>
 <!--         <p>
             Wartość w kolumnie "Prowadzony w tym roku?" jest prawidłowa tylko dla już dodanych semestrów.
             W szczególności, w semestrze zimowym, informacja o semestrze letnim może być nieprawdziwa.

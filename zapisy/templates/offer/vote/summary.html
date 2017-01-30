@@ -2,7 +2,7 @@
 
 {% load compressed %}
 {% block main-subtitle %}Podsumowanie głosowania{% endblock %}
-
+{% load i18n %}
 
 {% block styles %}
     {% compressed_css 'vote' %}
@@ -10,9 +10,9 @@
 
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url offer-main %}">Oferta dydaktyczna</a> &raquo;
-    <a href="{% url vote-main %}">Głosowanie</a> &raquo;
+    <a href="/">{% trans "Strona główna" %}</a> &raquo;
+    <a href="{% url offer-main %}">{% trans "Oferta dydaktyczna" %}</a> &raquo;
+    <a href="{% url vote-main %}">{% trans "Głosowanie" %}</a> &raquo;
     <h2>Podsumowanie {% if is_voting_active %}(<a href="{% url vote %}">głosuj</a>){% endif %}</h2>
     {# end bread #}
 {% endblock %}

@@ -1,9 +1,11 @@
+{% load i18n %}
+
 <div id="main-sidebar">
 	<div id="proposal-list">
 			<div class="semester">
 				<h3>Przedmioty w ofercie</h3>
                 {%  if request.user.employee %}
-                    <a href="{% url proposal-form %}" class="btn btn-success">Dodaj nową</a>
+                    <a href="{% url proposal-form %}" class="btn btn-success">{% trans "Dodaj nową" %}</a>
                 {% endif %}
 				<input type="hidden" name="semester-id" value="{{ semester.id }}" />
 				<ul class="proposal-list">
@@ -30,18 +32,18 @@
 
                    <ul id="proposal-legend">
                        <li>
-                           <div class="legend-box vote"></div> - przedmiot poddany pod głosowanie
+                           <div class="legend-box vote"></div> {% trans " - przedmiot poddany pod głosowanie " %}
                        </li>
                        <li>
-                           <div class="legend-box offer"></div> - przedmiot w ofercie
+                           <div class="legend-box offer"></div> {% trans "- przedmiot w ofercie" %}
                        </li>
 											 {% if user.is_authenticated %}
                        <li>
-                           <div class="legend-box nooffer"></div> - przedmiot wycofany z oferty
+                           <div class="legend-box nooffer"></div> {% trans " - przedmiot wycofany z oferty " %}
                        </li>
 											 {% endif %}
                         <li>
-                            <div class="legend-box work"></div> - przedmiot w wersji roboczej
+                            <div class="legend-box work"></div> {% trans " - przedmiot w wersji roboczej" %}
                         </li>
                    </ul>
 			</div>

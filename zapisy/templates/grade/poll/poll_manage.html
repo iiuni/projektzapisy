@@ -1,15 +1,16 @@
 ﻿{% extends "grade/base.html" %}
+{% load i18n %}
 
 {% block main-navigation %}
-	<li><a href="/">Strona główna</a></li>
-	<li><a href="{% url grade-main %}">Ocena zajęć</a></li>
-    <li>Zarządzanie ankietami</li>
+	<li><a href="/">{% trans "Strona główna" %}</a></li>
+	<li><a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a></li>
+    <li>{% trans "Zarządzanie ankietami" %}</li>
 {% endblock %}
 
 
 {% block content %}
 
-    <a href="{% url grade-poll-questionset-create %}">Utwórz nową sekcję</a>
+    <a href="{% url grade-poll-questionset-create %}">{% trans "Utwórz nową sekcję" %}</a>
     <ul>
         {% for section in sections %}
             <li><a href="{% url grade-poll-questionset-edit section %}">{{section}}</a></li>

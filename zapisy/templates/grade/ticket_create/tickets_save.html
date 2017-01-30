@@ -1,25 +1,28 @@
 {% extends "grade/base.html" %}
+{% load i18n %}
+
 {% load compressed %}
 {% block styles %}
     {% compressed_css 'ticketssave' %}
 {% endblock %}
 
 {% block main-navigation %}
-	<a href="/">Strona Główna</a> &raquo;
-	<a href="{% url grade-main %}">Ocena zajęć</a> &raquo;
+	<a href="/">{% trans "Strona Główna" %}</a> &raquo;
+	<a href="{% url grade-main %}">{% trans "Ocena zajęć" %}</a> &raquo;
 	Pobieranie biletów
 {% endblock %}
 
 
 {% block connection-choice %} class="active"{% endblock %}
 
-{% block main-subtitle %}Pobierz klucze{% endblock %}
+{% block main-subtitle %} {% trans "Pobierz klucze" %} {% endblock %}
 
 {% block content %}
 
     {% if tickets %}
         <div id='grade-tickets-save-form'>
-                <h3> Pomyślnie wygenerowano klucze.</h3><h3>Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
+                <h3>{% trans "Pomyślnie wygenerowano klucze." %}</h3>
+                <h3> Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
             <form action=".">
     	        <textarea id="keys" name="keys" cols="80" rows="20" readonly="readonly">{{ tickets }}
                 </textarea>
@@ -32,7 +35,7 @@
         </div>
     {% else %}
         <div class="alert-message">
-            <strong>Uwaga!</strong> Niestety nie możesz pobrać żadnych kluczy..
-        </div>
+             {% blocktrans %}<strong> Uwaga! </strong> Niestety nie możesz pobrać żadnych kluczy..
+        {% endblocktrans %}</div>
     {% endif %}
 {% endblock %}

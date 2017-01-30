@@ -1,4 +1,6 @@
 {% for section in sections %}
+{% load i18n %}
+
 <form method="Post" id="questionset" action="{% url grade-poll-questionset-create %}">{% csrf_token %}
 
     <input type="hidden" name="old_id" value="{{ section.pk }}">
@@ -19,19 +21,19 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td>Treść pytania: </td>
+                            <td>{% trans "Treść pytania:" %}</td>
                             <td>
                                 <input class="section-option" name="poll[question][{{forloop.counter}}][title]" id="poll[question][{{forloop.counter}}][title]" type="text" value="{{field.label}}"  class='section-option required'>
                             </td>
                         </tr>
                         <tr>
-                            <td>Opis pytania: </td>
+                            <td>{% trans "Opis pytania:" %}</td>
                             <td>
                                 <input class="section-option" name="poll[question][{{forloop.counter}}][description]" id="poll[question][{{forloop.counter}}][description]" type="text" value="{{field.description}}">
                             </td>
                         </tr>
                         <tr>
-                            <td>Typ pytania: </td>
+                            <td>{% trans "Typ pytania:" %}</td>
                             <td>
                                 <input type='hidden' name='poll[question][{{forloop.counter}}][type]' value='{{ field.type }}'>
                                 <select class="typeSelect options" name="poll[question][{{forloop.counter}}][formtype]">
