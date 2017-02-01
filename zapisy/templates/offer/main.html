@@ -1,21 +1,20 @@
 {% extends "offer/base.html" %}
-{% load i18n %}
 
 {% block styles %}
     <link rel="stylesheet" href="/site_media/css/common/mainPage.css" type="text/css" />
 {% endblock %}
 
 {% block main-navigation %}
-    <li><a href="/">{% trans "Strona główna" %}</a></li>
-    <li>{% trans "Oferta" %}</li>
+    <li><a href="/">Strona główna</a></li>
+    <li>Oferta</li>
 {% endblock %}
 
 {% block content %}
     <div id="mainPage-container">
         <div>
-            <a href="{% url offer-main %}">{% trans "Kształtowanie oferty dydaktycznej" %}</a>
-            <span>{% trans "System kształtowania oferty dydaktycznej w Instytucie
-                Informatyki Uniwersytetu Wrocławskiego" %}.</span>
+            <a href="{% url offer-main %}">Kształtowanie oferty dydaktycznej</a>
+            <span>System kształtowania oferty dydaktycznej w Instytucie
+                Informatyki Uniwersytetu Wrocławskiego.</span>
         </div>
     </div>
 {% endblock %}
