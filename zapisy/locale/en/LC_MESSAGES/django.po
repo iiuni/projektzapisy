@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-29 10:20+0000\n"
+"POT-Creation-Date: 2017-02-06 11:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,15 +148,15 @@ msgstr "Select language"
 
 #: templates/404.html:5
 msgid "Błąd 404"
-msgstr ""
+msgstr "Error 404"
 
 #: templates/404.html:9 templates/405.html:15
 msgid "Powrót do strony głównej"
-msgstr ""
+msgstr "Go Home"
 
 #: templates/405.html:12
 msgid "Błąd 405"
-msgstr ""
+msgstr "Error 405"
 
 #: templates/base.html:78
 msgid ""
@@ -223,27 +223,27 @@ msgstr ""
 
 #: templates/common/coursesitebar.html:8
 msgid "Dodaj nową"
-msgstr ""
+msgstr "Add new"
 
 #: templates/common/coursesitebar.html:35
 msgid " - przedmiot poddany pod głosowanie "
-msgstr ""
+msgstr "- subject put to the vote "
 
 #: templates/common/coursesitebar.html:38
 msgid "- przedmiot w ofercie"
-msgstr ""
+msgstr "- subject in offer"
 
 #: templates/common/coursesitebar.html:42
 msgid " - przedmiot wycofany z oferty "
-msgstr ""
+msgstr "- the subject withdrawn from the offer"
 
 #: templates/common/coursesitebar.html:46
 msgid " - przedmiot w wersji roboczej"
-msgstr ""
+msgstr "- the subject of the draft"
 
 #: templates/common/error.html:5
 msgid "Błąd"
-msgstr ""
+msgstr "Error"
 
 #: templates/common/index.html:10 templates/email_change/base.html:5
 #: templates/enrollment/main.html:11
@@ -264,9 +264,7 @@ msgstr ""
 #: templates/grade/ticket_create/keys_list.html:5
 #: templates/news/confirm_delete.html:11
 #: templates/news/confirm_delete_all.html:11 templates/news/form.html:13
-#: templates/news/form_all.html:13 templates/offer/main.html:9
-#: templates/offer/offer.html:81 templates/offer/vote/form.html:11
-#: templates/offer/vote/index.html:10
+#: templates/news/form_all.html:13 templates/offer/vote/form.html:11
 #: templates/offer/vote/proposal_summary.html:7
 #: templates/offer/vote/summary.html:13 templates/offer/vote/view.html:8
 msgid "Strona główna"
@@ -275,7 +273,7 @@ msgstr "Main page"
 #: templates/common/index.html:13 templates/news/confirm_delete_all.html:12
 #: templates/news/form_all.html:14 templates/news/list_all.html:50
 msgid "Aktualności"
-msgstr ""
+msgstr "News"
 
 #: templates/common/index.html:24 templates/enrollment/courses/course.html:20
 #: templates/enrollment/courses/courses_list.html:8
@@ -285,7 +283,7 @@ msgstr "Enrollment system"
 
 #: templates/common/index.html:30
 msgid "Oferta Dydaktyczna"
-msgstr ""
+msgstr "Teaching offer"
 
 #: templates/common/index.html:36 templates/grade/poll/poll_answer.html:10
 #: templates/grade/poll/poll_edit.html:6
@@ -301,37 +299,36 @@ msgid "Ocena zajęć"
 msgstr "Course evaluation"
 
 #: templates/common/index_m.html:19 templates/common/indexm.html:16
-#: templates/offer/main.html:16
 msgid "Kształtowanie oferty dydaktycznej"
-msgstr ""
+msgstr "Forming educational offer"
 
 #: templates/email_change/base.html:6
 msgid "Moje konto"
-msgstr ""
+msgstr "My account"
 
 #: templates/email_change/email_verify.html:4
 msgid "Email confirmation"
-msgstr ""
+msgstr "Email confirmation"
 
 #: templates/email_change/email_verify.html:7
 msgid "Notice"
-msgstr ""
+msgstr "Notice"
 
 #: templates/email_change/email_verify.html:13
 msgid "Email confirmation failed"
-msgstr ""
+msgstr "email confirmation failed"
 
 #: templates/email_change/email_verify.html:18
 msgid "This confirmation code has either expired or is invalid."
-msgstr ""
+msgstr "This confirmation code has either expired or is invalid."
 
 #: templates/email_change/email_verify.html:19
 msgid "The requested email address change has failed."
-msgstr ""
+msgstr "The requested email address change has failed."
 
 #: templates/email_change/email_verify.html:20
 msgid "Please, try to change it again in your account settings."
-msgstr ""
+msgstr "Please, try to change it again in your account settings."
 
 #: templates/enrollment/base.html:12
 #: templates/enrollment/records/schedule.html:98
@@ -380,13 +377,11 @@ msgstr ""
 "The enrollment system for classes at the Institute of Informatics at Wroclaw "
 "University"
 
-#: templates/enrollment/courses/base.html:17 templates/offer/offer.html:18
-#: templates/offer/vote/form.html:30
+#: templates/enrollment/courses/base.html:17 templates/offer/vote/form.html:30
 msgid "Filtrowanie"
 msgstr "Filtration"
 
-#: templates/enrollment/courses/base.html:24 templates/offer/offer.html:26
-#: templates/offer/vote/form.html:37
+#: templates/enrollment/courses/base.html:24 templates/offer/vote/form.html:37
 msgid "Rodzaj przedmiotu"
 msgstr "Type of course"
 
@@ -407,19 +402,16 @@ msgstr "Semester"
 #: templates/enrollment/courses/base.html:45
 #: templates/enrollment/courses/base.html:47
 #: templates/enrollment/records/schedule_prototype.html:44
-#: templates/offer/offer.html:58
 msgid "Schowaj przedmioty, na które byłem zapisany"
 msgstr "Hide items on which I was recorded"
 
 #: templates/enrollment/courses/base.html:49
 #: templates/enrollment/records/schedule_prototype.html:45
-#: templates/offer/offer.html:63
 msgid "Pokaż przedmioty prowadzone w j.angielskim"
 msgstr "Show courses in english"
 
 #: templates/enrollment/courses/base.html:50
 #: templates/enrollment/records/schedule_prototype.html:46
-#: templates/offer/offer.html:68
 msgid "Pokaż przedmioty kończące się egzaminem"
 msgstr "Show courses with an examination"
 
@@ -454,7 +446,6 @@ msgstr ""
 #: templates/enrollment/courses/course.html:52
 #: templates/enrollment/courses/course_consultations.html:34
 #: templates/enrollment/courses/course_head.html:13
-#: templates/offer/offer.html:39
 msgid "Prowadzący"
 msgstr "Presenter"
 
@@ -504,7 +495,7 @@ msgstr "record to the queue"
 msgid "lista"
 msgstr "list"
 
-#: templates/enrollment/courses/course.html:185 templates/offer/offer.html:99
+#: templates/enrollment/courses/course.html:185
 msgid ""
 "Przedmiot współfinansowany ze środków Unii Europejskiej w ramach "
 "Europejskiego Funduszu Społecznego"
@@ -522,11 +513,6 @@ msgstr "Consultations"
 msgctxt "typ kursu"
 msgid "Rodzaj"
 msgstr "Type"
-
-#: templates/enrollment/courses/course_consultations.html:42
-#, python-format
-msgid "Punkty %(points.type_of_point.name)s"
-msgstr ""
 
 #: templates/enrollment/courses/course_consultations.html:48
 #: templates/enrollment/courses/course_head.html:29
@@ -642,11 +628,6 @@ msgstr "None"
 msgid "Wybierz przedmiot z listy"
 msgstr "Select a course from the list"
 
-#: templates/enrollment/courses/voters.html:6
-#, python-format
-msgid "%(course.name)s - Głosy"
-msgstr ""
-
 #: templates/enrollment/courses/voters.html:28
 msgid "Głosy"
 msgstr "Votes"
@@ -665,7 +646,7 @@ msgstr "The courses, which have been recorded"
 
 #. Translators: Tytuł kolumny w tabelce
 #: templates/enrollment/records/schedule.html:113
-#: templates/offer/preferences/base.html:76 templates/offer/vote/view.html:25
+#: templates/offer/preferences/base.html:76
 msgid "Przedmiot"
 msgstr "Course"
 
@@ -684,6 +665,8 @@ msgid ""
 "Nie masz włączonej obsługi javascript &ndash; aplikacja prototypu planu nie "
 "może bez niej działać"
 msgstr ""
+"You do not have javascript enabled. application prototype plan "
+"can not work"
 
 #: templates/enrollment/records/schedule_prototype.html:82
 msgid "jesteś zapisany do tej grupy"
@@ -702,18 +685,24 @@ msgid ""
 "przypnij do prototypu. Widoczność grupy w prototypie zostaje zapamiętana. "
 "Przycisk <strong>NIE</strong> zapisuje na zajęcia"
 msgstr ""
+"Pin to the prototype. Visibility of group in the prototype will be saved."
+"The pushbottom don't recorded classes"
 
 #: templates/enrollment/records/schedule_prototype.html:94
 msgid ""
 "odepnij od prototypu. Przywraca domyślną widoczność grupy w prototypie. "
 "Przycisk <strong>NIE</strong> wypisuje z zajęć"
 msgstr ""
+"Unhook from the prototype. It restores the default visibility of the group in the prototype."
+"The  pushbottom don't write out from classes"
 
 #: templates/enrollment/records/schedule_prototype.html:97
 msgid ""
 "zapisz do grupy. Następuje próba zapisu studenta do grupy. Jeżeli przedmiot "
 "posiada również wykład, zostaniemy zapisanie na niego automatycznie"
 msgstr ""
+"Record to the group. An attempt to write the student group. If item"
+" has a lecture, we will save him automatically"
 
 #: templates/enrollment/records/schedule_prototype.html:100
 msgid ""
@@ -733,19 +722,24 @@ msgstr "Rules"
 msgid "Grupy bez ankiet"
 msgstr "Groups withpout questionnaires"
 
-#: templates/grade/base.html:35
+#: templates/grade/base.html:33
+#: templates/grade/ticket_create/tickets_save.html:18
+msgid "Pobierz klucze"
+msgstr "Download keys"
+
+#: templates/grade/base.html:36
 msgid "Oceń zajęcia"
 msgstr "Evaluate course"
 
-#: templates/grade/base.html:38
+#: templates/grade/base.html:39
 msgid "Otwórz ocenę"
 msgstr "Open evaluation"
 
-#: templates/grade/base.html:41
+#: templates/grade/base.html:42
 msgid "Wygeneruj klucze"
 msgstr "Generate a key"
 
-#: templates/grade/base.html:44 templates/grade/poll/poll_results.html:125
+#: templates/grade/base.html:45 templates/grade/poll/poll_results.html:125
 msgid "Wyniki oceny"
 msgstr "Evaluation results"
 
@@ -771,7 +765,7 @@ msgstr ""
 "Institute of Informatics at University of Wroclaw.With this information, we "
 "are able to work on improving qualityof our studies.                       "
 
-#: templates/grade/main.html:20 templates/offer/vote/index.html:37
+#: templates/grade/main.html:20
 msgid "Przebieg"
 msgstr "Evaluation run"
 
@@ -919,26 +913,11 @@ msgstr "Questionnairies assigned to the course:"
 msgid "Brak ankiet"
 msgstr "No questionnairies"
 
-#: templates/grade/ticket_create/connection_choice.html:55
-msgid "Ankiety ogólne:"
-msgstr "General questionnairies"
-
-#: templates/grade/ticket_create/tickets_save.html:18
-msgid "Pobierz klucze"
-msgstr "Download keys"
-
 #: templates/grade/ticket_create/tickets_save.html:24
 msgid "Pomyślnie wygenerowano klucze."
 msgstr "Successfully generated keys."
 
-#: templates/grade/ticket_create/tickets_save.html:24
-msgid ""
-"Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</"
-"strong>."
-msgstr ""
-"Save it in a safe place - <strong>there is no return to this screen</strong>."
-
-#: templates/grade/ticket_create/tickets_save.html:37
+#: templates/grade/ticket_create/tickets_save.html:38
 msgid ""
 "<strong> Uwaga! </strong> Niestety nie możesz pobrać żadnych kluczy..\n"
 "        "
@@ -1022,11 +1001,11 @@ msgstr ""
 
 #: templates/help/enrollment.html:9
 msgid "Zapisywanie się na zajęcia"
-msgstr ""
+msgstr "Recording on clesses"
 
 #: templates/help/enrollment.html:10
 msgid "Wybieramy "
-msgstr ""
+msgstr "Choose"
 
 #: templates/help/enrollment.html:12
 msgid ""
@@ -1036,23 +1015,23 @@ msgstr ""
 
 #: templates/help/enrollment.html:14
 msgid "Wybieramy przycisk "
-msgstr ""
+msgstr "Choose pushbuttom"
 
 #: templates/help/enrollment.html:16
 msgid "Z zajęć można wypisać się wybierając przycisk \"Wypisz\" "
-msgstr ""
+msgstr "From course, you can unsubscribe by tapping: Wypisz"
 
 #: templates/help/enrollment.html:19
 msgid "Wyświetlanie swojego planu zajęć:"
-msgstr ""
+msgstr "Displaying their timetable:"
 
 #: templates/help/enrollment.html:22
 msgid "Tak powinien wyglądać plan: "
-msgstr ""
+msgstr "A plan should look like:"
 
 #: templates/help/enrollment.html:24
 msgid "Plan zajęć można pobrać w formacie ical"
-msgstr ""
+msgstr "Schedule can be downloaded in ical"
 
 #: templates/help/enrollment.html:28
 msgid ""
@@ -1063,7 +1042,7 @@ msgstr ""
 
 #: templates/help/enrollment.html:31
 msgid "Możemy w nim wybrać pewne przedmioty:"
-msgstr ""
+msgstr "We can now select some items:"
 
 #: templates/help/enrollment.html:33
 msgid ""
@@ -1090,35 +1069,35 @@ msgstr ""
 
 #: templates/help/enrollment.html:39
 msgid "Wyświetlanie planu pracownika:"
-msgstr ""
+msgstr "Display employee plan"
 
 #: templates/help/enrollment.html:42
 msgid "Wybieramy interesującego nas pracownika:"
-msgstr ""
+msgstr "We choose our interest employee:"
 
 #: templates/help/enrollment.html:44 templates/help/enrollment.html.py:51
 msgid "Oglądamy jego plan:"
-msgstr ""
+msgstr "To watch plan:"
 
 #: templates/help/enrollment.html:46
 msgid "Wyświetlanie planu studenta:"
-msgstr ""
+msgstr "Displaying student plan:"
 
 #: templates/help/enrollment.html:47
 msgid "Wybieramy \"Studenci\":"
-msgstr ""
+msgstr "Select Students"
 
 #: templates/help/enrollment.html:49
 msgid "Wybieramy interesującego nas studenta:"
-msgstr ""
+msgstr "Select student:"
 
 #: templates/help/export.html:5
 msgid "Plan zajęć można wyeksportować do pliku w formacie"
-msgstr ""
+msgstr "Schedule can be exported to a file format"
 
 #: templates/help/rules.html:9
 msgid "Godzina otwarcia zapisów dla studenta zależy od:"
-msgstr ""
+msgstr "Opening time records for the student depends on:"
 
 #: templates/help/rules.html:11
 msgid ""
@@ -1134,7 +1113,7 @@ msgstr ""
 
 #: templates/help/rules.html:13
 msgid "udziału w głosowaniu na ofertę dydaktyczną."
-msgstr ""
+msgstr "vote on the didactic offer."
 
 #: templates/help/rules.html:13
 msgid ""
@@ -1155,11 +1134,11 @@ msgstr ""
 #: templates/help/rules.html:16
 msgid ""
 "Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00."
-msgstr ""
+msgstr "The terms T0 are allocated so the falling out between the hours of 10.00 and 22.00."
 
 #: templates/help/rules.html:18
 msgid "Zasady w kolejkach"
-msgstr ""
+msgstr "The rules in queues"
 
 #: templates/help/rules.html:20
 msgid ""
@@ -1202,7 +1181,7 @@ msgstr ""
 
 #: templates/help/rules.html:26
 msgid "W kolejkach obowiązuje zasada \"kto pierwszy, ten lepszy\"."
-msgstr ""
+msgstr "There is a rule in queues: first come, first served "
 
 #: templates/help/rules.html:27
 msgid ""
@@ -1233,7 +1212,7 @@ msgstr ""
 
 #: templates/help/rules.html:34
 msgid "Studenci zamawiani mogą zapisywać się na "
-msgstr ""
+msgstr "Students order may sign up for"
 
 #: templates/help/rules.html:35
 msgid ""
@@ -1244,27 +1223,27 @@ msgstr ""
 
 #: templates/help/terms.html:5
 msgid "Terminy"
-msgstr ""
+msgstr "Terms"
 
 #: templates/help/terms.html:11
 msgid "Kiedy kończy się i zaczyna nowy semestr?"
-msgstr ""
+msgstr "When the ends and begins a new semester?"
 
 #: templates/help/terms.html:12
 msgid "Kiedy jest upubliczniana wersja wstępna planu zajęć?"
-msgstr ""
+msgstr "When the pre-release timetable is made public ?"
 
 #: templates/help/terms.html:13
 msgid "Do kiedy i komu można zgłaszać poprawki do planu zajęć?"
-msgstr ""
+msgstr "To when and to whom you can propose amendments to the timetable?"
 
 #: templates/help/terms.html:14
 msgid "Kiedy otwierają się i zamykają zapisy?"
-msgstr ""
+msgstr "When opening and closing records?"
 
 #: templates/help/terms.html:15
 msgid "Kiedy jest limit 40ects zniesiony?"
-msgstr ""
+msgstr "When the limit is 40 ects abolished?"
 
 #: templates/help/terms.html:16
 msgid ""
@@ -1274,65 +1253,32 @@ msgstr ""
 
 #: templates/help/terms.html:17
 msgid "Od kiedy do kiedy jest otwarta ocena zajęć?"
-msgstr ""
+msgstr "From when to when is open assessment activities?"
 
 #: templates/help/terms.html:18
 msgid "Od kiedy do kiedy jest otwarte głosowanie?"
-msgstr ""
+msgstr "From when to when is the open vote?"
 
 #: templates/help/terms.html:19
 msgid "Od kiedy do kiedy jest otwarta korekta głosowania?"
-msgstr ""
+msgstr "From when to when the voting is open to correction?"
 
 #: templates/news/ajax_list.html:22 templates/news/list_all.html:79
 msgid "Nie ma ogłoszeń pasujących do zapytania"
-msgstr ""
+msgstr "There are no ads that match the query"
 
 #: templates/news/confirm_delete.html:18
 #: templates/news/confirm_delete_all.html:13
 msgid "Usuń ogłoszenie"
-msgstr ""
+msgstr "remove ad"
 
 #: templates/news/form.html:21 templates/news/form_all.html:16
 msgid "Dodaj ogłoszenie"
-msgstr ""
+msgstr "Add an announcement"
 
 #: templates/news/form.html:23 templates/news/form_all.html:18
 msgid "Edytuj ogłoszenie"
-msgstr ""
-
-#: templates/offer/base.html:6 templates/offer/offer.html:83
-#: templates/offer/vote/form.html:12 templates/offer/vote/index.html:11
-#: templates/offer/vote/summary.html:14 templates/offer/vote/view.html:9
-msgid "Oferta dydaktyczna"
-msgstr ""
-
-#: templates/offer/base.html:21 templates/offer/main.html:10
-msgid "Oferta"
-msgstr ""
-
-#: templates/offer/base.html:24
-msgid "Moje Propozycje"
-msgstr ""
-
-#: templates/offer/base.html:26
-msgid "Zarządzaj"
-msgstr ""
-
-#: templates/offer/base.html:30
-msgid "Preferencje"
-msgstr ""
-
-#: templates/offer/base.html:33 templates/offer/vote/form.html:13
-#: templates/offer/vote/index.html:12
-#: templates/offer/vote/proposal_summary.html:9
-#: templates/offer/vote/summary.html:15 templates/offer/vote/view.html:10
-msgid "Głosowanie"
-msgstr ""
-
-#: templates/offer/offer.html:41
-msgid "dowolny"
-msgstr ""
+msgstr "Edit ad"
 
 #: templates/offer/preferences/base.html:77
 msgid "Wykład"
@@ -1364,7 +1310,7 @@ msgstr "Hide"
 
 #: templates/offer/vote/form.html:60
 msgid "Maksymalna liczba punktów do wykorzystania"
-msgstr ""
+msgstr "The maximum number of points to be used"
 
 #: templates/offer/vote/index.html:38
 #, python-format
@@ -1377,16 +1323,6 @@ msgid ""
 "                        "
 msgstr ""
 
-#: templates/offer/vote/index.html:42
-msgid "Bonus/marchewka"
-msgstr ""
-
-#: templates/offer/vote/index.html:43
-msgid ""
-"Każdy oddany punkt na przedmiot daje <strong>24 godzinny bonus</strong> "
-"(maksymalnie 72 godziny) otwarcia zapisów na niego."
-msgstr ""
-
 #: templates/offer/vote/index.html:46
 msgid ""
 "Przed rozpoczęciem semestru odbędzie się korekta, podczas której można "
@@ -1394,17 +1330,14 @@ msgid ""
 "                        które nie będą prowadzone w tym roku."
 msgstr ""
 
-#: templates/offer/vote/index.html:61
-msgid "Podsumowanie głosowania"
-msgstr ""
-
-#: templates/offer/vote/index.html:62
-msgid "Pokaż mój głos"
-msgstr ""
+#: templates/offer/vote/proposal_summary.html:9
+#: templates/offer/vote/summary.html:15 templates/offer/vote/view.html:10
+msgid "Głosowanie"
+msgstr "Vote"
 
 #: templates/offer/vote/proposal_summary.html:10
 msgid "Podsumowanie"
-msgstr ""
+msgstr "Summary"
 
 #: templates/offer/vote/proposal_summary.html:18
 #, python-format
@@ -1417,23 +1350,19 @@ msgstr ""
 
 #: templates/offer/vote/proposal_summary.html:45
 msgid "Nikt nie zagłosował na ten przedmiot"
-msgstr ""
+msgstr "No one voted for this item"
 
-#: templates/offer/vote/view.html:15
-msgid "Mój głos"
-msgstr ""
+#: templates/offer/vote/summary.html:14 templates/offer/vote/view.html:9
+msgid "Oferta dydaktyczna"
+msgstr "educational offer"
 
 #: templates/offer/vote/view.html:27
 msgid "Punkty w głosowaniu"
-msgstr ""
+msgstr "Punkts in offer"
 
 #: templates/offer/vote/view.html:28
 msgid "Punkty w korekcie"
-msgstr ""
-
-#: templates/offer/vote/view.html:44
-msgid "Nie zagłosowałeś jeszcze na żaden przedmiot"
-msgstr ""
+msgstr "Points in correction"
 
 #: templates/offer/vote/view.html:48
 msgid ""
@@ -1450,3 +1379,13 @@ msgid ""
 "głosowaniu.\n"
 "        "
 msgstr ""
+
+#~ msgid "Ankiety ogólne:"
+#~ msgstr "General questionnairies"
+
+#~ msgid ""
+#~ "Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</"
+#~ "strong>."
+#~ msgstr ""
+#~ "Save it in a safe place - <strong>there is no return to this screen</"
+#~ "strong>."
