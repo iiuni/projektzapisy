@@ -282,7 +282,7 @@ class Student(BaseUser):
 
     def get_program(self):
         if self.isim:
-            return "Indywidualne Studia Informatyczno Matematyczne, dzienne I stopnia"
+            return "Indywidualne Studia Informatyczno-Matematyczne, dzienne I stopnia"
         else:
             return self.program
 
