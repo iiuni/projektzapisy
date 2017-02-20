@@ -17,6 +17,7 @@ class GroupInline(admin.TabularInline):
     raw_id_fields = ("teacher",)
 
 
+
 class CourseForm(ModelForm):
 
     class Meta:
@@ -57,7 +58,6 @@ class CourseAdmin(admin.ModelAdmin):
 
     form = CourseForm
 
-
     def changelist_view(self, request, extra_context=None):
 
         if not request.GET.has_key('semester__id__exact'):
@@ -90,6 +90,15 @@ class CourseAdmin(admin.ModelAdmin):
        """
        qs = super(CourseAdmin, self).queryset(request)
        return qs.select_related('semester', 'type')
+
+    def save_formset(self, request, form, formset, change):
+        from .views import change_group_limit_helper
+        groups = formset.save(commit=False)
+        for group in groups:
+            old = Group.objects.get(pk=group.pk)
+            change_group_limit_helper(group, old.limit, group.limit)
+            group.save()
+        formset.save_m2m()
 
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('number', 'capacity', 'building')

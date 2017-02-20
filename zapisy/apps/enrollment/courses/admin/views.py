@@ -76,6 +76,20 @@ def remove_student(request):
     url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
     return HttpResponseRedirect(url)
 
+@transaction.commit_on_success
+def change_group_limit_helper(group, old_limit, new_limit):
+    if new_limit < old_limit:
+        group.limit = new_limit
+        group.save()
+    else:
+        # quick fix, don't blame me, it's not my code :P
+        while old_limit < new_limit:
+            old_limit += 1
+            group.limit = old_limit
+            group.save()
+            run_rearanged(None, group)
+
+
 @staff_member_required
 @transaction.commit_on_success
 def change_group_limit(request):
@@ -91,14 +105,7 @@ def change_group_limit(request):
     except ObjectDoesNotExist:
         raise Http404
 
-    if limit < group.limit:
-        group.limit = limit
-        group.save()
-    else:
-        while group.limit < limit:
-            group.limit += 1
-            group.save()
-            run_rearanged(None, group)
+    change_group_limit_helper(group, group.limit, limit)
 
     url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
     return HttpResponseRedirect(url)
