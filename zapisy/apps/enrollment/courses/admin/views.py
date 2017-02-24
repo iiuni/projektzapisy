@@ -76,6 +76,7 @@ def remove_student(request):
     url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
     return HttpResponseRedirect(url)
 
+# change limit in group from old_limit to new_limit
 @transaction.commit_on_success
 def change_group_limit_helper(group, old_limit, new_limit):
     if new_limit < old_limit:
