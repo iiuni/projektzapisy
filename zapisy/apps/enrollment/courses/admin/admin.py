@@ -91,6 +91,8 @@ class CourseAdmin(admin.ModelAdmin):
        qs = super(CourseAdmin, self).queryset(request)
        return qs.select_related('semester', 'type')
 
+    # after changing limits in groups in inline form
+    # rearrange these groups
     def save_formset(self, request, form, formset, change):
         from .views import change_group_limit_helper
         groups = formset.save(commit=False)
