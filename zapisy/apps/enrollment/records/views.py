@@ -281,8 +281,8 @@ def own(request):
 
     employee = None
     student  = None
-    if request.user.student:
-        student = request.user.student
+    if Student.does_exist_for_user(request.user):
+        student = Student.get_for_user(request.user)
         groups = Course.get_student_courses_in_semester(student, default_semester)
         points, sum_points = student.get_points()
 

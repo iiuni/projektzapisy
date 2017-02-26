@@ -262,8 +262,13 @@ class Student(BaseUser):
 
     objects = GettersManager()
 
+    @classmethod
+    def does_exist_for_user(cls, user):
+        return Student.objects.filter(user_id = user.get_profile().user_id).exists()
 
-
+    @classmethod
+    def get_for_user(user):
+        return Student.objects.filter(user_id = user.get_profile().user_id)[0]
 
     def make_t0(self, semester=None):
         from apps.enrollment.courses.models import Semester

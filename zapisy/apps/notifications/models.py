@@ -132,7 +132,8 @@ def types_list(student=False, employee=False):
 class NotificationManager(models.Manager):
 
     def create_and_get(self, user):
-        types = types_list(not user.student is None, not user.employee is None)
+        user_student = Student.does_exist_for_user(user)
+        types = types_list(not user_student is None, not user.employee is None)
         used = self.filter(user=user).distinct().values_list('type', flat=True)
         new_objects = []
 
