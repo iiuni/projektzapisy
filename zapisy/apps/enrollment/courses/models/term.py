@@ -16,7 +16,7 @@ HOURS = [(str(hour), "%s.00" % hour) for hour in range(8, 23)]
 class Term(models.Model):
     """terms of groups"""
 
-    dayOfWeek  = models.CharField( max_length = 1, choices = common.DAYS_OF_WEEK, verbose_name = 'dzień tygodnia')
+    dayOfWeek  = models.CharField(max_length=1, choices=common.DAYS_OF_WEEK, verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name = 'rozpoczęcie')
     end_time   = models.TimeField(verbose_name = 'zakończenie')
     classroom  = models.ForeignKey('Classroom', verbose_name='sala', null=True, blank=True)

@@ -54,7 +54,7 @@ class ChangedDayTestCase(TestCase):
 
     def test_count_added_sundays_winter_semester(self):
         semester = Semester.get_semester(datetime(2015, 11, 10))
-        self.assertNotEqual(semester,None)
+        self.assertIsNotNone(semester)
         changed_days = ChangedDay.get_added_days_of_week(semester.semester_beginning,
                                                          semester.semester_ending,
                                                          common.SUNDAY)
@@ -63,7 +63,7 @@ class ChangedDayTestCase(TestCase):
 
     def test_count_changed_days_in_winter_semester(self):
         semester = Semester.get_semester(datetime(2015, 11, 10))
-        self.assertNotEqual(semester, None)
+        self.assertIsNotNone(semester)
         changed_days = ChangedDay.get_added_days_of_week(semester.semester_beginning,
                                                          semester.semester_ending)
 
@@ -101,8 +101,10 @@ class SemesterTestCase(TestCase):
     def test_get_all_sundays_in_winter_semester(self):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
         sundays = winter_semester.get_all_days_of_week(common.SUNDAY)
-        self.assertTrue(sundays)
-        # a sunday in winter semester
+
+        no_of_sundays = (winter_semester.lectures_ending - winter_semester.lectures_beginning).days / 7
+        self.assertTrue(len(sundays) >= no_of_sundays)
+
         a_sunday = date(2015, 12, 6)
         another_sunday = date(2015, 11, 22)
         self.assertTrue(a_sunday in sundays)

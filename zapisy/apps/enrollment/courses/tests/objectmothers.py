@@ -6,7 +6,6 @@ class SemesterObjectMother():
 
     @staticmethod
     def winter_semester_2015_16():
-        """Records opening and closing dates are made up"""
         semester = Semester(
             visible=True,
             type=Semester.TYPE_WINTER,
