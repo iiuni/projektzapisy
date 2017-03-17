@@ -1,8 +1,8 @@
-{% extends "notifications/base.html" %}
+{% extends "notifications/plaintext/base.html" %}
 
 {% block content %}
 W Systemie Zapisów dodano news.
 Temat: {{ subject }}
 Treść:
-{{ body|striptags }}
+{{ body }}
 {% endblock %}

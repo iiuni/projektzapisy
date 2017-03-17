@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.db import models
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, select_template
 from django.utils.html import strip_tags
 from mailer.models import Message
 from apps.users.models import Employee, Student
@@ -192,14 +192,19 @@ class Notification(object):
                     return type[1]
             return ''
 
+        def _find_notification_templates(notification):
+            html_template = 'notifications/%s.html' % notification
+            return (select_template(['notifications/plaintext/%s.html' % notification, html_template]), html_template)
+
         def _send_to_users(users, notification, subject, context):
+            template_html, template_plaintext = _find_notification_templates(notification)
             for u in users:
                 preference = NotificationManager.user_has_notification_on(u.user, notification)
                 address = u.user.email
                 if address and preference:
                     context['user'] = u.user
-                    body_html = render_to_string('notifications/%s.html' % notification, context)
-                    body_plaintext = strip_tags(body_html)
+                    body_html = render_to_string(template_html, context)
+                    body_plaintext = render_to_string(template_plaintext, context)
                     Message.objects.create(to_address=address, subject=subject, message_body=body_plaintext, message_body_html=body_html)
 
         subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
