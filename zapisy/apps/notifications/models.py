@@ -173,11 +173,13 @@ class Notification(object):
 
     @classmethod
     def send_notification(cls, user, notification, context):
-        context['user'] = user
         preference = NotificationManager.user_has_notification_on(user, notification)
         if user.email and preference:
-            body = render_to_string('notifications/' + notification + '.html', context)
-            Message.objects.create(to_address=user.email, subject=preference.get_type_display(), message_body=body)
+            template_html, template_plaintext = _find_notification_templates(notification)
+            context['user'] = user
+            body_html = render_to_string(template_html, context)
+            body_plaintext = render_to_string(template_plaintext, context)
+            Message.objects.create(to_address=user.email, subject=preference.get_type_display(), message_body=body_plaintext, message_body_html=body_html)
 
     @classmethod
     def send_notifications(cls, notification, context={}):
