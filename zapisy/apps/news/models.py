@@ -84,8 +84,8 @@ class News(models.Model):
         super(News, self).save(*args, **kwargs)
 
         # replace ó - https://code.djangoproject.com/ticket/10449
-        if self.is_published() and (old and not old.is_published() or not old):
-            Notification.send_notifications('send-news', {'news_id': self.pk, 'include_direct_link': True, 'subject': self.title, 'body': str(self.body).replace('&oacute;', u'ó')})
+        formatted_body = self.body.replace('&oacute;', u'ó').replace('&nbsp;', '')
+        Notification.send_notifications('send-news', {'news_id': self.pk, 'include_direct_link': True, 'subject': self.title, 'body': formatted_body})
 
     def is_published(self):
         return self.category != '-'

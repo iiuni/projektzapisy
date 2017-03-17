@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.db import models
-from django.template.loader import render_to_string, select_template
+from django.template.loader import Context, render_to_string, select_template
 from django.utils.html import strip_tags
 from mailer.models import Message
 from apps.users.models import Employee, Student
@@ -175,10 +175,10 @@ class Notification(object):
     def send_notification(cls, user, notification, context):
         preference = NotificationManager.user_has_notification_on(user, notification)
         if user.email and preference:
-            template_html, template_plaintext = _find_notification_templates(notification)
+            template_plaintext, template_html = _find_notification_templates(notification)
             context['user'] = user
-            body_html = render_to_string(template_html, context)
-            body_plaintext = render_to_string(template_plaintext, context)
+            body_html = template_html.render(context)
+            body_plaintext = template_plaintext.render(context)
             Message.objects.create(to_address=user.email, subject=preference.get_type_display(), message_body=body_plaintext, message_body_html=body_html)
 
     @classmethod
@@ -195,21 +195,22 @@ class Notification(object):
             return ''
 
         def _find_notification_templates(notification):
-            html_template = 'notifications/%s.html' % notification
-            return (select_template(['notifications/plaintext/%s.html' % notification, html_template]), html_template)
+            template_html = 'notifications/%s.html' % notification
+            return (select_template(['notifications/plaintext/%s.html' % notification, template_html]), select_template([template_html]))
 
         def _send_to_users(users, notification, subject, context):
-            template_html, template_plaintext = _find_notification_templates(notification)
+            template_plaintext, template_html = _find_notification_templates(notification)
             for u in users:
                 preference = NotificationManager.user_has_notification_on(u.user, notification)
                 address = u.user.email
                 if address and preference:
                     context['user'] = u.user
-                    body_html = render_to_string(template_html, context)
-                    body_plaintext = render_to_string(template_plaintext, context)
+                    body_html = template_html.render(context)
+                    body_plaintext = template_plaintext.render(context)
                     Message.objects.create(to_address=address, subject=subject, message_body=body_plaintext, message_body_html=body_html)
 
         subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
+        context = Context(context)
         _send_to_users(Employee.get_actives(), notification, subject, context)
         _send_to_users(Student.get_active_students(), notification, subject, context)
 
