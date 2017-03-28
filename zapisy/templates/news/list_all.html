@@ -51,7 +51,7 @@ u
         {% if items %}
             <div class="od-news-list">
                 {% for news in items %}
-                    <div class="od-news-item">
+                    <div id="od-news-{{news.id}}" class="od-news-item">
                         <div class="od-news-header">
                             <h3>{{ news.title }}</h3>
                             <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>

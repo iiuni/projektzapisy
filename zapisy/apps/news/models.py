@@ -4,10 +4,12 @@
     News models
 """
 
-from django.db                  import models
+from django.conf                import settings
 from django.contrib.auth.models import User
+from django.db                  import models
 
 from datetime import datetime, timedelta
+from apps.notifications.models import Notification
 
 class NewsManager(models.Manager):
     """
@@ -33,7 +35,15 @@ class NewsManager(models.Manager):
             Get a number of news
         """
         return self.category(category)[beginwith:(beginwith+quantity)]
-
+    def get_page_number_by_news_id(self, news_id):
+        """
+            Get a number of page by news
+        """
+	ids = enumerate(self.exclude(category='-').values_list('id').order_by('-id'))
+        for index, item in ids:
+            if item[0] == news_id:
+                return (int(index/settings.NEWS_PER_PAGE)) + 1
+        return 1
     def category(self, category):
         """
             Return news tagged with a given tag.
@@ -66,7 +76,6 @@ class News(models.Model):
     objects = NewsManager()
 
     def save(self, *args, **kwargs):
-        from apps.notifications.models import Notification
         try:
             old = News.objects.get(pk=self.pk)
         except News.DoesNotExist:
@@ -74,8 +83,10 @@ class News(models.Model):
 
         super(News, self).save(*args, **kwargs)
 
+        # replace ó - https://code.djangoproject.com/ticket/10449
         if self.is_published() and (old and not old.is_published() or not old):
-            Notification.send_notifications('send-news')
+            formatted_body = self.body.replace('&oacute;', u'ó').replace('&nbsp;', '')
+            Notification.send_notifications('send-news', {'news_id': self.pk, 'include_direct_link': True, 'subject': self.title, 'body': formatted_body})
 
     def is_published(self):
         return self.category != '-'

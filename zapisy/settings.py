@@ -360,3 +360,4 @@ if os.path.isfile(local_settings_file):
     execfile(local_settings_file)
 
 
+NEWS_PER_PAGE = 15

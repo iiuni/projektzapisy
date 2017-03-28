@@ -1,9 +1,6 @@
 {% extends "notifications/base.html" %}
 
 {% block content %}
-Witaj {{ user.get_full_name }},
-
 Głosowanie na przedmioty jest już aktywne. Możesz zagłosować na stronie: https://zapisy.ii.uni.wroc.pl/vote/
-
 Planowany koniec głosowania: {{ end_of_vote_date }}.
 {% endblock %}
