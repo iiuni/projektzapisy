@@ -4,6 +4,7 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models import Semester, Group
 from apps.enrollment.records.models import Record, Queue
 from apps.users.models import Student
+from apps.enrollment.records.utils import run_rearanged
 
 class Command(BaseCommand):
     args = ''
@@ -13,8 +14,8 @@ class Command(BaseCommand):
         make_option('--test',
                     action='store_true',
                     dest='test',
-                    default=True,
-                    help='test run to detect invalid enrolled / queued counters. Default: True'),
+                    default=False,
+                    help='test run to detect invalid enrolled / queued counters'),
         make_option('--semester',
                     action='store',
                     dest='semester',
@@ -51,7 +52,6 @@ class Command(BaseCommand):
                 group.enrolled = enrolled_cnt
                 group.save()
                 if old_enrolled_cnt > enrolled_cnt:
-                    from ...records.utils import run_rearanged
                     for _ in range(old_enrolled_cnt - enrolled_cnt):
                         run_rearanged(None, group)
             print "enrolled counter error for group:", group

@@ -150,7 +150,7 @@ class SpecialReservation(models.Model):
         verbose_name = u'rezerwacja stała'
         verbose_name_plural = u'rezerwacje stałe'
 
-    def create_event(self):
+    def create_event(self, author_id):
         from .term import Term
         from .event import Event
 
@@ -165,7 +165,7 @@ class SpecialReservation(models.Model):
         ev.type = Event.TYPE_GENERIC
         ev.visible = True
         ev.status = Event.STATUS_ACCEPTED
-        ev.author_id = 1
+        ev.author_id = author_id
         ev.save()
 
         term_days = semester.get_all_days_of_week(day_of_week=self.dayOfWeek, start_date=max(datetime.now().date(), semester.lectures_beginning))
@@ -179,9 +179,9 @@ class SpecialReservation(models.Model):
             term.room = self.classroom
             term.save()
 
-    def save(self, *args, **kwargs):
+    def save(self, author_id=1, *args, **kwargs):
         super(SpecialReservation, self).save(*args, **kwargs)
-        self.create_event()
+        self.create_event(author_id)
 
     def __unicode__(self):
         return u'%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),
