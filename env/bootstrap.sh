@@ -163,6 +163,7 @@ apt-get -y install libfreetype6-dev
 apt-get -y install liblcms1-dev
 apt-get -y install xvfb
 apt-get -y install firefox
+apt-get -y install htop
 
 # download and hack broken zlib
 apt-get -y install zlib1g-dev

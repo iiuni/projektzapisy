@@ -265,10 +265,10 @@ def my_profile(request):
 
     grade = {}
 
-    if semester and request.user.student:
+    if semester and Student.does_exist_for_user(request.user):
 
         try:
-            student = request.user.student
+            student = Student.get_for_user(request.user)
             courses = OpeningTimesView.objects.get_courses(student, semester)
             grade = [x.semester for x in StudentGraded.objects.filter(student=student).select_related('semester')]
 

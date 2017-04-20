@@ -25,7 +25,6 @@ urlpatterns = patterns('',
     url(r'^consultations/$', 'apps.users.views.consultations_list', name="consultations-list"),
 
     (r'^news/', include('apps.news.urls')),
-    (r'^jstests/', TemplateView.as_view(template_name="jstests/tests.html")),
     (r'^users/', include('apps.users.urls')),
     ('accounts/', include('apps.email_change.urls')),
 
