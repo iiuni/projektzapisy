@@ -97,7 +97,7 @@ class News(models.Model):
                 'include_direct_link': True,
                 'author': self.author,
                 'subject': self.title,
-                'body': self.body,
+                'body': self.body
             })
 
     def is_published(self):
