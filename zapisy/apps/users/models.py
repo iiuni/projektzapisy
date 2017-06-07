@@ -281,6 +281,12 @@ class Student(BaseUser):
         else:
             return 'M'
 
+    def get_program(self):
+        if self.isim:
+            return "Indywidualne Studia Informatyczno-Matematyczne, dzienne I stopnia"
+        else:
+            return self.program
+
     def get_type_of_studies(self):
         """ returns type of studies """
         semestr = {1:'pierwszy',2:'drugi',3:'trzeci',4:'czwarty',5:'piąty',6:'szósty',7:'siódmy',8:'ósmy',9:'dziewiąty',10:'dziesiąty',0:'niezdefiniowany'}[self.semestr]
