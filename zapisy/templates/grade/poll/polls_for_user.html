@@ -85,23 +85,7 @@
         }
     </style>
     <script>
-        var isDirty = true;
-        var submitForm = function () {
-            isDirty = false;
-        };
         this.sitemapstyler = function () {
-            // add on close popup
-            window.onbeforeunload = function (e) {
-                const dialogText = 'Czy na pewno chcesz wyjść?';
-                if (isDirty) {
-                    e.returnValue = dialogText;
-                    return dialogText;
-                }
-                else {
-                    return undefined;
-                }
-            };
-
             var sitemaps = $('.sitemap');
             var listitem = function (li) {
                 if (li.getElementsByTagName("ul").length > 0) {
@@ -110,7 +94,6 @@
                     var span = document.createElement("span");
                     span.className = "collapsed";
                     span.onclick = function () {
-                        isDirty = false;
                         ul.style.display = (ul.style.display === "none") ? "block" : "none";
                         this.className = (ul.style.display === "none") ? "collapsed" : "expanded";
                     };
