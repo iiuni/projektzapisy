@@ -6,87 +6,135 @@
 {% endblock %}
 
 {% block styles %}{{ block.super }}
-<style>
-    .sitemap, .sitemap ul, .sitemap li{
-    	margin:0;
-    	padding:0;
-    	list-style:none;
-    }
-    .sitemap{}
-    .sitemap ul{
-    	display:none;
-    }
-    .sitemap li{
-    	line-height:200%;
-    	margin-top:1px;
-    	background:#eee;
-    	position:relative;
-    	width:250px;
-    }
-    /* IE leaves a blank space where span is added so this is to avoid that */
-    * html .sitemap li{
-    	float:left;
-    	display:inline;
-    }
+    <style>
+        .sitemap, .sitemap ul, .sitemap li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
 
-    .sitemap li a{padding-left:28px;}
-    .sitemap li span{float:left;position:absolute;top:5px;left:5px;width:13px;height:13px;cursor:auto;font-size:0;}
-    .sitemap li span, .sitemap li span.collapsed{background:url(../images/collapsed.gif) no-repeat 0 0;}
-    .sitemap li span.expanded{background:url(../images/expanded.gif) no-repeat 0 0;}
+        .sitemap ul {
+            display: none;
+        }
 
-    /* second level */
+        .sitemap li {
+            line-height: 200%;
+            margin-top: 1px;
+            background: #eee;
+            position: relative;
+            width: 250px;
+        }
 
-    .sitemap li li{
-    	background:#fff;
-    }
-    .sitemap li li a{padding-left:56px;}
-    .sitemap li li span{left:28px;}
+        /* IE leaves a blank space where span is added so this is to avoid that */
+        * html .sitemap li {
+            float: left;
+            display: inline;
+        }
 
-    /* third level */
+        .sitemap li a {
+            padding-left: 28px;
+        }
 
-    .sitemap li li li a{padding-left:84px;}
-    .sitemap li li li span{left:56px;}
-    #container{
-    	margin:0 auto;
-    	width:680px;
-    	background:#fff;
-    	padding-bottom:20px;
-    }
-    #content{margin:0 20px;}
-    p{
-    	margin:0 auto;
-    	width:680px;
-    	padding:1em 0;
-    }
-</style>
-<script>
-    this.sitemapstyler = function(){
-    	var sitemaps = $('.sitemap')
-        var listitem =  function(li){
-            			if(li.getElementsByTagName("ul").length > 0){
-            				var ul = li.getElementsByTagName("ul")[0];
-            				ul.style.display = "none";
-            				var span = document.createElement("span");
-            				span.className = "collapsed";
-            				span.onclick = function(){
-            					ul.style.display = (ul.style.display == "none") ? "block" : "none";
-            					this.className = (ul.style.display == "none") ? "collapsed" : "expanded";
-            				};
-            				li.appendChild(span);
-            			};};
-        for(var i = 0; i<sitemaps.length;i++){
+        .sitemap li span {
+            float: left;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 13px;
+            height: 13px;
+            cursor: auto;
+            font-size: 0;
+        }
 
-    		var items = sitemaps[i].getElementsByTagName("li");
-    		for(var j=0;j<items.length;j++){
-                listitem(items[j]);
-    		};
+        .sitemap li span, .sitemap li span.collapsed {
+            background: url(../images/collapsed.gif) no-repeat 0 0;
+        }
 
-    	};
-        $(function(){$('.active_poll').parent().parent().parent().find('a').click();});
-    };
+        .sitemap li span.expanded {
+            background: url(../images/expanded.gif) no-repeat 0 0;
+        }
 
-    window.onload = sitemapstyler;
-</script>
+        /* second level */
+
+        .sitemap li li {
+            background: #fff;
+        }
+
+        .sitemap li li a {
+            padding-left: 56px;
+        }
+
+        .sitemap li li span {
+            left: 28px;
+        }
+
+        /* third level */
+
+        .sitemap li li li a {
+            padding-left: 84px;
+        }
+
+        .sitemap li li li span {
+            left: 56px;
+        }
+
+        p {
+            margin: 0 auto;
+            width: 680px;
+            padding: 1em 0;
+        }
+    </style>
+    <script>
+        var isDirty = true;
+        var submitForm = function () {
+            isDirty = false;
+        };
+        this.sitemapstyler = function () {
+            // add on close popup
+            window.onbeforeunload = function (e) {
+                const dialogText = 'Czy na pewno chcesz wyjść?';
+                if (isDirty) {
+                    e.returnValue = dialogText;
+                    return dialogText;
+                }
+                else {
+                    return undefined;
+                }
+            };
+
+            var sitemaps = $('.sitemap');
+            var listitem = function (li) {
+                if (li.getElementsByTagName("ul").length > 0) {
+                    var ul = li.getElementsByTagName("ul")[0];
+                    ul.style.display = "none";
+                    var span = document.createElement("span");
+                    span.className = "collapsed";
+                    span.onclick = function () {
+                        isDirty = false;
+                        ul.style.display = (ul.style.display === "none") ? "block" : "none";
+                        this.className = (ul.style.display === "none") ? "collapsed" : "expanded";
+                    };
+                    li.appendChild(span);
+                }
+                ;
+            };
+            for (var i = 0; i < sitemaps.length; i++) {
+
+                var items = sitemaps[i].getElementsByTagName("li");
+                for (var j = 0; j < items.length; j++) {
+                    listitem(items[j]);
+                }
+                ;
+
+            }
+            ;
+            $(function () {
+                $('.active_poll').parent().parent().parent().find('a').click();
+            });
+        };
+
+        window.onload = sitemapstyler;
+    </script>
 
 {% endblock %}
 
@@ -98,66 +146,76 @@
 
 
 {% block messages %}
-{% if errors %}
-    <div class="main-message">
-        Błąd nastepujących ankiet.
-        <ul>
-        {% for error in errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-{% endif %}
+    {% if errors %}
+        <div class="main-message">
+            Błąd nastepujących ankiet.
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
 {% endblock %}
 
 {% block content-width %}11{% endblock %}
 
 {% block topContent %}
-<div id="grade-progressbar-div"><div id="progressbar"></div>
-Zakończono <span id="finished-polls">{{finished_polls}}</span> spośród <span id="all-polls">{{all_polls}}</span></div>
-    {% endblock %}
+    <div id="grade-progressbar-div">
+        <div id="progressbar"></div>
+        Zakończono <span id="finished-polls">{{ finished_polls }}</span> spośród <span
+            id="all-polls">{{ all_polls }}</span></div>
+{% endblock %}
 {% block sidebar %}
-<div>
-{% if polls or finished %}
-    <h3>Twoje ankiety</h3>
-{% endif %}
-{% if polls %}
-    <h4>Ankiety</h4>
-    <ul class="sitemap">
-    {% for poll_sub in polls %}
-        <li><a class="grade-fillable-poll-link" href="{% url 'grade-poll-polls-for-user' poll_sub.0.1 %}">{{ poll_sub.0.0 }}</a>
-            <ul class="grade-fillable-poll-sublist">
-            {% for poll in poll_sub.2 %}
-                <li><a id="grade-fillable-poll-link-{{poll.0}}"{% if  poll.0 == pid %} class="active_poll"{% endif %} href="{% url 'grade-poll-poll-answer' poll_sub.0.1 poll.0 %}">{{ poll.3 }}</a></li>
-            {% endfor %}
+    <div>
+        {% if polls or finished %}
+            <h3>Twoje ankiety</h3>
+        {% endif %}
+        {% if polls %}
+            <h4>Ankiety</h4>
+            <ul class="sitemap">
+                {% for poll_sub in polls %}
+                    <li><a class="grade-fillable-poll-link"
+                           href="{% url 'grade-poll-polls-for-user' poll_sub.0.1 %}">{{ poll_sub.0.0 }}</a>
+                        <ul class="grade-fillable-poll-sublist">
+                            {% for poll in poll_sub.2 %}
+                                <li><a id="grade-fillable-poll-link-{{ poll.0 }}"{% if  poll.0 == pid %}
+                                       class="active_poll"{% endif %}
+                                       href="{% url 'grade-poll-poll-answer' poll_sub.0.1 poll.0 %}">{{ poll.3 }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
             </ul>
-        </li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{% if finished %}
-    <h4>Ankiety zakończone</h4>
-    <ul class="sitemap">
-    {% for fin_sub in finished %}
-        <li><a class="grade-fillable-poll-link"  href="{% url 'grade-poll-polls-for-user' fin_sub.0.1 %}">{{ fin_sub.0.0 }}</a>
-        <ul class="grade-not-fillable-poll-sublist">
-            {% for poll in fin_sub.2 %}
-                <li><a id="grade-fillable-poll-link-{{poll.0}}"{% if pid == poll.0 %} class="active_poll"{% endif %} href="{% url 'grade-poll-poll-answer' fin_sub.0.1 poll.0 %}">{{ poll.3 }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
-    </ul>
-{% endif %}
-</div>
+        {% endif %}
+        {% if finished %}
+            <h4>Ankiety zakończone</h4>
+            <ul class="sitemap">
+                {% for fin_sub in finished %}
+                    <li><a class="grade-fillable-poll-link"
+                           href="{% url 'grade-poll-polls-for-user' fin_sub.0.1 %}">{{ fin_sub.0.0 }}</a>
+                        <ul class="grade-not-fillable-poll-sublist">
+                            {% for poll in fin_sub.2 %}
+                                <li><a id="grade-fillable-poll-link-{{ poll.0 }}"{% if pid == poll.0 %}
+                                       class="active_poll"{% endif %}
+                                       href="{% url 'grade-poll-poll-answer' fin_sub.0.1 poll.0 %}">{{ poll.3 }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 {% endblock %}
 {% block content %}
-<div id="grade-poll-content">
-{% block poll-content %}
-    Brak ankiet
-{% endblock %}
-</div>
+    <div id="grade-poll-content">
+        {% block poll-content %}
+            Brak ankiet
+        {% endblock %}
+    </div>
 
-<div id="grade-end-grading"><a href="{% url 'poll-end-grading' %}">Zakończ oceniać</a></div>
+    <div id="grade-end-grading"><a href="{% url 'poll-end-grading' %}">Zakończ oceniać</a></div>
 {% endblock %}
