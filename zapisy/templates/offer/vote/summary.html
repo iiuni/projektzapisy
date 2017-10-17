@@ -14,7 +14,7 @@
     <a href="/">Strona główna</a> &raquo;
     <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
     <a href="{% url 'vote-main' %}">Głosowanie</a> &raquo;
-    <h2>Podsumowanie {% if is_voting_active %}(<a href="{% url 'vote' %}">głosuj</a>){% endif %}</h2>
+    <h2>Podsumowanie {% if is_voting_active and user.student %}(<a href="{% url 'vote' %}">głosuj</a>){% endif %}</h2>
     {# end bread #}
 {% endblock %}
 
