@@ -11,6 +11,9 @@ from apps.grade.poll.models   import Section, \
                                        OpenQuestion, \
                                        Poll
 
+class Xd:
+    x = "asdahgsdjgasjhdgjashgdjasgdashgdhasgdjhgsadgasgdahsgdhasgdshagdhasgdhgsadhgasdhgasdhgashgdashgdjasgdj"
+
 class SectionTest( TestCase ):
     fixtures = [ 'section_test.json' ]
         
