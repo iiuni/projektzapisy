@@ -1,6 +1,6 @@
 -r requirements.common.txt
 
 # Additional test dependencies
-selenium==2.53.6
-factory_boy==2.5.0
-coverage==4.3.4
+selenium==2.53.6 # (2.53.6) - Latest: 3.7.0 Jesli tylko testy, to podic, puscic i jak przejdzie po problemie
+factory_boy==2.5.0 # Jest 2.9.2, podbic, puscic testy, jak dziala jest ok
+coverage==4.3.4 # (4.3.4) - Latest: 4.4.2 Mysle ze mozna podbijac bez strachu
