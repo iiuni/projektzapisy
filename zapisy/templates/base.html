@@ -7,7 +7,7 @@
 <html lang="pl">
 <head>
     <meta charset="utf-8">
-    <title>{% block main-subtitle %}{% endblock %} - {% block title %}System Zapisów{% endblock %}</title>
+    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
     <meta name="description"
           content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
@@ -82,7 +82,8 @@
         })
     });
     </script>
-
+    <script src="{% static "js/common/utils.js" %}"></script>
+    <script src="{% static "js/common/base.js" %}"></script>
 </head>
 
 <body>
@@ -93,6 +94,11 @@
 </form>
 <script type="text/javascript">
     jQuery.dataInvalidate_check();
+    $(document).ready(function() {
+        $('.dropdown-menu input,label').click(function(e) {
+                e.stopPropagation(); //This will prevent the event from bubbling up and close the dropdown when you type/click on text boxes.
+        });
+    });
 </script>
 
 <div class="top">
@@ -101,29 +107,40 @@
             <!-- up-menu  -->
             <div class="container">
 
-                <ul>
-                    <li{% block enrollment_active %}{% endblock %}><a href="{% url 'enrollment-main' %}">System
-                        Zapisów</a>
+                <ul class="topBarLinkContainer">
+                    <li{% block enrollment_active %}{% endblock %}>
+                        <a href="{% url 'enrollment-main' %}">System Zapisów</a>
                     </li>
-                    <li{% block grade_active %}{% endblock %}><a href="{% url 'grade-main' %}">Ocena Zajęć</a></li>
-                    <li{% block offer_active %}{% endblock %}><a href="{% url 'offer-main' %}">Oferta</a></li>
-                    {% if perms.courses.view_stats %}<li{% block statistics_active %}{% endblock %}><a href="{% url 'statistics:main' %}">Statystyki</a></li>{% endif %}
-                    <li{% block events_active %}{% endblock %}><a href="{% url 'events:classrooms' %}">Sale <span style="color:red;font-size: 10px">beta</span></a></li>
+                    <li{% block grade_active %}{% endblock %}>
+                        <a href="{% url 'grade-main' %}">Ocena Zajęć</a>
+                    </li>
+                    <li{% block offer_active %}{% endblock %}>
+                        <a href="{% url 'offer-main' %}">Oferta</a>
+                    </li>
+                    {% if perms.courses.view_stats %}
+                        <li{% block statistics_active %}{% endblock %}>
+                            <a href="{% url 'statistics:main' %}">Statystyki</a>
+                        </li>
+                    {% endif %}
+                    <li{% block events_active %}{% endblock %}>
+                        <a href="{% url 'events:classrooms' %}">Sale</a>
+                    </li>
 
                 </ul>
                 {% if user.is_authenticated %}
                     <div class="user-panel">
-                        Witaj,
-                        <strong>{% if user.is_staff %}{{ user.first_name }}{% else %}{{ user.get_full_name }}{% endif %}</strong>
+                        <strong>
+                        {{ user.get_full_name }}
+                        </strong>
                         |
                         <a href="{% url 'my-profile' %}">Moje konto</a> |
                         {% if user.is_staff %}
                             <a href="/fereol_admin/">Admin</a> |
                         {% endif %}
-                        {% if user.get_profile.is_student and user.student.get_number_of_news > 0 %}
+                        {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
                             <a href="{% url 'news-all' %}"
                                class="unread">Aktualności ({{ user.student.get_number_of_news }})</a> |
-                            {% elif user.get_profile.is_employee and user.employee.get_number_of_news > 0 %}
+                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
                                 <a href="{% url 'news-all' %}"
                                    class="unread">Aktualności ({{ user.employee.get_number_of_news }})</a> |
                             {% else %}
@@ -131,29 +148,49 @@
 
                         {% endif %}
                         <a href="{% url 'help' %}">Pomoc</a> |
-                        <a href="{% url 'user-logout' %}">Wyloguj</a>
+                        <a href="{% url 'cas_ng_logout' %}">Wyloguj</a>
                     </div>
                 {% else %}
-
-                    <form action="{% url 'apps.users.views.login_plus_remember_me' %}" method="POST">
-                        {% csrf_token %}
-                        <div class="inline-inputs">
-                            {% if request.path == '/' %}
-                                <input type="hidden" name="next" value="{% url 'schedule-own' %}"/>
-                            {% else %}
-                                <input type="hidden" name="next" value="{{request.path}}"/>
-                            {% endif %}
-                            <label for="id_login">użytkownik:</label>
-                            <input class="small" tabindex="1" type="text" id="id_login" name="username">
-
-                            <label for="id_password">hasło:</label>
-                            <input class="small" tabindex="2"  type="password" id="id_password" name="password">
-
-                            <button class="btn small" tabindex="4"  type="submit">Loguj &raquo;</button>
-                            <input type="checkbox" tabindex="3"  value="true" id="xlInput3" name="remember_me">
-                            <label for="xlInput3">Zapamiętaj mnie</label>
-                        </div>
-                    </form>
+      <ul class="nav secondary-nav">
+          <li class="dropdown" data-dropdown="dropdown">
+              <a href="#" id="login-dropdown" class="dropdown-toggle" data-toggle="dropdown"><b>Zaloguj się</b> <span class="caret"></span></a>
+                <ul id="login-dp" class="dropdown-menu">
+                    <li>
+                         <div class="row">
+                                <div class="col-md-12">
+                                    <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos"><img src="{% static 'images/usos-login-logo.png'%}" alt="Uniwersytet Wrocławski">Zaloguj się przez USOS</a>
+                                    <button class="btn primary" id="btn-no-usos">
+                                      lub użyj konta Systemu Zapisów
+                                    </button>
+                                    <div id="login-without-usos">
+                                      <form action="{% url 'apps.users.views.login_plus_remember_me' %}" method="POST">
+                                          {% csrf_token %}
+                                          {% if request.path == '/' %}
+                                              <input type="hidden" name="next" value="{% url 'schedule-own' %}"/>
+                                          {% else %}
+                                              <input type="hidden" name="next" value="{{request.path}}"/>
+                                          {% endif %}
+                                          <div class="form-group">
+                                              <input tabindex="1" type="text" id="id_login" name="username" placeholder="Użytkownik">
+                                          </div>
+                                          <div class="form-group">
+                                              <input tabindex="2" type="password" id="id_password" name="password" placeholder="Hasło">
+                                          </div>
+                                          <div class="form-group">
+                                               <button type="submit" tabindex="4" class="btn btn-primary btn-block">Zaloguj &raquo;</button>
+                                          </div>
+                                          <div class="form-group">
+                                              <label>
+                                              <input type="checkbox" tabindex="3"  value="true" id="xlInput3" name="remember_me"> Pamiętaj mnie</label>
+                                          </div>
+                                      </form>
+                                    </div>
+                                </div>
+                         </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
                 {% endif %}
             </div>
             <!-- end up-menu  -->
@@ -203,20 +240,14 @@
             </div>
         {% endfor %}
         {% endblock %}
-        {% block filter %}
-            {# end filter #}
-        {% endblock %}
-        <div id="main-content-container" class="row show-grid sidebar-right">
+        <div id="main-content-container" class="row show-grid sidebar-right marginFix">
+            {% block topContent %}{% endblock %}
             {% block center %}
-                <div class="span{% block content-width %}11{% endblock %} columns">
-
-
+                <div class="span{% block content-width %}11{% endblock %} columns marginFix contentNoCollapse">
                     <div id="main-content">
                         {% block content %}
                         {% endblock %}
-                        &nbsp;
                     </div>
-
                 </div>
                 <div class="span{% block sidebar-width %}5{% endblock %} columns">
                     {% block sidebar %}
@@ -249,6 +280,7 @@
   })();
 
 </script>
+
 </body>
 
 </html>

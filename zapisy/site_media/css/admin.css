@@ -2,3 +2,7 @@
 {
     width: 500px;
 }
+
+.mce-tinymce {
+	float: left !important;
+}

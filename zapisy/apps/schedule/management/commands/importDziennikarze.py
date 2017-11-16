@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-from datetime import timedelta
+
 from django.core.management import BaseCommand
 from django.db.models import Q
+
 from apps.enrollment.courses.models import Semester, Freeday, ChangedDay, Classroom
 from apps.enrollment.courses.models import Term as T
 from apps.schedule.models import Term, Event
@@ -39,7 +40,7 @@ class Command(BaseCommand):
         while day <= semester.lectures_ending:
 
             if day in freedays:
-                day = day + timedelta(days=1)
+                day = day + datetime.timedelta(days=1)
                 continue
 
             weekday = day.weekday()
@@ -51,7 +52,7 @@ class Command(BaseCommand):
 
             days[weekday].append(day)
 
-            day = day + timedelta(days=1)
+            day = day + datetime.timedelta(days=1)
 
         def create_event(title, visible=True):
             ev = Event()
@@ -68,8 +69,8 @@ class Command(BaseCommand):
             newTerm = Term()
             newTerm.event = event
             newTerm.day = day
-            newTerm.start = timedelta(hours=start, minutes=minutes_start)
-            newTerm.end = timedelta(hours=end, minutes=minutes_end)
+            newTerm.start = datetime.time(hour=start, minute=minutes_start)
+            newTerm.end = datetime.time(hour=end, minute=minutes_end)
             newTerm.room = room
             newTerm.save()
 
@@ -163,7 +164,3 @@ class Command(BaseCommand):
             create_term(ev, d, 8, 10, s4)
             create_term(ev, d, 12, 14, s4)
             create_term(ev, d, 16, 20, s5)
-
-
-
-

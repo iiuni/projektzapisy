@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load compressed %}
+{% load static %}
 {% load i18n %}
 
 {% block styles %}
@@ -14,7 +15,7 @@
         border-top-width: 1px;
         border-bottom-width: 1px;}
     </style>
-
+    <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
 
 {% endblock %}
 
@@ -30,11 +31,6 @@ $('.checkall').live('click', function(){
     } else {
         $('tr[class="'+ cls +'"]').find('input[type="checkbox"]').attr('checked', false);
     }
-
-
-
-
-
 })
 });
 </script>
@@ -51,7 +47,7 @@ $('.checkall').live('click', function(){
 {% block content %}
 
 
-<h4>Moje dane</h4>
+<p class="info-table-header">Moje dane</p>
     <table class="table-info">
         <tr>
             <th>login</th>
@@ -76,10 +72,14 @@ $('.checkall').live('click', function(){
             <th>strona domowa</th>
             <td><a href="{{ homepage }}">{{ homepage }}</a></td>
         </tr>
+        <tr>
+            <th>tytuł naukowy</th>
+            <td>{{ title }}</td>
+        </tr>
     {%endif%}
     </table>
 
-    <a class="change_profile" href="{% url 'password-change' %}">zmień hasło</a>
+    <a class="change_profile" href="{% url 'password_change' %}">zmień hasło</a>
 &nbsp;
 <a href="{% url 'email_change' %}">zmień adres email</a>
 {%if zamawiany%}
@@ -91,17 +91,17 @@ $('.checkall').live('click', function(){
 <a href="{% url 'consultations-change' %}">zmień inne dane</a>
 {% endif %}
 
-{% if user.employee and consultations %}
-<h4>Konsultacje</h4>
+{% if user.employee %}
+<p class="info-table-header">Konsultacje</p>
     {% if consultations %}
-{{ consultations }}
+		{{ consultations }}
     {% else %}
         Brak informacji
     {% endif %}
 {% endif %}
 
 {% if zamawiany %}
-<h4>Studia zamawiane</h4>
+<p class="info-table-header">Studia zamawiane</p>
         <table class="table-info">
             <tr>
                 <th>Punkty</th>
@@ -115,19 +115,33 @@ $('.checkall').live('click', function(){
 {% endif %}
 
 {% if user.student %}
-<h4>Moje studia</h4>
-     <table class="table-info">
+<p class="info-table-header">Moje studia</p>
+    <table class="table-info">
+        {% comment %}
+        W tej chwili nie mamy aktualnych informacji z USOSa i znamy tylko
+        liczbę ECTS bez uwzględnienia ostatniego semestru, co jest mało
+        przydatne dla studenta (a pewnie nawet mylące). W związku z tym to pole
+        jest tymczasowo wyłączone.
         <tr>
-            <th>Punkty ECTS</th>
+            <th>Punkty ECTS uzyskane do tej pory</th>
             <td>{{user.student.ects}}</td>
         </tr>
+        {% endcomment %}
         <tr>
             <th>Program</th>
             <td>{{user.student.program}}</td>
         </tr>
         <tr>
-            <th>Semestr</th>
+            <th>Semestr studiów</th>
             <td>{{user.student.semestr}}</td>
+        </tr>
+        <tr>
+            <th>Aktualny semestr</th>
+            <td>{{ semester }}</td>
+        </tr>
+        <tr>
+            <th>Punkty ECTS na aktualny semestr</th>
+            <td>{{ current_semester_ects }}</td>
         </tr>
      </table>
 {% endif %}
@@ -144,41 +158,62 @@ $('.checkall').live('click', function(){
     </table>
 {% endif %}
 
-{% if courses %}
-<h4>Terminy zapisów</h4>
+<p class="info-table-header">Terminy</p>
 <table class="table-info-big">
-    {% regroup courses by opening_time as times %}
-        {% for time in times %}
-        <tr>
-            <th>Czas:</th>
-            <td>{{time.grouper|date:"d.m.Y, H:i"}}</td>
-        </tr>
-            <tr>
-            <td></td>
-            <td>
-                {% if time.list %}
-                    <ul class="voted-courses">
-
-                    {% for item in time.list %}
-                        <li><a href="{{ item.course.get_absolute_url }}">{{item.course.name}}</a></li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            </td>                    
-        </tr>
-        {% endfor %}
+    {% with dateFormatStr="l j E G:i" %}
         <tr>
             <th>Zniesienie limitu 35 ECTS</th>
-            <td>{{ semester.records_ects_limit_abolition }}</td>
+            <td>{{ semester.records_ects_limit_abolition|date:dateFormatStr }}</td>
         </tr>
+        {% if semester.records_ending %}
+            <tr>
+                <th>Koniec wypisów</th>
+                <td>{{ semester.records_ending|date:dateFormatStr }}</td>
+            </tr>
+        {% endif %}
         <tr>
             <th>Koniec zapisów</th>
-            <td>{{ semester.records_closing }}</td>
+            <td>{{ semester.records_closing|date:dateFormatStr }}</td>
         </tr>
+    
+        {% if courses %}
+            {% regroup courses by opening_time as times %}
+            {% for time in times %}
+            <tr>
+                <th>Czas:</th>
+                <td>{{ time.grouper|date:dateFormatStr }}</td>
+            </tr>
+                <tr>
+                <td></td>
+                <td>
+                    {% if time.list %}
+                        <ul class="voted-courses">
+
+                        {% for item in time.list %}
+                            <li><a href="{{ item.course.get_absolute_url }}">{{item.course.name}}</a></li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </td>                    
+            </tr>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </table>
+
+{% if grade %}
+    <p class="info-table-header">Udział w Ocenie zajęć</p>
+    <table class="table-info-big">
+        {% for semester in grade %}
+            <tr>
+                <td>{{ semester }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endif %}
+
 {% if user.is_staff %}
-<h4>{%  trans "Ustawienie preferencji językowych" %}</h4>
+<p class="info-table-header">{%  trans "Ustawienie preferencji językowych" %}</p>
 {% get_available_languages as LANGUAGES %}
 <form method="post" action="{% url 'setlang' %}">
     {% csrf_token %}
@@ -202,7 +237,7 @@ $('.checkall').live('click', function(){
     </table>
 </form>
 {% endif %}
-<h4>Ustawienie powiadomień</h4>
+<p class="info-table-header">Ustawienia powiadomień</p>
 
 <form method="POST" action="{% url 'notifications:save' %}">
     {% csrf_token %}

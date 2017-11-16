@@ -16,3 +16,10 @@ class Tag(models.Model):
     def __unicode__(self):
         return smart_unicode(self.short_name) + u' (' + smart_unicode(self.full_name) + u')'
 
+    def serialize_for_json(self):
+        return {
+            'id': self.pk,
+            'short_name': self.short_name,
+            'full_name': self.full_name,
+            'description': self.description
+        }

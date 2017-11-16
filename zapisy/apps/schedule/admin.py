@@ -1,7 +1,48 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from .models import SpecialReservation
+from django.db import models
+from django import forms
+from .models import SpecialReservation, Term
+from django.core.validators import ValidationError
+import sys
+
+class SpecialReservationForm(forms.ModelForm):
+
+	ignore_conflicts = forms.BooleanField(required = False, label = "", widget=forms.HiddenInput())
+
+	def __init__(self, *args, **kwargs):
+		super(SpecialReservationForm, self).__init__(*args, **kwargs)
+		if self.errors:
+			if '__all__' in self.errors:
+				if 'W tym samym czasie' in self.errors['__all__'].as_ul():
+					self.fields['ignore_conflicts'].widget = forms.CheckboxInput()
+					self.fields['ignore_conflicts'].label = u'Zezwalaj na konflikty'
+					self._errors['ignore_conflicts'] = self.error_class([u'Zaakceptuj konflikty'])
+
+	def clean(self):
+		cleaned_data = super(SpecialReservationForm, self).clean()
+		self.instance.ignore_conflicts = cleaned_data.get('ignore_conflicts')
+		return cleaned_data
+
+	class Meta:
+		model = SpecialReservation
+		fields = '__all__' 
+
+class SpecialReservationAdmin(admin.ModelAdmin):
+	form = SpecialReservationForm
+
+        def save_model(self, request, obj, form, change):
+             instance = form.save(commit=False)
+             instance.save(author_id=request.user.id)
+             return instance
 
 
-admin.site.register(SpecialReservation)
+class TermAdmin(admin.ModelAdmin):
+	list_display = ('event', 'day', 'start', 'end', 'room', 'place')
+	list_filter = ('room',)
+	search_fields = ('event__title',)
+	ordering = ('-day', 'start', 'end')
+
+admin.site.register(Term, TermAdmin)
+admin.site.register(SpecialReservation, SpecialReservationAdmin)

@@ -208,5 +208,5 @@ Vote.initFilter = function()
 				course.removeClass('visible').addClass('hidden');
 		}));
 
-	Vote.courseFilter.runThread();
+	Vote.courseFilter.runThread(true);
 };

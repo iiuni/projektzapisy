@@ -10,7 +10,7 @@ class SingleChoiceQuestion( BaseQuestion ):
                                        verbose_name = 'sekcje', 
                                        through = 'SingleChoiceQuestionOrdering' )
                                       
-    is_scale = models.BooleanField(    verbose_name = 'skala' )
+    is_scale = models.BooleanField(    verbose_name = 'skala', default=False)
     options  = models.ManyToManyField( Option, 
                                        verbose_name = 'odpowiedzi' )
     
@@ -37,7 +37,7 @@ class SingleChoiceQuestionOrdering( models.Model ):
                                     verbose_name = 'pytanie' )
     sections   = models.ForeignKey( 'Section', verbose_name = 'sekcja' )
     position   = models.IntegerField( verbose_name = 'pozycja' )
-    is_leading = models.BooleanField( verbose_name = 'pytanie wiodące' )
+    is_leading = models.BooleanField( verbose_name = 'pytanie wiodące', default=False )
     hide_on    = models.ManyToManyField( Option,
                                          verbose_name = 'ukryj sekcję przy \
                                                          odpowiedziach',

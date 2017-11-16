@@ -2,7 +2,7 @@
  * Style dotyczące osadzenia terminów przedmiotów w komponencie terminarza.
  */
 
-#schedule-legend .pinned,
+.schedule-legend .pinned,
 .schedule .pinned,
 .schedule .pinned .classroom,
 .schedule .pinned .type
@@ -10,7 +10,7 @@
     background: #EFF0F0 !important;
 }
 
-#schedule-legend .enrolled,
+.schedule-legend .enrolled,
 .schedule .enrolled,
 .schedule .enrolled .classroom,
 .schedule .enrolled .type
@@ -18,7 +18,7 @@
     background: #E0EEEE !important; /* wheat */
 }
 
-#schedule-legend .queued,
+.schedule-legend .queued,
 .schedule .queued,
 .schedule .queued .classroom,
 .schedule .queued .type
@@ -104,14 +104,13 @@
 .schedule .term .controls span, .legend-box.icons
 {
 	display: block;
-	width: 12px;
-	height: 12px;
+ 	width: 12px;
+ 	height: 12px;
 	margin: 3px;
-
 	overflow: hidden;
 	cursor: pointer;
 	background: no-repeat;
-	background-image: url('/site_media/images/schedule-prototype-controls.png');
+ 	background-image: url('/site_media/images/schedule-prototype-controls.png');
 }
 
 .legend-box.icons {

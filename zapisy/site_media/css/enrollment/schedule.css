@@ -45,3 +45,13 @@
 	color: #999999;
 }
 
+.schedule-title
+{
+    float: left;
+}
+
+.schedule-header-ects-count
+{
+    float: right;
+}
+

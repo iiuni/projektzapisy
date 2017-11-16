@@ -38,15 +38,10 @@ class VoteLinkTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.VOTE_LINK = '<a href="%s">głosuj</a>' % reverse('vote')
-        # cls.user = User.objects.create_user('user', 'user@user.com', 'password')
-        # s1 = Student.objects.create(user=cls.user)
-        # s1.status = 0
 
-        # cls.user2 = User.objects.create_user('user2', 'user2@user.com', 'password')
-        # s2 = Student.objects.create(user=cls.user2,matricula='111111')
-        # s2.status = 1
         cls.s1 = StudentFactory()
         cls.s2 = StudentFactory(status=1)
+        
         sql_calls = [
             """
                 CREATE TABLE courses_studentpointsview (

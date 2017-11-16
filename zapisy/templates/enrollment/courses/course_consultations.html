@@ -1,106 +1,26 @@
-{% extends "enrollment/courses/base.html" %}
-{% load url from future %}
 {% load i18n %}
+<h3>{% trans "Konsultacje prowadzących" %}:</h3>
+<br>
 
-{% block main-subtitle %}
-	{{group.course.name}}
-	{% trans "Konsultacje" %}
-{% endblock %}
-
-{% block bread %}
-	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
-	<a href="{% url 'enrollment-main' %}">{% trans "Zapisy" %}</a> &raquo;
-	<a href="{% url 'course-list' %}">{% trans "Przedmioty" %}</a> &raquo;
-	<a href="{% url 'course-page' course.slug %}"
-			>{{course.name}}</a> &raquo;
-
-	<h3>{% trans "Konsultacje" %}</h3>
-{% endblock %}
-
-{% block enrollment_menu_courses %} class="active"{% endblock %}
-
-{% block content %}
-    <div id="enr-course-view">
-
-        <h1>{{course.name}}</h1>
-
-        <div class="details">
-            <ul class="properties">
-                <li>
-                    <span>{% trans "Rodzaj" context "typ kursu" %}:</span>
-                    {{course.type}}
-                </li>
-                {% if course.teachers.all %}
-                    <li>
-                        <span>{% trans "Prowadzący" %}:</span>
-                        {% for teacher in course.teachers.all %}
-                            <a href="{% url 'employee-profile' teacher.user.id %}" class="person">{{teacher.user.get_full_name}}</a>{%if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </li>
-                {% endif %}
-                {% if points %}
-                    <li>
-                        <span>{% blocktrans %}Punkty {{ points.type_of_point.name }}{% endblocktrans %}:</span>
-                        {{ points.value }}
-                    </li>
-                {% endif %}
-                {% if course.lectures or course.exercises or course.laboratories or course.repetitions %}
-                    <li>
-                        <span>{% trans "Liczba godzin" %}:</span>
-                        {% if course.lectures %}{{course.lectures}} {% trans "(wyk)" %} {%if course.exercises or course.laboratories or course.repetitions %}+{% endif %}{% endif %}
-                        {% if course.repetitions %}{{course.repetitions}} {% trans "(rep)" %} {%if course.lectures or course.laboratories %}+{% endif %}{% endif %}
-                        {% if course.exercises %}{{course.exercises}} {% trans "(ćw)" %} {%if course.laboratories %}+{% endif %}{% endif %}
-                        {% if course.laboratories %}{{course.laboratories}} {% trans "(prac)" %}{% endif %}
-                    </li>
-                {% endif %}
-                {% if course.web_page %}
-                    <li>
-                        <span>{% trans "Strona www" %}:</span>
-                        <a href="{{ course.web_page }}">{{ course.web_page }}</a>
-                    </li>
-                {% endif %}
-                {% if requirements %}
-                    <li>                
-                        <span>{% trans "Wymagane" context "zależności przedmiotu" %}:</span>
-                        {{ requirements|join:", " }}
-                    <li>                        
-                    {% endif %}
-                <li>
-                    <span>{% trans "Konsultacje" %}:</span>
-                    <a href="{% url 'course-consiltations-page' course.slug %}">{% trans "link" %}</a>
-                </li>
-            </ul>
-
-            <div class="footer"></div>
-        </div>
-
-        <hr>
-
-		<br/>
-		<h3>{% trans "Konsultacje prowadzących" %}:</h3>
-
-		<br/>
-		
-		{% if employees %}
-		<table>
-			<thead>
-				<td>{% trans "Imię i nazwisko" %}</td>
-				<td>{% trans "Pokój" %}</td>
-				<td>{% trans "Konsultacje" %}</td>
-			</thead>
-			<tbody>
-				{% for employee in employees %}
-					<tr>
-						<td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
-						    {{employee.user.get_full_name}}</a></td>
-						<td>{% if employee.room %}{{employee.room}}{% endif %}</td>
-						<td>{{employee.consultations}}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table><br />
-		{% else %}
-		{% trans "Brak prowadzących" %}.
-		{% endif %}
-	</div>
-{% endblock %}
+{% if employees %}
+    <table>
+        <thead>
+            <td>{% trans "Imię i nazwisko" %}</td>
+            <td>{% trans "Pokój" %}</td>
+            <td>{% trans "Konsultacje" %}</td>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+                <tr>
+                    <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
+                        {{ employee.user.get_full_name }}</a></td>
+                    <td>{{ employee.room|default:"" }}</td>
+                    <td>{{ employee.consultations }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% else %}
+    {% trans "Brak informacji" %}.
+{% endif %}

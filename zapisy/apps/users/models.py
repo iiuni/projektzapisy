@@ -22,8 +22,8 @@ logger = logging.getLogger()
 EMPLOYEE_STATUS_CHOICES = [(0, 'aktywny'), (1, 'nieaktywny')]
 
 class Related(models.Manager):
-    def get_query_set(self):
-        return super(Related, self).get_query_set().select_related('user')
+    def get_queryset(self):
+        return super(Related, self).get_queryset().select_related('user')
 
 class ExtendedUser(User):
     is_student = models.BooleanField(default = False, verbose_name="czy student?")
@@ -38,7 +38,7 @@ class ExtendedUser(User):
 
 class UserProfile(models.Model):
     # This field is required.
-    user         = models.OneToOneField(User, related_name='_profile_cache')
+    user         = models.OneToOneField(User, related_name='profile')
     is_student   = models.BooleanField(default = False, verbose_name="czy student?")
     is_employee  = models.BooleanField(default = False, verbose_name="czy pracownik?")
     is_zamawiany = models.BooleanField(default = False, verbose_name="czy zamawiany?")
@@ -52,7 +52,7 @@ class UserProfile(models.Model):
         super(UserProfile, self).clean()
         if not (self.is_employee or self.is_student) or (self.is_student and self.is_employee):
             raise ValidationError(
-                message={'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
+                message={'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
             )
 
 
@@ -70,7 +70,7 @@ class BaseUser(models.Model):
     receive_mass_mail_grade = models.BooleanField(
         default = True,
         verbose_name="otrzymuje mailem ogłoszenia Oceny Zajęć")
-    last_news_view = models.DateTimeField(default=datetime.datetime.now())
+    last_news_view = models.DateTimeField(default=datetime.datetime.now)
 
     objects = Related()
 
@@ -119,7 +119,8 @@ class Employee(BaseUser):
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
     status = models.PositiveIntegerField(default=0, choices=EMPLOYEE_STATUS_CHOICES, verbose_name="Status")
-
+    title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
+    
     def make_preferences(self):
         from apps.offer.preferences.models import Preference
 
@@ -158,7 +159,7 @@ class Employee(BaseUser):
 
 
     @staticmethod
-    def get_list(begin):
+    def get_list(begin='All'):
         def next_char(begin):
             try:
                 return chr(ord(begin) + 1)
@@ -328,21 +329,14 @@ class Student(BaseUser):
         return list(frozenset(records_list))
 
     def get_points(self, semester=None):
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models import Semester, StudentPointsView
         from apps.enrollment.records.models import Record
-        from apps.enrollment.courses.models import Course
+        if not semester:
+            semester = Semester.objects.get_next()
 
-        return (EmptyQuerySet, 0)
-#
-#        if not semester:
-#            semester = Semester.get_current_semester
-#        records = Record.objects.filter(student=self, group__course__semester=semester, status=1).values_list('group__course_id', flat=True).distinct()
-#        courses = Course.objects.filter(student=self, semester=semester, course__in=records).order_by('course__entity__name')
-#
-#        points = 0
-#        for c in courses: points += c.value
-#
-#        return courses, points
+        records = Record.objects.filter(student=self, group__course__semester=semester, status=1).values_list('group__course__entity_id', flat=True).distinct()
+
+        return StudentPointsView.get_points_for_entities(self, records)
 
     def get_points_with_course(self, course, semester=None):
         from apps.enrollment.courses.models import Semester, StudentPointsView

@@ -30,12 +30,15 @@ FEREOL_PATH = os.getcwd()
 path.append(FEREOL_PATH + '/dbimport/schedule')
 
 @staff_member_required
-@transaction.commit_on_success
+@transaction.atomic
 def add_student(request):
-    group_id = request.POST.get('group_id', None)
-    student_id = int(request.POST.get('student', -1))
+    try:
+        group_id = int(request.POST.get('group_id', -1))
+        student_id = int(request.POST.get('student', -1))
+    except (UnicodeEncodeError, ValueError):
+        raise Http404
 
-    if not group_id or student_id < 0:
+    if group_id < 0 or student_id < 0:
         raise Http404
 
     try:
@@ -54,22 +57,25 @@ def add_student(request):
 
 
 @staff_member_required
-@transaction.commit_on_success
+@transaction.atomic
 def remove_student(request):
-    group_id = request.POST.get('group_id', None)
-    recordid = int(request.POST.get('recordid', -1))
+    try:
+        group_id = int(request.POST.get('group_id', -1))
+        record_id = int(request.POST.get('recordid', -1))
+    except (UnicodeEncodeError, ValueError):
+        raise Http404
 
-    if not group_id or recordid < 0:
+    if group_id < 0 or record_id < 0:
         raise Http404
 
     try:
         course = Course.objects.select_for_update().filter(groups=group_id)
         group = Group.objects.get(id=group_id)
-        student = Record.objects.get(id=recordid).student
+        student = Record.objects.get(id=record_id).student
     except ObjectDoesNotExist:
         raise Http404
 
-    result, messages_list = group.remove_student(student)
+    result, messages_list = group.remove_student(student, is_admin=True)
     if result:
         run_rearanged(result, group)
 
@@ -92,12 +98,15 @@ def change_group_limit_helper(group, old_limit, new_limit):
 
 
 @staff_member_required
-@transaction.commit_on_success
+@transaction.atomic
 def change_group_limit(request):
-    group_id = request.POST.get('group_id', None)
-    limit = int(request.POST.get('limit', -1))
+    try:
+        group_id = int(request.POST.get('group_id', -1))
+        limit = int(request.POST.get('limit', -1))
+    except (UnicodeEncodeError, ValueError):
+        raise Http404
 
-    if not group_id or limit < 0:
+    if group_id < 0 or limit < 0:
         raise Http404
 
     try:
@@ -188,7 +197,7 @@ def import_schedule(request):
 
 @staff_member_required
 def refresh_semester(request):
-    semester = Semester.objects.filter(records_closing__gt=datetime.datetime.now())[0]
+    semester = Semester.objects.get_next()
     cursor = connection.cursor()
     cursor.execute("SELECT users_openingtimesview_refresh_for_semester(%s);" % str(semester.id))
     connection.commit()

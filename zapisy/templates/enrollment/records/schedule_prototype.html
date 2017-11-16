@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load compressed %}
 {% load i18n %}
+{% load static %}
 
 {% block main-subtitle %}{# Translators: podtytuł #}{% trans "Prototyp planu zajęć" %}{% endblock %}
 
@@ -13,6 +14,10 @@
     {% compressed_js 'prototype' %}
 {% endblock %}
 
+{% block topContent %}
+{% include "common/course_list_filters.html" %}
+{% endblock %}
+
 {% block enrollment_menu_prototype %} class="active"{% endblock %}
 
 {% block bread %}
@@ -21,39 +26,9 @@
 	{% trans "Prototyp planu" %}
 {% endblock %}
 
-{% block filter %}
-	<div id="enr-schedulePrototype-top-bar" class="main-top-bar" style="display: none">
-		<fieldset>
-			<legend><span>{# Translators: tytuł okienka filtrowania #}{% trans "Filtrowanie" %}</span></legend>
-			<div class="main-filter-input">
-				<input class="text filter-phrase" type="text" />
-				<input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
-			</div>
-		</fieldset>
-		<fieldset class="course-type-filter">
-			<legend><span>{# Translators: Filtrowanie -> tytuł kawałka z checkboxami #}{% trans "Rodzaj przedmiotu" %}</span></legend>
-			{% for type in types_list %}
-				<span class="checkbox">
-					<input type="checkbox" checked="checked" id="filter-course-type-{{ type.id }}" {% if type.meta_type %} class="filter-course-type-meta" {% endif %} value="{{ type.id }}"/>
-					<input type="hidden" class="group-id" value="{{ type.group.id }}" />
-					<label for="filter-course-type-{{ type.id }}"><span>{{ type.name }}</span></label>
-				</span>
-			{% endfor %}
-		</fieldset>
-		<fieldset id="enr-schedulePrototype-other">
-			<legend><span>{# Translators: Filtrowanie -> tytuł kawałka z opcjami #}{% trans "Inne" %}</span></legend>
-			<span class="checkbox"><input type="checkbox" id="enr-hidesigned" /><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label></span>
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-english" checked="checked"/><label for="enr-courseFilter-english">{% trans "Pokaż przedmioty prowadzone w j.angielskim" %}</label></span>
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-exam" checked="checked"/><label for="enr-courseFilter-exam">{% trans "Pokaż przedmioty kończące się egzaminem" %}</label></span>
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-suggestedForFirstYear" {% if user.student.is_first_year_student %}checked="checked"{% endif %}/><label for="enr-courseFilter-suggestedForFirstYear"  style="color:red;">{% trans "Pokaż tylko przedmioty zalecane dla 1 roku" %}</label></span>
-		</fieldset>
-	</div>
-{% endblock %}
-
-
-
 {% block content-width %}12{% endblock %}
 {% block content %}
+    {% comment %}
 	<form action="{% url 'records-set-locked' %}" method="post" id="enr-schedulePrototype-setLocked"><div>{% csrf_token %}
 		<input type="hidden" name="ajax-url" value="{% url 'records-set-locked' '.json' %}" />
         {% if request.user.student %}
@@ -66,39 +41,57 @@
             {% endif %}
 		{% endif %}
 	</div></form>
+	{% endcomment %}
 
 	{% block messages %}{% endblock %}{% include 'common/messages.html' %}
 
+    <div id="scheduleData">
+	  <script type="application/json" id="courses_list_json">{{ courses_json|safe }}</script>
+	  <script type="application/json" id="courses_groups">{{ groups_json|safe }}</script>
+      <input type="hidden" id="isLeavingAllowed" value="{{ allow_leave_course }}" />
+      <input type="hidden" name="ajax-set-enrolled-url" value="{% url 'records-set-enrolled' '.json' %}" />
+      <input type="hidden" name="ajax-set-pinned-url" value="{% url 'schedule-prototype-set-pinned' %}" />
+      <input type="hidden" name="ajax-set-queue-priority-url" value="{% url 'records-set-queue-priority' '.json' %}" />
+      <input type="hidden" name="priority-limit" value="{{ priority_limit }}" />
+    </div>
+	
 	<div id="enr-schedulePrototype-scheduleContainer">
-		<p>{% trans "Nie masz włączonej obsługi javascript &ndash; aplikacja prototypu planu nie może bez niej działać" %}.</p>
-		<input type="hidden" name="courses" value="{{ courses_json }}" />
-		<input type="hidden" name="groups" value="{{ groups_json }}" />
-		<input type="hidden" name="ajax-set-enrolled-url" value="{% url 'records-set-enrolled' '.json' %}" />
-		<input type="hidden" name="ajax-set-pinned-url" value="{% url 'schedule-prototype-set-pinned' %}" />
-		<input type="hidden" name="ajax-set-queue-priority-url" value="{% url 'records-set-queue-priority' '.json' %}" />
-		<input type="hidden" name="priority-limit" value="{{ priority_limit }}" />
+        <h3 style="display: inline">Trwa ładowanie prototypu planu zajęć</h3>
+        <img src="{% static "images/loading.gif" %}" style="vertical-align: middle">
+		
+		<noscript>
+		<div class="main-message">
+		{% trans "Nie masz włączonej obsługi JavaScript &ndash; aplikacja prototypu planu nie może bez niej działać" %}.
+		</div>
+		</noscript>
 	</div>
-    <ul id="schedule-legend">
+	<br>
+	<hr>
+	<h4>{% trans "Legenda" %}</h4>
+	<br>	
+    <ul class="schedule-legend">
         <li>
-            <div class="legend-box enrolled"></div> - {% trans "jesteś zapisany do tej grupy" %}
+            <div class="legend-box enrolled"></div> - {% trans "Jesteś zapisany do tej grupy" %}
         </li>
         <li>
-            <div class="legend-box queued"></div> - {% trans "jesteś w kolejce do tej grupy" %}
+            <div class="legend-box queued"></div> - {% trans "Jesteś w kolejce do tej grupy" %}
         </li>
         <li>
-            <div class="legend-box pinned"></div> - {% trans "grupa przypięta do prototypu" %}
+            <div class="legend-box pinned"></div> - {% trans "Grupa przypięta do prototypu" %}
+        </li>
+    </ul>
+    <ul class="schedule-legend">
+        <li>
+            <div class="legend-box icons pinIn"></div> - {% trans "Przypnij do prototypu. Widoczność grupy w prototypie zostaje zapamiętana. Przycisk <strong>NIE</strong> zapisuje na zajęcia" %}.
         </li>
         <li>
-            <div class="legend-box icons pinIn"></div> - {% trans "przypnij do prototypu. Widoczność grupy w prototypie zostaje zapamiętana. Przycisk <strong>NIE</strong> zapisuje na zajęcia" %}.
+            <div class="legend-box icons pinOut"></div> - {% trans "Odepnij od prototypu. Przywraca domyślną widoczność grupy w prototypie. Przycisk <strong>NIE</strong> wypisuje z zajęć" %}.
         </li>
         <li>
-            <div class="legend-box icons pinOut"></div> - {% trans "odepnij od prototypu. Przywraca domyślną widoczność grupy w prototypie. Przycisk <strong>NIE</strong> wypisuje z zajęć" %}.
+            <div class="legend-box icons signIn"></div> - {% trans "Zapisz do grupy. Następuje próba zapisu studenta do grupy. Jeżeli przedmiot posiada również wykład, nastąpi automatyczne dopisanie także do tej grupy" %}.
         </li>
         <li>
-            <div class="legend-box icons signIn"></div> - {% trans "zapisz do grupy. Następuje próba zapisu studenta do grupy. Jeżeli przedmiot posiada również wykład, zostaniemy zapisanie na niego automatycznie" %}.
-        </li>
-        <li>
-            <div class="legend-box icons signOut"></div> - {% trans "wypisz z grupy. Następuje wypisanie z grupy. Wypisanie z wykładu skutkuje wypisaniem się z pozostałych grup przedmiotu" %}.
+            <div class="legend-box icons signOut"></div> - {% trans "Wypisz z grupy. Następuje wypisanie z grupy. Wypisanie z wykładu skutkuje wypisaniem się z pozostałych grup przedmiotu" %}.
         </li>
     </ul>
 {% endblock %}
@@ -108,26 +101,20 @@
 	<div id="main-sidebar" class="prototype-sidebar">
 		{# Translators: tytuł nad sidebarem #}
 		<h3>{% trans "Semestr" %} {{ semester }}</h3>
+		<a id="enr-schedulePrototype-uncheckAll">Odznacz wszystkie</a>
         <hr>
+        <p class="main-side-message hidden" id="noResultsMessage">
+            Do podanego filtra nie pasuje żaden przedmiot.
+        </p>
 		<ul id="enr-schedulePrototype-course-list">
-			{% for course in courses %}
-			<li>
-				<span class="checkbox"><input type="checkbox" id="enr-schedulePrototype-course-{{ course.id }}" /></span>
-				<label for="enr-schedulePrototype-course-{{ course.id }}">{{ course.name }}</label>
-				<input type="hidden" name="id" value="{{ course.id }}" />
-				<input type="hidden" name="type" value="{{ course.type }}" />
-				<input type="hidden" name="short" value="{{ course.short }}" />
-				<input type="hidden" name="wasEnrolled" value="{{ course.was_enrolled }}" />
-				<input type="hidden" name="english" value="{{ course.english }}" />
-				<input type="hidden" name="exam" value="{{ course.exam }}" />
-				<input type="hidden" name="suggested_for_first_year" value="{{ course.suggested_for_first_year }}" />
-				<input type="hidden" name="isRecordingOpen" value="{{ course.is_recording_open }}" />
-				<input type="hidden" name="url" value="{% url 'course-page' course.slug %}" />
-				{% for term in course.terms %}
-					<input type="hidden" name="term" value="{{ term.json }}" />
-				{% endfor %}
-			</li>
-			{% endfor %}
+            {% for course in courses %}
+                <li id="listItem-course-{{ course.id }}">
+                    <span class="checkbox">
+                        <input type="checkbox" id="checkbox-course-{{ course.id }}">
+                    </span>
+                    <label for="checkbox-course-{{ course.id }}">{{ course.name }}</label>
+                </li>
+            {% endfor %}
 		</ul>
 	</div>
 {% endblock %}

@@ -38,21 +38,29 @@ Fereol.Enrollment.ScheduleCourseTerm._byID = {};
 
 Fereol.Enrollment.ScheduleCourseTerm.fromJSON = function(json, readOnly)
 {
-	var sterm = new Fereol.Enrollment.ScheduleCourseTerm();
-	var raw = $.parseJSON(json)
+	let obj = $.parseJSON(json)
+    return Fereol.Enrollment.ScheduleCourseTerm.fromObject(obj);
+};
 
-	sterm.id = raw['id'].castToInt();
-	sterm.group = Fereol.Enrollment.CourseGroup.getByID(raw['group'].castToInt());
+Fereol.Enrollment.ScheduleCourseTerm.fromObject = function(obj)
+{
+    var sterm = new Fereol.Enrollment.ScheduleCourseTerm();
+    
+    sterm.id = obj['id'].castToInt();
+	sterm.group = Fereol.Enrollment.CourseGroup.getByID(obj['group'].castToInt());
 	sterm.group.updateListeners.push(function()
 	{
 		sterm._updateVisibility();
 		sterm._updateControls();
 	});
-
+    
+    let startTimes = obj.start_time.split(":");
+    let endTimes = obj.end_time.split(":");
+    
 	sterm.scheduleTerm = new Schedule.Term(
-		raw.day.castToInt() - 1,
-		new Schedule.Time(raw.start_time[0].castToInt(), raw.start_time[1].castToInt()),
-		new Schedule.Time(raw.end_time[0].castToInt(), raw.end_time[1].castToInt()),
+		obj.day.castToInt() - 1,
+		new Schedule.Time(parseInt(startTimes[0]), parseInt(startTimes[1])),
+		new Schedule.Time(parseInt(endTimes[0]), parseInt(endTimes[1])),
 		sterm.container,
 		sterm.popupContents
 	);
@@ -61,7 +69,7 @@ Fereol.Enrollment.ScheduleCourseTerm.fromJSON = function(json, readOnly)
 		sterm._onResize(isFullSize);
 	};
 
-	sterm.classroom = raw.classroom;
+	sterm.classroom = obj.classroom;
 
 	Fereol.Enrollment.ScheduleCourseTerm._byID[sterm.id] = sterm;
 
@@ -108,6 +116,7 @@ Fereol.Enrollment.ScheduleCourseTerm.prototype._updateVisibility = function()
 				appendTo(this._controlsBox);
 			this._signInOutButton = $.create('span', { className: 'signInOut'}).
 				appendTo(this._controlsBox);
+            
 			this._loadingIndicator =
 				$.create('div', { className: 'loadingIndicator'}).
 				appendTo(this._controlsBox).css('display', 'none');
@@ -295,11 +304,21 @@ Fereol.Enrollment.ScheduleCourseTerm.prototype._updateControls = function()
 		backgroundPosition: this.group.isPinned ? '-12px -12px' : '0 -12px',
 		display: this.group.isEnrolledOrQueued() ? 'none' : ''
 	}).attr('title', this.group.isPinned ? 'odepnij od planu' : 'przypnij do planu');
+	
+    // students are not allowed to leave the group 
+    // (i.e. should not see the sign out button) if one of the following holds:
+    // * recording is not open
+    // * they're enrolled (not in queue) and leaving is not allowed (records ended)
+    const displaySignInOutButton = 
+        this.group.course.isRecordingOpen && 
+        (!this.group.isEnrolled || Fereol.Enrollment.isLeavingAllowed);
+
 	this._signInOutButton.css({
 		backgroundPosition: this.group.isEnrolledOrQueued() ? '-12px 0' : '0 0',
-		display: this.group.course.isRecordingOpen ? '' : 'none'
+		display: displaySignInOutButton ? '' : 'none'
 	}).attr('title', this.group.isEnrolledOrQueued() ? 'wypisz się' +
 		(this.group.isQueued ? ' z kolejki' : '') : 'zapisz się');
+	
 	this._controlsEmpty = this.group.isEnrolledOrQueued() &&
 		!this.group.course.isRecordingOpen;
 };

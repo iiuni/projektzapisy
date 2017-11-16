@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-from django.contrib                    import auth, messages
+import json
 
+from django.contrib                    import auth, messages
 from django.contrib.auth.decorators    import login_required
 from django.core.exceptions            import ObjectDoesNotExist, \
                                               ValidationError
@@ -11,18 +12,16 @@ from django.http                       import HttpResponse, \
 from django.shortcuts                  import render_to_response, redirect
 from django.template                   import RequestContext
 from django.template.response import TemplateResponse
-from django.utils                      import simplejson
+from django.utils.safestring import SafeUnicode, mark_safe
+from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
+
 from apps.enrollment.courses.models.course import CourseEntity
 from apps.grade.poll.models.last_visit import LastVisit
 from apps.users.decorators             import employee_required
-
-
 from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
 from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.semester import Semester
-
-
 from apps.grade.ticket_create.utils  import from_plaintext
 from apps.grade.ticket_create.models import PublicKey, \
                                               PrivateKey
@@ -64,15 +63,10 @@ from apps.grade.poll.utils           import check_signature, \
                                               make_polls_for_all, get_templates,\
                                               make_template_from_db,\
                                               get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
-
 from apps.users.models               import Employee, Program
-
 from form_utils                        import get_section_form_data, \
                                               validate_section_form, \
                                               section_save
-from django.utils.safestring           import SafeUnicode, mark_safe
-from django.utils.encoding import smart_str
-
 from apps.grade.poll.exceptions import NoTitleException, NoSectionException, \
                                     NoPollException
 
@@ -116,13 +110,13 @@ def template_actions( request ):
 
     if request.method == 'POST':
         action = request.POST.get('action')
-        
+
         ### delete
         if action == 'delete_selected':
             data['templates'] = get_objects( request, Template)
             return render_to_response( 'grade/poll/managment/templates_confirm.html',
                                        data, context_instance = RequestContext( request ))
-                                       
+
         ### use
         elif action == 'use_selected':
             semester_id        = request.POST['semester']
@@ -130,7 +124,7 @@ def template_actions( request ):
             data['templates'] = get_objects( request, Template)
             return render_to_response( 'grade/poll/managment/templates_confirm_use.html',
                                        data, context_instance = RequestContext( request ))
-                                       
+
     ### Nothing happend, back to list.
     return HttpResponseRedirect(reverse('grade-poll-templates'))
 
@@ -140,7 +134,7 @@ def delete_templates( request ):
         counter = delete_objects(request, Template, 'templates[]')
         message = u'Usunięto ' + unicode(counter) + u' ' + declination_template(counter)
         messages.info(request, SafeUnicode(message))
-            
+
     return HttpResponseRedirect(reverse('grade-poll-templates'))
 
 @employee_required
@@ -183,7 +177,7 @@ def create_poll_from_template(request, templates):
         polls_list.extend(polls)
     message   = make_message_from_polls(polls_list)
     messages.success(request, message)
-    
+
     return len(message)
 
 @employee_required
@@ -248,23 +242,23 @@ def enable_grade( request ):
 def disable_grade( request ):
     semester_id = request.POST.get('semester_id')
     semester = Semester.objects.get(id=semester_id)
-    
+
     if semester.is_grade_active:
         semester.is_grade_active = False
         semester.save()
-        
+
 #        PublicKey.objects.all().delete()
 #        PrivateKey.objects.all().delete()
-        
+
         for st in SavedTicket.objects.filter(finished=False):
             # TODO: oznaczyć je jako archiwalne!
             st.finished = True
             st.save()
-        
+
         messages.success( request, "Zamknięto ocenę zajęć" )
     else:
         messages.error( request, "Nie można zamknąć oceny; system nie był uruchomiony" )
-    
+
     return HttpResponseRedirect( reverse( 'grade-main' ))
 
 #### Poll creation ####
@@ -281,10 +275,10 @@ def autocomplete(request):
                 distinct().values_list('content', flat=True)
             results = [ x for x in model_results ]
     if results:
-        json = simplejson.dumps(results)
+        json = json.dumps(results)
     else:
         json = ""
-    return HttpResponse(json, mimetype='application/javascript')
+    return HttpResponse(json, content_type='application/javascript')
 
 @employee_required
 def ajax_get_groups(request):
@@ -294,7 +288,7 @@ def ajax_get_groups(request):
             type    = int( request.POST.get('type', '0') )
             course = int( request.POST.get('course', '0') )
             groups  = groups_list( get_groups_for_user(request, type, course))
-            message = simplejson.dumps( groups )
+            message = json.dumps(groups)
     return HttpResponse(message)
 
 
@@ -305,7 +299,7 @@ def ajax_get_courses(request):
         if request.method == 'POST':
             semester = int( request.POST.get('semester', '0') )
             courses = course_list( Course.objects.filter(semester=semester).order_by('name') )
-            message = simplejson.dumps( courses )
+            message = json.dumps(courses)
     return HttpResponse(message)
 
 
@@ -409,7 +403,7 @@ def poll_create(request):
 #
 # Poll managment
 #
-    
+
 @employee_required
 def sections_list( request ):
     """
@@ -482,13 +476,13 @@ def delete_sections( request ):
 @employee_required
 def polls_list( request ):
     data = {}
-    semester = Semester.get_current_semester() 
-        
+    semester = Semester.get_current_semester()
+
     if not semester:
         messages.info( request, "Ocena zajęć jest obecnie zamknięta." )
         return render_to_response( 'grade/main.html', { 'grade' : False }, context_instance = RequestContext( request ))
-        
-    grade = semester.is_grade_active    
+
+    grade = semester.is_grade_active
     if grade:
         messages.error( request, "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona" )
         return HttpResponseRedirect( reverse( 'grade-main' ))
@@ -528,7 +522,7 @@ def polls_list( request ):
         page, paginator  = make_paginator(request, objects=polls)
     else:
         page, paginator  = make_paginator(request, object=Poll)
-        
+
     data['polls'] = page
     data['polls_word'] = declination_poll(paginator.count, True)
     data['grade']      = grade
@@ -595,7 +589,7 @@ def groups_without_poll( request ):
 def poll_manage(request):
     grade =   Semester.objects.filter(is_grade_active=True).count() > 0
     data = {}
-    data['semesters']  = Semester.objects.all() 
+    data['semesters']  = Semester.objects.all()
     data['grade']      = grade
     return render_to_response ('grade/poll/manage.html', data, context_instance = RequestContext( request ))
 
@@ -604,16 +598,16 @@ def get_section_form(request):
     data          = {}
     grade         =    Semester.objects.filter(is_grade_active=True).count() > 0
     data['grade'] = grade
-    
+
     return render_to_response ('grade/poll/ajax_section_create.html', data, context_instance = RequestContext( request ))
 
 
-@employee_required    
+@employee_required
 def questionset_create(request):
     data          = {}
     grade         =   Semester.objects.filter(is_grade_active=True).count() > 0
     data['grade'] = grade
-    
+
     if grade:
         messages.error( request, "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona" )
         return HttpResponseRedirect( reverse( 'grade-main' ))
@@ -621,7 +615,7 @@ def questionset_create(request):
     if request.method == "POST":
         form_data = get_section_form_data( request.POST )
         errors    = validate_section_form( form_data )
-        
+
         if errors:
             error_msg = u"Nie można utworzyć sekcji:\n<ul>"
             if errors.has_key( 'title' ):
@@ -637,16 +631,16 @@ def questionset_create(request):
                         error_msg += u"<li>" + error + u"</li>"
                     error_msg += u"</ul></li>"
             error_msg += u"</ul>"
-            
+
             messages.error( request, SafeUnicode( error_msg ))
         else:
             if section_save( form_data ):
                 messages.success( request, "Sekcja dodana" )
             else:
                 messages.error( request, "Zapis sekcji nie powiódł się" )
-                
+
         return HttpResponseRedirect( '/grade/poll/managment/sections_list' )
-            
+
     return HttpResponseRedirect( '/grade/poll/managment/sections_list' )
 
 #### Poll answering ####
@@ -661,20 +655,20 @@ def tickets_enter(request):
 
     grade = Semester.objects.filter(is_grade_active=True).count()>0
     data = {}
-    
+
     if request.method == "POST":
         form = TicketsForm( request.POST, request.FILES )
-        
+
         if form.is_valid():
             if request.FILES:
                 keysfile = request.FILES[ 'ticketsfile' ]
                 if keysfile.size > 1048576:
                     from django.template.defaultfilters import filesizeformat
-                    messages.error( request, 
+                    messages.error( request,
                         u'Proszę przesłać plik o maksymalnym rozmiarze: \
-                        %s. Obecny rozmiar to: %s' % 
+                        %s. Obecny rozmiar to: %s' %
                         (filesizeformat(1048576), filesizeformat(keysfile.size)))
-                    data[ 'form' ]  = form 
+                    data[ 'form' ]  = form
                     data[ 'grade' ] = grade
                     return render_to_response( 'grade/poll/tickets_enter.html', data, context_instance = RequestContext( request ))
                 else:
@@ -685,13 +679,13 @@ def tickets_enter(request):
                 ids_and_tickets   = from_plaintext( tickets_plaintext )
             except:
                 ids_and_tickets   = []
-            
+
             if not ids_and_tickets:
                 messages.error( request, "Podano niepoprawne bilety." )
-                data[ 'form' ]  = form 
+                data[ 'form' ]  = form
                 data[ 'grade' ] = grade
                 return render_to_response( 'grade/poll/tickets_enter.html', data, context_instance = RequestContext( request ))
-                
+
             errors   = []
             polls    = []
             finished = []
@@ -717,7 +711,7 @@ def tickets_enter(request):
                     errors.append(( id, u"Podana ankieta nie istnieje" ))
 
             if errors:
-                msg = u"Wystąpił problem z biletami na następujące ankiety: <ul>"    
+                msg = u"Wystąpił problem z biletami na następujące ankiety: <ul>"
                 for pid, error in errors:
                     try:
                         poll = unicode( Poll.objects.get( pk = pid ))
@@ -729,12 +723,12 @@ def tickets_enter(request):
                 messages.error( request, msg)
             request.session[ "polls" ]             = map( lambda (s, l): ((s, create_slug( s )), l), group_polls_and_tickets_by_course( polls ))
             request.session[ "finished" ]          = map( lambda (s, l): ((s, create_slug( s )), l),group_polls_and_tickets_by_course( finished ))
-            
+
 
             return HttpResponseRedirect( '/grade/poll/polls/all' )
     else:
         form = TicketsForm()
-        
+
     data[ 'form' ]  = form
     data[ 'grade' ] = grade
     return render_to_response( 'grade/poll/tickets_enter.html', data, context_instance = RequestContext( request ))
@@ -742,7 +736,7 @@ def tickets_enter(request):
 def polls_for_user( request, slug ):
     if not 'polls' in request.session.keys():
         return HttpResponseRedirect( reverse('grade-poll-tickets-enter') )
-    
+
     data = prepare_data( request, slug )
     data[ 'grade' ] =   Semester.objects.filter(is_grade_active=True).count() > 0
     if data['polls']:
@@ -755,7 +749,7 @@ def polls_for_user( request, slug ):
         return HttpResponseRedirect( reverse('grade-poll-poll-answer', args=[s, id ]))
 
     return render_to_response( 'grade/poll/polls_for_user.html', data, context_instance = RequestContext( request ))
-    
+
 def poll_answer( request, slug, pid ):
     if request.user.is_authenticated():
         return render_to_response( 'grade/poll/user_is_authenticated.html', {}, context_instance = RequestContext( request ))
@@ -801,14 +795,14 @@ def poll_answer( request, slug, pid ):
 
     data[ 'next' ]      = get_next( poll_cands, finished_cands, int( pid ))
     data[ 'prev' ]      = get_prev( poll_cands, finished_cands, int( pid ))
-        
+
     if ticket and signed_ticket and check_signature( ticket, signed_ticket, public_key ):
         st   = SavedTicket.objects.get( ticket = unicode( ticket ), poll = poll )
-    
+
         if request.method == "POST" and not st.finished:
             form = PollForm( )
             form.setFields( poll, st, None, request.POST )
-            
+
             errors = {}
             for key in request.POST:
                 if key in form.fields:
@@ -824,7 +818,7 @@ def poll_answer( request, slug, pid ):
                         """
                     except ValidationError:
                         errors[ key ] = ""
-            
+
             if errors:
                 data[ 'form_errors' ] = errors
                 messages.error(request, u"Nie udało się zapisać ankiety: " + poll.title + u"; błąd formularza")
@@ -834,7 +828,7 @@ def poll_answer( request, slug, pid ):
                 keys.remove( u'finish' )
                 keys.sort()
                 section_data = []
-                
+
                 if keys:
                     act     = [ keys[0] ]
                     curr_id = keys[0].split( '_' )[1].split( '-' )[1]
@@ -846,15 +840,15 @@ def poll_answer( request, slug, pid ):
                             section_data.append(( curr_id, act ))
                             curr_id = sect_id
                             act = [ key ]
-                    if act: 
+                    if act:
                         section_data.append(( curr_id, act ))
-                
+
                 for section_id, section_answers in section_data:
                     section = Section.objects.get( pk = section_id )
                     delete  = False
                     if section_answers[ 0 ].endswith( 'leading' ):
                         question_id = section_answers[ 0 ].split( '_' )[2].split( '-' )[ 1 ]
-                        question = SingleChoiceQuestion.objects.get( 
+                        question = SingleChoiceQuestion.objects.get(
                                         pk = question_id )
                         try:
                             ans = SingleChoiceQuestionAnswer.objects.get(
@@ -878,27 +872,27 @@ def poll_answer( request, slug, pid ):
                             ans.delete()
                             delete = True
                         section_answers = section_answers[ 1: ]
-                        
+
                     for answer in section_answers:
                         question_id   = answer.split( '_' )[2].split( '-' )[ 1 ]
                         question_type = answer.split( '_' )[2].split( '-' )[ 2 ]
                         if not answer.endswith( 'other' ):
                             if question_type == 'single':
-                                question = SingleChoiceQuestion.objects.get( 
+                                question = SingleChoiceQuestion.objects.get(
                                                 pk = question_id )
                                 try:
-                                    ans = SingleChoiceQuestionAnswer.objects.get( 
+                                    ans = SingleChoiceQuestionAnswer.objects.get(
                                                 question     = question,
-                                                saved_ticket = st ) 
+                                                saved_ticket = st )
                                 except ObjectDoesNotExist:
                                     ans = SingleChoiceQuestionAnswer(
                                             section      = section,
                                             question     = question,
                                             saved_ticket = st )
                                     ans.save()
-                                
+
                                 value = request.POST.get( answer, None )
-                                if delete: 
+                                if delete:
                                     ans.delete()
                                 elif value:
                                     ans.option = Option.objects.get( pk = value )
@@ -906,21 +900,21 @@ def poll_answer( request, slug, pid ):
                                 else:
                                     ans.delete()
                             if question_type == 'open':
-                                question = OpenQuestion.objects.get( 
+                                question = OpenQuestion.objects.get(
                                                 pk = question_id )
                                 try:
-                                    ans = OpenQuestionAnswer.objects.get( 
+                                    ans = OpenQuestionAnswer.objects.get(
                                                 question     = question,
-                                                saved_ticket = st ) 
+                                                saved_ticket = st )
                                 except ObjectDoesNotExist:
                                     ans = OpenQuestionAnswer(
                                             section      = section,
                                             question     = question,
                                             saved_ticket = st )
                                     ans.save()
-                                
+
                                 value = request.POST.get( answer, None )
-                                if delete: 
+                                if delete:
                                     ans.delete()
                                 elif value:
                                     ans.content = value
@@ -928,21 +922,21 @@ def poll_answer( request, slug, pid ):
                                 else:
                                     ans.delete()
                             if question_type == 'multi':
-                                question = MultipleChoiceQuestion.objects.get( 
+                                question = MultipleChoiceQuestion.objects.get(
                                                 pk = question_id )
                                 try:
-                                    ans = MultipleChoiceQuestionAnswer.objects.get( 
+                                    ans = MultipleChoiceQuestionAnswer.objects.get(
                                                 question     = question,
-                                                saved_ticket = st ) 
+                                                saved_ticket = st )
                                 except ObjectDoesNotExist:
                                     ans = MultipleChoiceQuestionAnswer(
                                             section      = section,
                                             question     = question,
                                             saved_ticket = st )
                                     ans.save()
-                                
+
                                 value = request.POST.getlist( answer )
-                                if delete: 
+                                if delete:
                                     ans.delete()
                                 elif value:
                                     if u'-1' in value:
@@ -961,13 +955,13 @@ def poll_answer( request, slug, pid ):
                     messages.success(request, u"Ankieta: " + poll.title + u" zakończona")
                     finit = request.session.get( 'finished', default = [])
                     polls = request.session.get( 'polls',    default = [])
-                    
+
                     slug_polls = filter( lambda ((x, s), ls): slug == s, polls)
-                    slug_finit = filter( lambda ((x, s), ls): slug == s, finit) 
-                    
+                    slug_finit = filter( lambda ((x, s), ls): slug == s, finit)
+
                     name = None
-                    
-                    for ((n, s), ls) in slug_polls: 
+
+                    for ((n, s), ls) in slug_polls:
                         pd = filter( lambda x: x == (int(pid), ticket, signed_ticket), ls )
                         if pd:
                             polls.remove(((n, s), ls ))
@@ -975,8 +969,8 @@ def poll_answer( request, slug, pid ):
                                 ls.remove( poll_data )
                             if ls: polls.append(((n, s), ls))
                             name = n
-                            break 
-                            
+                            break
+
                     if slug_finit:
                         for ((n, s), ls) in slug_finit:
                             if n == name:
@@ -986,18 +980,18 @@ def poll_answer( request, slug, pid ):
                                 break
                     else:
                         finit.append(((name, slug), [(int(pid), ticket, signed_ticket)]))
-                    
+
                     def slug_cmp((n1,slug1), (n2,slug2)):
                         if slug1 == "common": return -1
                         if slug2 == "common": return 1
                         return cmp((n1, slug1), (n2,slug2))
-                    
+
                     polls.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
                     finit.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
-                    
+
                     request.session[ 'finished' ] = finit
                     request.session[ 'polls' ]    = polls
-                    
+
                     st.finished = True
                     st.save()
                 else:
@@ -1008,7 +1002,7 @@ def poll_answer( request, slug, pid ):
 
         data[ 'form' ]   = form
         data[ 'pid']     = int(pid)
-        
+
         if request.method == "POST" and (not ('form_errors' in data and data['form_errors']) or st.finished):
             if request.POST.get( 'Next', default=None ):
                 return HttpResponseRedirect( '/grade/poll/poll_answer/' + str( data['next'][3]) + '/' + str( data['next'][0]))
@@ -1017,17 +1011,17 @@ def poll_answer( request, slug, pid ):
             if request.POST.get( 'Save', default=None ):
                 return HttpResponseRedirect( '/grade/poll/poll_answer/' + slug + '/' + str( pid ))
     else:
-        data = { 'errors': [ u"Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title() ], 
+        data = { 'errors': [ u"Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title() ],
                  'slug' : slug,
                  'link_name' : poll.to_url_title() }
-    
+
     data[ 'grade' ] =   Semester.objects.filter(is_grade_active=True).count() > 0
-    
+
     return render_to_response( 'grade/poll/poll_answer.html', data, context_instance = RequestContext( request ))
-   
+
 def poll_end_grading( request ):
     request.session.clear()
-    
+
     return HttpResponseRedirect( reverse( 'grade-main' ))
 
 #### Poll results ####
@@ -1048,7 +1042,7 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
     data['grade']    = semester.is_grade_active
     data['semester'] = semester
     data['semesters'] = Semester.objects.all()
-    
+
     if mode == 'S':
         data['mode']  = 'course'
     elif mode == 'T':
@@ -1056,24 +1050,24 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
 
     if semester.is_grade_active:
         messages.info( request, "Ocena zajęć jest otwarta; wyniki nie są kompletne." )
-    
+
     if not poll_id:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ), 
+        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
                                 Poll.get_polls_for_semester(semester=semester))
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
-    
+
     try:
         data['polls_by_course'] = request.session['polls_by_course']
         data['polls_by_teacher'] = request.session['polls_by_teacher']
     except:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ), 
+        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
                                 Poll.get_polls_for_semester())
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
         data['polls_by_course']            = request.session['polls_by_course']
         data['polls_by_teacher']            = request.session['polls_by_teacher']
-        
+
     if poll_id:
         data['pid']       = int(poll_id)
         data['link_mode'] = mode
@@ -1115,7 +1109,7 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                             perc = 0
                         ans_data.append((u"Brak odpowiedzi", sts_fin - len( q_data), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
-                        
+
                     elif isinstance( question, MultipleChoiceQuestion ):
                         mode               = u'multi'
                         q_data             = map( lambda x: (list( x.options.all()) , x.other), question_answers )
@@ -1145,15 +1139,15 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                             perc = 0
                         ans_data.append((u"Brak odpowiedzi", sts_fin - len( question_answers), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
-                        
+
                     elif isinstance( question, OpenQuestion ):
                         mode   = u'open'
                         s_ans.append(( mode, question.content, question_answers, len( question_answers) ))
-                        
+
                 answers.append(( section.title, s_ans ))
 
-            
-            if semester.is_grade_active: 
+
+            if semester.is_grade_active:
                 data['completness'] = SafeUnicode( u"Liczba studentów, którzy zakończyli wypełniać ankietę: %d<br/>Liczba studentów którzy nie zakończyli wypełniać ankiety: %d" % ( sts_fin, sts_not_fin ))
             else:
                 data['completness'] = SafeUnicode( u"Liczba studentów, którzy wypełnili ankietę: %d" % ( sts_fin ))
@@ -1164,30 +1158,30 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                 data[ 'poll_teacher' ] = poll.group.get_teacher_full_name()
             except:
                 data[ 'poll_course' ] = "Ankieta ogólna"
-                
+
             try:
                 user = poll.group.teacher
             except:
                 user = None
-                
+
             if user:
                 if user == request.user:
                     data['show_share_toggle'] = True
             else:
                 data['show_share_toggle'] = request.user.is_superuser
-            
+
             data['share_state'] = poll.share_result
             data['results']     = answers
         else:
             messages.error( request, "Nie masz uprawnień do oglądania wyników tej ankiety." )
- 
+
     return render_to_response ('grade/poll/poll_total_results.html', data, context_instance = RequestContext ( request ))
 
 @login_required
 def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None ):
     data = {}
     data['grade'] =   Semester.objects.filter(is_grade_active=True).count() > 0
-    
+
     if mode == 'S':
         data['mode']  = 'course'
     elif mode == 'T':
@@ -1206,18 +1200,18 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
 
     if semester.is_grade_active:
         messages.info( request, "Ocena zajęć jest otwarta; wyniki nie są kompletne." )
-       
+
     try:
         data['polls_by_course'] = request.session['polls_by_course']
         data['polls_by_teacher'] = request.session['polls_by_teacher']
     except:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ), 
+        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
                                 Poll.get_polls_for_semester())
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
         data['polls_by_course']            = request.session['polls_by_course']
         data['polls_by_teacher']            = request.session['polls_by_teacher']
-        
+
     data['pid']       = poll_id
     data['link_mode'] = mode
     try:
@@ -1227,7 +1221,7 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
         return render_to_response ('grade/poll/poll_total_results.html', data, context_instance = RequestContext ( request ))
 
     if poll.is_user_entitled_to_view_result( request.user ):
-        
+
         if not st_id:
             sts = SavedTicket.objects.filter( poll = poll, finished = True )
             data['page'] = 1
@@ -1240,7 +1234,7 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
                 sts = SavedTicket.objects.filter( poll = poll, finished = True )
                 data['sts']  = sts
                 request.session[ 'sts' ] = data[ 'sts' ]
-                
+
             sts  = data['sts']
             data['page'] = 1
             err = True
@@ -1254,11 +1248,11 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
         sts = list( sts )
         if sts:
             st   = sts[ data['page'] - 1 ]
-            
+
             form = PollForm()
             form.setFields( poll, st )
             data[ 'form' ] = form
-            
+
             data['first'] = sts[ 0 ].id
             data['last']  = sts[ -1 ].id
             data[ 'connected' ] = []
@@ -1266,7 +1260,7 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
                 cform = PollForm()
                 cform.setFields( cst.poll, cst )
                 data['connected'].append( cform )
-            
+
             pages = []
             for i, t in enumerate( data['sts']): pages.append(( i+1, t.id ))
             beg = data[ 'page' ] - 10
@@ -1275,10 +1269,10 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
             data['pages'] = pages[beg-1:end-1]
         else:
             messages.error( request, "Brak odpowiedzi na tą ankietę." )
-        
+
     else:
         messages.error( request, "Nie masz uprawnień do oglądania wyników tej ankiety." )
-            
+
     return render_to_response ('grade/poll/poll_detailed_results.html', data, context_instance = RequestContext ( request ))
 
 @login_required
@@ -1291,30 +1285,30 @@ def save_csv(request, mode, poll_id):
     csv_title = generate_csv_title(poll)
 
     # For each section: section title and contents of all questions
-    poll_answers = poll.all_answers()    
-    sections = []    
-    for section, section_answers in poll_answers:            
-        sections.append( map (lambda q: u'[' + unicode(section.title) + u']' + unicode(q.content), section.all_questions()) )         
-                        
+    poll_answers = poll.all_answers()
+    sections = []
+    for section, section_answers in poll_answers:
+        sections.append( map (lambda q: u'[' + unicode(section.title) + u']' + unicode(q.content), section.all_questions()) )
+
     # For each ticket (that is, response to the poll): answers to all questions
     poll_answers = poll.all_answers_by_tickets()
     answers = []
     for ticket, sections_list in poll_answers:
-        answer = []  
-        for section, section_answers in sections_list:        
-            # Actual answers to these questions                       
+        answer = []
+        for section, section_answers in sections_list:
+            # Actual answers to these questions
             for question, question_answer in section_answers:
                 if not question_answer:
                     answer.append(u'')
-                else:                    
+                else:
                     answer.append( unicode(question_answer[0]) )
-        answers.append( answer )       
-    response = HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename='+ smart_str(csv_title)        
+        answers.append( answer )
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename='+ smart_str(csv_title)
     csv_content = csv_prepare(response, sections, answers)
     return response
     #return HttpResponseRedirect(reverse( 'grade-poll-poll-results', args=[mode, poll_id] ))
- 
+
 @login_required
 def share_results_toggle( request, mode, poll_id ):
     poll = Poll.objects.get( pk = poll_id )

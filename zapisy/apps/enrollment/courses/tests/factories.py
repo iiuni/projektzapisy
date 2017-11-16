@@ -26,6 +26,7 @@ class SemesterFactory(DjangoModelFactory):
     year = \
         factory.LazyAttribute(lambda x: ("%s/%s" % (x.whole_year,
                                                     x.whole_year % 100 + 1)))
+    is_grade_active = False
     if type == Semester.TYPE_WINTER:
         records_opening = \
             factory.LazyAttribute(lambda x: datetime(x.whole_year, 9, 20))
@@ -65,6 +66,7 @@ class CourseEntityFactory(DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'course_entity_{0}'.format(n))
     ects = 5
+    suggested_for_first_year = False
 
 
 class CourseFactory(DjangoModelFactory):
@@ -79,7 +81,6 @@ class CourseFactory(DjangoModelFactory):
     semester = factory.SubFactory(SemesterFactory)
     type = 1
     name = factory.Sequence(lambda n: 'course_{0}'.format(n))
-
 
 class GroupFactory(DjangoModelFactory):
     class Meta:
@@ -96,22 +97,6 @@ class ChangedDayForFridayFactory(DjangoModelFactory):
         model = ChangedDay
 
     weekday = common.FRIDAY
-
-
-# to be removed, please use SemesterFactory
-class SummerSemesterFactory(DjangoModelFactory):
-    class Meta:
-        model = Semester
-
-    visible = True
-    type = Semester.TYPE_SUMMER
-    semester_beginning = date(datetime.now().year + 1, 2, 15)
-    semester_ending = date(datetime.now().year + 1, 6, 30)
-    lectures_beginning = semester_beginning
-    lectures_ending = semester_ending
-    records_ects_limit_abolition = datetime(datetime.now().year + 1, 2, 10)
-    year = str(semester_beginning.year - 1) + "/" + str(semester_beginning.year % 100)
-
 
 class ClassroomFactory(DjangoModelFactory):
     class Meta:

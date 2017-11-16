@@ -4,7 +4,7 @@ from django.db import models
 class SavedTicket( models.Model ):
     ticket   = models.TextField( verbose_name = 'bilet' )
     poll     = models.ForeignKey( 'Poll', verbose_name = 'ankieta' )
-    finished = models.BooleanField( verbose_name = 'czy zakończona' )
+    finished = models.BooleanField( verbose_name = 'czy zakończona' , default=False)
     
     class Meta:
         verbose_name_plural = 'zapisane bilety'

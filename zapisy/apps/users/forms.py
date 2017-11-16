@@ -16,7 +16,7 @@ class BankAccountChangeForm(forms.ModelForm):
 
 class ConsultationsChangeForm(forms.ModelForm):
     class Meta:
-        fields = ['room','homepage','consultations']
+        fields = ['title', 'room','homepage','consultations']
         model = Employee
 
 class EmailToAllStudentsForm(forms.Form):

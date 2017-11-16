@@ -125,13 +125,6 @@ msgstr ""
 msgid "Ściągnij listę studentów z kolejki jako"
 msgstr ""
 
-#: apps/users/templates/users/import_zamawiani.html:5
-#: templates/enrollment/courses/admin/import_schedule.html:5
-#: templates/enrollment/courses/admin/import_schedule_step2.html:5
-#: templates/enrollment/courses/admin/import_semester.html:5
-msgid "Home"
-msgstr ""
-
 #: apps/users/templates/users/my_profile.html:180
 msgid "Ustawienie preferencji językowych"
 msgstr ""

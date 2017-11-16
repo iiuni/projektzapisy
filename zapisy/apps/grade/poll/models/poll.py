@@ -11,8 +11,7 @@ from apps.enrollment.courses.models.group import Group, \
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import Course
 
-from apps.enrollment.records.models  import Record, \
-                                              STATUS_ENROLLED
+from apps.enrollment.records.models  import Record
 from section                           import SectionOrdering
 from saved_ticket                       import SavedTicket
 from origin                          import Origin
@@ -64,7 +63,7 @@ class Poll( models.Model ):
         if self.group:
             rec = Record.objects.filter( student = student, 
                                          group   = self.group,
-                                         status  = STATUS_ENROLLED )
+                                         status  = Record.STATUS_ENROLLED )
             try:                
                 rec[ 0 ]
             except:
@@ -216,7 +215,7 @@ class Poll( models.Model ):
     @staticmethod
     def get_all_polls_for_student( student ):
         groups = Record.objects.filter( student = student,
-                                                 status  = STATUS_ENROLLED ).select_related('group')\
+                                                 status  = Record.STATUS_ENROLLED ).select_related('group')\
                                 .values_list('group__id', flat=True)
 
         return filter( lambda x: not x.group or x.group.id in groups, Poll.get_current_polls(student=student) )

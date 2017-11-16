@@ -1,11 +1,22 @@
-# -*- coding: utf-8 -*-
+# # -*- coding: utf-8 -*-
 
-"""
-    News admin
-"""
+# """
+#     News admin
+# """
 
 from apps.news.models import News
 from django.contrib import admin
+from django import forms
+
+
+class NewsForm(forms.ModelForm):
+
+    class Meta:
+        model = News
+        widgets = { 
+            'body': forms.Textarea(attrs={'class': 'tinymce'})
+        }
+        fields = '__all__' 
 
 class NewsAdmin(admin.ModelAdmin):
     """
@@ -14,9 +25,9 @@ class NewsAdmin(admin.ModelAdmin):
     fields = ('title', 'body', 'author', 'category')
     list_display = ('title', 'date')
     list_filter  = ['date']
-
+    form = NewsForm
     class Media:
-        js = ('/site_media/js/tiny_mce/tiny_mce.js',
+        js = ('/site_media/js/tinymce/tinymce.min.js',
               '/site_media/js/textareas.js',)
 
 admin.site.register(News, NewsAdmin)

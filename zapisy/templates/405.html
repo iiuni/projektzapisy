@@ -1,15 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl" lang="pl">
-<head>
-	<title>Fereol &ndash; błąd 405</title>
+{% extends "base.html" %}
+{% load settings_value %}
 
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="shortcut icon" href="/site_media/favicon.ico" />
-</head>
-<body>
+{% block main-subtitle %}Błąd 405{% endblock %}
+
+{% block content %}
 	<h1>Błąd 405</h1>
-	<p>Zły rodzaj zapytania (POST/GET).</p>
-	<!-- TODO: rozwinąć -->
+	<p>Nieprawidłowe zapytanie. Prosimy, 
+	<a href="{% settings_value "ISSUE_TRACKER_NEW_ISSUE_URL" %}">zgłoś ten błąd 
+	na trackerze Zapisów.</a></p>
+	</p>
 	<p><a href="/">Powrót do strony głównej</a>.</p>
-</body>
-</html>
+{% endblock %}

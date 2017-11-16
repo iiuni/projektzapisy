@@ -5,13 +5,22 @@ from django.db.models.query import EmptyQuerySet
 from django.forms import HiddenInput
 from apps.enrollment.courses.models import Course, Semester
 from apps.schedule.models import Event, Term, EventModerationMessage, EventMessage
+from apps.users.models import BaseUser
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from django.forms.models import inlineformset_factory
+
 
 from datetime import timedelta, datetime
 
 
 class TermForm(forms.ModelForm):
+    ignore_conflicts = forms.BooleanField(required=False, label="", widget=forms.HiddenInput())
+    
+    def clean(self):
+        cleaned_data = super(TermForm, self).clean()
+        self.instance.ignore_conflicts = cleaned_data.get('ignore_conflicts')
+        return cleaned_data
 
     class Meta:
         model = Term
@@ -26,7 +35,6 @@ class TermForm(forms.ModelForm):
         }
 
 TermFormSet = inlineformset_factory(Event, Term, extra=0, form=TermForm)
-
 class EventForm(forms.ModelForm):
 
     class Meta:
@@ -42,17 +50,15 @@ class EventForm(forms.ModelForm):
 
 
         super(EventForm, self).__init__(data, **kwargs)
-
         if not self.instance.pk:
             self.instance.author = user
-
-        if user.get_profile().is_employee:
+        if BaseUser.is_employee(user):
             self.fields['type'].choices = Event.TYPES_FOR_TEACHER
         else:
             self.fields['type'].choices = Event.TYPES_FOR_STUDENT
 
-        if not user.get_profile().is_employee:
-            self.fields['course'].queryset = EmptyQuerySet()
+        if not BaseUser.is_employee(user):
+            self.fields['course'].queryset = Course.objects.none()
         else:
             semester = Semester.get_current_semester()
 
@@ -89,4 +95,14 @@ class DecisionForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ('status',)
+
+
+class ReportForm(forms.Form):
+    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
+
+class ConflictsForm(forms.Form):
+    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
 

@@ -37,5 +37,51 @@
 
 
 {% block sidebar %}
-    {% include "common/coursesitebar.html" with courses=proposals semester=semester %}
+<div id="main-sidebar">
+	<div>
+			<div class="semester">
+				<h3>Przedmioty w ofercie</h3>
+                {%  if request.user.employee %}
+                    <a href="{% url 'proposal-form' %}" class="btn btn-success">Dodaj nową</a>
+                {% endif %}
+				<input type="hidden" name="semester-id" value="{{ semester.id }}" />
+				<script type="application/json" id="courses_list_json">{{ proposals_json|safe }}</script>
+				<ul id="proposal-list" class="proposal-list">
+                       {% for course in proposals %}
+                        <li id="listItem-proposal-{{ course.id }}" class="
+                            {% if course.status == 0 %}work
+                            {% elif course.status == 1 %}
+                                offer
+                            {% elif course.status == 2 %}
+                                vote
+                            {% elif course.status == 4 %}
+                                nooffer
+                            {% endif %}">
+                            <a href="{% url 'offer-page' course.slug %}">{{ course.name }}</a>
+                        </li>
+                        {% endfor %}
+				</ul>
+
+                <p class="main-side-message hidden" id="noResultsMessage">
+                    Do podanego filtra nie pasuje żaden przedmiot.
+                </p>
+                   <ul id="proposal-legend">
+                       <li>
+                           <div class="legend-box vote"></div> - przedmiot poddany pod głosowanie
+                       </li>
+                       <li>
+                           <div class="legend-box offer"></div> - przedmiot w ofercie
+                       </li>
+											 {% if user.is_authenticated %}
+                       <li>
+                           <div class="legend-box nooffer"></div> - przedmiot wycofany z oferty
+                       </li>
+											 {% endif %}
+                        <li>
+                            <div class="legend-box work"></div> - przedmiot w wersji roboczej
+                        </li>
+                   </ul>
+			</div>
+	</div>
+</div>
 {% endblock %}

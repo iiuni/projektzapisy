@@ -1,150 +1,172 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from django.conf import settings
 
-class Migration(SchemaMigration):
-    
-    def forwards(self, orm):
-        
-        # Adding model 'Employee'
-        db.create_table('users_employee', (
-            ('consultations', self.gf('django.db.models.fields.TextField')()),
-            ('room', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
-            ('receive_mass_mail_offer', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('receive_mass_mail_enrollment', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('homepage', self.gf('django.db.models.fields.URLField')(default='', max_length=200)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('receive_mass_mail_grade', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-        ))
-        db.send_create_signal('users', ['Employee'])
 
-        # Adding model 'Student'
-        db.create_table('users_student', (
-            ('ects', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('records_opening_delay_minutes', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('semestr', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('program', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['users.Program'], null=True)),
-            ('receive_mass_mail_offer', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('matricula', self.gf('django.db.models.fields.CharField')(default='', unique=True, max_length=20)),
-            ('receive_mass_mail_enrollment', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('block', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('receive_mass_mail_grade', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-        ))
-        db.send_create_signal('users', ['Student'])
+class Migration(migrations.Migration):
 
-        # Adding model 'Program'
-        db.create_table('users_program', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=50)),
-        ))
-        db.send_create_signal('users', ['Program'])
+    dependencies = [
+        ('auth', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
 
-        # Adding model 'StudiaZamawiane'
-        db.create_table('users_studiazamawiane', (
-            ('points', self.gf('django.db.models.fields.FloatField')()),
-            ('bank_account', self.gf('django.db.models.fields.CharField')(max_length=40, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('student', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['users.Student'], unique=True)),
-            ('comments', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('users', ['StudiaZamawiane'])
-    
-    
-    def backwards(self, orm):
-        
-        # Deleting model 'Employee'
-        db.delete_table('users_employee')
-
-        # Deleting model 'Student'
-        db.delete_table('users_student')
-
-        # Deleting model 'Program'
-        db.delete_table('users_program')
-
-        # Deleting model 'StudiaZamawiane'
-        db.delete_table('users_studiazamawiane')
-    
-    
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'users.employee': {
-            'Meta': {'object_name': 'Employee'},
-            'consultations': ('django.db.models.fields.TextField', [], {}),
-            'homepage': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '200'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'receive_mass_mail_enrollment': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_grade': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_offer': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'room': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        },
-        'users.program': {
-            'Meta': {'object_name': 'Program'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50'})
-        },
-        'users.student': {
-            'Meta': {'object_name': 'Student'},
-            'block': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'ects': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'matricula': ('django.db.models.fields.CharField', [], {'default': "''", 'unique': 'True', 'max_length': '20'}),
-            'program': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['users.Program']", 'null': 'True'}),
-            'receive_mass_mail_enrollment': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_grade': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_offer': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'records_opening_delay_minutes': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'semestr': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        },
-        'users.studiazamawiane': {
-            'Meta': {'object_name': 'StudiaZamawiane'},
-            'bank_account': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
-            'comments': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'points': ('django.db.models.fields.FloatField', [], {}),
-            'student': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['users.Student']", 'unique': 'True'})
-        }
-    }
-    
-    complete_apps = ['users']
+    operations = [
+        migrations.CreateModel(
+            name='Employee',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('receive_mass_mail_enrollment', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia Zapis\xc3\xb3w')),
+                ('receive_mass_mail_offer', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia OD')),
+                ('receive_mass_mail_grade', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia Oceny Zaj\xc4\x99\xc4\x87')),
+                ('last_news_view', models.DateTimeField(default=datetime.datetime(2017, 5, 29, 16, 17, 10, 129201))),
+                ('consultations', models.TextField(null=True, verbose_name=b'konsultacje', blank=True)),
+                ('homepage', models.URLField(default=b'', null=True, verbose_name=b'strona domowa', blank=True)),
+                ('room', models.CharField(max_length=20, null=True, verbose_name=b'pok\xc3\xb3j', blank=True)),
+                ('status', models.PositiveIntegerField(default=0, verbose_name=b'Status', choices=[(0, b'aktywny'), (1, b'nieaktywny')])),
+                ('title', models.CharField(max_length=20, null=True, verbose_name=b'tytu\xc5\x82 naukowy', blank=True)),
+            ],
+            options={
+                'ordering': ['user__last_name', 'user__first_name'],
+                'verbose_name': 'pracownik',
+                'verbose_name_plural': 'Pracownicy',
+                'permissions': (('mailto_all_students', 'Mo\u017ce wysy\u0142a\u0107 maile do wszystkich student\xf3w'),),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ExtendedUser',
+            fields=[
+                ('user_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('is_student', models.BooleanField(default=False, verbose_name=b'czy student?')),
+                ('is_employee', models.BooleanField(default=False, verbose_name=b'czy pracownik?')),
+                ('is_zamawiany', models.BooleanField(default=False, verbose_name=b'czy zamawiany?')),
+            ],
+            options={
+                'verbose_name': 'u\u017cutkownik',
+                'verbose_name_plural': 'u\u017cytkownicy',
+            },
+            bases=('auth.user',),
+        ),
+        migrations.CreateModel(
+            name='Program',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=50, verbose_name=b'Program')),
+            ],
+            options={
+                'verbose_name': 'Program studi\xf3w',
+                'verbose_name_plural': 'Programy studi\xf3w',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Student',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('receive_mass_mail_enrollment', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia Zapis\xc3\xb3w')),
+                ('receive_mass_mail_offer', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia OD')),
+                ('receive_mass_mail_grade', models.BooleanField(default=True, verbose_name=b'otrzymuje mailem og\xc5\x82oszenia Oceny Zaj\xc4\x99\xc4\x87')),
+                ('last_news_view', models.DateTimeField(default=datetime.datetime(2017, 5, 29, 16, 17, 10, 129201))),
+                ('matricula', models.CharField(default=b'', unique=True, max_length=20, verbose_name=b'Numer indeksu')),
+                ('ects', models.PositiveIntegerField(default=0, verbose_name=b'punkty ECTS')),
+                ('records_opening_bonus_minutes', models.PositiveIntegerField(default=0, verbose_name=b'Przyspieszenie otwarcia zapis\xc3\xb3w (minuty)')),
+                ('block', models.BooleanField(default=False, verbose_name=b'blokada planu')),
+                ('semestr', models.PositiveIntegerField(default=0, verbose_name=b'Semestr')),
+                ('status', models.PositiveIntegerField(default=0, help_text=b'0 - aktywny student, 1 - skre\xc5\x9blony student', verbose_name=b'Status')),
+                ('t0', models.DateTimeField(null=True, blank=True)),
+                ('isim', models.BooleanField(default=False)),
+                ('ects_in_semester', models.SmallIntegerField(default=0)),
+                ('dyskretna_l', models.BooleanField(default=False)),
+                ('numeryczna_l', models.BooleanField(default=False)),
+                ('algorytmy_l', models.BooleanField(default=False)),
+                ('programowanie_l', models.BooleanField(default=False)),
+            ],
+            options={
+                'ordering': ['user__last_name', 'user__first_name'],
+                'verbose_name': 'student',
+                'verbose_name_plural': 'studenci',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='OpeningTimesView',
+            fields=[
+                ('student', models.ForeignKey(related_name='opening_times', primary_key=True, serialize=False, to='users.Student')),
+                ('opening_time', models.DateTimeField()),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StudiaZamawiane',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('points', models.FloatField(null=True, verbose_name=b'Punkty', blank=True)),
+                ('comments', models.TextField(null=True, verbose_name=b'Uwagi', blank=True)),
+                ('bank_account', models.CharField(max_length=40, null=True, verbose_name=b'Numer konta bankowego', blank=True)),
+                ('student', models.OneToOneField(related_name='zamawiane', verbose_name=b'Student', to='users.Student')),
+            ],
+            options={
+                'verbose_name': 'Studia zamawiane2009',
+                'verbose_name_plural': 'Studia zamawiane2009',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StudiaZamawiane2012',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('points', models.FloatField(null=True, verbose_name=b'Punkty', blank=True)),
+                ('comments', models.TextField(null=True, verbose_name=b'Uwagi', blank=True)),
+                ('bank_account', models.CharField(max_length=40, null=True, verbose_name=b'Numer konta bankowego', blank=True)),
+                ('student', models.OneToOneField(related_name='zamawiane2012', verbose_name=b'Student', to='users.Student')),
+            ],
+            options={
+                'verbose_name': 'Studia zamawiane2012',
+                'verbose_name_plural': 'Studia zamawiane2012',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StudiaZamawianeMaileOpiekunow',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('email', models.CharField(max_length=100)),
+            ],
+            options={
+                'verbose_name': 'Studia zamawiane - opiekunowie',
+                'verbose_name_plural': 'Studia zamawiane - opiekunowie',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserProfile',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('is_student', models.BooleanField(default=False, verbose_name=b'czy student?')),
+                ('is_employee', models.BooleanField(default=False, verbose_name=b'czy pracownik?')),
+                ('is_zamawiany', models.BooleanField(default=False, verbose_name=b'czy zamawiany?')),
+                ('preferred_language', models.CharField(default=b'pl', max_length=5, verbose_name=b'preferowany j\xc4\x99zyk Systemu Zapis\xc3\xb3w', choices=[(b'pl', b'Polish'), (b'en', b'English')])),
+                ('user', models.OneToOneField(related_name='_profile_cache', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='student',
+            name='program',
+            field=models.ForeignKey(default=None, verbose_name=b'Program Studi\xc3\xb3w', to='users.Program', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='student',
+            name='user',
+            field=models.OneToOneField(related_name='student', verbose_name=b'U\xc5\xbcytkownik', to=settings.AUTH_USER_MODEL),
+            preserve_default=True,
+        ),
+    ]

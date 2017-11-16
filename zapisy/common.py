@@ -8,10 +8,10 @@ FRIDAY = '5'
 SATURDAY = '6'
 SUNDAY = '7'
 
-DAYS_OF_WEEK = [(MONDAY, u'poniedzialek'),
+DAYS_OF_WEEK = [(MONDAY, u'poniedziałek'),
                 (TUESDAY, u'wtorek'),
-                (WEDNESDAY, u'sroda'),
+                (WEDNESDAY, u'środa'),
                 (THURSDAY, u'czwartek'),
-                (FRIDAY, u'piatek'),
+                (FRIDAY, u'piątek'),
                 (SATURDAY, u'sobota'),
                 (SUNDAY, u'niedziela')]

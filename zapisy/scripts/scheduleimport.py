@@ -167,7 +167,6 @@ TECH = { "KRYSTIAN BAClAWSKI": 96,
 
 import sys
 import os
-from django.core.management import setup_environ
 from datetime import time
 
 

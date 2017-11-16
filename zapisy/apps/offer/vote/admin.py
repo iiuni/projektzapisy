@@ -18,7 +18,7 @@ class SystemStateAdminForm( ModelForm ):
     """
     class Meta:
         model = SystemState
-
+        fields = '__all__' 
         
     def clean_max_points(self):
         """

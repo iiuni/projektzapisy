@@ -337,7 +337,7 @@ ListFilter.CustomFilters.createSimpleComboFilter = function(name, formElementSel
 
 		var onChange = function()
 		{
-			thisObj.controlValue = thisObj.formElement.attr('value');
+			thisObj.controlValue = thisObj.formElement.val();
 		};
 		this.formElement.change(onChange);
 		onChange();
@@ -356,7 +356,7 @@ ListFilter.CustomFilters.createSimpleComboFilter = function(name, formElementSel
 	 */
 	filter.validateValue = function(rawValue)
 	{
-		if (filter.valueList.indexOf(rawValue + '') >= 0)
+	//	if (filter.valueList.indexOf(rawValue + '') >= 0)
 			return rawValue;
 		return null;
 	};
@@ -373,7 +373,7 @@ ListFilter.CustomFilters.createSimpleComboFilter = function(name, formElementSel
 	filter.saveToForm = function()
 	{
 		this.controlValue = this.value;
-		this.formElement.attr('value', this.value);
+		this.formElement.val(this.value);
 	};
 
 	filter.loadFromForm = function()
@@ -381,8 +381,9 @@ ListFilter.CustomFilters.createSimpleComboFilter = function(name, formElementSel
 		var newValue = this.controlValue;//this.formElement.attr('value');
 		if (this.value == newValue)
 			return false;
-		if (!this.validateValue(newValue))
-			throw new Error('Wartość odczytana z formularza nie przechodzi walidacji');
+        
+// 		if (this.validateValue(newValue) === null)
+// 			throw new Error('Wartość odczytana z formularza nie przechodzi walidacji');
 
 		this.value = newValue;
 		return true;

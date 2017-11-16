@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import re
 import StringIO
 import csv
@@ -33,13 +33,13 @@ def check_signature( ticket, signed_ticket, public_key ):
 
 def group_polls_and_tickets_by_course( poll_and_ticket_list ):
     if not poll_and_ticket_list: return []
-    
+
     poll_and_ticket_list.sort( lambda (p1, t1, st1), (p2, t2, st2): poll_cmp( p1, p2 ))
-    
+
     res       = []
     act_polls = []
     act_group = poll_and_ticket_list[ 0 ][ 0 ].group
-    
+
     for ( poll, ticket, signed_ticket ) in poll_and_ticket_list:
         if   not act_group:
             if   poll.group == act_group:
@@ -55,20 +55,20 @@ def group_polls_and_tickets_by_course( poll_and_ticket_list ):
                 res.append(( unicode( act_group.course.name ), act_polls ))
                 act_group = poll.group
                 act_polls = [( poll.pk, ticket, signed_ticket )]
-    
+
     if act_group:
         res.append(( unicode( act_group.course.name ), act_polls ))
     else:
         res.append(( u'Ankiety ogólne', act_polls ))
-        
-    return res 
-    
+
+    return res
+
 def create_slug( name ):
     """
         Creates slug
     """
     if name == u"Ankiety ogólne": return "common"
-    
+
     slug = name.lower()
     slug = re.sub(u'ą', "a", slug)
     slug = re.sub(u'ę', "e", slug)
@@ -93,17 +93,17 @@ def get_polls_for_course(( ( sub, slug ), get), groupped_polls ):
         return ( sub, slug ), []
 
 def prepare_data( request, slug ):
-    data = { 'errors'   : [], 
+    data = { 'errors'   : [],
              'polls'    : [],
              'finished' : [] }
-    
+
     for id, error in request.session.get( 'errors', default = [] ):
         try:
             p = Poll.objects.get( pk = id )
             data[ 'errors' ].append( "%s: %s" % ( unicode( p ), error ))
         except:
             data[ 'errors' ].append( error )
-        
+
     try:
         del request.session[ 'errors' ]
     except KeyError:
@@ -112,41 +112,41 @@ def prepare_data( request, slug ):
     polls = request.session.get( "polls", default = [] )
     dict  = {}
     if polls:
-        polls_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l): 
+        polls_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l):
                                 map( lambda (id, t, st):
-                                        id, 
-                                    l), polls))    
+                                        id,
+                                    l), polls))
         for poll in Poll.objects.filter(pk__in=polls_id).select_related('group', 'group__course', 'group__teacher', 'group__teacher__user'):
             dict[poll.pk] = poll
-    
-        data[ 'polls' ]    = map( lambda ((x, s), l): 
+
+        data[ 'polls' ]    = map( lambda ((x, s), l):
                                 ((x, s),
                                 slug==s,
                                 map( lambda (id, t, st):
-                                        (id, t, st, dict[id].to_url_title( True )), 
+                                        (id, t, st, dict[id].to_url_title( True )),
                                     l)),
                             polls)
     else:
         data[ 'polls' ] = []
     finished    = request.session.get( "finished", default = [] )
     if finished:
-        finished_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l): 
+        finished_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l):
                                 map( lambda (id, t, st):
-                                        id, 
+                                        id,
                                     l), finished))
         for poll in Poll.objects.filter(pk__in=finished_id).select_related('group', 'group__course', 'group__teacher', 'group__teacher__user'):
             dict[poll.pk] = poll
-        
-        data[ 'finished' ] = map( lambda ((x, s), l): 
+
+        data[ 'finished' ] = map( lambda ((x, s), l):
                                 ((x, s),
                                 slug==s,
                                 map( lambda (id, t, st):
-                                        (id, t, st, dict[id].to_url_title( True )), 
-                                    l)), 
+                                        (id, t, st, dict[id].to_url_title( True )),
+                                    l)),
                             finished)
     else:
         data[ 'finished' ] = []
-    
+
     data[ 'finished_polls' ] = len(request.session.get( "finished", default = [] ))
     data[ 'all_polls']  = reduce(lambda x, y: x + y,
                                    map( lambda (p, l): len(l),
@@ -158,23 +158,23 @@ def get_next( poll_list, finished_list, poll_id ):
     for (p_id, t, st, s), slug in poll_list:
         if ret: return p_id, t, s, slug
         ret = p_id == poll_id
-    
+
     ret = False
     for (p_id, t, st, s), slug in finished_list:
         if ret: return p_id, t, s, slug
         ret = p_id == poll_id
-        
+
     return None
-    
+
 def get_prev( poll_list, finished_list, poll_id ):
     poll_list.reverse()
     finished_list.reverse()
-    
+
     prev = get_next( poll_list, finished_list, poll_id )
-    
+
     poll_list.reverse()
     finished_list.reverse()
-    
+
     return prev
 
 def get_ticket_and_signed_ticket_from_session( session, slug, poll_id ):
@@ -183,10 +183,10 @@ def get_ticket_and_signed_ticket_from_session( session, slug, poll_id ):
 
     polls    = flatten( map(lambda ((n,s), lt): lt, filter( lambda ((name, s), lt): s == slug, polls)))
     finished = flatten( map(lambda ((n,s), lt): lt, filter( lambda ((name, s), lt): s == slug, finished)))
-    
+
     data = polls + finished
     data = map( lambda (id, t, st): (t, st), filter( lambda (id, t, st): id == int( poll_id ), data ))
-    
+
     try:
         return data[0]
     except IndexError:
@@ -234,10 +234,10 @@ def poll_cmp_teachers( p1, p2 ):
             return 1
     else:
         return -1
-        
+
 def group_polls_by_course( polls ):
     polls.sort( poll_cmp_courses )
-    
+
     groupped = []
     if polls:
         try:
@@ -246,13 +246,13 @@ def group_polls_by_course( polls ):
             act_sub = u"Ankiety ogólne"
         act = [ polls[ 0 ]]
         polls = polls[ 1: ]
-        
+
         for poll in polls:
             try:
                 sub = poll.group.course.name
             except:
                 sub = u"Ankiety ogólne"
-            
+
             if sub == act_sub:
                 act.append( poll )
             else:
@@ -261,8 +261,8 @@ def group_polls_by_course( polls ):
                 act_sub = sub
         if act: groupped.append(( act_sub, act ))
     return groupped
-            
-    
+
+
 def group_polls_by_teacher( polls ):
     polls.sort( poll_cmp_teachers )
 
@@ -274,13 +274,13 @@ def group_polls_by_teacher( polls ):
             act_sub = u"Ankiety ogólne"
         act = [ polls[ 0 ]]
         polls = polls[ 1: ]
-        
+
         for poll in polls:
             try:
                 sub = poll.group.get_teacher_full_name()
             except:
                 sub = u"Ankiety ogólne"
-            
+
             if sub == act_sub:
                 act.append( poll )
             else:
@@ -294,12 +294,12 @@ def declination_poll(num, nominative = False):
     if num == 1:
         if nominative:
             return u'ankieta'
-        else:        
+        else:
             return u'ankietę'
     if ((num % 10) in [2,3,4] and (num < 10 or num > 20)):
         return u'ankiety'
     return u'ankiet'
-    
+
 
 def declination_section(num, nominative = False):
     if num == 1:
@@ -317,8 +317,8 @@ def declination_template(num):
     if num in [2,3,4]:
         return u'szablony'
     return 'szablonów'
-   
-####  HELPER FOR UNICODE + CSV -- Python's CSV does not support unicode 
+
+####  HELPER FOR UNICODE + CSV -- Python's CSV does not support unicode
 
 class UnicodeWriter(object):
 
@@ -328,7 +328,7 @@ class UnicodeWriter(object):
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoding = encoding
-    
+
     def writerow(self, row):
         # Modified from original: now using unicode(s) to deal with e.g. ints
         self.writer.writerow([unicode(s).encode("utf-8") for s in row])
@@ -341,16 +341,16 @@ class UnicodeWriter(object):
         self.stream.write(data)
         # empty queue
         self.queue.truncate(0)
-    
+
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
-            
+
 #### CSV file preparation
 
 def generate_csv_title(poll):
     res = poll.title
-    try:        
+    try:
         res += u' ' + poll.group.course.name
         res += u' ' + poll.group.get_type_display()
         res += u' ' + poll.group.get_teacher_full_name()
@@ -359,27 +359,27 @@ def generate_csv_title(poll):
     res += u' ' + unicode(poll.pk)
     res += u'.csv'
     return unicode(res)
-    
+
 def csv_prepare_header(sections):
     """
-    csv_prepare_header prepares header for a specific poll - that is, it provides 
+    csv_prepare_header prepares header for a specific poll - that is, it provides
     questions for the specific poll, prepared as reqired by the csv.writer
     """
     row = []
-    for sec_questions in sections:        
+    for sec_questions in sections:
         row += sec_questions
     return row
-    
+
 def csv_prepare(handle, poll_sections, poll_data):
     """
     csv_prepare prepares the entire csv file - typically this is a file for
     a specific poll
     """
     #handle = StringIO.StringIO() #open(csv_title, 'wb')
-    writer = UnicodeWriter(handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL)    
-    writer.writerow( csv_prepare_header(poll_sections) )    
+    writer = UnicodeWriter(handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL)
+    writer.writerow( csv_prepare_header(poll_sections) )
     for poll in poll_data:
-        writer.writerow(poll)    
+        writer.writerow(poll)
     return handle
 
 ### POST DATA MANIPULATION
@@ -427,7 +427,7 @@ def make_paginator( request, object=None, objects=None):
     """
     if object:
         objects = object.objects.filter(deleted=False)
-        
+
     paginator = Paginator(objects, 25)
 
     # Make sure page request is an int. If not, deliver first page.
@@ -525,12 +525,15 @@ def make_template_variables( request ):
     return var
 
 def prepare_template( request ):
-    """
-        Create template from request
+    """Creates template from the request.
         @author mjablonski
 
         @param request
         @return Template
+
+        Raises:
+            Employee.DoesNotExist: If the user in the request is not an
+                employee.
     """
     variables = make_template_variables( request )
 
@@ -610,6 +613,11 @@ def make_section_for_poll(request, poll, template={}):
             pollSection.save()
 
 def make_poll_from_template( request, template):
+    """Returns a poll object based on the template.
+
+    Raises:
+        Employee.DoesNotExist: If the user is not an employee.
+    """
     poll = Poll()
     poll.author       = request.user.employee
     poll.title        = template['title']
@@ -622,6 +630,11 @@ def make_poll_from_template( request, template):
     return poll
 
 def make_poll(request, template, group=None, origin=None):
+    """Prepares a poll object for the group based on the template.
+
+    Raises:
+        Employee.DoesNotExist: If the user in the request is not an employee.
+    """
     poll = Poll()
     poll.author       = request.user.employee
     poll.title        = template['title']
@@ -750,6 +763,12 @@ def prepare_data_for_create_template( request, group_id = 0 ):
     return data
 
 def get_courses_for_user(request, semester):
+    """Returns courses owned by the user.
+
+    Raises:
+        Employee.DoesNotExist: If the user in the request is not 'staff' and
+            not an employee.
+    """
     if request.user.is_staff:
         return Course.objects.filter(semester = semester).order_by('name')
     else:
@@ -757,6 +776,11 @@ def get_courses_for_user(request, semester):
         return Course.objects.filter(Q(semester = semester), Q(teachers=request.user.employee) | Q(pk__in=courses)).order_by('name')
 
 def get_groups_for_user(request, type, course):
+    """Returns groups owned by the user.
+
+    Raises:
+        Employee.DoesNotExist: If the user in the request is not an employee.
+    """
     sub = Course.objects.filter(pk=course, teachers=request.user.employee)
     if request.user.is_staff or sub:
         return Group.objects.filter(type=type, course=course).order_by('teacher')

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, time as dtime
+import datetime
 import json
+
 from django import http
 from django.db.models import Q
 from django.http import Http404
@@ -112,39 +113,31 @@ class FullCalendarAdapter(object):
         return False
 
     def get_start(self, item):
-        """
-        Date. Required.
+        """The date/time an event begins.
 
-        The date/time an event begins.
-
-        When specifying Event Objects for events or eventSources,
-        you may specify a string in IETF format (ex: "Wed, 18 Oct 2009 13:00:00 EST"),
-        a string in ISO8601 format (ex: "2009-11-05T13:15:30Z") or a UNIX timestamp.
+        When specifying Event Objects for events or eventSources, you may
+        specify a string in IETF format (ex: "Wed, 18 Oct 2009 13:00:00 EST"),
+        a string in ISO8601 format (ex: "2009-11-05T13:15:30Z") or a UNIX
+        timestamp.
         """
         import time
-        return time.mktime( (datetime.combine(item.day, dtime() ) + item.start ).timetuple() )
+        return time.mktime(
+            datetime.datetime.combine(item.day, item.start).timetuple())
 
     def get_end(self, item):
-        """
-        Date. Optional.
+        """The date/time an event ends.
 
-        The date/time an event ends.
-
-        As with start, you may specify it in IETF, ISO8601, or UNIX timestamp format.
-
-        If an event is all-day...
-
-        the end date is inclusive. This means an event with start Nov 10
-         and end Nov 12 will span 3 days on the calendar.
-
-        If an event is NOT all-day...
-
-        the end date is exclusive. This is only a gotcha when your end has time 00:00.
-         It means your event ends on midnight, and it will not span through the next day.
+        As with start, you may specify it in IETF, ISO8601, or UNIX timestamp
+        format. If an event is all-day the end date is inclusive. This means an
+        event with start Nov 10 and end Nov 12 will span 3 days on the
+        calendar. If an event is NOT all-day the end date is exclusive. This is
+        only a gotcha when your end has time 00:00. It means your event ends on
+        midnight, and it will not span through the next day.
 
         """
         import time
-        return time.mktime( (datetime.combine(item.day, dtime() ) + item.end ).timetuple() )
+        return time.mktime(
+            datetime.datetime.combine(item.day, item.end).timetuple())
 
     def get_description(self, item):
         return item.event.description
@@ -209,8 +202,9 @@ class FullCalendarView(BaseListView):
         if not 'start' in self.request.GET or not 'end' in self.request.GET:
             raise Http404
 
-        start = datetime.fromtimestamp(int(self.request.GET.get('start')))
-        end   = datetime.fromtimestamp(int(self.request.GET.get('end')))
+        start = datetime.datetime.fromtimestamp(
+            int(self.request.GET.get('start')))
+        end = datetime.datetime.fromtimestamp(int(self.request.GET.get('end')))
 
         if not self.queryset:
             self.queryset = super(FullCalendarView, self).get_queryset()
@@ -227,4 +221,3 @@ class FullCalendarView(BaseListView):
 
     def convert_to_json(self, queryset):
         return self.adapter(queryset, self.request).collection_as_json()
-

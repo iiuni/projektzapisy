@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 from apps.utils.fullcalendar import FullCalendarAdapter
 
 __author__ = 'maciek'
+
+def get_week_range_by_date(date):
+    """
+    Returns tuple of (monday, sunday) enclosing given date
+    """
+    monday = date - timedelta(days=date.weekday())
+    sunday = monday + timedelta(days=7)
+    return (monday, sunday)
 
 
 class EventAdapter(FullCalendarAdapter):
@@ -56,3 +65,4 @@ class ScheduleAdapter(EventAdapter):
             return None
 
         return super(EventAdapter, self).get_url(item)
+

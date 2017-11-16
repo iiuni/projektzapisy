@@ -423,10 +423,18 @@
 
         });
 
+        $('#ignore_all_conflicts').change(function () {
+          var checkboxes =  $('.ignore_conflicts > input');
+          for (var i=0; i<checkboxes.length; i++) {
+            checkboxes[i].value = (+checkboxes[i].value+1)%2;
+          }
+        })
+
         $('#save_event').click(function (event) {
 
             if ($('#termstable tbody').find('tr:not(.removed)').length == 0) {
-                this.setCustomValidity('Musisz podać przynajmniej jeden termin');
+                if (window.confirm("Czy na pewno chcesz usunąć to wydarzenie?"))
+                  $('#testmainform').click();                          
             } else {
                 this.setCustomValidity('');
                 $('#testmainform').click();
@@ -689,15 +697,18 @@
                             rpixel = right;
                         },
 
-                        is_free = function () {
+                        is_free = function (force) {
+                            {% if perms.schedule.manage_events %}
+                              return true
+                            {% endif %}
                             if (!rpixel || !lpixel) {
                                 return false;
                             }
                             for (var key in config.terms) {
                                 if (config.terms.hasOwnProperty(key)) {
                                     var pitem = config.terms[key];
-                                    if ((lpixel - pitem.end <= 1 && rpixel - pitem.begin >= -1) ||
-                                            (pitem.begin - rpixel <= 1 && pitem.end - lpixel >= -1)) {
+                                    if (!(lpixel >= pitem.end || rpixel <= pitem.begin ))
+                                    {
                                         return false;
                                     }
                                 }
@@ -713,7 +724,7 @@
                     },
                     shouldBeShow:function (l, r) {
                         setLimit(getPixel(l) + config.x1, getPixel(r) + config.x1);
-                        return is_free();
+                        return is_free(true);
                     },
                     setLimit:setLimit,
                     click:click
@@ -955,8 +966,8 @@
             {% for form in formset %}
                 <tr>
                     <td class="termtbl1"><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
-                    <td class="termtbl2"><span>{{ form.instance.print_start }}</span>{{ form.start }}</td>
-                    <td class="termtbl2"><span>{{ form.instance.print_end }}</span>{{ form.end }}{{ form.id }}</td>
+                    <td class="termtbl2"><span>{{ form.instance.start|time }}</span>{{ form.start }}</td>
+                    <td class="termtbl2"><span>{{ form.instance.end|time }}</span>{{ form.end }}{{ form.id }}</td>
                     <td class="termtbl4"><span>{% if form.instance.room %}Sala
                         {{ form.instance.room.number }}{% else %}
                         {{ form.instance.place }}{% endif %}{{ form.room }}{{ form.place }}</span>
@@ -965,6 +976,7 @@
 
                     <td>
                         <div class="hidden">{{ form.DELETE }}</div>
+                        <div class="hidden ignore_conflicts">{{ form.ignore_conflicts }}</div>
                         <button style="display:none" class="btn success unremoveterm" formnovalidate>Cofnij
                             usunięcie
                         </button>
@@ -1098,6 +1110,11 @@
     </form>
     <div class="row">
         <form id="testroomlistform">
+          {% if errors and perms.schedule.manage_events %}
+            <div class="span16 left">
+              <input type="checkbox" id="ignore_all_conflicts"> Zignoruj konflikty</input>
+            </div>
+            {% endif %}
             <div class="span16 right" style="text-align:right">
                 <input type="submit" id="save_event" class="btn" name="zapisz" value="Zapisz">
             </div>

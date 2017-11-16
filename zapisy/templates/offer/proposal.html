@@ -7,14 +7,12 @@
 
     <div class="footer"></div>
 
+    {% if user.is_staff or course.owner == user.employee %}
 	<div class="actions">
         <div class="action right">
-
-            {% if user.is_staff or course.owner == user.employee %}
                 <a href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
-            {% endif %}
-
         </div>
 	</div>
+	{% endif %}
 
 </div>

@@ -3,6 +3,7 @@ from apps.enrollment.courses.models import CourseEntity, CourseDescription
 
 class CourseEntityTranslationOptions(TranslationOptions):
 	fields = ('name', )
+	fallback_languages = {'default': ('pl',)}
 
 translator.register(CourseEntity, CourseEntityTranslationOptions)
 

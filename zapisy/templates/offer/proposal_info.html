@@ -1,19 +1,5 @@
 {% load url from future %}
     <table class="table-info">
-        {% if course.owner %}
-            <tr>
-                <th>Prowadzący</th>
-                <td>
-                    <a href="{% url 'employee-profile' course.owner.user.id %}"
-                           class="person">{{ course.owner.user.get_full_name }}</a>
-                    </td>
-            </tr>
-        {% endif %}
-        <tr>
-            <th>Typ</th>
-            <td>{{ course.type }}</td>
-        </tr>
-
         {% if course.ects %}
         <tr>
             <th>ECTS</th>
@@ -54,35 +40,32 @@
                 <td>Tak</td>
             </tr>
         {% endif %}
-
-            <tr>
-                <th>Egzamin</th>
-                <td>{% if course.exam %}Tak{% else %}Nie{% endif %}</td>
-            </tr>
-    {% if course.web_page %}
+        {% include "common/common_course_info.html" with course_entity=course %}
+        {% if course.web_page %}
             <tr>
                 <th>Strona WWW</th>
                 <td><a href="{{ course.web_page }}">{{ course.web_page }}</a></td>
-            </tr>{% endif %}
-            <tr>
-                <th>Wymagania</th>
-                <td>{% if course.information.requirements.all %}{{ course.information.requirements.all|join:", " }}{% else %}Brak{% endif %}</td>
             </tr>
-            <tr>
-                <th>Efekty kształcenia</th>
-                <td>{% if course.effects.all %}{{ course.effects.all|join:", " }}{% else %}Brak{% endif %}</td>
-            </tr>
+        {% endif %}
+        {% comment %}
+        TODO: turn this on when requirements are enabled
+        on the backend
+        <tr>
+            <th>Wymagania</th>
+            <td>{% if course.information.requirements.all %}{{ course.information.requirements.all|join:", " }}{% else %}Brak{% endif %}</td>
+        </tr>
+        {% endcomment %}
         {% if course.created %}
             <tr>
                 <th>Utworzono</th>
                 <td>{{ course.created }}</td>
             </tr>
-    {% endif %}
+        {% endif %}
         {% if course.edited %}
-                <tr>
-                    <th>Aktualizacja</th>
-                    <td>{{ course.edited }}</td>
-                </tr>
+            <tr>
+                <th>Aktualizacja</th>
+                <td>{{ course.edited }}</td>
+            </tr>
         {% endif %}
 
     </table>

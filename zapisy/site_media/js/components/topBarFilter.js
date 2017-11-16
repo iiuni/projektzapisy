@@ -27,8 +27,6 @@ TopBarFilter.init = function()
 				$(this).attr('value', TopBarFilter.emptyFilterText);
 		});
 
-		$(filterReset).css('display','inline-block');
-
 		if ($(filterField).attr('value') == '')
 			$(filterField).attr('value', TopBarFilter.emptyFilterText);
 	}

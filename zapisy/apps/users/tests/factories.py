@@ -25,6 +25,8 @@ class UserFactory(DjangoModelFactory):
     password = factory.PostGenerationMethodCall('set_password', 'test')
     is_staff = False
     is_superuser = False
+    email = factory.LazyAttribute(lambda o: o.pref_username + o.suff_username + '@example.com')
+
 
 class StudentFactory(DjangoModelFactory):
     class Meta:
@@ -59,6 +61,7 @@ class EmployeeProfileFactory(UserProfileFactory):
 class OrderedStudentProfileFactory(UserProfileFactory):
     is_zamawiany = True
     is_employee = False
+
 
 class EmployeeFactory(DjangoModelFactory):
     class Meta:

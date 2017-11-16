@@ -26,7 +26,7 @@
 
 import random
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.hashcompat import sha_constructor
+from hashlib import sha1 as sha_constructor
 
 
 def generate_key(user, email):
@@ -43,4 +43,3 @@ def generate_key(user, email):
     return sha_constructor(
             default_token_generator.make_token(user) + email + str(random.random())
         ).hexdigest()
-    

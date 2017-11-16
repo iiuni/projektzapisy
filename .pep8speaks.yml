@@ -1,0 +1,7 @@
+# The configuration file for pep8speaks linter.
+
+scanner:
+  diff_only: True  # Only errors caused by the patch are shown.
+
+pycodestyle:
+  max-line-length: 120

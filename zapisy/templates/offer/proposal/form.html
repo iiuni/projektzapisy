@@ -5,8 +5,24 @@
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
     <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
     <script type="text/javascript" src="/fereol_admin/jsi18n/"></script>
+    <!-- <script src="//cloud.tinymce.com/stable/tinymce.min.js"></script> -->
+    <!-- <script>tinymce.init({ selector:'textarea' });</script> -->
     {% compressed_js 'proposal_edit' %}
-    <style>label { width: 50px;}</style>
+    <style>
+        label { width: 150px; }
+        textarea,input,select {width: 100%; }
+        tr.haserrors {background-color: #ffd1d1;}
+        td.hours-col input {width:50px;}
+        td.hours-col {width:150px;}
+        th.name-col input {width:300px;}
+        th.name-col {width:300px;}
+        div#main-content form {width:770px;}
+        .delete-row { margin-left: 15px;}
+    </style>
+    <script type="text/javascript">
+        types_data = {{ types_data|safe }};
+        proposal_init(types_data);
+    </script>
 {% endblock %}
 
 
@@ -38,9 +54,144 @@
     {% endif %}
         {% csrf_token %}
         <table>
-        {{ form }}
-        {{ desc }}
+            {% for field in form %}
+                {% if not field.name in 'lectures,exercises,repetitions,laboratories,exercises_laboratiories,seminars,ects'|slice:',' %}
+                <tr>
+                    <th>
+                    {% if field.field.required %}
+                    <span style="position:absolute; left:160px;">*</span>
+                    {% endif %}
+                    {{field.label_tag}}
+                    </th>
+                    {% if field.errors %}
+                    <td>{{field}}</td>
+                    <td>
+                        {{field.errors}}
+                    </td>
+                    {% else %}
+                    <td colspan="2">{{field}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+            {% endfor %}
         </table>
-        <button type="submit" class="btn btn-success">Zapisz</button>
+        <table>
+            {{ desc }}
+            {% for field in syllabus %}
+                {% if not field.name in 'exam_hours,tests_hours,project_presentation_hours'|slice:',' %}
+                <tr>
+                    <th>
+                    {% if field.field.required %}
+                    <span style="position:absolute; left:160px;">*</span>
+                    {% endif %}
+                    {{field.label_tag}}
+                    </th>
+                    {% if field.errors %}
+                    <td>{{field}}</td>
+                    <td>
+                        {{field.errors}}
+                    </td>
+                    {% else %}
+                    <td colspan="2">{{field}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <table id="hours-table">
+        <h3>Nakład pracy studenta</h3>
+        <tr>
+            <th></th>
+            <th>Forma aktywności studenta2</th>
+            <th>Liczba godzin</th>
+        </tr>
+        <tr>
+            <th><label>Godziny zajęć</label></th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        <tr>
+            <th></th>
+            <th class="name-col">repetytorium</th>
+            <td class="hours-col">{{ form.repetitions }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">wykład</th>
+            <td class="hours-col">{{ form.lectures }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">ćwiczenia</th>
+            <td class="hours-col">{{ form.exercises }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">pracownię</th>
+            <td class="hours-col">{{ form.laboratories }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">ćwiczenio-pracownię</th>
+            <td class="hours-col">{{ form.exercises_laboratiories }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">seminarium</th>
+            <td class="hours-col">{{ form.seminars }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">egzamin</th>
+            <td class="hours-col">{{ syllabus.exam_hours }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">sprawdziany/kolokwia</th>
+            <td class="hours-col">{{ syllabus.tests_hours }}</td>
+        </tr>
+        <tr>
+            <th></th>
+            <th class="name-col">prezentacja projektu</th>
+            <td class="hours-col">{{ syllabus.project_presentation_hours }}</td>
+        </tr>
+        <tr>
+            <th><label>Praca własna studenta</label></th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for form in student_work_formset.forms %}
+        <tr class="dynamic-formset">
+            <th>{{ form.name.errors }}{{ form.hours.errors }}</th>
+            <th class="name-col">
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+              {{ form.id }}
+              {{ form.name }}
+            </th>
+            <td class="hours-col">{{ form.hours }}</td>
+        </tr>
+        {% endfor %}
+        </table>
+        {{ student_work_formset.management_form }}
+        <table>
+        <tr>
+            <th>Suma godzin</th>
+            <td></td>
+            <td id="target_sum"></td>
+        </tr>
+        <tr>
+            <th>Powinno być (z dokładnością do 20h)</th>
+            <td></td>
+            <td id="hours_should_be">{% widthratio form.ects.value 1 25 %}</td>
+        </tr>
+
+        <tr>
+        </tr>
+            <th>ECTS</th>
+            <td></td>
+            <td>{{ form.ects }}</td>
+        </table>
+        <button type="submit" class="btn btn-success" onclick="beforeSubmitButton('id_entity-name','id_entity-name_en')">Zapisz</button>
     </form>
 {% endblock %}

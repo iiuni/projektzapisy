@@ -56,7 +56,7 @@
                             <h6><a href="{{ ll.grouper.get_absolute_url }}">{{ ll.grouper.name }}</a></h6>
                             <ul>
                                 {% for term in ll.list %}
-                                    <li><p>{{ term.print_start }} - {{ term.print_end }}, {% if term.room %}sala <a href="{{ term.room.get_absolute_url }}">{{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</p>
+                                    <li><p>{{ term.start|time }} - {{ term.end|time }}, {% if term.room %}sala <a href="{{ term.room.get_absolute_url }}">{{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</p>
                                         </li>
                                 {% endfor %}
                             </ul>

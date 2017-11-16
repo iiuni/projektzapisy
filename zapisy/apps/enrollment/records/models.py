@@ -6,7 +6,7 @@ from apps.enrollment.records.exceptions import InactiveStudentException
 
 from apps.enrollment.courses.models.course import Course
 from apps.enrollment.courses.models.group  import Group
-from apps.enrollment.courses.models.semester  import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -22,30 +22,31 @@ from itertools import cycle
 from django.db.models import signals
 #from django.dispatch import receiver
 from settings import ECTS_LIMIT
-
 from apps.enrollment.utils import mail_enrollment_from_queue
-
-STATUS_ENROLLED = '1'
-STATUS_PINNED = '2'
-STATUS_REMOVED = '0'
-STATUS_QUEUED = '1'
-RECORD_STATUS = [(STATUS_REMOVED, u'usunięty'), (STATUS_ENROLLED, u'zapisany'), (STATUS_PINNED, u'przypięty')]
-
 import logging
 logger = logging.getLogger('project.default')
 backup_logger = logging.getLogger('project.backup')
 
 class EnrolledManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns only enrolled students. """
-        return super(EnrolledManager, self).get_query_set().filter(status=STATUS_ENROLLED)
+        # hate to do it like this but seems like there is no other way
+        return super(EnrolledManager, self).get_queryset().filter(status='1')
 
 class PinnedManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns only enrolled students. """
-        return super(PinnedManager, self).get_query_set().filter(status=STATUS_PINNED)
+        # hate to do it like this but seems like there is no other way
+        return super(PinnedManager, self).get_queryset().filter(status='2')
 
 class Record(models.Model):
+
+    STATUS_REMOVED = '0'
+    STATUS_ENROLLED = '1'
+    STATUS_PINNED = '2'
+
+    RECORD_STATUS = [(STATUS_REMOVED, u'usunięty'), (STATUS_ENROLLED, u'zapisany'), (STATUS_PINNED, u'przypięty')]
+
     group = models.ForeignKey(Group, verbose_name='grupa')
     student = models.ForeignKey(Student, verbose_name='student', related_name='records')
     status = models.CharField(max_length=1, choices=RECORD_STATUS, verbose_name='status')
@@ -71,12 +72,12 @@ class Record(models.Model):
         self.group.remove_from_enrolled_counter(student)
 
         self.group.save()
-        self.status=STATUS_REMOVED
+        self.status=self.STATUS_REMOVED
         self.save()
 
     @staticmethod
     def get_student_records_for_course(student, course):
-        return Record.objects.filter(student=student, status=STATUS_ENROLLED, group__course=course).select_related('group')
+        return Record.objects.filter(student=student, status=Record.STATUS_ENROLLED, group__course=course).select_related('group')
 
     @staticmethod
     def get_student_records_for_group_type(student, group):
@@ -214,7 +215,7 @@ class Record(models.Model):
         try:
             student = user.student
             group = Group.objects.get(id=group_id)
-            record, is_created = Record.objects.get_or_create(group=group, student=student, status=STATUS_PINNED)
+            record, is_created = Record.objects.get_or_create(group=group, student=student, status=Record.STATUS_PINNED)
             if is_created == False:
                 logger.warning('Record.pin_student_to_group(user_id = %d, group_id = %d) raised AlreadyPinnedException exception.' % (int(user_id), int(group_id)))
                 raise AlreadyPinnedException()
@@ -233,7 +234,7 @@ class Record(models.Model):
         try:
             student = user.student
             group = Group.objects.get(id=group_id)
-            record = Record.objects.get(group=group, student=student, status=STATUS_PINNED)
+            record = Record.objects.get(group=group, student=student, status=Record.STATUS_PINNED)
             record.delete()
             logger.info('User %s <id: %s> is no longer pinned to group: "%s" <id: %s>' % (user.username, user.id, group, group.id))
             return record
@@ -260,10 +261,10 @@ class Record(models.Model):
                 if (l not in groups) and (l.get_count_of_enrolled(dont_use_cache=False) < l.limit):
                     record, created = Record.objects.get_or_create(group=l, student=student)
                     if created:
-                        record.status = STATUS_ENROLLED
+                        record.status = Record.STATUS_ENROLLED
                         record.save()
-                    elif record.status == STATUS_PINNED:
-                            record.status = STATUS_ENROLLED
+                    elif record.status == Record.STATUS_PINNED:
+                            record.status = Record.STATUS_ENROLLED
                             record.save()
                     new_records.append(record)
                     try:
@@ -290,9 +291,9 @@ class Record(models.Model):
         return u"%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 class QueueManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns only queued students. """
-        return super(QueueManager, self).get_query_set()
+        return super(QueueManager, self).get_queryset()
     
 
 def queue_priority(value):
@@ -481,11 +482,11 @@ class Queue(models.Model):
         return u"%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 def log_add_record(sender, instance, created, **kwargs):
-    if instance.status == STATUS_ENROLLED:
+    if instance.status == Record.STATUS_ENROLLED:
         backup_logger.info('[01] user <%s> is added to group <%s>' % (instance.student.user.id, instance.group.id))
         
 def log_delete_record(sender, instance, **kwargs):
-    if instance.status == STATUS_ENROLLED and instance.group:
+    if instance.status == Record.STATUS_ENROLLED and instance.group:
         backup_logger.info('[03] user <%s> is removed from group <%s>' % (instance.student.user.id, instance.group.id))
 
 

@@ -25,3 +25,7 @@ li.vote2013, li.vote2013 a { color:green!important; font-weight: bold;}
 #proposal-legend .vote2013 { background-color: green; font-weight: bold;}
 
 .preferences-form label { margin-right: 20px;}
+
+#extraOfferFilters td {
+  vertical-align: middle;
+}

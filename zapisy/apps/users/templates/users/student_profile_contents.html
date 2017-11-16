@@ -35,7 +35,9 @@
         {% endif %}
 	</table>
 
-	<h3>Plan zajęć:</h3>
+	{% if terms_by_days|length > 0 %}
+        <h3>Plan zajęć:</h3>
+    {% endif %}
 	<div id="user-schedule-scheduleContainer">
 		<input type="hidden" name="courses" value="{{ courses_json }}" />
 		<input type="hidden" name="groups" value="{{ groups_json }}" />
@@ -43,11 +45,12 @@
 		<input type="hidden" name="ajax-set-pinned-url" value="{% url 'schedule-prototype-set-pinned' %}" />
 		<input type="hidden" name="ajax-set-queue-priority-url" value="{% url 'records-set-queue-priority' '.json' %}" />
 		<input type="hidden" name="priority-limit" value="{{ priority_limit }}" />
-
+    </div>
+    <br>
+    {% if terms_by_days|length > 0 %}
 		<div class="byWeekDays">
-			<h2>Zajęcia z podziałem na dni</h2>
 			{% for day in terms_by_days %}
-				<h3>{{ day.day_name|capfirst }}</h3>
+				<h5>{{ day.day_name|capfirst }}</h5>
 				<ul>
 					{% for term in day.terms %}
 						<li>
@@ -69,14 +72,13 @@
 				</ul>
 			{% endfor %}
 		</div>
-	</div>
-
+    {% endif %}
 	<div id="user-schedule-listByCourse" style="display:none">
 		{% for course in courses %}
 			<span>
-				<input type="hidden" name="id" value="{{ course.info.id }}" />
+				<input type="hidden" name="id" value="{{ course.id }}" />
 				{% for term in course.terms %}
-					<input type="hidden" name="term" value="{{ term.json }}" />
+					<input type="hidden" name="term" value="{{ term }}" />
 				{% endfor %}
 			</span>
 		{% endfor %}

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns( 'apps.offer.proposal.views',
     url(r'^$', 'offer', name='offer-main'),

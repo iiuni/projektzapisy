@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-
+import json
      
 class Type(models.Model):
     """types of courses"""
@@ -19,6 +19,7 @@ class Type(models.Model):
     have_seminar = models.BooleanField(verbose_name=u'Posiada seminarium', default=False)
     have_project = models.BooleanField(verbose_name=u'Posiada projekt', default=False)
 
+    default_ects = models.IntegerField(verbose_name=u'Punkty ECTS', default=6)
 
 	#TODO: dodać unique na parę (meta_type, name)
     
@@ -47,3 +48,22 @@ class Type(models.Model):
             Zwraca wszystkie typy przedmiotów z wyjątkiem abstrakcyjnych
         """
         return Type.objects.filter(meta_type=False)
+
+    @staticmethod
+    def get_types_for_syllabus():
+        """
+            Zwraca wszystkie typy wraz z informacją o typie zajęć (JSON).
+        """
+        types = Type.objects.all()
+        types_dict = {}
+        for t in types:
+            types_dict[t.id] = {
+                'lectures': t.have_lecture,
+                'exercises': t.have_tutorial,
+                'repetitions': t.have_review_lecture,
+                'laboratories': t.have_lab,
+                'exercises_laboratiories': t.have_tutorial_lab,
+                'seminars': t.have_seminar,
+                'default_ects': t.default_ects
+            }
+        return json.dumps(types_dict)

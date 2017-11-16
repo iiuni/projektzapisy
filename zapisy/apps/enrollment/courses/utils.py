@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.utils import simplejson
-
+import json
 
 def prepare_group_data(course, student):
     from apps.enrollment.records.models import Queue, Record
@@ -15,7 +14,7 @@ def prepare_group_data(course, student):
 
     data = {}
     for group in groups:
-        data[group.id] = simplejson.dumps(group.serialize_for_ajax(
+        data[group.id] = json.dumps(group.serialize_for_json(
             enrolled_ids, queued_ids, pinned_ids,
             queue_priorities, student))
     return data

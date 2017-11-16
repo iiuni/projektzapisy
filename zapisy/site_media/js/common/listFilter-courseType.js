@@ -126,24 +126,24 @@ function CourseTypeFilterForm(container)
     this.courseTypes = {};
 
     // generowanie nowej grupy - inne
-    var otherSpanBox = document.createElement('span');
-    otherSpanBox.className = 'checkbox';
-    var otherCheck = document.createElement('input');
-    otherCheck.type = 'checkbox';
-	this.container.appendChild(otherSpanBox);
-	otherSpanBox.appendChild(otherCheck);
-    otherCheck.value = '0';
-    otherCheck.id = 'filter-course-type-0';
-    otherCheck.className = 'filter-course-type-meta';
-    var otherGroup = document.createElement('input');
-    otherGroup.type = 'hidden';
-    otherGroup.className = 'group-id';
-	otherSpanBox.appendChild(otherGroup);
-    var otherLabel = document.createElement('label');
-    otherSpanBox.appendChild(document.createTextNode(' '));
-    otherSpanBox.appendChild(otherLabel);
-    otherLabel.htmlFor = 'filter-course-type-0';
-    otherLabel.appendChild(document.createTextNode('Inne'));
+//     var otherSpanBox = document.createElement('span');
+//     otherSpanBox.className = 'checkbox';
+//     var otherCheck = document.createElement('input');
+//     otherCheck.type = 'checkbox';
+// 	this.container.appendChild(otherSpanBox);
+// 	otherSpanBox.appendChild(otherCheck);
+//     otherCheck.value = '0';
+//     otherCheck.id = 'filter-course-type-0';
+//     otherCheck.className = 'filter-course-type-meta';
+//     var otherGroup = document.createElement('input');
+//     otherGroup.type = 'hidden';
+//     otherGroup.className = 'group-id';
+// 	otherSpanBox.appendChild(otherGroup);
+//     var otherLabel = document.createElement('label');
+//     otherSpanBox.appendChild(document.createTextNode(' '));
+//     otherSpanBox.appendChild(otherLabel);
+//     otherLabel.htmlFor = 'filter-course-type-0';
+//     otherLabel.appendChild(document.createTextNode('Inne'));
 
     // akcja kliknięcia checkboxa meta-typu
     var metaClick = function(metaType)
@@ -162,7 +162,7 @@ function CourseTypeFilterForm(container)
     };
 
     // odczytywanie grup do obiektów
-    var courseTypes = $(this.container).find('span.checkbox');
+    var courseTypes = $(this.container).find('li.checkbox');
     for (i = 0; i < courseTypes.length; i++)
     {
         var type = new CourseTypeFilterForm.Type(courseTypes[i]);
@@ -198,11 +198,7 @@ function CourseTypeFilterForm(container)
         }
     }
 
-    // dodanie przycisku metaSwitch
-    this.metaSwitch = document.createElement('a');
-    this.metaSwitch.className = 'filter-course-type-metaSwitch';
-    this.metaSwitch.appendChild(document.createTextNode('więcej'));
-    this.container.appendChild(this.metaSwitch);
+    this.metaSwitch = $("#extraCourseTypeFiltersToggle");
     $(this.metaSwitch).click(function()
     {
         thisObj.setMetaMode(!thisObj.metaMode);
@@ -225,12 +221,12 @@ CourseTypeFilterForm.prototype.setMetaMode = function(enabled)
     enabled = !!enabled;
 
     this.metaMode = enabled;
-    $(this.metaSwitch).text(enabled?'więcej':'mniej');
+    $(this.metaSwitch).text(enabled ? 'pokaż więcej filtrów' : 'pokaż mniej filtrów');
 
     for (i in this.courseTypes)
     {
         var type = this.courseTypes[i];
-        type.container.style.display = (this.metaMode == type.isMeta)?'':'none';
+        type.container.style.display = (this.metaMode == type.isMeta) ? '' : 'none';
     }
 
     if (this.metaMode)

@@ -451,14 +451,6 @@ input[type=checkbox].partialCheck
 
 .mcePlaceHolder{ display: inline-block !important; }
 
-.filter-course-type-metaSwitch
-{
-	float: right;
-	clear: left;
-	font-size: 10px;
-	margin-bottom: -6px;
-}
-
 .course-type-filter { width: 300px; }
 .course-type-filter > span { min-width: 150px; }
 
@@ -501,5 +493,5 @@ form#courses-in-voting select
 }
 
 .topbar {
-	z-index: 999;
+	z-index: initial;
 }

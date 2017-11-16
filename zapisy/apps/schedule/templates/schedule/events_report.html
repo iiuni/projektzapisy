@@ -1,0 +1,81 @@
+{% extends 'schedule/base.html' %}
+
+{% load url from future %}
+{% load compressed %}
+
+{% block bread %}
+    <a href="/">Strona główna</a> &raquo;
+    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
+{% endblock %}
+
+{% block styles %}
+    {{ block.super }}
+
+    <link href="/site_media/css/jquery-ui-1.8.14.custom.css" rel="stylesheet" type="text/css"
+          media="screen,projection"/>
+    <link href="/site_media/js/timepicker/jquery.ui.timepicker.css" rel="stylesheet" type="text/css"
+          media="screen,projection"/>
+{% endblock %}
+
+{% block js %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
+    <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
+    <script type="text/javascript" src="/fereol_admin/jsi18n/"></script>
+    {% compressed_js 'proposal_edit' %}
+    <style>label { width: 50px;}</style>
+    <script type="text/javascript" src="/site_media/js/timepicker/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/site_media/js/timepicker/i18n/jquery.ui.timepicker-pl.js"></script>
+    <script type="text/javascript" src="/site_media/js/jquery/jquery.smooth-scroll.js"></script>
+    <script type="text/javascript">
+
+    var LoadPickers = function () {
+        $(".datepicker").datepicker({dateFormat: 'yy-mm-dd'});
+      }
+    window.onload = LoadPickers;
+    </script>
+{% endblock %}
+
+
+{% block events_report %} class="active"{% endblock %}
+
+{% block content-width %}16{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="span15">
+            <h2>Raport</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span16">
+          <form action="{% url 'events:events_report' %}" method="post">
+
+          <table>
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+          {% endfor %}
+          <tr>
+            <td><label for="{{ form.rooms.id_for_label }}">Sale:</label></td>
+            <td>
+              {{ form.rooms }}
+            </td>
+            <td>{{ form.rooms.errors }}</td>
+          </tr>
+          <tr>
+            <td><label for="{{ form.beg_date.id_for_label }}">Początek zapytania:</label></td>
+            <td>{{ form.beg_date }}</td>
+            <td>{{ form.beg_date.errors }}</td>
+          </tr>
+          <tr>
+            <td><label for="{{ form.end_date.id_for_label }}">Koniec zapytania:</label></td>
+            <td>{{ form.end_date }}</td>
+            <td>{{ form.beg_date.errors }}</td>
+          </tr>
+        </table>
+          <input class="btn" type="submit" value="Generuj raport" />
+          </form>
+        </div>
+    </div>
+{% endblock %}

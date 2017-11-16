@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import include, patterns, url
 
 # to tree/list_view and description, pass by GET:
 # format=json - returns data as json

@@ -5,15 +5,18 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_unicode
+from django.utils.translation import get_language
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
+from apps.cache_utils import cache_result
 from apps.enrollment.courses.models.effects import Effects
+
 from apps.enrollment.courses.models.tag import Tag
 
 from apps.offer.proposal.exceptions import NotOwnerException
-
+from apps.users.models import OpeningTimesView
 import logging
 
 logger = logging.getLogger()
@@ -22,17 +25,17 @@ logger = logging.getLogger()
 class WithInformation(models.Manager):
     """ Manager for course objects with visible semester """
 
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(WithInformation, self).get_query_set().select_related('information')
+        return super(WithInformation, self).get_queryset().select_related('information')
 
 
 class NoRemoved(WithInformation):
     """ Manager for course objects with visible semester """
 
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(NoRemoved, self).get_query_set().filter(deleted=False, owner__isnull=False)
+        return super(NoRemoved, self).get_queryset().filter(deleted=False, owner__isnull=False)
 
 
 class SimpleManager(models.Manager):
@@ -41,9 +44,9 @@ class SimpleManager(models.Manager):
 
 
 class DefaultCourseManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(DefaultCourseManager, self).get_query_set().select_related('entity', 'information')
+        return super(DefaultCourseManager, self).get_queryset().select_related('entity', 'information')
 
 
 class StatisticsManager(models.Manager):
@@ -57,7 +60,7 @@ class StatisticsManager(models.Manager):
 
         #TODO: po przeniesieniu wszystkich metod do managerów filtrowanie na
         #  status powinno byc  z dziedziczenia
-        return self.get_query_set().filter(status=2)\
+        return self.get_queryset().filter(status=2)\
             .select_related('type', 'owner', 'owner__user')\
             .order_by('name')\
             .extra(
@@ -123,7 +126,7 @@ class CourseEntity(models.Model):
     exam = models.BooleanField(verbose_name='egzamin',
                                default=True)
 
-    suggested_for_first_year = models.BooleanField(verbose_name='polecany dla pierwszego roku')
+    suggested_for_first_year = models.BooleanField(verbose_name='polecany dla pierwszego roku', default=False)
 
     web_page = models.URLField(verbose_name='strona www', null=True, blank=True)
     ects = models.IntegerField(null=True, blank=True)
@@ -164,26 +167,38 @@ class CourseEntity(models.Model):
     noremoved = NoRemoved()
     statistics = StatisticsManager()
 
+    def _add_or_none(self, hours1, hours2):
+        """
+        Adds two numbers denoting the number
+        of hours of a particular type of class.
+        If both are None, returns None, otherwise it
+        returns the sum, possibly casting None to 0
+        """
+        if hours1 is None and hours2 is None:
+            return None
+        
+        return (hours1 or 0) + (hours2 or 0)
 
     def get_lectures(self):
-        return self.lectures + self.information.lectures
+        return _add_or_none(self.lectures, self.information.lectures)
 
     def get_exercises(self):
-        return self.exercises + self.information.exercises
+        return _add_or_none(self.exercises, self.information.exercises)
 
     def get_laboratories(self):
-        return self.laboratories + self.information.laboratories
+        return _add_or_none(self.laboratories, self.information.laboratories)
 
     def get_repetitions(self):
-        return self.repetitions + self.information.repetitions
+        return _add_or_none(self.repetitions, self.information.repetitions)
 
     def get_seminars(self):
-        return self.seminars + self.information.seminars
+        return _add_or_none(self.seminars, self.information.seminars)
 
     def get_exercises_laboratiories(self):
-        return self.exercises_laboratiories + self.information.exercises_laboratories
+        return _add_or_none(
+            self.exercises_laboratiories,
+            self.information.exercises_laboratories)
 
-    #
 
     def get_status(self):
         return self.status
@@ -225,19 +240,14 @@ class CourseEntity(models.Model):
         verbose_name = 'Podstawa przedmiotu'
         verbose_name_plural = 'Podstawy przedmiotów'
         app_label = 'courses'
-        ordering = ['name']
-
-
-    def get_opening_time(self, student):
-        """
-
-        @param student:
-        @return:
-        """
-
-        from apps.users.models import OpeningTimesView
-
-        return OpeningTimesView.objects.get(student=student, course=self)
+        # FIXME: this should not be needed, the modeltranslation lib
+        # should automatically fall back to the Polish base name
+        # (it's the default + we have it defined in settings.py)
+        # For whatever reason Course instances (that use entity__name) are
+        # actually ordered properly, but when accessing CourseEntity directly
+        # it doesn't work...
+        # As it is, we need this so lists in the offer app are sorted properly
+        ordering = ['name_pl']
 
 
     def get_points(self, student=None):
@@ -257,8 +267,8 @@ class CourseEntity(models.Model):
 
     def get_short_name(self):
         """
-        If entity have shortName (e.g. JFiZO for Języki Formalne i Złożoność Obliczeniowa) return it.
-        Otherwise return full name
+        Return short name if present (e.g. JFiZO = Języki Formalne
+        i Złożoność Obliczeniowa). Otherwise return full name.
 
         @return: String
         """
@@ -267,6 +277,43 @@ class CourseEntity(models.Model):
         else:
             return self.shortName
 
+    @cache_result
+    def get_all_effects(self):
+        return list(self.effects.all())
+
+    @cache_result
+    def get_all_tags(self):
+        return list(self.tags.all())
+    
+    @cache_result
+    def get_all_tags_with_weights(self):
+        """
+        TagCourseEntity is a glue model that contains extra info
+        about the relationship - in this case, the "weight" of the tag.
+        """
+        return list(TagCourseEntity.objects.filter(courseentity=self))
+
+    def serialize_for_json(self):
+        """
+        Serialize this object to a dictionary
+        that contains the most important information and can
+        be passed to a template or json.dumps
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "short_name" : self.get_short_name(),
+            "status": self.status,
+            "slug": self.slug,
+            "type": self.type.id if self.type else -1,
+            "english": self.english,
+            "exam": self.exam,
+            "semester" : self.semester,
+            "suggested_for_first_year": self.suggested_for_first_year,
+            "teacher": self.owner.id if self.owner else -1,
+            "effects": [effect.pk for effect in self.get_all_effects()],
+            "tags": [tag.pk for tag in self.get_all_tags()]
+        }
 
     @property
     def description(self):
@@ -380,17 +427,23 @@ class CourseEntity(models.Model):
 
     @staticmethod
     def get_proposals(is_authenticated=False):
+        # TODO: in the order_by clause, we could just use "name";
+        # the model translation plugin will actually check the user's language
+        # (based on the account settings if logged in, or headers otherwise)
+        # and map it to name_en or name_pl accordingly. The trouble is, almost all
+        # CourseEntities have empty English names, so the sorting order is nonsensical.
+        # Could re-enable this when (if) we have proper translations for course names.
+        result = CourseEntity.noremoved \
+                .exclude(status=CourseEntity.STATUS_PROPOSITION) \
+                .exclude(status=CourseEntity.STATUS_FOR_REVIEW) \
+                .select_related('type', 'owner', 'owner__user') \
+                .order_by('name_pl')
+            
         if is_authenticated:
-            return CourseEntity.noremoved \
-                .exclude(status=CourseEntity.STATUS_PROPOSITION) \
-                .exclude(status=CourseEntity.STATUS_FOR_REVIEW) \
-                .select_related('type', 'owner', 'owner__user')
+            return result
+                
         else:
-            return CourseEntity.noremoved \
-                .exclude(status=CourseEntity.STATUS_PROPOSITION) \
-                .exclude(status=CourseEntity.STATUS_FOR_REVIEW) \
-                .exclude(status=CourseEntity.STATUS_WITHDRAWN) \
-                .select_related('type', 'owner', 'owner__user')
+            return result.exclude(status=CourseEntity.STATUS_WITHDRAWN)
 
     @staticmethod
     def get_proposal(slug):
@@ -405,6 +458,11 @@ class CourseEntity(models.Model):
 
     @staticmethod
     def get_employee_proposals(user):
+        """Returns Courses owned by the user.
+
+        Raises:
+            Employee.DoesNotExist: If the user is not an employee.
+        """
         return CourseEntity.noremoved.filter(owner=user.employee)
 
     @staticmethod
@@ -420,17 +478,17 @@ class CourseEntity(models.Model):
 class Related(models.Manager):
     """ Manager for course objects with visible semester """
 
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(Related, self).get_query_set().select_related('semester', 'type', 'type__classroom', 'entity')
+        return super(Related, self).get_queryset().select_related('semester', 'type', 'type__classroom', 'entity')
 
 
 class VisibleManager(Related):
     """ Manager for course objects with visible semester """
 
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(VisibleManager, self).get_query_set().filter(semester__visible=True)
+        return super(VisibleManager, self).get_queryset().filter(semester__visible=True)
 
 
 class Course(models.Model):
@@ -478,14 +536,17 @@ class Course(models.Model):
 
     def get_opening_time(self, student):
         """
-
-        @param student:
-        @return:
+        Gets the opening time of the current course for the given
+        student, that is, the earliest point in time such that
+        the student is allowed to sign up for the course.
+        @param student: The student for whom the course opening
+        time is to be determined.
         """
-
-        from apps.users.models import OpeningTimesView
-
-        return OpeningTimesView.objects.get(student=student, course=self)
+        try:
+            o = OpeningTimesView.objects.get(student=student, course=self)
+            return o.opening_time
+        except ObjectDoesNotExist:
+            return None
 
     @property
     def exam(self):
@@ -519,14 +580,6 @@ class Course(models.Model):
             delta = 0
 
         return hours + delta
-
-    @property
-    def tags(self):
-        if not hasattr(self, '_tagscache'):
-            self._tagscache = TagCourseEntity.objects.filter(courseentity=self.entity)
-
-        return self._tagscache
-
 
     @property
     def repetitions(self):
@@ -622,8 +675,8 @@ class Course(models.Model):
     def get_all_enrolled_emails(self):
         from apps.enrollment.records.models import Record
 
-        return Record.objects.filter(group__course=self, status='1').values_list('student__user__email',
-                                                                                 flat=True).distinct()
+        return Record.objects.filter(group__course=self, status=Record.STATUS_ENROLLED)\
+            .values_list('student__user__email', flat=True).distinct()
 
 
     def votes_count(self, semester=None):
@@ -633,18 +686,27 @@ class Course(models.Model):
             .filter(Q(course=self), Q(state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)) \
             .count()
 
-    def is_opened(self, student):
-        try:
-            return self.get_opening_time(student).opening_time < datetime.datetime.now()
-        except:
+    def is_opened_for_student(self, student):
+        """
+        Determines whether the student is allowed
+        to sign up for this course at the current time.
+        Note: as the return value depends on the current time,
+        the function is not pure.
+        """
+        if student.status == 1:
             return False
-
-    def is_recording_open_for_student(self, student=None):
-        """ gives the answer to question: is course opened for apps.enrollment for student at the very moment? """
-
-        if not student:
+        opening_time = self.get_opening_time(student)
+        if opening_time is None:
             return False
+        return opening_time < datetime.datetime.now()
+        
 
+    def is_recording_open_for_student(self, student):
+        """
+        Determines whether the course is "open"
+        for the given student, i.e. whether they're
+        allowed to sign up or leave a course group.
+        """
         records_opening = self.semester.records_opening
         records_closing = self.semester.records_closing
 
@@ -653,7 +715,7 @@ class Course(models.Model):
         if self.records_start and self.records_end and self.records_start <= now <= self.records_end:
             return True
 
-        if records_opening and self.is_opened(student) and now < records_closing:
+        if records_opening and self.is_opened_for_student(student) and now < records_closing:
             return True
 
         if self.records_start and self.records_end and self.records_start <= now < self.records_end:
@@ -700,20 +762,50 @@ class Course(models.Model):
 
         return self.entity.get_points(student)
 
+    def get_effects_list(self):
+        return self.entity.get_all_effects()
 
-    def serialize_for_ajax(self, student=None, is_recording_open=None):
+    def get_tags_list(self):
+        return self.entity.get_all_tags()
+
+    def get_was_enrolled(self, student):
+        if student is None:
+            return False
+
+        # TODO
+        return False
+
+    @cache_result
+    def get_type_id(self):
+        return self.type.id if self.type.id else 1
+
+    def serialize_for_json(self, student=None,
+                           terms=None, includeWasEnrolled=False):
         from django.core.urlresolvers import reverse
 
-        data = {
-            'id': self.pk,
-            'name': self.name,
-            'short_name': self.entity.get_short_name(),
-            'type': self.type.id and self.type.id or 1,
-            'url': reverse('course-page', args=[self.slug]),
-            'is_recording_open': is_recording_open is not None and is_recording_open or (False if (student is None) else \
-                                                                                             self.is_recording_open_for_student(
-                                                                                                 student))
-        }
+        data = self.entity.serialize_for_json()
+        data['id'] = self.pk
+        data['type'] = self.get_type_id()
+        data['url'] = reverse('course-page', args=[self.slug])
+        if student is not None:
+            is_recording_open = self.is_recording_open_for_student(student)
+        else:
+            is_recording_open = False
+        data['is_recording_open'] = is_recording_open
+            
+        # TODO: why do we have this field defined in the model
+        # if the CourseEntity object has it as well? What's the difference?
+        data['english'] = self.english
+
+        if includeWasEnrolled:
+            data.update({
+                'was_enrolled': self.get_was_enrolled(student)
+            })
+
+        if terms is not None:
+            data.update({
+                'terms': [term.serialize_for_json() for term in terms]
+            })
 
         return data
 
@@ -779,7 +871,7 @@ class CourseDescription(models.Model):
     entity = models.ForeignKey(CourseEntity) #Podstawa do ktorej jestesmy przypisani
     author = models.ForeignKey('users.Employee')
 
-    is_ready = models.BooleanField()
+    is_ready = models.BooleanField(default=False)
 
     description = models.TextField(verbose_name='opis', blank=True, default='')
 
@@ -793,7 +885,7 @@ class CourseDescription(models.Model):
                                                  default=0)
 
     requirements = models.ManyToManyField(CourseEntity, verbose_name='wymagania', related_name='+', blank=True)
-    exam = models.BooleanField(verbose_name='egzamin')
+    exam = models.BooleanField(verbose_name='egzamin', default=False)
 
     created = models.DateTimeField(auto_now_add=True, auto_now=True)
 
@@ -812,6 +904,11 @@ class CourseDescription(models.Model):
         self.id = None
         self.save(force_insert=True)
 
+"""
+Because a tag will have different weights for each
+CourseEntity it's assigned to, we need this special
+relationship glue model.
+"""
 class TagCourseEntity(models.Model):
     tag = models.ForeignKey(Tag)
     courseentity = models.ForeignKey(CourseEntity)

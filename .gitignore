@@ -16,3 +16,6 @@ zapisy/settings_local.py
 static/
 .vagrant/
 a_dump_20160301.sql
+.DS_Store
+zapisy/logs/
+personal/

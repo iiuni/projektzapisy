@@ -91,12 +91,16 @@
 {% endblock %}
 
 {% block center %}
-{#    <div  style="float:right;margin-bottom: 20px;"><a href="{% url 'ical' %}">{% trans "Eksportuj do ical" %}</a>#}
-{#    </div>#}
+    <div  style="float:right;margin-bottom: 20px;"><a href="{% url 'ical' %}">{% trans "Eksportuj zajęcia z bieżącego semestru do ical" %}</a>
+    </div>
 
     <div class="row">
         <div class="span16">
-            <h2>{% trans "Plan zajęć" %}</h2>
+            <div class="schedule-title"><h2>{% trans "Plan zajęć" %}</h2></div>
+            
+            {% if user.student %}
+                <div class="schedule-header-ects-count"><h4>Punktów ECTS: {{ sum_points }}</h4></div>
+            {% endif %}
         </div>
     </div>
 
@@ -121,17 +125,17 @@
                 {% endif %}
 			</tr>
 		</thead>
-{#		<tfoot>#}
-{#			<tr>#}
-{#			{% if user.student %}#}
-{#				<td>Suma punktów ECTS:</td>#}
-{#				<td class="ects">{{ sum_points }}</td>#}
+		<tfoot>
+			<tr>
+			{% if user.student %}
+				<td><strong>Suma punktów ECTS:</strong></td>
+				<td class="ects">{{ sum_points }}</td>
 {#            {% else %}#}
 {#                <td>Liczba godzin:</td>#}
 {#                <td class="ects">{{ hours_sum }}</td>    #}
-{#            {% endif %}#}
-{#			</tr>#}
-{#		</tfoot>#}
+            {% endif %}
+			</tr>
+		</tfoot>
 		<tbody>
             {% regroup groups by group.course as courses %}
             {% for course in courses %}

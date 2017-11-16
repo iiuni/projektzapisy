@@ -2,8 +2,9 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from mailer.models import Message
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, BaseUser
 
 NOTIFICATION_TYPES = (
     ('News', {
@@ -132,7 +133,7 @@ def types_list(student=False, employee=False):
 class NotificationManager(models.Manager):
 
     def create_and_get(self, user):
-        types = types_list(not user.student is None, not user.employee is None)
+        types = types_list(BaseUser.is_student(user), BaseUser.is_employee(user))
         used = self.filter(user=user).distinct().values_list('type', flat=True)
         new_objects = []
 
@@ -191,26 +192,17 @@ class Notification(object):
                     return type[1]
             return ''
 
-        students = Student.get_active_students()
-        employees = Employee.get_actives()
+        def _send_to_users(users, notification, subject, context):
+            for u in users:
+                preference = NotificationManager.user_has_notification_on(u.user, notification)
+                address = u.user.email
+                if address and preference:
+                    context['user'] = u.user
+                    body_html = render_to_string('notifications/%s.html' % notification, context)
+                    body_plaintext = strip_tags(body_html)
+                    Message.objects.create(to_address=address, subject=subject, message_body=body_plaintext, message_body_html=body_html)
 
-        subject = _find_notification_name(notification)
+        subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
+        _send_to_users(Employee.get_actives(), notification, subject, context)
+        _send_to_users(Student.get_active_students(), notification, subject, context)
 
-        for employee in employees:
-            preference = NotificationManager.user_has_notification_on(employee.user, notification)
-            address = employee.user.email
-
-            if address and preference:
-                context['user'] = employee.user
-                body = render_to_string('notifications/%s.html' % notification, context)
-                Message.objects.create(to_address=address, subject=subject, message_body=body)
-
-        for student in students:
-            preference = NotificationManager.user_has_notification_on(student.user, notification)
-            address = student.user.email
-
-            if address and preference:
-                context['user'] = student.user
-                body = render_to_string('notifications/%s.html' % notification, context)
-
-                Message.objects.create(to_address=address, subject=subject, message_body=body)

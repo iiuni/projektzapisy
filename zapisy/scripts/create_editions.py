@@ -12,29 +12,29 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def run():
-    sem = Semester.objects.get(id=337)
+    sem = Semester.objects.get(id=338)
     file = open('lista.txt')
     ids = []
     for line in file:
         title = line.strip()
         try:
-            ce = CourseEntity.objects.get(name_pl = title)
+            ce = CourseEntity.objects.get(name_pl__iexact = title)
             print ce
             ids.append(ce.id)
         except ObjectDoesNotExist:
             print bcolors.FAIL+'   [not exists error] '+title+bcolors.ENDC
         except MultipleObjectsReturned:
-            print bcolors.FAIL+'   [multiple objects error (took newest)] '+title+bcolors.ENDC
-            ce = CourseEntity.objects.filter(name_pl = title).order_by('-id')[0]
+            print bcolors.FAIL+'   [multiple objects error (took newest,for vote)] '+title+bcolors.ENDC
+            ce = CourseEntity.objects.filter(name_pl__iexact = title,status=2).order_by('-id')[0]
             ids.append(ce.id)
 
-    sem = Semester.objects.get(id=337)
     for idd in ids:
             ent = CourseEntity.objects.get(id=idd)
             if ent.slug is None:
                     print bcolors.FAIL+'   [slug error] '+ent.name+bcolors.ENDC
             else:
-                    newslug = ent.slug+'_lato_16_17'
+                    newslug = ent.slug+'_zima_17_18'
                     cour = Course(entity=ent, information=ent.information, semester=sem, slug=newslug)
                     cour.save()
-                    print ent.name + ' $ ' + newslug + ' $ '# + str(cour.id)
+                    print ent.name + ' $ ' + newslug + ' $ ' + str(cour.id)
+

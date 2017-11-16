@@ -1,382 +1,421 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-    depends_on = (
-        ('users',    '0001_initial'),
-    )
-    
-    def forwards(self, orm):
-        
-        # Adding model 'Type'
-        db.create_table('courses_type', (
-            ('meta_type', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Type'], null=True, blank=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
-        ))
-        db.send_create_signal('courses', ['Type'])
+from django.db import models, migrations
+import autoslug.fields
 
-        # Adding model 'StudentOptions'
-        db.create_table('courses_studentoptions', (
-            ('records_opening_delay_minutes', self.gf('django.db.models.fields.IntegerField')()),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('student', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['users.Student'])),
-            ('course', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Course'])),
-        ))
-        db.send_create_signal('courses', ['StudentOptions'])
 
-        # Adding unique constraint on 'StudentOptions', fields ['course', 'student']
-        db.create_unique('courses_studentoptions', ['course_id', 'student_id'])
+class Migration(migrations.Migration):
 
-        # Adding model 'CourseEntity'
-        db.create_table('courses_courseentity', (
-            ('lectures', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('description', self.gf('django.db.models.fields.TextField')(default='')),
-            ('repetitions', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('exercises', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('shortName', self.gf('django.db.models.fields.CharField')(max_length=30, null=True)),
-            ('laboratories', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Type'], null=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-        ))
-        db.send_create_signal('courses', ['CourseEntity'])
+    dependencies = [
+        ('users', '0001_initial'),
+    ]
 
-        # Adding model 'Course'
-        db.create_table('courses_course', (
-            ('lectures', self.gf('django.db.models.fields.IntegerField')()),
-            ('laboratories', self.gf('django.db.models.fields.IntegerField')()),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('repetitions', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('semester', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Semester'], null=True)),
-            ('exercises', self.gf('django.db.models.fields.IntegerField')()),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.CourseEntity'])),
-            ('type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Type'], null=True)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=255, unique=True, null=True, db_index=True)),
-            ('description', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('courses', ['Course'])
-
-        # Adding unique constraint on 'Course', fields ['name', 'semester']
-        db.create_unique('courses_course', ['name', 'semester_id'])
-
-        # Adding M2M table for field teachers on 'Course'
-        db.create_table('courses_course_teachers', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('course', models.ForeignKey(orm['courses.course'], null=False)),
-            ('employee', models.ForeignKey(orm['users.employee'], null=False))
-        ))
-        db.create_unique('courses_course_teachers', ['course_id', 'employee_id'])
-
-        # Adding model 'Group'
-        db.create_table('courses_group', (
-            ('limit', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('teacher', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['users.Employee'], null=True, blank=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('course', self.gf('django.db.models.fields.related.ForeignKey')(related_name='groups', to=orm['courses.Course'])),
-        ))
-        db.send_create_signal('courses', ['Group'])
-
-        # Adding model 'Classroom'
-        db.create_table('courses_classroom', (
-            ('building', self.gf('django.db.models.fields.CharField')(default='', max_length=75, blank=True)),
-            ('capacity', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('number', self.gf('django.db.models.fields.CharField')(max_length=4)),
-        ))
-        db.send_create_signal('courses', ['Classroom'])
-
-        # Adding model 'Term'
-        db.create_table('courses_term', (
-            ('dayOfWeek', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('classroom', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Classroom'])),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(related_name='term', to=orm['courses.Group'])),
-            ('start_time', self.gf('django.db.models.fields.TimeField')()),
-            ('end_time', self.gf('django.db.models.fields.TimeField')()),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal('courses', ['Term'])
-
-        # Adding model 'Book'
-        db.create_table('courses_book', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.TextField')()),
-            ('course', self.gf('django.db.models.fields.related.ForeignKey')(related_name='books', to=orm['courses.Course'])),
-        ))
-        db.send_create_signal('courses', ['Book'])
-
-        # Adding model 'Semester'
-        db.create_table('courses_semester', (
-            ('records_opening', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('semester_beginning', self.gf('django.db.models.fields.DateField')()),
-            ('semester_ending', self.gf('django.db.models.fields.DateField')()),
-            ('records_closing', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('visible', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('year', self.gf('django.db.models.fields.CharField')(default='0', max_length=7)),
-            ('type', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('is_grade_active', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-        ))
-        db.send_create_signal('courses', ['Semester'])
-
-        # Adding unique constraint on 'Semester', fields ['type', 'year']
-        db.create_unique('courses_semester', ['type', 'year'])
-
-        # Adding model 'PointTypes'
-        db.create_table('courses_pointtypes', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(default='', max_length=30)),
-        ))
-        db.send_create_signal('courses', ['PointTypes'])
-
-        # Adding model 'PointsOfCourseEntities'
-        db.create_table('courses_pointsofcourseentities', (
-            ('value', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('type_of_point', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.PointTypes'])),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.CourseEntity'])),
-        ))
-        db.send_create_signal('courses', ['PointsOfCourseEntities'])
-
-        # Adding model 'PointsOfCourses'
-        db.create_table('courses_pointsofcourses', (
-            ('value', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('program', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['users.Program'], null=True)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('type_of_point', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.PointTypes'])),
-            ('course', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Course'])),
-        ))
-        db.send_create_signal('courses', ['PointsOfCourses'])
-    
-    
-    def backwards(self, orm):
-        
-        # Deleting model 'Type'
-        db.delete_table('courses_type')
-
-        # Deleting model 'StudentOptions'
-        db.delete_table('courses_studentoptions')
-
-        # Removing unique constraint on 'StudentOptions', fields ['course', 'student']
-        db.delete_unique('courses_studentoptions', ['course_id', 'student_id'])
-
-        # Deleting model 'CourseEntity'
-        db.delete_table('courses_courseentity')
-
-        # Deleting model 'Course'
-        db.delete_table('courses_course')
-
-        # Removing unique constraint on 'Course', fields ['name', 'semester']
-        db.delete_unique('courses_course', ['name', 'semester_id'])
-
-        # Removing M2M table for field teachers on 'Course'
-        db.delete_table('courses_course_teachers')
-
-        # Deleting model 'Group'
-        db.delete_table('courses_group')
-
-        # Deleting model 'Classroom'
-        db.delete_table('courses_classroom')
-
-        # Deleting model 'Term'
-        db.delete_table('courses_term')
-
-        # Deleting model 'Book'
-        db.delete_table('courses_book')
-
-        # Deleting model 'Semester'
-        db.delete_table('courses_semester')
-
-        # Removing unique constraint on 'Semester', fields ['type', 'year']
-        db.delete_unique('courses_semester', ['type', 'year'])
-
-        # Deleting model 'PointTypes'
-        db.delete_table('courses_pointtypes')
-
-        # Deleting model 'PointsOfCourseEntities'
-        db.delete_table('courses_pointsofcourseentities')
-
-        # Deleting model 'PointsOfCourses'
-        db.delete_table('courses_pointsofcourses')
-    
-    
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'courses.book': {
-            'Meta': {'object_name': 'Book'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.TextField', [], {}),
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'books'", 'to': "orm['courses.Course']"})
-        },
-        'courses.classroom': {
-            'Meta': {'object_name': 'Classroom'},
-            'building': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '75', 'blank': 'True'}),
-            'capacity': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'number': ('django.db.models.fields.CharField', [], {'max_length': '4'})
-        },
-        'courses.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'limit': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'groups'", 'to': "orm['courses.Course']"}),
-            'teacher': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['users.Employee']", 'null': 'True', 'blank': 'True'}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '1'})
-        },
-        'courses.pointsofcourseentities': {
-            'Meta': {'object_name': 'PointsOfCourseEntities'},
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.CourseEntity']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'type_of_point': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.PointTypes']"}),
-            'value': ('django.db.models.fields.PositiveSmallIntegerField', [], {})
-        },
-        'courses.pointsofcourses': {
-            'Meta': {'object_name': 'PointsOfCourses'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'program': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['users.Program']", 'null': 'True'}),
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']"}),
-            'type_of_point': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.PointTypes']"}),
-            'value': ('django.db.models.fields.PositiveSmallIntegerField', [], {})
-        },
-        'courses.pointtypes': {
-            'Meta': {'object_name': 'PointTypes'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'})
-        },
-        'courses.semester': {
-            'Meta': {'unique_together': "(('type', 'year'),)", 'object_name': 'Semester'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_grade_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'records_closing': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'records_opening': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'semester_beginning': ('django.db.models.fields.DateField', [], {}),
-            'semester_ending': ('django.db.models.fields.DateField', [], {}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'visible': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'year': ('django.db.models.fields.CharField', [], {'default': "'0'", 'max_length': '7'})
-        },
-        'courses.studentoptions': {
-            'Meta': {'unique_together': "(('course', 'student'),)", 'object_name': 'StudentOptions'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'records_opening_delay_minutes': ('django.db.models.fields.IntegerField', [], {}),
-            'student': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['users.Student']"}),
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']"})
-        },
-        'courses.course': {
-            'Meta': {'unique_together': "(('name', 'semester'),)", 'object_name': 'Course'},
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.CourseEntity']"}),
-            'exercises': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'laboratories': ('django.db.models.fields.IntegerField', [], {}),
-            'lectures': ('django.db.models.fields.IntegerField', [], {}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'repetitions': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'semester': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Semester']", 'null': 'True'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255', 'unique': 'True', 'null': 'True', 'db_index': 'True'}),
-            'students_options': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['users.Student']", 'through': "orm['courses.StudentOptions']", 'symmetrical': 'False'}),
-            'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['users.Employee']", 'symmetrical': 'False'}),
-            'type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Type']", 'null': 'True'})
-        },
-        'courses.courseentity': {
-            'Meta': {'object_name': 'CourseEntity'},
-            'description': ('django.db.models.fields.TextField', [], {'default': "''"}),
-            'exercises': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'laboratories': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'lectures': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'repetitions': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'shortName': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True'}),
-            'type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Type']", 'null': 'True'})
-        },
-        'courses.term': {
-            'Meta': {'object_name': 'Term'},
-            'classroom': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Classroom']"}),
-            'dayOfWeek': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'end_time': ('django.db.models.fields.TimeField', [], {}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'term'", 'to': "orm['courses.Group']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'start_time': ('django.db.models.fields.TimeField', [], {})
-        },
-        'courses.type': {
-            'Meta': {'object_name': 'Type'},
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Type']", 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'meta_type': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '30'})
-        },
-        'users.employee': {
-            'Meta': {'object_name': 'Employee'},
-            'consultations': ('django.db.models.fields.TextField', [], {}),
-            'homepage': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '200'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'receive_mass_mail_enrollment': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_grade': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_offer': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'room': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        },
-        'users.program': {
-            'Meta': {'object_name': 'Program'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50'})
-        },
-        'users.student': {
-            'Meta': {'object_name': 'Student'},
-            'block': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'ects': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'matricula': ('django.db.models.fields.CharField', [], {'default': "''", 'unique': 'True', 'max_length': '20'}),
-            'program': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['users.Program']", 'null': 'True'}),
-            'receive_mass_mail_enrollment': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_grade': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'receive_mass_mail_offer': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'records_opening_delay_minutes': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'semestr': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        }
-    }
-    
-    complete_apps = ['courses']
+    operations = [
+        migrations.CreateModel(
+            name='StudentPointsView',
+            fields=[
+                ('value', models.SmallIntegerField()),
+                ('student', models.ForeignKey(primary_key=True, serialize=False, to='users.Student')),
+            ],
+            options={
+                'managed': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ChangedDay',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('day', models.DateField(unique=True, verbose_name=b'dzie\xc5\x84 wolny')),
+                ('weekday', models.CharField(max_length=1, verbose_name=b'zmieniony na', choices=[(b'1', 'poniedzialek'), (b'2', 'wtorek'), (b'3', 'sroda'), (b'4', 'czwartek'), (b'5', 'piatek'), (b'6', 'sobota'), (b'7', 'niedziela')])),
+            ],
+            options={
+                'verbose_name': 'dzie\u0144 zmienony na inny',
+                'verbose_name_plural': 'dni zmienione na inne',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Classroom',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('type', models.IntegerField(default=1, verbose_name=b'typ', choices=[(0, 'Sala wyk\u0142adowa'), (1, 'Sala \u0107wiczeniowa'), (2, 'Pracownia komputerowa - Windows'), (3, 'Pracownia komputerowa - Linux')])),
+                ('description', models.TextField(null=True, verbose_name=b'opis', blank=True)),
+                ('number', models.CharField(max_length=20, verbose_name=b'numer sali')),
+                ('order', models.IntegerField(null=True, blank=True)),
+                ('building', models.CharField(default=b'', max_length=75, verbose_name=b'budynek', blank=True)),
+                ('capacity', models.PositiveSmallIntegerField(default=0, verbose_name=b'liczba miejsc')),
+                ('floor', models.IntegerField(blank=True, null=True, choices=[(0, b'Parter'), (1, b'I pi\xc4\x99tro'), (2, b'II Pi\xc4\x99tro'), (3, b'III pi\xc4\x99tro')])),
+                ('can_reserve', models.BooleanField(default=False)),
+                ('slug', autoslug.fields.AutoSlugField(editable=False)),
+            ],
+            options={
+                'ordering': ['floor', 'number'],
+                'verbose_name': 'sala',
+                'verbose_name_plural': 'sale',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Course',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('slug', models.SlugField(max_length=255, unique=True, null=True, verbose_name=b'odno\xc5\x9bnik')),
+                ('notes', models.TextField(null=True, verbose_name=b'uwagi do tej edyci przedmiotu', blank=True)),
+                ('web_page', models.URLField(null=True, verbose_name=b'Strona WWW przedmiotu', blank=True)),
+                ('english', models.BooleanField(default=False, verbose_name=b'przedmiot prowadzony w j.angielskim')),
+                ('records_start', models.DateTimeField(null=True, verbose_name='Pocz\u0105tek zapis\xf3w', blank=True)),
+                ('records_end', models.DateTimeField(null=True, verbose_name='Koniec zapis\xf3w', blank=True)),
+            ],
+            options={
+                'ordering': ['entity__name'],
+                'verbose_name': 'przedmiot',
+                'verbose_name_plural': 'przedmioty',
+                'permissions': (('view_stats', 'Mo\u017ce widzie\u0107 statystyki'),),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='CourseDescription',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('is_ready', models.BooleanField()),
+                ('description', models.TextField(default=b'', verbose_name=b'opis', blank=True)),
+                ('description_pl', models.TextField(default=b'', null=True, verbose_name=b'opis', blank=True)),
+                ('description_en', models.TextField(default=b'', null=True, verbose_name=b'opis', blank=True)),
+                ('lectures', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach wyk\u0142adu', blank=True)),
+                ('repetitions', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach repetytori\xf3w', blank=True)),
+                ('exercises', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach \u0107wicze\u0144', blank=True)),
+                ('laboratories', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach pracowni', blank=True)),
+                ('seminars', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach seminari\xf3w', blank=True)),
+                ('exercises_laboratories', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach \u0107w+prac', blank=True)),
+                ('exam', models.BooleanField(verbose_name=b'egzamin')),
+                ('created', models.DateTimeField(auto_now=True, auto_now_add=True)),
+                ('author', models.ForeignKey(to='users.Employee')),
+            ],
+            options={
+                'verbose_name': 'opis przedmiotu',
+                'verbose_name_plural': 'opisy przedmiotu',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='CourseEntity',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100, verbose_name=b'nazwa')),
+                ('name_pl', models.CharField(max_length=100, null=True, verbose_name=b'nazwa')),
+                ('name_en', models.CharField(max_length=100, null=True, verbose_name=b'nazwa')),
+                ('shortName', models.CharField(help_text='Opcjonalna skr\xf3cona nazwa, u\u017cywana na np. planie. Przyk\u0142ady: JFiZO, AiSD', max_length=30, null=True, verbose_name=b'skr\xc3\xb3cona nazwa', blank=True)),
+                ('status', models.IntegerField(default=0, choices=[(0, 'Propozycja'), (1, 'W ofercie'), (2, 'Poddana pod g\u0142osowanie'), (4, 'Wycofany z oferty'), (5, 'Do poprawienia')])),
+                ('semester', models.CharField(default=b'u', max_length=1, verbose_name=b'semestr', choices=[(b'u', b'nieoznaczony'), (b'z', b'zimowy'), (b'l', b'letni')])),
+                ('english', models.BooleanField(default=False, verbose_name=b'przedmiot prowadzony w j.angielskim')),
+                ('exam', models.BooleanField(default=True, verbose_name=b'egzamin')),
+                ('suggested_for_first_year', models.BooleanField(verbose_name=b'polecany dla pierwszego roku')),
+                ('web_page', models.URLField(null=True, verbose_name=b'strona www', blank=True)),
+                ('ects', models.IntegerField(null=True, blank=True)),
+                ('lectures', models.IntegerField(null=True, verbose_name='godzin wyk\u0142adu', blank=True)),
+                ('exercises', models.IntegerField(null=True, verbose_name='godzin \u0107wicze\u0144', blank=True)),
+                ('laboratories', models.IntegerField(null=True, verbose_name='godzin pracowni', blank=True)),
+                ('repetitions', models.IntegerField(null=True, verbose_name='godzin repetytorium', blank=True)),
+                ('seminars', models.IntegerField(null=True, verbose_name='godzin seminari\xf3w', blank=True)),
+                ('exercises_laboratiories', models.IntegerField(null=True, verbose_name='godzin \u0107wiczenio-pracowni', blank=True)),
+                ('deleted', models.BooleanField(default=False, verbose_name=b'ukryty')),
+                ('slug', models.SlugField(max_length=255, unique=True, null=True, verbose_name=b'odno\xc5\x9bnik (nazwa pojawiaj\xc4\x85ca si\xc4\x99 w urlach)')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name=b'Utworzono')),
+                ('edited', models.DateTimeField(auto_now=True, verbose_name=b'Ostatnia zmiana')),
+                ('in_prefs', models.BooleanField(default=True, verbose_name=b'w preferencjach')),
+                ('dyskretna_l', models.BooleanField(default=False, verbose_name='Przedmiot posiada r\xf3wnie\u017c wersje: Dyskretna (L)')),
+                ('numeryczna_l', models.BooleanField(default=False, verbose_name='Przedmiot posiada r\xf3wnie\u017c wersje: Numeryczna (L)')),
+                ('algorytmy_l', models.BooleanField(default=False, verbose_name='Przedmiot posiada r\xf3wnie\u017c wersje: Algorytmy (L)')),
+                ('programowanie_l', models.BooleanField(default=False, verbose_name='Przedmiot posiada r\xf3wnie\u017c wersje: Programowanie (L)')),
+                ('usos_kod', models.CharField(default=b'', max_length=20, blank=True, help_text=b'UWAGA! Nie edytuj tego pola sam!', null=True, verbose_name='Kod przedmiotu w usos')),
+                ('ue', models.BooleanField(default=False, verbose_name='Przedmiot prowadzony przy pomocy \u015brodk\xf3w pochodz\u0105cych z Unii Europejskiej')),
+            ],
+            options={
+                'ordering': ['name'],
+                'verbose_name': 'Podstawa przedmiotu',
+                'verbose_name_plural': 'Podstawy przedmiot\xf3w',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Effects',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('group_name', models.CharField(max_length=250, verbose_name='grupa efekt\xf3w')),
+                ('description', models.TextField(null=True, verbose_name='opis', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Grupa Efekt\xf3w',
+                'verbose_name_plural': 'Grupy Efekt\xf3w',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Freeday',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('day', models.DateField(unique=True, verbose_name=b'dzie\xc5\x84 wolny')),
+            ],
+            options={
+                'verbose_name': 'dzie\u0144 wolny od zaj\u0119\u0107',
+                'verbose_name_plural': 'dni wolne od zaj\u0119\u0107',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Group',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('type', models.CharField(max_length=2, verbose_name=b'typ zaj\xc4\x99\xc4\x87', choices=[(b'1', b'wyk\xc5\x82ad'), (b'2', b'\xc4\x87wiczenia'), (b'3', b'pracownia'), (b'5', b'\xc4\x87wiczenio-pracownia'), (b'6', b'seminarium'), (b'7', b'lektorat'), (b'8', b'WF'), (b'9', b'repetytorium'), (b'10', b'projekt')])),
+                ('limit', models.PositiveSmallIntegerField(default=0, verbose_name=b'limit miejsc')),
+                ('limit_zamawiane', models.PositiveSmallIntegerField(default=0, help_text=b'miejsca gwarantowane dla student\xc3\xb3w zamawianych 2009', verbose_name=b'miejsca dla zamawianych 2009')),
+                ('limit_zamawiane2012', models.PositiveSmallIntegerField(default=0, help_text=b'miejsca gwarantowane dla student\xc3\xb3w zamawianych 2012', verbose_name=b'miejsca dla zamawianych 2012')),
+                ('limit_isim', models.PositiveSmallIntegerField(default=0, help_text=b'miejsca gwarantowane dla student\xc3\xb3w isim', verbose_name=b'miejsca dla ISIM')),
+                ('extra', models.CharField(default=b'', max_length=20, verbose_name=b'dodatkowe informacje', blank=True, choices=[(b'', b''), (b'pierwsze 7 tygodni', b'pierwsze 7 tygodni'), (b'drugie 7 tygodni', b'drugie 7 tygodni'), (b'grupa rezerwowa', b'grupa rezerwowa'), (b'grupa licencjacka', b'grupa licencjacka'), (b'grupa magisterska', b'grupa magisterska'), (b'grupa zaawansowana', b'grupa zaawansowana'), (b'zajecia na mat.', 'zaj\u0119cia na matematyce'), ('wyk\u0142ad okrojony', b'wyk\xc5\x82ad okrojony'), ('grupa 1', b'grupa 1'), ('grupa 2', b'grupa 2'), ('grupa 3', b'grupa 3'), ('grupa 4', b'grupa 4'), ('grupa 5', b'grupa 5'), ('pracownia linuksowa', b'pracownia linuksowa'), ('grupa angloj\u0119zyczna', b'grupa angloj\xc4\x99zyczna'), ('I rok', b'I rok'), ('II rok', b'II rok'), ('ISIM', b'ISIM')])),
+                ('export_usos', models.BooleanField(default=True, verbose_name=b'czy eksportowa\xc4\x87 do usos?')),
+                ('enrolled', models.PositiveIntegerField(default=0, verbose_name=b'liczba zapisanych student\xc3\xb3w', editable=False)),
+                ('enrolled_zam', models.PositiveIntegerField(default=0, verbose_name=b'liczba zapisanych student\xc3\xb3w zamawianych', editable=False)),
+                ('enrolled_zam2012', models.PositiveIntegerField(default=0, verbose_name=b'liczba zapisanych student\xc3\xb3w zamawianych', editable=False)),
+                ('enrolled_isim', models.PositiveIntegerField(default=0, verbose_name=b'liczba zapisanych student\xc3\xb3w ISIM', editable=False)),
+                ('queued', models.PositiveIntegerField(default=0, verbose_name=b'liczba student\xc3\xb3w w kolejce', editable=False)),
+                ('usos_nr', models.IntegerField(help_text=b'UWAGA! Nie edytuj tego pola sam!', null=True, verbose_name='Nr grupy w usos', blank=True)),
+                ('course', models.ForeignKey(related_name='groups', verbose_name=b'przedmiot', to='courses.Course')),
+                ('teacher', models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', blank=True, to='users.Employee', null=True)),
+            ],
+            options={
+                'verbose_name': 'grupa',
+                'verbose_name_plural': 'grupy',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='PointsOfCourseEntities',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('value', models.PositiveSmallIntegerField(default=6, verbose_name=b'liczba punkt\xc3\xb3w')),
+                ('entity', models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity')),
+                ('program', models.ForeignKey(default=None, blank=True, to='users.Program', null=True, verbose_name=b'Program Studi\xc3\xb3w')),
+            ],
+            options={
+                'verbose_name': 'zale\u017cno\u015b\u0107 podstawa przedmiotu-punkty',
+                'verbose_name_plural': 'zale\u017cno\u015bci podstawy przedmiotu-punkty',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='PointTypes',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(default=b'', max_length=30, verbose_name=b'rodzaj punkt\xc3\xb3w')),
+            ],
+            options={
+                'verbose_name': 'rodzaj punktu',
+                'verbose_name_plural': 'rodzaje punkt\xf3w',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Semester',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('visible', models.BooleanField(verbose_name=b'widoczny')),
+                ('type', models.CharField(max_length=1, verbose_name=b'rodzaj semestru', choices=[(b'z', 'zimowy'), (b'l', 'letni')])),
+                ('year', models.CharField(default=b'0', max_length=7, verbose_name=b'rok akademicki')),
+                ('records_opening', models.DateTimeField(help_text=b'Godzina powinna by\xc4\x87 ustawiona na 00:00:00, by studenci mieli otwarcie mi\xc4\x99dzy 10:00 a 22:00.', null=True, verbose_name=b'Czas otwarcia zapis\xc3\xb3w', blank=True)),
+                ('records_closing', models.DateTimeField(null=True, verbose_name=b'Czas zamkniecia zapis\xc3\xb3w', blank=True)),
+                ('records_ending', models.DateTimeField(null=True, verbose_name=b'Czas zamkni\xc4\x99cia wypis\xc3\xb3w', blank=True)),
+                ('lectures_beginning', models.DateField(null=True, verbose_name=b'Dzie\xc5\x84 rozpocz\xc4\x99cia zaj\xc4\x99\xc4\x87', blank=True)),
+                ('lectures_ending', models.DateField(null=True, verbose_name=b'Dzie\xc5\x84 zako\xc5\x84czenia zaj\xc4\x99\xc4\x87', blank=True)),
+                ('semester_beginning', models.DateField(verbose_name=b'Data rozpocz\xc4\x99cia semestru')),
+                ('semester_ending', models.DateField(verbose_name=b'Data zako\xc5\x84czenia semestru')),
+                ('desiderata_opening', models.DateTimeField(null=True, verbose_name=b'Czas otwarcia dezyderat', blank=True)),
+                ('desiderata_closing', models.DateTimeField(null=True, verbose_name=b'Czas zamkni\xc4\x99cia dezyderat', blank=True)),
+                ('is_grade_active', models.BooleanField(verbose_name=b'Ocena aktywna')),
+                ('records_ects_limit_abolition', models.DateTimeField(null=True, verbose_name=b'Czas zniesienia limitu 35 ECTS')),
+                ('t0_are_ready', models.BooleanField(default=False, verbose_name='T0 zosta\u0142y ustalone')),
+                ('first_grade_semester', models.ForeignKey(related_name='fgrade', verbose_name=b'Pierwszy semestr oceny', blank=True, to='courses.Semester', null=True)),
+                ('second_grade_semester', models.ForeignKey(related_name='sgrade', verbose_name=b'Drugi semester oceny', blank=True, to='courses.Semester', null=True)),
+            ],
+            options={
+                'ordering': ['-year', 'type'],
+                'verbose_name': 'semestr',
+                'verbose_name_plural': 'semestry',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StudentOptions',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('records_opening_bonus_minutes', models.IntegerField(default=0, verbose_name=b'Przyspieszenie otwarcia zapis\xc3\xb3w na ten przedmiot (minuty)')),
+                ('course', models.ForeignKey(verbose_name=b'przedmiot', to='courses.Course')),
+                ('student', models.ForeignKey(verbose_name=b'student', to='users.Student')),
+            ],
+            options={
+                'verbose_name': 'zale\u017cno\u015b\u0107 przedmiot-student',
+                'verbose_name_plural': 'zale\u017cno\u015bci przedmiot-student',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Tag',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('short_name', models.CharField(max_length=50, verbose_name='nazwa skr\xf3cona')),
+                ('full_name', models.CharField(max_length=250, verbose_name='nazwa pe\u0142na')),
+                ('description', models.TextField(verbose_name='opis')),
+            ],
+            options={
+                'verbose_name': 'Tag',
+                'verbose_name_plural': 'Tagi',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TagCourseEntity',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('weight', models.IntegerField(verbose_name='Waga')),
+                ('courseentity', models.ForeignKey(to='courses.CourseEntity')),
+                ('tag', models.ForeignKey(to='courses.Tag')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Term',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('dayOfWeek', models.CharField(max_length=1, verbose_name=b'dzie\xc5\x84 tygodnia', choices=[(b'1', 'poniedzialek'), (b'2', 'wtorek'), (b'3', 'sroda'), (b'4', 'czwartek'), (b'5', 'piatek'), (b'6', 'sobota'), (b'7', 'niedziela')])),
+                ('start_time', models.TimeField(verbose_name=b'rozpocz\xc4\x99cie')),
+                ('end_time', models.TimeField(verbose_name=b'zako\xc5\x84czenie')),
+                ('classroom', models.ForeignKey(verbose_name=b'sala', blank=True, to='courses.Classroom', null=True)),
+                ('classrooms', models.ManyToManyField(related_name='new_classrooms', null=True, verbose_name=b'sale', to='courses.Classroom', blank=True)),
+                ('group', models.ForeignKey(related_name='term', verbose_name=b'grupa', to='courses.Group')),
+            ],
+            options={
+                'ordering': ['dayOfWeek'],
+                'verbose_name': 'termin',
+                'verbose_name_plural': 'terminy',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Type',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(default=b'', max_length=30, verbose_name=b'rodzaj zajec')),
+                ('short_name', models.CharField(default=b'', max_length=5, verbose_name=b'rodzaj zajec (kr\xc3\xb3\xc5\xa7ka forma)')),
+                ('meta_type', models.BooleanField(default=False, verbose_name=b'Grupa typow')),
+                ('free_in_vote', models.BooleanField(default=False)),
+                ('have_review_lecture', models.BooleanField(default=False, verbose_name='Posiada repetytorium')),
+                ('have_lecture', models.BooleanField(default=False, verbose_name='Posiada wyk\u0142ad')),
+                ('have_tutorial', models.BooleanField(default=False, verbose_name='Posiada \u0107wiczenia')),
+                ('have_lab', models.BooleanField(default=False, verbose_name='Posiada pracowni\u0119')),
+                ('have_tutorial_lab', models.BooleanField(default=False, verbose_name='Posiada \u0107wiczenio-pracowni\u0119')),
+                ('have_seminar', models.BooleanField(default=False, verbose_name='Posiada seminarium')),
+                ('have_project', models.BooleanField(default=False, verbose_name='Posiada projekt')),
+                ('default_ects', models.IntegerField(default=6, verbose_name='Punkty ECTS')),
+                ('group', models.ForeignKey(verbose_name=b'grupa', blank=True, to='courses.Type', null=True)),
+            ],
+            options={
+                'verbose_name': 'rodzaj przedmiotu',
+                'verbose_name_plural': 'rodzaje przedmiot\xf3w',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='studentoptions',
+            unique_together=set([('course', 'student')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='semester',
+            unique_together=set([('type', 'year')]),
+        ),
+        migrations.AddField(
+            model_name='pointsofcourseentities',
+            name='type_of_point',
+            field=models.ForeignKey(verbose_name=b'rodzaj punkt\xc3\xb3w', to='courses.PointTypes'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='pointsofcourseentities',
+            unique_together=set([('entity', 'type_of_point', 'program')]),
+        ),
+        migrations.AddField(
+            model_name='courseentity',
+            name='effects',
+            field=models.ManyToManyField(to='courses.Effects', null=True, verbose_name='Grupa efekt\xf3w kszta\u0142cenia', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='courseentity',
+            name='information',
+            field=models.ForeignKey(blank=True, to='courses.CourseDescription', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='courseentity',
+            name='owner',
+            field=models.ForeignKey(verbose_name=b'opiekun', blank=True, to='users.Employee', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='courseentity',
+            name='tags',
+            field=models.ManyToManyField(to='courses.Tag', through='courses.TagCourseEntity'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='courseentity',
+            name='type',
+            field=models.ForeignKey(verbose_name=b'rodzaj', to='courses.Type', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='coursedescription',
+            name='entity',
+            field=models.ForeignKey(to='courses.CourseEntity'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='coursedescription',
+            name='requirements',
+            field=models.ManyToManyField(related_name='+', verbose_name=b'wymagania', to='courses.CourseEntity', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='entity',
+            field=models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='information',
+            field=models.ForeignKey(verbose_name=b'opis', blank=True, to='courses.CourseDescription', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='semester',
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='students_options',
+            field=models.ManyToManyField(to='users.Student', verbose_name=b'opcje student\xc3\xb3w', through='courses.StudentOptions'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='teachers',
+            field=models.ManyToManyField(to='users.Employee', verbose_name=b'prowadz\xc4\x85cy', blank=True),
+            preserve_default=True,
+        ),
+    ]

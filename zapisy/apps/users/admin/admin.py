@@ -6,8 +6,8 @@ from django import forms
 from django.contrib.auth.models import User
 
 from apps.users.models import Employee, Student, Program, StudiaZamawiane, StudiaZamawianeMaileOpiekunow, ExtendedUser, UserProfile, StudiaZamawiane2012
-from zapisy.apps.enrollment.courses.models import Semester
-from zapisy.apps.enrollment.records.models import Record
+from apps.enrollment.courses.models import Semester
+from apps.enrollment.records.models import Record
 
 
 class ExtendedUserAdmin(admin.ModelAdmin):
@@ -32,7 +32,7 @@ def export_as_csv(modeladmin, request, queryset):
 
     opts = modeladmin.model._meta
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s.csv' % unicode(opts).replace('.', '_')
 
     writer = unicodecsv.writer(response, encoding='utf-8')
@@ -125,8 +125,8 @@ from django.contrib.auth.models import User
 class UserAdmin(UserAdmin):
     inlines =  [StudentInline, ProfileInline, EmployeeInline]
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff')
-    list_filter = ('is_active', 'is_staff', '_profile_cache__is_student',
-                          '_profile_cache__is_employee', '_profile_cache__is_zamawiany')
+    list_filter = ('is_active', 'is_staff', 'profile__is_student',
+                          'profile__is_employee', 'profile__is_zamawiany')
 
 
 admin.site.unregister(User)

@@ -24,6 +24,8 @@
     {% endif %}
     {% if perms.schedule.manage_events %}
         <li {% block schedule_manage %}{% endblock %}><a href="{% url 'events:reservations' %}">Zarządzaj</a></li>
+        <li {% block conflicts_manage %}{% endblock %}><a href="{% url 'events:conflicts' %}">Konflikty</a></li>
+
     {% endif %}
     {% if user.is_authenticated %}
         <li{% block schedule_history %}{% endblock %}><a
@@ -32,6 +34,10 @@
 
     {% if perms.schedule.manage_events %}
         <li {% block schedule_statistic %}{% endblock %}><a href="{% url 'events:statistics' %}">Statystyki</a></li>
+    {% endif %}
+
+    {% if perms.schedule.manage_events %}
+        <li {% block events_report %}{% endblock %}><a href="{% url 'events:events_report' %}">Raport</a></li>
     {% endif %}
     {# end system_menu #}
 {% endblock %}

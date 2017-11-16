@@ -1,71 +1,223 @@
-a
-{
-	cursor: pointer;
+a {
+  cursor: pointer;
 }
 
-.right { float: right; }
-.left { float: left; }
-div.header
-{
-
-background: #00709e; /* Old browsers */
-    height:96px;
-
+.right {
+  float: right;
 }
 
-div.top .topbar { position:relative;  height: auto!important;}
-div.top .topbar .fill{ position:relative;}
-div.top .btn { padding:4px; color:#808080;}
-div.top .topbar ul a { color:#FFFFFF; font-size:15px; }
-div.top .systemtopbar .fill { background-color: #00709e; background-image:none; box-shadow: none; }
-div.top .systemtopbar ul a { padding: 8px 10px 8px 10px; color:#FFFFFF; font-size:15px;}
-div.top .systemtopbar ul li {  margin-right:5px; background-color:#005f92; font-size:15px;
+.left {
+  float: left;
+}
+
+div.header {
+  background: #00709e;
+ /* Old browsers */
+  height: 96px;
+}
+
+div.top .topbar {
+  position: relative;
+  height: auto!important;
+}
+
+div.top .topbar .fill {
+  position: relative;
+}
+
+div.top .topbar ul a {
+  color: #FFFFFF;
+  font-size: 15px;
+}
+
+div.top .systemtopbar .fill {
+  background-color: #00709e;
+  background-image: none;
+  box-shadow: none;
+}
+
+div.top .systemtopbar ul a {
+  padding: 8px 10px 8px 10px;
+  color: #FFFFFF;
+  font-size: 15px;
+}
+
+div.top .systemtopbar ul li {
+  margin-right: 5px;
+  background-color: #005f92;
+  font-size: 15px;
   -webkit-border-radius: 5px  5px 0 0;
   -moz-border-radius: 5px 5px 0 0;
-  border-radius: 5px 5px 0 0;}
-div.top .systemtopbar ul li.active { background-color:#FFFFFF; color:#005f92; background-image:none; font-size:15px;}
-div.top .systemtopbar ul li.active a { font-weight: normal; text-shadow:none; background-color:transparent; color:#005f92; background-image:none; font-size:15px;}
-div.top .topbar form { min-height:35px; float:right;}
-div.top .topbar .inline-inputs label { float:none; color:#FFFFFF; }
+  border-radius: 5px 5px 0 0;
+}
 
-div.news_list { padding: 20px; margin-top:20px }
-div.news_list p { font-size: 14px; }
-.hero-unit  { padding-top: 30px; padding-bottom: 45px; margin-top: 10px }
-.hero-unit p { font-size:14px; }
+div.top .systemtopbar ul li.active {
+  background-color: #FFFFFF;
+  color: #005f92;
+  background-image: none;
+  font-size: 15px;
+}
 
-div.loginbox { background-color: #f5f5f5;
+div.top .systemtopbar ul li.active a {
+  font-weight: normal;
+  text-shadow: none;
+  background-color: transparent;
+  color: #005f92;
+  background-image: none;
+  font-size: 15px;
+}
+
+#login-dp {
+    min-width: 250px;
+    padding: 14px 14px 0;
+    overflow:hidden;
+    z-index: 10000;
+}
+
+#btn-usos {
+  padding: 10px 0;
+  margin-bottom:10px;
+  background-color: #00709e;
+  text-align: center;
+  background-image: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+}
+
+#btn-no-usos {
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  background-color: #00709e;
+  background-image: none;
+}
+
+#btn-no-usos:hover, #btn-usos:hover {
+  background-color: #2696C4;
+}
+
+#login-dp .row {
+  margin-left: 0px;
+}
+
+#login-dp .form-group {
+  margin-bottom: 10px;
+}
+
+#login-dp .form-group label {
+  float: none;
+  color: #808080;
+}
+
+div.top .topbar .inline-inputs label {
+  float: none;
+  color: #FFFFFF;
+}
+
+div.news_list {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+div.news_list p {
+  font-size: 14px;
+}
+
+.hero-unit {
+  padding-top: 30px;
+  padding-bottom: 45px;
+  margin-top: 10px;
+}
+
+.hero-unit p {
+  font-size: 14px;
+}
+
+div.loginbox {
+  background-color: #f5f5f5;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
-  border-radius: 6px;}
+  border-radius: 6px;
+}
 
-div.space { margin-top: 25px; }
-div.space2 { margin-top: 50px; }
+div.space {
+  margin-top: 25px;
+}
 
+div.space2 {
+  margin-top: 50px;
+}
 
 #enr-schedulePrototype-top-bar fieldset,
 #enr-proposalsList-top-bar fieldset,
-#enr-coursesList-top-bar fieldset{ float:left; }
+#enr-coursesList-top-bar fieldset {
+  float: left;
+}
+
 #enr-coursesList-top-bar fieldset legend,
 #enr-proposalsList-top-bar fieldset legend,
-#enr-schedulePrototype-top-bar fieldset legend { font-size:16px; }
+#enr-schedulePrototype-top-bar fieldset legend {
+  font-size: 16px;
+}
+
 #enr-schedulePrototype-top-bar label,
 #enr-proposalsList-top-bar label,
 #enr-StudentsList-top-bar label,
-#enr-coursesList-top-bar label { float:none; }
-
-.courses-list li { margin-bottom:5px; }
-.employees li { margin-bottom:5px; }
-.students li { margin-bottom:5px; }
-
-
-.course-type-filter
-{
-	width: 300px;
+#enr-coursesList-top-bar label {
+  float: none;
 }
 
-.course-type-filter > span
-{
-	min-width: 150px;
+#fetchingListMessage {
+  text-align: center;
+}
+
+#courses-list li {
+  margin-bottom: 5px;
+}
+
+.employees li {
+  margin-bottom: 5px;
+}
+
+.students li {
+  margin-bottom: 5px;
+}
+
+select[multiple] {
+  height: auto !important;
+  line-height: normal !important;
+}
+
+.courseListMultipleSelect {
+  width: 100%;
+}
+
+.showMoreFiltersContainer {
+  text-align: center;
+  padding-top: 15px;
+  font-size: 11px !important;
+}
+
+.filterList {
+  list-style-type: none;
+  margin: auto;
+}
+
+hr.filterListDivider {
+  margin: 15px 0px;
+}
+
+.tagsEffectsFilterHint {
+  font-size: 11px;
+}
+
+.course-type-filter {
+  width: 290px;
+}
+
+.course-type-filter > span {
+  min-width: 150px;
 }
 
 
@@ -76,82 +228,186 @@ table td:nth-child(4),
 table td:nth-child(5),
 table th:nth-child(3),
 table th:nth-child(4),
-table th:nth-child(5) { text-align: center; }
-table.table-info th { width:100px; background-color: #F9F9F9; border-top-width: 1px; border-bottom-width: 1px; }
-table.table-info-big th { width:200px; background-color: #F9F9F9; border-top-width: 1px; border-bottom-width: 1px; }
-.controls form { margin: 0 0 0 0; display: inline-block;}
+table th:nth-child(5) {
+  text-align: center;
+}
 
+table.table-info th {
+  width: 100px;
+  background-color: #F9F9F9;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+table.table-info-big th {
+  width: 200px;
+  background-color: #F9F9F9;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.controls form {
+  margin: 0 0 0 0;
+  display: inline-block;
+}
 
 #enr-EmployeesList-top-bar label,
-#enr-schedulePrototype-top-bar label { float:none;  }
+#enr-schedulePrototype-top-bar label {
+  float: none;
+}
 
-.schedule-table { width:auto;}
-
+.schedule-table {
+  width: auto;
+}
 
 #enr-schedulePrototype-course-list label {
-    color: #0069D6;
-    font-weight: inherit;
-    line-height: inherit;
-    text-decoration: none;
-    text-align: left;
-    float: none;
-    width:auto;
+  color: #0069D6;
+  font-weight: inherit;
+  line-height: inherit;
+  text-decoration: none;
+  text-align: left;
+  float: none;
+  width: auto;
 }
 
 .user-panel {
-   background: none repeat scroll 0 0 #FFFFFF;
-    -webkit-border-radius: 0 0 7px 28px;
-    -moz-border-radius: 0 0 7px 28px;
-    border-radius: 0 0 7px 7px;
-    float: right;
-    height: 21px;
-    padding: 5px 10px 5px 10px;
+  background: none repeat scroll 0 0 #FFFFFF;
+  -webkit-border-radius: 0 0 7px 28px;
+  -moz-border-radius: 0 0 7px 28px;
+  border-radius: 0 0 7px 7px;
+  float: right;
+  height: 21px;
+  padding: 5px 10px 5px 10px;
 }
 
-.user-panel a, .user-panel a:hover { text-shadow: none; color:#0069D6;}
-
-.filter-course-type-metaSwitch {
-    margin-bottom: -6px;    font-size: 10px;    float: right;    clear: left;
+.user-panel a, .user-panel a:hover {
+  text-shadow: none;
+  color: #0069D6;
 }
 
-
-.main-filter-input input[type="text"] { padding-right: 25px; }
-
-#enr-course-view .tutorial table tr.signed td
-{
-	background: #e9e9e9;
+.main-filter-input input[type="text"] {
+  padding-right: 25px;
 }
 
-input.small { width:auto; }
+#enr-course-view .tutorial table tr.signed td {
+  background: #e9e9e9;
+}
+
+input.small {
+  width: auto;
+}
 
 .topbar div > ul .active a, .nav .active a {
-    background-color: rgba(0, 0, 0, 0.7);
-    font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.7);
+  font-weight: bold;
 }
 
 #enr-schedulePrototype-other span,
-#enr-coursesList-other span { float:none; display: block; }
+#enr-coursesList-other span {
+  float: none;
+  display: block;
+}
 
 #enr-schedulePrototype-top-bar .checkbox label,
 #enr-coursesList-top-bar .checkbox label {
-    vertical-align: top;}
+  vertical-align: baseline;
+}
 
 #enr-schedulePrototype-other input[type="checkbox"],
-#enr-coursesList-other input[type="checkbox"] { margin-right: 3px; }
+#enr-coursesList-other input[type="checkbox"] {
+  margin-right: 3px;
+}
 
-.bread, .main-top-bar { margin-bottom: 10px; }
+.bread, .main-top-bar {
+  margin-bottom: 10px;
+}
 
+.filter-phrase {
+  width: 220px;
+}
 
-.filter-phrase { width:190px; }
+.main-top-bar fieldset:nth-child(1) {
+  width: 290px;
+}
 
-.main-top-bar fieldset:nth-child(1) { width:260px; }
+table td.ects {
+  background-color: #FFFFFF!important;
+}
 
-table td.ects { background-color: #FFFFFF!important; }
+.priority select {
+  width: auto;
+}
 
-.priority select { width:auto;}
+table ul.voted-courses {
+  list-style: none;
+  margin: 5px 0 0 0;
+  padding: 0;
+}
 
-table ul.voted-courses { list-style: none; margin: 5px 0 0 0; padding: 0;}
+.hidden {
+  display: none;
+}
 
-.hidden { display:none; }
-.poll-list-actions { padding: 5px;}
-.poll-list-actions fieldset { margin-bottom: 0;}
+.poll-list-actions {
+  padding: 5px;
+}
+
+.poll-list-actions fieldset {
+  margin-bottom: 0;
+}
+
+.contentNoCollapse {
+  min-height: 1px;
+}
+
+.tagEffectListInCourseHead {
+  margin: 0px 0px 0px 10px;
+}
+
+#filterTable {
+  border: 0px;
+  margin: 0px;
+}
+
+#filterTable td {
+  border: 0px;
+  padding: 5px 0px 0px 0px;
+  vertical-align: top;
+  text-align: left;
+}
+
+#filterTable td:not(:last-child) {
+  border-right: 1px dotted #cbcbcb;
+}
+
+.tableNameField {
+  margin-right: 5px;
+}
+
+/* Bootstrap customizations/overrides */
+.marginFix {
+  margin-left: 0px !important;
+}
+
+/* If someone reports that the user name in the top bar is too long
+ * and gets moved to the next line as a result, uncomment this
+ * to squash the nav links and make room for the user name.
+/*.topBarLinkContainer li a {
+  padding: 10px 7px !important;
+}*/
+
+.topBarLinkContainer {
+  margin: 0px !important;
+}
+
+.content-loading { 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 120px; 
+  background: white url(../images/launcher-loader.gif) no-repeat scroll center top 20px;
+  background-size: 100px;
+  opacity: 0.5; filter: alpha(opacity = 50); zoom: 1;
+}

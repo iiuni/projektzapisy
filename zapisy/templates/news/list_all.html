@@ -23,18 +23,15 @@ u
     Aktualności
 {% endblock %}
 
-{% block filter %}
+{% block topContent %}
     <div id="od-news-top-bar" class="main-top-bar">
         <form id="od-news-search-form" method="get">
             <div class="main-filter-input">
-                <input class="text" type="text" name="q" id="od-news-search-q"/>
-                <input class="reset" type="reset" id="od-news-search-reset" value="X" style="display:none;"/>
+                <input class="text" type="text" name="q" id="od-news-search-q" value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..."/>
+                <input class="reset" type="reset" id="od-news-search-reset" value="X"/>
             </div>
         </form>
-
-        {% if perms.news.add_news %}
-        {% endif %}
-
+        
         <div class="od-news-navigator">
             <a href="/feeds/news/" title="Aktualności RSS" id="od-news-rss-icon">
                 <img src="/site_media/images/rss.png" alt="RSS"/>
@@ -47,11 +44,12 @@ u
 
 {% block content %}
     <h2>Aktualności</h2>
+    {% if query %}<p> Wyniki wyszukiwania dla "{{ query|lower }}" | <a href="/news">usuń filtr</a></p>{% endif %}
     <div id="news-content">
         {% if items %}
             <div class="od-news-list">
                 {% for news in items %}
-                    <div class="od-news-item">
+                    <div id="od-news-{{news.id}}" class="od-news-item">
                         <div class="od-news-header">
                             <h3>{{ news.title }}</h3>
                             <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>

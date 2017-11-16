@@ -13,7 +13,6 @@ from django.core.urlresolvers import reverse
 
 from django.http import QueryDict, HttpResponse
 from django.template.response import TemplateResponse
-from django.utils import simplejson
 from django.utils.translation import check_for_language
 from django.db.models import Q
 
@@ -23,7 +22,7 @@ from apps.offer.vote.models.single_vote import SingleVote
 
 from apps.users.exceptions import NonUserException, NonEmployeeException,\
                                  NonStudentException
-from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException                                 
+from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list,\
                              prepare_ajax_employee_list
 
@@ -42,6 +41,7 @@ import datetime
 from mailer.models import Message
 
 import logging
+import json
 
 from django.core.cache import cache as mcache
 from apps.notifications.forms import NotificationFormset
@@ -61,11 +61,19 @@ def student_profile(request, user_id):
     """student profile"""
     try:
         student = Student.objects.select_related('user').get(user=user_id)
-        courses = prepare_schedule_courses(request, for_student=student)
+        courses_with_terms = prepare_schedule_courses(
+            request, for_student=student)
         votes   = SingleVote.get_votes(student)
-        data = prepare_schedule_data(request, courses)
+        data = prepare_schedule_data(request, courses_with_terms)
+        courses_for_template = []
+        for course, terms in courses_with_terms:
+            d = {}
+            d["id"] = course.id
+            d["terms"] = [json.dumps(term.serialize_for_json())
+                          for term in terms]
+            courses_for_template.append(d)
         data.update({
-            'courses': courses,
+            'courses': courses_for_template,
             'student': student,
             'votes': votes
         })
@@ -73,11 +81,10 @@ def student_profile(request, user_id):
         if request.is_ajax():
             return render_to_response('users/student_profile_contents.html', data, context_instance=RequestContext(request))
         else:
-            begin = student.user.last_name[0]
-            students = Student.get_list(begin)
-            students = Record.recorded_students(students)
-            data['students'] = students
-            data['char']     = begin
+            students = Student.get_list()
+            enrolled_students = Record.recorded_students(students)
+            data['students'] = enrolled_students
+            data['char'] = "All"
             return render_to_response('users/student_profile.html', data, context_instance=RequestContext(request))
 
     except Student.DoesNotExist:
@@ -114,25 +121,24 @@ def employee_profile(request, user_id):
             'courses': courses,
             'employee': employee
         })
-        
+
         if request.is_ajax():
             return render_to_response('users/employee_profile_contents.html',
                 data, context_instance=RequestContext(request))
         else:
-            begin = user.last_name[0] if user.last_name else 'All'
-            employees = Employee.get_list(begin)
             semester = Semester.get_current_semester()
-            employees = Group.teacher_in_present(employees, semester)
+            employees = Employee.get_list()
+            active_employees = Group.teacher_in_present(employees, semester)
 
-            for e in employees:
+            for e in active_employees:
                 e.short_new = e.user.first_name[:1] + e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
                 e.short_old = e.user.first_name[:2] + e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
 
-            data['employees'] = employees
-            data['char'] = begin
-              
+            data['employees'] = active_employees
+            data['char'] = 'All'
+
             return render_to_response('users/employee_profile.html', data, context_instance=RequestContext(request))
-        
+
 
     except MoreThanOneCurrentSemesterException:
         data = {'employee' : employee}
@@ -142,7 +148,7 @@ def employee_profile(request, user_id):
 
 @login_required
 def set_language(request):
-    """ 
+    """
     Redirect to a given url while setting the chosen language in the
     session or cookie. The url and the language code need to be
     specified in the request parameters.
@@ -156,7 +162,7 @@ def set_language(request):
     if not next:
         next = request.META.get('HTTP_REFERER', None)
     if not next:
-        next = '/' 
+        next = '/'
     response = HttpResponseRedirect(next)
     if request.method == 'POST':
         lang_code = request.POST.get('language', None)
@@ -215,7 +221,7 @@ def bank_account_change(request):
 def consultations_change(request):
     """function that enables consultations changing"""
     try:
-        employee = request.user.employee     
+        employee = request.user.employee
         if request.POST:
             data = request.POST.copy()
             form = ConsultationsChangeForm(data, instance=employee)
@@ -232,14 +238,14 @@ def consultations_change(request):
         return render_to_response('common/error.html',
                 context_instance=RequestContext(request))
 
-@login_required  
+@login_required
 def password_change_done(request):
     """informs if password were changed"""
     logger.info('User (%s) changed password' % request.user.get_full_name())
     messages.success(request, "Twoje hasło zostało zmienione.")
     return HttpResponseRedirect(reverse('my-profile'))
 
-@login_required  
+@login_required
 def my_profile(request):
     """profile site"""
     semester = Semester.objects.get_next()
@@ -249,25 +255,32 @@ def my_profile(request):
 
     notifications = NotificationFormset(queryset=NotificationPreferences.objects.create_and_get(request.user))
 
-    if hasattr(request.user, 'employee') and request.user.employee:
+    if BaseUser.is_employee(request.user):
         consultations = request.user.employee.consultations
         room = request.user.employee.room
         homepage = request.user.employee.homepage
+        title = request.user.employee.title
         room = room and room or ''
         homepage = homepage and homepage or ''
+        title = title and title or ''
     else:
         consultations = ''
         homepage = ''
         room = ''
+        title = ''
 
     grade = {}
 
-    if semester and request.user.student:
-
+    if semester and BaseUser.is_student(request.user):
         try:
             student = request.user.student
             courses = OpeningTimesView.objects.get_courses(student, semester)
-            grade = [x.semester for x in StudentGraded.objects.filter(student=student).select_related('semester')]
+            gradeInfo = StudentGraded.objects\
+                .filter(student=student)\
+                .select_related('semester')\
+                .order_by('-semester__records_opening')
+            grade = [x.semester for x in gradeInfo]
+            current_semester_ects = student.get_points()
 
         except (KeyError, Student.DoesNotExist):
             grade = {}
@@ -292,8 +305,8 @@ def employees_list(request, begin = 'All', query=None):
             "employees" : employees,
             "char": begin,
             "query": query
-            }  
-    
+            }
+
     return render_to_response('users/employees_list.html', data, context_instance=RequestContext(request))
 
 def consultations_list(request, begin='A'):
@@ -309,7 +322,7 @@ def consultations_list(request, begin='A'):
         data = {
             "employees" : employees,
             "char": begin
-            }          
+            }
         return render_to_response('users/consultations_list.html', data, context_instance=RequestContext(request))
 
 
@@ -322,8 +335,8 @@ def students_list(request, begin = 'All', query=None):
         students = prepare_ajax_students_list(students)
         return AjaxSuccessMessage(message="ok", data=students)
     else:
-        data = { 
-            "students" : students, 
+        data = {
+            "students" : students,
             "char": begin,
             "query": query,
             'mailto_group': mailto(request.user, students),
@@ -334,37 +347,38 @@ def students_list(request, begin = 'All', query=None):
 @login_required
 def logout(request):
     """logout"""
-    logger.info('User %s <id: %s> is logged out ' % (request.user.username, request.user.id))    
+    logger.info('User %s <id: %s> is logged out ' % (request.user.username, request.user.id))
     auth.logout(request)
     return HttpResponseRedirect('/')
 
-def login_plus_remember_me(request, *args, **kwargs):
-    """ funkcja logowania uzględniająca zapamiętanie sesji na życzenie użytkownika"""
 
+def login_plus_remember_me(request, *args, **kwargs):
+    """
+    Sign-in function with an option to save the session.
+    If the user clicked the 'Remember me' button (we read it from POST data), the
+    session will expire after two weeks.
+    """
+    if request.user.is_authenticated():
+        return redirect("main-page")
     if 'polls' in request.session:
         del request.session['polls']
-
     if 'finished' in request.session:
         del request.session['finished']
 
     if request.method == 'POST':
         if request.POST.get('remember_me', None):
-            request.session.set_expiry(datetime.timedelta(14))
+            request.session.set_expiry(datetime.timedelta(14).total_seconds())
         else:
-            request.session.set_expiry(0) # on browser close
+            request.session.set_expiry(0)  # Expires on browser closing.
     return login(request, *args, **kwargs)
-    
+
+
 @login_required
 def create_ical_file(request):
     user = request.user
     user_full_name = user.get_full_name()
     semester = Semester.get_default_semester()
-    semester_beginning = semester.semester_beginning
-    semester_beginning_weekday = semester_beginning.weekday() + 1
-    semester_ending = semester.semester_ending
-    until = semester_ending.strftime("%Y%m%dT235959Z")
-    
-    
+
     cal = vobject.iCalendar()
     cal.add('x-wr-timezone').value = 'Europe/Warsaw'
     cal.add('version').value = '2.0'
@@ -386,35 +400,30 @@ def create_ical_file(request):
     groups = groups_employee + groups_student
     for group in groups:
         course_name = group.course.name
-        group_type = GTC[group.type]
+        group_type = group.human_readable_type().decode('utf-8').lower()
         try:
-            terms = group.get_all_terms()
+            terms = group.get_all_terms_for_export()
         except IndexError:
             continue
         for term in terms:
-            start_time = term.start_time
-            end_time = term.end_time
-            weekday = int(term.dayOfWeek)
-            classroom_number = term.classroom.number if term.classroom else 'Nieznana'
-    
-            diff = semester_beginning_weekday - weekday
-            if diff<0:
-                diff += 7
-            diff = 7 - diff
-            start_date = semester_beginning + datetime.timedelta(days=diff)
-            start_datetime = datetime.datetime.combine(start_date, start_time)
-            end_datetime = datetime.datetime.combine(start_date, end_time)
-    
+            start_datetime = datetime.datetime.combine(term.day, term.start)
+            end_datetime = datetime.datetime.combine(term.day, term.end)
             event = cal.add('vevent')
-            event.add('summary').value = '%s, %s, s.%s' % (course_name,group_type,classroom_number)
-            event.add('dtstart').value  = start_datetime
+            event.add('summary').value = '%s - %s' % (course_name, group_type)
+            if term.room:
+                event.add('location').value = 'sala '+term.room.number \
+                    + u', Instytut Informatyki Uniwersytetu Wrocławskiego'
+
+            event.add('description').value = u'prowadzący: ' \
+                + group.get_teacher_full_name()
+            event.add('dtstart').value = start_datetime
             event.add('dtend').value = end_datetime
-            event.add('rrule').value = "FREQ=WEEKLY;UNTIL=%s" % (until,)
 
     cal_str = cal.serialize()
     response = HttpResponse(cal_str, content_type='application/calendar')
     response['Content-Disposition'] = 'attachment; filename=schedule.ical'
-    return response    
+    return response
+
 
 @permission_required('users.mailto_all_students')
 def email_students(request):
@@ -446,5 +455,3 @@ def email_students(request):
         form = EmailToAllStudentsForm(initial={'sender': 'zapisy@cs.uni.wroc.pl'})
         form.fields['sender'].widget.attrs['readonly'] = True
     return render_to_response('users/email_students.html', {'form':form, 'students_mails': studentsmails}, context_instance=RequestContext(request))
-
-

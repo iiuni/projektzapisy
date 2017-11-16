@@ -4,6 +4,7 @@
 
 from django.test import LiveServerTestCase
 
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.support.ui import Select
@@ -31,7 +32,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.driver = WebDriver()
+        cls.driver = webdriver.Firefox()
         cls.driver.set_window_size(1024, 1024)
         super(SeleniumTestCase, cls).setUpClass()
 
@@ -44,6 +45,21 @@ class SeleniumTestCase(LiveServerTestCase):
 class NewSemesterTests(SeleniumTestCase):
 
     def setUp(self):
+        sql_calls = [
+            """
+                CREATE TABLE courses_studentpointsview (
+                    value smallint,
+                    student_id integer,
+                    entity_id integer
+                );
+            """
+            ]
+
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
+
         self.password = '11111'
         self.admin = User.objects.create_superuser(username='przemka',
                                               password=self.password,
@@ -74,37 +90,45 @@ class NewSemesterTests(SeleniumTestCase):
         for i in range(1, 6):
             CourseEntity.objects.create(
                 name='Course %s' % i,
+                name_pl='Course %s' % i,
+                name_en='Course %s' % i,
                 semester='z',
                 type=self.course_type,
-                status=1 # w ofercie
+                status=1, # w ofercie
+                suggested_for_first_year=False,
             )
         for i in range(6, 11):
             CourseEntity.objects.create(
                 name='Course %s' % i,
+                name_pl='Course %s' % i,
+                name_en='Course %s' % i,
                 semester='l',
                 type=self.course_type,
-                status=1 # w ofercie
+                status=1, # w ofercie
+                suggested_for_first_year=False,
             )
-
         CourseEntity.objects.create(
             name='Course 50',
             semester='l',
             type=self.course_type,
-            status=0 # propozycja
+            status=0, # propozycja
+            suggested_for_first_year=False,
         )
 
         CourseEntity.objects.create(
             name='Course 100',
             semester='z',
             type=self.course_type,
-            status=1 # w ofercie
+            status=1, # w ofercie
+            suggested_for_first_year=False,
         )
 
         CourseEntity.objects.create(
             name='Course 101',
             semester='l',
             type=self.course_type,
-            status=1 # w ofercie
+            status=1, # w ofercie
+            suggested_for_first_year=False,
         )
 
         for course_entity in CourseEntity.objects.all():
@@ -119,7 +143,8 @@ class NewSemesterTests(SeleniumTestCase):
             semester_beginning=date.today(),
             semester_ending=date.today() + relativedelta(months=3),
             records_ects_limit_abolition=date.today() + relativedelta(days=10),
-            visible=True
+            visible=True,
+            is_grade_active=False
         )
 
 
@@ -129,7 +154,8 @@ class NewSemesterTests(SeleniumTestCase):
             semester_beginning=self.current_semester.semester_ending + relativedelta(days=1),
             semester_ending=self.current_semester.semester_ending + relativedelta(days=1, months=3),
             records_ects_limit_abolition=self.current_semester.semester_ending + relativedelta(days=11),
-            visible=True
+            visible=True,
+            is_grade_active=False
         )
 
         self.next_summer_semester = Semester.objects.create(
@@ -138,7 +164,8 @@ class NewSemesterTests(SeleniumTestCase):
             semester_beginning=self.next_winter_semester.semester_ending + relativedelta(days=1),
             semester_ending=self.next_winter_semester.semester_ending + relativedelta(days=1, months=3),
             records_ects_limit_abolition=self.next_winter_semester.semester_ending + relativedelta(days=11),
-            visible=True
+            visible=True,
+            is_grade_active=False
         )
 
         self.system_state = SystemState.objects.create(
@@ -148,6 +175,15 @@ class NewSemesterTests(SeleniumTestCase):
             max_vote=3
         )
 
+
+    def tearDown(self):
+        sql_calls = [
+            "DROP TABLE courses_studentpointsview;",
+        ]
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
 
     def test_new_semester_scenario(self):
         self.prepare_course_entities_for_voting()
@@ -164,14 +200,14 @@ class NewSemesterTests(SeleniumTestCase):
         self.driver.get_screenshot_as_file("screenshot.png")
 
     def prepare_course_entities_for_voting(self):
-        self.driver.get('%s%s' % (self.live_server_url, '//'))
+        self.driver.get(self.live_server_url)
         self.driver.find_element_by_id('id_login').send_keys(self.admin.username)
         self.driver.find_element_by_id('id_password').send_keys(self.password)
         self.driver.find_element_by_xpath('//button[contains(text(), "Loguj")]').click()
         self.driver.find_element_by_link_text('Oferta').click()
         self.driver.get('%s%s' % (self.driver.current_url, '/manage/proposals'))
         self.driver.find_element_by_link_text('Głosowanie').click()
-
+        
         nonselected_select = Select(
             WebDriverWait(self.driver, 1).until(EC.element_to_be_clickable((By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting')))
         )
@@ -243,7 +279,7 @@ class NewSemesterTests(SeleniumTestCase):
 
     def vote(self, student, points):
         self.driver.get('%s%s' % (self.live_server_url, '/users/logout/'))
-        self.driver.get('%s%s' % (self.live_server_url, '//'))
+        self.driver.get(self.live_server_url)
         self.driver.find_element_by_id('id_login').send_keys(student.user.username)
         self.driver.find_element_by_id('id_password').send_keys(self.password)
         self.driver.find_element_by_xpath('//button[contains(text(), "Loguj")]').click()
@@ -305,7 +341,7 @@ class NewSemesterTests(SeleniumTestCase):
 
     def correction(self, student, points):
         self.driver.get('%s%s' % (self.live_server_url, '/users/logout/'))
-        self.driver.get('%s%s' % (self.live_server_url, '//'))
+        self.driver.get(self.live_server_url)
         self.driver.find_element_by_id('id_login').send_keys(student.user.username)
         self.driver.find_element_by_id('id_password').send_keys(self.password)
         self.driver.find_element_by_xpath('//button[contains(text(), "Loguj")]').click()

@@ -1,11 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
+import json
+
 from django.contrib                      import messages
 from django.http                         import HttpResponse, HttpResponseRedirect
 from django.shortcuts                    import render_to_response
 from django.template                     import RequestContext
-from django.utils                        import simplejson
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.users.decorators             import student_required, employee_required
+from apps.users.models import BaseUser
 from django.contrib.auth.decorators      import login_required
 
 from apps.enrollment.courses.models   import Semester, \
@@ -39,7 +41,7 @@ from django.core.cache import cache
 def ajax_keys_generate( request ):
     generate_keys_for_polls()
     return HttpResponse("OK")
-    
+
 @employee_required
 def ajax_keys_progress( request ):
     count = cache.get('generated-keys', 0)
@@ -52,13 +54,13 @@ def ajax_get_rsa_keys_step1( request ):
         if request.method == 'POST':
             students_polls = Poll.get_all_polls_for_student( request.user.student )
             groupped_polls = group_polls_by_course( students_polls )
-            form = PollCombineForm( request.POST, 
+            form = PollCombineForm( request.POST,
                                     polls = groupped_polls )
             if form.is_valid():
                 connected_groups = connect_groups( groupped_polls, form )
-                tickets = map( lambda gs: generate_keys( gs ), 
-                                      connected_groups ) 
-                message = simplejson.dumps(tickets)
+                tickets = map( lambda gs: generate_keys( gs ),
+                                      connected_groups )
+                message = json.dumps(tickets)
     return HttpResponse(message)
 
 @student_required
@@ -68,20 +70,20 @@ def ajax_get_rsa_keys_step2( request ):
         if request.method == 'POST':
             students_polls = Poll.get_all_polls_for_student( request.user.student )
             groupped_polls = group_polls_by_course( students_polls )
-            form = PollCombineForm( request.POST, 
+            form = PollCombineForm( request.POST,
                                     polls = groupped_polls )
             if form.is_valid():
-                ts               = simplejson.loads( request.POST.get('ts') )
+                ts               = json.loads(request.POST.get('ts'))
                 connected_groups = connect_groups( groupped_polls, form )
                 groups           = reduce(list.__add__, connected_groups )
                 tickets          = zip( groups, ts)
-                signed = map( lambda ( g, t): 
+                signed = map( lambda ( g, t):
                             (g, long(t), secure_signer_without_save( request.user, g, long(t) )),
                              tickets )
-                unblinds = map ( lambda ( g, t, st ): 
+                unblinds = map ( lambda ( g, t, st ):
                                 (unicode(t), unblind( g, st ) ),
                              signed )
-                message = simplejson.dumps(unblinds)
+                message = json.dumps(unblinds)
     return HttpResponse(message)
 
 @student_required
@@ -101,9 +103,9 @@ def connections_choice( request ):
             form = PollCombineForm( request.POST,
                                     polls = groupped_polls )
             if form.is_valid():
-                unblindst = simplejson.loads( request.POST.get('unblindst', '') )
-                unblindt  = simplejson.loads( request.POST.get('unblindt', '') )
-                ts        = simplejson.loads( request.POST.get('ts', '') )
+                unblindst = json.loads(request.POST.get('unblindst', ''))
+                unblindt  = json.loads(request.POST.get('unblindt', ''))
+                ts        = json.loads(request.POST.get('ts', ''))
                 connected_groups = connect_groups( groupped_polls, form)
                 if connected_groups:
                     groups           = reduce(list.__add__, connected_groups )
@@ -135,32 +137,32 @@ def connections_choice( request ):
         else:
            pass
 #             form = PollCombineForm( polls = groupped_polls )
-            
+
         data = { 'polls':polls_lists, 'grade' : grade, 'general_polls': general_polls}
         return render_to_response ('grade/ticket_create/connection_choice.html', data, context_instance = RequestContext ( request ))
     else:
         messages.error( request, "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów" )
         return render_to_response ('grade/ticket_create/connection_choice.html', {'grade': grade }, context_instance = RequestContext ( request ))
-    
+
 
 @csrf_exempt
 def client_connection( request ):
     if request.method == 'POST':
-        
+
         form = ContactForm(request.POST)
-        
+
         if form.is_valid():
             idUser = form.cleaned_data['idUser']
             passwordUser = form.cleaned_data['passwordUser']
             groupNumber = form.cleaned_data['groupNumber']
             groupKey = long(form.cleaned_data['groupKey'])
-        
+
             user = authenticate(username=idUser, password=passwordUser)
 
-            if user:
-                pass
-            else:
+            if user is None:
                 return HttpResponse(u"nie ma takiego użytkownika")
+            if BaseUser.is_student(user):
+                return HttpResponse(u"użytkownik nie jest studentem")
 
 
             if groupNumber == u"*":
@@ -173,21 +175,21 @@ def client_connection( request ):
                                                       semester=semester)
                 groupped_polls = group_polls_by_course( students_polls )
                 for polls in groupped_polls:
-                    
+
                     if len( polls ) == 1:
-                        
+
                         st += unicode( polls[0].pk ) + u'***'
                         st += u'[' + unicode( polls[0].title ) + u']%%%'
-            
+
                         if polls[0].group:
                             st += unicode( polls[0].group.course.name ) + u'%%%'
                             st += unicode( polls[0].group.get_type_display()) + u': %%%'
                             st += unicode( polls[0].group.get_teacher_full_name()) + u'%%%'
 
                         st +=unicode( '***' )
-                            
+
                         st += unicode( PublicKey.objects.get( poll = polls[0].pk ).public_key ) + u'???'
-                        
+
                     else:
                         for poll in polls:
                             st += unicode( poll.pk ) + u'***'
@@ -202,14 +204,14 @@ def client_connection( request ):
 
                 return HttpResponse( st )
 
-            
+
             students_polls = Poll.get_all_polls_for_student( user.student )
 
             st = ""
-            
+
             for students_poll in students_polls:
                 if int(students_poll.pk) == int(groupNumber):
-                    
+
                     st = secure_signer_without_save( user, students_poll, groupKey)
                     secure_signer( user, students_poll, groupKey )
                     p = students_poll
@@ -229,7 +231,7 @@ def client_connection( request ):
             else:
                 return HttpResponse( to_plaintext( [(p,u'***',u'%%%')] ) + u'???' + unicode(a) )
 
-            
+
 @csrf_exempt
 def keys_list( request ):
     l = PublicKey.objects.all()#.order_by('poll__group__course__name')

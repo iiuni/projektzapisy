@@ -39,9 +39,9 @@
             <table style="font-size:xx-small;">
                 {% for term in event.term_set.all %}
                 <tr>
-                    <td style="width:20px">{{ term.print_start }}</td>
+                    <td style="width:20px">{{ term.start|time }}</td>
                     <td style="width:5px">-</td>
-                    <td style="width:30px">{{ term.print_end }}</td>
+                    <td style="width:30px">{{ term.end|time }}</td>
                     <td style="width:100px; text-align: center">{{ term.day|date:"j E Y" }}</td>
                     <td>{% if term.room %}<a style="font-size: xx-small" href="{{ term.room.get_absolute_url }}">Sala {{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</td>
 

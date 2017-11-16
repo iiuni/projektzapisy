@@ -9,7 +9,7 @@ DEBUG = False
 
 RELEASE = False
 
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -17,30 +17,33 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# With DEBUG = False Django will refuse to serve requests to hosts different
+# than this one.
+ALLOWED_HOSTS = ['zapisy.ii.uni.wroc.pl', 'localhost']
 EVENT_MODERATOR_EMAIL = 'zapisy@cs.uni.wroc.pl'
 
 """
 DATABASES = {
      'default' : {
         'ENGINE' : 'postgresql_psycopg2',
- 	    'NAME' : 'fereol',
- 	    'PORT' : '',
- 	    'USER' : 'fereol',
-	    'PASSWORD' : 'fereol',
- 	    'HOST' : '',
- 	    'CHARSET' : 'utf8',
- 	    'USE_UNICODE' : True,
+        'NAME' : 'fereol',
+        'PORT' : '',
+        'USER' : 'fereol',
+        'PASSWORD' : 'fereol',
+        'HOST' : '',
+        'CHARSET' : 'utf8',
+        'USE_UNICODE' : True,
         },
 
      'fereol2012' : {
         'ENGINE' : 'postgresql_psycopg2',
- 	    'NAME' : 'fereol2012',
- 	    'PORT' : '',
- 	    'USER' : 'fereol',
-	    'PASSWORD' : 'fereol',
- 	    'HOST' : '',
- 	    'CHARSET' : 'utf8',
- 	    'USE_UNICODE' : True,
+        'NAME' : 'fereol2012',
+        'PORT' : '',
+        'USER' : 'fereol',
+        'PASSWORD' : 'fereol',
+        'HOST' : '',
+        'CHARSET' : 'utf8',
+        'USE_UNICODE' : True,
         }
  }
 """
@@ -49,13 +52,13 @@ DATABASES = {
 DATABASES = {
      'default' : {
         'ENGINE' : 'django.db.backends.sqlite3',
- 	    'NAME' : os.path.join(PROJECT_PATH, 'database/db.sqlite3'),
- 	    'PORT' : '',
- 	    'USER' : '',
-	    'PASSWORD' : '',
- 	    'HOST' : '',
- 	    'CHARSET' : 'utf8',
- 	    'USE_UNICODE' : True,
+        'NAME' : os.path.join(PROJECT_PATH, 'database/db.sqlite3'),
+        'PORT' : '',
+        'USER' : '',
+        'PASSWORD' : '',
+        'HOST' : '',
+        'CHARSET' : 'utf8',
+        'USE_UNICODE' : True,
         }
 }
 
@@ -158,11 +161,6 @@ MEDIA_URL = '/site_media/'
 
 USE_ETAGS = True
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6$u2ggeh-!^hxep3s4h$3z&2-+3c@sy7-sy8349+l-1m)9r0fn'
 
@@ -217,6 +215,11 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'modeltranslation', # needs to be before django.contrib.admin
+    # needed from 1.7 onwards to prevent Django from trying to apply
+    # migrations when testing (slows down DB setup _a lot_)
+    'test_without_migrations',
+    
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -224,14 +227,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'modeltranslation',
-
     'apps.users',
 
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mailer',
-    'south',
+    #'south',
     'pipeline',
     'apps.enrollment.courses',
     'apps.enrollment.records',
@@ -242,6 +243,7 @@ INSTALLED_APPS = (
     'apps.offer.vote',
     'apps.offer.desiderata',
 
+    'apps.utils',
     'apps.schedule',
     #'debug_toolbar',
     'apps.grade.poll',
@@ -253,31 +255,26 @@ INSTALLED_APPS = (
     'autoslug',
     'endless_pagination',
     'apps.notifications',
+    'django_cas_ng',
 
     'test_app'
 )
 
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('pl',)
+
 AUTHENTICATION_BACKENDS = (
     'apps.users.auth_backend.BetterBackend',
+    'django_cas_ng.backends.CASBackend',
 )
 
-AUTH_PROFILE_MODULE = 'users.UserProfile'
-
-FIXTURE_DIRS = (
-    os.path.join(PROJECT_PATH, 'offer/proposal/fixtures'),
-)
+CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
+CAS_CREATE_USER = False
+CAS_LOGIN_MSG = u'Sukces! Zalogowano przez USOS (login: %s).'
 
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
 
-SKIP_SOUTH_TESTS = True # wylacza wbudowane testy south
-SOUTH_TESTS_MIGRATE = False
-
-#TODO: udokumentowac zaleznosci!
-#TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.run_tests'
-#TEST_OUTPUT_VERBOSE = True
-#TEST_OUTPUT_DESCRIPTIONS = True
-#TEST_OUTPUT_DIR = 'xmlrunner'
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 #settings for enrollment
 ECTS_BONUS = 5 # ECTS_BONUS * ECTS = abs(t0-t1); set to 7, if changed, change also get_t0_interval()
@@ -297,7 +294,11 @@ SESSION_COOKIE_PATH = '/;HttpOnly'
 #DEBUG = False
 #TEMPLATE_DEBUG = DEBUG
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE	= True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Since Django 1.6 the default session serializer is json, which
+# doesn't have as many features, in particular it cannot serialize
+# custom objects, and we need this behavior.
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 DEBUG_TOOLBAR_ALLOWED_USERS = [
     "209067", # Tomasz Wasilczyk
@@ -321,7 +322,6 @@ DEBUG_TOOLBAR_CONFIG = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 86400,
         'OPTIONS': {
@@ -329,6 +329,14 @@ CACHES = {
         }
     }
 }
+        
+NEWS_PER_PAGE = 15
+
+# The URL to the issue tracker where users
+# can submit issues or bug reports. Used in several templates.
+ISSUE_TRACKER_URL = "https://tracker-zapisy.ii.uni.wroc.pl"
+# As above, but takes the user straight to the "create new issue" page
+ISSUE_TRACKER_NEW_ISSUE_URL = "https://tracker-zapisy.ii.uni.wroc.pl/projects/zapisy-tracker/issues/new"
 
 if os.path.isfile(os.path.join(PROJECT_PATH, 'pipeline.py')):
     execfile(os.path.join(PROJECT_PATH, 'pipeline.py'))
@@ -341,7 +349,7 @@ PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
 #PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.csstidy.CSSTidyCompressor'
 
 STATIC_URL = '/static/'
-STATIC_ROOT =  os.path.join(PROJECT_PATH, 'static')
+STATIC_ROOT =  os.path.join(PROJECT_PATH, 'site_media')
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 PIPELINE_STORAGE = 'pipeline.storage.PipelineFinderStorage'
 PIPELINE_VERSIONING = 'pipeline.versioning.hash.MD5Versioning'
@@ -351,12 +359,6 @@ STATICFILES_FINDERS = (
   'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'site_media'),
-)
-
 local_settings_file = os.path.join(PROJECT_PATH, 'settings_local.py')
 if os.path.isfile(local_settings_file):
     execfile(local_settings_file)
-
-

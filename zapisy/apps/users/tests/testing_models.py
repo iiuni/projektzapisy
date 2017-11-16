@@ -13,9 +13,13 @@ from apps.enrollment.courses.models import Course, Term, Group
 from apps.users.models import Employee, Student, StudiaZamawiane
 from apps.users.exceptions import NonEmployeeException, NonStudentException
 from django.contrib.auth.models import Permission
+from django.db import connection
 
-from apps.users.tests.factories import UserFactory
+from apps.users.tests.factories import UserFactory, StudentFactory
 from apps.enrollment.courses.models import Semester
+from random import *
+from apps.enrollment.courses.models import Semester
+from datetime import datetime, timedelta
 
 # class EmployeeGroupsTest(TestCase):
 #     fixtures =  ['fixtures__users', 'fixtures__courses']
@@ -161,6 +165,21 @@ class IBANTest(TestCase):
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
+        sql_calls = [
+            """
+                CREATE TABLE courses_studentpointsview (
+                    value smallint,
+                    student_id integer,
+                    entity_id integer
+                );
+            """
+            ]
+
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
+    
         cls.MSG_HEADER = 'Wyślij wiadomość do studentów'
         regular_user = User.objects.create_user('regular_user', 'user@user.com', 'password')
         Student.objects.create(user=regular_user)
@@ -174,13 +193,91 @@ class MailsToStudentsLinkTestCase(TestCase):
         from apps.enrollment.courses.tests.factories import SemesterFactory
         summer_semester = SemesterFactory(type=Semester.TYPE_SUMMER)
         summer_semester.full_clean()
+        
+    @classmethod
+    def tearDownClass(cls):
+        sql_calls = [
+            "DROP TABLE courses_studentpointsview;",
+        ]
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
 
     def test_mailto_link_not_exists_regular_user(self):
         self.client.login(username='regular_user', password='password')
         response = self.client.get(reverse('my-profile'))
+        #print(response)
         self.assertNotContains(response, self.MSG_HEADER, status_code=200)
 
     def test_mailto_link_exists_dean_user(self):
         self.client.login(username='dean_user', password='password')
         response = self.client.get(reverse('my-profile'))
         self.assertContains(response, self.MSG_HEADER, status_code=200)
+
+
+class MyProfileSemesterInfoTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        sql_calls = [
+            """
+                CREATE TABLE courses_studentpointsview (
+                    value smallint,
+                    student_id integer,
+                    entity_id integer
+                );
+            """
+            ]
+
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
+
+        student_user = User.objects.create_user('student_user', 'student@user.com', 'password')
+        s = Student.objects.create(user=student_user, matricula=str(randint(100000, 200000)))
+        student_user.save()
+        s.save()
+        
+        Semester.objects.all().delete()
+        cls.semester = Semester(
+            visible=True,
+            type=Semester.TYPE_WINTER,
+            records_opening=datetime.now()-timedelta(days=15),
+            records_closing=datetime.now()+timedelta(days=15),
+            records_ects_limit_abolition=datetime.now()+timedelta(days=5),
+            semester_beginning=datetime.now()+timedelta(days=20),
+            semester_ending=datetime.now()+timedelta(days=100)
+        )
+        cls.semester.full_clean()
+        cls.semester.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        sql_calls = [
+            "DROP TABLE courses_studentpointsview;",
+        ]
+        for sql_call in sql_calls:
+            cursor = connection.cursor()
+            cursor.execute(sql_call)
+            connection.commit()
+    
+    def test_my_profile_contains_records_closing_time(self):
+        self.semester.records_ending = datetime.now()+timedelta(days=10)
+        self.semester.save()
+        self.client.login(username='student_user', password='password')
+        response = self.client.get(reverse('my-profile'))
+        self.assertContains(response, "Koniec wypisów", status_code=200)
+
+    def test_my_profile_does_not_contain_records_closing_time(self):
+        self.semester.records_ending = None
+        self.semester.save()
+        self.client.login(username='student_user', password='password')
+        response = self.client.get(reverse('my-profile'))
+        self.assertNotContains(response, "Koniec wypisów", status_code=200)
+
+    def test_my_profile_contains_other_semester_info(self):
+        self.client.login(username='student_user', password='password')
+        response = self.client.get(reverse('my-profile'))
+        self.assertContains(response, "Zniesienie limitu 35 ECTS")
+        self.assertContains(response, "Koniec zapisów")

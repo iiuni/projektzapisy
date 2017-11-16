@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
   config.vm.box_url = "https://atlas.hashicorp.com/ubuntu/boxes/trusty64"
   config.vm.provision :shell, path: "env/bootstrap.sh"
   config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
-  config.vm.provision :shell, path: "env/env2.6_setup.sh", privileged: false
+  config.vm.provision :shell, path: "env/env2.7_setup.sh", privileged: false
   config.vm.network :forwarded_port, guest: 80, host: 8001
   config.vm.network :forwarded_port, guest: 8000, host: 8002
   config.vm.network :forwarded_port, guest: 5432, host: 15432

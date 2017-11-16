@@ -5,7 +5,7 @@ from apps.schedule.views import ClassroomTermsAjaxView, EventsTermsAjaxView, MyS
 __author__ = 'maciek'
 
 
-from django.conf.urls import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('apps.schedule.views',
     url(r'^classrooms$', 'classrooms', name='classrooms'),
@@ -13,6 +13,7 @@ urlpatterns = patterns('apps.schedule.views',
                                                                                     name='ajax_get_terms'),
     url(r'^classrooms/reservation$', 'reservation', name='reservation'),
     url(r'^classrooms/reservations$', 'reservations', name='reservations'),
+    url(r'^classrooms/conflicts$', 'conflicts', name='conflicts'),
     url(r'^classrooms/(?P<slug>[0-9]+)$', 'classroom', name='classroom'),
     url(r'^classrooms/ajax/(?P<slug>[0-9]+)$', ClassroomTermsAjaxView.as_view(), name='classroom_ajax'),
     url(r'^events/(?P<event_id>[0-9]+)/moderation$', 'moderation_message', name='moderation'),
@@ -29,4 +30,5 @@ urlpatterns = patterns('apps.schedule.views',
     url(r'^session$', 'session', name='session'),
     url(r'^session/feed$', LatestExams(), name='session_feed'),
     url(r'^session/statistics$', 'statistics', name='statistics'),
+    url(r'^events/report$', 'events_report', name='events_report'),
 )

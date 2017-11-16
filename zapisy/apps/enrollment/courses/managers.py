@@ -15,6 +15,6 @@ class SimpleManager(models.Manager):
 
 class FullManager(SimpleManager):
 
-    def get_query_set(self):
+    def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(FullManager, self).get_query_set().select_related('information')
+        return super(FullManager, self).get_queryset().select_related('information')

@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
+import json
 
 from django.http import HttpResponse
-from django.utils import simplejson
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -14,7 +14,7 @@ class AjaxMessage(HttpResponse):
 		}
 		if data:
 			ajax_message_as_json['data'] = data
-		HttpResponse.__init__(self, simplejson.dumps(ajax_message_as_json))
+		HttpResponse.__init__(self, json.dumps(ajax_message_as_json))
 
 class AjaxSuccessMessage(AjaxMessage):
 	def __init__(self, message = 'OK', data = None):

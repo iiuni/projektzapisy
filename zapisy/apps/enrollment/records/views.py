@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import StringIO
 import csv
+import json
 import re
+import StringIO
 
 from django.conf import settings
-
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -15,7 +14,6 @@ from django.template import RequestContext
 from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
-from django.utils import simplejson
 from django.views.decorators.http import require_POST
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import transaction
@@ -24,6 +22,7 @@ from xhtml2pdf import pisa
 from apps.enrollment.courses.utils import prepare_group_data
 from apps.users.decorators import employee_required
 
+from apps.cache_utils import cache_result
 from apps.enrollment.courses.models import *
 from apps.users.models import *
 from apps.enrollment.records.models import *
@@ -36,7 +35,7 @@ from libs.ajax_messages import *
 
 
 @require_POST
-@transaction.commit_on_success
+@transaction.atomic
 def prototype_set_pinned(request):
     """
         Response for AJAX query for pinning or un-pinning group from student's
@@ -77,11 +76,14 @@ def prototype_set_pinned(request):
             'Grupa jest już odpięta od Twojego planu.')
 
 @require_POST
-@transaction.commit_on_success
+@transaction.atomic
 def set_enrolled(request, method):
     """
         Set student assigned (or not) to group.
     """
+    # Used to roll the transaction back if an error occurrs.
+    savept = transaction.savepoint()
+    
     from django.db.models.query import QuerySet
     is_ajax = (method == '.json')
     message_context = None if is_ajax else request
@@ -95,11 +97,16 @@ def set_enrolled(request, method):
     except MultiValueDictKeyError:
         return AjaxFailureMessage.auto_render('InvalidRequest', 'Nieprawidłowe zapytanie.', message_context)
 
-    if request.user.student.block:
-        return AjaxFailureMessage.auto_render('ScheduleLocked',
-            u'Twój plan jest zablokowany. Możesz go doblokować w prototypie', message_context)
-    student = request.user.student
 
+    try:
+        if request.user.student.block:
+            return AjaxFailureMessage.auto_render('ScheduleLocked',
+                u'Twój plan jest zablokowany. Możesz go odblokować w prototypie', message_context)
+        student = request.user.student
+    except Student.DoesNotExist:
+        transaction.savepoint_rollback(savept)
+        return AjaxFailureMessage.auto_render('NonStudent',
+            u'Nie jesteś studentem.', message_context)
 
     try:
         group = Group.objects.get(id=group_id)
@@ -107,26 +114,29 @@ def set_enrolled(request, method):
         group = Group.objects.select_for_update().get(id=group_id)
         group.course = course
     except ObjectDoesNotExist:
-        transaction.rollback()
+        transaction.savepoint_rollback(savept)
         return AjaxFailureMessage.auto_render('NonGroup',
             'Nie możesz zapisać lub wypisać się z grupy, ponieważ ona nie istnieje.', message_context)
 
     if set_enrolled:
         result, messages_list = group.enroll_student(student)
-        if result:
-            run_rearanged(result)
-
     else:
         result, messages_list = group.remove_student(student)
-        if result:
-            run_rearanged(result, group)
-
-    if not result:
-        transaction.rollback()
+        
+    if result:
+        run_rearanged(result, group)
+    else:
+        transaction.savepoint_rollback(savept)
 
     if is_ajax:
         message = ', '.join(messages_list)
-        return AjaxSuccessMessage(message, prepare_group_data(group.course, student))
+        
+        if result:
+            return AjaxSuccessMessage(message, prepare_group_data(group.course, student))
+        
+        else:
+            return AjaxFailureMessage.auto_render('SetEnrolledFailed',
+                message, message_context)
 
     else:
         for message in messages_list:
@@ -171,7 +181,7 @@ def records_set_locked(request, method):
 
 @require_POST
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def set_queue_priority(request, method):
     """
         Sets new priority for queue of some group
@@ -206,6 +216,9 @@ def set_queue_priority(request, method):
         transaction.rollback()
         return AjaxFailureMessage.auto_render('NotQueued',
             'Nie jesteś w kolejce do tej grupy.', message_context)
+    except Student.DoesNotExist:
+        return AjaxFailureMessage.auto_render('NonStudent',
+            u'Nie jesteś studentem.', message_context)
 
 @login_required
 def records(request, group_id):
@@ -241,7 +254,7 @@ def records_group_csv(request, group_id):
         students_in_group = Record.get_students_in_group(group_id)
         group = Group.objects.get(id=group_id)
 
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.csv'
 
         writer = UnicodeWriter(response)
@@ -259,7 +272,7 @@ def records_queue_csv(request, group_id):
         students_in_queue = Queue.get_students_in_queue(group_id)
         group = Group.objects.get(id=group_id)
 
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.csv'
 
         writer = UnicodeWriter(response)
@@ -281,110 +294,82 @@ def own(request):
 
     employee = None
     student  = None
-    if request.user.student:
+    if BaseUser.is_student(request.user):
         student = request.user.student
         groups = Course.get_student_courses_in_semester(student, default_semester)
-        points, sum_points = student.get_points()
+        sum_points = student.get_points()
 
 
-    if student is None and request.user.employee is None:
+    if not BaseUser.is_student(request.user) and \
+       not BaseUser.is_employee(request.user):
         messages.info(request, 'Nie jesteś pracownikiem ani studentem.')
         return render_to_response('common/error.html',
             context_instance=RequestContext(request))
 
-
-
-
     return TemplateResponse(request, 'enrollment/records/schedule.html', locals())
+
+
+@cache_result
+def get_schedule_prototype_courselist(student):
+    courses = prepare_courses_with_terms()
+    return [course.serialize_for_json(
+                student=student, terms=terms, includeWasEnrolled=True)
+            for course, terms in courses]
+
+
+@cache_result
+def get_schedule_prototype_grouplist(semester):
+    return Group.get_groups_by_semester_opt(semester)
 
 
 def schedule_prototype(request):
     """ schedule prototype view """
 
-    if hasattr(request.user, 'student') and request.user.student:
+    if BaseUser.is_student(request.user):
         student = request.user.student
         student_id = student.id
     else:
         student = None
         student_id = 'None'
 
+    should_allow_leave = Semester.get_default_semester().can_remove_record()
+
     default_semester = Semester.objects.get_next()
     if not default_semester:
         messages.info(request, 'Brak aktywnego semestru.')
         data = {
             'student_records': [],
-            'courses' : [],
-            'semester' : 'nieokreślony',
-            'types_list' : []
+            'groups_json': '',
+            'semester': 'nieokreślony',
+            'effects': '',
+            'tags': '',
+            'types_list': [],
+            'is_leaving_allowed': should_allow_leave,
         }
         return render_to_response('enrollment/records/schedule_prototype.html',
             data, context_instance = RequestContext(request))
     if student:
         StudentOptions.preload_cache(student, default_semester)
-    cached_courses = mcache.get("schedule_prototype_courses_%s_%s" % (default_semester.id, student_id), 'DoesNotExist')
-    if cached_courses == 'DoesNotExist':
-        logger.debug("missed cache schedule_prototype_courses_%s_%s" % (default_semester.id, student_id))
-        terms = Term.get_all_in_semester(default_semester )
-        courses = prepare_courses_with_terms( terms )
-        ccourses = []
-        for course in courses:
-            jsons = []
-            for term in course['terms']:
-                term.update({ # TODO: do szablonu
-                    'json': simplejson.dumps(term['info'])
-                })
-                jsons.append({'json': simplejson.dumps(term['info'])})
-            course['info'].update({
-                'is_recording_open': False,
-                #TODO: kod w prepare_courses_list_to_render moim zdaniem nie
-                #      zadziała
-                'was_enrolled': 'False',
-	        'english': course['object'].english,
-	        'exam': course['object'].exam,
-	        'suggested_for_first_year': course['object'].suggested_for_first_year,
-            'terms':jsons
-            })
-            ccourses.append(course['info'])
-        cached_courses = ccourses
-        mcache.set("schedule_prototype_courses_%s_%s" % (default_semester.id, student_id), cached_courses)
-#    else:
-#        logger.debug("in cache schedule_prototype_courses_%s_%s" % (default_semester.id, student_id))
 
+    prototype_courses = get_schedule_prototype_courselist(student)
+    courses_json = json.dumps(prototype_courses)
 
-    cached_all_groups = mcache.get("schedule_prototype_all_groups_%s" % default_semester.id, 'DoesNotExist')
-    if cached_all_groups == 'DoesNotExist':
-
-#        logger.debug('Cache miss with semester id: %s' % \
-#                default_semester.id)
-        mcache.delete("schedule_prototype_courses_json_%s" % student_id)
-        cached_all_groups = Group.get_groups_by_semester_opt(default_semester)
-        mcache.set("schedule_prototype_all_groups_%s" % default_semester.id, cached_all_groups)
-
-    all_groups_json = prepare_groups_json(default_semester, cached_all_groups,
-        student=student)
-
-    cached_test = mcache.get("test_cache", "DoesNotExist")
-
-    if cached_test == 'DoesNotExist':
-#        logger.debug("test missed")
-        mcache.set("test_cache", 2)
-#    else:
-#        logger.debug("test is in cache")
-    cached_courses_json = mcache.get("schedule_prototype_courses_json_%s" % student_id, 'DoesNotExist')
-    if cached_courses_json == 'DoesNotExist':
-#        logger.debug("miss schedule_prototype_courses_json_%s" % student.id)
-        cached_courses_json = prepare_courses_json(cached_all_groups, student) #OK!
-        mcache.set("schedule_prototype_courses_json_%s" % student_id, cached_courses_json)
-#    else:
-#        logger.debug("in cache schedule_prototype_courses_json_%s" % student.id)
+    groups = get_schedule_prototype_grouplist(default_semester)
+    all_groups_json = prepare_groups_json(
+        default_semester, groups, student=student)
 
     data = {
-        'courses_json': cached_courses_json,
+        # Info needed by the JS prototype code
+        'courses_json': courses_json,
+        # Needed by the template to generate a list of courses
+        'courses': prototype_courses,
         'groups_json': all_groups_json,
-        'courses' : cached_courses,
-        'semester' : default_semester,
-        'types_list' : Type.get_all_for_jsfilter(),
-        'priority_limit': settings.QUEUE_PRIORITY_LIMIT
+        'semester': default_semester,
+        'effects': Effects.objects.all(),
+        'tags': Tag.objects.all(),
+        'types_list': Type.get_all_for_jsfilter(),
+        'priority_limit': settings.QUEUE_PRIORITY_LIMIT,
+        'allow_leave_course': should_allow_leave,
     }
     return render_to_response('enrollment/records/schedule_prototype.html',
         data, context_instance = RequestContext(request))
@@ -409,7 +394,7 @@ def records_group_pdf(request, group_id):
     result = StringIO.StringIO()
 
     pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
-    response = HttpResponse(result.getvalue(), mimetype='application/pdf')
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
 
     return response
@@ -434,7 +419,7 @@ def records_queue_pdf(request, group_id):
     result = StringIO.StringIO()
 
     pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
-    response = HttpResponse(result.getvalue(), mimetype='application/pdf')
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
 
     return response

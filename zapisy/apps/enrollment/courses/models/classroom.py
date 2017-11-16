@@ -17,6 +17,7 @@ class Classroom( models.Model ):
     type = models.IntegerField(choices=types, default=1, verbose_name='typ')
     description = models.TextField(null=True, blank=True, verbose_name='opis')
     number = models.CharField( max_length = 20, verbose_name = 'numer sali' )
+    # we don't use ordering properly
     order = models.IntegerField(null=True, blank=True)
     building = models.CharField( max_length = 75, verbose_name = 'budynek', blank=True, default='' )
     capacity = models.PositiveSmallIntegerField(default=0, verbose_name='liczba miejsc')
@@ -24,16 +25,16 @@ class Classroom( models.Model ):
     can_reserve = models.BooleanField(default=False)
     slug =  AutoSlugField(populate_from='number', unique_with='number')
 
-    
+
     class Meta:
         verbose_name = 'sala'
         verbose_name_plural = 'sale'
         app_label = 'courses'
-        ordering = ['order', 'floor', 'number']
+        ordering = ['floor', 'number']
 
     def get_absolute_url(self):
         return reverse('events:classroom', args=[self.slug])
-    
+
     def __unicode__(self):
         return str(self.number) + ' ('+str(self.capacity)+')'
 

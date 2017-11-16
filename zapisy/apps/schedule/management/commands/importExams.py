@@ -2,10 +2,11 @@
 
 
 import datetime
-from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from django.db.models import Q
+
 from apps.enrollment.courses.models import Semester, Freeday, ChangedDay, Classroom, Course
 from apps.enrollment.courses.models import Term as T
 from apps.schedule.models import Term, Event
@@ -66,24 +67,24 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s141
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s140
         newTerm.save()
 
@@ -91,8 +92,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s139
         newTerm.save()
 
@@ -100,16 +101,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s105
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s104
         newTerm.save()
 
@@ -117,24 +118,24 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s103
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s4
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s5
         newTerm.save()
 
@@ -142,16 +143,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s141
         newTerm.save()
 
@@ -159,8 +160,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=14, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=14, minute=0)
         newTerm.room = s140
         newTerm.save()
 
@@ -177,16 +178,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 2)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -202,8 +203,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 1)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -219,8 +220,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 1)
-        newTerm.start = timedelta(hours=13, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=13, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -236,24 +237,24 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.place = 's. 13, Wielka Zachodnia'
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.place = s25
         newTerm.save()
 
@@ -269,48 +270,48 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=15, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=15, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s141
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=15, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=15, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.place = 's. 13, Wielka Zachodnia'
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 4)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=18, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=18, minute=0)
         newTerm.place = 's. EM, Instytut Matematyczny'
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=9, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=9, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -327,24 +328,24 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 6)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 6)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s119
         newTerm.save()
 
@@ -359,40 +360,40 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 7)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 7)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.room = s141
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 7)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.place = 's. 13, Wielka Zachodnia'
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s141
         newTerm.save()
 
@@ -408,16 +409,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 31)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 7)
-        newTerm.start = timedelta(hours=14, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=14, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.room = s119
         newTerm.save()
 
@@ -433,8 +434,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 1)
-        newTerm.start = timedelta(hours=10, minutes=0)
-        newTerm.end = timedelta(hours=13, minutes=0)
+        newTerm.start = datetime.time(hour=10, minute=0)
+        newTerm.end = datetime.time(hour=13, minute=0)
         newTerm.room = s140
         newTerm.save()
 
@@ -453,64 +454,64 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=9, minutes=0)
-        newTerm.end = timedelta(hours=11, minutes=0)
+        newTerm.start = datetime.time(hour=9, minute=0)
+        newTerm.end = datetime.time(hour=11, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=15, minutes=0)
-        newTerm.end = timedelta(hours=17, minutes=0)
+        newTerm.start = datetime.time(hour=15, minute=0)
+        newTerm.end = datetime.time(hour=17, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=15, minutes=0)
-        newTerm.end = timedelta(hours=17, minutes=0)
+        newTerm.start = datetime.time(hour=15, minute=0)
+        newTerm.end = datetime.time(hour=17, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=15, minutes=0)
-        newTerm.end = timedelta(hours=17, minutes=0)
+        newTerm.start = datetime.time(hour=15, minute=0)
+        newTerm.end = datetime.time(hour=17, minute=0)
         newTerm.room = s119
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s105
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s105
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s105
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s105
         newTerm.save()
 
@@ -518,24 +519,24 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s104
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s104
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s104
         newTerm.save()
 
@@ -545,40 +546,40 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s107
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s107
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s107
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s107
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s107
         newTerm.save()
 
@@ -586,40 +587,40 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
@@ -628,40 +629,40 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s110
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s110
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s110
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s110
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s110
         newTerm.save()
 
@@ -670,40 +671,40 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 11)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s7
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 12)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s7
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 13)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s7
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 14)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s7
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s7
         newTerm.save()
 
@@ -723,16 +724,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 5)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s140
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 6)
-        newTerm.start = timedelta(hours=8, minutes=0)
-        newTerm.end = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=8, minute=0)
+        newTerm.end = datetime.time(hour=19, minute=0)
         newTerm.room = s140
         newTerm.save()
 
@@ -747,8 +748,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 2, 15)
-        newTerm.start = timedelta(hours=9, minutes=0)
-        newTerm.end = timedelta(hours=15, minutes=0)
+        newTerm.start = datetime.time(hour=9, minute=0)
+        newTerm.end = datetime.time(hour=15, minute=0)
         newTerm.room = s119
         newTerm.save()
 
@@ -767,16 +768,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 12)
-        newTerm.start = timedelta(hours=13, minutes=0)
-        newTerm.end = timedelta(hours=16, minutes=0)
+        newTerm.start = datetime.time(hour=13, minute=0)
+        newTerm.end = datetime.time(hour=16, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day = datetime.datetime(2013, 1, 16)
-        newTerm.start = timedelta(hours=9, minutes=0)
-        newTerm.end = timedelta(hours=12, minutes=0)
+        newTerm.start = datetime.time(hour=9, minute=0)
+        newTerm.end = datetime.time(hour=12, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -791,16 +792,16 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day   = datetime.datetime(2013, 1, 18)
-        newTerm.start = timedelta(hours=12, minutes=0)
-        newTerm.end   = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=12, minute=0)
+        newTerm.end   = datetime.time(hour=19, minute=0)
         newTerm.room = s25
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day   = datetime.datetime(2013, 1, 25)
-        newTerm.start = timedelta(hours=12, minutes=0)
-        newTerm.end   = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=12, minute=0)
+        newTerm.end   = datetime.time(hour=19, minute=0)
         newTerm.room = s25
         newTerm.save()
 
@@ -815,8 +816,8 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day   = datetime.datetime(2013, 1, 14)
-        newTerm.start = timedelta(hours=16, minutes=0)
-        newTerm.end   = timedelta(hours=20, minutes=0)
+        newTerm.start = datetime.time(hour=16, minute=0)
+        newTerm.end   = datetime.time(hour=20, minute=0)
         newTerm.room = s107
         newTerm.save()
 
@@ -831,16 +832,15 @@ class Command(BaseCommand):
         newTerm = Term()
         newTerm.event = ev
         newTerm.day   = datetime.datetime(2013, 1, 16)
-        newTerm.start = timedelta(hours=17, minutes=0)
-        newTerm.end   = timedelta(hours=19, minutes=0)
+        newTerm.start = datetime.time(hour=17, minute=0)
+        newTerm.end   = datetime.time(hour=19, minute=0)
         newTerm.room = s108
         newTerm.save()
 
         newTerm = Term()
         newTerm.event = ev
         newTerm.day   = datetime.datetime(2013, 1, 24)
-        newTerm.start = timedelta(hours=16, minutes=0)
-        newTerm.end   = timedelta(hours=18, minutes=0)
+        newTerm.start = datetime.time(hour=16, minute=0)
+        newTerm.end   = datetime.time(hour=18, minute=0)
         newTerm.room = s110
         newTerm.save()
-

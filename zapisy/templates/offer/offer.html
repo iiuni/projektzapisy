@@ -8,74 +8,13 @@
         {{ proposal.name }}
     {% else %}
         Oferta
-    {% endif %}{% endblock %}
+    {% endif %}
+{% endblock %}
 
 
-
-{% block filter %}
-    <div id="enr-proposalsList-top-bar" class="main-top-bar" style="display: none">
-   		<fieldset>
-   			<legend><span>Filtrowanie</span></legend>
-   			<div class="main-filter-input">
-   				<input class="text filter-phrase" type="text" />
-   				<input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
-   			</div>
-   		</fieldset>
-
-   		<fieldset class="course-type-filter">
-   			<legend><span>Rodzaj przedmiotu</span></legend>
-   			{% for type in types_list %}
-   				<span class="checkbox">
-   					<input type="checkbox" checked="checked" id="filter-course-type-{{ type.id }}" {% if type.meta_type %} class="filter-course-type-meta" {% endif %} value="{{ type.id }}"/>
-   					<input type="hidden" class="group-id" value="{{ type.group.id }}" />
-   					<label for="filter-course-type-{{ type.id }}">{{ type.name }}</label>
-   				</span>
-   			{% endfor %}
-   		</fieldset>
-
-   		<fieldset id="enr-coursesList-other">
-   			<legend><span>Inne</span></legend>
-   			<span class="selectbox" style="display:block; float:none;">
-   				<label for="enr-teacher">Prowadzący:</label>
-   				<select id="enr-teacher">
-   					<option value="-1">dowolny</option>
-   					{% for teacher in teachers %}
-   						<option value="{{ teacher.id }}">{{ teacher }}</option>
-   					{% endfor %}
-   				</select>
-   			</span>
-
-           {% if user.student %}
-                <span class="checkbox">
-                    <input type="checkbox" id="enr-hidesigned" />
-                    <label for="enr-hidesigned">
-                        Schowaj przedmioty, na które {% if user.student.get_sex == 'M' %}byłem zapisany{% else %}byłam zapisana{% endif %}
-                    </label>
-                </span>
-            {% else %}
-                <span class="checkbox" style="display: none;">
-                    <input type="checkbox" id="enr-hidesigned"/>
-                    <label for="enr-hidesigned">Schowaj przedmioty, na które byłem zapisany</label>
-                </span>
-           {% endif %}
-           <span class="checkbox">
-               <input type="checkbox" id="enr-proposalFilter-english" checked="checked"/>
-               <label for="enr-proposalFilter-english">Pokaż przedmioty prowadzone w j.angielskim</label>
-           </span>
-
-           <span class="checkbox">
-               <input type="checkbox" id="enr-proposalFilter-exam" checked="checked"/>
-               <label for="enr-proposalFilter-exam">Pokaż przedmioty kończące się egzaminem</label>
-           </span>
-
-           <span class="checkbox">
-               <input type="checkbox" id="enr-proposalFilter-vote" checked="checked" />
-               <label for="enr-proposalFilter-vote">Pokaż przedmioty niepoddane pod głosowanie</label>
-           </span>
-
-   		</fieldset>
-   	</div>{% endblock %}
-
+{% block topContent %}
+{% include "common/course_list_filters.html" with custom_filters="offer/custom_filters.html" %}
+{% endblock %}
 
 {% block bread %}
     <a href="/">Strona główna</a> &raquo;

@@ -6,27 +6,43 @@
     <br />
     <br />
     <h2>Do poprawienia</h2>
-    <ul>
-    {% for proposal in for_review %}
-        <li><a href={{proposal.slug}}>{{proposal.name}}</a></li>
-    {% endfor %}
-    </ul>
+    {% if for_review|length > 0 %}
+        <ul>
+        {% for proposal in for_review %}
+            <li><a href={{proposal.slug}}>{{proposal.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
     <h2>Niezaakceptowane</h2>
-    <ul>
-    {% for proposal in not_accepted %}
-        <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
-    {% endfor %}
-    </ul>
+    {% if not_accepted|length > 0 %}
+        <ul>
+        {% for proposal in not_accepted %}
+            <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
     <h2>W ofercie</h2>
-    <ul>
-    {% for proposal in in_offer %}
-        <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
-    {% endfor %}
-    </ul>
+    {% if in_offer|length > 0 %}
+        <ul>
+        {% for proposal in in_offer %}
+            <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
     <h2>Wycofane z oferty</h2>
-    <ul>
-    {% for proposal in removed%}
-        <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
-    {% endfor %}
-
+    {% if removed|length > 0 %}
+        <ul>
+        {% for proposal in removed %}
+            <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
 {% endblock %}

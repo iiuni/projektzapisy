@@ -9,7 +9,7 @@ class MultipleChoiceQuestion( BaseQuestion ):
     sections     = models.ManyToManyField( 'Section',    
                                             verbose_name = 'sekcje', 
                                             through = 'MultipleChoiceQuestionOrdering' )
-    has_other    = models.BooleanField(     verbose_name = 'opcja inne' )
+    has_other    = models.BooleanField(     verbose_name = 'opcja inne' , default=False)
     choice_limit = models.IntegerField(     verbose_name = 'maksimum opcji do wyboru' )
     options      = models.ManyToManyField(  Option, 
                                             verbose_name = 'odpowiedzi' ) 

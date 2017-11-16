@@ -1,95 +1,66 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
 
-class Migration(SchemaMigration):
-    
-    def forwards(self, orm):
-        
-        # Adding model 'Message'
-        db.create_table('mailer_message', (
-            ('message_body', self.gf('django.db.models.fields.TextField')()),
-            ('to_address', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('from_address', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('message_body_html', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('when_added', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('priority', self.gf('django.db.models.fields.CharField')(default='2', max_length=1)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(max_length=100)),
-        ))
-        db.send_create_signal('mailer', ['Message'])
 
-        # Adding model 'DontSendEntry'
-        db.create_table('mailer_dontsendentry', (
-            ('to_address', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('when_added', self.gf('django.db.models.fields.DateTimeField')()),
-        ))
-        db.send_create_signal('mailer', ['DontSendEntry'])
+class Migration(migrations.Migration):
 
-        # Adding model 'MessageLog'
-        db.create_table('mailer_messagelog', (
-            ('message_body', self.gf('django.db.models.fields.TextField')()),
-            ('to_address', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('from_address', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('when_attempted', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('message_body_html', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('when_added', self.gf('django.db.models.fields.DateTimeField')()),
-            ('priority', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('result', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('log_message', self.gf('django.db.models.fields.TextField')()),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(max_length=100)),
-        ))
-        db.send_create_signal('mailer', ['MessageLog'])
-    
-    
-    def backwards(self, orm):
-        
-        # Deleting model 'Message'
-        db.delete_table('mailer_message')
+    dependencies = [
+    ]
 
-        # Deleting model 'DontSendEntry'
-        db.delete_table('mailer_dontsendentry')
-
-        # Deleting model 'MessageLog'
-        db.delete_table('mailer_messagelog')
-    
-    
-    models = {
-        'mailer.dontsendentry': {
-            'Meta': {'object_name': 'DontSendEntry'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'to_address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'when_added': ('django.db.models.fields.DateTimeField', [], {})
-        },
-        'mailer.message': {
-            'Meta': {'object_name': 'Message'},
-            'from_address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message_body': ('django.db.models.fields.TextField', [], {}),
-            'message_body_html': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'priority': ('django.db.models.fields.CharField', [], {'default': "'2'", 'max_length': '1'}),
-            'subject': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'to_address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'when_added': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
-        },
-        'mailer.messagelog': {
-            'Meta': {'object_name': 'MessageLog'},
-            'from_address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'log_message': ('django.db.models.fields.TextField', [], {}),
-            'message_body': ('django.db.models.fields.TextField', [], {}),
-            'message_body_html': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'priority': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'result': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'subject': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'to_address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'when_added': ('django.db.models.fields.DateTimeField', [], {}),
-            'when_attempted': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
-        }
-    }
-    
-    complete_apps = ['mailer']
+    operations = [
+        migrations.CreateModel(
+            name='DontSendEntry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('to_address', models.CharField(max_length=50, verbose_name=b'adres')),
+                ('when_added', models.DateTimeField(verbose_name=b'od kiedy')),
+            ],
+            options={
+                'verbose_name': 'blokada',
+                'verbose_name_plural': 'blokady',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Message',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('to_address', models.CharField(max_length=50, verbose_name=b'odbiorca')),
+                ('from_address', models.CharField(max_length=50, verbose_name=b'nadawca')),
+                ('subject', models.CharField(max_length=100, verbose_name=b'temat')),
+                ('message_body', models.TextField(verbose_name=b'tre\xc5\x9b\xc4\x87')),
+                ('message_body_html', models.TextField(verbose_name=b'tre\xc5\x9b\xc4\x87 html', blank=True)),
+                ('when_added', models.DateTimeField(default=datetime.datetime.now, verbose_name=b'dodano')),
+                ('priority', models.CharField(default=b'2', max_length=1, verbose_name=b'priorytet', choices=[(b'1', b'wysoki'), (b'2', b'\xc5\x9bredni'), (b'3', b'niski'), (b'4', b'odroczona')])),
+            ],
+            options={
+                'verbose_name': 'wiadomo\u015b\u0107',
+                'verbose_name_plural': 'wiadomo\u015bci',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='MessageLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('to_address', models.CharField(max_length=50, verbose_name=b'odbiorca')),
+                ('from_address', models.CharField(max_length=50, verbose_name=b'nadawca')),
+                ('subject', models.CharField(max_length=100, verbose_name=b'temat')),
+                ('message_body', models.TextField(verbose_name=b'tre\xc5\x9b\xc4\x87')),
+                ('message_body_html', models.TextField(verbose_name=b'tre\xc5\x9b\xc4\x87 html', blank=True)),
+                ('when_added', models.DateTimeField(verbose_name=b'dodano')),
+                ('priority', models.CharField(max_length=1, verbose_name=b'priorytet', choices=[(b'1', b'wysoki'), (b'2', b'\xc5\x9bredni'), (b'3', b'niski'), (b'4', b'odroczona')])),
+                ('when_attempted', models.DateTimeField(default=datetime.datetime.now, verbose_name=b'czas pr\xc3\xb3by')),
+                ('result', models.CharField(max_length=1, verbose_name=b'wynik', choices=[(b'1', b'sukces'), (b'2', b'nie wys\xc5\x82ane'), (b'3', b'niepowodzenie')])),
+                ('log_message', models.TextField(verbose_name=b'wiadomo\xc5\x9b\xc4\x87')),
+            ],
+            options={
+                'verbose_name': 'log',
+                'verbose_name_plural': 'logi',
+            },
+            bases=(models.Model,),
+        ),
+    ]

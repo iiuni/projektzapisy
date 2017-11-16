@@ -1,4 +1,4 @@
-from zapisy.apps.enrollment.courses.models import Semester, Classroom
+from apps.enrollment.courses.models import Semester, Classroom
 from datetime import datetime
 
 
@@ -17,7 +17,8 @@ class SemesterObjectMother():
             lectures_ending=datetime(2016, 2, 3),
             semester_beginning=datetime(2015, 10, 1),
             semester_ending=datetime(2016, 2, 21),
-            records_ects_limit_abolition=datetime(2015, 10, 1)
+            records_ects_limit_abolition=datetime(2015, 10, 1),
+            is_grade_active=False
         )
         semester.full_clean()
         return semester
@@ -35,7 +36,8 @@ class SemesterObjectMother():
             lectures_ending=datetime(2016, 6, 16),
             semester_beginning=datetime(2016, 2, 22),
             semester_ending=datetime(2016, 9, 10),
-            records_ects_limit_abolition=datetime(2016, 3, 1)
+            records_ects_limit_abolition=datetime(2016, 3, 1),
+            is_grade_active=False
         )
         semester.full_clean()
         return semester

@@ -1,10 +1,11 @@
 {% extends "admin/base_site.html" %}
 {% load url from future %}
-{% load i18n %}
+{% load i18n staticfiles %}
 
 {% block extrastyle %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="/site_media/css/admin.css">
-    <link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}" />
+{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -62,25 +63,6 @@
                 <tr>
                     <th scope="row">Odśwież ręcznie czasy otwarcia</th>
                     <td><a href="{{ model.admin_url }}refresh_semester" class="addlink">Odśwież</a></td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        {% if app.name == 'Users' and app_list|length < 2 %}
-        <div class="module">
-            <table>
-                <caption>Import/Eksport studentów zamawianych</caption>
-                <tr>
-                    <th scope="row">Importuj dane</th>
-                    <td><a href="{{ model.admin_url }}import_zamawiani" class="addlink">Importuj</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">Importuj nowych studentów</th>
-                    <td><a href="{{ model.admin_url }}import_new_zamawiani" class="addlink">Importuj</a></td>
-                </tr>
-                <tr>
-                    <th scope="row">Eksportuj dane</th>
-                    <td><a href="{{ model.admin_url }}export_zamawiani" class="addlink">Eksportuj</a></td>
                 </tr>
             </table>
         </div>

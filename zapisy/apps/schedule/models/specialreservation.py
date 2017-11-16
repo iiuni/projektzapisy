@@ -2,8 +2,9 @@
 from django.db import models
 from django.core.validators import ValidationError
 from datetime import date, datetime
+from apps.schedule.models import Event
 
-import zapisy.common as common
+import common
 
 from apps.enrollment.courses.models import Semester, Term as CourseTerm
 
@@ -29,26 +30,26 @@ class SpecialReservationQuerySet(models.query.QuerySet):
 
 
 class SpecialReservationManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return SpecialReservationQuerySet(self.model, using=self._db)
 
     def on_day_of_week(self, day_of_week):
-        return self.get_query_set().on_day_of_week(day_of_week)
+        return self.get_queryset().on_day_of_week(day_of_week)
 
     def this_semester(self):
-        return self.get_query_set().this_semester()
+        return self.get_queryset().this_semester()
 
     def any_semester(self, semester):
-        return self.get_query_set().any_semester(semester)
+        return self.get_queryset().any_semester(semester)
 
     def in_classroom(self, classroom):
-        return self.get_query_set().in_classroom(classroom)
+        return self.get_queryset().in_classroom(classroom)
 
     def in_classrooms(self, classrooms):
-        return self.get_query_set().in_classrooms(classrooms)
+        return self.get_queryset().in_classrooms(classrooms)
 
     def between_hours(self, start_time, end_time):
-        return self.get_query_set().between_hours(start_time, end_time)
+        return self.get_queryset().between_hours(start_time, end_time)
 
 
 class SpecialReservation(models.Model):
@@ -62,6 +63,7 @@ class SpecialReservation(models.Model):
                                  verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name='rozpoczęcie', blank=False)
     end_time = models.TimeField(verbose_name='zakończenie', blank=False)
+    ignore_conflicts = False
 
     objects = SpecialReservationManager()
 
@@ -91,34 +93,34 @@ class SpecialReservation(models.Model):
 
         return query
 
-    def validate_against_course_terms(self):
+    def validate_against_all_terms(self):
+
         course_terms = CourseTerm.get_terms_for_semester(semester=self.semester,
                                                          day=self.dayOfWeek,
                                                          classrooms=[self.classroom],
                                                          start_time=self.start_time,
                                                          end_time=self.end_time)
 
-        if course_terms:
-            raise ValidationError(
-                message={'__all__': [u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
-                                     course_terms[0].group.course.name + ' ' + unicode(course_terms[0])]},
-                code='overlap'
-            )
-
-    def validate_against_event_terms(self):
         from .term import Term
-
         candidate_days = self.semester.get_all_days_of_week(self.dayOfWeek, start_date=max(datetime.now().date(), self.semester.lectures_beginning))
 
         terms = Term.get_terms_for_dates(dates=candidate_days,
                                          classroom=self.classroom,
                                          start_time=self.start_time,
                                          end_time=self.end_time)
+        msg_list = []
+
+        if course_terms:
+            for t in course_terms:
+                msg_list.append(u'W tym samym czasie w tej sali odbywają się zajęcia: ' + t.group.course.name + ' ' + unicode(t))
 
         if terms:
-            raise ValidationError(message={'__all__': [u'W tym czasie ta sala jest zarezerwowana (wydarzenie) : ' +
-                                                       unicode(terms[0].event) + ' ' + unicode(terms[0])]},
-                                  code='overlap')
+            for t in terms:
+                if t.event.reservation != self and t.event.type != Event.TYPE_CLASS:
+                    msg_list.append( u'W tym samym czasie ta sala jest zarezerwowana (wydarzenie): ' + unicode(t.event) + ' ' + unicode(t))
+
+        if len(msg_list)>0:
+            raise ValidationError(message={'__all__': msg_list}, code='overlap')
 
     def clean(self):
         """
@@ -138,9 +140,8 @@ class SpecialReservation(models.Model):
                 code='invalid'
             )
 
-        self.validate_against_event_terms()
-
-        self.validate_against_course_terms()
+        if not self.ignore_conflicts:
+            self.validate_against_all_terms()
 
         super(SpecialReservation, self).clean()
 
@@ -149,7 +150,7 @@ class SpecialReservation(models.Model):
         verbose_name = u'rezerwacja stała'
         verbose_name_plural = u'rezerwacje stałe'
 
-    def create_event(self):
+    def create_event(self, author_id):
         from .term import Term
         from .event import Event
 
@@ -164,7 +165,7 @@ class SpecialReservation(models.Model):
         ev.type = Event.TYPE_GENERIC
         ev.visible = True
         ev.status = Event.STATUS_ACCEPTED
-        ev.author_id = 1
+        ev.author_id = author_id
         ev.save()
 
         term_days = semester.get_all_days_of_week(day_of_week=self.dayOfWeek, start_date=max(datetime.now().date(), semester.lectures_beginning))
@@ -178,9 +179,9 @@ class SpecialReservation(models.Model):
             term.room = self.classroom
             term.save()
 
-    def save(self, *args, **kwargs):
+    def save(self, author_id=1, *args, **kwargs):
         super(SpecialReservation, self).save(*args, **kwargs)
-        self.create_event()
+        self.create_event(author_id)
 
     def __unicode__(self):
         return u'%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),

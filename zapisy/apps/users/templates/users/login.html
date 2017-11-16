@@ -11,6 +11,8 @@
 	{% compressed_css "login" %}
 {% endblock %}
 
+{% block main-subtitle %}Logowanie{% endblock %}
+
 {% block content %}
     {% if user.is_authenticated %}
         <p class="main-message">Jesteś już zalogowany. Możesz się <a href="{% url 'user-logout' %}">wylogować</a>.</p>
@@ -62,10 +64,10 @@
 </div>
     <div class="span11 columns">
 <p><h3>Jak zdobyć hasło?</h3>
-Hasło dostaje każdy student po spotkaniu z dyrekcją Instytutu Informatyki UWr.
+Każdy student Uniwersytetu Wrocławskiego może zalogować się poprzez USOS. Dozwolone jest również alternatywne uwierzytelnianie za pomocą loginu i hasła. Jeśli takiego nie masz, <a href="mailto:zapisy@cs.uni.wroc.pl">napisz do administratora</a>
 </p>
 <p><h3>Nie pamiętasz hasła?</h3>
-Skorzystaj z naszego <a href="{% url 'password-reset' %}">formularza</a>. Jeżeli to nie pomoże skontaktuj się z
+Skorzystaj z naszego <a href="{% url 'password_reset' %}">formularza</a>. Jeżeli to nie pomoże skontaktuj się z
 dziekanatem.
 </p>
 </div>

@@ -3,6 +3,8 @@
 {% load compressed %}
 {% load cache %}
 {% load i18n %}
+{% load static %}
+
 {% block js %}
     {% compressed_js 'courses' %}
 {% endblock %}
@@ -11,75 +13,33 @@
     {% compressed_css 'main' %}
 {% endblock %}
 
-
-{% block filter %}
-	<div id="enr-coursesList-top-bar" class="main-top-bar" style="display: none">
-		<fieldset>
-			<legend><span>{% trans "Filtrowanie" %}</span></legend>
-			<div class="main-filter-input">
-				<input class="text filter-phrase" type="text" />
-				<input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
-			</div>
-		</fieldset>
-		<fieldset class="course-type-filter">
-			<legend><span>{% trans "Rodzaj przedmiotu" %}</span></legend>
-			{% for type in types_list %}
-				<span class="checkbox">
-					<input type="checkbox" checked="checked" id="filter-course-type-{{ type.id }}" {% if type.meta_type %} class="filter-course-type-meta" {% endif %} value="{{ type.id }}"/>
-					<input type="hidden" class="group-id" value="{{ type.group.id }}" />
-					<label for="filter-course-type-{{ type.id }}">{{ type.name }}</label>
-				</span>
-			{% endfor %}
-		</fieldset>
-		<fieldset id="enr-coursesList-other">
-			<legend><span>{% trans "Inne" %}</span></legend>
-			<span class="selectbox" style="display:block; float:none;">
-				<label for="enr-courseFilter-semester">{% trans "Semestr" %}:</label>
-				<select id="enr-courseFilter-semester">
-					<option value="0">{# Translators: filtr przedmiotów - wybór semestru #}{% trans "dowolny" %}</option>
-					{% for semester in semester_courses %}
-						<option value="{{ semester.id }}" {% if semester.id == default_semester.id %} selected="selected" {% endif %}>{{ semester.year }} {{ semester.get_type_display }}{% if semester.id == default_semester.id %} (bieżący){% endif %}</option>
-					{% endfor %}
-				</select>
-			</span>
-			{% if user.student %}
-                                <span class="checkbox"><input type="checkbox" id="enr-hidesigned" /><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label></span>
-                        {% else %}
-                                <span class="checkbox" style="display: none;"><input type="checkbox" id="enr-hidesigned"/><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label></span>
-		        {% endif %}
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-english" checked="checked"/><label for="enr-courseFilter-english">{% trans "Pokaż przedmioty prowadzone w j.angielskim" %}</label></span>
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-exam" checked="checked"/><label for="enr-courseFilter-exam">{% trans "Pokaż przedmioty kończące się egzaminem" %}</label></span>
-                        <span class="checkbox"><input type="checkbox" id="enr-courseFilter-suggestedForFirstYear" {% if user.student.is_first_year_student %}checked="checked"{% endif %}/><label for="enr-courseFilter-suggestedForFirstYear">{% trans "Pokaż tylko przedmioty zalecane dla 1 roku" %}</label></span>
-		</fieldset>
-	</div>
-{% endblock %}
-
-
 {% block sidebar %}
     {% cache 3600 courses_list request.user %}
 	<div id="main-sidebar">
 		<div id="course-list">
-			{% for semester in semester_courses %}
-				<div class="semester">
-					{# Translators: Tytuł nad sidebarem  #}
-					<h3>{% trans "Semestr" %} <span>{{ semester.year }} {{ semester.get_type_display }}</span></h3>
-					<input type="hidden" name="semester-id" value="{{ semester.id }}" />
-					<ul class="courses-list">
-						{% for course in courses %}
-                            {% if course.semester_id == semester.id %}
-							<li>
-								<a href="{% url 'course-page' course.slug %}" id="course-{{ course.id }}">{{ course.name }}</a>
-								<input type="hidden" name="type" value="{{ course.type.id }}" />
-								<input type="hidden" name="wasEnrolled" value="{% if course.in_history and course.in_history > 0 %}True{% else %}False{% endif %}" />
-								<input type="hidden" name="english" value="{{ course.english }}" />
-								<input type="hidden" name="exam" value="{{ course.exam }}" />
-								<input type="hidden" name="suggested_for_first_year" value="{{ course.suggested_for_first_year }}" />
-							</li>
-                            {% endif %}
-						{% endfor %}
-					</ul>
-				</div>
-			{% endfor %}
+            <p class="main-side-message hidden" id="fetchingListMessage">
+                Pobieranie listy przedmiotów...
+                <img src="{% static "images/loading.gif" %}">
+            </p>
+		
+			<div class="semester" id="mainCoursesContainer">
+				{# Translators: Tytuł nad sidebarem  #}
+				<h3>{% trans "Semestr" %}
+					<span id="current_semester_year">{{ default_semester.year }}</span>&nbsp;<span 
+						id="current_semester_type">{{ default_semester.get_type_display }}</span>
+				</h3>
+				<input type="hidden" id="semester_id" value="{{ default_semester.id }}" />
+				<!-- The course list the server sends to us when we first load the page,
+				then if the user changes the semester, we download the JSON using AJAX. -->
+				<script type="application/json" id="courses_list_json">{{ courses_list_json|safe }}</script>
+				
+				<p class="main-side-message hidden" id="noResultsMessage">
+                    Do podanego filtra nie pasuje żaden przedmiot.
+                </p>
+				
+				<ul id="courses-list">
+				</ul>
+            </div>
 		</div>
 	</div>
     {% endcache %}

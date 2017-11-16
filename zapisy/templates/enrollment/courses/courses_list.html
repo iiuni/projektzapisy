@@ -1,21 +1,38 @@
 {% extends "enrollment/courses/base.html" %}
 {% load i18n %}
+{% load compressed %}
 
 {% block main-subtitle %}{% trans "Przedmioty" %}{% endblock %}
 
+{% block styles %}
+    {% compressed_css 'courseview' %}
+{% endblock %}
+
 {% block bread %}
-<a href="/">{% trans "Strona główna" %}</a> &raquo;
-<a href="/">{% trans "System Zapisów" %}</a> &raquo;
-{% trans "Przedmioty" %}
-    {# end bread #}
+<a href="{% url "main-page" %}">{% trans "Strona główna" %}</a>&nbsp;&raquo;&nbsp;<a
+    href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>&nbsp;<span
+        class="hidden" id="enr-course-arrow">&raquo;</span>&nbsp;<span
+            class="hidden" id="enr-course-name">{{ course.name }}</span>
+            {% if user.is_staff %}
+            <a
+                id="enr-course-edit-link"
+                href=""
+                class="hidden"
+            >
+            {% trans "Edytuj przedmiot" %}
+            </a>
+            {% endif %}
+{% endblock %}
+
+{% block topContent %}
+{% include "common/course_list_filters.html" with custom_filters="enrollment/semesterChooser.html" %}
 {% endblock %}
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
 
 {% block content %}
-    <div class="alert-message info">
+    <div id="select-course-notification" class="alert-message info">
         <a href="#" class="close">×</a>
         <p>{% trans "Wybierz przedmiot z listy" %}</p>
     </div>
-    {# end content#}
 {% endblock %}

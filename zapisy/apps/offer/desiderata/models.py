@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from apps.enrollment.courses.models import Term, Course, Semester
-import zapisy.common as common
+import common
 
 class Desiderata(models.Model):
     employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')

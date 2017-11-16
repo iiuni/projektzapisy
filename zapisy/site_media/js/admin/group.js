@@ -71,7 +71,7 @@ $(document).ready(function () {
         button.hide();
         $('#record_set-group table tbody').append('<tr class="dynamic-record_set row1""><td class="original"><input type="hidden" name="set-id" id="set-id"><input type="hidden" name="set-group" value="11232" id="set-group"></td><td class="student">' +
             '<input class="vForeignKeyRawIdAdminField" type="text" name="set-student" id="set-student">' +
-            '<a href="/fereol_admin/users/student/?t=id" class="related-lookup" id="lookup_set-student" onclick="return showRelatedObjectLookupPopup(this);">' +
+            '<a href="/fereol_admin/users/student/?_to_field=id" class="related-lookup" id="lookup_set-student" onclick="return showRelatedObjectLookupPopup(this);">' +
             '<img src="/static/admin/img/selector-search.gif" width="16" height="16" alt="Szukaj"></a></td><td><button class="save_new_student">Zapisz</button></td></tr>');
         $('.save_new_student').click(function(event){
             event.preventDefault();

@@ -9,8 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.aggregates import Sum
 from apps.enrollment.courses.models.course import CourseEntity, Course
-
-from apps.offer.proposal.models          import Proposal
 from apps.offer.vote.models.system_state import SystemState
 
 class SingleVote ( models.Model ):
@@ -156,8 +154,6 @@ class SingleVote ( models.Model ):
             Makes 'zero' vote for student - only for proposal without
             vote
         """
-        from apps.offer.proposal.models.proposal import Proposal
-
         correction = state.is_correction_active()
 
         semester = None

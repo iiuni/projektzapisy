@@ -2,10 +2,87 @@
 
 # Current version
 
+# Version 17.10.25
+
+* Fixed missing title for login page
+* Hid vote button for employees
+* Added notification when leaving voting page
+* Fixed several typos
+* Fixed 'None' in news search field
+* Improved login UX
+* Added displaying links to courses on employee's page
+* Added showing records ending time
+* Added USOS CAS authentication
+
+# Version 17.06.19
+
+* Upgrade to Django 1.7
+* Added maintenance mode switcher
+* Fixed course names in vote results
+* Enhanced filtering for offer
+
+# Version 17.06.13
+
+* Added possibility to remove reservations
+* Added link to tracker to 500 error page
+
+# Version 17.06.07
+
+* Fixed error with not visible plans and not working prototype when new hidden future semester is added
+* Fixed 500 error on vote summary
+* Fixed password reset functionality after upgrade to Django 1.6. The issue was with wrong url names
+
+# Version 17.06.06
+
+* Added tag/effects filtering
+* Bug-fixes after Django 1.6
+
+# Version 17.05.29
+
+* Upgrade to Django 1.6
+
+# Version 17.05.05
+
+* Improved syllabus form
+
+# Version 17.04.20
+
+* Upgrade to Django 1.5
+
+# Version 17.04.20
+
+* Fixed bug with sending emails with "ó"
+* Added possibility to edit syllabus
+* Added conflict list for secretary
+
+# Version 17.04.07
+
+* Fixed mail-to links escape '+'
+* Fixed proper author while creating cyclical reservation
+* Added possibility to add reservations with conflicts for secretary
+* Fixed FreeDay and ChangedDay are now unique
+* Added news content is now included in emails
+
+# Version 17.03.09
+
+* Added new date for records: end of unenrolling
+
+# Version 17.02.26
+
+* Added rooms reports
+* Fixed polish fonts in pdfs
+* Fixed export to ical
+* Fixed display enrollment number (with isim students)
+
+# Version 17.02.13
+
+* Cyclic reservations can now be added with conflicts
+* Fixed tight time bounds for reservations
+
 # Version 17.01.31
 
-* fixed cyclical reservation starts no earlier than semester beginning
-* fixed open only SMTP one connection while sending emails
+* Fixed cyclical reservation starts no earlier than semester beginning
+* Fixed open only SMTP one connection while sending emails
 
 # Version 17.01.25
 
@@ -54,7 +131,7 @@
 
 * Created unified dev environment with Vagrant
 * Fixed template for enabling grade
-* Fixed an issue with queue rearrangments
+* Fixed an issue with queue rearrangements
 * Added csv/pdf export links for queues
 * Reviewed, fixed and merged `Courses Proposals` (Filip's thesis?)
 * Button for refreshing opening times

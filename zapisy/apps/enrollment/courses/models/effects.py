@@ -15,4 +15,9 @@ class Effects(models.Model):
     def __unicode__(self):
         return smart_unicode(self.group_name)
 
-
+    def serialize_for_json(self):
+        return {
+            'id': self.pk,
+            'name': self.group_name,
+            'description': self.description
+        }
