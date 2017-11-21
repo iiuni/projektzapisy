@@ -61,28 +61,31 @@
     {% block js %}{% compressed_js 'main' %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
-    <script src="{% static 'js/cookieconsent.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css"
+          href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
     <script>
-    window.addEventListener("load", function(){
-        window.cookieconsent.initialise({
-          "palette": {
-            "popup": {
-              "background": "#222222"
-            },
-            "button": {
-              "background": "#00709e"
-            }
-          },
-          "showLink": false,
-          "theme": "classic",
-          "position": "bottom",
-          "content": {
-            "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
-            "dismiss": "OK"
-          }
-        })
-    });
+        window.addEventListener("load", function () {
+            window.cookieconsent.initialise({
+                "palette": {
+                    "popup": {
+                        "background": "#eaf7f7",
+                        "text": "#5c7291"
+                    },
+                    "button": {
+                        "background": "#56cbdb",
+                        "text": "#ffffff"
+                    }
+                },
+                "showLink": false,
+                "theme": "classic",
+                "position": "bottom-right",
+                "content": {
+                    "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
+                    "dismiss": "OK"
+                }
+            })
+        });
     </script>
     <script src="{% static "js/common/utils.js" %}"></script>
     <script src="{% static "js/common/base.js" %}"></script>
