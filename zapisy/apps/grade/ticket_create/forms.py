@@ -13,35 +13,35 @@ class PollCombineForm( forms.Form ):
         for polls in polls_by_s:
             if len( polls ) == 1:
                 if not polls[ 0 ].group:
-                    title = u'[' + polls[ 0 ].title + u'] Ankieta ogólna'
+                    title = '[' + polls[ 0 ].title + '] Ankieta ogólna'
                 else:
-                    title = u'[' + polls[ 0 ].title + u'] Przedmiot: ' + \
+                    title = '[' + polls[ 0 ].title + '] Przedmiot: ' + \
                             polls[ 0 ].group.course.name + \
-                            u' ' + polls[ 0 ].group.get_type_display() + u': ' + \
+                            ' ' + polls[ 0 ].group.get_type_display() + ': ' + \
                             polls[ 0 ].group.get_teacher_full_name()
-                if polls[ 0 ].studies_type: u', studia ' + polls[ 0 ].studies_type
+                if polls[ 0 ].studies_type: ', studia ' + polls[ 0 ].studies_type
                 
-                self.poll_groups.append( unicode( title ))
+                self.poll_groups.append( str( title ))
             else:
                 if not polls[ 0 ].group:
-                    title = u'Ankiety ogólne:<ul>'
-                    label = u'join_common'
+                    title = 'Ankiety ogólne:<ul>'
+                    label = 'join_common'
                 else:
-                    title = u'Przedmiot: ' + polls[ 0 ].group.course.name + u'<ul>'
-                    label = u'join_' + unicode( polls[ 0 ].group.course.pk )
+                    title = 'Przedmiot: ' + polls[ 0 ].group.course.name + '<ul>'
+                    label = 'join_' + str( polls[ 0 ].group.course.pk )
                 for poll in polls:
                     if not poll.group:
-                        title += u'<li>[' + poll.title + ']'
+                        title += '<li>[' + poll.title + ']'
                     else:
-                        title += u'<li>[' + poll.title + u'] ' + \
-                                 poll.group.get_type_display() + u': ' + \
-                                 poll.group.get_teacher_full_name() + u'</li>' 
-                title += u'</ul>'
+                        title += '<li>[' + poll.title + '] ' + \
+                                 poll.group.get_type_display() + ': ' + \
+                                 poll.group.get_teacher_full_name() + '</li>' 
+                title += '</ul>'
 
                 field = forms.BooleanField( label     = SafeUnicode( title ),
                                             required  = False,
                                             initial   = False,
-                                            help_text = u'Powiąż ocenę'
+                                            help_text = 'Powiąż ocenę'
 					  ) # this is NOT escaped
 
                 self.fields[ label ] = field
@@ -49,7 +49,7 @@ class PollCombineForm( forms.Form ):
     def as_table( self ):
         result = ""
         for name in self.poll_groups:
-            result += u"<tr><td colspan='2'>" + unicode( name )+ u"</td></tr>"
+            result += "<tr><td colspan='2'>" + str( name )+ "</td></tr>"
         result += super( PollCombineForm, self ).as_table()
         return SafeUnicode( result )
 	

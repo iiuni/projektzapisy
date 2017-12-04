@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from course import Course
+from .course import Course
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from apps.enrollment.courses.exceptions import *
 from django.db.models import Q
@@ -26,7 +26,7 @@ class Semester( models.Model ):
     """semester in academic year"""
     TYPE_WINTER = 'z'
     TYPE_SUMMER = 'l'
-    TYPE_CHOICES = [(TYPE_WINTER, u'zimowy'), (TYPE_SUMMER, u'letni')]
+    TYPE_CHOICES = [(TYPE_WINTER, 'zimowy'), (TYPE_SUMMER, 'letni')]
 
     visible = models.BooleanField(verbose_name='widoczny', default=False)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES, verbose_name='rodzaj semestru')
@@ -46,7 +46,7 @@ class Semester( models.Model ):
     is_grade_active = models.BooleanField( verbose_name = 'Ocena aktywna', default=False)
     records_ects_limit_abolition = models.DateTimeField(null = True, verbose_name='Czas zniesienia limitu 35 ECTS')
 
-    t0_are_ready = models.BooleanField( verbose_name= u'T0 zostały ustalone', default=False)
+    t0_are_ready = models.BooleanField( verbose_name= 'T0 zostały ustalone', default=False)
 
     first_grade_semester  = models.ForeignKey('self', verbose_name='Pierwszy semestr oceny', null=True, blank=True, related_name='fgrade')
     second_grade_semester = models.ForeignKey('self', verbose_name='Drugi semester oceny', null=True, blank=True, related_name='sgrade')
@@ -63,7 +63,7 @@ class Semester( models.Model ):
         if self.records_ending and not (self.records_opening <= self.records_ending <= self.records_closing):
             raise ValidationError(
                 message={
-                    'records_ending': [u'Koniec wypisów musi byćw przedziale <otwarcie zapisów, zamknięcie zapisów>']
+                    'records_ending': ['Koniec wypisów musi byćw przedziale <otwarcie zapisów, zamknięcie zapisów>']
                 },
                 code='invalid'
             )
@@ -90,7 +90,7 @@ class Semester( models.Model ):
         """ returns name of semester """
         #TODO: wymuszanie formatu roku "XXXX/YY" zamiast "XXXX"
         if len(self.year) != 7:
-            return u'(BŁĄD) {0} {1}'.format(self.year, self.get_type_display())
+            return '(BŁĄD) {0} {1}'.format(self.year, self.get_type_display())
         return '{0} {1}'.format(self.year, self.get_type_display())
 
     def get_short_name(self):
@@ -219,7 +219,7 @@ class Semester( models.Model ):
         added_days = ChangedDay.get_added_days_of_week(from_date,
                                                        self.lectures_ending,
                                                        day_of_week)
-        return map(lambda x: x.day, added_days)
+        return [x.day for x in added_days]
 
     @staticmethod
     def get_current_semester():
@@ -319,7 +319,7 @@ class ChangedDay(models.Model):
 
     def clean(self):
         if Term.get_day_of_week(self.day) == self.weekday:
-            raise ValidationError(message={'weekday': [u'To już jest ' + common.DAYS_OF_WEEK[self.day.weekday()][1]]},
+            raise ValidationError(message={'weekday': ['To już jest ' + common.DAYS_OF_WEEK[self.day.weekday()][1]]},
                                   code='invalid')
 
     @classmethod
@@ -344,7 +344,7 @@ class ChangedDay(models.Model):
             return added_days.filter(weekday=day_of_week)
 
     def __unicode__(self):
-        return u"{0} -> {1}".format(str(self.day), unicode(self.get_weekday_display()))
+        return "{0} -> {1}".format(str(self.day), str(self.get_weekday_display()))
 
     class Meta:
         verbose_name = 'dzień zmienony na inny'

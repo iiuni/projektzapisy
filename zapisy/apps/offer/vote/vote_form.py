@@ -87,7 +87,7 @@ class VoteFormset(object):
                 for form in self.formset:
                     sum_points += form.cleaned_data['correction']
                     if form.instance.value > form.cleaned_data['correction']:
-                        self.errors.append( u'Nie można zmniejszyć głosu!' )
+                        self.errors.append( 'Nie można zmniejszyć głosu!' )
                         return False
 
             return True
@@ -184,7 +184,7 @@ class VoteFormsets():
 
         points = self.points()
         if  points > self.points_limit:
-            self.errors.append(u'Limit ' + str(self.points_limit) +u' punktów przekroczony o ' + \
+            self.errors.append('Limit ' + str(self.points_limit) +' punktów przekroczony o ' + \
                                str((points - self.points_limit)) )
             return False
 

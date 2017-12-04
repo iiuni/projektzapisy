@@ -25,7 +25,7 @@ def get_questions_from_section_form( position, post ):
     question_data[ 'has_other' ]    = choicebox_is_on(post.get(question_id + "[hasOther]", False))
     question_data[ 'answers' ]      = []
     
-    hide_section = map( lambda (x): int(x), post.getlist(question_id + "[hideOn][]"))
+    hide_section = [int(x) for x in post.getlist(question_id + "[hideOn][]")]
     for i, a in enumerate( post.getlist(question_id + "[answers][]")):
         answer = {}
         if len( a ) != 0:
@@ -55,7 +55,7 @@ def get_section_form_data( post ):
 def validate_question_in_section_form( question ):
     errors = []
     if len( question[ 'content' ]) == 0:
-        errors.append( u"brak tekstu" )
+        errors.append( "brak tekstu" )
     
     if (question[ 'type' ] == 'single' or \
         question[ 'type' ] == 'multi') and \
@@ -67,7 +67,7 @@ def validate_question_in_section_form( question ):
             int( question[ 'choice_limit' ])
         except ValueError:
             if len( question[ 'choice_limit' ]) != 0:
-                errors.append( u'pole "Limit odpowiedzi" nie zawiera liczby' )
+                errors.append( 'pole "Limit odpowiedzi" nie zawiera liczby' )
     
     return errors
     
@@ -75,10 +75,10 @@ def validate_section_form( data ):
     errors = {}
     
     if len(data[ 'title' ]) == 0:
-        errors[ 'title' ] = ( u"Niepoprawny tytuł sekcji" )
+        errors[ 'title' ] = ( "Niepoprawny tytuł sekcji" )
     
     if not data[ 'questions' ]:
-        errors[ 'content' ] = u"Sekcja nie zawiera pytań"
+        errors[ 'content' ] = "Sekcja nie zawiera pytań"
     else:
         errors[ 'questions' ] = {}
         for question in data[ 'questions' ]:

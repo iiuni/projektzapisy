@@ -12,7 +12,7 @@ from .models import Notification
 
 __author__ = 'maciek'
 
-GENERIC_ERROR = u'Wystąpił błąd podczas wysyłania powiadomień!'
+GENERIC_ERROR = 'Wystąpił błąd podczas wysyłania powiadomień!'
 
 @require_POST
 @login_required
@@ -22,10 +22,10 @@ def save(request):
 
     if formset.is_valid():
         formset.save()
-        messages.success(request, u'Zmieniono ustawienia powiadomień')
+        messages.success(request, 'Zmieniono ustawienia powiadomień')
 
     else:
-        messages.error(request, u'Wystąpił błąd przy zapisie zmian ustawień')
+        messages.error(request, 'Wystąpił błąd przy zapisie zmian ustawień')
 
     return redirect('my-profile')
 
@@ -45,11 +45,11 @@ def vote_start(request):
         try:
             year = int(request.POST['year'])
         except ValueError:
-            raise ValueError(u'Błędny rok akademicki')
+            raise ValueError('Błędny rok akademicki')
 
         which = request.POST['which']
         if which not in ['main', 'winter', 'summer']:
-            raise ValueError(u'Błędny rodzaj głosowania')
+            raise ValueError('Błędny rodzaj głosowania')
 
         state = SystemState.get_state(year)
 
@@ -62,7 +62,7 @@ def vote_start(request):
 
         Notification.send_notifications('vote-start', {'end_of_vote_date': end_of_vote_date})
 
-        messages.success(request, u'Wysłano powiadomienia o rozpoczęciu głosowania!')
+        messages.success(request, 'Wysłano powiadomienia o rozpoczęciu głosowania!')
     except ValueError as e:
         messages.error(request, e.message)
     except:
@@ -77,14 +77,14 @@ def grade_start(request):
         semester = Semester.get_current_semester()
 
         if not semester:
-            raise ValueError(u'Nie można zidentyfikować bieżącego semestru!')
+            raise ValueError('Nie można zidentyfikować bieżącego semestru!')
 
         if not semester.is_grade_active:
-            raise ValueError(u'Ocena zajęć nie jest w tej chwili aktywna!')
+            raise ValueError('Ocena zajęć nie jest w tej chwili aktywna!')
 
         Notification.send_notifications('grade-start')
 
-        messages.success(request, u'Wysłano powiadomienia o rozpoczęciu oceny zajęć')
+        messages.success(request, 'Wysłano powiadomienia o rozpoczęciu oceny zajęć')
     except ValueError as e:
         messages.error(request, e.message)
     except:
@@ -98,7 +98,7 @@ def enrollment_limit(request):
     try:
         Notification.send_notifications('enrollment-limit', { 'ECTS_LIMIT': settings.ECTS_LIMIT, 'ECTS_FINAL_LIMIT': settings.ECTS_FINAL_LIMIT })
 
-        messages.success(request, u'Wysłano powiadomienia o zwiększeniu limitu punktów ECTS')
+        messages.success(request, 'Wysłano powiadomienia o zwiększeniu limitu punktów ECTS')
     except:
         messages.error(request, GENERIC_ERROR)
 

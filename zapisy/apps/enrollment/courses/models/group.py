@@ -9,7 +9,7 @@ from django.conf import settings
 from apps.notifications.models import Notification
 from django.core.urlresolvers import reverse
 
-from course import *
+from .course import *
 
 import logging
 
@@ -28,16 +28,16 @@ GROUP_EXTRA_CHOICES = [('',''),
     ('grupa licencjacka','grupa licencjacka'),
     ('grupa magisterska','grupa magisterska'),
     ('grupa zaawansowana','grupa zaawansowana'),
-    ('zajecia na mat.',u'zajęcia na matematyce'),
-    (u'wykład okrojony','wykład okrojony'),
-    (u'grupa 1','grupa 1'),
-    (u'grupa 2','grupa 2'),
-    (u'grupa 3','grupa 3'),
-    (u'grupa 4','grupa 4'),
-    (u'grupa 5','grupa 5'),
-    (u'pracownia linuksowa','pracownia linuksowa'),
-    (u'grupa anglojęzyczna','grupa anglojęzyczna'),
-    (u'I rok', 'I rok'), (u'II rok', 'II rok'), (u'ISIM', 'ISIM')
+    ('zajecia na mat.','zajęcia na matematyce'),
+    ('wykład okrojony','wykład okrojony'),
+    ('grupa 1','grupa 1'),
+    ('grupa 2','grupa 2'),
+    ('grupa 3','grupa 3'),
+    ('grupa 4','grupa 4'),
+    ('grupa 5','grupa 5'),
+    ('pracownia linuksowa','pracownia linuksowa'),
+    ('grupa anglojęzyczna','grupa anglojęzyczna'),
+    ('I rok', 'I rok'), ('II rok', 'II rok'), ('ISIM', 'ISIM')
     ]
 
 
@@ -84,7 +84,7 @@ class Group(models.Model):
 
     disable_update_signal = False
 
-    usos_nr = models.IntegerField(null=True, blank=True, verbose_name=u'Nr grupy w usos', help_text='UWAGA! Nie edytuj tego pola sam!')
+    usos_nr = models.IntegerField(null=True, blank=True, verbose_name='Nr grupy w usos', help_text='UWAGA! Nie edytuj tego pola sam!')
 
     objects = models.Manager()
     statistics = StatisticManager()
@@ -92,7 +92,7 @@ class Group(models.Model):
     def get_teacher_full_name(self):
         """return teacher's full name of current group"""
         if self.teacher is None:
-            return u'(nieznany prowadzący)'
+            return '(nieznany prowadzący)'
         else:
             return self.teacher.user.get_full_name()
 
@@ -122,7 +122,7 @@ class Group(models.Model):
 
 
     def get_terms_as_string(self):
-      return ",".join(map(lambda x: "%s %s-%s" % (x.get_dayOfWeek_display(), x.start_time.hour, x.end_time.hour), self.term.all()))
+      return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(), x.start_time.hour, x.end_time.hour) for x in self.term.all()])
     get_terms_as_string.short_description = 'Terminy zajęć'
 
     def remove_from_queued_counter(self, student):
@@ -188,20 +188,20 @@ class Group(models.Model):
             semester = Semester.objects.get_next()
         
             if semester.is_closed():
-                return False, [u'Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
+                return False, ['Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
             
             elif not semester.can_remove_record() and not self.has_student_in_queue(student):
-                return False, [u'Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.']
+                return False, ['Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.']
 
         result = True
         if Record.objects.filter(student=student, group=self, status=Record.STATUS_ENROLLED).update(status=Record.STATUS_REMOVED) > 0:
-            message = [u'Student wypisany z grupy']
+            message = ['Student wypisany z grupy']
 
             lecture_records = Record.objects.filter(student=student, status=Record.STATUS_ENROLLED, group__course=self.course,
                                                     group__type=settings.LETURE_TYPE)
             if self.type == settings.LETURE_TYPE and len(lecture_records) == 0:
                 result = self._remove_from_all_groups(student)
-                message.append(u'Automatycznie wypisano również z pozostałych grup')
+                message.append('Automatycznie wypisano również z pozostałych grup')
 
             self.remove_from_enrolled_counter(student)
 
@@ -209,10 +209,10 @@ class Group(models.Model):
 
         if Queue.objects.filter(student=student, group=self, deleted=False).update(deleted=True) > 0:
             self.remove_from_queued_counter(student)
-            return result, [u'Usunięto z kolejki']
+            return result, ['Usunięto z kolejki']
 
 
-        return False, [u'Operacja niemożliwa']
+        return False, ['Operacja niemożliwa']
 
     def _remove_from_other_groups(self, student):
         from apps.enrollment.records.models import Record
@@ -244,7 +244,7 @@ class Group(models.Model):
         for group in groups:
             __, created = Record.objects.get_or_create(student=student, group=group, status=Record.STATUS_ENROLLED)
             if created:
-                result.append(u'Nastąpiło automatyczne dopisanie do grupy wykładowej')
+                result.append('Nastąpiło automatyczne dopisanie do grupy wykładowej')
                 group.add_to_enrolled_counter(student)
 
         return result
@@ -269,31 +269,31 @@ class Group(models.Model):
 
         if return_group:
             if isinstance(result, QuerySet):
-                return result,  [u'Student dopisany do grupy', u'Wypisano z poprzedniej grupy']
+                return result,  ['Student dopisany do grupy', 'Wypisano z poprzedniej grupy']
             else:
-                return result,  [u'Student dopisany do grupy']
+                return result,  ['Student dopisany do grupy']
 
-        return result, [u'Student dopisany do grupy']
+        return result, ['Student dopisany do grupy']
 
     def enroll_student(self, student):
         from apps.enrollment.courses.models import Semester
         from apps.enrollment.records.models import Record
 
         if Record.objects.filter(group=self, student=student, status=Record.STATUS_ENROLLED).count() > 0:
-            return False, [u"Jesteś już w tej grupie"]
+            return False, ["Jesteś już w tej grupie"]
 
         if not self.course.is_opened_for_student(student):
-            return False, [u"Zapisy na ten przedmiot są dla Ciebie zamknięte"]
+            return False, ["Zapisy na ten przedmiot są dla Ciebie zamknięte"]
 
         semester = Semester.objects.get_next()
       
         if semester.is_closed():
-            return False, [u'Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
+            return False, ['Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
         
         current_limit = semester.get_current_limit()
 
         if not student.get_points_with_course(self.course) <= current_limit:
-            return False, [u'Przekroczono limit ' + str(current_limit) + u' punktów. Zapis niemożliwy.' ]
+            return False, ['Przekroczono limit ' + str(current_limit) + ' punktów. Zapis niemożliwy.' ]
 
         can_enroll, result = self.student_can_enroll(student)
 
@@ -309,7 +309,7 @@ class Group(models.Model):
     def student_can_enroll(self, student):
 
         if self.is_full_for_student(student):
-            return False, [u'Brak wolnych miejsc w grupie']
+            return False, ['Brak wolnych miejsc w grupie']
 
         return True, []
 
@@ -319,10 +319,10 @@ class Group(models.Model):
         __, created = Queue.objects.get_or_create(group=self, student=student, deleted=False)
         if created:
             self.add_to_queued_counter(student)
-            return True, [u"Student został dopisany do kolejki"]
+            return True, ["Student został dopisany do kolejki"]
 
         else:
-            return False, [u"Student znajdował się już w kolejce"]
+            return False, ["Student znajdował się już w kolejce"]
 
 
     def rearanged(self):
@@ -372,7 +372,7 @@ class Group(models.Model):
             queue.deleted = True
             self.remove_from_queued_counter(queue.student)
             queue.save()
-            Notification.send_notification(queue.student.user, 'queue-remove', {'group': self, 'reason': u'Zapis spowodowałby przekroczenie limitu ECTS'})
+            Notification.send_notification(queue.student.user, 'queue-remove', {'group': self, 'reason': 'Zapis spowodowałby przekroczenie limitu ECTS'})
 
         return result
 
@@ -525,14 +525,14 @@ class Group(models.Model):
                     select_related('course', 'course__semester', 'course__entity', 'teacher', 'teacher__user').order_by('course__entity__name')
 
     def __unicode__(self):
-        return "%s: %s - %s" % (unicode(self.course.entity.get_short_name()),
-                                unicode(self.get_type_display()),
-                                unicode(self.get_teacher_full_name()))
+        return "%s: %s - %s" % (str(self.course.entity.get_short_name()),
+                                str(self.get_type_display()),
+                                str(self.get_teacher_full_name()))
 
     def long_print(self):
-        return "%s: %s - %s" % (unicode(self.course.entity.name),
-                                unicode(self.get_type_display()),
-                                unicode(self.get_teacher_full_name()))
+        return "%s: %s - %s" % (str(self.course.entity.name),
+                                str(self.get_type_display()),
+                                str(self.get_teacher_full_name()))
 
     def get_absolute_url(self):
         return reverse('records-group', args=[self.id])
@@ -552,7 +552,7 @@ def log_add_group(sender, instance, created, **kwargs):
         '9': 'w', '10': 'p'}
         kod_grupy = group.id
         kod_przed_sem = group.course.id
-        teacher_name_array = (group.teacher and group.teacher.user.get_full_name() or u"Nieznany prowadzący").split(" ")
+        teacher_name_array = (group.teacher and group.teacher.user.get_full_name() or "Nieznany prowadzący").split(" ")
 	kod_uz = teacher_name_array[0]
 	if teacher_name_array[0] != teacher_name_array[-1]:
 		kod_uz += " " + teacher_name_array[-1]

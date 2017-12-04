@@ -44,11 +44,11 @@ class BaseDesiderataFormSet(BaseFormSet):
                 result[form.initial['day']][form.initial['hour']] = form
             else:
                 result[form.data['day']][form.data['hour']] = form
-        result = map(lambda x: (REVERSE_DAY[x[0]], x[1]), sorted(result.items(), key=lambda x: x[0]))
+        result = [(REVERSE_DAY[x[0]], x[1]) for x in sorted(list(result.items()), key=lambda x: x[0])]
         return iter(result)
 
     def hours(self):
-        return range(8, 22, 1)
+        return list(range(8, 22, 1))
     """
     def is_valid(self):
         for form in self.forms:

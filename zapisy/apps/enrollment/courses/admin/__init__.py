@@ -1,1 +1,1 @@
-from admin import *
+from .admin import *

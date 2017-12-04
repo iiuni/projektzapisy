@@ -65,7 +65,7 @@ class CourseAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
 
-        if not request.GET.has_key('semester__id__exact'):
+        if 'semester__id__exact' not in request.GET:
 
             q = request.GET.copy()
             semester = Semester.get_current_semester()
@@ -132,7 +132,7 @@ class TagsInline(admin.TabularInline):
 
 
 class EffectsListFilter(SimpleListFilter):
-    title = u'Grupa efektów kształcenia'
+    title = 'Grupa efektów kształcenia'
 
     # Parameter for the filter that will be used in the URL query.
     parameter_name = 'effects'
@@ -157,8 +157,8 @@ class CourseEntityAdmin(TranslationAdmin):
     fieldsets = [
         (None,               {'fields': ['name','shortName','type', 'information'], 'classes': ['long_name']}),
         (None,               {'fields': ['owner', 'status', 'semester', 'effects']}),
-        (u'Godziny', {'fields': ['lectures', 'exercises', 'laboratories', 'repetitions', 'seminars', 'exercises_laboratiories']}),
-        (u'Zmiana sposobu liczenia punktów',               {'fields': ['algorytmy_l', 'dyskretna_l', 'numeryczna_l', 'programowanie_l']}),
+        ('Godziny', {'fields': ['lectures', 'exercises', 'laboratories', 'repetitions', 'seminars', 'exercises_laboratiories']}),
+        ('Zmiana sposobu liczenia punktów',               {'fields': ['algorytmy_l', 'dyskretna_l', 'numeryczna_l', 'programowanie_l']}),
         (None,               {'fields': ['ue', 'english', 'exam', 'suggested_for_first_year', 'deleted']}),
         ('USOS',             {'fields': ['usos_kod'], 'classes': ['collapse']}),
 
@@ -352,7 +352,7 @@ class GroupAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
 
-        if not request.GET.has_key('course__semester__id__exact'):
+        if 'course__semester__id__exact' not in request.GET:
 
             q = request.GET.copy()
             semester = Semester.get_current_semester()

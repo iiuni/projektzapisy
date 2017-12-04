@@ -151,16 +151,16 @@ class IBANTest(TestCase):
         self.assertFalse(StudiaZamawiane.check_iban(self.invalid_polish_wrong_length))
 
     def testWithValidPolish(self):
-        self.assert_(StudiaZamawiane.check_iban(self.valid_polish))
+        self.assertTrue(StudiaZamawiane.check_iban(self.valid_polish))
 
     def testWithValidSpaced(self):
-        self.assert_(StudiaZamawiane.check_iban(self.valid_polish_spaced))
+        self.assertTrue(StudiaZamawiane.check_iban(self.valid_polish_spaced))
 
     def testWithValidPolishWithoutCountryCode(self):
-        self.assert_(StudiaZamawiane.check_iban(self.valid_polish_without_country_code))
+        self.assertTrue(StudiaZamawiane.check_iban(self.valid_polish_without_country_code))
 
     def testWithValidGreece(self):
-        self.assert_(StudiaZamawiane.check_iban(self.valid_greece))
+        self.assertTrue(StudiaZamawiane.check_iban(self.valid_greece))
 
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod

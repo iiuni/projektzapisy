@@ -13,7 +13,7 @@ class PrivateKey( models.Model ):
         app_label           = 'ticket_create'
         
     def __unicode__( self ):
-        return u"Klucz prywatny: " + unicode( self.poll )
+        return "Klucz prywatny: " + str( self.poll )
         
     def sign_ticket( self, ticket ):
         key     = RSA.importKey( self.private_key )

@@ -72,12 +72,12 @@ class VoteLinkTestCase(TestCase):
     def generic_voting_active_view_test_case(self, urlname):
         create_active_system_state()
         response = self.client.get(reverse(urlname))
-        self.assertEquals(response.context['is_voting_active'], True)
+        self.assertEqual(response.context['is_voting_active'], True)
         self.assertContains(response, self.VOTE_LINK, 1, html=True)
 
     def _generic_voting_inactive_view_test_case(self, urlname):
         response = self.client.get(reverse(urlname))
-        self.assertEquals(response.context['is_voting_active'], False)
+        self.assertEqual(response.context['is_voting_active'], False)
         self.assertNotContains(response, self.VOTE_LINK, html=True)
 
     def generic_voting_inactive_view_past_test_case(self, urlname):

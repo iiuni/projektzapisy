@@ -23,7 +23,8 @@ from apps.utils.fullcalendar import FullCalendarView
 from apps.users.models import BaseUser
 
 from xhtml2pdf import pisa
-import StringIO
+import io
+from functools import reduce
 
 
 def classrooms(request):
@@ -88,10 +89,10 @@ def edit_event(request, event_id=None):
 
             if Term.objects.filter(event=event).count() == 0:
                 event.remove()
-                messages.success(request, u'Usunięto wydarzenie')
+                messages.success(request, 'Usunięto wydarzenie')
                 return reservations(request)
 
-            messages.success(request, u'Zmieniono zdarzenie')
+            messages.success(request, 'Zmieniono zdarzenie')
             return redirect(event)
     errors = True
 
@@ -116,7 +117,7 @@ def session(request, semester=None):
 def reservations(request):
     from apps.schedule.models import Event
     events = EventFilter(request.GET, queryset=Event.get_all_without_courses())
-    title = u'Zarządzaj rezerwacjami'
+    title = 'Zarządzaj rezerwacjami'
     return TemplateResponse(request, 'schedule/reservations.html', locals())
 
 @login_required
@@ -136,7 +137,7 @@ def conflicts(request):
         beg_date, end_date = get_week_range_by_date(datetime.datetime.today())
 
     terms = Term.prepare_conflict_dict(beg_date, end_date)
-    title = u'Konflikty'
+    title = 'Konflikty'
     return TemplateResponse(request, 'schedule/conflicts.html', locals())
 
 @login_required
@@ -144,7 +145,7 @@ def history(request):
     from apps.schedule.models import Event
 
     events = EventFilter(request.GET, queryset=Event.get_for_user(request.user))
-    title = u'Moje rezerwacje'
+    title = 'Moje rezerwacje'
     return TemplateResponse(request, 'schedule/history.html', locals())
 
 
@@ -161,15 +162,15 @@ def decision(request, event_id):
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
-            messages.error(request, u'Status wydarzenia nie został zmieniony')
+            messages.error(request, 'Status wydarzenia nie został zmieniony')
         else:
             event_obj = form.save()
             msg = EventModerationMessage()
             msg.author = request.user
-            msg.message = u'Status wydarzenia został zmieniony na ' + unicode(event_obj.get_status_display())
+            msg.message = 'Status wydarzenia został zmieniony na ' + str(event_obj.get_status_display())
             msg.event = event_obj
             msg.save()
-            messages.success(request, u'Status wydarzenia został zmieniony')
+            messages.success(request, 'Status wydarzenia został zmieniony')
 
     return redirect(reverse('events:show', args=[str(event.id)]))
 
@@ -206,8 +207,8 @@ def moderation_message(request, event_id):
         moderation_message.author = request.user
         moderation_message.save()
 
-        messages.success(request, u"Wiadomość została wysłana")
-        messages.info(request, u"Wiadomość została również wysłana emailem")
+        messages.success(request, "Wiadomość została wysłana")
+        messages.info(request, "Wiadomość została również wysłana emailem")
 
         return redirect(reverse('events:show', args=[str(event.id)]))
 
@@ -228,8 +229,8 @@ def message(request, event_id):
 
         message.save()
 
-        messages.success(request, u"Wiadomość została wysłana")
-        messages.info(request, u"Wiadomość została również wysłana emailem")
+        messages.success(request, "Wiadomość została wysłana")
+        messages.info(request, "Wiadomość została również wysłana emailem")
 
         return redirect(reverse('events:show', args=[str(event.id)]))
 
@@ -244,10 +245,10 @@ def change_interested(request, event_id):
     event = Event.get_event_or_404(event_id, request.user)
     if request.user in event.interested.all():
         event.interested.remove(request.user)
-        messages.success(request, u'Nie obsereujesz już wydarzenia')
+        messages.success(request, 'Nie obsereujesz już wydarzenia')
     else:
         event.interested.add(request.user)
-        messages.success(request, u'Obserwujesz wydarzenie')
+        messages.success(request, 'Obserwujesz wydarzenie')
 
         return redirect(event)
 
@@ -375,9 +376,9 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
 
     template = get_template('schedule/events_report_pdf.html')
     html = template.render(context)
-    result = StringIO.StringIO()
+    result = io.StringIO()
 
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result,
+    pdf = pisa.pisaDocument(io.StringIO(html.encode('UTF-8')), result,
                             encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=raport.pdf'

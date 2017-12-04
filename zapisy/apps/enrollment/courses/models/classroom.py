@@ -8,7 +8,7 @@ from django.db.models import Q
 from autoslug import AutoSlugField
 
 floors = [(0, 'Parter'), (1, 'I piętro'), (2, 'II Piętro'), (3, 'III piętro')]
-types = [(0, u'Sala wykładowa'), (1, u'Sala ćwiczeniowa'), (2, u'Pracownia komputerowa - Windows'), (3, u'Pracownia komputerowa - Linux')]
+types = [(0, 'Sala wykładowa'), (1, 'Sala ćwiczeniowa'), (2, 'Pracownia komputerowa - Windows'), (3, 'Pracownia komputerowa - Linux')]
 
 
 

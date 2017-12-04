@@ -23,7 +23,7 @@ from apps.users.decorators      import student_required
 
 @student_required
 def vote( request ):
-    from vote_form import VoteFormsets
+    from .vote_form import VoteFormsets
 
     student = request.user.student
     state   = SystemState.get_state()

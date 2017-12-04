@@ -19,7 +19,7 @@ class TruncateNode(Node):
 def truncate(parser, token):
   bits = token.contents.split()
   if len(bits) != 3:
-    raise TemplateSyntaxError, "truncate takes exactly two arguments, string, size"
+    raise TemplateSyntaxError("truncate takes exactly two arguments, string, size")
   return TruncateNode(bits[1], bits[2])
 
 register.tag('truncate', truncate)

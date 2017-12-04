@@ -13,10 +13,10 @@ logger = logging.getLogger()
 def bbcode(str):
     markup = postmarkup.PostMarkup()
 
-    markup.add_tag(postmarkup.SimpleTag, u'b', u'strong')
-    markup.add_tag(postmarkup.SimpleTag, u'i', u'em')
-    markup.add_tag(postmarkup.SimpleTag, u'u', u'u')
-    markup.add_tag(postmarkup.SimpleTag, u's', u's')
+    markup.add_tag(postmarkup.SimpleTag, 'b', 'strong')
+    markup.add_tag(postmarkup.SimpleTag, 'i', 'em')
+    markup.add_tag(postmarkup.SimpleTag, 'u', 'u')
+    markup.add_tag(postmarkup.SimpleTag, 's', 's')
 
     return markup.render_to_html(str)
 
@@ -30,7 +30,7 @@ def nl2br(str):
 @register.filter
 def validate_url(str):
 	from django.core.validators import URLValidator, ValidationError
-	from StringIO import StringIO
+	from io import StringIO
 	import traceback
 	import string
 	validate = URLValidator()
@@ -44,7 +44,7 @@ def validate_url(str):
 			trace = StringIO()
 			traceback.print_stack(file=trace)
 			trace = trace.getvalue().split('\n')
-			trace = filter(lambda str: str.find('html') >= 0, trace)
+			trace = [str for str in trace if str.find('html') >= 0]
 			trace = string.join(trace, '\n')
 			logger.warning('Invalid URL couldn\'t be displayed in template: '
 				+ str + '\n' + trace)

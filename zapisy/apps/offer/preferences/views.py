@@ -37,17 +37,17 @@ def save(request):
 
     id = request.POST.get('prefid', None)
     if not id:
-        return AjaxFailureMessage('InvalidRequest', u'Niepoprawny identyfikator')
+        return AjaxFailureMessage('InvalidRequest', 'Niepoprawny identyfikator')
 
     id = int(id)
 
     try:
         pref = Preference.objects.get(id=id)
     except ObjectDoesNotExist:
-        return AjaxFailureMessage('InvalidRequest', u'Podany obiekt nie istnieje')
+        return AjaxFailureMessage('InvalidRequest', 'Podany obiekt nie istnieje')
 
     if not pref.employee == request.user.employee:
-        return AjaxFailureMessage('InvalidRequest', u'Nie możesz edytować nie swoich preferencji')
+        return AjaxFailureMessage('InvalidRequest', 'Nie możesz edytować nie swoich preferencji')
 
     form = PreferenceForm(data=request.POST, instance=pref)
     if form.is_valid:
@@ -59,4 +59,4 @@ def save(request):
         pref.save()
         form = PreferenceForm(instance=pref)
         return render_to_response('offer/preferences/form_row.html', {'form': form, })
-    return AjaxFailureMessage('InvalidRequest', u'Coś poszło źle')
+    return AjaxFailureMessage('InvalidRequest', 'Coś poszło źle')

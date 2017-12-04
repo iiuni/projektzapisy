@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-import StringIO
+import io
 import csv
 from Crypto.PublicKey                 import RSA
 from apps.grade.poll.models          import Poll, Section, SectionOrdering, \
@@ -26,6 +26,7 @@ from apps.users.models               import Program
 from django.core.paginator             import Paginator, InvalidPage, EmptyPage
 from django.utils.safestring           import SafeUnicode, mark_safe
 from django.db.models import Q
+from functools import reduce
 
 def check_signature( ticket, signed_ticket, public_key ):
     pk = RSA.importKey( public_key.public_key )
@@ -45,21 +46,21 @@ def group_polls_and_tickets_by_course( poll_and_ticket_list ):
             if   poll.group == act_group:
                 act_polls.append(( poll.pk, ticket, signed_ticket ))
             else:
-                res.append(( u'Ankiety ogólne', act_polls ))
+                res.append(( 'Ankiety ogólne', act_polls ))
                 act_group = poll.group
                 act_polls = [( poll.pk, ticket, signed_ticket )]
         else:
             if   poll.group.course == act_group.course:
                 act_polls.append(( poll.pk, ticket, signed_ticket ))
             else:
-                res.append(( unicode( act_group.course.name ), act_polls ))
+                res.append(( str( act_group.course.name ), act_polls ))
                 act_group = poll.group
                 act_polls = [( poll.pk, ticket, signed_ticket )]
 
     if act_group:
-        res.append(( unicode( act_group.course.name ), act_polls ))
+        res.append(( str( act_group.course.name ), act_polls ))
     else:
-        res.append(( u'Ankiety ogólne', act_polls ))
+        res.append(( 'Ankiety ogólne', act_polls ))
 
     return res
 
@@ -67,28 +68,29 @@ def create_slug( name ):
     """
         Creates slug
     """
-    if name == u"Ankiety ogólne": return "common"
+    if name == "Ankiety ogólne": return "common"
 
     slug = name.lower()
-    slug = re.sub(u'ą', "a", slug)
-    slug = re.sub(u'ę', "e", slug)
-    slug = re.sub(u'ś', "s", slug)
-    slug = re.sub(u'ć', "c", slug)
-    slug = re.sub(u'ż', "z", slug)
-    slug = re.sub(u'ź', "z", slug)
-    slug = re.sub(u'ł', "l", slug)
-    slug = re.sub(u'ó', "o", slug)
-    slug = re.sub(u'ć', "c", slug)
-    slug = re.sub(u'ń', "n", slug)
+    slug = re.sub('ą', "a", slug)
+    slug = re.sub('ę', "e", slug)
+    slug = re.sub('ś', "s", slug)
+    slug = re.sub('ć', "c", slug)
+    slug = re.sub('ż', "z", slug)
+    slug = re.sub('ź', "z", slug)
+    slug = re.sub('ł', "l", slug)
+    slug = re.sub('ó', "o", slug)
+    slug = re.sub('ć', "c", slug)
+    slug = re.sub('ń', "n", slug)
     slug = re.sub("\W", "-", slug)
     slug = re.sub("-+", "-", slug)
     slug = re.sub("^-", "", slug)
     slug = re.sub("-$", "", slug)
     return slug
 
-def get_polls_for_course(( ( sub, slug ), get), groupped_polls ):
+def get_polls_for_course(xxx_todo_changeme, groupped_polls ):
+    ( ( sub, slug ), get) = xxx_todo_changeme
     if get:
-        return ( sub, slug ), u'jest'
+        return ( sub, slug ), 'jest'
     else:
         return ( sub, slug ), []
 
@@ -100,7 +102,7 @@ def prepare_data( request, slug ):
     for id, error in request.session.get( 'errors', default = [] ):
         try:
             p = Poll.objects.get( pk = id )
-            data[ 'errors' ].append( "%s: %s" % ( unicode( p ), error ))
+            data[ 'errors' ].append( "%s: %s" % ( str( p ), error ))
         except:
             data[ 'errors' ].append( error )
 
@@ -112,45 +114,30 @@ def prepare_data( request, slug ):
     polls = request.session.get( "polls", default = [] )
     dict  = {}
     if polls:
-        polls_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l):
-                                map( lambda (id, t, st):
-                                        id,
-                                    l), polls))
+        polls_id = reduce(lambda x, y: x + y, [[id_t_st[0] for id_t_st in x_s_l[1]] for x_s_l in polls])
         for poll in Poll.objects.filter(pk__in=polls_id).select_related('group', 'group__course', 'group__teacher', 'group__teacher__user'):
             dict[poll.pk] = poll
 
-        data[ 'polls' ]    = map( lambda ((x, s), l):
-                                ((x, s),
-                                slug==s,
-                                map( lambda (id, t, st):
-                                        (id, t, st, dict[id].to_url_title( True )),
-                                    l)),
-                            polls)
+        data[ 'polls' ]    = [((x_s_l7[0][0], x_s_l7[0][1]),
+                                slug==x_s_l7[0][1],
+                                [(id_t_st2[0], id_t_st2[1], id_t_st2[2], dict[id_t_st2[0]].to_url_title( True )) for id_t_st2 in x_s_l7[1]]) for x_s_l7 in polls]
     else:
         data[ 'polls' ] = []
     finished    = request.session.get( "finished", default = [] )
     if finished:
-        finished_id = reduce(lambda x, y: x + y, map( lambda ((x, s), l):
-                                map( lambda (id, t, st):
-                                        id,
-                                    l), finished))
+        finished_id = reduce(lambda x, y: x + y, [[id_t_st1[0] for id_t_st1 in x_s_l4[1]] for x_s_l4 in finished])
         for poll in Poll.objects.filter(pk__in=finished_id).select_related('group', 'group__course', 'group__teacher', 'group__teacher__user'):
             dict[poll.pk] = poll
 
-        data[ 'finished' ] = map( lambda ((x, s), l):
-                                ((x, s),
-                                slug==s,
-                                map( lambda (id, t, st):
-                                        (id, t, st, dict[id].to_url_title( True )),
-                                    l)),
-                            finished)
+        data[ 'finished' ] = [((x_s_l8[0][0], x_s_l8[0][1]),
+                                slug==x_s_l8[0][1],
+                                [(id_t_st3[0], id_t_st3[1], id_t_st3[2], dict[id_t_st3[0]].to_url_title( True )) for id_t_st3 in x_s_l8[1]]) for x_s_l8 in finished]
     else:
         data[ 'finished' ] = []
 
     data[ 'finished_polls' ] = len(request.session.get( "finished", default = [] ))
     data[ 'all_polls']  = reduce(lambda x, y: x + y,
-                                   map( lambda (p, l): len(l),
-                                    request.session.get( "polls", default = [] )), data[ 'finished_polls' ])
+                                   [len(p_l[1]) for p_l in request.session.get( "polls", default = [] )], data[ 'finished_polls' ])
     return data
 
 def get_next( poll_list, finished_list, poll_id ):
@@ -181,11 +168,11 @@ def get_ticket_and_signed_ticket_from_session( session, slug, poll_id ):
     polls    = session.get( 'polls', default = [])
     finished = session.get( 'finished', default = [])
 
-    polls    = flatten( map(lambda ((n,s), lt): lt, filter( lambda ((name, s), lt): s == slug, polls)))
-    finished = flatten( map(lambda ((n,s), lt): lt, filter( lambda ((name, s), lt): s == slug, finished)))
+    polls    = flatten( [n_s_lt[1] for n_s_lt in [name_s_lt for name_s_lt in polls if name_s_lt[0][1] == slug]])
+    finished = flatten( [n_s_lt9[1] for n_s_lt9 in [name_s_lt5 for name_s_lt5 in finished if name_s_lt5[0][1] == slug]])
 
     data = polls + finished
-    data = map( lambda (id, t, st): (t, st), filter( lambda (id, t, st): id == int( poll_id ), data ))
+    data = [(id_t_st10[1], id_t_st10[2]) for id_t_st10 in [id_t_st6 for id_t_st6 in data if id_t_st6[0] == int( poll_id )]]
 
     try:
         return data[0]
@@ -243,7 +230,7 @@ def group_polls_by_course( polls ):
         try:
             act_sub = polls[ 0 ].group.course.name
         except:
-            act_sub = u"Ankiety ogólne"
+            act_sub = "Ankiety ogólne"
         act = [ polls[ 0 ]]
         polls = polls[ 1: ]
 
@@ -251,7 +238,7 @@ def group_polls_by_course( polls ):
             try:
                 sub = poll.group.course.name
             except:
-                sub = u"Ankiety ogólne"
+                sub = "Ankiety ogólne"
 
             if sub == act_sub:
                 act.append( poll )
@@ -271,7 +258,7 @@ def group_polls_by_teacher( polls ):
         try:
             act_sub = polls[ 0 ].group.get_teacher_full_name()
         except:
-            act_sub = u"Ankiety ogólne"
+            act_sub = "Ankiety ogólne"
         act = [ polls[ 0 ]]
         polls = polls[ 1: ]
 
@@ -279,7 +266,7 @@ def group_polls_by_teacher( polls ):
             try:
                 sub = poll.group.get_teacher_full_name()
             except:
-                sub = u"Ankiety ogólne"
+                sub = "Ankiety ogólne"
 
             if sub == act_sub:
                 act.append( poll )
@@ -293,29 +280,29 @@ def group_polls_by_teacher( polls ):
 def declination_poll(num, nominative = False):
     if num == 1:
         if nominative:
-            return u'ankieta'
+            return 'ankieta'
         else:
-            return u'ankietę'
+            return 'ankietę'
     if ((num % 10) in [2,3,4] and (num < 10 or num > 20)):
-        return u'ankiety'
-    return u'ankiet'
+        return 'ankiety'
+    return 'ankiet'
 
 
 def declination_section(num, nominative = False):
     if num == 1:
         if nominative:
-            return u'sekcja'
+            return 'sekcja'
         else:
-            return u'sekcję'
+            return 'sekcję'
     if ((num % 10) in [2,3,4] and (num < 10 or num > 20)):
-        return u'sekcje'
-    return u'sekcji'
+        return 'sekcje'
+    return 'sekcji'
 
 def declination_template(num):
     if num == 1:
-        return u'szablon'
+        return 'szablon'
     if num in [2,3,4]:
-        return u'szablony'
+        return 'szablony'
     return 'szablonów'
 
 ####  HELPER FOR UNICODE + CSV -- Python's CSV does not support unicode
@@ -324,14 +311,14 @@ class UnicodeWriter(object):
 
     def __init__(self, f, dialect=csv.excel_tab, encoding="utf-16", **kwds):
         # Redirect output to a queue
-        self.queue = StringIO.StringIO()
+        self.queue = io.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoding = encoding
 
     def writerow(self, row):
         # Modified from original: now using unicode(s) to deal with e.g. ints
-        self.writer.writerow([unicode(s).encode("utf-8") for s in row])
+        self.writer.writerow([str(s).encode("utf-8") for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
@@ -351,14 +338,14 @@ class UnicodeWriter(object):
 def generate_csv_title(poll):
     res = poll.title
     try:
-        res += u' ' + poll.group.course.name
-        res += u' ' + poll.group.get_type_display()
-        res += u' ' + poll.group.get_teacher_full_name()
+        res += ' ' + poll.group.course.name
+        res += ' ' + poll.group.get_type_display()
+        res += ' ' + poll.group.get_teacher_full_name()
     except:
-        res += u' ' + u'Ankieta ogólna'
-    res += u' ' + unicode(poll.pk)
-    res += u'.csv'
-    return unicode(res)
+        res += ' ' + 'Ankieta ogólna'
+    res += ' ' + str(poll.pk)
+    res += '.csv'
+    return str(res)
 
 def csv_prepare_header(sections):
     """
@@ -445,13 +432,13 @@ def make_paginator( request, object=None, objects=None):
 def course_list( courses ):
     course_list = []
     for course in courses:
-        course_list.append( (course.pk , unicode(course.name)) )
+        course_list.append( (course.pk , str(course.name)) )
     return course_list
 
 def groups_list( groups ):
     group_list = []
     for group in groups:
-        group_list.append( (group.pk, unicode(group.teacher)) )
+        group_list.append( (group.pk, str(group.teacher)) )
     return group_list
 
 
@@ -658,7 +645,7 @@ def make_polls_for_groups( request, groups, template ):
             continue
 
         poll = make_poll(request, template, group, origin)
-        polls.append(unicode(poll))
+        polls.append(str(poll))
 
     if not len(polls):
         raise NoPollException
@@ -670,7 +657,7 @@ def make_polls_for_all( request, template ):
     polls = []
     poll = make_poll(request, template, None, origin)
 
-    polls.append(unicode(poll))
+    polls.append(str(poll))
 
     if not len(polls):
         raise NoPollException
@@ -689,7 +676,7 @@ def save_template_in_session( request, template ):
 def pop_template_from_session( request ):
     template = {'studies_type': request.session.get('studies_type', None),
                 'semester': request.session.get('semester', None), 'group': request.session.get('group', None),
-                'type': unicode(request.session.get('type', 0)), 'course': request.session.get('course', None),
+                'type': str(request.session.get('type', 0)), 'course': request.session.get('course', None),
                 'groups_without': request.session.get('groups_without', None),
                 'polls_len': request.session.get('polls_len', None)}
     #clear session for future
@@ -714,7 +701,7 @@ def make_message_from_polls( polls ):
     message += ("<br>Liczba utworzonych ankiet: %d" % (len( polls )))
     message += "<ul>"
     for poll in polls:
-        message += ("<li>%s</li>" % unicode(poll) )
+        message += ("<li>%s</li>" % str(poll) )
     message += "</ul>"
 
     return message
@@ -791,23 +778,23 @@ def get_groups_for_user(request, type, course):
 
 def make_pages( pages, page_number ):
     if pages < 12:
-        return range(1, pages)
+        return list(range(1, pages))
 
-    list = range(1, 6)
+    list = list(range(1, 6))
     if page_number > 8:
         list.extend( [-1])
 
     first = max(page_number-2, 6)
     last = min(page_number+3, pages)
 
-    list.extend( range(first, last))
+    list.extend( list(range(first, last)))
 
     if page_number < pages - 8:
         list.extend( [-1])
 
     last = min(page_number+3, pages)
     start = max(last, pages-5)
-    list.extend( range(start, pages))
+    list.extend( list(range(start, pages)))
 
     return list
 

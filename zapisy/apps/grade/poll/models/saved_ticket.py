@@ -14,10 +14,10 @@ class SavedTicket( models.Model ):
         
     def __unicode__( self ):
         if self.finished:
-            res = u'[Zakończona]'
+            res = '[Zakończona]'
         else:
             res = ''
             
-        res += unicode( self.poll )
-        res += u' (' + unicode( self.ticket ) + ')'
+        res += str( self.poll )
+        res += ' (' + str( self.ticket ) + ')'
         return res

@@ -112,12 +112,12 @@ class SpecialReservation(models.Model):
 
         if course_terms:
             for t in course_terms:
-                msg_list.append(u'W tym samym czasie w tej sali odbywają się zajęcia: ' + t.group.course.name + ' ' + unicode(t))
+                msg_list.append('W tym samym czasie w tej sali odbywają się zajęcia: ' + t.group.course.name + ' ' + str(t))
 
         if terms:
             for t in terms:
                 if t.event.reservation != self and t.event.type != Event.TYPE_CLASS:
-                    msg_list.append( u'W tym samym czasie ta sala jest zarezerwowana (wydarzenie): ' + unicode(t.event) + ' ' + unicode(t))
+                    msg_list.append( 'W tym samym czasie ta sala jest zarezerwowana (wydarzenie): ' + str(t.event) + ' ' + str(t))
 
         if len(msg_list)>0:
             raise ValidationError(message={'__all__': msg_list}, code='overlap')
@@ -130,13 +130,13 @@ class SpecialReservation(models.Model):
         """
         if self.end_time <= self.start_time:
             raise ValidationError(
-                message={'end_time': [u'Koniec rezerwacji musi natępować po początku']},
+                message={'end_time': ['Koniec rezerwacji musi natępować po początku']},
                 code='invalid'
             )
 
         if not self.classroom.can_reserve:
             raise ValidationError(
-                message={'classroom': [u'Ta sala nie jest przeznaczona do rezerwacji']},
+                message={'classroom': ['Ta sala nie jest przeznaczona do rezerwacji']},
                 code='invalid'
             )
 
@@ -147,8 +147,8 @@ class SpecialReservation(models.Model):
 
     class Meta:
         app_label = 'schedule'
-        verbose_name = u'rezerwacja stała'
-        verbose_name_plural = u'rezerwacje stałe'
+        verbose_name = 'rezerwacja stała'
+        verbose_name_plural = 'rezerwacje stałe'
 
     def create_event(self, author_id):
         from .term import Term
@@ -160,7 +160,7 @@ class SpecialReservation(models.Model):
 
         ev = Event()
         ev.title = self.title
-        ev.description = u'Rezerwacja cykliczna - ' + self.title
+        ev.description = 'Rezerwacja cykliczna - ' + self.title
         ev.reservation = self
         ev.type = Event.TYPE_GENERIC
         ev.visible = True
@@ -184,5 +184,5 @@ class SpecialReservation(models.Model):
         self.create_event(author_id)
 
     def __unicode__(self):
-        return u'%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),
+        return '%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),
                                          self.start_time, self.end_time)

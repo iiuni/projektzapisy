@@ -2,7 +2,7 @@
 import csv
 import json
 import re
-import StringIO
+import io
 
 from django.conf import settings
 from django.contrib import messages
@@ -101,12 +101,12 @@ def set_enrolled(request, method):
     try:
         if request.user.student.block:
             return AjaxFailureMessage.auto_render('ScheduleLocked',
-                u'Twój plan jest zablokowany. Możesz go odblokować w prototypie', message_context)
+                'Twój plan jest zablokowany. Możesz go odblokować w prototypie', message_context)
         student = request.user.student
     except Student.DoesNotExist:
         transaction.savepoint_rollback(savept)
         return AjaxFailureMessage.auto_render('NonStudent',
-            u'Nie jesteś studentem.', message_context)
+            'Nie jesteś studentem.', message_context)
 
     try:
         group = Group.objects.get(id=group_id)
@@ -218,7 +218,7 @@ def set_queue_priority(request, method):
             'Nie jesteś w kolejce do tej grupy.', message_context)
     except Student.DoesNotExist:
         return AjaxFailureMessage.auto_render('NonStudent',
-            u'Nie jesteś studentem.', message_context)
+            'Nie jesteś studentem.', message_context)
 
 @login_required
 def records(request, group_id):
@@ -391,9 +391,9 @@ def records_group_pdf(request, group_id):
 
     template = get_template('records/group_pdf.html')
     html  = template.render(context)
-    result = StringIO.StringIO()
+    result = io.StringIO()
 
-    pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    pdf      = pisa.pisaDocument(io.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
 
@@ -416,9 +416,9 @@ def records_queue_pdf(request, group_id):
 
     template = get_template('records/queue_pdf.html')
     html  = template.render(context)
-    result = StringIO.StringIO()
+    result = io.StringIO()
 
-    pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    pdf      = pisa.pisaDocument(io.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
 

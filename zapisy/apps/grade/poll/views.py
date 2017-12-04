@@ -64,7 +64,7 @@ from apps.grade.poll.utils           import check_signature, \
                                               make_template_from_db,\
                                               get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
 from apps.users.models               import Employee, Program
-from form_utils                        import get_section_form_data, \
+from .form_utils                        import get_section_form_data, \
                                               validate_section_form, \
                                               section_save
 from apps.grade.poll.exceptions import NoTitleException, NoSectionException, \
@@ -96,7 +96,7 @@ def templates( request ):
     data['grade']  = True
     data['template_word'] = declination_template(paginator.count)
     data['pages']  = make_pages( paginator.num_pages+1, page.number )
-    data['pages_range']  = range( 1, paginator.num_pages+1 )
+    data['pages_range']  = list(range( 1, paginator.num_pages+1))
     data['tab']    = "template_list"
     return render_to_response( 'grade/poll/managment/templates.html', data, context_instance = RequestContext( request ))
 
@@ -132,7 +132,7 @@ def template_actions( request ):
 def delete_templates( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Template, 'templates[]')
-        message = u'Usunięto ' + unicode(counter) + u' ' + declination_template(counter)
+        message = 'Usunięto ' + str(counter) + ' ' + declination_template(counter)
         messages.info(request, SafeUnicode(message))
 
     return HttpResponseRedirect(reverse('grade-poll-templates'))
@@ -195,7 +195,7 @@ def show_template( request, template_id ):
 # @author mjablonski
 @employee_required
 def create_template(request):
-    if request.method <> "POST":
+    if request.method != "POST":
         raise Http404
 
     template = prepare_template( request )
@@ -267,8 +267,8 @@ def disable_grade( request ):
 def autocomplete(request):
     results = []
     if request.method == "GET":
-        if request.GET.has_key(u'term'):
-            value = request.GET[u'term']
+        if 'term' in request.GET:
+            value = request.GET['term']
             # Ignore queries shorter than length 3
             #if len(value) > 2:
             model_results = Option.objects.filter(content__istartswith=value).\
@@ -421,7 +421,7 @@ def sections_list( request ):
     data['sections_word'] = declination_section(paginator.count, True)
     data['grade']  = grade
     data['pages']  = make_pages( paginator.num_pages+1, page.number )
-    data['pages_range']  = range( 1, paginator.num_pages+1 )
+    data['pages_range']  = list(range( 1, paginator.num_pages+1))
     data['tab']    = "section_list"
     return render_to_response( 'grade/poll/managment/sections_list.html', data, context_instance = RequestContext( request ))
 
@@ -468,7 +468,7 @@ def section_actions( request ):
 def delete_sections( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Section, 'sections[]')
-        message = u'Usunięto ' + unicode(counter) + u' ' + declination_section(counter)
+        message = 'Usunięto ' + str(counter) + ' ' + declination_section(counter)
         messages.info(request, SafeUnicode(message))
 
     return HttpResponseRedirect(reverse('grade-poll-sections-list'))
@@ -571,7 +571,7 @@ def poll_actions( request ):
 def delete_polls( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Poll, 'polls[]')
-        message = u'Usunięto ' + unicode(counter) + u' ' + declination_poll(counter)
+        message = 'Usunięto ' + str(counter) + ' ' + declination_poll(counter)
         messages.info(request, SafeUnicode(message))
 
     return HttpResponseRedirect(reverse('grade-poll-list'))
@@ -617,20 +617,20 @@ def questionset_create(request):
         errors    = validate_section_form( form_data )
 
         if errors:
-            error_msg = u"Nie można utworzyć sekcji:\n<ul>"
-            if errors.has_key( 'title' ):
-                error_msg += u"<li>" + errors[ 'title' ] + u"</li>"
-            if errors.has_key( 'content' ):
-                error_msg += u"<li>" + errors[ 'content' ] + u"</li>"
-            if errors.has_key( 'questions' ):
-                question_errors = errors[ 'questions' ].keys()
+            error_msg = "Nie można utworzyć sekcji:\n<ul>"
+            if 'title' in errors:
+                error_msg += "<li>" + errors[ 'title' ] + "</li>"
+            if 'content' in errors:
+                error_msg += "<li>" + errors[ 'content' ] + "</li>"
+            if 'questions' in errors:
+                question_errors = list(errors[ 'questions' ].keys())
                 question_errors.sort()
                 for position in question_errors:
-                    error_msg += u"<li>Pytanie " + unicode(position) + ":\n<ul>"
+                    error_msg += "<li>Pytanie " + str(position) + ":\n<ul>"
                     for error in errors[ 'questions' ][ position ]:
-                        error_msg += u"<li>" + error + u"</li>"
-                    error_msg += u"</ul></li>"
-            error_msg += u"</ul>"
+                        error_msg += "<li>" + error + "</li>"
+                    error_msg += "</ul></li>"
+            error_msg += "</ul>"
 
             messages.error( request, SafeUnicode( error_msg ))
         else:
@@ -665,7 +665,7 @@ def tickets_enter(request):
                 if keysfile.size > 1048576:
                     from django.template.defaultfilters import filesizeformat
                     messages.error( request,
-                        u'Proszę przesłać plik o maksymalnym rozmiarze: \
+                        'Proszę przesłać plik o maksymalnym rozmiarze: \
                         %s. Obecny rozmiar to: %s' %
                         (filesizeformat(1048576), filesizeformat(keysfile.size)))
                     data[ 'form' ]  = form
@@ -706,23 +706,23 @@ def tickets_enter(request):
                             st.save()
                             polls.append(( poll, ticket, signed_ticket ))
                     else:
-                        errors.append(( id, u"Nie udało się zweryfikować podpisu pod biletem." ))
+                        errors.append(( id, "Nie udało się zweryfikować podpisu pod biletem." ))
                 except:
-                    errors.append(( id, u"Podana ankieta nie istnieje" ))
+                    errors.append(( id, "Podana ankieta nie istnieje" ))
 
             if errors:
-                msg = u"Wystąpił problem z biletami na następujące ankiety: <ul>"
+                msg = "Wystąpił problem z biletami na następujące ankiety: <ul>"
                 for pid, error in errors:
                     try:
-                        poll = unicode( Poll.objects.get( pk = pid ))
+                        poll = str( Poll.objects.get( pk = pid ))
                     except:
-                        poll = unicode( pid )
-                    msg += u'<li>' + poll + u" - " + error + u'</li>'
-                msg += u'</ul>'
-                msg  = mark_safe( unicode( msg ))
+                        poll = str( pid )
+                    msg += '<li>' + poll + " - " + error + '</li>'
+                msg += '</ul>'
+                msg  = mark_safe( str( msg ))
                 messages.error( request, msg)
-            request.session[ "polls" ]             = map( lambda (s, l): ((s, create_slug( s )), l), group_polls_and_tickets_by_course( polls ))
-            request.session[ "finished" ]          = map( lambda (s, l): ((s, create_slug( s )), l),group_polls_and_tickets_by_course( finished ))
+            request.session[ "polls" ]             = [((s_l[0], create_slug( s_l[0] )), s_l[1]) for s_l in group_polls_and_tickets_by_course( polls )]
+            request.session[ "finished" ]          = [((s_l2[0], create_slug( s_l2[0] )), s_l2[1]) for s_l2 in group_polls_and_tickets_by_course( finished )]
 
 
             return HttpResponseRedirect( '/grade/poll/polls/all' )
@@ -734,7 +734,7 @@ def tickets_enter(request):
     return render_to_response( 'grade/poll/tickets_enter.html', data, context_instance = RequestContext( request ))
 
 def polls_for_user( request, slug ):
-    if not 'polls' in request.session.keys():
+    if not 'polls' in list(request.session.keys()):
         return HttpResponseRedirect( reverse('grade-poll-tickets-enter') )
 
     data = prepare_data( request, slug )
@@ -797,7 +797,7 @@ def poll_answer( request, slug, pid ):
     data[ 'prev' ]      = get_prev( poll_cands, finished_cands, int( pid ))
 
     if ticket and signed_ticket and check_signature( ticket, signed_ticket, public_key ):
-        st   = SavedTicket.objects.get( ticket = unicode( ticket ), poll = poll )
+        st   = SavedTicket.objects.get( ticket = str( ticket ), poll = poll )
 
         if request.method == "POST" and not st.finished:
             form = PollForm( )
@@ -821,11 +821,11 @@ def poll_answer( request, slug, pid ):
 
             if errors:
                 data[ 'form_errors' ] = errors
-                messages.error(request, u"Nie udało się zapisać ankiety: " + poll.title + u"; błąd formularza")
+                messages.error(request, "Nie udało się zapisać ankiety: " + poll.title + "; błąd formularza")
             else:
                 data[ 'form_errors' ] = {}
-                keys = form.fields.keys()
-                keys.remove( u'finish' )
+                keys = list(form.fields.keys())
+                keys.remove( 'finish' )
                 keys.sort()
                 section_data = []
 
@@ -939,9 +939,9 @@ def poll_answer( request, slug, pid ):
                                 if delete:
                                     ans.delete()
                                 elif value:
-                                    if u'-1' in value:
-                                        ans.other = request.POST.get( answer + u'-other', None )
-                                        value.remove( u'-1' )
+                                    if '-1' in value:
+                                        ans.other = request.POST.get( answer + '-other', None )
+                                        value.remove( '-1' )
                                     else:
                                         ans.other = None
                                     ans.options = []
@@ -951,18 +951,18 @@ def poll_answer( request, slug, pid ):
                                     ans.save()
                                 else:
                                     ans.delete()
-                if request.POST.has_key( 'finish' ):
-                    messages.success(request, u"Ankieta: " + poll.title + u" zakończona")
+                if 'finish' in request.POST:
+                    messages.success(request, "Ankieta: " + poll.title + " zakończona")
                     finit = request.session.get( 'finished', default = [])
                     polls = request.session.get( 'polls',    default = [])
 
-                    slug_polls = filter( lambda ((x, s), ls): slug == s, polls)
-                    slug_finit = filter( lambda ((x, s), ls): slug == s, finit)
+                    slug_polls = [x_s_ls for x_s_ls in polls if slug == x_s_ls[0][1]]
+                    slug_finit = [x_s_ls1 for x_s_ls1 in finit if slug == x_s_ls1[0][1]]
 
                     name = None
 
                     for ((n, s), ls) in slug_polls:
-                        pd = filter( lambda x: x == (int(pid), ticket, signed_ticket), ls )
+                        pd = [x for x in ls if x == (int(pid), ticket, signed_ticket)]
                         if pd:
                             polls.remove(((n, s), ls ))
                             for poll_data in pd:
@@ -981,7 +981,9 @@ def poll_answer( request, slug, pid ):
                     else:
                         finit.append(((name, slug), [(int(pid), ticket, signed_ticket)]))
 
-                    def slug_cmp((n1,slug1), (n2,slug2)):
+                    def slug_cmp(xxx_todo_changeme, xxx_todo_changeme3):
+                        (n1,slug1) = xxx_todo_changeme
+                        (n2,slug2) = xxx_todo_changeme3
                         if slug1 == "common": return -1
                         if slug2 == "common": return 1
                         return cmp((n1, slug1), (n2,slug2))
@@ -995,7 +997,7 @@ def poll_answer( request, slug, pid ):
                     st.finished = True
                     st.save()
                 else:
-                    messages.success(request, u"Ankieta: " + poll.title + u" zapisana")
+                    messages.success(request, "Ankieta: " + poll.title + " zapisana")
         else:
             form = PollForm()
             form.setFields( poll, st )
@@ -1011,7 +1013,7 @@ def poll_answer( request, slug, pid ):
             if request.POST.get( 'Save', default=None ):
                 return HttpResponseRedirect( '/grade/poll/poll_answer/' + slug + '/' + str( pid ))
     else:
-        data = { 'errors': [ u"Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title() ],
+        data = { 'errors': [ "Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title() ],
                  'slug' : slug,
                  'link_name' : poll.to_url_title() }
 
@@ -1052,8 +1054,7 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
         messages.info( request, "Ocena zajęć jest otwarta; wyniki nie są kompletne." )
 
     if not poll_id:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
-                                Poll.get_polls_for_semester(semester=semester))
+        polls = [x for x in Poll.get_polls_for_semester(semester=semester) if x.is_user_entitled_to_view_result( request.user )]
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
 
@@ -1061,8 +1062,7 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
         data['polls_by_course'] = request.session['polls_by_course']
         data['polls_by_teacher'] = request.session['polls_by_teacher']
     except:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
-                                Poll.get_polls_for_semester())
+        polls = [x for x in Poll.get_polls_for_semester() if x.is_user_entitled_to_view_result( request.user )]
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
         data['polls_by_course']            = request.session['polls_by_course']
@@ -1074,7 +1074,7 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
         try:
             poll              = Poll.objects.get( id = poll_id )
         except ObjectDoesNotExist:
-            messages.error(request, u"Podana ankieta nie istnieje." )
+            messages.error(request, "Podana ankieta nie istnieje." )
             return render_to_response ('grade/poll/poll_total_results.html', data, context_instance = RequestContext ( request ))
 
         last_visit, created = LastVisit.objects.get_or_create(user=request.user, poll=poll)
@@ -1093,8 +1093,8 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                 s_ans = []
                 for question, question_answers in section_answers:
                     if isinstance( question, SingleChoiceQuestion ):
-                        mode     = u'single'
-                        q_data   = map( lambda x: x.option, question_answers )
+                        mode     = 'single'
+                        q_data   = [x.option for x in question_answers]
                         options  = question.options.all()
                         ans_data = []
                         for option in options:
@@ -1107,16 +1107,16 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                             perc = int(100 * (float(sts_fin - len( q_data))/ float(sts_fin)))
                         else:
                             perc = 0
-                        ans_data.append((u"Brak odpowiedzi", sts_fin - len( q_data), perc))
+                        ans_data.append(("Brak odpowiedzi", sts_fin - len( q_data), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
 
                     elif isinstance( question, MultipleChoiceQuestion ):
-                        mode               = u'multi'
-                        q_data             = map( lambda x: (list( x.options.all()) , x.other), question_answers )
+                        mode               = 'multi'
+                        q_data             = [(list( x.options.all()) , x.other) for x in question_answers]
                         if q_data:
-                            q_data, other_data = zip( *q_data )
+                            q_data, other_data = list(zip( *q_data ))
                             q_data             = sum( q_data, [] )
-                            other_data         = list( filter( lambda x: x, other_data ))
+                            other_data         = list( [x for x in other_data if x])
                         else:
                             other_data     = []
                         options            = question.options.all()
@@ -1132,25 +1132,25 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                                 perc = int(100 * (float(len( other_data)) / float(sts_fin)))
                             else:
                                 perc = 0
-                            ans_data.append(( u"Inne", len( other_data ), perc, other_data))
+                            ans_data.append(( "Inne", len( other_data ), perc, other_data))
                         if sts_fin:
                             perc = int(100 * (float(sts_fin - len(question_answers))/ float(sts_fin)))
                         else:
                             perc = 0
-                        ans_data.append((u"Brak odpowiedzi", sts_fin - len( question_answers), perc))
+                        ans_data.append(("Brak odpowiedzi", sts_fin - len( question_answers), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
 
                     elif isinstance( question, OpenQuestion ):
-                        mode   = u'open'
+                        mode   = 'open'
                         s_ans.append(( mode, question.content, question_answers, len( question_answers) ))
 
                 answers.append(( section.title, s_ans ))
 
 
             if semester.is_grade_active:
-                data['completness'] = SafeUnicode( u"Liczba studentów, którzy zakończyli wypełniać ankietę: %d<br/>Liczba studentów którzy nie zakończyli wypełniać ankiety: %d" % ( sts_fin, sts_not_fin ))
+                data['completness'] = SafeUnicode( "Liczba studentów, którzy zakończyli wypełniać ankietę: %d<br/>Liczba studentów którzy nie zakończyli wypełniać ankiety: %d" % ( sts_fin, sts_not_fin ))
             else:
-                data['completness'] = SafeUnicode( u"Liczba studentów, którzy wypełnili ankietę: %d" % ( sts_fin ))
+                data['completness'] = SafeUnicode( "Liczba studentów, którzy wypełnili ankietę: %d" % ( sts_fin ))
             data['poll_title']  = poll.title
             try:
                 data[ 'poll_course' ] = poll.group.course.name
@@ -1205,8 +1205,7 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
         data['polls_by_course'] = request.session['polls_by_course']
         data['polls_by_teacher'] = request.session['polls_by_teacher']
     except:
-        polls = filter( lambda x: x.is_user_entitled_to_view_result( request.user ),
-                                Poll.get_polls_for_semester())
+        polls = [x for x in Poll.get_polls_for_semester() if x.is_user_entitled_to_view_result( request.user )]
         request.session['polls_by_course'] = group_polls_by_course( polls )
         request.session['polls_by_teacher'] = group_polls_by_teacher( polls )
         data['polls_by_course']            = request.session['polls_by_course']
@@ -1217,7 +1216,7 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
     try:
         poll              = Poll.objects.get( id = poll_id )
     except:
-        messages.error(request, u"Podana ankieta nie istnieje." )
+        messages.error(request, "Podana ankieta nie istnieje." )
         return render_to_response ('grade/poll/poll_total_results.html', data, context_instance = RequestContext ( request ))
 
     if poll.is_user_entitled_to_view_result( request.user ):
@@ -1239,11 +1238,11 @@ def poll_results_detailed( request, mode, poll_id, st_id = None, semester=None )
             data['page'] = 1
             err = True
             for i, st in enumerate( sts ):
-                if unicode(st.id) == unicode(st_id):
+                if str(st.id) == str(st_id):
                     data['page'] = i+1
                     err = False
                     break
-            if err: messages.error( request, u"Nie istnieje taka odpowiedź na ankietę" )
+            if err: messages.error( request, "Nie istnieje taka odpowiedź na ankietę" )
 
         sts = list( sts )
         if sts:
@@ -1288,7 +1287,7 @@ def save_csv(request, mode, poll_id):
     poll_answers = poll.all_answers()
     sections = []
     for section, section_answers in poll_answers:
-        sections.append( map (lambda q: u'[' + unicode(section.title) + u']' + unicode(q.content), section.all_questions()) )
+        sections.append( ['[' + str(section.title) + ']' + str(q.content) for q in section.all_questions()] )
 
     # For each ticket (that is, response to the poll): answers to all questions
     poll_answers = poll.all_answers_by_tickets()
@@ -1299,9 +1298,9 @@ def save_csv(request, mode, poll_id):
             # Actual answers to these questions
             for question, question_answer in section_answers:
                 if not question_answer:
-                    answer.append(u'')
+                    answer.append('')
                 else:
-                    answer.append( unicode(question_answer[0]) )
+                    answer.append( str(question_answer[0]) )
         answers.append( answer )
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename='+ smart_str(csv_title)
@@ -1315,9 +1314,9 @@ def share_results_toggle( request, mode, poll_id ):
     poll.share_result = not poll.share_result
     poll.save()
     if poll.share_result:
-        messages.info( request, u"Udostępniono wyniki ankiety." )
+        messages.info( request, "Udostępniono wyniki ankiety." )
     else:
-        messages.info( request, u"Przestano udostepniać wyniki ankiety." )
+        messages.info( request, "Przestano udostepniać wyniki ankiety." )
     return HttpResponseRedirect(reverse( 'grade-poll-poll-results', args=[mode, poll_id] ))
 
 

@@ -62,4 +62,4 @@ class StudentOptions( models.Model ):
 
     def __unicode__(self):
         """ returns printable name of StudentOptions """
-        return u'Przedmiot: %s, Student: %s ' % (self.course, self.student)
+        return 'Przedmiot: %s, Student: %s ' % (self.course, self.student)

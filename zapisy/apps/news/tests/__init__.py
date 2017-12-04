@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
-from models import *
-from tags import *
+from .models import *
+from .tags import *

@@ -99,7 +99,7 @@ class CourseEntity(models.Model):
     shortName = models.CharField(max_length=30,
                                  verbose_name='skrócona nazwa',
                                  null=True, blank=True,
-                                 help_text=u'Opcjonalna skrócona nazwa, używana na np. planie. Przykłady: JFiZO, AiSD')
+                                 help_text='Opcjonalna skrócona nazwa, używana na np. planie. Przykłady: JFiZO, AiSD')
 
     STATUS_PROPOSITION = 0
     STATUS_IN_OFFER = 1
@@ -107,11 +107,11 @@ class CourseEntity(models.Model):
     STATUS_WITHDRAWN = 4
     STATUS_FOR_REVIEW = 5
 
-    STATUS_CHOICES = [(STATUS_PROPOSITION, u'Propozycja'),
-                      (STATUS_IN_OFFER, u'W ofercie'),
-                      (STATUS_TO_VOTE, u'Poddana pod głosowanie'),
-                      (STATUS_WITHDRAWN, u'Wycofany z oferty'),
-                      (STATUS_FOR_REVIEW, u'Do poprawienia')]
+    STATUS_CHOICES = [(STATUS_PROPOSITION, 'Propozycja'),
+                      (STATUS_IN_OFFER, 'W ofercie'),
+                      (STATUS_TO_VOTE, 'Poddana pod głosowanie'),
+                      (STATUS_WITHDRAWN, 'Wycofany z oferty'),
+                      (STATUS_FOR_REVIEW, 'Do poprawienia')]
 
     status = models.IntegerField(choices=STATUS_CHOICES,
                                  default=STATUS_PROPOSITION)
@@ -130,12 +130,12 @@ class CourseEntity(models.Model):
 
     web_page = models.URLField(verbose_name='strona www', null=True, blank=True)
     ects = models.IntegerField(null=True, blank=True)
-    lectures = models.IntegerField(null=True, blank=True, verbose_name=u'godzin wykładu')
-    exercises = models.IntegerField(null=True, blank=True, verbose_name=u'godzin ćwiczeń')
-    laboratories = models.IntegerField(null=True, blank=True, verbose_name=u'godzin pracowni')
-    repetitions = models.IntegerField(null=True, blank=True, verbose_name=u'godzin repetytorium')
-    seminars = models.IntegerField(null=True, blank=True, verbose_name=u'godzin seminariów')
-    exercises_laboratiories = models.IntegerField(null=True, blank=True, verbose_name=u'godzin ćwiczenio-pracowni')
+    lectures = models.IntegerField(null=True, blank=True, verbose_name='godzin wykładu')
+    exercises = models.IntegerField(null=True, blank=True, verbose_name='godzin ćwiczeń')
+    laboratories = models.IntegerField(null=True, blank=True, verbose_name='godzin pracowni')
+    repetitions = models.IntegerField(null=True, blank=True, verbose_name='godzin repetytorium')
+    seminars = models.IntegerField(null=True, blank=True, verbose_name='godzin seminariów')
+    exercises_laboratiories = models.IntegerField(null=True, blank=True, verbose_name='godzin ćwiczenio-pracowni')
 
     deleted = models.BooleanField(verbose_name='ukryty', default=False)
     owner = models.ForeignKey('users.Employee', verbose_name='opiekun', blank=True, null=True)
@@ -147,20 +147,20 @@ class CourseEntity(models.Model):
 
     in_prefs = models.BooleanField(verbose_name='w preferencjach', default=True)
 
-    dyskretna_l = models.BooleanField(default=False, verbose_name=u'Przedmiot posiada również wersje: Dyskretna (L)')
-    numeryczna_l = models.BooleanField(default=False, verbose_name=u'Przedmiot posiada również wersje: Numeryczna (L)')
-    algorytmy_l = models.BooleanField(default=False, verbose_name=u'Przedmiot posiada również wersje: Algorytmy (L)')
+    dyskretna_l = models.BooleanField(default=False, verbose_name='Przedmiot posiada również wersje: Dyskretna (L)')
+    numeryczna_l = models.BooleanField(default=False, verbose_name='Przedmiot posiada również wersje: Numeryczna (L)')
+    algorytmy_l = models.BooleanField(default=False, verbose_name='Przedmiot posiada również wersje: Algorytmy (L)')
     programowanie_l = models.BooleanField(default=False,
-                                          verbose_name=u'Przedmiot posiada również wersje: Programowanie (L)')
+                                          verbose_name='Przedmiot posiada również wersje: Programowanie (L)')
 
-    usos_kod = models.CharField(max_length=20, null=True, blank=True, default='', verbose_name=u'Kod przedmiotu w usos',
+    usos_kod = models.CharField(max_length=20, null=True, blank=True, default='', verbose_name='Kod przedmiotu w usos',
                                 help_text='UWAGA! Nie edytuj tego pola sam!')
 
     ue = models.BooleanField(default=False,
-                             verbose_name=u'Przedmiot prowadzony przy pomocy środków pochodzących z Unii Europejskiej')
+                             verbose_name='Przedmiot prowadzony przy pomocy środków pochodzących z Unii Europejskiej')
 
     tags = models.ManyToManyField(Tag, through='TagCourseEntity')
-    effects = models.ManyToManyField(Effects, verbose_name=u'Grupa efektów kształcenia', blank=True)
+    effects = models.ManyToManyField(Effects, verbose_name='Grupa efektów kształcenia', blank=True)
 
     objects = WithInformation()
     simple = models.Manager()
@@ -513,8 +513,8 @@ class Course(models.Model):
                                               verbose_name='opcje studentów',
                                               through='StudentOptions')
 
-    records_start = models.DateTimeField(verbose_name=u'Początek zapisów', null=True, blank=True)
-    records_end = models.DateTimeField(verbose_name=u'Koniec zapisów', null=True, blank=True)
+    records_start = models.DateTimeField(verbose_name='Początek zapisów', null=True, blank=True)
+    records_end = models.DateTimeField(verbose_name='Koniec zapisów', null=True, blank=True)
 
     objects = DefaultCourseManager()
     simple = models.Manager()
@@ -847,7 +847,7 @@ class Course(models.Model):
         app_label = 'courses'
         ordering = ['entity__name']
         permissions = (
-            ("view_stats", u"Może widzieć statystyki"),
+            ("view_stats", "Może widzieć statystyki"),
         )
 
     def __unicode__(self):
@@ -875,13 +875,13 @@ class CourseDescription(models.Model):
 
     description = models.TextField(verbose_name='opis', blank=True, default='')
 
-    lectures = models.IntegerField(verbose_name=u'różnica w godzinach wykładu', blank=True, null=True, default=0)
-    repetitions = models.IntegerField(verbose_name=u'różnica w godzinach repetytoriów', blank=True, null=True,
+    lectures = models.IntegerField(verbose_name='różnica w godzinach wykładu', blank=True, null=True, default=0)
+    repetitions = models.IntegerField(verbose_name='różnica w godzinach repetytoriów', blank=True, null=True,
                                       default=0)
-    exercises = models.IntegerField(verbose_name=u'różnica w godzinach ćwiczeń', blank=True, null=True, default=0)
-    laboratories = models.IntegerField(verbose_name=u'różnica w godzinach pracowni', blank=True, null=True, default=0)
-    seminars = models.IntegerField(default=0, null=True, blank=True, verbose_name=u'różnica w godzinach seminariów')
-    exercises_laboratories = models.IntegerField(verbose_name=u'różnica w godzinach ćw+prac', blank=True, null=True,
+    exercises = models.IntegerField(verbose_name='różnica w godzinach ćwiczeń', blank=True, null=True, default=0)
+    laboratories = models.IntegerField(verbose_name='różnica w godzinach pracowni', blank=True, null=True, default=0)
+    seminars = models.IntegerField(default=0, null=True, blank=True, verbose_name='różnica w godzinach seminariów')
+    exercises_laboratories = models.IntegerField(verbose_name='różnica w godzinach ćw+prac', blank=True, null=True,
                                                  default=0)
 
     requirements = models.ManyToManyField(CourseEntity, verbose_name='wymagania', related_name='+', blank=True)
@@ -912,7 +912,7 @@ relationship glue model.
 class TagCourseEntity(models.Model):
     tag = models.ForeignKey(Tag)
     courseentity = models.ForeignKey(CourseEntity)
-    weight = models.IntegerField(verbose_name=u'Waga')
+    weight = models.IntegerField(verbose_name='Waga')
 
     class Meta:
         app_label = 'courses'

@@ -29,7 +29,7 @@ class TicketsForm( forms.Form ):
 
 
 class MaxAnswersValidator(MaxLengthValidator):
-    compare = lambda self, a, b: (b<>0) and (a > b)
+    compare = lambda self, a, b: (b!=0) and (a > b)
 
 
 class PollForm( forms.Form ):
@@ -96,11 +96,11 @@ class PollForm( forms.Form ):
                     
                     choices = []
                     for option in questions[ 0 ].options.all().order_by('pk'):
-                        choices.append(( option.pk, unicode( option.content )))
+                        choices.append(( option.pk, str( option.content )))
                     
                     field = forms.ChoiceField( 
                                 choices  = choices,
-                                label    = unicode( questions[ 0 ].content ),
+                                label    = str( questions[ 0 ].content ),
                                 required = False,
                                 widget   = forms.widgets.RadioSelect(),
                                 initial  = answer )
@@ -108,17 +108,17 @@ class PollForm( forms.Form ):
                     field.is_leading     = True
                     poll_section.leading = True
                     section
-                    field.hide_on    = map(lambda x: x.pk, questionOrdering.hide_on.all())
+                    field.hide_on    = [x.pk for x in questionOrdering.hide_on.all()]
                     field.title      = title
                     field.description = questions[ 0 ].description
                     if not field.description: field.description = ""
                     field.is_scale    = questions[ 0 ].is_scale
-                    field.type       = u'single'
+                    field.type       = 'single'
                     if self.finished: field.widget.attrs[ 'disabled' ] = True
                     poll_section.questions.append( field )
                     
                     if self.finished: field.disabled = True
-                    self.fields[ unicode( title ) ] = field
+                    self.fields[ str( title ) ] = field
                     questions = questions[ 1: ]
                     
             for question in questions:
@@ -143,10 +143,10 @@ class PollForm( forms.Form ):
                         
                     choices = []
                     for option in question.options.all().order_by('pk'):
-                        choices.append(( option.pk, unicode( option.content )))
+                        choices.append(( option.pk, str( option.content )))
                     
                     field = forms.ChoiceField( choices  = choices,
-                                               label    = unicode( question.content ),
+                                               label    = str( question.content ),
                                                required = False,
                                                widget   = forms.widgets.RadioSelect(),
                                                initial  = answer )
@@ -159,13 +159,13 @@ class PollForm( forms.Form ):
                     field.title        = title
                     if self.finished: field.disabled = True
                     poll_section.questions.append( field )
-                    self.fields[ unicode( title ) ] = field
+                    self.fields[ str( title ) ] = field
                 elif str( type( question )) == \
                     "<class 'apps.grade.poll.models.multiple_choice_question.MultipleChoiceQuestion'>":
                     title += '-multi'
                     
                     if post_data:
-                        answer    = map( int, post_data.getlist( title ))
+                        answer    = list(map( int, post_data.getlist( title )))
                         if -1 in answer:
                             other_ans = post_data.get( title + '-other', None )
                         else:
@@ -177,18 +177,18 @@ class PollForm( forms.Form ):
                                           section      = section,
                                           question     = question)
                             other_ans = answer.other
-                            answer    =  map( lambda x: x.pk, answer.options.all())
+                            answer    =  [x.pk for x in answer.options.all()]
                         except ObjectDoesNotExist:
                             answer    = None
                             other_ans = None
                     choices = []
                     for option in question.options.all().order_by('pk'):
-                        choices.append(( option.pk, unicode( option.content )))
+                        choices.append(( option.pk, str( option.content )))
                     other_field = None
                     if question.has_other:
-                        choices.append(( -1, unicode( 'Inne' )))
+                        choices.append(( -1, str( 'Inne' )))
                         other_field = forms.CharField( 
-                                        label    = u'', 
+                                        label    = '', 
                                         initial  = other_ans,
                                         required = False )
                         other_field.title = title + '-other'
@@ -201,7 +201,7 @@ class PollForm( forms.Form ):
                         choosed = 0
                     field = forms.MultipleChoiceField( 
                                 choices        = choices,
-                                label          = unicode( question.content ),
+                                label          = str( question.content ),
                                 required       = False,
                                 widget         = forms.widgets.CheckboxSelectMultiple(),
                                 initial        = answer,
@@ -215,10 +215,10 @@ class PollForm( forms.Form ):
                     field.title = title 
                     if self.finished: field.disabled = True
                     poll_section.questions.append( field )
-                    self.fields[ unicode( title ) ] = field
+                    self.fields[ str( title ) ] = field
                     if question.has_other:
                         field.other = other_field
-                        self.fields[ unicode(other_field.title) ] = other_field
+                        self.fields[ str(other_field.title) ] = other_field
                 elif str( type( question )) == \
                     "<class 'apps.grade.poll.models.open_question.OpenQuestion'>":
                     title += '-open'
@@ -238,7 +238,7 @@ class PollForm( forms.Form ):
                                 widget = forms.widgets.Textarea(
                                                 attrs = { 'cols'  : 80,
                                                           'rows'  : 20 }),
-                                label  = unicode( question.content ),
+                                label  = str( question.content ),
                                 required = False,
                                 initial  = answer )
                     if self.finished: field.widget.attrs[ 'disabled' ] = True
@@ -248,7 +248,7 @@ class PollForm( forms.Form ):
                     if not field.description: field.description = ""
                     if self.finished: field.disabled = True
                     poll_section.questions.append( field )
-                    self.fields[ unicode( title ) ] = field
+                    self.fields[ str( title ) ] = field
 
             if section.pk:
                 poll_section.pk = section.pk
@@ -256,13 +256,13 @@ class PollForm( forms.Form ):
             self.sections.append(poll_section)
         if not self.finished:
             field = forms.BooleanField(
-                            label     = u'Zakończ oceniać',
+                            label     = 'Zakończ oceniać',
                             required  = False,
                             initial   = False,
-                            help_text = u'Ankieta zakończona - Jeśli zaznaczysz to pole, utracisz mozliwość edycji tej ankiety.' )
+                            help_text = 'Ankieta zakończona - Jeśli zaznaczysz to pole, utracisz mozliwość edycji tej ankiety.' )
             field.type  = 'finish'
             self.finish = field
-            self.fields[ u'finish' ] = field
+            self.fields[ 'finish' ] = field
 
 
 class FilterMenu( forms.Form ):

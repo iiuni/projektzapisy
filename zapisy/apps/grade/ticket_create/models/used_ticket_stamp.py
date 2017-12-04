@@ -14,7 +14,7 @@ class UsedTicketStamp( models.Model ):
         app_label           = 'ticket_create'
         
     def __unicode__(self):
-        return unicode( self.student ) + " " + unicode( self.poll )
+        return str( self.student ) + " " + str( self.poll )
         
     @staticmethod
     def check_exists( student, poll ):

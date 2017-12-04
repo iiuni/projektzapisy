@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from base_answer   import BaseAnswer
-from open_question import OpenQuestion
+from .base_answer   import BaseAnswer
+from .open_question import OpenQuestion
 
 class OpenQuestionAnswer( BaseAnswer ):
     question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' )
@@ -14,4 +14,4 @@ class OpenQuestionAnswer( BaseAnswer ):
         app_label           = 'poll'
         
     def __unicode__( self ):
-        return unicode( self.content )
+        return str( self.content )

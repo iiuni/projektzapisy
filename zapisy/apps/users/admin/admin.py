@@ -35,7 +35,7 @@ def export_as_csv(modeladmin, request, queryset):
     opts = modeladmin.model._meta
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=%s.csv' % unicode(opts).replace('.', '_')
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(opts).replace('.', '_')
 
     writer = unicodecsv.writer(response, encoding='utf-8')
     for record in records:

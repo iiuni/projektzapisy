@@ -9,7 +9,7 @@ from apps.users.models import Employee, Student, BaseUser
 NOTIFICATION_TYPES = (
     ('News', {
         'all': [
-            ('send-news', u'Dodano nowy news'),
+            ('send-news', 'Dodano nowy news'),
             #('send-dev-news', u'Dodano nowy news developerski'),
         ],
         'student': [
@@ -47,7 +47,7 @@ NOTIFICATION_TYPES = (
             #('enrollment-finish', u'Pozostały 24 godziny do końca zapisów'),
             #('enrollment-finish-dir', u'Pozostały 24 godziny do końca wypisów dyrektorskich'),
             #('enrollment-started', u'Twoje zapisy się rozpoczęły'),
-            ('enrollment-limit', u'Podniesiono limit ECTS'),
+            ('enrollment-limit', 'Podniesiono limit ECTS'),
         ],
         'employee': [
             #('student-enrolled', u'Po pierwszym tygodniu do grupy dołączył nowy student'),
@@ -61,12 +61,12 @@ NOTIFICATION_TYPES = (
             #('offer', u'Przypomnienie o aktualizacji oferty')
         ],
         'student': [
-            ('vote-start', u'Rozpoczęło się głosowanie'),
+            ('vote-start', 'Rozpoczęło się głosowanie'),
             #('vote-finish', u'Zostało 24 godziny do końca głosowania'),
             #('vote-correction', u'Rozpoczęła się korekta głosowania'),
             #('vote-correction-finish', u'Zostało 24 godziny do końca korekty'),
             #('vote-summary', u'Wyślij podsumowanie oddanego głosu'),
-            ('grade-start', u'Rozpoczęła się ocena')
+            ('grade-start', 'Rozpoczęła się ocena')
             #('grade-finish', u'Pozostało 24 godzin do końca oceny'),
             #('grade-info', u'Wyślij potwierdzenie wygenerowania kluczy')
         ],
@@ -155,9 +155,9 @@ class NotificationManager(models.Manager):
 
 
 class NotificationPreferences(models.Model):
-    user = models.ForeignKey(User, verbose_name=u'użytkownik')
-    type = models.CharField(choices=types_list(True, True), max_length=50, verbose_name=u'typ')
-    value = models.BooleanField(default=True, verbose_name=u'wartość')
+    user = models.ForeignKey(User, verbose_name='użytkownik')
+    type = models.CharField(choices=types_list(True, True), max_length=50, verbose_name='typ')
+    value = models.BooleanField(default=True, verbose_name='wartość')
 
     objects = NotificationManager()
 
@@ -165,8 +165,8 @@ class NotificationPreferences(models.Model):
         unique_together = ('user', 'type')
 
         ordering = ['id']
-        verbose_name = u'Ustawienie Notyfikacji'
-        verbose_name_plural = u'Ustawienia Notyfikacji'
+        verbose_name = 'Ustawienie Notyfikacji'
+        verbose_name_plural = 'Ustawienia Notyfikacji'
 
 
 class Notification(object):

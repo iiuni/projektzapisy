@@ -33,6 +33,7 @@ from apps.grade.ticket_create.forms      import *
 from django.views.decorators.csrf          import csrf_exempt
 from Crypto.PublicKey import RSA
 from django.core.cache import cache
+from functools import reduce
 
 
 ### KEYS generate:
@@ -58,8 +59,7 @@ def ajax_get_rsa_keys_step1( request ):
                                     polls = groupped_polls )
             if form.is_valid():
                 connected_groups = connect_groups( groupped_polls, form )
-                tickets = map( lambda gs: generate_keys( gs ),
-                                      connected_groups )
+                tickets = [generate_keys( gs ) for gs in connected_groups]
                 message = json.dumps(tickets)
     return HttpResponse(message)
 
@@ -76,13 +76,9 @@ def ajax_get_rsa_keys_step2( request ):
                 ts               = json.loads(request.POST.get('ts'))
                 connected_groups = connect_groups( groupped_polls, form )
                 groups           = reduce(list.__add__, connected_groups )
-                tickets          = zip( groups, ts)
-                signed = map( lambda ( g, t):
-                            (g, long(t), secure_signer_without_save( request.user, g, long(t) )),
-                             tickets )
-                unblinds = map ( lambda ( g, t, st ):
-                                (unicode(t), unblind( g, st ) ),
-                             signed )
+                tickets          = list(zip( groups, ts))
+                signed = [(g_t[0], int(g_t[1]), secure_signer_without_save( request.user, g_t[0], int(g_t[1]) )) for g_t in tickets]
+                unblinds = [(str(g_t_st[1]), unblind( g_t_st[0], g_t_st[2] ) ) for g_t_st in signed]
                 message = json.dumps(unblinds)
     return HttpResponse(message)
 
@@ -111,19 +107,19 @@ def connections_choice( request ):
                     groups           = reduce(list.__add__, connected_groups )
                 else:
                     groups = []
-                prepared_tickets = zip( groups, unblindt, unblindst )
+                prepared_tickets = list(zip( groups, unblindt, unblindst ))
                 #### final mark:
                 for g, t, unblind in prepared_tickets:
                     secure_mark(request.user, g, t )
                 errors, tickets_to_serve = get_valid_tickets( prepared_tickets )
                 if errors:
-                    message = u'Nie udało się pobrać następujących biletów:\n<ul>'
+                    message = 'Nie udało się pobrać następujących biletów:\n<ul>'
                     for poll, reason in errors:
-                        message += u"<li>Ankieta: " + unicode( poll )
-                        message += u"<br>Powód: "
-                        message += unicode( reason )
-                        message += u"</li>"
-                    message += u"</ul>"
+                        message += "<li>Ankieta: " + str( poll )
+                        message += "<br>Powód: "
+                        message += str( reason )
+                        message += "</li>"
+                    message += "</ul>"
                     messages.error( request, SafeUnicode( message ))
                 data = { 'tickets' : to_plaintext( tickets_to_serve ),
                          'grade' : grade }
@@ -155,18 +151,18 @@ def client_connection( request ):
             idUser = form.cleaned_data['idUser']
             passwordUser = form.cleaned_data['passwordUser']
             groupNumber = form.cleaned_data['groupNumber']
-            groupKey = long(form.cleaned_data['groupKey'])
+            groupKey = int(form.cleaned_data['groupKey'])
 
             user = authenticate(username=idUser, password=passwordUser)
 
             if user is None:
-                return HttpResponse(u"nie ma takiego użytkownika")
+                return HttpResponse("nie ma takiego użytkownika")
             if BaseUser.is_student(user):
-                return HttpResponse(u"użytkownik nie jest studentem")
+                return HttpResponse("użytkownik nie jest studentem")
 
 
-            if groupNumber == u"*":
-                st=u""
+            if groupNumber == "*":
+                st=""
                 students_polls = Poll.get_all_polls_for_student( user.student )
 
                 if students_polls:
@@ -178,29 +174,29 @@ def client_connection( request ):
 
                     if len( polls ) == 1:
 
-                        st += unicode( polls[0].pk ) + u'***'
-                        st += u'[' + unicode( polls[0].title ) + u']%%%'
+                        st += str( polls[0].pk ) + '***'
+                        st += '[' + str( polls[0].title ) + ']%%%'
 
                         if polls[0].group:
-                            st += unicode( polls[0].group.course.name ) + u'%%%'
-                            st += unicode( polls[0].group.get_type_display()) + u': %%%'
-                            st += unicode( polls[0].group.get_teacher_full_name()) + u'%%%'
+                            st += str( polls[0].group.course.name ) + '%%%'
+                            st += str( polls[0].group.get_type_display()) + ': %%%'
+                            st += str( polls[0].group.get_teacher_full_name()) + '%%%'
 
-                        st +=unicode( '***' )
+                        st +=str( '***' )
 
-                        st += unicode( PublicKey.objects.get( poll = polls[0].pk ).public_key ) + u'???'
+                        st += str( PublicKey.objects.get( poll = polls[0].pk ).public_key ) + '???'
 
                     else:
                         for poll in polls:
-                            st += unicode( poll.pk ) + u'***'
+                            st += str( poll.pk ) + '***'
                             if not poll.group:
-                                st += u'Ankiety ogólne: %%%   [' + poll.title + '] '
+                                st += 'Ankiety ogólne: %%%   [' + poll.title + '] '
                             else:
-                                st += u'Przedmiot: ' + polls[ 0 ].group.course.name + u'%%%    [' + poll.title + u'] ' + \
-                                         poll.group.get_type_display() + u': ' + \
-                                         poll.group.get_teacher_full_name() + u'***'
-                                st += unicode( PublicKey.objects.get( poll = poll.pk ).public_key ) + '&&&'
-                        st += u'???'
+                                st += 'Przedmiot: ' + polls[ 0 ].group.course.name + '%%%    [' + poll.title + '] ' + \
+                                         poll.group.get_type_display() + ': ' + \
+                                         poll.group.get_teacher_full_name() + '***'
+                                st += str( PublicKey.objects.get( poll = poll.pk ).public_key ) + '&&&'
+                        st += '???'
 
                 return HttpResponse( st )
 
@@ -217,19 +213,19 @@ def client_connection( request ):
                     p = students_poll
                     break
             if st == "":
-                st = u"Nie jesteś zapisany do tej ankiety"
+                st = "Nie jesteś zapisany do tej ankiety"
 
 
             try:
-                a=long(st[0][0])
-            except ValueError, err:
+                a=int(st[0][0])
+            except ValueError as err:
                 return HttpResponse(st)
-            if   st == u"Nie jesteś zapisany do tej ankiety":
+            if   st == "Nie jesteś zapisany do tej ankiety":
                 return HttpResponse(st)
-            elif st == u"Bilet już pobrano":
+            elif st == "Bilet już pobrano":
                 return HttpResponse(st)
             else:
-                return HttpResponse( to_plaintext( [(p,u'***',u'%%%')] ) + u'???' + unicode(a) )
+                return HttpResponse( to_plaintext( [(p,'***','%%%')] ) + '???' + str(a) )
 
 
 @csrf_exempt

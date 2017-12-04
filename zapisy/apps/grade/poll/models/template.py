@@ -6,7 +6,7 @@ from apps.users.models               import Employee, \
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from apps.enrollment.courses.models.course import CourseEntity
 
-from section                         import SectionOrdering, Section
+from .section                         import SectionOrdering, Section
 
 class Template( models.Model ):
     title             = models.CharField( max_length = 40, verbose_name = 'tytuł' )
@@ -20,7 +20,7 @@ class Template( models.Model ):
     sections          = models.ManyToManyField( Section, verbose_name = 'sekcje',
                                                 through = 'TemplateSections')
 
-    in_grade          = models.BooleanField(default=False, verbose_name=u'Szablon wykorzystywany w ocenie')
+    in_grade          = models.BooleanField(default=False, verbose_name='Szablon wykorzystywany w ocenie')
 
     author            = models.ForeignKey( Employee, verbose_name = 'autor' )
     
@@ -31,10 +31,10 @@ class Template( models.Model ):
         ordering            =['title']
         
     def __unicode__( self ):
-        res = unicode( self.title )
-        if self.studies_type: res += u', typ studiów: ' + unicode( self.studies_type )
-        if self.course:      res += u', przedmiot: ' + unicode( self.course )
-        if self.group_type:   res += u', typ grupy: ' + unicode( self.get_group_type_display() )
+        res = str( self.title )
+        if self.studies_type: res += ', typ studiów: ' + str( self.studies_type )
+        if self.course:      res += ', przedmiot: ' + str( self.course )
+        if self.group_type:   res += ', typ grupy: ' + str( self.get_group_type_display() )
         return res
 
     def all_sections( self ):

@@ -45,7 +45,7 @@ class EventAdapter(FullCalendarAdapter):
     def get_title(self, item):
 
         if not item.event.visible and not self.request.user.has_perm('schedule.manage_events'):
-            return u"Sala zajęta"
+            return "Sala zajęta"
 
         if item.event.type in ['0', '1']:
             return str(item.event.course) + " " + str(item.event.get_type_display())
