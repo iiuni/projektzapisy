@@ -2,8 +2,10 @@ general:
   build_dir: zapisy
 
 machine:
-  python:
-    version: 3.6-dev
+  pre:                                                                                                                                                                   
+    - cd /opt/circleci/.pyenv; git pull                                                                                                                                  
+  python:                                                                                                                                                                
+    version: 3.6.3
 
 dependencies:
   override:
