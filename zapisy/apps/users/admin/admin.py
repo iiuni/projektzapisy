@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-import unicodecsv
+import csv
 
 from apps.users.models import (Employee, Student, Program, StudiaZamawiane, StudiaZamawianeMaileOpiekunow, UserProfile,
                                StudiaZamawiane2012)
@@ -37,7 +37,7 @@ def export_as_csv(modeladmin, request, queryset):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(opts).replace('.', '_')
 
-    writer = unicodecsv.writer(response, encoding='utf-8')
+    writer = csv.writer(response)
     for record in records:
         writer.writerow([record.student.matricula, record.student.user.first_name, record.student.user.last_name,
                          record.group.course.name, record.group.get_type_display(), record.group.get_terms_as_string()])

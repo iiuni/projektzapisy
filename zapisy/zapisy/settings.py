@@ -209,7 +209,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'django_filters',
     'autoslug',
-    'endless_pagination',
+    'el_pagination',
     'apps.notifications',
     'django_cas_ng',
 

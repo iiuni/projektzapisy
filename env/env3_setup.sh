@@ -1,7 +1,7 @@
 # set up virtualenv
 cd $HOME
-virtualenv -p python3 env3.5
-source env3.5/bin/activate
+virtualenv -p python3 env3
+source env3/bin/activate
 
 # get requirements
 pip install -r /vagrant/zapisy/requirements.development.txt
