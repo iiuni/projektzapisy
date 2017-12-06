@@ -3,9 +3,10 @@ general:
 
 machine:
   pre:                                                                                                                                                                   
-    - add-apt-repository ppa:jonathonf/python-3.6
-    - apt-get -y update
-    - apt-get -y install python3.6
+    - sudo add-apt-repository ppa:jonathonf/python-3.6
+    - sudo apt-get -y update
+    - sudo apt-get -y install python3.6
+    - sudo ln -s /usr/bin/python3.6 /usr/bin/python -f
 
 dependencies:
   override:
