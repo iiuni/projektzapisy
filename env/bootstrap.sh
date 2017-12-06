@@ -187,6 +187,11 @@ apt-get -y install zlib1g-dev
 # Install redis
 apt-get -y install redis-server
 
-# This can be removed after upgrading Ubuntu.
+# For good measure
 pip install --upgrade pip
 pip install --upgrade virtualenv
+
+# Grab Python 3.6
+add-apt-repository ppa:jonathonf/python-3.6
+apt-get -y update
+apt-get -y install python3.6

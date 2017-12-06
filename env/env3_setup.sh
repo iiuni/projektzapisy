@@ -1,6 +1,6 @@
 # set up virtualenv
 cd $HOME
-virtualenv -p python3 env3
+virtualenv -p python3.6 env3
 source env3/bin/activate
 
 # get requirements
