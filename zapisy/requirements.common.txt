@@ -20,7 +20,6 @@ pyPdf==1.13
 pycrypto==2.6
 six==1.9.0
 rollbar==0.13.3
-wsgiref==0.1.2
 yolk==0.4.3
 newrelic==2.68.0.50
 pyvirtualdisplay
@@ -35,8 +34,7 @@ readline==6.2.4.1
 gunicorn==19.7.1
 lxml==3.0.1
 python-dateutil==2.1
-reportlab==2.6
-
+# reportlab==2.6
 # Packages which have version in both environments
 #   I am choosing to install versions from production environment.
 #   Development:
