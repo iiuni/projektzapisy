@@ -3,9 +3,9 @@ general:
 
 machine:
   pre:                                                                                                                                                                   
-    - cd /opt/circleci/.pyenv; git pull                                                                                                                                  
-  python:                                                                                                                                                                
-    version: 3.6.3
+    - add-apt-repository ppa:jonathonf/python-3.6
+    - apt-get -y update
+    - apt-get -y install python3.6
 
 dependencies:
   override:
