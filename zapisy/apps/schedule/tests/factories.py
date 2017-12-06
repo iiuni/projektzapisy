@@ -35,8 +35,8 @@ class EventFactory(DjangoModelFactory):
     visible = True
     status = Event.STATUS_ACCEPTED
     author = factory.SubFactory(UserFactory)
-    title = factory.fuzzy.FuzzyText(length=50, chars=string.letters)
-    description = factory.fuzzy.FuzzyText(length=120, chars=string.letters)
+    title = factory.fuzzy.FuzzyText(length=50, chars=string.ascii_letters)
+    description = factory.fuzzy.FuzzyText(length=120, chars=string.ascii_letters)
 
     @factory.post_generation
     def interested(self, create, extracted, **kwargs):
