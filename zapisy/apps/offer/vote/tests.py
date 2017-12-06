@@ -41,7 +41,7 @@ class VoteLinkTestCase(TestCase):
 
         cls.s1 = StudentFactory()
         cls.s2 = StudentFactory(status=1)
-        
+
         sql_calls = [
             """
                 CREATE TABLE courses_studentpointsview (
@@ -97,7 +97,7 @@ class VoteLinkTestCase(TestCase):
         create_active_system_state()
         response = self.client.get(reverse('vote-view'), follow=True)
         self.assertNotContains(response, self.VOTE_LINK, html=True)
-        
+
     def test_vote_link_in_vote_view_when_system_is_inactive_in_past(self):
         self.client.login(username=self.s1.user.username, password='test')
         self.generic_voting_inactive_view_past_test_case('vote-view')

@@ -32,7 +32,7 @@ def change_desiderata(request):
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
         if other_form.is_valid():
             other_form.save()
-            
+
     else:
         other_form = DesiderataOtherForm(instance=other)
     formset = DesiderataFormSet(initial=desiderata_formset_initial)
@@ -42,6 +42,3 @@ def change_desiderata(request):
         'semester': semester
     }
     return render_to_response('offer/desiderata/change_desiderata.html', data, context_instance=RequestContext(request))
-
-
-    

@@ -10,22 +10,22 @@ class LatestNews(Feed):
     title = "Zapisy - newsy"
     description = "Aktualności z Systemu Zapisów Insytutu Informatyki UWr"
 
-    
+
     def link(self):
         return ("/news/")
 
     def items(self):
         return News.objects.exclude(category='-').select_related('author')[:10]
-    
+
     def item_link(self, item):
         return ("/news/#news_" + str(item.id))
-    
+
     def item_author_name(self, item):
         return item.author.get_full_name()
-    
+
     def item_author_email(self, item):
         return item.author.email
-    
+
     def item_pubdate(self, item):
         return item.date
 

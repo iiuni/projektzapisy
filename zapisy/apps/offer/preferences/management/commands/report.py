@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from django.utils.encoding import smart_unicode
 from django.core.management.base import BaseCommand, CommandError
 from apps.enrollment.courses.models.course import CourseEntity
 from apps.enrollment.courses.models.course_type import Type
@@ -17,11 +16,10 @@ class Command(BaseCommand):
         courses = CourseEntity.get_proposals()
         file = open(args[0], 'w')
         for course in courses:
-            file.write(smart_unicode(course).encode('utf-8')+'\n')
+            file.write("{0}\n".format(course))
             for user in course.get_all_voters():
                 file.write(user.matricula+'\n')
 
             file.write('\n')
 
         file.close()
-

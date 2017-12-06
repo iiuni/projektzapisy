@@ -23,13 +23,13 @@ class Template( models.Model ):
     in_grade          = models.BooleanField(default=False, verbose_name='Szablon wykorzystywany w ocenie')
 
     author            = models.ForeignKey( Employee, verbose_name = 'autor' )
-    
+
     class Meta:
-        verbose_name        = 'szablon' 
+        verbose_name        = 'szablon'
         verbose_name_plural = 'szablony'
         app_label           = 'poll'
         ordering            =['title']
-        
+
     def __unicode__( self ):
         res = str( self.title )
         if self.studies_type: res += ', typ studiów: ' + str( self.studies_type )
@@ -41,7 +41,7 @@ class Template( models.Model ):
         sections =  self.templatesections_set.all().values_list('pk', flat=True)
         return Section.objects.filter(pk__in=sections)
 
-        
+
 
 class TemplateSections( models.Model ):
     id           = models.AutoField(primary_key=True)
@@ -56,4 +56,3 @@ class TemplateSections( models.Model ):
 
     def all_questions(self):
         return self.section.all_questions()
-

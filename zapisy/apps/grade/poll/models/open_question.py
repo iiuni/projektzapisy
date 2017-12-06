@@ -5,26 +5,26 @@ from .base_question  import BaseQuestion
 from .saved_ticket   import SavedTicket
 
 class OpenQuestion( BaseQuestion ):
-    sections = models.ManyToManyField( 'Section',    
-                                       verbose_name = 'sekcje', 
+    sections = models.ManyToManyField( 'Section',
+                                       verbose_name = 'sekcje',
                                        through = 'OpenQuestionOrdering' )
     class Meta:
         abstract            = False
         verbose_name        = 'pytanie otwarte'
         verbose_name_plural = 'pytania otwarte'
         app_label           = 'poll'
-    
+
     def get_all_answers_from_poll( self, poll, section ):
         sts = SavedTicket.objects.filter( poll = poll )
         result = []
         for st in sts:
             result += st.openquestionanswer_set.filter( question = self, section = section ).order_by('time')
         return self, result
-        
-    def get_all_answers_from_poll_for_ticket(self, poll, section, ticket):        
+
+    def get_all_answers_from_poll_for_ticket(self, poll, section, ticket):
         result = []
         result += ticket.openquestionanswer_set.filter( question = self, section = section )
-        return self, result        
+        return self, result
 
 class OpenQuestionOrdering( models.Model ):
     question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' )
@@ -36,8 +36,7 @@ class OpenQuestionOrdering( models.Model ):
         verbose_name        = 'pozycja pytań otwartych'
         ordering            = [ 'sections', 'position' ]
         unique_together     = [ 'sections', 'position' ]
-        app_label           = 'poll' 
-    
+        app_label           = 'poll'
+
     def __unicode__( self ):
         return str( self.position ) + '[' + str( self.sections ) + ']' + str( self.question )
-        

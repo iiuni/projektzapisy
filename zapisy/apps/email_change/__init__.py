@@ -29,4 +29,3 @@ VERSION = (0, 2, 2, 'final', 0)
 def get_version():
     version = '%d.%d.%d' % (VERSION[0], VERSION[1], VERSION[2])
     return version
-

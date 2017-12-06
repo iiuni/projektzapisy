@@ -65,14 +65,14 @@ class StudentAdmin(admin.ModelAdmin):
     actions = [export_as_csv]
 
     def get_queryset(self, request):
-       qs = super(StudentAdmin, self).get_queryset(request)
-       return qs.select_related('program', 'program__type_of_points', 'user')
+        qs = super(StudentAdmin, self).get_queryset(request)
+        return qs.select_related('program', 'program__type_of_points', 'user')
 
 class ProgramAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-       qs = super(ProgramAdmin, self).get_queryset(request)
-       return qs.select_related('type_of_points')
+        qs = super(ProgramAdmin, self).get_queryset(request)
+        return qs.select_related('type_of_points')
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('get_full_name','homepage','room','consultations',)
@@ -86,8 +86,8 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display_links = ('get_full_name',)
 
     def get_queryset(self, request):
-       qs = super(EmployeeAdmin, self).get_queryset(request)
-       return qs.select_related('user')
+        qs = super(EmployeeAdmin, self).get_queryset(request)
+        return qs.select_related('user')
 
 class StudentInline(admin.StackedInline):
     model = Student

@@ -119,7 +119,7 @@ class Employee(BaseUser):
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
     status = models.PositiveIntegerField(default=0, choices=EMPLOYEE_STATUS_CHOICES, verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
-    
+
     def make_preferences(self):
         from apps.offer.preferences.models import Preference
 
@@ -190,8 +190,8 @@ class Employee(BaseUser):
             employee = user.employee
             groups = Group.objects.filter(teacher=employee, course__semester=semester)
         except Employee.DoesNotExist:
-             logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
-             raise NonEmployeeException()
+            logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
+            raise NonEmployeeException()
         return groups
 
     @staticmethod
@@ -203,8 +203,8 @@ class Employee(BaseUser):
             employee = user.employee
             groups = Group.objects.filter(teacher=employee)
         except Employee.DoesNotExist:
-             logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
-             raise NonEmployeeException()
+            logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
+            raise NonEmployeeException()
         return groups
 
 #    @staticmethod
@@ -391,9 +391,9 @@ class Student(BaseUser):
                                       'group__course__semester',
                                       'group__course__term')]
         except Student.DoesNotExist:
-             logger.error('Function Student.get_all_groups(student = %d)' + \
-             'throws Student.DoesNotExist exception.' % student.pk )
-             raise NonStudentException()
+            logger.error('Function Student.get_all_groups(student = %d)' + \
+            'throws Student.DoesNotExist exception.' % student.pk )
+            raise NonStudentException()
         return groups
 
 #    @staticmethod
@@ -424,7 +424,7 @@ class Student(BaseUser):
             zamawiany = StudiaZamawiane.objects.get(student=student)
             return zamawiany
         except (User.DoesNotExist, Student.DoesNotExist, StudiaZamawiane.DoesNotExist):
-             return None
+            return None
 
     def zamawiany(self):
         return StudiaZamawiane.objects.get(student=self)

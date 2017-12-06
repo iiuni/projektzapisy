@@ -38,7 +38,7 @@ def gcd( a, b ):
     if b > a:
         a, b = b, a
     while a:
-            a, b = b%a, a
+        a, b = b%a, a
     return b
 
 def gcwd( u, v ):
@@ -162,7 +162,7 @@ def save_private_keys(polls_private_keys):
 def generate_keys_for_polls(semester=None):
     from apps.enrollment.courses.models import Semester
     if not semester:
-       semester = Semester.get_current_semester()
+        semester = Semester.get_current_semester()
     poll_list = Poll.get_polls_without_keys(semester)
     pub_list  = []
     priv_list = []
@@ -331,9 +331,9 @@ def get_valid_tickets( tl ):
     for g, t, st in tl:
         if st == "Nie jesteś przypisany do tej ankiety" or \
            st == "Bilet już pobrano":
-                err.append(( str( g ), st ))
+            err.append(( str( g ), st ))
         else:
-                val.append(( g, t, st ))
+            val.append(( g, t, st ))
 
     return err, val
 

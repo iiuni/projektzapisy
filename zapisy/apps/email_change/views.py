@@ -50,10 +50,10 @@ def email_change_view(request, extra_context={},
     if request.method == 'POST':
         form = EmailChangeForm(username=request.user.username, data=request.POST, files=request.FILES)
         if form.is_valid():
-            
+
             EmailChangeRequest = apps.cache.get_model('email_change', 'EmailChangeRequest')
             Site = apps.cache.get_model('sites', 'Site')
-            
+
             email = form.cleaned_data.get('email')
             user = User.objects.filter(email=email)
 
@@ -62,26 +62,26 @@ def email_change_view(request, extra_context={},
                 return render_to_response(template_name, {'form':form}, context_instance=RequestContext(request))
 
             verification_key = generate_key(request.user, email)
-            
+
             current_site = Site.objects.get_current()
             site_name = current_site.name
             domain = current_site.domain
-            
+
             protocol = 'http'
             if request.is_secure():
                 protocol = 'https'
-            
+
             # First clean all email change requests made by this user
             qs = EmailChangeRequest.objects.filter(user=request.user)
             qs.delete()
-            
+
             # Create an email change request
             EmailChangeRequest.objects.create(
                 user = request.user,
                 verification_key = verification_key,
                 email = email
                 )
-            
+
             # Prepare context
             c = {
                 'email': email,
@@ -97,18 +97,18 @@ def email_change_view(request, extra_context={},
             # Send success email
             subject = render_to_string(email_subject_template_name, context_instance=context)
             message = render_to_string(email_message_template_name, context_instance=context)
-            
+
             send_mail('[Fereol] Weryfikacja zmiany adresu email', message, None, [email])
             messages.success(request, "Mail zawierający link weryfikacyjny został wysłany na Twój nowy adres email. Postępuj zgodnie z instrukcjami w tym mailu by z sukcesem zmienić Twój obecny adres email.")
             # Redirect
             return redirect(success_url)
-    
+
     else:
         form = EmailChangeForm(username=request.user.username, initial={'email' : request.user.email})
-    
+
     context = RequestContext(request, extra_context)
     context['form'] = form
-    
+
     return render_to_response(template_name, context_instance=context)
 
 
@@ -133,14 +133,13 @@ def email_verify_view(request, verification_key, extra_context={},
             ecr.delete()
             # Return failure response
             return render_to_response(template_name, context_instance=context)
-        
+
         # Success. Replace the user's email with the new email
         request.user.email = ecr.email
         request.user.save()
         messages.success(request, "Mail został pomyślnie zmieniony.")
         # Delete the email change request
         ecr.delete()
-        
+
         # Redirect to success URL
         return redirect(success_url)
-

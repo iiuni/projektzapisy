@@ -160,11 +160,11 @@ def course(request, slug):
         #requirements = map(lambda x: x.name, course.requirements.all())
 
         if not student:
-                course.is_recording_open = False
-                for g in groups:
-                    g.is_in_diff = False
-                    g.signed = False
-                pass
+            course.is_recording_open = False
+            for g in groups:
+                g.is_in_diff = False
+                g.signed = False
+            pass
         else:
             enrolled_pinned_queued_ids_sql = """
             SELECT
@@ -300,7 +300,7 @@ def course(request, slug):
         if student and student.get_points_with_course(course) > maxEcts:
             currentEcts = student.get_points()
             ectsLimitExceeded = True
-        
+
         employees = { group.teacher for group in Group.objects.filter(course=course) }
 
         data.update({

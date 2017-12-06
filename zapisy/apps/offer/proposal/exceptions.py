@@ -6,4 +6,3 @@ class NonEmployeeException(Exception):
 
 class NotOwnerException(Exception):
     pass
-

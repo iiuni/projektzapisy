@@ -29,37 +29,34 @@ from django.apps import apps
 
 
 class EmailChangeForm(forms.Form):
-    
+
     email = forms.EmailField(label="adres email", max_length=75)
-    
+
     def __init__(self, username=None, *args, **kwargs):
         """Constructor.
-        
+
         **Mandatory arguments**
-        
+
         ``username``
             The username of the user that requested the email change.
-        
+
         """
         self.username = username
         super(EmailChangeForm, self).__init__(*args, **kwargs)
-    
+
     def clean_email(self):
         """Checks whether the new email address differs from the user's current
         email address.
-        
+
         """
         email = self.cleaned_data.get('email')
-        
+
         User = apps.cache.get_model('auth', 'User')
         user = User.objects.get(username__exact=self.username)
-        
+
         # Check if the new email address differs from the current email address.
         if user.email == email:
             raise forms.ValidationError('New email address cannot be the same \
                 as your current email address')
-        
+
         return email
-
-
-

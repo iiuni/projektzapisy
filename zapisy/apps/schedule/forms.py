@@ -16,7 +16,7 @@ from datetime import timedelta, datetime
 
 class TermForm(forms.ModelForm):
     ignore_conflicts = forms.BooleanField(required=False, label="", widget=forms.HiddenInput())
-    
+
     def clean(self):
         cleaned_data = super(TermForm, self).clean()
         self.instance.ignore_conflicts = cleaned_data.get('ignore_conflicts')
@@ -106,4 +106,3 @@ class ReportForm(forms.Form):
 class ConflictsForm(forms.Form):
     beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
     end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
-

@@ -212,7 +212,7 @@ def proposal_edit(request, slug=None):
             if new_proposal or proposal.status == 5:
                 proposal.status = 0
                 sendnotification = True
- 
+
             proposal.save()
 
             description.author = request.user.employee

@@ -28,14 +28,14 @@ NEWS_PER_PAGE = 5
 
 def render_with_device_detection(request, full_tpl, mobi_tpl):
     """ Detects type of device and renders appropriate template"""
- 		
+
     template=full_tpl
     #if request.is_mobile:
     if request.mobile:
         template=mobi_tpl
-		
+
     return render_to_response(template, context_instance = RequestContext(request))
-    
+
 
 def render_with_category_template(temp, context):
     """ Switch beetween top menus based on context['category'].
@@ -49,7 +49,7 @@ def render_with_category_template(temp, context):
     elif context.get('category', '') == 'offer':
         temp.nodelist[0].parent_name = 'offer/base.html'
     return HttpResponse(temp.render(context))
-    
+
 def render_items(request, items):
     """
         Renders items
@@ -97,7 +97,7 @@ def prepare_data(request, items,
     data['category']    = category
     data['content']     = render_items(request, items)
     data['older_group'] = render_older_group(category,
-        beginwith + quantity, 
+        beginwith + quantity,
         max(news_count-(beginwith+quantity),0))
     data['newer_group'] = render_newer_group(category,
         max(beginwith - quantity, 0),
@@ -200,14 +200,14 @@ def send_mass_mail(msg_parts, users):
         if email:
             send_html_mail(course, text_body, html_body,
                        MASS_MAIL_FROM, [email])
-                       
+
 def mail_news_enrollment(news):
     """
     Queue news in form of a mail message to all users
     that haven't opted out.
     """
     users  = list(Student.objects.filter(receive_mass_mail_enrollment=True).select_related())
-    users += list(Employee.objects.filter(receive_mass_mail_enrollment=True).select_related())    
+    users += list(Employee.objects.filter(receive_mass_mail_enrollment=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
 
 def mail_news_offer(news):
@@ -218,7 +218,7 @@ def mail_news_offer(news):
     users  = list(Student.objects.filter(receive_mass_mail_offer=True).select_related())
     users += list(Employee.objects.filter(receive_mass_mail_offer=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
-    
+
 def mail_news_grade(news):
     """
     Queue news in form of a mail message to all users
@@ -227,4 +227,3 @@ def mail_news_grade(news):
     users  = list(Student.objects.filter(receive_mass_mail_grade=True).select_related())
     users += list(Employee.objects.filter(receive_mass_mail_grade=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
-    

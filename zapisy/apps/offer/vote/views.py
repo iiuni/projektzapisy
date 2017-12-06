@@ -89,7 +89,7 @@ def vote_summary( request ):
     summer = []
     winter = []
     unknown = []
-    
+
     year = date.today().year
     state = SystemState.get_state(year)
 
@@ -131,5 +131,5 @@ def proposal_vote_summary( request, slug ):
              'points'   : points,
              'votes'    : votes,
              'voters'    : voters}
-           
+
     return render_to_response('offer/vote/proposal_summary.html', data, context_instance = RequestContext( request ))

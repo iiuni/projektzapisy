@@ -46,4 +46,4 @@ class ECTS_Limit_Exception(Exception):
     """is thrown when user tries to queue for the same group twice """
     pass
 class InactiveStudentException(Exception):
-	"""is thrown when inactive user tries to enroll to group"""
+    """is thrown when inactive user tries to enroll to group"""

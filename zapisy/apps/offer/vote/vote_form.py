@@ -165,7 +165,7 @@ class VoteFormsets():
             points += self.unknown.points()
 
         return points
-    
+
     def is_valid(self):
         is_valid = (not self.summer or self.summer.is_valid()) and\
                    (not self.winter or self.winter.is_valid()) and\
@@ -199,4 +199,3 @@ class VoteFormsets():
             self.winter.save()
         if self.unknown:
             self.unknown.save()
-

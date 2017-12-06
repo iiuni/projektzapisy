@@ -4,22 +4,22 @@ from django.db     import models
 from .base_question import BaseQuestion
 from .option        import Option
 from .saved_ticket  import SavedTicket
-    
+
 class SingleChoiceQuestion( BaseQuestion ):
-    sections = models.ManyToManyField( 'Section',    
-                                       verbose_name = 'sekcje', 
+    sections = models.ManyToManyField( 'Section',
+                                       verbose_name = 'sekcje',
                                        through = 'SingleChoiceQuestionOrdering' )
-                                      
+
     is_scale = models.BooleanField(    verbose_name = 'skala', default=False)
-    options  = models.ManyToManyField( Option, 
+    options  = models.ManyToManyField( Option,
                                        verbose_name = 'odpowiedzi' )
-    
+
     class Meta:
         verbose_name_plural = 'pytania jednokrotnego wyboru'
         verbose_name        = 'pytanie jednokrotnego wyboru'
         app_label           = 'poll'
         abstract            = False
-        
+
     def get_all_answers_from_poll( self, poll, section ):
         sts = SavedTicket.objects.filter( poll = poll )
         result = []
@@ -30,10 +30,10 @@ class SingleChoiceQuestion( BaseQuestion ):
     def get_all_answers_from_poll_for_ticket(self, poll, section, ticket):
         result = []
         result += ticket.singlechoicequestionanswer_set.filter( question = self, section = section )
-        return self, result         
+        return self, result
 
 class SingleChoiceQuestionOrdering( models.Model ):
-    question   = models.ForeignKey( SingleChoiceQuestion, 
+    question   = models.ForeignKey( SingleChoiceQuestion,
                                     verbose_name = 'pytanie' )
     sections   = models.ForeignKey( 'Section', verbose_name = 'sekcja' )
     position   = models.IntegerField( verbose_name = 'pozycja' )
@@ -47,7 +47,7 @@ class SingleChoiceQuestionOrdering( models.Model ):
         verbose_name        = 'pozycja pytań jednokrotnego wyboru'
         ordering            = [ 'sections', '-is_leading', 'position' ]
         unique_together     = [ 'sections', 'is_leading', 'position' ]
-        app_label           = 'poll' 
+        app_label           = 'poll'
 
     def __unicode__( self ):
         return str( self.position ) + '[' + str( self.sections ) + ']' + str( self.question )

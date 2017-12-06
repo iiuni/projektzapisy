@@ -12,10 +12,10 @@ class UsedTicketStamp( models.Model ):
         verbose_name        = 'wykorzystany bilet'
         verbose_name_plural = 'wykorzystane bilety'
         app_label           = 'ticket_create'
-        
+
     def __unicode__(self):
         return str( self.student ) + " " + str( self.poll )
-        
+
     @staticmethod
     def check_exists( student, poll ):
         return len( UsedTicketStamp.objects.filter( student = student, poll = poll )) == 0

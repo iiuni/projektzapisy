@@ -16,13 +16,13 @@ XSCHEMA = os.path.join(settings.BASE_DIR, 'enrollment/courses/admin/xml/semester
 def import_semester_schedule(xmlfile):
     """ This function parses XML file containing complete schedule of semester (courses, grups, terms,
         teachers, etc.). The file is validated with XSCHEMA.
-        
+
         xmlfile - path to XML file or file object
-    """ 
+    """
 
     def get_teacher(el_teacher):
         """ This function parses <teacher> element and returns existing in database Employee object """
-        
+
         name = el_teacher.find('name').text
         surname = el_teacher.find('surname').text
 
@@ -34,20 +34,20 @@ def import_semester_schedule(xmlfile):
             raise Employee.DoesNotExist('Employee name="%s"  surname="%s" does not exist' % (name, surname))
 
         return employee
-    
+
     def get_teachers(el_teachers):
         """ This function parses <teachers> element and returns list of Employees objects """
-        
+
         teachers = []
-        
+
         for el_teacher in el_teachers:
             teachers.append(get_teacher(el_teacher))
-            
+
         return teachers
-    
+
     def create_course(el_course, semester):
         """ This function parses <course> element """
-        
+
         teachers = get_teachers(el_course.find('teachers'))
 
         name = el_course.find('name').text
@@ -70,15 +70,15 @@ def import_semester_schedule(xmlfile):
                                          exercises=exercises,
                                          laboratories=labs
                                          )
-        
+
         course.teachers = teachers
         course.save()
 
         create_groups(el_course.find('groups'), course)
-        
+
     def create_groups(el_groups, course):
         """ This function parses <groups> element """
-        
+
         for el_group in el_groups:
             el_teacher = el_group.find('teacher')
 
@@ -113,14 +113,14 @@ def import_semester_schedule(xmlfile):
                          type=gr_type,
                          limit=limit
                          )
-                         
+
             create_terms(el_group.find('terms'), group)
 
 
     def create_terms(el_terms, group):
         """ This function parses <terms> element and returns list of Terms objects """
         terms = []
-        
+
         for el_term in el_terms:
             el_day_text = el_term.find('day').text
 
@@ -145,15 +145,15 @@ def import_semester_schedule(xmlfile):
                                                         )[0]
 
             terms.append(Term.objects.create(dayOfWeek=day,
-									         start_time=start_time,
-									         end_time=end_time,
-									         classroom=classroom,
-									         group=group
-									         )
+                                                                                 start_time=start_time,
+                                                                                 end_time=end_time,
+                                                                                 classroom=classroom,
+                                                                                 group=group
+                                                                                 )
                          )
 
         return terms
-    
+
     schema = etree.XMLSchema(file=XSCHEMA)
     events = etree.iterparse(xmlfile,
                              remove_blank_text=True,
@@ -187,5 +187,3 @@ def import_semester_schedule(xmlfile):
 
             while element.getprevious() is not None:
                 del element.getparent()[0]
-
-

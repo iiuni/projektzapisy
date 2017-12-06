@@ -15,4 +15,3 @@ class StudentGraded( models.Model ):
 
     def __unicode__(self):
         return str( self.student ) + " " + str( self.semester )
-    

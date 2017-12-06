@@ -17,29 +17,29 @@ class AddStudentToGroupTest(TestCase):
     fixtures =  ['fixtures__users', 'fixtures__courses']
 
     def setUp(self):
-    	"""
-    	EXERCISE_GROUP:
-	    	"fields": {
-	            "limit": 120,
-	            "type": "2",
-	            "teacher": 3,
-	            "course": 1
-	        }
-	    LECTURE_GROUPS:
-		    "fields": {
-	            "limit": 120,
-	            "type": "1",
-	            "teacher": 3,
-	            "course": 1
-	        },
-   		    "fields": {
-	            "limit": 100,
-	            "type": "1",
-	            "teacher": 3,
-	            "course": 1
-	        }
+        """
+        EXERCISE_GROUP:
+                "fields": {
+                    "limit": 120,
+                    "type": "2",
+                    "teacher": 3,
+                    "course": 1
+                }
+            LECTURE_GROUPS:
+                    "fields": {
+                    "limit": 120,
+                    "type": "1",
+                    "teacher": 3,
+                    "course": 1
+                },
+                    "fields": {
+                    "limit": 100,
+                    "type": "1",
+                    "teacher": 3,
+                    "course": 1
+                }
 
-    	"""
+        """
         self.user = User.objects.get(id=5)
         self.exercise_group = Group.objects.get(id=1)
         self.lecture_group = Group.objects.get(id=3)
@@ -50,9 +50,9 @@ class AddStudentToGroupTest(TestCase):
         self.assertRaises(NonStudentException, Record.add_student_to_group, self.user, self.exercise_group)
 
     def testWithInactiveStudent(self):
-    	self.user.student.status = 1
-    	self.user.student.save()
-    	self.assertRaises(InactiveStudentException, Record.add_student_to_group, self.user, self.exercise_group)
+        self.user.student.status = 1
+        self.user.student.save()
+        self.assertRaises(InactiveStudentException, Record.add_student_to_group, self.user, self.exercise_group)
 
     def testWithoutGivenGroup(self):
         self.exercise_group.delete()
@@ -115,15 +115,15 @@ class RemoveStudentFromGroupTest(TestCase):
         self.assertEqual(Record.objects.count(), 0)
 
     def testAfterRecordsClosing(self):
-    	semester = self.group.course.semester
-    	semester.semester_ending = datetime.now().date() + timedelta(days=1)
-    	semester.records_closing = datetime.now().date() - timedelta(days=1)
-    	semester.save()
-    	self.assertTrue(semester.is_current_semester())
-    	self.assertRaises(RecordsNotOpenException, Record.remove_student_from_group, self.user, self.group)
+        semester = self.group.course.semester
+        semester.semester_ending = datetime.now().date() + timedelta(days=1)
+        semester.records_closing = datetime.now().date() - timedelta(days=1)
+        semester.save()
+        self.assertTrue(semester.is_current_semester())
+        self.assertRaises(RecordsNotOpenException, Record.remove_student_from_group, self.user, self.group)
 
     def testRemoveStudentFromGroup(self):
-    	self.assertEqual(Record.objects.count(), 1)
+        self.assertEqual(Record.objects.count(), 1)
         Record.remove_student_from_group(self.user, self.group)
         self.assertEqual(Record.objects.count(), 0)
 
@@ -155,10 +155,10 @@ class GetGroupsForStudentTest(TestCase):
     fixtures =  ['fixtures__users', 'fixtures__courses']
 
     def setUp(self):
-    	"""
-    	lecture_group_2 and exercise_group belong to same course
-    	lecture_group_2 belongs to different course
-    	"""
+        """
+        lecture_group_2 and exercise_group belong to same course
+        lecture_group_2 belongs to different course
+        """
         self.user = User.objects.get(id=5)
         self.lecture_group_1 = Group.objects.get(id=3)
         self.lecture_group_2 = Group.objects.get(id=5)
@@ -271,11 +271,11 @@ class MoveStudentFromQueueToGroup(TestCase):
         self.assertEqual(Queue.objects.filter(student=self.student_first_in_queue.id, group=self.full_group.id).count(), 0)
 
     def testWithNoFreePlaceInGroup(self):
-    	self.assertEqual(Record.objects.filter(group=self.congested_group.id).count(), self.congested_group.limit + 1)
-    	queue_count_before = Queue.objects.filter(group=self.congested_group.id).count()
-    	Record.remove_student_from_group(self.student_to_remove, self.congested_group)
-    	queue_count_after = Queue.objects.filter(group=self.congested_group.id).count()
-    	self.assertEqual(queue_count_before, queue_count_after)
+        self.assertEqual(Record.objects.filter(group=self.congested_group.id).count(), self.congested_group.limit + 1)
+        queue_count_before = Queue.objects.filter(group=self.congested_group.id).count()
+        Record.remove_student_from_group(self.student_to_remove, self.congested_group)
+        queue_count_after = Queue.objects.filter(group=self.congested_group.id).count()
+        self.assertEqual(queue_count_before, queue_count_after)
 
     def testRemoveStudentLowerPriorityRecords(self):
         self.assertEqual(Queue.objects.filter(student=self.student_first_in_queue.id, group=self.same_type_group.id).count(), 1)
@@ -411,12 +411,12 @@ class RemoveStudentFromQueue(TestCase):
         self.assertRaises(AlreadyNotAssignedException, Queue.remove_student_from_queue, self.student1.id, self.group.id)
 
     def testAfterRecordsClosing(self):
-    	semester = self.group.course.semester
-    	semester.semester_ending = datetime.now().date() + timedelta(days=1)
-    	semester.records_closing = datetime.now().date() - timedelta(days=1)
-    	semester.save()
-    	self.assertTrue(semester.is_current_semester())
-    	self.assertRaises(RecordsNotOpenException, Queue.remove_student_from_queue, self.user.id, self.group.id)
+        semester = self.group.course.semester
+        semester.semester_ending = datetime.now().date() + timedelta(days=1)
+        semester.records_closing = datetime.now().date() - timedelta(days=1)
+        semester.save()
+        self.assertTrue(semester.is_current_semester())
+        self.assertRaises(RecordsNotOpenException, Queue.remove_student_from_queue, self.user.id, self.group.id)
 
     def testRemoveStudentFromQueue(self):
         self.assertEqual(Queue.objects.filter(group=self.group.id).count(), 1)
@@ -479,5 +479,3 @@ class RemoveStudentLowPriorityRecords(TestCase):
     def testRemoveStudentLowPriorityRecords(self):
         Queue.remove_student_low_priority_records(self.student2.id, self.group2.id,10)
         self.assertEqual(Queue.objects.filter(group=101, student=self.student2).count(), 0)
-
-

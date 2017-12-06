@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
 from django.db.models.query import EmptyQuerySet
-from django.utils.encoding import smart_unicode
 
 from .event import Event
 from .specialreservation import SpecialReservation
@@ -195,6 +194,4 @@ class Term(models.Model):
         return conflicts
 
     def __unicode__(self):
-        return '{0:s}: {1:s} - {2:s}'.format(smart_unicode(self.day),
-                                             smart_unicode(self.start),
-                                             smart_unicode(self.end))
+        return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)

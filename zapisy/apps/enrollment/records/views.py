@@ -83,7 +83,7 @@ def set_enrolled(request, method):
     """
     # Used to roll the transaction back if an error occurrs.
     savept = transaction.savepoint()
-    
+
     from django.db.models.query import QuerySet
     is_ajax = (method == '.json')
     message_context = None if is_ajax else request
@@ -122,7 +122,7 @@ def set_enrolled(request, method):
         result, messages_list = group.enroll_student(student)
     else:
         result, messages_list = group.remove_student(student)
-        
+
     if result:
         run_rearanged(result, group)
     else:
@@ -130,10 +130,10 @@ def set_enrolled(request, method):
 
     if is_ajax:
         message = ', '.join(messages_list)
-        
+
         if result:
             return AjaxSuccessMessage(message, prepare_group_data(group.course, student))
-        
+
         else:
             return AjaxFailureMessage.auto_render('SetEnrolledFailed',
                 message, message_context)

@@ -66,7 +66,7 @@ class Preference(models.Model):
     """
     employee   = models.ForeignKey(Employee, verbose_name='pracownik')
 
-    hidden     = models.BooleanField(default=False, 
+    hidden     = models.BooleanField(default=False,
                                      verbose_name='ukryte')
 
     proposal   = models.ForeignKey(CourseEntity, verbose_name='propozycja')
@@ -85,31 +85,31 @@ class Preference(models.Model):
     seminar        = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
                                      verbose_name='seminarium')
 
-    
+
     class Meta:
         verbose_name = 'preferencja'
         verbose_name_plural = 'preferencje'
-    
+
     def __unicode__(self):
         rep = ''.join([self.employee.user.get_full_name(),
                        ': ',
                        self.proposal.name])
         return rep
-    
+
     def hide(self):
         """
             Hides this preference in a default employee's view.
         """
         self.hidden = True
         self.save()
-    
+
     def unhide(self):
         """
             Unhides this preference in a default employee's view.
         """
         self.hidden = False
         self.save()
-    
+
     def set_preference(self, **kwargs):
         """
             Sets employee's preferences.

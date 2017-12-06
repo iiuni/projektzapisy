@@ -13,7 +13,7 @@ class Command(BaseCommand):
     help = 'Tworzy ankiety dla semestru. W przypadku braku argumentu bierze aktualny.'
 
     def handle(self, *args, **options):
-	from apps.enrollment.courses.models.semester import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         if len(args) > 0:
             semester  = Semester.objects.get(id=args[0])
@@ -58,14 +58,14 @@ class Command(BaseCommand):
                     poll.save()
 
                     if 'sections' in t:
-                            sections = t['sections']
+                        sections = t['sections']
 
-                            for section in sections:
-                                pollSection = SectionOrdering()
-                                pollSection.poll = poll
-                                pollSection.position = section.pk
-                                pollSection.section = section
-                                pollSection.save()
+                        for section in sections:
+                            pollSection = SectionOrdering()
+                            pollSection.poll = poll
+                            pollSection.position = section.pk
+                            pollSection.section = section
+                            pollSection.save()
 
             else:
                 poll = Poll()
@@ -79,11 +79,11 @@ class Command(BaseCommand):
                 poll.save()
 
                 if 'sections' in t:
-                        sections = t['sections']
+                    sections = t['sections']
 
-                        for section in sections:
-                            pollSection = SectionOrdering()
-                            pollSection.poll = poll
-                            pollSection.position = section.pk
-                            pollSection.section = section
-                            pollSection.save()
+                    for section in sections:
+                        pollSection = SectionOrdering()
+                        pollSection.poll = poll
+                        pollSection.position = section.pk
+                        pollSection.section = section
+                        pollSection.save()

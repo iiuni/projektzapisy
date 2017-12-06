@@ -11,15 +11,14 @@ class PrivateKey( models.Model ):
         verbose_name        = 'klucz prywatny'
         verbose_name_plural = 'klucze prywatne'
         app_label           = 'ticket_create'
-        
+
     def __unicode__( self ):
         return "Klucz prywatny: " + str( self.poll )
-        
+
     def sign_ticket( self, ticket ):
         key     = RSA.importKey( self.private_key )
         return key.sign( ticket, 0 )
-        
+
     def verify_signature( self, ticket, signed_ticket ):
         key     = RSA.importKey( self.private_key )
         return key.verify( ticket, signed_ticket )
-

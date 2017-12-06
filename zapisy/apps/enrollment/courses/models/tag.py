@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.utils.encoding import smart_unicode
 
 
 class Tag(models.Model):
@@ -14,7 +13,7 @@ class Tag(models.Model):
         app_label = 'courses'
 
     def __unicode__(self):
-        return smart_unicode(self.short_name) + ' (' + smart_unicode(self.full_name) + ')'
+        return "{0} ({1})".format(self.short_name, self.full_name)
 
     def serialize_for_json(self):
         return {

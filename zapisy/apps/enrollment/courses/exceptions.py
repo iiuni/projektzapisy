@@ -9,7 +9,7 @@ class NonSemesterException(Exception):
 class MoreThanOneCurrentSemesterException(Exception):
     """is thrown when two or more semesters take place in the same time"""
     pass
-  
+
 class MoreThanOneSemesterWithOpenRecordsException(Exception):
     """is thrown when enrollments for more than one semester are open in the same time"""
     pass

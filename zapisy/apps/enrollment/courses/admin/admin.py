@@ -23,7 +23,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = '__all__' 
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CourseForm, self).__init__(*args, **kwargs)
@@ -38,7 +38,7 @@ class CourseEntityForm(forms.ModelForm):
 
     class Meta:
         model = CourseEntity
-        fields = '__all__' 
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CourseEntityForm, self).__init__(*args, **kwargs)
@@ -89,12 +89,12 @@ class CourseAdmin(admin.ModelAdmin):
             return None
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(CourseAdmin, self).get_queryset(request)
-       return qs.select_related('semester')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(CourseAdmin, self).get_queryset(request)
+        return qs.select_related('semester')
 
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('number', 'capacity', 'building')
@@ -169,12 +169,12 @@ class CourseEntityAdmin(TranslationAdmin):
     inlines = [PointsInline, TagsInline]
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(CourseEntityAdmin, self).get_queryset(request)
-       return qs.select_related('owner', 'owner__user', 'type')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(CourseEntityAdmin, self).get_queryset(request)
+        return qs.select_related('owner', 'owner__user', 'type')
 
 class TermInline(admin.TabularInline):
     model = Term
@@ -183,7 +183,7 @@ class TermInline(admin.TabularInline):
 class RecordInlineForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = '__all__' 
+        fields = '__all__'
 
     # def save(self, commit=True):
     #
@@ -225,7 +225,7 @@ class RecordInline(admin.TabularInline):
 class QueuedInlineForm(forms.ModelForm):
     class Meta:
         model = Queue
-        fields = '__all__' 
+        fields = '__all__'
 
     # def save(self, commit=True):
     #     queue = super(QueuedInlineForm, self).save(commit=False)
@@ -362,12 +362,12 @@ class GroupAdmin(admin.ModelAdmin):
         return super(GroupAdmin,self).changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(GroupAdmin, self).get_queryset(request)
-       return qs.select_related('teacher', 'teacher__user', 'course', 'course__semester').prefetch_related('term')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(GroupAdmin, self).get_queryset(request)
+        return qs.select_related('teacher', 'teacher__user', 'course', 'course__semester').prefetch_related('term')
 
     class Media:
         css = {
@@ -384,12 +384,12 @@ class TypeAdmin(admin.ModelAdmin):
 class CourseDescriptionForm(forms.ModelForm):
     class Meta:
         model = CourseDescription
-        widgets = { 
+        widgets = {
             'description_pl': forms.Textarea(attrs={'class': 'tinymce'}),
             'description_en': forms.Textarea(attrs={'class': 'tinymce'}),
             'requirements': FilteredSelectMultiple("wymagania", is_stacked=False)
         }
-        fields = '__all__' 
+        fields = '__all__'
 
 
 class CourseDescriptionAdmin(TranslationAdmin):

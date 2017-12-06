@@ -122,7 +122,7 @@ class Group(models.Model):
 
 
     def get_terms_as_string(self):
-      return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(), x.start_time.hour, x.end_time.hour) for x in self.term.all()])
+        return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(), x.start_time.hour, x.end_time.hour) for x in self.term.all()])
     get_terms_as_string.short_description = 'Terminy zajęć'
 
     def remove_from_queued_counter(self, student):
@@ -182,14 +182,14 @@ class Group(models.Model):
 
         from apps.enrollment.records.models import Record, Queue
         from apps.enrollment.courses.models import Semester
-        
+
         # admins are always allowed to remove students
         if not is_admin:
             semester = Semester.objects.get_next()
-        
+
             if semester.is_closed():
                 return False, ['Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
-            
+
             elif not semester.can_remove_record() and not self.has_student_in_queue(student):
                 return False, ['Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.']
 
@@ -286,10 +286,10 @@ class Group(models.Model):
             return False, ["Zapisy na ten przedmiot są dla Ciebie zamknięte"]
 
         semester = Semester.objects.get_next()
-      
+
         if semester.is_closed():
             return False, ['Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.']
-        
+
         current_limit = semester.get_current_limit()
 
         if not student.get_points_with_course(self.course) <= current_limit:
@@ -475,7 +475,7 @@ class Group(models.Model):
             employee.teacher = employee.pk in teachers
 
         return employees
-    
+
     def has_student_in_queue(self, student):
         from apps.enrollment.records.models import Queue
         return Queue.objects.filter(student=student, group=self).count() != 0
@@ -484,7 +484,7 @@ class Group(models.Model):
         student=None, employee=None):
         """ Dumps this group state to form readable by JavaScript """
         zamawiany = student and student.is_zamawiany()
-        
+
         data = {
             'id': self.pk,
             'type': int(self.type),
@@ -536,10 +536,10 @@ class Group(models.Model):
 
     def get_absolute_url(self):
         return reverse('records-group', args=[self.id])
-    
-    
-    
-    
+
+
+
+
 
 def log_add_group(sender, instance, created, **kwargs):
     if Group.disable_update_signal:
@@ -553,9 +553,9 @@ def log_add_group(sender, instance, created, **kwargs):
         kod_grupy = group.id
         kod_przed_sem = group.course.id
         teacher_name_array = (group.teacher and group.teacher.user.get_full_name() or "Nieznany prowadzący").split(" ")
-	kod_uz = teacher_name_array[0]
-	if teacher_name_array[0] != teacher_name_array[-1]:
-		kod_uz += " " + teacher_name_array[-1]
+        kod_uz = teacher_name_array[0]
+        if teacher_name_array[0] != teacher_name_array[-1]:
+            kod_uz += " " + teacher_name_array[-1]
         max_osoby = group.limit
         rodzaj_zajec = GROUP_TYPE_MAPPING[group.type]
         zamawiane_bonus = group.limit_zamawiane

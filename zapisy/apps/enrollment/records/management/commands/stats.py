@@ -47,4 +47,3 @@ class Command(BaseCommand):
             groups = Group.objects.filter(course__semester=semester)
             for g in groups:
                 print(str(g.id) + ' ' + g.get_type_display())
-

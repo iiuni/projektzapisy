@@ -6,6 +6,6 @@ class BaseQuestion( models.Model ):
     description = models.TextField( verbose_name = 'opis', blank = True, null=True )
     class Meta:
         abstract = True
-        
+
     def __unicode__( self ):
         return str( self.content )

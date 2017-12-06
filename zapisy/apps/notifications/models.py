@@ -205,4 +205,3 @@ class Notification(object):
         subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
         _send_to_users(Employee.get_actives(), notification, subject, context)
         _send_to_users(Student.get_active_students(), notification, subject, context)
-

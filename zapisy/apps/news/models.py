@@ -42,7 +42,7 @@ class NewsManager(models.Manager):
         """
             If news doesn\'t exist the first page is returned
         """
-	ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
+        ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
         if not ids.filter(pk=news_id).exists():
             return 1
         return ((ids.count()-1)/settings.NEWS_PER_PAGE) + 1

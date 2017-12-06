@@ -14,12 +14,12 @@ class StudentGradedAdmin( admin.ModelAdmin ):
     list_filter = ('semester',)
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(StudentGradedAdmin, self).get_queryset(request)
-       return qs.select_related('semester', 'student', 'student__user')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(StudentGradedAdmin, self).get_queryset(request)
+        return qs.select_related('semester', 'student', 'student__user')
 
 
 class UsedTicketStampAdmin( admin.ModelAdmin ):
@@ -37,4 +37,3 @@ admin.site.register( PublicKey )
 admin.site.register( PrivateKey, PrivateKeyAdmin )
 admin.site.register( UsedTicketStamp, UsedTicketStampAdmin )
 admin.site.register( StudentGraded, StudentGradedAdmin )
-

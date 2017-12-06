@@ -70,7 +70,7 @@ class Semester( models.Model ):
 
     def can_remove_record(self):
         return self.records_ending is None or datetime.now() <= self.records_ending
-    
+
     def is_closed(self):
         return self.records_closing is not None and self.records_closing <= datetime.now()
 
@@ -290,7 +290,7 @@ class Semester( models.Model ):
 
 class Freeday(models.Model):
     day = models.DateField(verbose_name='dzień wolny', unique=True)
-    
+
     @classmethod
     def is_free(cls, date):
         """

@@ -6,7 +6,7 @@ register = template.Library()
 @register.filter
 def as_divs_with_errors(obj, errs):
     return obj.as_divs(errs)
-    
+
 @register.filter
 def get_value(obj, key):
     return obj[ key ]

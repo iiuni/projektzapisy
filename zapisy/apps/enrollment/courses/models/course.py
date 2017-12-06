@@ -4,7 +4,6 @@ from datetime import date
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.utils.encoding import smart_unicode
 from django.utils.translation import get_language
 from django.db import models
 from django.db.models import Q
@@ -176,7 +175,7 @@ class CourseEntity(models.Model):
         """
         if hours1 is None and hours2 is None:
             return None
-        
+
         return (hours1 or 0) + (hours2 or 0)
 
     def get_lectures(self):
@@ -284,7 +283,7 @@ class CourseEntity(models.Model):
     @cache_result
     def get_all_tags(self):
         return list(self.tags.all())
-    
+
     @cache_result
     def get_all_tags_with_weights(self):
         """
@@ -438,10 +437,10 @@ class CourseEntity(models.Model):
                 .exclude(status=CourseEntity.STATUS_FOR_REVIEW) \
                 .select_related('type', 'owner', 'owner__user') \
                 .order_by('name_pl')
-            
+
         if is_authenticated:
             return result
-                
+
         else:
             return result.exclude(status=CourseEntity.STATUS_WITHDRAWN)
 
@@ -699,7 +698,7 @@ class Course(models.Model):
         if opening_time is None:
             return False
         return opening_time < datetime.datetime.now()
-        
+
 
     def is_recording_open_for_student(self, student):
         """
@@ -792,7 +791,7 @@ class Course(models.Model):
         else:
             is_recording_open = False
         data['is_recording_open'] = is_recording_open
-            
+
         # TODO: why do we have this field defined in the model
         # if the CourseEntity object has it as well? What's the difference?
         data['english'] = self.english
@@ -895,9 +894,9 @@ class CourseDescription(models.Model):
         app_label = 'courses'
 
     def __unicode__(self):
-        title = smart_unicode(self.created) + " - "
+        title = self.created + " - "
         if self and self.author:
-            title = title + smart_unicode(self.author)
+            title = title + self.author
         return title
 
     def save_as_copy(self):

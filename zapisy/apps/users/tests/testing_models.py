@@ -62,32 +62,32 @@ from datetime import datetime, timedelta
 #         groups_term_id = map(lambda x: x.id, groups_term_id)
 
 #         for g in groups_id:
-#         	self.assert_(g in [1, 3, 5])
+#               self.assert_(g in [1, 3, 5])
 #         for s in groups_course:
-#         	self.assert_(s in [course_1, course_1])
+#               self.assert_(s in [course_1, course_1])
 #         for t in groups_term_id:
-#         	self.assert_(t in [term_1, term_2])
+#               self.assert_(t in [term_1, term_2])
 
 # class StudentScheduleTest(TestCase):
 #     fixtures =  ['fixtures__users', 'fixtures__courses']
 
 #     def setUp(self):
-#     	"""
-#     	EXERCISE_GROUP:
-# 	    	"fields": {
-# 	            "limit": 120,
-# 	            "type": "2",
-# 	            "teacher": 3,
-# 	            "course": 1
-# 	        }
-# 	    LECTURE_GROUP:
-# 		    "fields": {
-# 	            "limit": 120,
-# 	            "type": "1",
-# 	            "teacher": 3,
-# 	            "course": 1
-# 	        }
-#     	"""
+#       """
+#       EXERCISE_GROUP:
+#               "fields": {
+#                   "limit": 120,
+#                   "type": "2",
+#                   "teacher": 3,
+#                   "course": 1
+#               }
+#           LECTURE_GROUP:
+#                   "fields": {
+#                   "limit": 120,
+#                   "type": "1",
+#                   "teacher": 3,
+#                   "course": 1
+#               }
+#       """
 #         self.user = User.objects.get(id=5)
 #         self.exercise_group = Group.objects.get(id=1)
 #         self.lecture_group = Group.objects.get(id=3)
@@ -121,11 +121,11 @@ from datetime import datetime, timedelta
     #     groups_term_id = map(lambda x: x.id, groups_term_id)
 
     #     for g in groups_id:
-    #     	self.assert_(g in [self.exercise_group.id, self.lecture_group.id, self.lecture_group_2.id])
+    #           self.assert_(g in [self.exercise_group.id, self.lecture_group.id, self.lecture_group_2.id])
     #     for s in groups_course:
-    #     	self.assert_(s in [course_1, course_1])
+    #           self.assert_(s in [course_1, course_1])
     #     for t in groups_term_id:
-    #     	self.assert_(t in [term_1, term_2])
+    #           self.assert_(t in [term_1, term_2])
 
 class IBANTest(TestCase):
     def setUp(self):
@@ -178,7 +178,7 @@ class MailsToStudentsLinkTestCase(TestCase):
         for sql_call in sql_calls:
             cursor = connection.cursor()
             cursor.execute(sql_call)
-    
+
         cls.MSG_HEADER = 'Wyślij wiadomość do studentów'
         regular_user = User.objects.create_user('regular_user', 'user@user.com', 'password')
         Student.objects.create(user=regular_user)
@@ -192,7 +192,7 @@ class MailsToStudentsLinkTestCase(TestCase):
         from apps.enrollment.courses.tests.factories import SemesterFactory
         summer_semester = SemesterFactory(type=Semester.TYPE_SUMMER)
         summer_semester.full_clean()
-        
+
     @classmethod
     def tearDownTestData(cls):
         sql_calls = [
@@ -235,7 +235,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
         s = Student.objects.create(user=student_user, matricula=str(randint(100000, 200000)))
         student_user.save()
         s.save()
-        
+
         Semester.objects.all().delete()
         cls.semester = Semester(
             visible=True,
@@ -258,7 +258,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
             cursor = connection.cursor()
             cursor.execute(sql_call)
             connection.commit()
-    
+
     def test_my_profile_contains_records_closing_time(self):
         self.semester.records_ending = datetime.now()+timedelta(days=10)
         self.semester.save()

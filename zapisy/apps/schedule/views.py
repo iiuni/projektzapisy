@@ -77,7 +77,7 @@ def edit_event(request, event_id=None):
     form = EventForm(data=request.POST or None, instance=event, user=request.user)
     formset = TermFormSet(request.POST or None, instance=event)
     reservation = event.reservation
-    
+
     if form.is_valid():
         event = form.save(commit=False)
         if not event.id:

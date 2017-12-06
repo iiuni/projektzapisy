@@ -131,7 +131,7 @@ def connections_choice( request ):
                 return render_to_response( "grade/ticket_create/tickets_save.html", data, context_instance = RequestContext( request ))
 
         else:
-           pass
+            pass
 #             form = PollCombineForm( polls = groupped_polls )
 
         data = { 'polls':polls_lists, 'grade' : grade, 'general_polls': general_polls}

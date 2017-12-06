@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.utils.encoding import smart_unicode
 from apps.enrollment.courses.models import CourseEntity
 
 class LearningMethod(models.Model):
     name = models.CharField(max_length=250, verbose_name='metoda kształcenia')
-    
+
     class Meta:
         verbose_name = 'Metoda kształcenia'
         verbose_name_plural = 'Metody kształcenia'
         app_label = 'proposal'
 
     def __unicode__(self):
-        return smart_unicode(self.name)
+        return self.name
 
 studies_types = (('isim','isim'), ('inf','informatyka'), ('both','informatyka, ISIM'))
 year_choices = [(x, str(x)) for x in range(1, 6)]
@@ -48,18 +47,17 @@ class Syllabus(models.Model):
         app_label = 'proposal'
 
     def __unicode__(self):
-        return smart_unicode(self.name)
+        return self.name
 
 
 class StudentWork(models.Model):
-	name = models.CharField(max_length=250, verbose_name='nazwa aktywności')
-	hours = models.IntegerField(verbose_name='liczba godzin')
-	syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
+    name = models.CharField(max_length=250, verbose_name='nazwa aktywności')
+    hours = models.IntegerField(verbose_name='liczba godzin')
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
 
-	class Meta:
-		verbose_name = 'Praca własna studenta'
-		app_label = 'proposal'
+    class Meta:
+        verbose_name = 'Praca własna studenta'
+        app_label = 'proposal'
 
-	def __unicode__(self):
-		return smart_unicode(self.name)
-
+    def __unicode__(self):
+        return self.name

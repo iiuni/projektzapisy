@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.utils.encoding import smart_unicode
 
 
 class Effects(models.Model):
@@ -13,7 +12,7 @@ class Effects(models.Model):
         app_label = 'courses'
 
     def __unicode__(self):
-        return smart_unicode(self.group_name)
+        return self.group_name
 
     def serialize_for_json(self):
         return {

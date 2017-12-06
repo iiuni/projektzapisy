@@ -18,17 +18,17 @@ class SystemStateAdminForm( ModelForm ):
     """
     class Meta:
         model = SystemState
-        fields = '__all__' 
-        
+        fields = '__all__'
+
     def clean_max_points(self):
         """
             Max points per courses validation
         """
         data = self.cleaned_data['max_points']
-        
+
         if data < 1:
             raise ValidationError("Musi wynosić co najmniej 1.")
-            
+
         return data
 
 
@@ -39,13 +39,13 @@ class SingleVoteAdmin( admin.ModelAdmin ):
     search_fields = ('student__matricula', 'student__user__first_name', 'student__user__last_name', 'student__user__username', 'entity__name')
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(SingleVoteAdmin, self).get_queryset(request)
-       return qs.select_related('student', 'student__user', 'course', 'course__semester', 'course__type', 'entity',
-           'proposal', 'state')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(SingleVoteAdmin, self).get_queryset(request)
+        return qs.select_related('student', 'student__user', 'course', 'course__semester', 'course__type', 'entity',
+            'proposal', 'state')
 
 class StateAdmin( admin.ModelAdmin ):
     """

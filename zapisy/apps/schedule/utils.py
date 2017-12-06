@@ -65,4 +65,3 @@ class ScheduleAdapter(EventAdapter):
             return None
 
         return super(EventAdapter, self).get_url(item)
-

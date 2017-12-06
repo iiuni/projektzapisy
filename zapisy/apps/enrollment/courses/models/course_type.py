@@ -2,7 +2,7 @@
 
 from django.db import models
 import json
-     
+
 class Type(models.Model):
     """types of courses"""
     name = models.CharField(max_length=30, verbose_name='rodzaj zajec', default="", unique=False)
@@ -21,8 +21,8 @@ class Type(models.Model):
 
     default_ects = models.IntegerField(verbose_name='Punkty ECTS', default=6)
 
-	#TODO: dodać unique na parę (meta_type, name)
-    
+        #TODO: dodać unique na parę (meta_type, name)
+
     @staticmethod
     def get_all_types():
         return Type.objects.select_related('group').all()
@@ -30,7 +30,7 @@ class Type(models.Model):
     @staticmethod
     def get_all_for_jsfilter():
         return Type.objects.select_related('group').order_by('name').all()
-    
+
     def get_name(self):
         self.name
 

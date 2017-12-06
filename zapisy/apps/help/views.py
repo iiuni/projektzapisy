@@ -45,4 +45,3 @@ def admin( request ):
 @employee_required
 def employee( request ):
     return render_to_response('help/employee.html', {}, context_instance = RequestContext(request))
-

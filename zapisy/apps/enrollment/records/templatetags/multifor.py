@@ -32,7 +32,7 @@ class ForNode(Node):
         else:
             self.nodelist_empty = nodelist_empty
         if zip_func is not None:
-	        self.zip = zip_func
+            self.zip = zip_func
 
     def __repr__(self):
         def make_rev_txt(revd):
@@ -141,7 +141,7 @@ def do_for(parser, token, ForNode=ForNode):
             for var in loopvars:
                 if not var or ' ' in var:
                     raise TemplateSyntaxError("'for' tag received an "
-                                              "invalid argument: %s" 
+                                              "invalid argument: %s"
                                               % token.contents)
 
         sequence_list.append(parser.compile_filter(bits[in_index+1]))

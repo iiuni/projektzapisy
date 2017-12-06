@@ -66,11 +66,11 @@ class _CheckProfileOr403(object):
         for k in view_func.__dict__:
             if k not in self.__dict__:
                 self.__dict__[k] = view_func.__dict__[k]
-    
+
     def __get__(self, obj, cls=None):
         view_func = self.view_func.__get__(obj, cls)
         return _CheckProfileOr403(view_func, self.test_func, self.redirect_to)
-    
+
     def __call__(self, request, *args, **kwargs):
         if self.test_func(request.user):
             return self.view_func(request, *args, **kwargs)
@@ -81,4 +81,3 @@ class _CheckProfileOr403(object):
             tup = login_url, REDIRECT_FIELD_NAME, path
             self.redirect_to = '%s?%s=%s' % tup
         return redirect(self.redirect_to)
-

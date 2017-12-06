@@ -33,19 +33,19 @@ class SingleVote ( models.Model ):
 
     free_vote = models.BooleanField(default=False, verbose_name='Głos nie liczy się do limitu')
     # powyższe pole służy do odróżnienia np glosow dopisanych, ktorych nie chcemy liczyc do limitu
-    	
+
     class Meta:
         verbose_name        = 'pojedynczy głos'
         verbose_name_plural = 'pojedyncze głosy'
         app_label           = 'vote'
         ordering            = ('student', 'entity', '-value' )
-        
+
         unique_together = ('course', 'state', 'student')
-        
+
     def __unicode__( self ):
         return  '[' + str(self.state.year) + ']Głos użytkownika: ' + \
-				self.student.user.username + '; ' + self.entity.name + \
-				'; ' + str(self.value)
+                                self.student.user.username + '; ' + self.entity.name + \
+                                '; ' + str(self.value)
 
     @staticmethod
     def clean_votes():

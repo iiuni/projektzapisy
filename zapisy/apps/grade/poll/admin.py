@@ -40,8 +40,8 @@ class PollAdmin(admin.ModelAdmin):
 class TemplateAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-       qs = super(TemplateAdmin, self).get_queryset(request)
-       return qs.select_related('studies_type', 'course', 'author', 'author__user')
+        qs = super(TemplateAdmin, self).get_queryset(request)
+        return qs.select_related('studies_type', 'course', 'author', 'author__user')
 
 
 #admin.site.register( Option )
@@ -59,4 +59,3 @@ admin.site.register( SavedTicket )
 #admin.site.register( SingleChoiceQuestionAnswer )
 #admin.site.register( MultipleChoiceQuestionAnswer )
 admin.site.register( Template, TemplateAdmin )
-

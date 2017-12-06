@@ -29,8 +29,8 @@ class Term(models.Model):
         verbose_name_plural = 'terminy'
         ordering  = ['dayOfWeek']
         app_label = 'courses'
-    
-    
+
+
     @staticmethod
     def get_all_in_semester(semester, student=None, employee=None):
         filtered = Term.objects.filter(group__course__semester=semester).extra(
@@ -39,7 +39,7 @@ class Term(models.Model):
                     JOIN courses_classroom
                     ON (courses_classroom.id = courses_term_classrooms.classroom_id)
                 WHERE courses_term.id=courses_term_classrooms.term_id),',')"""})
-        
+
         if student:
             from apps.enrollment.records.models import Record
             filtered = filtered.filter(group__id__in=\
@@ -51,11 +51,11 @@ class Term(models.Model):
                         values('group__pk', flat=True)).query.__str__() )
 
            """
-                
+
         if employee:
             from apps.enrollment.records.models import Record
             filtered = filtered.filter(group__teacher=employee)
-            
+
         return filtered.select_related('classroom', 'group', 'group__course', \
             'group__course__semester', 'group__course__entity',
             'group__course__entity__type', \
@@ -65,18 +65,18 @@ class Term(models.Model):
 
     def day_in_zero_base(self):
         return int(self.dayOfWeek)-1
-    
+
     def length_in_minutes(self):
         return (self.end_time.hour - self.start_time.hour)*60 + (self.end_time.minute - self.start_time.minute)
-    
+
     def time_from_in_minutes(self):
         "Returns number of minutes from start of day (midnight) to term beggining"""
-        return (self.start_time.hour)* 60 + (self.start_time.minute) 
+        return (self.start_time.hour)* 60 + (self.start_time.minute)
 
     def time_from(self):
         "Returns hourFrom in time format"""
         return self.start_time
-  
+
     def time_to(self):
         "Returns hourTo in time format"""
         return self.end_time
@@ -84,10 +84,10 @@ class Term(models.Model):
     def _convert_string_to_time(self, str):
         hour, minute = [int(x) for x in str.split('.')]
         return time(hour=hour, minute=minute)
-    
+
     def period_string(self):
         return "%s – %s" % (self.start_time.strftime("%H"), self.end_time.strftime("%H"))
-        
+
     def get_dayOfWeek_display_short(self):
         return { '1': 'pn', '2': 'wt', '3': 'śr', '4': 'cz', '5': 'pt', '6': 'so', '7': 'nd'}[self.dayOfWeek].decode('utf8')
 
@@ -106,7 +106,7 @@ class Term(models.Model):
         """
         return [{'group_id':x.group_id,'term_as_string': "%s %s-%s (s.%s)" % (x.get_dayOfWeek_display_short(), x.start_time.strftime("%H:%M"), x.end_time.strftime("%H:%M"), x.classrooms_as_string)} for x in Term.objects.filter(group__in=groups_ids).extra(select={'classrooms_as_string': """
                                     SELECT array_to_string(array(SELECT courses_classroom.number FROM courses_term_classrooms
-                                    JOIN courses_classroom 
+                                    JOIN courses_classroom
                                     ON (courses_classroom.id = courses_term_classrooms.classroom_id)
                                     WHERE courses_term.id=courses_term_classrooms.term_id),',')"""})]
 
@@ -187,7 +187,7 @@ def log_edit_term(sender, instance, **kwargs):
             newstring.append(term.classroom.number)
 
         term_format = '-'.join(newstring)
-        message = '[09] term for group <%s> has been updated from <%s> to <%s>' % (term.group.id, old_term_format.encode('utf-8'), term_format.encode('utf-8')) 
+        message = '[09] term for group <%s> has been updated from <%s> to <%s>' % (term.group.id, old_term_format.encode('utf-8'), term_format.encode('utf-8'))
         backup_logger.info(message)
     except Term.DoesNotExist:
         pass
@@ -201,9 +201,9 @@ def log_add_term(sender, instance, created, **kwargs):
         number = ''
     term_format = '-'.join([term.dayOfWeek,str(term.start_time),str(term.end_time),number])
     if created:
-        message = '[08] term <%s> for group <%s> has been created' % (term_format.encode('utf-8'), term.group.id) 
+        message = '[08] term <%s> for group <%s> has been created' % (term_format.encode('utf-8'), term.group.id)
         backup_logger.info(message)
-        
+
 def log_delete_term(sender, instance, **kwargs):
     return
     term = instance
@@ -212,13 +212,13 @@ def log_delete_term(sender, instance, **kwargs):
         words += term.classroom.number
     term_format = '-'.join(words)
     backup_logger.info('[10] term <%s> for group <%s> has been deleted' % (term_format.encode('utf-8'), term.group.id))
-            
-signals.pre_save.connect(log_edit_term, sender=Term)          
-signals.post_save.connect(log_add_term, sender=Term)                               
-signals.pre_delete.connect(log_delete_term, sender=Term)  
+
+signals.pre_save.connect(log_edit_term, sender=Term)
+signals.post_save.connect(log_add_term, sender=Term)
+signals.pre_delete.connect(log_delete_term, sender=Term)
 
 def recache(sender, **kwargs):
     mcache.clear()
-    
-signals.post_save.connect(recache, sender=Term)        
-signals.post_delete.connect(recache, sender=Term)	
+
+signals.post_save.connect(recache, sender=Term)
+signals.post_delete.connect(recache, sender=Term)

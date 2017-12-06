@@ -7,7 +7,7 @@ urlpatterns = [
 
     url(r'^tickets_enter$', views.tickets_enter, name='grade-poll-tickets-enter'),
     url(r'^polls/(?P<slug>[\w\-_]+)$', views.polls_for_user, name='grade-poll-polls-for-user'),
-    
+
     url(r'^poll_answer/(?P<slug>[\w\-_]+)/(?P<pid>[0-9]+)/$', views.poll_answer, name='grade-poll-poll-answer'),
     url(r'^end_grading/$', views.poll_end_grading, name='poll-end-grading'),
 
@@ -43,8 +43,8 @@ urlpatterns = [
     url(r'^managment/templates/use/$', views.use_templates, name='grade-poll-use-template'),
     url(r'^managment/templates/delete/$', views.delete_templates, name='grade-poll-delete_template'),
     url(r'^managment/edit_section/(?P<section_id>[1-9][0-9]*)/$', views.edit_section, name='grade-poll-edit-section'),
-    
+
     url(r'^autocomplete$', views.autocomplete, name='grade-poll-autocomplete'),
-    
+
     url(r'^get_section/(?P<section_id>[1-9][0-9]*)/$', views.get_section, name='grade-poll-get-section'),
 ]

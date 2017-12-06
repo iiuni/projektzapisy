@@ -15,7 +15,7 @@ def choicebox_is_on( value ):
 def get_questions_from_section_form( position, post ):
     question_data = {}
     question_id = "poll[question][" + str(position) +"]"
-    
+
     question_data[ 'position' ]     = position
     question_data[ 'type' ]         = post.get(question_id + "[type]")
     question_data[ 'content' ]      = post.get(question_id + "[title]")
@@ -24,7 +24,7 @@ def get_questions_from_section_form( position, post ):
     question_data[ 'choice_limit' ] = post.get(question_id + "[choiceLimit]", 0)
     question_data[ 'has_other' ]    = choicebox_is_on(post.get(question_id + "[hasOther]", False))
     question_data[ 'answers' ]      = []
-    
+
     hide_section = [int(x) for x in post.getlist(question_id + "[hideOn][]")]
     for i, a in enumerate( post.getlist(question_id + "[answers][]")):
         answer = {}
@@ -34,64 +34,64 @@ def get_questions_from_section_form( position, post ):
             question_data[ 'answers' ].append( answer )
 
     return question_data
-    
+
 def get_section_form_data( post ):
     data = {}
-    
+
     data[ 'title' ]       = post.get( "poll[title]" )
     data[ 'old_id' ]      = post.get( "old_id", None)
     data[ 'description' ] = post.get( "poll[description]" )
-    
+
     data[ 'has_leading_question' ] = choicebox_is_on(post.get("poll[leading]"))
     data[ 'questions' ] = []
-    
+
     questions = post.getlist( 'poll[question][order][]' )
     for position in questions:
         question_data = get_questions_from_section_form( position, post )
         data[ 'questions' ].append( question_data )
-    
+
     return data
 
 def validate_question_in_section_form( question ):
     errors = []
     if len( question[ 'content' ]) == 0:
         errors.append( "brak tekstu" )
-    
+
     if (question[ 'type' ] == 'single' or \
         question[ 'type' ] == 'multi') and \
        len( question[ 'answers' ]) == 0:
-           errors.append( "brak opcji" ) 
-    
+        errors.append( "brak opcji" )
+
     if question[ 'type' ] == 'multi':
         try:
             int( question[ 'choice_limit' ])
         except ValueError:
             if len( question[ 'choice_limit' ]) != 0:
                 errors.append( 'pole "Limit odpowiedzi" nie zawiera liczby' )
-    
+
     return errors
-    
+
 def validate_section_form( data ):
     errors = {}
-    
+
     if len(data[ 'title' ]) == 0:
         errors[ 'title' ] = ( "Niepoprawny tytuł sekcji" )
-    
+
     if not data[ 'questions' ]:
         errors[ 'content' ] = "Sekcja nie zawiera pytań"
     else:
         errors[ 'questions' ] = {}
         for question in data[ 'questions' ]:
-            question_errors = validate_question_in_section_form( question )            
+            question_errors = validate_question_in_section_form( question )
             if question_errors:
                 errors[ 'questions' ][ int(question[ 'position' ])] = question_errors
         if not errors[ 'questions' ]:
             del errors[ 'questions' ]
-        
+
     return errors
 
 def save_options( answers ):
-    options = []    
+    options = []
     hide_on = []
     for ans in answers:
         o         = Option()
@@ -101,11 +101,11 @@ def save_options( answers ):
         except:
             for o in options: o.delete()
             return None
-            
+
         options.append( o )
         if ans[ 'hide' ]: hide_on.append( o )
     return (options, hide_on)
-    
+
 def add_options( q, options ):
     for o in options:
         q.options.add( o )
@@ -116,7 +116,7 @@ def add_options( q, options ):
         q.delete()
         for o in options: o.delete()
         return False
- 
+
 def single_choice_question_save( section, leading, question ):
     q             = SingleChoiceQuestion()
     q.content     = question[ 'content' ]
@@ -126,14 +126,14 @@ def single_choice_question_save( section, leading, question ):
         q.save()
     except:
         return None
-    
+
     hide_on = None
     option_data = save_options( question[ 'answers' ])
     if option_data:
         options   = option_data[0]
         hide_on   = option_data[1]
         if not add_options( q, options ): return None
-    
+
     p          = SingleChoiceQuestionOrdering()
     p.question = q
     p.sections = section
@@ -143,7 +143,7 @@ def single_choice_question_save( section, leading, question ):
     except:
         q.delete()
         return None
-        
+
     if p.position == 0 and leading:
         p.is_leading = True
         p.hide_on    = hide_on
@@ -153,7 +153,7 @@ def single_choice_question_save( section, leading, question ):
             q.delete()
             for o in options: o.delete()
             return None
-    
+
     return (q, options, p)
 
 def multiple_choice_question_save( section, question ):
@@ -176,7 +176,7 @@ def multiple_choice_question_save( section, question ):
         q.save()
     except:
         return None
-        
+
     option_data = save_options( question[ 'answers' ])
     if option_data:
         options   = option_data[0]
@@ -184,7 +184,7 @@ def multiple_choice_question_save( section, question ):
     else:
         q.delete()
         return None
-   
+
     p          = MultipleChoiceQuestionOrdering()
     p.sections = section
     p.question = q
@@ -195,9 +195,9 @@ def multiple_choice_question_save( section, question ):
         q.delete()
         for o in options: o.delete()
         return None
-    
+
     return (q, options, p)
-    
+
 def open_question_save( section, question ):
     q         = OpenQuestion()
     q.content = question[ 'content' ]
@@ -215,17 +215,17 @@ def open_question_save( section, question ):
         q.delete()
         return None
     return (q, [], p)
-    
+
 def section_save( data ):
     section = Section()
     section.title       = data[ 'title' ]
     section.description = data[ 'description' ]
-    
+
     try:
         section.save()
     except:
         return False
-    
+
     questions = []
     options   = []
     positions = []
@@ -253,6 +253,5 @@ def section_save( data ):
         section = Section.objects.get(pk = data[ 'old_id' ] )
         section.deleted = True
         section.save()
-        
+
     return True
-            

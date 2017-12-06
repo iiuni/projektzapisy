@@ -16,7 +16,6 @@ from django import forms
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from tempfile import NamedTemporaryFile
 from django.template.response import TemplateResponse
-from django.utils.encoding import smart_unicode
 from apps.enrollment.courses.models import Course, Semester, Group, Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
@@ -132,7 +131,7 @@ def import_semester(request):
 
             try:
                 import_semester_schedule(xmlfile)
-    	    except Exception:
+            except Exception:
                 errormsg = str(exc_info()[0]) + ' ' + str(exc_info()[1]) + '\n\n'
                 errormsg += 'Traceback:\n'
                 errormsg += ''.join([str for str in format_tb(exc_info()[2])])
