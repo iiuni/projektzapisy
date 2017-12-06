@@ -45,7 +45,7 @@ class NewsManager(models.Manager):
         ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
         if not ids.filter(pk=news_id).exists():
             return 1
-        return ((ids.count()-1)/settings.NEWS_PER_PAGE) + 1
+        return ((ids.count() - 1) // settings.NEWS_PER_PAGE) + 1
 
     def get_published(self):
         """

@@ -218,7 +218,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.driver.get_screenshot_as_file("screenshot.png")
 
     def wait_for_pass(self, block, times=3):
-        for _ in xrange(1, times + 1):
+        for _ in range(1, times + 1):
             try:
                 return block()
             except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
@@ -381,9 +381,9 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
-        sum_points = sum(points.itervalues())
+        sum_points = sum(points.values())
 
-        for course_name, value in points.iteritems():
+        for course_name, value in points.items():
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
@@ -477,7 +477,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
-        for course_name, value in points.iteritems():
+        for course_name, value in points.items():
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
@@ -532,7 +532,7 @@ class NewSemesterTests(SeleniumTestCase):
         test_schedule_path = settings.BASE_DIR + '/test_schedule.txt'
         with open(test_schedule_path, 'w') as file:
             file.write(test_schedule)
-        print employees
+        print(employees)
         scheduleimport_run_test(
             test_schedule_path,
             courses,
@@ -601,8 +601,8 @@ class NewSemesterTests(SeleniumTestCase):
         }
 
         test_ectsimport = ''
-        for student, points in students_ects.iteritems():
-            for deg, ects in points.iteritems():
+        for student, points in students_ects.items():
+            for deg, ects in points.items():
                 test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
