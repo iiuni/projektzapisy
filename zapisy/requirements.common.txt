@@ -54,4 +54,4 @@ python-memcached==1.58
 # python-apt==0.7.100.1-squeeze1
 
 # On production, but one would need to find suitable version.
-xhtml2pdf==0.0.5
+xhtml2pdf==0.2b1
