@@ -37,7 +37,7 @@ python-dateutil==2.1
 # reportlab==2.6
 
 # On production: 0.8.1c, but this version has problems with installation
-vobject==0.8.2
+vobject==0.9.5
 
 python-memcached==1.58
 
