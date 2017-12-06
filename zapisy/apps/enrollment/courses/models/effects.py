@@ -12,7 +12,7 @@ class Effects(models.Model):
         app_label = 'courses'
 
     def __unicode__(self):
-        return self.group_name
+        return str(self.group_name)
 
     def serialize_for_json(self):
         return {

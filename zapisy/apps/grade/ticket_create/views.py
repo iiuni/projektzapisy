@@ -120,7 +120,7 @@ def connections_choice( request ):
                         message += str( reason )
                         message += "</li>"
                     message += "</ul>"
-                    messages.error( request, SafeUnicode( message ))
+                    messages.error( request, SafeText( message ))
                 data = { 'tickets' : to_plaintext( tickets_to_serve ),
                          'grade' : grade }
 

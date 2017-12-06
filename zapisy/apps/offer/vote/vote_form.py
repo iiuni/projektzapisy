@@ -8,7 +8,7 @@ from django                   import forms
 from django.core.exceptions   import ObjectDoesNotExist
 from django.db import connection
 from django.db.models import Sum
-from django.utils.safestring  import SafeUnicode
+from django.utils.safestring  import SafeText
 from apps.enrollment.courses.models.course import CourseEntity
 
 from apps.offer.vote.models import SystemState

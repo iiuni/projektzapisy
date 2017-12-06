@@ -3,7 +3,7 @@
     Forms used to apps.grade courses
 """
 from django                   import forms
-from django.utils.safestring  import SafeUnicode
+from django.utils.safestring  import SafeText
 from django.core.exceptions   import ValidationError, \
                                      ObjectDoesNotExist
 from django.core.validators   import MaxLengthValidator

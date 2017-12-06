@@ -13,7 +13,7 @@ class Tag(models.Model):
         app_label = 'courses'
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.short_name, self.full_name)
+        return str(self.short_name) + ' (' + str(self.full_name) + ')'
 
     def serialize_for_json(self):
         return {

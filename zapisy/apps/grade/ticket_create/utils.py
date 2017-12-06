@@ -6,7 +6,7 @@ from subprocess                              import *
 from string                                import whitespace
 
 from django.db.models                      import Q
-from django.utils.safestring               import SafeUnicode
+from django.utils.safestring               import SafeText
 
 from apps.enrollment.courses.models     import Course, \
                                                   Group
@@ -354,7 +354,7 @@ def to_plaintext( vtl ):
         res += str( t ) + " &#10;"
         res += str( st ) + " &#10;"
         res += "---------------------------------- &#10;"
-    return SafeUnicode( str( res ))
+    return SafeText( str( res ))
 
 def from_plaintext( tickets_plaintext ):
     pre_tickets = tickets_plaintext.split( '----------------------------------' )

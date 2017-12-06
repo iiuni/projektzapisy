@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db                         import models
-from django.utils.safestring           import SafeUnicode
+from django.utils.safestring           import SafeText
 
 from apps.users.models               import Employee, \
                                               Student, \
@@ -57,7 +57,7 @@ class Poll( models.Model ):
         if self.studies_type:
             res += sep + 'typ studiów: ' + str( self.studies_type )
 
-        return SafeUnicode( res )
+        return SafeText( res )
 
     def is_student_entitled_to_poll( self, student ):
         if self.group:
@@ -130,7 +130,7 @@ class Poll( models.Model ):
 
         res += str( " &#10;".join(PublicKey.objects.get( poll = self.pk ).public_key.split('\n')))
         res += '</td></tr>'
-        return SafeUnicode( res )
+        return SafeText( res )
 
     @staticmethod
     def get_polls_for_semester( semester = None):

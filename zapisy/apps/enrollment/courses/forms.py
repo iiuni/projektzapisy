@@ -93,13 +93,14 @@ class Parser(object):
         groups = []
 
         for line in file:
+            line = str(line)
             line = line.rstrip()
             if len(line) < 2:
                 continue
 
             elif line[1] != ' ':
                 if title and groups:
-                    result.append( {'name': title, 'groups': groups} )
+                    result.append( {'name': smart_str(title), 'groups': groups} )
                 title = self._parseTitle(line)
                 groups = []
             else:

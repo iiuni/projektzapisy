@@ -12,7 +12,7 @@ from django.http                       import HttpResponse, \
 from django.shortcuts                  import render_to_response, redirect
 from django.template                   import RequestContext
 from django.template.response import TemplateResponse
-from django.utils.safestring import SafeUnicode, mark_safe
+from django.utils.safestring import SafeText, mark_safe
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 
@@ -133,7 +133,7 @@ def delete_templates( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Template, 'templates[]')
         message = 'Usunięto ' + str(counter) + ' ' + declination_template(counter)
-        messages.info(request, SafeUnicode(message))
+        messages.info(request, SafeText(message))
 
     return HttpResponseRedirect(reverse('grade-poll-templates'))
 
@@ -469,7 +469,7 @@ def delete_sections( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Section, 'sections[]')
         message = 'Usunięto ' + str(counter) + ' ' + declination_section(counter)
-        messages.info(request, SafeUnicode(message))
+        messages.info(request, SafeText(message))
 
     return HttpResponseRedirect(reverse('grade-poll-sections-list'))
 
@@ -572,7 +572,7 @@ def delete_polls( request ):
     if request.method == 'POST':
         counter = delete_objects(request, Poll, 'polls[]')
         message = 'Usunięto ' + str(counter) + ' ' + declination_poll(counter)
-        messages.info(request, SafeUnicode(message))
+        messages.info(request, SafeText(message))
 
     return HttpResponseRedirect(reverse('grade-poll-list'))
 
@@ -632,7 +632,7 @@ def questionset_create(request):
                     error_msg += "</ul></li>"
             error_msg += "</ul>"
 
-            messages.error( request, SafeUnicode( error_msg ))
+            messages.error( request, SafeText( error_msg ))
         else:
             if section_save( form_data ):
                 messages.success( request, "Sekcja dodana" )
@@ -1148,9 +1148,9 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
 
 
             if semester.is_grade_active:
-                data['completness'] = SafeUnicode( "Liczba studentów, którzy zakończyli wypełniać ankietę: %d<br/>Liczba studentów którzy nie zakończyli wypełniać ankiety: %d" % ( sts_fin, sts_not_fin ))
+                data['completness'] = SafeText( "Liczba studentów, którzy zakończyli wypełniać ankietę: %d<br/>Liczba studentów którzy nie zakończyli wypełniać ankiety: %d" % ( sts_fin, sts_not_fin ))
             else:
-                data['completness'] = SafeUnicode( "Liczba studentów, którzy wypełnili ankietę: %d" % ( sts_fin ))
+                data['completness'] = SafeText( "Liczba studentów, którzy wypełnili ankietę: %d" % ( sts_fin ))
             data['poll_title']  = poll.title
             try:
                 data[ 'poll_course' ] = poll.group.course.name

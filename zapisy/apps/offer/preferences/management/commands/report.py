@@ -16,10 +16,11 @@ class Command(BaseCommand):
         courses = CourseEntity.get_proposals()
         file = open(args[0], 'w')
         for course in courses:
-            file.write("{0}\n".format(course))
+            file.write(str(course).encode('utf-8')+'\n')
             for user in course.get_all_voters():
                 file.write(user.matricula+'\n')
 
             file.write('\n')
 
         file.close()
+

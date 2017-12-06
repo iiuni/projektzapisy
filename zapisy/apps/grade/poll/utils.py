@@ -24,7 +24,7 @@ from apps.enrollment.courses.models import Semester, Group, Course, GROUP_TYPE_C
 from apps.users.models               import Program
 
 from django.core.paginator             import Paginator, InvalidPage, EmptyPage
-from django.utils.safestring           import SafeUnicode, mark_safe
+from django.utils.safestring           import SafeText, mark_safe
 from django.db.models import Q
 from functools import reduce
 
