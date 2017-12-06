@@ -19,5 +19,5 @@ def run():
         else:
             g2.enroll_student(s)
             c2 += 1
-    print("First year isim enrolled: " + str(c1))
-    print("Second year isim enrolled: " + str(c2))
+    print(("First year isim enrolled: " + str(c1)))
+    print(("Second year isim enrolled: " + str(c2)))

@@ -21,13 +21,13 @@ def refresh(matricula, ects):
         try:
             student = Student.objects.get(matricula=matricula, status=0)
         except ObjectDoesNotExist:
-            print "***" + str(matricula) + " brak"
+            print("***" + str(matricula) + " brak")
             return
 
-        print student
-        print student.ects
-        print ects_sum
-        print ""
+        print(student)
+        print(student.ects)
+        print(ects_sum)
+        print("")
         student.ects = max(student.ects, ects_sum)
         student.save()
 
@@ -35,7 +35,7 @@ def import_ects(file):
     for line  in file:
         process(line)
 
-    for key, value in students.items():
+    for key, value in list(students.items()):
         refresh(key, value)
 
 # for running ectsimport.py from tests

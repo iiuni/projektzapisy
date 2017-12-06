@@ -16,4 +16,4 @@ def run():
 			subject = '[Zapisy] Przypomnienie o ocenie zajęć'
 			counter += 1
 			Message.objects.create(to_address=address, from_address='zapisy@cs.uni.wroc.pl', subject=subject, message_body=body)
-	print counter
+	print(counter)

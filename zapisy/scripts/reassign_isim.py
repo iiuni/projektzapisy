@@ -11,7 +11,7 @@ def process(line):
     try:
         s = Student.objects.get(matricula=indeks)
     except ObjectDoesNotExist:
-        print "***" + indeks + ": brak"
+        print("***" + indeks + ": brak")
         return
     s.isim = True
     s.save()
@@ -21,7 +21,7 @@ def remove_all_isim():
     for s in ss:
         s.isim = False
         s.save()
-    print("old isim students count: "+str(len(ss)))
+    print(("old isim students count: "+str(len(ss))))
 
 def run():
     remove_all_isim()
@@ -30,4 +30,4 @@ def run():
     for line in file:
         process(line)
         c += 1
-    print("new isim students count: "+str(c))
+    print(("new isim students count: "+str(c)))

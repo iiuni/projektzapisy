@@ -61,9 +61,9 @@ def process(line):
         u = create_user(indeks, imie, nazwisko, mail, isim, haslo)
         refresh_student_ECTS(u.student)
         send_email(mail)
-        print imie + ',' + nazwisko + ',' + indeks + ',' + haslo + ',' + program
+        print(imie + ',' + nazwisko + ',' + indeks + ',' + haslo + ',' + program)
     else:
-        print(str(indeks)+': already exists')
+        print((str(indeks)+': already exists'))
 
 def refresh_student_ECTS(student):
     cursor = connection.cursor()
