@@ -14,5 +14,5 @@ class SingleChoiceQuestionAnswer( BaseAnswer ):
         verbose_name        = 'odpowiedź na pytanie jednokrotnego wyboru'
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.option )

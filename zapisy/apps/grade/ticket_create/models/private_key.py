@@ -12,7 +12,7 @@ class PrivateKey( models.Model ):
         verbose_name_plural = 'klucze prywatne'
         app_label           = 'ticket_create'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return "Klucz prywatny: " + str( self.poll )
 
     def sign_ticket( self, ticket ):

@@ -193,7 +193,7 @@ class Term(models.Model):
                 current_result['conflicted'].append(term)
         return conflicts
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0:s}: {1:s} - {2:s}'.format(str(self.day),
                                              str(self.start),
                                              str(self.end))

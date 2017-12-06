@@ -79,7 +79,7 @@ class SystemState( models.Model ):
         verbose_name_plural = 'ustawienia głosowań'
         app_label           = 'vote'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return "Ustawienia systemu na rok " + str(self.year)
 
     @staticmethod

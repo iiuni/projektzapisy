@@ -284,7 +284,7 @@ class Semester( models.Model ):
         unique_together = (('type', 'year'),)
         ordering = ['-year', 'type']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_name()
 
 
@@ -304,7 +304,7 @@ class Freeday(models.Model):
         else:
             return False
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.day)
 
     class Meta:
@@ -343,7 +343,7 @@ class ChangedDay(models.Model):
         else:
             return added_days.filter(weekday=day_of_week)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} -> {1}".format(str(self.day), str(self.get_weekday_display()))
 
     class Meta:

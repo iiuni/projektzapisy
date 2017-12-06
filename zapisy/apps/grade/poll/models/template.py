@@ -30,7 +30,7 @@ class Template( models.Model ):
         app_label           = 'poll'
         ordering            =['title']
 
-    def __unicode__( self ):
+    def __str__( self ):
         res = str( self.title )
         if self.studies_type: res += ', typ studiów: ' + str( self.studies_type )
         if self.course:      res += ', przedmiot: ' + str( self.course )

@@ -101,7 +101,7 @@ class BaseUser(models.Model):
     def is_employee(user):
         return hasattr(user, "employee") and user.employee
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_full_name
 
     class Meta:
@@ -231,7 +231,7 @@ class Employee(BaseUser):
             ("mailto_all_students", "Może wysyłać maile do wszystkich studentów"),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.user.get_full_name())
 
 class Student(BaseUser):
@@ -471,7 +471,7 @@ class Student(BaseUser):
         app_label = 'users'
         ordering = ['user__last_name', 'user__first_name']
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.user.get_full_name())
 
 
@@ -486,7 +486,7 @@ class Program( models.Model ):
         verbose_name = 'Program studiów'
         verbose_name_plural = 'Programy studiów'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class ZamawianeAbstract(models.Model):
@@ -542,7 +542,7 @@ class StudiaZamawiane(ZamawianeAbstract):
 
     student = models.OneToOneField(Student, related_name='zamawiane', verbose_name='Student')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Student zamawiany: '+str(self.student).decode('utf-8')
 
     def save(self, *args, **kwargs):
@@ -589,7 +589,7 @@ class StudiaZamawiane2012(ZamawianeAbstract):
 
     student = models.OneToOneField(Student, related_name='zamawiane2012', verbose_name='Student')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Student zamawiany: '+str(self.student).decode('utf-8')
 
     def save(self, *args, **kwargs):
@@ -640,7 +640,7 @@ class StudiaZamawianeMaileOpiekunow(models.Model):
         verbose_name = 'Studia zamawiane - opiekunowie'
         verbose_name_plural = 'Studia zamawiane - opiekunowie'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.email
 
 """

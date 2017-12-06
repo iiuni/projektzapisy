@@ -9,5 +9,5 @@ class Option( models.Model ):
         verbose_name        = 'opcja'
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.content )

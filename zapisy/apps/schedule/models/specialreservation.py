@@ -183,6 +183,6 @@ class SpecialReservation(models.Model):
         super(SpecialReservation, self).save(*args, **kwargs)
         self.create_event(author_id)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s - %s %s - %s' % (self.semester, self.title, self.get_dayOfWeek_display(),
                                          self.start_time, self.end_time)

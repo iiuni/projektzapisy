@@ -7,5 +7,5 @@ class BaseQuestion( models.Model ):
     class Meta:
         abstract = True
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.content )

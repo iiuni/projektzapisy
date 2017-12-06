@@ -284,7 +284,7 @@ class Record(models.Model):
         verbose_name = 'zapis'
         verbose_name_plural = 'zapisy'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 class QueueManager(models.Manager):
@@ -475,7 +475,7 @@ class Queue(models.Model):
         verbose_name = 'kolejka'
         verbose_name_plural = 'kolejki'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 def log_add_record(sender, instance, created, **kwargs):

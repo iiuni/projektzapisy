@@ -15,7 +15,7 @@ class MultipleChoiceQuestionAnswer( BaseAnswer ):
         verbose_name        = 'odpowiedź na pytanie wielokrotnego wyboru'
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         ans = ""
         for option in self.options.all():
             ans += str( option ) + '; '

@@ -13,7 +13,7 @@ class PointTypes(models.Model):
         verbose_name_plural = 'rodzaje punktów'
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.name, )
 
 class PointsOfCourseEntities(models.Model):
@@ -50,7 +50,7 @@ class PointsOfCourseEntities(models.Model):
         app_label = 'courses'
         unique_together = ('entity', 'type_of_point', 'program')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s %s' % (self.entity.name, self.value, self.type_of_point)
 
 

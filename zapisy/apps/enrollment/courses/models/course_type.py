@@ -39,7 +39,7 @@ class Type(models.Model):
         verbose_name_plural = 'rodzaje przedmiotów'
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.name)
 
     @staticmethod

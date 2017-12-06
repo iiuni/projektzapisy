@@ -36,7 +36,7 @@ class Poll( models.Model ):
         verbose_name_plural = 'ankiety'
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         res = str( self.title )
         if self.group: res += ', ' + str(self.group.get_type_display()) + " - " + str(self.group.get_teacher_full_name())
         if self.studies_type: res += ', typ studiów: ' + str( self.studies_type )

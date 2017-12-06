@@ -42,7 +42,7 @@ class SingleVote ( models.Model ):
 
         unique_together = ('course', 'state', 'student')
 
-    def __unicode__( self ):
+    def __str__( self ):
         return  '[' + str(self.state.year) + ']Głos użytkownika: ' + \
                                 self.student.user.username + '; ' + self.entity.name + \
                                 '; ' + str(self.value)

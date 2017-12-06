@@ -90,7 +90,7 @@ class Preference(models.Model):
         verbose_name = 'preferencja'
         verbose_name_plural = 'preferencje'
 
-    def __unicode__(self):
+    def __str__(self):
         rep = ''.join([self.employee.user.get_full_name(),
                        ': ',
                        self.proposal.name])

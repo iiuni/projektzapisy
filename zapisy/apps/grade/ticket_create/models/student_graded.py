@@ -13,5 +13,5 @@ class StudentGraded( models.Model ):
         verbose_name_plural = 'udzial w ocenie'
         app_label           = 'ticket_create'
 
-    def __unicode__(self):
+    def __str__(self):
         return str( self.student ) + " " + str( self.semester )

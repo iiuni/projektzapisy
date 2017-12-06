@@ -164,7 +164,7 @@ class Term(models.Model):
             'end_time': ("%d:%d" % (self.end_time.hour, self.end_time.minute)),
         }
 
-    def __unicode__(self):
+    def __str__(self):
         """
         N query problem with self.classrooms.all(). If you want to optimize, use Term.get_groups_terms.
         """

@@ -20,7 +20,7 @@ class Section( models.Model ):
         app_label           = 'poll'
         ordering            = ['title']
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.title )
 
     def all_questions( self ):
@@ -56,5 +56,5 @@ class SectionOrdering( models.Model ):
         unique_together     = [ 'poll', 'position' ]
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.position ) + '[' + str( self.poll ) + ']' + str( self.section )

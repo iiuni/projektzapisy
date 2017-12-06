@@ -103,5 +103,5 @@ class News(models.Model):
         verbose_name = 'Ogłoszenie'
         verbose_name_plural = 'Ogłoszenia'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title

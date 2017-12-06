@@ -232,7 +232,7 @@ class CourseEntity(models.Model):
             self.slug = slugify('%d_%s' % (self.pk, self.name,))
             self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.name, )
 
     class Meta:
@@ -849,7 +849,7 @@ class Course(models.Model):
             ("view_stats", "Może widzieć statystyki"),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.name, self.get_semester_name())
 
 
@@ -893,7 +893,7 @@ class CourseDescription(models.Model):
         verbose_name_plural = 'opisy przedmiotu'
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         title = str(self.created) + " - "
         if self and self.author:
             title = title + str(self.author)

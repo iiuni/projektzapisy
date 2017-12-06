@@ -12,7 +12,7 @@ class Tag(models.Model):
         verbose_name_plural = 'Tagi'
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.short_name) + ' (' + str(self.full_name) + ')'
 
     def serialize_for_json(self):

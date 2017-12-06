@@ -11,7 +11,7 @@ class Effects(models.Model):
         verbose_name_plural = 'Grupy Efektów'
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.group_name)
 
     def serialize_for_json(self):

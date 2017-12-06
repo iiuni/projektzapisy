@@ -38,5 +38,5 @@ class OpenQuestionOrdering( models.Model ):
         unique_together     = [ 'sections', 'position' ]
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.position ) + '[' + str( self.sections ) + ']' + str( self.question )

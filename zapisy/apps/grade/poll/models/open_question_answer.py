@@ -13,5 +13,5 @@ class OpenQuestionAnswer( BaseAnswer ):
         verbose_name        = 'odpowiedź na pytanie otwarte'
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.content )

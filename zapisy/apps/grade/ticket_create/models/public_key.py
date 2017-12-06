@@ -10,5 +10,5 @@ class PublicKey( models.Model ):
         verbose_name_plural = 'klucze publiczne'
         app_label           = 'ticket_create'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return "Klucz publiczny: " + str( self.poll )

@@ -12,7 +12,7 @@ class SavedTicket( models.Model ):
         app_label           = 'poll'
         unique_together     = [ 'ticket', 'poll' ]
 
-    def __unicode__( self ):
+    def __str__( self ):
         if self.finished:
             res = '[Zakończona]'
         else:

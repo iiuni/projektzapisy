@@ -38,7 +38,7 @@ class Classroom( models.Model ):
         except:
             return reverse('events:classrooms')
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.number) + ' ('+str(self.capacity)+')'
 
     @classmethod

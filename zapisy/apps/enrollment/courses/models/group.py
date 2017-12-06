@@ -524,7 +524,7 @@ class Group(models.Model):
         return Group.objects.filter(course__semester=semester).\
                     select_related('course', 'course__semester', 'course__entity', 'teacher', 'teacher__user').order_by('course__entity__name')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s - %s" % (str(self.course.entity.get_short_name()),
                                 str(self.get_type_display()),
                                 str(self.get_teacher_full_name()))

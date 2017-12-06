@@ -49,5 +49,5 @@ class SingleChoiceQuestionOrdering( models.Model ):
         unique_together     = [ 'sections', 'is_leading', 'position' ]
         app_label           = 'poll'
 
-    def __unicode__( self ):
+    def __str__( self ):
         return str( self.position ) + '[' + str( self.sections ) + ']' + str( self.question )

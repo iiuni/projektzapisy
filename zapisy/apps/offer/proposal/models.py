@@ -10,7 +10,7 @@ class LearningMethod(models.Model):
         verbose_name_plural = 'Metody kształcenia'
         app_label = 'proposal'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 studies_types = (('isim','isim'), ('inf','informatyka'), ('both','informatyka, ISIM'))
@@ -38,7 +38,7 @@ class Syllabus(models.Model):
     def name(self):
         return self.entity.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -46,7 +46,7 @@ class Syllabus(models.Model):
         verbose_name_plural = 'Metody kształcenia'
         app_label = 'proposal'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 
@@ -59,6 +59,6 @@ class StudentWork(models.Model):
 		verbose_name = 'Praca własna studenta'
 		app_label = 'proposal'
 
-	def __unicode__(self):
+	def __str__(self):
 		return str(self.name)
 

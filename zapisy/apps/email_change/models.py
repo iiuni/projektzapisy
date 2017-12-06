@@ -41,7 +41,7 @@ class EmailChangeRequest(models.Model):
         verbose_name = 'email change request'
         verbose_name_plural = 'email change requests'
 
-    def __unicode__(self):
+    def __str__(self):
         return '(%s) %s --> %s' % (self.user.username, self.user.email, self.email)
 
     def has_expired(self):

@@ -60,6 +60,6 @@ class StudentOptions( models.Model ):
         unique_together = (('course', 'student'),)
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         """ returns printable name of StudentOptions """
         return 'Przedmiot: %s, Student: %s ' % (self.course, self.student)

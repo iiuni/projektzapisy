@@ -263,5 +263,5 @@ class Event(models.Model):
 
         return self.interested.values_list('email', flat=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %s' % (self.title, self.description)
