@@ -192,6 +192,6 @@ pip install --upgrade pip
 pip install --upgrade virtualenv
 
 # Grab Python 3.6
-add-apt-repository ppa:jonathonf/python-3.6
+add-apt-repository -y ppa:jonathonf/python-3.6
 apt-get -y update
 apt-get -y install python3.6
