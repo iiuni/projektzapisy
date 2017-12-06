@@ -3,7 +3,7 @@ general:
 
 machine:
   python:
-    version: 3.5
+    version: 3.5.1
 
 dependencies:
   override:
