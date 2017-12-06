@@ -10,4 +10,4 @@ class Option( models.Model ):
         app_label           = 'poll'
         
     def __unicode__( self ):
-        return unicode( self.content )
+        return str( self.content )

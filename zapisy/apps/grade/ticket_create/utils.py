@@ -2,7 +2,7 @@
 from Crypto.PublicKey                      import RSA
 from Crypto.Random.random                  import getrandbits, \
                                                   randint
-from commands                              import *
+from subprocess                              import *
 from string                                import whitespace
 
 from django.db.models                      import Q
@@ -25,7 +25,7 @@ def flatten( x ):
     result = []
     for el in x:
         if isinstance(el, list):
-            if hasattr(el, "__iter__") and not isinstance(el, basestring):
+            if hasattr(el, "__iter__") and not isinstance(el, str):
                 result.extend(flatten(el))
             else:
                 result.append(el)
@@ -148,7 +148,7 @@ def generate_rsa_key():
 
 def save_public_keys(polls_public_keys):
     for (poll, key) in polls_public_keys:
-        print poll
+        print(poll)
         pkey = PublicKey(   poll = poll,
                             public_key = key)
         pkey.save()
@@ -172,9 +172,9 @@ def generate_keys_for_polls(semester=None):
         pub_list.append(pub)
         priv_list.append(priv)
         i = i + 1
-    save_public_keys(zip(poll_list, pub_list))
-    save_private_keys(zip(poll_list, priv_list))
-    print i - 1
+    save_public_keys(list(zip(poll_list, pub_list)))
+    save_private_keys(list(zip(poll_list, priv_list)))
+    print(i - 1)
     return
 
 def group_polls_by_course( poll_list ):
@@ -217,7 +217,7 @@ def connect_groups( groupped_polls, form ):
         if not polls[ 0 ].group:
             label = 'join_common'
         else:
-            label = u'join_' + unicode( polls[ 0 ].group.course.pk )
+            label = 'join_' + str( polls[ 0 ].group.course.pk )
 
         if len( polls ) == 1:
             connected_groups.append( polls )
@@ -234,7 +234,7 @@ def generate_keys( poll_list ):
 
     for poll in poll_list:
         key =  RSA.importKey( PublicKey.objects.get( poll = poll ).public_key )
-        keys.append((unicode(key.n), unicode(key.e)))
+        keys.append((str(key.n), str(key.e)))
 
     return keys
 
@@ -294,44 +294,44 @@ def secure_signer_without_save( user, g, t ):
     try:
         return ticket_check_and_sign_without_mark( user, g, t ),
     except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
+        return "Nie jesteś przypisany do tej ankiety",
     except TicketUsed:
-        return u"Bilet już pobrano",
+        return "Bilet już pobrano",
 
 def secure_mark ( user, g, t ):
     try:
         return ticket_check_and_mark( user, g, t ),
     except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
+        return "Nie jesteś przypisany do tej ankiety",
     except TicketUsed:
-        return u"Bilet już pobrano",
+        return "Bilet już pobrano",
 
 def secure_signer( user, g, t ):
     try:
         return ticket_check_and_sign( user, g, t ),
     except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
+        return "Nie jesteś przypisany do tej ankiety",
     except TicketUsed:
-        return u"Bilet już pobrano",
+        return "Bilet już pobrano",
 
 def unblind( poll, st ):
     st  = st[0]
-    if   st == u"Nie jesteś przypisany do tej ankiety":
+    if   st == "Nie jesteś przypisany do tej ankiety":
         return st
-    elif st == u"Bilet już pobrano":
+    elif st == "Bilet już pobrano":
         return st
     else:
         st  = st[0]
         key = RSA.importKey( PublicKey.objects.get( poll = poll ).public_key )
-        return (unicode(st), unicode(key.n), unicode(key.e))
+        return (str(st), str(key.n), str(key.e))
 
 def get_valid_tickets( tl ):
     err = []
     val = []
     for g, t, st in tl:
-        if st == u"Nie jesteś przypisany do tej ankiety" or \
-           st == u"Bilet już pobrano":
-                err.append(( unicode( g ), st ))
+        if st == "Nie jesteś przypisany do tej ankiety" or \
+           st == "Bilet już pobrano":
+                err.append(( str( g ), st ))
         else:
                 val.append(( g, t, st ))
 
@@ -342,31 +342,26 @@ def to_plaintext( vtl ):
     for p, t, st in vtl:
         res += '[' + p.title + ']'
         if not p.group:
-            res += u'Ankieta ogólna &#10;'
+            res += 'Ankieta ogólna &#10;'
         else:
-            res += unicode( p.group.course.name ) + " &#10;"
-            res += unicode( p.group.get_type_display()) + ": "
-            res += unicode( p.group.get_teacher_full_name()) + " &#10;"
+            res += str( p.group.course.name ) + " &#10;"
+            res += str( p.group.get_type_display()) + ": "
+            res += str( p.group.get_teacher_full_name()) + " &#10;"
         if p.studies_type:
-            res += u'typ studiów: ' + unicode( p.studies_type ) + " &#10;"
+            res += 'typ studiów: ' + str( p.studies_type ) + " &#10;"
 
-        res += u'id: ' + unicode( p.pk ) + ' &#10;'
-        res += unicode( t ) + " &#10;"
-        res += unicode( st ) + " &#10;"
+        res += 'id: ' + str( p.pk ) + ' &#10;'
+        res += str( t ) + " &#10;"
+        res += str( st ) + " &#10;"
         res += "---------------------------------- &#10;"
-    return SafeUnicode( unicode( res ))
+    return SafeUnicode( str( res ))
 
 def from_plaintext( tickets_plaintext ):
     pre_tickets = tickets_plaintext.split( '----------------------------------' )
-    pre_tickets = map( lambda x: [ x ], pre_tickets )
+    pre_tickets = [[ x ] for x in pre_tickets]
     for sign in whitespace:
-        pre_tickets = map( lambda ls:
-                            flatten(
-                                map(
-                                    lambda x:
-                                        x.split( sign ),
-                                    ls )),
-                            pre_tickets )
+        pre_tickets = [flatten(
+                                [x.split( sign ) for x in ls]) for ls in pre_tickets]
 
     convert            = False
     ids_tickets_signed = []
@@ -388,7 +383,7 @@ def from_plaintext( tickets_plaintext ):
                 j += 1
                 while True:
                     try:
-                        t  = long( poll_info[ j ])
+                        t  = int( poll_info[ j ])
                         break
                     except:
                         j += 1
@@ -396,7 +391,7 @@ def from_plaintext( tickets_plaintext ):
                 j += 1
                 while True:
                     try:
-                        st = long( poll_info[ j ])
+                        st = int( poll_info[ j ])
                         break
                     except:
                         j += 1

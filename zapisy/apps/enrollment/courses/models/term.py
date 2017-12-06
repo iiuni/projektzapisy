@@ -82,7 +82,7 @@ class Term(models.Model):
         return self.end_time
 
     def _convert_string_to_time(self, str):
-        hour, minute = map(lambda x: int(x), str.split('.'))
+        hour, minute = [int(x) for x in str.split('.')]
         return time(hour=hour, minute=minute)
     
     def period_string(self):
@@ -104,12 +104,11 @@ class Term(models.Model):
         """
         Optimized query returning terms as string for group ids.
         """
-        return map(lambda x: {'group_id':x.group_id,'term_as_string': "%s %s-%s (s.%s)" % (x.get_dayOfWeek_display_short(), x.start_time.strftime("%H:%M"), x.end_time.strftime("%H:%M"), x.classrooms_as_string)},
-                   Term.objects.filter(group__in=groups_ids).extra(select={'classrooms_as_string': """
+        return [{'group_id':x.group_id,'term_as_string': "%s %s-%s (s.%s)" % (x.get_dayOfWeek_display_short(), x.start_time.strftime("%H:%M"), x.end_time.strftime("%H:%M"), x.classrooms_as_string)} for x in Term.objects.filter(group__in=groups_ids).extra(select={'classrooms_as_string': """
                                     SELECT array_to_string(array(SELECT courses_classroom.number FROM courses_term_classrooms
                                     JOIN courses_classroom 
                                     ON (courses_classroom.id = courses_term_classrooms.classroom_id)
-                                    WHERE courses_term.id=courses_term_classrooms.term_id),',')"""}))
+                                    WHERE courses_term.id=courses_term_classrooms.term_id),',')"""})]
 
     def numbers(self):
         if not self.id:
@@ -119,7 +118,7 @@ class Term(models.Model):
             return self.classrooms_as_string
         classrooms = self.classrooms.all()
         if len(classrooms) > 0:
-            classrooms = ' (s.' + ', '.join(map(lambda x: x.number, classrooms)) + ')'
+            classrooms = ' (s.' + ', '.join([x.number for x in classrooms]) + ')'
         else:
             classrooms = ''
 

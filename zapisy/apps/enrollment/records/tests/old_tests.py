@@ -84,10 +84,10 @@ class AddStudentToGroupTest(TestCase):
         self.assertEqual(Record.objects.count(), 0)
         records = Record.add_student_to_group(self.user, self.exercise_group)
         groups_records = [r.group for r in records]
-        self.assert_(len(groups_records) == 3)
-        self.assert_(self.exercise_group in groups_records)
-        self.assert_(self.lecture_group in groups_records)
-        self.assert_(self.lecture_group2 in groups_records)
+        self.assertTrue(len(groups_records) == 3)
+        self.assertTrue(self.exercise_group in groups_records)
+        self.assertTrue(self.lecture_group in groups_records)
+        self.assertTrue(self.lecture_group2 in groups_records)
 
 class RemoveStudentFromGroupTest(TestCase):
     fixtures =  ['fixtures__users', 'fixtures__courses']
@@ -119,7 +119,7 @@ class RemoveStudentFromGroupTest(TestCase):
     	semester.semester_ending = datetime.now().date() + timedelta(days=1)
     	semester.records_closing = datetime.now().date() - timedelta(days=1)
     	semester.save()
-    	self.assert_(semester.is_current_semester())
+    	self.assertTrue(semester.is_current_semester())
     	self.assertRaises(RecordsNotOpenException, Record.remove_student_from_group, self.user, self.group)
 
     def testRemoveStudentFromGroup(self):
@@ -148,7 +148,7 @@ class IsStudentInCourseGroupTypeTest(TestCase):
         self.assertRaises(NonCourseException, Record.is_student_in_course_group_type, self.user, course_slug, self.lecture_group.type)
 
     def testStudentInCourseGroupType(self):
-        self.assert_(Record.is_student_in_course_group_type(self.user, self.course.slug, self.lecture_group.type))
+        self.assertTrue(Record.is_student_in_course_group_type(self.user, self.course.slug, self.lecture_group.type))
         self.assertFalse(Record.is_student_in_course_group_type(self.user, self.course.slug, self.exercise_group.type))
 
 class GetGroupsForStudentTest(TestCase):
@@ -177,11 +177,11 @@ class GetGroupsForStudentTest(TestCase):
 
     def testGetGroupsForStudent(self):
         groups = Record.get_groups_for_student(self.user)
-        self.assert_(len(groups) == 4)
-        self.assert_(self.lecture_group_1 in groups)
-        self.assert_(self.lecture_group_2 in groups)
-        self.assert_(self.exercise_group in groups)
-        self.assert_(self.lecture_group_3 in groups)
+        self.assertTrue(len(groups) == 4)
+        self.assertTrue(self.lecture_group_1 in groups)
+        self.assertTrue(self.lecture_group_2 in groups)
+        self.assertTrue(self.exercise_group in groups)
+        self.assertTrue(self.lecture_group_3 in groups)
 
 class GetStudentsInGroupTest(TestCase):
     fixtures =  ['fixtures__users', 'fixtures__courses']
@@ -415,7 +415,7 @@ class RemoveStudentFromQueue(TestCase):
     	semester.semester_ending = datetime.now().date() + timedelta(days=1)
     	semester.records_closing = datetime.now().date() - timedelta(days=1)
     	semester.save()
-    	self.assert_(semester.is_current_semester())
+    	self.assertTrue(semester.is_current_semester())
     	self.assertRaises(RecordsNotOpenException, Queue.remove_student_from_queue, self.user.id, self.group.id)
 
     def testRemoveStudentFromQueue(self):

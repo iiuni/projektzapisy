@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test                       import TestCase
-from utils                             import generate_keys_for_polls, \
+from .utils                             import generate_keys_for_polls, \
                                               group_polls_by_course
-from models                            import PublicKey, \
+from .models                            import PublicKey, \
                                               PrivateKey
 from apps.grade.poll.models          import Poll
 from apps.users.models               import Employee, \

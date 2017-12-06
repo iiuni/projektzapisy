@@ -37,7 +37,7 @@ class SectionTest( TestCase ):
 
     def test_questions_ordering( self ):
         for i, question in enumerate( self.section.all_questions()):
-            self.assertEqual( unicode( question ).endswith( unicode( i + 1 )), True )
+            self.assertEqual( str( question ).endswith( str( i + 1 )), True )
 
 class PollTest( TestCase ):
     fixtures = [ 'poll_test.json' ]

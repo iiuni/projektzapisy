@@ -19,3 +19,4 @@ a_dump_20160301.sql
 .DS_Store
 zapisy/logs/
 personal/
+**/.vscode/*

@@ -174,7 +174,7 @@ def email_change(request):
 
             user = User.objects.filter(email=email)
 
-            if user and user <> request.user:
+            if user and user != request.user:
                 messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
                 return render_to_response('users/email_change_form.html', {'form':form}, context_instance=RequestContext(request))
 
@@ -376,11 +376,11 @@ def create_ical_file(request):
     groups_employee = []
     groups_student = []
     try:
-        groups_student = filter(lambda x: x.course.semester==semester, Record.get_groups_for_student(user))
+        groups_student = [x for x in Record.get_groups_for_student(user) if x.course.semester==semester]
     except Student.DoesNotExist:
         pass
     try:
-        groups_employee = map(lambda x: x, Group.objects.filter(course__semester = semester, teacher = user.employee))
+        groups_employee = [x for x in Group.objects.filter(course__semester = semester, teacher = user.employee)]
     except Employee.DoesNotExist:
         pass
     groups = groups_employee + groups_student
@@ -398,9 +398,9 @@ def create_ical_file(request):
             event.add('summary').value = '%s - %s' % (course_name, group_type)
             if term.room:
                 event.add('location').value = 'sala '+term.room.number \
-                    + u', Instytut Informatyki Uniwersytetu Wrocławskiego'
+                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
 
-            event.add('description').value = u'prowadzący: ' \
+            event.add('description').value = 'prowadzący: ' \
                 + group.get_teacher_full_name()
             event.add('dtstart').value = start_datetime
             event.add('dtend').value = end_datetime
@@ -433,10 +433,10 @@ def email_students(request):
                     Message.objects.create(to_address=address, from_address=form.cleaned_data['sender'], subject=subject, message_body=body)
             if form.cleaned_data['cc_myself'] == True:
                 Message.objects.create(to_address=request.user.email, from_address=form.cleaned_data['sender'], subject=subject, message_body=body)
-            messages.success(request, u'Wysłano wiadomość do %d studentów' % counter)
+            messages.success(request, 'Wysłano wiadomość do %d studentów' % counter)
             return HttpResponseRedirect(reverse('my-profile'))
         else:
-            messages.error(request, u'Wystąpił błąd przy wysyłaniu wiadomości')
+            messages.error(request, 'Wystąpił błąd przy wysyłaniu wiadomości')
     else:
         form = EmailToAllStudentsForm(initial={'sender': 'zapisy@cs.uni.wroc.pl'})
         form.fields['sender'].widget.attrs['readonly'] = True

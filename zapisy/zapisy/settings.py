@@ -295,7 +295,7 @@ ISSUE_TRACKER_URL = "https://tracker-zapisy.ii.uni.wroc.pl"
 ISSUE_TRACKER_NEW_ISSUE_URL = "https://tracker-zapisy.ii.uni.wroc.pl/projects/zapisy-tracker/issues/new"
 
 if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
-    execfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py'))
+    exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
 
 PIPELINE = True
 PIPELINE_AUTO = False
@@ -318,4 +318,4 @@ STATICFILES_FINDERS = (
 LOCAL_SETTINGS = os.path.join(BASE_DIR, 'zapisy', 'settings_local.py')
 if os.path.isfile(LOCAL_SETTINGS):
     print("Running local settings file {0}".format(LOCAL_SETTINGS))
-    execfile(LOCAL_SETTINGS)
+    exec(open(LOCAL_SETTINGS).read())

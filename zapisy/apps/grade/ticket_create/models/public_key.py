@@ -11,4 +11,4 @@ class PublicKey( models.Model ):
         app_label           = 'ticket_create'
         
     def __unicode__( self ):
-        return u"Klucz publiczny: " + unicode( self.poll )
+        return "Klucz publiczny: " + str( self.poll )

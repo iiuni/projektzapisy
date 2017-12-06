@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from base_answer            import BaseAnswer
-from single_choice_question import SingleChoiceQuestion
-from option                 import Option
+from .base_answer            import BaseAnswer
+from .single_choice_question import SingleChoiceQuestion
+from .option                 import Option
 
 class SingleChoiceQuestionAnswer( BaseAnswer ):
     question = models.ForeignKey( SingleChoiceQuestion, verbose_name = 'pytanie' )
@@ -15,4 +15,4 @@ class SingleChoiceQuestionAnswer( BaseAnswer ):
         app_label           = 'poll'
         
     def __unicode__( self ):
-        return unicode( self.option )
+        return str( self.option )

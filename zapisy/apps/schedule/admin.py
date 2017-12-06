@@ -17,8 +17,8 @@ class SpecialReservationForm(forms.ModelForm):
 			if '__all__' in self.errors:
 				if 'W tym samym czasie' in self.errors['__all__'].as_ul():
 					self.fields['ignore_conflicts'].widget = forms.CheckboxInput()
-					self.fields['ignore_conflicts'].label = u'Zezwalaj na konflikty'
-					self._errors['ignore_conflicts'] = self.error_class([u'Zaakceptuj konflikty'])
+					self.fields['ignore_conflicts'].label = 'Zezwalaj na konflikty'
+					self._errors['ignore_conflicts'] = self.error_class(['Zaakceptuj konflikty'])
 
 	def clean(self):
 		cleaned_data = super(SpecialReservationForm, self).clean()

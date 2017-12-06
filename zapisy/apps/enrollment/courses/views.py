@@ -248,7 +248,7 @@ def course(request, slug):
 
         # Statystyki wyświetlane tylko adminom (nieadmin -> 0 zapytań sql, admin -> 1 zapytanie sql)
         statistics = {}
-        for group_type in xrange(1,11):
+        for group_type in range(1,11):
             statistics[str(group_type)] = {"in_group": 0, "in_queue": 0}
 
         if request.user.is_staff:

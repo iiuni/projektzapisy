@@ -59,7 +59,7 @@ def offer(request, slug=None):
 @permission_required('proposal.can_create_offer')
 def select_for_voting(request):
     courses = CourseEntity.noremoved.all()
-    courses = filter((lambda course: 1 <= course.get_status() <= 3), courses)
+    courses = list(filter((lambda course: 1 <= course.get_status() <= 3), courses))
     if request.method == 'POST':
         for course in courses:
             ids_for_voting = set(map(int, request.POST.getlist('for_voting')))
@@ -114,7 +114,7 @@ def course_groups(request, slug):
             {'course': course, 'teachers': teachers,
             'groups_with_teachers': groups_with_teachers, 'path': request.path})
     elif request.method == 'POST':
-        for group_id, teacher_id in request.POST.iteritems():
+        for group_id, teacher_id in request.POST.items():
             if group_id[:6] != "group_":
                 continue
             group_id = group_id[6:]
@@ -136,10 +136,10 @@ def proposal(request, slug=None):
     """
     try:
         proposals = CourseEntity.get_employee_proposals(request.user)
-        for_review = filter((lambda course: course.get_status() == 5), proposals)
-        not_accepted = filter((lambda course: course.get_status() == 0), proposals)
-        in_offer = filter((lambda course: 1 <= course.get_status() <= 3), proposals)
-        removed = filter((lambda course: course.get_status() == 4), proposals)
+        for_review = list(filter((lambda course: course.get_status() == 5), proposals))
+        not_accepted = list(filter((lambda course: course.get_status() == 0), proposals))
+        in_offer = list(filter((lambda course: 1 <= course.get_status() <= 3), proposals))
+        removed = list(filter((lambda course: course.get_status() == 4), proposals))
         proposal  = employee_proposal(request.user, slug)
     except NotOwnerException:
         return redirect('offer-page', slug=slug)
@@ -239,14 +239,14 @@ def proposal_edit(request, slug=None):
             proposal = proposal_for_offer(proposal.slug)
             proposal.save()
 
-            messages.success(request, u'Propozycja zapisana')
+            messages.success(request, 'Propozycja zapisana')
             if sendnotification:
                 send_notification_to_3d(proposal, new_proposal)
-                messages.success(request, u'Wysłano wiadomość do DDD z prośbą o zaakceptowanie propozycji przedmiotu')
+                messages.success(request, 'Wysłano wiadomość do DDD z prośbą o zaakceptowanie propozycji przedmiotu')
 
             return redirect('my-proposal-show', slug=proposal.slug)
         else:
-            messages.error(request, u'Popraw błędy w formularzu')
+            messages.error(request, 'Popraw błędy w formularzu')
 
     return TemplateResponse(request, 'offer/proposal/form.html', {
         "form": proposal_form,
@@ -267,7 +267,7 @@ def proposal_accept(request, slug=None):
     proposal = proposal_for_offer(slug)
     proposal.mark_as_accepted()
     proposal.save()
-    messages.success(request, u'Zaakceptowano przedmiot '+proposal.name)
+    messages.success(request, 'Zaakceptowano przedmiot '+proposal.name)
     return redirect('manage')
 
 @permission_required('proposal.can_create_offer')

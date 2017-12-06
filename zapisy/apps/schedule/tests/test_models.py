@@ -21,7 +21,7 @@ import apps.enrollment.courses.tests.factories as enrollment_factories
 from apps.enrollment.records.tests.factories import RecordFactory
 
 from apps.enrollment.records.models import Record
-import factories
+from . import factories
 from zapisy import common
 
 
@@ -46,7 +46,7 @@ class SpecialReservationTestCase(TestCase):
         reservation.save()
 
         reservation_2 = SpecialReservation(semester=semester,
-                                           title=u'ąęłżóćśśń',
+                                           title='ąęłżóćśśń',
                                            classroom=room110,
                                            dayOfWeek=common.THURSDAY,
                                            start_time=time(15),
@@ -129,7 +129,7 @@ class SpecialReservationTestCase(TestCase):
     def test_special_reservation_unicode_method(self):
         reservations = SpecialReservation.objects.all()
         for reservation in reservations:
-            unicode(reservation)
+            str(reservation)
 
     def test_try_clean_on_non_overlapping_reservation(self):
         semester = Semester.get_semester(date(2016, 5, 12))
@@ -304,8 +304,8 @@ class TermTestCase(TestCase):
                                      start=time(9), end=time(17))
         term.full_clean()
         term.save()
-        self.assertEquals(other_semester.semester_beginning,term.day)
-        self.assertEquals(reservation.classroom,term.room)
+        self.assertEqual(other_semester.semester_beginning,term.day)
+        self.assertEqual(reservation.classroom,term.room)
 
 
 class FeedsTestCase(TestCase):
@@ -318,11 +318,11 @@ class FeedsTestCase(TestCase):
         item_pub= [feeds.Latest.item_pubdate(latest,event),feeds.Latest.item_pubdate(latest,event)]
         item_desc = [feeds.Latest.item_description(latest,event),feeds.Latest.item_description(latest,event)]
         item_auth_mail = [feeds.Latest.item_author_email(latest,event),feeds.Latest.item_author_email(latest,event)]
-        self.assertEquals(len(item_title),2)
-        self.assertEquals(len(item_author),2)
-        self.assertEquals(len(item_pub),2)
-        self.assertEquals(len(item_desc),2)
-        self.assertEquals(len(item_auth_mail),2)
+        self.assertEqual(len(item_title),2)
+        self.assertEqual(len(item_author),2)
+        self.assertEqual(len(item_pub),2)
+        self.assertEqual(len(item_desc),2)
+        self.assertEqual(len(item_auth_mail),2)
 
 
 class EventTestCase(TestCase):
@@ -370,15 +370,15 @@ class EventTestCase(TestCase):
     def test_event_unicode_method(self):
         events = Event.objects.all()
         for event in events:
-            self.assertEquals(unicode(event), u'%s %s' % (event.title, event.description))
+            self.assertEqual(str(event), '%s %s' % (event.title, event.description))
 
     def test_get_absolute_url__no_group(self):
         event = Event.objects.all()[0]
-        self.assertEquals(event.get_absolute_url(), '/events/%d' % event.pk)
+        self.assertEqual(event.get_absolute_url(), '/events/%d' % event.pk)
 
     def test_get_absolute_url__group(self):
         event = factories.EventCourseFactory.create()
-        self.assertEquals(event.get_absolute_url(), '/records/%s/records' % event.group_id)
+        self.assertEqual(event.get_absolute_url(), '/records/%s/records' % event.group_id)
 
     def test_clean__overlapping_term(self):
         event = Event.objects.all()[0]
@@ -486,7 +486,7 @@ class EventTestCase(TestCase):
         employee = UserProfile.objects.get(is_employee=True).user
         event = factories.EventFactory(author=employee)
         ret = Event.get_event_or_404(event.id, employee)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_or_404_raises_error404_if_user_cant_see_event(self):
         user = UserFactory()
@@ -498,7 +498,7 @@ class EventTestCase(TestCase):
         user = UserFactory()
         event = factories.EventFactory(author=user)
         ret = Event.get_event_for_moderation_or_404(event.id, user)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_for_moderation_returns_event_if_it_exists_and_user_has_perms(self):
         event = factories.EventFactory()
@@ -506,7 +506,7 @@ class EventTestCase(TestCase):
         permission = Permission.objects.get(codename='manage_events')
         user_w_perms.user_permissions.add(permission)
         ret = Event.get_event_for_moderation_or_404(event.id, user_w_perms)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_for_moderation_throws_Http404_if_event_doesnt_exist(self):
         user = UserFactory.build()
@@ -522,7 +522,7 @@ class EventTestCase(TestCase):
         perm = Permission.objects.get(codename='manage_events')
         user = UserFactory()
         user.user_permissions.add(perm)
-        self.assertEquals(Event.get_event_for_moderation_only_or_404(ev.id, user), ev)
+        self.assertEqual(Event.get_event_for_moderation_only_or_404(ev.id, user), ev)
 
     def test_get_for_moderation_only_raises_404_if_user_doesnt_have_perms(self):
         ev = factories.EventFactory()
@@ -541,7 +541,7 @@ class EventTestCase(TestCase):
         events = factories.EventFactory.create_batch(random.randint(50, 100))
         events.append(self.event)
         get_all_wo_courses_res = Event.get_all_without_courses()
-        events_wo_courses = filter(lambda x: x.type != Event.TYPE_CLASS, events)
+        events_wo_courses = [x for x in events if x.type != Event.TYPE_CLASS]
         self.assertEqual(len(events_wo_courses), len(get_all_wo_courses_res))
         get_all_res_pk = [x.pk for x in get_all_wo_courses_res]
         for i in range(0, len(events_wo_courses)):
@@ -555,7 +555,7 @@ class EventTestCase(TestCase):
         events.append(self.event)
         user = random.choice(users)
         events_for_user = Event.get_for_user(user)
-        filtered_events = filter(lambda x: x.author == user, events)
+        filtered_events = [x for x in events if x.author == user]
         self.assertEqual(len(filtered_events), len(events_for_user))
         filtered_pk = [x.pk for x in filtered_events]
         for i in range(0, len(events_for_user)):
@@ -565,7 +565,7 @@ class EventTestCase(TestCase):
         events = factories.EventFactory.create_batch(random.randint(50, 100))
         events.append(self.event)
         get_exams_res = Event.get_exams()
-        filtered_events = filter(lambda x: x.type == Event.TYPE_EXAM, events)
+        filtered_events = [x for x in events if x.type == Event.TYPE_EXAM]
         self.assertEqual(len(get_exams_res), len(filtered_events))
         get_exams_pk = [x.pk for x in get_exams_res]
         for i in range(0, len(filtered_events)):
@@ -600,7 +600,7 @@ class EventTestCase(TestCase):
 
     def test_unicode(self):
         event = factories.EventFactory()
-        self.assertEqual(u'{0} {1}'.format(event.title, event.description), str(event))
+        self.assertEqual('{0} {1}'.format(event.title, event.description), str(event))
 
 
 class EventsOnChangedDayTestCase(TestCase):

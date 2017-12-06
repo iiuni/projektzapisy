@@ -8,7 +8,7 @@ class LatestNews(Feed):
     base_title_prefix = ""
     base_title_suffix = ": ogłoszenia"
     title = "Zapisy - newsy"
-    description = u"Aktualności z Systemu Zapisów Insytutu Informatyki UWr"
+    description = "Aktualności z Systemu Zapisów Insytutu Informatyki UWr"
 
     
     def link(self):

@@ -1,4 +1,4 @@
-from itertools import izip_longest
+from itertools import zip_longest
 
 from django.template.base import Library
 from django.conf import settings
@@ -38,9 +38,9 @@ class ForNode(Node):
         def make_rev_txt(revd):
             return revd and ' reversed' or ''
         rev_text_list = [make_rev_txt(revd) for revd in self.is_reversed]
-        zip_list = zip(self.loopvars_list, self.sequence_list, rev_text_list)
+        zip_list = list(zip(self.loopvars_list, self.sequence_list, rev_text_list))
         sections = ['%s in %s%s'%(', '.join(l), s, r) for l, s, r in zip_list]
-        zip(sections, reversed_text_list)
+        list(zip(sections, reversed_text_list))
         return "<For Node: for %s, tail_len: %d%s>" % \
             ('; '.join(sections), len(self.nodelist_loop))
 
@@ -92,12 +92,12 @@ class ForNode(Node):
             loop_dict['first'] = (i == 0)
             loop_dict['last'] = (i == len_values - 1)
 
-            uli_zip = zip(unpack_list, self.loopvars_list, items)
+            uli_zip = list(zip(unpack_list, self.loopvars_list, items))
             for unpack, loopvars, item in uli_zip:
                 if unpack:
                     # If there are multiple loop variables, unpack the item
                     # into them.
-                    context.update(dict(zip(loopvars, item)))
+                    context.update(dict(list(zip(loopvars, item))))
                 else:
                     context[loopvars[0]] = item
             for node in self.nodelist_loop:
@@ -115,7 +115,7 @@ class ForNode(Node):
 
 class ForLongestNode(ForNode):
     def zip(self, *args):
-        return izip_longest(fillvalue=settings.TEMPLATE_STRING_IF_INVALID, *args)
+        return zip_longest(fillvalue=settings.TEMPLATE_STRING_IF_INVALID, *args)
     get_overall_len = max
 
 #@register.tag(name="for")

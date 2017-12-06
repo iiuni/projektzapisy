@@ -154,7 +154,7 @@ def get_search_results_data(request, category=None):
         data['category'] = category
         if 'q' in request.GET and request.GET['q'] and form.is_valid():
             query = form.cleaned_data['q']
-            results = map(lambda r: r.object, form.search())
+            results = [r.object for r in form.search()]
             paginator = Paginator(results, NEWS_PER_PAGE)
             page = paginator.page(page_n)
             data['content'] = render_items(request, page.object_list)

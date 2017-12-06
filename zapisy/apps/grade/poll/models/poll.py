@@ -12,9 +12,9 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import Course
 
 from apps.enrollment.records.models  import Record
-from section                           import SectionOrdering
-from saved_ticket                       import SavedTicket
-from origin                          import Origin
+from .section                           import SectionOrdering
+from .saved_ticket                       import SavedTicket
+from .origin                          import Origin
 
 class Poll( models.Model ):
 
@@ -37,25 +37,25 @@ class Poll( models.Model ):
         app_label           = 'poll'
         
     def __unicode__( self ):
-        res = unicode( self.title )
-        if self.group: res += u', ' + unicode(self.group.get_type_display()) + u" - " + unicode(self.group.get_teacher_full_name())
-        if self.studies_type: res += u', typ studiów: ' + unicode( self.studies_type )
+        res = str( self.title )
+        if self.group: res += ', ' + str(self.group.get_type_display()) + " - " + str(self.group.get_teacher_full_name())
+        if self.studies_type: res += ', typ studiów: ' + str( self.studies_type )
         return res
         
     def to_url_title( self, break_lines = False ):
-        res = unicode( self.title )
+        res = str( self.title )
         if break_lines:
-            sep = u'<br>'
+            sep = '<br>'
         else:
-            sep = u', '
+            sep = ', '
             
         if self.group:
-            res += u': '   + self.group.get_teacher_full_name()
+            res += ': '   + self.group.get_teacher_full_name()
         else:
-            res += sep + u'Ankieta ogólna'
+            res += sep + 'Ankieta ogólna'
             
         if self.studies_type: 
-            res += sep + u'typ studiów: ' + unicode( self.studies_type )
+            res += sep + 'typ studiów: ' + str( self.studies_type )
         
         return SafeUnicode( res )
         
@@ -86,7 +86,7 @@ class Poll( models.Model ):
             if self.group:
                 if viewer == self.group.teacher: return True
                 
-                lecture = filter( lambda (x,y): y == 'wykład', GROUP_TYPE_CHOICES )[ 0 ][ 0 ]
+                lecture = filter( lambda x_y: x_y[1] == 'wykład', GROUP_TYPE_CHOICES )[ 0 ][ 0 ]
                 groups  = Group.objects.filter( course = self.group.course,
                                                 teacher = viewer,
                                                 type    = lecture )
@@ -112,24 +112,24 @@ class Poll( models.Model ):
     def as_row( self ):
         from apps.grade.ticket_create.models.public_key import PublicKey
 
-        res  = u"<tr><td>"
-        res += unicode( self.pk ) + u'</td><td>'
-        res += unicode( self.title ) + u'</td><td>'
+        res  = "<tr><td>"
+        res += str( self.pk ) + '</td><td>'
+        res += str( self.title ) + '</td><td>'
         
         if self.group:
-            res += unicode( self.group.course.name ) + u'</td><td>'
-            res += unicode( self.group.get_type_display()) + u'</td><td>'
-            res += unicode( self.group.get_teacher_full_name()) + u'</td><td>'
+            res += str( self.group.course.name ) + '</td><td>'
+            res += str( self.group.get_type_display()) + '</td><td>'
+            res += str( self.group.get_teacher_full_name()) + '</td><td>'
         else:
-            res += u'-</td><td>-</td><td>-</td><td>'
+            res += '-</td><td>-</td><td>-</td><td>'
         
         if self.studies_type:
-            res += unicode( self.studies_type ) + u'</td><td>'
+            res += str( self.studies_type ) + '</td><td>'
         else:
-            res += u'-</td><td>'
+            res += '-</td><td>'
             
-        res += unicode( " &#10;".join(PublicKey.objects.get( poll = self.pk ).public_key.split('\n')))
-        res += u'</td></tr>'
+        res += str( " &#10;".join(PublicKey.objects.get( poll = self.pk ).public_key.split('\n')))
+        res += '</td></tr>'
         return SafeUnicode( res )
     
     @staticmethod
@@ -142,9 +142,9 @@ class Poll( models.Model ):
     def get_groups_without_poll():
         semester = Semester.get_current_semester()
         polls    = Poll.objects.filter( semester = semester, group__isnull=False, deleted = False ).order_by('pk') 
-        polls    = map( lambda p: p.group_id, polls)
+        polls    = [p.group_id for p in polls]
         groups   = Group.objects.filter(course__semester = semester).order_by('pk')
-        return filter( lambda g: g.pk not in polls, groups)
+        return [g for g in groups if g.pk not in polls]
     
     @staticmethod
     def get_current_polls(student=None):
@@ -218,7 +218,7 @@ class Poll( models.Model ):
                                                  status  = Record.STATUS_ENROLLED ).select_related('group')\
                                 .values_list('group__id', flat=True)
 
-        return filter( lambda x: not x.group or x.group.id in groups, Poll.get_current_polls(student=student) )
+        return [x for x in Poll.get_current_polls(student=student) if not x.group or x.group.id in groups]
     
     @staticmethod
     def get_all_polls_for_group( group, semester = None ):

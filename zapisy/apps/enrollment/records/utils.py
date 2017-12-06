@@ -58,7 +58,7 @@ def prepare_courses_with_terms(terms=None, records=None):
         if record.group.course not in courses_terms_map:
             courses_terms_map[record.group.course] = []
 
-    courses = [(course, terms) for course, terms in courses_terms_map.items()]
+    courses = [(course, terms) for course, terms in list(courses_terms_map.items())]
 
     return sorted(courses, key=lambda item: item[0].name)
 
@@ -132,7 +132,7 @@ def prepare_schedule_data(request, courses, semester=None):
             term['object'] = oldTerm
             term['json'] = json.dumps(term['object'].serialize_for_json())
             terms_by_days[day]['terms'].append(term)
-    terms_by_days = filter(lambda term: term, terms_by_days)
+    terms_by_days = [term for term in terms_by_days if term]
 
     # TODO: tylko grupy, na które jest zapisany
     all_groups = Group.get_groups_by_semester(default_semester)
@@ -147,7 +147,7 @@ def prepare_schedule_data(request, courses, semester=None):
     }
 
 
-import csv, codecs, cStringIO
+import csv, codecs, io
 
 class UTF8Recoder:
     """
@@ -159,7 +159,7 @@ class UTF8Recoder:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         return self.reader.next().encode("utf-8")
 
 class UnicodeReader:
@@ -172,9 +172,9 @@ class UnicodeReader:
         f = UTF8Recoder(f, encoding)
         self.reader = csv.reader(f, dialect=dialect, **kwds)
 
-    def next(self):
-        row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+    def __next__(self):
+        row = next(self.reader)
+        return [str(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -187,7 +187,7 @@ class UnicodeWriter:
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = io.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()

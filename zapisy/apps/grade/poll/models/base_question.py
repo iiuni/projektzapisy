@@ -8,4 +8,4 @@ class BaseQuestion( models.Model ):
         abstract = True
         
     def __unicode__( self ):
-        return unicode( self.content )
+        return str( self.content )

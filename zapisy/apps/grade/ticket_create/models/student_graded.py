@@ -14,5 +14,5 @@ class StudentGraded( models.Model ):
         app_label           = 'ticket_create'
 
     def __unicode__(self):
-        return unicode( self.student ) + " " + unicode( self.semester )
+        return str( self.student ) + " " + str( self.semester )
     

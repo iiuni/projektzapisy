@@ -19,12 +19,12 @@ class Command(BaseCommand):
             semester  = Semester.objects.get(id=args[0])
         else:
             semester = Semester.get_current_semester()
-        print semester
+        print(semester)
 
         templates = Template.objects.filter(in_grade=True)
-        print templates
+        print(templates)
         prych     = Employee.objects.get(user__pk=19) # nowym PRychem Przemka
-        print prych
+        print(prych)
         for template in templates:
             t = dict(
                     type           = None if template.group_type == '--' else template.group_type,

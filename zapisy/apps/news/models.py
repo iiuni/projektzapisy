@@ -71,13 +71,13 @@ class News(models.Model):
         Single news
     """
     title = models.CharField(max_length=255,
-                             verbose_name=u'Tytuł')
-    body = models.TextField(verbose_name=u'Treść',
+                             verbose_name='Tytuł')
+    body = models.TextField(verbose_name='Treść',
                             blank=True)
     date = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(User)
     category = models.CharField(max_length=15,
-                                verbose_name=u'Kategoria',
+                                verbose_name='Kategoria',
                                 choices=CATEGORIES,
                                 default='-')
 
@@ -100,8 +100,8 @@ class News(models.Model):
     class Meta:
         get_latest_by = 'date'
         ordering = ['-date', '-id']
-        verbose_name = u'Ogłoszenie'
-        verbose_name_plural = u'Ogłoszenia'
+        verbose_name = 'Ogłoszenie'
+        verbose_name_plural = 'Ogłoszenia'
 
     def __unicode__(self):
         return self.title

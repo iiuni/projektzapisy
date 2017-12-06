@@ -43,7 +43,7 @@ class Record(models.Model):
     STATUS_ENROLLED = '1'
     STATUS_PINNED = '2'
 
-    RECORD_STATUS = [(STATUS_REMOVED, u'usunięty'), (STATUS_ENROLLED, u'zapisany'), (STATUS_PINNED, u'przypięty')]
+    RECORD_STATUS = [(STATUS_REMOVED, 'usunięty'), (STATUS_ENROLLED, 'zapisany'), (STATUS_PINNED, 'przypięty')]
 
     group = models.ForeignKey(Group, verbose_name='grupa')
     student = models.ForeignKey(Student, verbose_name='student', related_name='records')
@@ -154,7 +154,7 @@ class Record(models.Model):
             try:
                 student_groups = Record.get_groups_for_student(user)
             except NonStudentException:
-                logger.warning('Record.get_groups_with_records_for_course(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (unicode(slug), int(user_id), unicode(group_type)))
+                logger.warning('Record.get_groups_with_records_for_course(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (str(slug), int(user_id), str(group_type)))
                 student_groups = {}
             for g in groups:
                 g.priority = Queue.get_priority(user_id, g.id)
@@ -170,7 +170,7 @@ class Record(models.Model):
                 else:
                     g.is_full = True
         except Course.DoesNotExist:
-            logger.warning('Record.get_groups_with_records_for_course(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (unicode(slug), int(user_id), unicode(group_type)))
+            logger.warning('Record.get_groups_with_records_for_course(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (str(slug), int(user_id), str(group_type)))
             raise NonCourseException()
         return groups
     
@@ -185,9 +185,8 @@ class Record(models.Model):
     def get_groups_for_student(user):
         try:
             student = user.student
-            return map(lambda x: x.group, \
-                Record.enrolled.filter(student=student).\
-                select_related('group', 'group__course'))
+            return [x.group for x in Record.enrolled.filter(student=student).\
+                select_related('group', 'group__course')]
         except Student.DoesNotExist:
             logger.warning('Record.get_groups_for_student(user_id = %d) throws Student.DoesNotExist exception.' % int(user.id))
             raise NonStudentException()
@@ -201,10 +200,10 @@ class Record(models.Model):
                 return user_course_group_type[0]
             return False
         except Student.DoesNotExist:
-            logger.warning('Record.is_student_in_course_group_type(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (unicode(slug), int(user.id), unicode(group_type)))
+            logger.warning('Record.is_student_in_course_group_type(slug = %s, user_id = %d, group_type = %s) throws Student.DoesNotExist exception.' % (str(slug), int(user.id), str(group_type)))
             raise NonStudentException()
         except Course.DoesNotExist:
-            logger.warning('Record.is_student_in_course_group_type(slug = %s, user_id = %d, group_type = %s) throws Course.DoesNotExist exception.' % (unicode(slug), int(user.id), unicode(group_type)))
+            logger.warning('Record.is_student_in_course_group_type(slug = %s, user_id = %d, group_type = %s) throws Course.DoesNotExist exception.' % (str(slug), int(user.id), str(group_type)))
             raise NonCourseException()
     
     @staticmethod
@@ -286,7 +285,7 @@ class Record(models.Model):
         verbose_name_plural = 'zapisy'
     
     def __unicode__(self):
-        return u"%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
+        return "%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 class QueueManager(models.Manager):
     def get_queryset(self):
@@ -297,7 +296,7 @@ class QueueManager(models.Manager):
 def queue_priority(value):
     """ Controls range of priority"""
     if value <= 0 or value > 10:
-        raise ValidationError(u'%s is not a priority' % value)
+        raise ValidationError('%s is not a priority' % value)
 
 class Queue(models.Model):
     group   = models.ForeignKey(Group, verbose_name='grupa')
@@ -417,7 +416,7 @@ class Queue(models.Model):
         """ Return all groups that student is trying to sign to."""
         try:
             student = user.student
-            return map(lambda x: x.group, Queue.queued.filter(student=student))
+            return [x.group for x in Queue.queued.filter(student=student)]
         except Student.DoesNotExist:
             logger.warning('Queue.get_groups_for_student(user_id = %d) throws Student.DoesNotExist exception.' % int(user.id))
             raise NonStudentException()
@@ -477,7 +476,7 @@ class Queue(models.Model):
         verbose_name_plural = 'kolejki'
     
     def __unicode__(self):
-        return u"%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
+        return "%s (%s - %s)" % (self.group.course, self.group.get_type_display(), self.group.get_teacher_full_name())
 
 def log_add_record(sender, instance, created, **kwargs):
     if instance.status == Record.STATUS_ENROLLED:

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from sys       import maxint
+from sys       import maxsize
 from django.db import models
 
-from open_question            import OpenQuestionOrdering
-from single_choice_question   import SingleChoiceQuestionOrdering
-from multiple_choice_question import MultipleChoiceQuestionOrdering
-from utils                    import ordering_cmp
+from .open_question            import OpenQuestionOrdering
+from .single_choice_question   import SingleChoiceQuestionOrdering
+from .multiple_choice_question import MultipleChoiceQuestionOrdering
+from .utils                    import ordering_cmp
                         
 class Section( models.Model ):
     title       = models.CharField( max_length = 50,  verbose_name = 'tytuł' )
@@ -21,7 +21,7 @@ class Section( models.Model ):
         ordering            = ['title']
         
     def __unicode__( self ):
-        return unicode( self.title )
+        return str( self.title )
         
     def all_questions( self ):
         open            = OpenQuestionOrdering.objects.filter( sections = self ).select_related('question')
@@ -30,7 +30,7 @@ class Section( models.Model ):
         
         orderings = list( open ) + list( single_choice ) + list( multiple_choice )
         orderings.sort( ordering_cmp )
-        return map( lambda o: o.question, orderings )
+        return [o.question for o in orderings]
         
     def all_answers( self, poll ):
         result = []
@@ -57,4 +57,4 @@ class SectionOrdering( models.Model ):
         app_label           = 'poll'
         
     def __unicode__( self ):
-        return unicode( self.position ) + u'[' + unicode( self.poll ) + u']' + unicode( self.section )
+        return str( self.position ) + '[' + str( self.poll ) + ']' + str( self.section )

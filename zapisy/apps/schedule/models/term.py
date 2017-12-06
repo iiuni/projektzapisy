@@ -21,16 +21,16 @@ class Term(models.Model):
     Term representation
     """
 
-    event = models.ForeignKey(Event, verbose_name=u'Wydarzenie')
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie')
 
-    day = models.DateField(verbose_name=u'Dzień')
+    day = models.DateField(verbose_name='Dzień')
 
-    start = models.TimeField(verbose_name=u'Początek')
-    end = models.TimeField(verbose_name=u'Koniec')
+    start = models.TimeField(verbose_name='Początek')
+    end = models.TimeField(verbose_name='Koniec')
 
-    room = models.ForeignKey(to=Classroom, null=True, blank=True, verbose_name=u'Sala',
+    room = models.ForeignKey(to=Classroom, null=True, blank=True, verbose_name='Sala',
                              related_name='event_terms')
-    place = models.CharField(max_length=255, null=True, blank=True, verbose_name=u'Miejsce')
+    place = models.CharField(max_length=255, null=True, blank=True, verbose_name='Miejsce')
     ignore_conflicts = False
 
     def validate_against_event_terms(self):
@@ -45,8 +45,8 @@ class Term(models.Model):
 
         if terms:
             raise ValidationError(
-                message={'__all__': [u'W tym samym czasie ta sala jest zarezerwowana: ' +
-                                     unicode(terms[0].event) + ' (wydarzenie)']},
+                message={'__all__': ['W tym samym czasie ta sala jest zarezerwowana: ' +
+                                     str(terms[0].event) + ' (wydarzenie)']},
                 code='overlap')
 
     def validate_against_course_terms(self):
@@ -62,8 +62,8 @@ class Term(models.Model):
                                                              end_time=self.end)
             if course_terms:
                 raise ValidationError(
-                    message={'__all__': [u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
-                                         course_terms[0].group.course.name + ' ' + unicode(course_terms[0])]},
+                    message={'__all__': ['W tym samym czasie w tej sali odbywają się zajęcia: ' +
+                                         course_terms[0].group.course.name + ' ' + str(course_terms[0])]},
                     code='overlap'
                 )
 
@@ -73,20 +73,20 @@ class Term(models.Model):
         """
         if self.start >= self.end:
             raise ValidationError(
-                message={'end': [u'Koniec musi następować po początku']},
+                message={'end': ['Koniec musi następować po początku']},
                 code='overlap')
 
         if not self.room and not self.place:
             raise ValidationError(
-                message={'room': [u'Musisz wybrać salę lub miejsce zewnętrzne'],
-                         'place': [u'Musisz wybrać salę lub miejsce zewnętrzne']},
+                message={'room': ['Musisz wybrać salę lub miejsce zewnętrzne'],
+                         'place': ['Musisz wybrać salę lub miejsce zewnętrzne']},
                 code='invalid'
             )
 
         if self.room:
             if not self.room.can_reserve:
                 raise ValidationError(
-                    message={'room': [u'Ta sala nie jest przeznaczona do rezerwacji']},
+                    message={'room': ['Ta sala nie jest przeznaczona do rezerwacji']},
                     code='invalid'
                 )
 
@@ -101,8 +101,8 @@ class Term(models.Model):
         app_label = 'schedule'
         get_latest_by = 'end'
         ordering = ['day', 'start', 'end']
-        verbose_name = u'termin'
-        verbose_name_plural = u'terminy'
+        verbose_name = 'termin'
+        verbose_name_plural = 'terminy'
 
     def get_conflicted(self):
         if not self.room:

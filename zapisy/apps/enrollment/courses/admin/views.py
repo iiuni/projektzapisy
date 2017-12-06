@@ -22,7 +22,7 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.enrollment.records.utils import run_rearanged
 from apps.users.models import Employee, Student
-from importschedule import import_semester_schedule
+from .importschedule import import_semester_schedule
 from apps.enrollment.courses.forms import Parser
 import os
 
@@ -133,13 +133,13 @@ def import_semester(request):
             try:
                 import_semester_schedule(xmlfile)
     	    except Exception:
-                errormsg = unicode(exc_info()[0]) + ' ' + unicode(exc_info()[1]) + '\n\n'
-                errormsg += u'Traceback:\n'
-                errormsg += u''.join([str for str in format_tb(exc_info()[2])])
-                messages.error(request, u"Błąd!")
+                errormsg = str(exc_info()[0]) + ' ' + str(exc_info()[1]) + '\n\n'
+                errormsg += 'Traceback:\n'
+                errormsg += ''.join([str for str in format_tb(exc_info()[2])])
+                messages.error(request, "Błąd!")
             else:
                 errormsg = None
-                messages.success(request, u"Plik został zaimportowany.")
+                messages.success(request, "Plik został zaimportowany.")
             finally:
                 xmlfile.close()
 
@@ -206,7 +206,7 @@ def finish_import_schedule(request):
         for g in obj['groups']:
             gr = Group()
             gr.course = c
-            if g['teacher'] <> '':
+            if g['teacher'] != '':
                 gr.teacher_id = Employee.objects.get(user__id=g['teacher']).id
             gr.type = g['type']
             gr.limit = 0

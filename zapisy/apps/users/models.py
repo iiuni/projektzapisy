@@ -51,7 +51,7 @@ class UserProfile(models.Model):
         super(UserProfile, self).clean()
         if not (self.is_employee or self.is_student) or (self.is_student and self.is_employee):
             raise ValidationError(
-                message={'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
+                message={'integrity': ['Profil musi jedoznacznie określać rolę użytkownika w systemie']},
             )
 
 
@@ -228,11 +228,11 @@ class Employee(BaseUser):
         app_label = 'users'
         ordering = ['user__last_name', 'user__first_name']
         permissions = (
-            ("mailto_all_students", u"Może wysyłać maile do wszystkich studentów"),
+            ("mailto_all_students", "Może wysyłać maile do wszystkich studentów"),
         )
 
     def __unicode__(self):
-        return unicode(self.user.get_full_name())
+        return str(self.user.get_full_name())
 
 class Student(BaseUser):
     '''
@@ -310,8 +310,8 @@ class Student(BaseUser):
         from apps.enrollment.courses.models import Semester
         current_semester = Semester.get_default_semester()
         from apps.offer.vote.models.single_vote import SingleVote
-        return map(lambda x: x.course, SingleVote.objects.filter(student=self, state__semester_winter=current_semester,
-                                              correction=given_points).select_related('course').order_by('course__entity__name'))
+        return [x.course for x in SingleVote.objects.filter(student=self, state__semester_winter=current_semester,
+                                              correction=given_points).select_related('course').order_by('course__entity__name')]
         #return map(lambda x: x.course, StudentOptions.objects.filter(course__semester__id__exact=current_semester.id).filter(student=self, records_opening_bonus_minutes=minutes).order_by('course__name'))
 
     def get_records_history(self,default_semester=None):
@@ -324,7 +324,7 @@ class Student(BaseUser):
         records = self.records.exclude(group__course__semester = \
             default_semester).select_related('group', 'group__course',
             'group__course__entity')
-        records_list = map(lambda x: x.group.course.entity.id, records)
+        records_list = [x.group.course.entity.id for x in records]
         return list(frozenset(records_list))
 
     def get_points(self, semester=None):
@@ -386,10 +386,10 @@ class Student(BaseUser):
     @staticmethod
     def get_all_groups(student):
         try:
-            groups = map(lambda x: x.group, student.records.filter(status="1").\
+            groups = [x.group for x in student.records.filter(status="1").\
                         select_related('group', 'group__teacher',
                                       'group__course__semester',
-                                      'group__course__term'))
+                                      'group__course__term')]
         except Student.DoesNotExist:
              logger.error('Function Student.get_all_groups(student = %d)' + \
              'throws Student.DoesNotExist exception.' % student.pk )
@@ -472,7 +472,7 @@ class Student(BaseUser):
         ordering = ['user__last_name', 'user__first_name']
 
     def __unicode__(self):
-        return unicode(self.user.get_full_name())
+        return str(self.user.get_full_name())
 
 
 class Program( models.Model ):
@@ -565,7 +565,7 @@ class StudiaZamawiane(ZamawianeAbstract):
                 message_user = render_to_string('users/bank_account_change_email.html', context_instance=context)
                 message_employee = render_to_string('users/bank_account_change_email_employee.html', context_instance=context)
 
-                emails = map( lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
+                emails = [x['email'] for x in list(StudiaZamawianeMaileOpiekunow.objects.values())]
 
                 send_mail(subject, message_user, None, [self.student.user.email])
                 send_mail(subject_employee, message_employee, None ,emails)
@@ -612,7 +612,7 @@ class StudiaZamawiane2012(ZamawianeAbstract):
                 message_user = render_to_string('users/bank_account_change_email.html', context_instance=context)
                 message_employee = render_to_string('users/bank_account_change_email_employee.html', context_instance=context)
 
-                emails = map( lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
+                emails = [x['email'] for x in list(StudiaZamawianeMaileOpiekunow.objects.values())]
 
                 send_mail(subject, message_user, None, [self.student.user.email])
                 send_mail(subject_employee, message_employee, None ,emails)

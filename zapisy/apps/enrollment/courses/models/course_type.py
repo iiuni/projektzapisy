@@ -11,15 +11,15 @@ class Type(models.Model):
     meta_type = models.BooleanField(default = False, verbose_name ='Grupa typow')
     free_in_vote = models.BooleanField(default=False)
 
-    have_review_lecture = models.BooleanField(verbose_name=u'Posiada repetytorium', default=False)
-    have_lecture = models.BooleanField(verbose_name=u'Posiada wykład', default=False)
-    have_tutorial = models.BooleanField(verbose_name=u'Posiada ćwiczenia', default=False)
-    have_lab = models.BooleanField(verbose_name=u'Posiada pracownię', default=False)
-    have_tutorial_lab = models.BooleanField(verbose_name=u'Posiada ćwiczenio-pracownię', default=False)
-    have_seminar = models.BooleanField(verbose_name=u'Posiada seminarium', default=False)
-    have_project = models.BooleanField(verbose_name=u'Posiada projekt', default=False)
+    have_review_lecture = models.BooleanField(verbose_name='Posiada repetytorium', default=False)
+    have_lecture = models.BooleanField(verbose_name='Posiada wykład', default=False)
+    have_tutorial = models.BooleanField(verbose_name='Posiada ćwiczenia', default=False)
+    have_lab = models.BooleanField(verbose_name='Posiada pracownię', default=False)
+    have_tutorial_lab = models.BooleanField(verbose_name='Posiada ćwiczenio-pracownię', default=False)
+    have_seminar = models.BooleanField(verbose_name='Posiada seminarium', default=False)
+    have_project = models.BooleanField(verbose_name='Posiada projekt', default=False)
 
-    default_ects = models.IntegerField(verbose_name=u'Punkty ECTS', default=6)
+    default_ects = models.IntegerField(verbose_name='Punkty ECTS', default=6)
 
 	#TODO: dodać unique na parę (meta_type, name)
     

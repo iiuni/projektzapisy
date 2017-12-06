@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db      import models
 
-from base_question  import BaseQuestion
-from saved_ticket   import SavedTicket
+from .base_question  import BaseQuestion
+from .saved_ticket   import SavedTicket
 
 class OpenQuestion( BaseQuestion ):
     sections = models.ManyToManyField( 'Section',    
@@ -39,5 +39,5 @@ class OpenQuestionOrdering( models.Model ):
         app_label           = 'poll' 
     
     def __unicode__( self ):
-        return unicode( self.position ) + u'[' + unicode( self.sections ) + u']' + unicode( self.question )
+        return str( self.position ) + '[' + str( self.sections ) + ']' + str( self.question )
         
