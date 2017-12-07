@@ -180,7 +180,7 @@ def generate_keys_for_polls(semester=None):
 def group_polls_by_course( poll_list ):
     if poll_list == []: return []
 
-    poll_list.sort( poll_cmp )
+    #poll_list.sort( poll_cmp )
 
     res       = []
     act_polls = []

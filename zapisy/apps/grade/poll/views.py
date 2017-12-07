@@ -988,8 +988,8 @@ def poll_answer( request, slug, pid ):
                         if slug2 == "common": return 1
                         return cmp((n1, slug1), (n2,slug2))
 
-                    polls.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
-                    finit.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
+                    #polls.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
+                    #finit.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
 
                     request.session[ 'finished' ] = finit
                     request.session[ 'polls' ]    = polls

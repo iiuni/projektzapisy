@@ -35,7 +35,7 @@ def check_signature( ticket, signed_ticket, public_key ):
 def group_polls_and_tickets_by_course( poll_and_ticket_list ):
     if not poll_and_ticket_list: return []
 
-    poll_and_ticket_list.sort( lambda (p1, t1, st1), (p2, t2, st2): poll_cmp( p1, p2 ))
+    #poll_and_ticket_list.sort( lambda (p1, t1, st1), (p2, t2, st2): poll_cmp( p1, p2 ))
 
     res       = []
     act_polls = []
@@ -223,7 +223,8 @@ def poll_cmp_teachers( p1, p2 ):
         return -1
 
 def group_polls_by_course( polls ):
-    polls.sort( poll_cmp_courses )
+    #polls.sort( poll_cmp_courses )
+    polls.sort(key = lambda p: p.group.course.name if p.group else None)
 
     groupped = []
     if polls:
@@ -251,7 +252,8 @@ def group_polls_by_course( polls ):
 
 
 def group_polls_by_teacher( polls ):
-    polls.sort( poll_cmp_teachers )
+    #polls.sort( poll_cmp_teachers )
+    polls.sort(key = lambda p: p.group.get_teacher_full_name() if p.group else None)
 
     groupped = []
     if polls:

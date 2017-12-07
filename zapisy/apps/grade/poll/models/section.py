@@ -29,7 +29,7 @@ class Section( models.Model ):
         multiple_choice = MultipleChoiceQuestionOrdering.objects.filter( sections = self ).select_related()
 
         orderings = list( open ) + list( single_choice ) + list( multiple_choice )
-        orderings.sort( ordering_cmp )
+        #orderings.sort( ordering_cmp )
         return [o.question for o in orderings]
 
     def all_answers( self, poll ):
