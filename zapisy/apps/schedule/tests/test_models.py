@@ -224,7 +224,8 @@ class TermTestCase(TestCase):
         term2 = factories.TermFactory()
         term2.full_clean()
         term2.save()
-        term3 = factories.Term(room = term2.get_room())
+        term3 = factories.TermFactory()
+        term3.room = term2.get_room()
         self.assertRaises(ValidationError, term3.full_clean)
 
     def test_different_semester_reservation(self):
