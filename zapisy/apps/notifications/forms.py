@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django import forms
 from django.forms.models import modelformset_factory
 from apps.notifications.models import NotificationPreferences, get_category

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from copy import deepcopy
 from django import forms
 from django.db.models.query import EmptyQuerySet

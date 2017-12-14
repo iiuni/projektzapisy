@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from functools import update_wrapper
 
 from django.contrib.auth import REDIRECT_FIELD_NAME

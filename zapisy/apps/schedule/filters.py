@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import django_filters
 from apps.enrollment.courses.models import Semester

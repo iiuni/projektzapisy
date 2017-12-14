@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import permission_required
 from django.template.response import TemplateResponse
 from apps.enrollment.records.models import Queue, Record
