@@ -24,7 +24,7 @@ from apps.offer.vote.models import SystemState
 
 import os
 from time import sleep
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from django.db import connection
@@ -46,6 +46,15 @@ class SeleniumTestCase(LiveServerTestCase):
     def tearDownClass(cls):
         cls.driver.quit()
         super(SeleniumTestCase, cls).tearDownClass()
+
+    def wait_for_pass(self, block, times=3):
+        for _ in xrange(times):
+            try:
+                return block()
+            except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
+                sleep(3)
+        return block()
+
 
 
 class NewSemesterTests(SeleniumTestCase):
@@ -98,13 +107,13 @@ class NewSemesterTests(SeleniumTestCase):
             username='student4',
             password=self.password)
         self.student1 = Student.objects.create(
-            user=user_student1, matricula="264823")
+            user=user_student1, matricula='264823')
         self.student2 = Student.objects.create(
-            user=user_student2, matricula="222222")
+            user=user_student2, matricula='222222')
         self.student3 = Student.objects.create(
-            user=user_student3, matricula="333333")
+            user=user_student3, matricula='333333')
         self.student4 = Student.objects.create(
-            user=user_student4, matricula="444444")
+            user=user_student4, matricula='444444')
 
         self.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
@@ -196,7 +205,7 @@ class NewSemesterTests(SeleniumTestCase):
 
     def tearDown(self):
         sql_calls = [
-            "DROP TABLE courses_studentpointsview;",
+            'DROP TABLE courses_studentpointsview;',
         ]
         for sql_call in sql_calls:
             cursor = connection.cursor()
@@ -215,15 +224,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.open_records()
         self.generate_t0()
 
-        self.driver.get_screenshot_as_file("screenshot.png")
-
-    def wait_for_pass(self, block, times=3):
-        for _ in range(1, times + 1):
-            try:
-                return block()
-            except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
-                sleep(3)
-        return block()
+        self.driver.get_screenshot_as_file('screenshot.png')
 
     def prepare_course_entities_for_voting(self):
         self.driver.get(self.live_server_url)
@@ -249,8 +250,8 @@ class NewSemesterTests(SeleniumTestCase):
                 )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
-        self.driver.get(
-            '{}{}'.format(self.driver.current_url, '/manage/proposals'))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_link_text('Zarządzaj').click())
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Głosowanie').click())
 
@@ -532,7 +533,6 @@ class NewSemesterTests(SeleniumTestCase):
         test_schedule_path = settings.BASE_DIR + '/test_schedule.txt'
         with open(test_schedule_path, 'w') as file:
             file.write(test_schedule)
-        print(employees)
         scheduleimport_run_test(
             test_schedule_path,
             courses,
@@ -627,7 +627,86 @@ class NewSemesterTests(SeleniumTestCase):
 
     def generate_t0(self):
         # cursor = connection.cursor()
-        # cursor.execute("SELECT
-        # users_openingtimesview_refresh_for_semester(%s)",
+        # cursor.execute('SELECT
+        # users_openingtimesview_refresh_for_semester(%s)',
         # [self.next_winter_semester.id])
         pass
+
+
+class AdminTests(SeleniumTestCase):
+
+    SUB_PAGES = [
+      "/fereol_admin/courses/freeday/", "/fereol_admin/courses/changedday/", "/fereol_admin/courses/group/",
+      "/fereol_admin/courses/effects/", "/fereol_admin/courses/coursedescription/",
+      "/fereol_admin/courses/courseentity/", "/fereol_admin/courses/course/", "/fereol_admin/courses/type/",
+      "/fereol_admin/courses/pointtypes/", "/fereol_admin/courses/classroom/", "/fereol_admin/courses/semester/",
+      "/fereol_admin/courses/tag/", "/fereol_admin/courses/pointsofcourseentities/",
+      "/fereol_admin/desiderata/desiderataother/", "/fereol_admin/desiderata/desiderata/",
+      "/fereol_admin/mailer/dontsendentry/", "/fereol_admin/mailer/messagelog/", "/fereol_admin/mailer/message/",
+      "/fereol_admin/news/news/", "/fereol_admin/notifications/notificationpreferences/",
+      "/fereol_admin/poll/template/",
+      "/fereol_admin/poll/savedticket/", "/fereol_admin/preferences/preference/",
+      "/fereol_admin/schedule/specialreservation/", "/fereol_admin/schedule/term/", "/fereol_admin/sites/site/",
+      "/fereol_admin/ticket_create/privatekey/", "/fereol_admin/ticket_create/publickey/",
+      "/fereol_admin/ticket_create/studentgraded/", "/fereol_admin/ticket_create/usedticketstamp/",
+      "/fereol_admin/users/employee/", "/fereol_admin/users/program/", "/fereol_admin/users/student/",
+      "/fereol_admin/users/studiazamawianemaileopiekunow/", "/fereol_admin/users/studiazamawiane/",
+      "/fereol_admin/users/studiazamawiane2012/", "/fereol_admin/auth/group/", "/fereol_admin/auth/user/",
+      "/fereol_admin/vote/singlevote/", "/fereol_admin/vote/systemstate/"
+      ]
+
+    def createAdmin(self):
+        self.password = '11111'
+        self.admin = User.objects.create_superuser(username='przemka',
+                                                   password=self.password,
+                                                   email='admin@admin.com')
+        self.admin.first_name = 'przemka'
+        self.admin.save()
+    def createSemester(self):
+       today = datetime.now()
+       self.semester = Semester(
+           visible=True,
+           type=Semester.TYPE_WINTER,
+           year='2016/17',
+           records_opening=(today + timedelta(days=-1)),
+           records_closing=today + timedelta(days=6),
+           lectures_beginning=today + timedelta(days=4),
+           lectures_ending=today + timedelta(days=120),
+           semester_beginning=today,
+           semester_ending=today + timedelta(days=130),
+           records_ects_limit_abolition=(today + timedelta(days=1)))
+       self.semester.save()
+
+    def setUp(self):
+        self.createAdmin()
+        self.createSemester()
+        self.driver.get('{}/fereol_admin'.format(self.live_server_url))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('id_username').send_keys(self.admin.username)
+            )
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            )
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            )
+
+    def tearDown(self):
+        self.admin.delete()
+        self.semester.delete()
+
+    def testAdminLogin(self):
+        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+
+
+def createSubPageTest(link_text):
+    def f(self):
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_xpath(u'//th//a[@href="{}"]'.format(link_text)).click()
+            )
+        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+    return f
+
+
+for idx, name in enumerate(AdminTests.SUB_PAGES):
+    setattr(AdminTests, 'testSubpageId' + str(idx), createSubPageTest(name))

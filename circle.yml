@@ -9,13 +9,13 @@ dependencies:
   override:
     - pip install --upgrade pip
     - pip install -r requirements.test.txt
+    - pip freeze
 
 test:
   pre:
     - cp ../env/settings_local_test.py settings_local.py
   override:
     - mkdir logs
-    # - python manage.py test test_app --nomigrations
     - coverage run manage.py test test_app --nomigrations
     - coverage run manage.py test apps.news.tests --nomigrations
     - coverage run manage.py test apps.schedule --nomigrations

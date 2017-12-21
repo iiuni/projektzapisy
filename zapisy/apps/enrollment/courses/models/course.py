@@ -316,7 +316,8 @@ class CourseEntity(models.Model):
 
     @property
     def description(self):
-        return self.information.description
+        if self.information:
+            return self.information.description
 
 
     @property

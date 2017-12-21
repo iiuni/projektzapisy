@@ -2,6 +2,9 @@
 
 
 from django.core.exceptions import ObjectDoesNotExist
+import sys
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 SCHEDULE_FILE = 'plan.txt'
 LIMITS = {'1' : 300, '9' : 300, '2' : 20, '3' : 15 , '5' : 18 , '6' : 15 }
@@ -232,7 +235,8 @@ def import_schedule(file, semester):
     course = None
     while True:
         line = file.readline()
-        print(line)
+        if not TESTING:
+            print(line)
         if not line:
             return
         if line.startswith('  '):
@@ -280,8 +284,9 @@ def import_schedule(file, semester):
             name = line.strip()
             try:
                 course = get_course(name)
-            except Exception as e:
-                print('Error during creating course:%s. \nError: %s ' % (name, e))
+            except Exception, e:
+                if not TESTING:
+                    print('Error during creating course:%s. \nError: %s ' % (name, e))
                 break
 
         else:
@@ -304,7 +309,8 @@ def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):
 
 def run():
     semester = get_semester()
-    print('Przenosimy na semestr <%s>' % semester)
+    if not TESTING:
+        print('Przenosimy na semestr <%s>' % semester)
     file = open(SCHEDULE_FILE)
     import_schedule(file, semester)
 

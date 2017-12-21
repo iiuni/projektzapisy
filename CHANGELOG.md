@@ -2,6 +2,16 @@
 
 # Current version
 
+# Version 17.12.16
+
+* Improved desideratas form
+* Upgrade to Django 1.9
+
+# Version 17.12.11
+
+* Show desiderates in offer menu
+* Upgraded the google analytics library
+
 # Version 17.11.28
 
 * Fixed users schedules
@@ -17,7 +27,7 @@
 * Loading courses with ajax
 * Fixed disappearing pop-up
 * Fixed issues with reservations and conflicts
-* Hided vote summary from non-users
+* Hid vote summary from non-users
 
 # Version 17.10.25
 

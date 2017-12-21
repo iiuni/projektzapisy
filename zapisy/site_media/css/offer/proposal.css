@@ -29,3 +29,7 @@ li.vote2013, li.vote2013 a { color:green!important; font-weight: bold;}
 #extraOfferFilters td {
   vertical-align: middle;
 }
+
+#desiderata-emphasis {
+    color: green;
+}

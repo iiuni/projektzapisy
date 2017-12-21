@@ -53,6 +53,7 @@ def offer(request, slug=None):
         "types_list": types_list,
         "teachers": teachers,
         "effects": Effects.objects.all(),
+        "semester": Semester.get_current_semester(),
         "tags": Tag.objects.all(),
     })
 
@@ -141,6 +142,7 @@ def proposal(request, slug=None):
         in_offer = list(filter((lambda course: 1 <= course.get_status() <= 3), proposals))
         removed = list(filter((lambda course: course.get_status() == 4), proposals))
         proposal  = employee_proposal(request.user, slug)
+        semester = Semester.get_current_semester()
     except NotOwnerException:
         return redirect('offer-page', slug=slug)
     except Http404:
