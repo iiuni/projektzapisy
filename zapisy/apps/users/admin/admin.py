@@ -105,7 +105,7 @@ class ProfileInline(admin.StackedInline):
 
 
 class StudiaZamawianeAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'points', 'comments')
+    list_display = ('__str__', 'points', 'comments')
     search_fields = ('student__user__first_name', 'student__user__last_name', 'student__matricula', 'bank_account')
     ordering = ['student__user__last_name', 'student__user__first_name']
 
@@ -115,7 +115,7 @@ class StudiaZamawianeAdmin(admin.ModelAdmin):
 
 
 class StudiaZamawianeAdmin2012(admin.ModelAdmin):
-    list_display = ('__unicode__', 'points', 'comments')
+    list_display = ('__str__', 'points', 'comments')
     search_fields = ('student__user__first_name', 'student__user__last_name', 'student__matricula', 'bank_account')
     ordering = ['student__user__last_name', 'student__user__first_name']
 

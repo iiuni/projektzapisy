@@ -1,7 +1,6 @@
 """
 Allows templates to access the Django version.
 """
-
 from django import template
 import django
 
