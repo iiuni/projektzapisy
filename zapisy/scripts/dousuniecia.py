@@ -13,7 +13,7 @@ def process(line):
     try:
         student = Student.objects.get(matricula=matricula)
     except ObjectDoesNotExist:
-        print("***" + str(matricula) + " brak " + str(ects))
+        print(("***" + str(matricula) + " brak " + str(ects)))
         return
     print((student, student.status))
     # student.status = 0

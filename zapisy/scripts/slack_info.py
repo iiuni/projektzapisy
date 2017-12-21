@@ -18,7 +18,7 @@ def run():
     for g in gg:
         if len(Queue.get_students_in_queue(g)) != g.queued:
             bad_groups.append(g)
-            print(g.id, len(Queue.get_students_in_queue(g)), g.queued)
+            print((g.id, len(Queue.get_students_in_queue(g)), g.queued))
 
     s = ''
     for g in bad_groups:

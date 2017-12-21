@@ -11,7 +11,7 @@ def process(line):
     try:
         s = Student.objects.get(matricula=indeks)
     except ObjectDoesNotExist:
-        print("***" + indeks + ": brak")
+        print(("***" + indeks + ": brak"))
         return
     s.isim = True
     s.save()

@@ -18,7 +18,7 @@ def process(line):
         else:
             u = User.objects.get(last_name = nazwisko, first_name = imie)
     except ObjectDoesNotExist:
-        print("***" + str(line) + " brak")
+        print(("***" + str(line) + " brak"))
         return
     print((u.get_full_name()))
     u.student.program = Program.objects.get(id=ptype)

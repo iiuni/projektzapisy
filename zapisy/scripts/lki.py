@@ -15,7 +15,7 @@ def process(line, t):
     try:
         student = Student.objects.get(matricula=matricula, status=0)
     except ObjectDoesNotExist:
-        print("***" + str(matricula) + " brak")
+        print(("***" + str(matricula) + " brak"))
         return
     if t == 'dyskretna_l':
         print((student, student.dyskretna_l))

@@ -51,7 +51,7 @@ def process(line):
         if program == 'ISIM':
             isim = True
         create_user(indeks, imie, nazwisko, mail, isim, haslo)
-        print(imie + ',' + nazwisko + ',' + indeks + ',' + haslo + ',' + program)
+        print((imie + ',' + nazwisko + ',' + indeks + ',' + haslo + ',' + program))
     else:
         print((str(indeks)+': already exists'))
 

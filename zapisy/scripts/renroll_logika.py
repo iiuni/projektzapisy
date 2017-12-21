@@ -24,5 +24,5 @@ def run():
             #g.enroll_student(s)
 
 g = Group.objects.get(id=gB_id)
-for i in rr[0:20]
+for i in rr[0:20]:
     g.enroll_student(i)
