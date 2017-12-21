@@ -9,9 +9,9 @@ class mobileDetectionMiddleware(object):
     """
 
     def process_request(self, request):
-        is_mobile = False;
+        is_mobile = False
 
-        if request.META.has_key('HTTP_USER_AGENT'):
+        if 'HTTP_USER_AGENT' in request.META:
             user_agent = request.META['HTTP_USER_AGENT']
 
             # Test common mobile values.
@@ -20,12 +20,12 @@ class mobileDetectionMiddleware(object):
             match = prog.search(user_agent)
 
             if match:
-                is_mobile = True;
+                is_mobile = True
             else:
                 # Nokia like test for WAP browsers.
                 # http://www.developershome.com/wap/xhtmlmp/xhtml_mp_tutorial.asp?page=mimeTypesFileExtension
 
-                if request.META.has_key('HTTP_ACCEPT'):
+                if 'HTTP_ACCEPT' in request.META:
                     http_accept = request.META['HTTP_ACCEPT']
 
                     pattern = "application/vnd\.wap\.xhtml\+xml"
