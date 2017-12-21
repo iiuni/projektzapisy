@@ -69,6 +69,7 @@ from .form_utils                        import get_section_form_data, \
                                               section_save
 from apps.grade.poll.exceptions import NoTitleException, NoSectionException, \
                                     NoPollException
+from functools import cmp_to_key
 
 
 def main(request):
@@ -750,6 +751,15 @@ def polls_for_user( request, slug ):
 
     return render_to_response( 'grade/poll/polls_for_user.html', data, context_instance = RequestContext( request ))
 
+def slug_cmp(t1, t2):
+    x, lx = t1
+    y, ly = t2
+    n1, slug1 = x
+    n2, slug2 = y
+    if slug1 == "common": return -1
+    if slug2 == "common": return 1
+    return (x > y) - (x < y)
+
 def poll_answer( request, slug, pid ):
     if request.user.is_authenticated():
         return render_to_response( 'grade/poll/user_is_authenticated.html', {}, context_instance = RequestContext( request ))
@@ -980,16 +990,9 @@ def poll_answer( request, slug, pid ):
                                 break
                     else:
                         finit.append(((name, slug), [(int(pid), ticket, signed_ticket)]))
-
-                    def slug_cmp(xxx_todo_changeme, xxx_todo_changeme3):
-                        (n1,slug1) = xxx_todo_changeme
-                        (n2,slug2) = xxx_todo_changeme3
-                        if slug1 == "common": return -1
-                        if slug2 == "common": return 1
-                        return cmp((n1, slug1), (n2,slug2))
-
-                    #polls.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
-                    #finit.sort( lambda (x, lx), (y, ly): slug_cmp( x, y ))
+                    
+                    polls.sort(key = cmp_to_key(slug_cmp))
+                    finit.sort(key = cmp_to_key(slug_cmp))
 
                     request.session[ 'finished' ] = finit
                     request.session[ 'polls' ]    = polls

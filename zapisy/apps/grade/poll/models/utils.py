@@ -18,7 +18,7 @@ def getGroups(semester, group = None, type = None, course = None):
     return groups
 
 def ordering_cmp( ord_1, ord_2 ):
-    if cmp( ord_1.position, ord_2.position ) == 0:
+    if ord_1.position == ord_2.position:
         if str( type( ord_1 )) == \
            "<class 'apps.grade.poll.models.single_choice_question.SingleChoiceQuestionOrdering'>":
             return -1
@@ -37,4 +37,4 @@ def ordering_cmp( ord_1, ord_2 ):
         else:
             return 1
     else:
-        return cmp( ord_1.position, ord_2.position )
+        return -1 if ord_1.position < ord_2.position else 1

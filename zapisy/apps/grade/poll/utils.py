@@ -26,7 +26,12 @@ from apps.users.models               import Program
 from django.core.paginator             import Paginator, InvalidPage, EmptyPage
 from django.utils.safestring           import SafeText, mark_safe
 from django.db.models import Q
-from functools import reduce
+from functools import reduce, cmp_to_key
+
+def poll_and_ticket_cmp(ptst1, ptst2):
+    p1, t1, st1 = ptst1
+    p2, t2, st2 = ptst2
+    return poll_cmp(p1, p2)
 
 def check_signature( ticket, signed_ticket, public_key ):
     pk = RSA.importKey( public_key.public_key )
@@ -35,7 +40,7 @@ def check_signature( ticket, signed_ticket, public_key ):
 def group_polls_and_tickets_by_course( poll_and_ticket_list ):
     if not poll_and_ticket_list: return []
 
-    #poll_and_ticket_list.sort( lambda (p1, t1, st1), (p2, t2, st2): poll_cmp( p1, p2 ))
+    poll_and_ticket_list.sort(key = cmp_to_key(poll_and_ticket_cmp))
 
     res       = []
     act_polls = []
@@ -204,27 +209,11 @@ def getGroups(request, template):
 
     return Group.objects.filter(**kwargs)
 
-def poll_cmp_courses( p1, p2 ):
-    if p1.group:
-        if p2.group:
-            return cmp( p1.group.course.name, p2.group.course.name )
-        else:
-            return 1
-    else:
-        return -1
-
-def poll_cmp_teachers( p1, p2 ):
-    if p1.group:
-        if p2.group:
-            return cmp( p1.group.get_teacher_full_name(), p2.group.get_teacher_full_name() )
-        else:
-            return 1
-    else:
-        return -1
+def poll_sort_by_course_key(p):
+    return p.group.course.name if p.group else ""
 
 def group_polls_by_course( polls ):
-    #polls.sort( poll_cmp_courses )
-    polls.sort(key = lambda p: p.group.course.name if p.group else None)
+    polls.sort(key = poll_sort_by_course_key)
 
     groupped = []
     if polls:
@@ -250,10 +239,11 @@ def group_polls_by_course( polls ):
         if act: groupped.append(( act_sub, act ))
     return groupped
 
+def poll_sort_by_teacher_key(p):
+    return p.group.get_teacher_full_name() if p.group else ""
 
 def group_polls_by_teacher( polls ):
-    #polls.sort( poll_cmp_teachers )
-    polls.sort(key = lambda p: p.group.get_teacher_full_name() if p.group else None)
+    polls.sort(key = poll_sort_by_teacher_key)
 
     groupped = []
     if polls:
