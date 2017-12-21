@@ -2,6 +2,7 @@
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib import messages
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.desiderata.forms import DesiderataFormSet, DesiderataOtherForm
@@ -32,7 +33,7 @@ def change_desiderata(request):
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
         if other_form.is_valid():
             other_form.save()
-
+        messages.success(request, 'Zmiany zapisano pomyślnie')
     else:
         other_form = DesiderataOtherForm(instance=other)
     formset = DesiderataFormSet(initial=desiderata_formset_initial)

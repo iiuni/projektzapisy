@@ -6,6 +6,7 @@ from .open_question            import OpenQuestionOrdering
 from .single_choice_question   import SingleChoiceQuestionOrdering
 from .multiple_choice_question import MultipleChoiceQuestionOrdering
 from .utils                    import ordering_cmp
+from functools import cmp_to_key
 
 class Section( models.Model ):
     title       = models.CharField( max_length = 50,  verbose_name = 'tytuł' )
@@ -29,7 +30,7 @@ class Section( models.Model ):
         multiple_choice = MultipleChoiceQuestionOrdering.objects.filter( sections = self ).select_related()
 
         orderings = list( open ) + list( single_choice ) + list( multiple_choice )
-        #orderings.sort( ordering_cmp )
+        orderings.sort(key = cmp_to_key(ordering_cmp))
         return [o.question for o in orderings]
 
     def all_answers( self, poll ):

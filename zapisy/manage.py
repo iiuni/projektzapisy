@@ -19,8 +19,4 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    from django.contrib.auth.models import Permission
-    # Patch the field width to allow for our long model names
-    Permission._meta.get_field('name').max_length=200
-    Permission._meta.get_field('codename').max_length=200
     execute_from_command_line(sys.argv)

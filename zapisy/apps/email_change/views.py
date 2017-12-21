@@ -34,6 +34,7 @@ from apps.email_change.forms import EmailChangeForm
 from apps.email_change.utils import generate_key
 from apps.email_change.models import EmailChangeRequest
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.contrib import messages
 
 @login_required
@@ -47,12 +48,8 @@ def email_change_view(request, extra_context={},
 
     """
     if request.method == 'POST':
-        form = EmailChangeForm(username=request.user.username, data=request.POST, files=request.FILES)
+        form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
-
-            EmailChangeRequest = apps.cache.get_model('email_change', 'EmailChangeRequest')
-            Site = apps.cache.get_model('sites', 'Site')
-
             email = form.cleaned_data.get('email')
             user = User.objects.filter(email=email)
 
@@ -103,8 +100,8 @@ def email_change_view(request, extra_context={},
             return redirect(success_url)
 
     else:
-        form = EmailChangeForm(username=request.user.username, initial={'email' : request.user.email})
-
+        form = EmailChangeForm(instance=request.user)
+    
     context = RequestContext(request, extra_context)
     context['form'] = form
 
@@ -116,9 +113,6 @@ def email_change_view(request, extra_context={},
 def email_verify_view(request, verification_key, extra_context={},
         success_url='my-profile',#'email_change_complete',
         template_name='email_change/email_verify.html'):
-    """
-    """
-    EmailChangeRequest = apps.cache.get_model('email_change', 'EmailChangeRequest')
     context = RequestContext(request, extra_context)
     try:
         ecr = EmailChangeRequest.objects.get(

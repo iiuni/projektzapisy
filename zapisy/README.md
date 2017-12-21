@@ -32,4 +32,4 @@ _O nowszego dumpa można poprosić na Slacku._
 * Starą wersję bazy danych, możesz aktualizować aplikując migracje komendą:
 `./manage.py migrate`
 * Zmieniając model, możesz zmienić strukturę bazy danych. Poniższą komendą możesz wygenerować automatycznie migrację:
-`./manage.py schemamigration appname --auto --update`
+`./manage.py makemigrations`

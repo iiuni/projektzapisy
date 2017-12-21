@@ -1,6 +1,14 @@
 {% extends "offer/base.html" %}
+{% load staticfiles %}
 
+{% block main-subtitle %}Dezyderaty{% endblock %}
 {% block sidebar %}{% endblock %}
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/offer/desiderata.js" %}"></script>
+{% endblock %}
+
+{% block offer_menu_desiderata %} class="active"{% endblock %}
 
 {% block bread %}
     <a href="/">Strona główna</a> &raquo;
@@ -14,7 +22,8 @@
     <h3>Dezyderaty</h3>
 
     {% if semester.desiderata_is_open %}
-    Zaznacz godziny, w których nie możesz prowadzić zajęć.<br>
+    Zaznacz godziny, w których możesz prowadzić zajęcia. 
+    <p id="desiderata-emphasis">Proszę zwrócić uwagę, że zaznaczamy odwrotnie, niż było przyjęte na papierowych dezyderatach.</p><br>
     <form method="post">{% csrf_token %}
     <table>
         <thead>
@@ -23,6 +32,7 @@
                 {% for hour in formset.hours %}
                 <th>{{hour}}</th>
                 {% endfor %}
+                <th>Cały dzień</th>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +44,9 @@
                         {{ form.value }}{{form.day}}{{form.hour}}
                     </td>
                 {% endfor %}
+                    <td>
+                        <button class="btn btn-small btn-info desiderata-toggler">Przełącz</button>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

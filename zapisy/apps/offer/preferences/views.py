@@ -8,6 +8,7 @@ from django.template import RequestContext
 from apps.offer.preferences.forms import PreferenceFormset, PreferenceForm
 from apps.offer.preferences.models import Preference
 from apps.users.decorators import employee_required
+from apps.enrollment.courses.models import Semester
 
 from django.views.decorators.http import require_POST
 
@@ -24,6 +25,7 @@ def view(request):
 
     prefs     = employee.get_preferences()
     formset   = PreferenceFormset(queryset=prefs)
+    semester  = Semester.get_current_semester()
 
     return render_to_response(
         'offer/preferences/base.html',

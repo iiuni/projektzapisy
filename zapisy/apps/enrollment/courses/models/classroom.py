@@ -7,9 +7,17 @@ import json
 from django.db.models import Q
 from autoslug import AutoSlugField
 
-floors = [(0, 'Parter'), (1, 'I piętro'), (2, 'II Piętro'), (3, 'III piętro')]
-types = [(0, 'Sala wykładowa'), (1, 'Sala ćwiczeniowa'), (2, 'Pracownia komputerowa - Windows'), (3, 'Pracownia komputerowa - Linux')]
+floors = [(0, 'Parter'),
+          (1, 'I piętro'),
+          (2, 'II Piętro'),
+          (3, 'III piętro')]
 
+types = [(0, 'Sala wykładowa'),
+         (1, 'Sala ćwiczeniowa'),
+         (2, 'Pracownia komputerowa - Windows'),
+         (3, 'Pracownia komputerowa - Linux'),
+         (4, 'Pracownia dwusystemowa (Windows+Linux)'),
+         (5, 'Poligon (109)')]
 
 
 class Classroom( models.Model ):

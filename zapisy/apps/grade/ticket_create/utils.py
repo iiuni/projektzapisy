@@ -18,6 +18,7 @@ from apps.grade.ticket_create.models     import PublicKey, \
 from apps.grade.ticket_create.exceptions import *
 from time import sleep
 from django.core.cache import cache
+from functools import cmp_to_key
 
 RAND_BITS = 512
 
@@ -180,7 +181,7 @@ def generate_keys_for_polls(semester=None):
 def group_polls_by_course( poll_list ):
     if poll_list == []: return []
 
-    #poll_list.sort( poll_cmp )
+    poll_list.sort(key = cmp_to_key(poll_cmp))
 
     res       = []
     act_polls = []

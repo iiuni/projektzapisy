@@ -73,11 +73,17 @@ def student_profile(request, user_id):
             return render_to_response('users/student_profile.html', data, context_instance=RequestContext(request))
 
     except Student.DoesNotExist:
-        logger.error('Function student_profile(id = %d) throws NonStudentException while acessing to non existing student.' % int(user_id) )
+        logger.error(
+            'Function student_profile(id = {}) throws NonStudentException while acessing to non existing student.'
+            .format(str(user_id))
+        )
         messages.error(request, "Nie ma takiego studenta.")
         return render_to_response('common/error.html', context_instance=RequestContext(request))
     except User.DoesNotExist:
-        logger.error('Function student_profile(id = %d) throws User.DoesNotExist while acessing to non existing user.' % int(user_id) )
+        logger.error(
+            'Function student_profile(id = {}) throws User.DoesNotExist while acessing to non existing user.'
+            .format(str(user_id))
+        )
         messages.error(request, "Nie ma takiego użytkownika.")
         return render_to_response('common/error.html', context_instance=RequestContext(request))
 
@@ -143,12 +149,8 @@ def set_language(request):
     redirect to the page in the request (the 'next' parameter) without changing
     any state.
     """
-    next = request.REQUEST.get('next', None)
-    if not next:
-        next = request.META.get('HTTP_REFERER', None)
-    if not next:
-        next = '/'
-    response = HttpResponseRedirect(next)
+    redirect_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
+    response = HttpResponseRedirect(redirect_url)
     if request.method == 'POST':
         lang_code = request.POST.get('language', None)
         if lang_code and check_for_language(lang_code):
