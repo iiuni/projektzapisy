@@ -58,7 +58,7 @@ class Versioning(object):
             for f in storage.listdir(path)[1]:
                 if regex.match(f):
                     if self.verbose:
-                        print "Removing outdated file %s" % f
+                        print("Removing outdated file %s" % f)
                     storage.delete(os.path.join(path, f))
         except EnvironmentError:
             # We can't use exists() first because some backends (S3) have no concept of directories.

@@ -1,4 +1,4 @@
-import cStringIO
+import io
 from hashlib import md5, sha1
 
 from pipeline.conf import settings
@@ -35,7 +35,7 @@ class HashVersioningBase(VersioningBase):
 
     def version(self, paths):
         buf = self.concatenate(paths)
-        s = cStringIO.StringIO(buf)
+        s = io.StringIO(buf)
         version = self.get_hash(s)
         s.close()
         return version

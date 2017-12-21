@@ -43,7 +43,7 @@ class PipelineStorage(FileSystemStorage):
         if not os.path.exists(directory):
             try:
                 os.makedirs(directory)
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
         if not os.path.isdir(directory):

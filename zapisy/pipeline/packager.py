@@ -1,5 +1,5 @@
 import os
-import urlparse
+import urllib.parse
 
 from django.core.files.base import ContentFile
 from django.utils.encoding import smart_str
@@ -41,7 +41,7 @@ class Packager(object):
 
     def individual_url(self, filename):
         relative_path = self.compressor.relative_path(filename)[1:]
-        return urlparse.urljoin(settings.PIPELINE_URL,
+        return urllib.parse.urljoin(settings.PIPELINE_URL,
             filepath_to_uri(relative_path))
 
     def pack_stylesheets(self, package, **kwargs):
@@ -65,8 +65,8 @@ class Packager(object):
                 )
                 self.versioning.cleanup(package['output'])
                 if self.verbose:
-                    print "Version: %s" % version
-                    print "Saving: %s" % output_filename
+                    print("Version: %s" % version)
+                    print("Saving: %s" % output_filename)
                 paths = self.compile(package['paths'])
                 content = compress(paths,
                     asset_url=self.individual_url(output_filename), **kwargs)
