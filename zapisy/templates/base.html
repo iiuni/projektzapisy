@@ -174,7 +174,7 @@
                                       lub użyj konta Systemu Zapisów
                                     </button>
                                     <div id="login-without-usos">
-                                      <form action="{% url 'apps.users.views.login_plus_remember_me' %}" method="POST">
+                                      <form action="{% url 'user-login' %}" method="POST">
                                           {% csrf_token %}
                                           {% if request.path == '/' %}
                                               <input type="hidden" name="next" value="{% url 'schedule-own' %}"/>

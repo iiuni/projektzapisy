@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls.defaults import *
+from django.conf.urls import url
 from django.contrib.auth.views import login, logout
 
 import os
 
-urlpatterns = patterns('',
+urlpatterns = [
     #MAIN PAGE
     url('login/', login, {'template_name': 'mobile/login.html'}),
     url('^logout/$', logout, {'template_name': 'mobile/logout.html'}, name='user-mobile-logout'),
@@ -33,4 +33,4 @@ urlpatterns = patterns('',
     (r'^group/(?P<group_id>\d+)/assign/$', 'apps.mobile.views.assign'),
     (r'^group/(?P<group_id>\d+)/resign/$', 'apps.mobile.views.resign'),
     (r'^group/(?P<group_from>\d+)/(?P<group_to>\d+)/reassign/$', 'apps.mobile.views.reassign'),
-)
+]

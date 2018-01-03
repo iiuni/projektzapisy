@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models   import Q
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template import RequestContext
 
 from apps.news.models import News
@@ -48,7 +48,7 @@ def all_news(request):
 
     data  = {'items': news, 'page_range': paginator.page_range, 'query': query}
 
-    return render_to_response('news/list_all.html', data, context_instance = RequestContext(request))
+    return render(request, 'news/list_all.html', data)
 
 def all_news_focus_one(request, news_id):
     """
@@ -61,4 +61,4 @@ def main_page( request ):
     allNews = News.objects.exclude(category='-')\
               .order_by("-date").select_related('author')
     news = allNews[0] if len(allNews) > 0 else None
-    return render_to_response('common/index.html', {'news': news}, context_instance = RequestContext(request))
+    return render(request, 'common/index.html', {'news': news})

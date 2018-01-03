@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.core.paginator import Paginator, InvalidPage
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import Context, RequestContext
 from django.template.loader import get_template
 from mailer import send_html_mail
@@ -27,14 +27,11 @@ NEWS_PER_PAGE = 5
 
 def render_with_device_detection(request, full_tpl, mobi_tpl):
     """ Detects type of device and renders appropriate template"""
-
     template=full_tpl
-    #if request.is_mobile:
     if request.mobile:
         template=mobi_tpl
-
-    return render_to_response(template, context_instance = RequestContext(request))
-
+    return render(request, template)
+    
 
 def render_with_category_template(temp, context):
     """ Switch beetween top menus based on context['category'].

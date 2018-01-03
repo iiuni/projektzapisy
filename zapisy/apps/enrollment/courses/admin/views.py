@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction, connection
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 from django import forms
@@ -142,21 +142,19 @@ def import_semester(request):
             finally:
                 xmlfile.close()
 
-            return render_to_response(
-                'enrollment/courses/admin/import_semester.html',
-                {'form': form,
-                'errormsg': errormsg,
-                },
-                RequestContext(request, {}),
+            return render(
+                request, 'enrollment/courses/admin/import_semester.html',
+                {
+                    'form': form,
+                    'errormsg': errormsg,
+                }
             )
     else:
         form = SemesterImportForm()
 
-    return render_to_response(
-        'enrollment/courses/admin/import_semester.html',
-        {'form': form,
-        },
-        RequestContext(request, {}),
+    return render(
+        request, 'enrollment/courses/admin/import_semester.html',
+        { 'form': form }
     )
 
 

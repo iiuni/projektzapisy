@@ -6,12 +6,13 @@ import factory
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
-from ..models.course import Course, CourseEntity
+from ..models.course import Course, CourseEntity, CourseDescription
 from ..models.group import Group
 from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
 from apps.users.tests.factories import EmployeeFactory
 from zapisy import common
+from apps.users.tests.factories import EmployeeFactory
 
 
 class SemesterFactory(DjangoModelFactory):
@@ -60,27 +61,30 @@ class SemesterFactory(DjangoModelFactory):
 
 
 class CourseEntityFactory(DjangoModelFactory):
-
     class Meta:
         model = CourseEntity
 
-    name = factory.Sequence(lambda n: 'course_entity_{0}'.format(n))
+    name = factory.Sequence(lambda n: 'course_{0}'.format(n))
     ects = 5
     suggested_for_first_year = False
 
-
-class CourseFactory(DjangoModelFactory):
-
+class CourseDescriptionFactory(DjangoModelFactory):
     class Meta:
-        model = Course
+        model = CourseDescription
 
+    author = factory.SubFactory(EmployeeFactory)
+    entity = factory.SubFactory(CourseEntityFactory)
     lectures = 30
     exercises = 30
     laboratories = 30
+
+class CourseFactory(DjangoModelFactory):
+    class Meta:
+        model = Course
+
     entity = factory.SubFactory(CourseEntityFactory)
+    information = factory.SubFactory(CourseDescriptionFactory)
     semester = factory.SubFactory(SemesterFactory)
-    type = 1
-    name = factory.Sequence(lambda n: 'course_{0}'.format(n))
 
 class GroupFactory(DjangoModelFactory):
     class Meta:

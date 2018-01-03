@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib import messages
 
@@ -42,4 +42,4 @@ def change_desiderata(request):
         'other_form': other_form,
         'semester': semester
     }
-    return render_to_response('offer/desiderata/change_desiderata.html', data, context_instance=RequestContext(request))
+    return render(request, 'offer/desiderata/change_desiderata.html', data)

@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.shortcuts import redirect
 from django.template.loader import get_template
@@ -241,12 +241,10 @@ def records(request, group_id):
             'mailto_group_bcc': mailto(request.user, students_in_group, True),
             'mailto_queue_bcc': mailto(request.user, students_in_queue, True),
         })
-        return render_to_response('enrollment/records/records_list.html', data,
-            context_instance=RequestContext(request))
+        return render(request, 'enrollment/records/records_list.html', data)
     except NonGroupException:
         messages.info(request, "Podana grupa nie istnieje.")
-        return render_to_response('common/error.html',
-            context_instance=RequestContext(request))
+        return render(request, 'common/error.html')
 
 @employee_required
 def records_group_csv(request, group_id):
@@ -303,8 +301,7 @@ def own(request):
     if not BaseUser.is_student(request.user) and \
        not BaseUser.is_employee(request.user):
         messages.info(request, 'Nie jesteś pracownikiem ani studentem.')
-        return render_to_response('common/error.html',
-            context_instance=RequestContext(request))
+        return render(request, 'common/error.html')
 
     return TemplateResponse(request, 'enrollment/records/schedule.html', locals())
 
@@ -346,8 +343,7 @@ def schedule_prototype(request):
             'types_list': [],
             'is_leaving_allowed': should_allow_leave,
         }
-        return render_to_response('enrollment/records/schedule_prototype.html',
-            data, context_instance = RequestContext(request))
+        return render(request, 'enrollment/records/schedule_prototype.html', data)
     if student:
         StudentOptions.preload_cache(student, default_semester)
 
@@ -371,8 +367,7 @@ def schedule_prototype(request):
         'priority_limit': settings.QUEUE_PRIORITY_LIMIT,
         'allow_leave_course': should_allow_leave,
     }
-    return render_to_response('enrollment/records/schedule_prototype.html',
-        data, context_instance = RequestContext(request))
+    return render(request, 'enrollment/records/schedule_prototype.html', data)
 
 @employee_required
 def records_group_pdf(request, group_id):

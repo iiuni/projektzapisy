@@ -1,5 +1,4 @@
 from django import template
-from django.template import resolve_variable
 from django.template import Library, Node, TemplateSyntaxError
 
 register = template.Library()
@@ -9,12 +8,11 @@ class TruncateNode(Node):
         self.value, self.cutoff = value, cutoff
 
     def render(self, context):
-        truncated = template.resolve_variable(self.value, context)
-        size = int(template.resolve_variable(self.cutoff, context))
+        truncated = template.Variable(self.value).resolve(context)
+        size = int(template.Variable(self.cutoff).resolve(context))
         if len(truncated) > size and size > 3:
             truncated = truncated[0:(size - 3)] + '...'
-
-        return truncated
+            return truncated
 
 def truncate(parser, token):
     bits = token.contents.split()

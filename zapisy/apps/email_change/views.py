@@ -24,7 +24,7 @@
 #
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.apps import apps
 from django.template import RequestContext, Context
 from django.template.loader import render_to_string
@@ -55,7 +55,7 @@ def email_change_view(request, extra_context={},
 
             if user and user != request.user:
                 messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render_to_response(template_name, {'form':form}, context_instance=RequestContext(request))
+                return render(request, template_name, {'form':form})
 
             verification_key = generate_key(request.user, email)
 
@@ -88,12 +88,11 @@ def email_change_view(request, extra_context={},
                 'protocol': protocol,
             }
             c.update(extra_context)
-            context = Context(c)
 
             # Send success email
-            subject = render_to_string(email_subject_template_name, context_instance=context)
-            message = render_to_string(email_message_template_name, context_instance=context)
-
+            subject = render_to_string(email_subject_template_name, c)
+            message = render_to_string(email_message_template_name, c)
+            
             send_mail('[Fereol] Weryfikacja zmiany adresu email', message, None, [email])
             messages.success(request, "Mail zawierający link weryfikacyjny został wysłany na Twój nowy adres email. Postępuj zgodnie z instrukcjami w tym mailu by z sukcesem zmienić Twój obecny adres email.")
             # Redirect
@@ -104,8 +103,8 @@ def email_change_view(request, extra_context={},
     
     context = RequestContext(request, extra_context)
     context['form'] = form
-
-    return render_to_response(template_name, context_instance=context)
+    
+    return render(context, template_name)
 
 
 
@@ -119,14 +118,14 @@ def email_verify_view(request, verification_key, extra_context={},
             user=request.user, verification_key=verification_key)
     except EmailChangeRequest.DoesNotExist:
         # Return failure response
-        return render_to_response(template_name, context_instance=context)
+        return render(context, template_name)
     else:
         # Check if the email change request has expired
         if ecr.has_expired():
             ecr.delete()
             # Return failure response
-            return render_to_response(template_name, context_instance=context)
-
+            return render(context, template_name)
+        
         # Success. Replace the user's email with the new email
         request.user.email = ecr.email
         request.user.save()
