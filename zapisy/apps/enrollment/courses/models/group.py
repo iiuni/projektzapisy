@@ -333,6 +333,10 @@ class Group(models.Model):
         queued = Queue.objects.filter(deleted=False, group=self).order_by('time').select_related('student')
         to_removed = []
         result = None
+        semester = Semester.objects.get_next()
+        if semester.is_closed():
+            return result
+
         for q in queued:
             if self.is_full_for_student(q.student) and not self.course.is_opened_for_student(q.student):
                 continue
@@ -342,7 +346,6 @@ class Group(models.Model):
             if not limit:
                 pass
             else:
-                semester = Semester.objects.get_next()
                 current_limit = semester.get_current_limit()
                 if q.student.get_points_with_course(self.course) <= current_limit:
                     result, messages  = self.add_student(q.student, return_group=True)

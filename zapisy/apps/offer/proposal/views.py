@@ -82,7 +82,7 @@ def all_groups(request):
 def course_groups(request, slug):
     if request.method == 'GET':
         teachers_by_preference_tutorial = {-1:[], 0:[], 1:[], 2:[], 3: []}
-        course = Course.objects.select_related('groups').get(slug=slug)
+        course = Course.objects.prefetch_related("groups").get(slug=slug)
         teachers = Employee.objects.all()
 
         for teacher in teachers:

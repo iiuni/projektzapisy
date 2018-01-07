@@ -97,7 +97,7 @@ def templates( request ):
     data['grade']  = True
     data['template_word'] = declination_template(paginator.count)
     data['pages']  = make_pages( paginator.num_pages+1, page.number )
-    data['pages_range']  = list(range( 1, paginator.num_pages+1))
+    data['pages_range']  = paginator.page_range
     data['tab']    = "template_list"
     return render(request, 'grade/poll/managment/templates.html', data)
 
@@ -420,7 +420,7 @@ def sections_list( request ):
     data['sections_word'] = declination_section(paginator.count, True)
     data['grade']  = grade
     data['pages']  = make_pages( paginator.num_pages+1, page.number )
-    data['pages_range']  = list(range( 1, paginator.num_pages+1))
+    data['pages_range']  = paginator.page_range
     data['tab']    = "section_list"
     return render(request, 'grade/poll/managment/sections_list.html', data)
 
@@ -525,7 +525,7 @@ def polls_list( request ):
     data['polls_word'] = declination_poll(paginator.count, True)
     data['grade']      = grade
     data['pages']  = make_pages( paginator.num_pages+1, page.number )
-    data['pages_range']    = paginator._get_page_range()
+    data['pages_range']    = paginator.page_range
     data['tab']            = "poll_list"
     data['semesters']      = Semester.objects.all()
     data['courses']        = CourseEntity.objects.all().order_by('name')
