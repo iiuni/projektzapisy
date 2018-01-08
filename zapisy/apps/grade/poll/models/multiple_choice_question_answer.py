@@ -7,7 +7,7 @@ from option                   import Option
 
 class MultipleChoiceQuestionAnswer( BaseAnswer ):
     question = models.ForeignKey( MultipleChoiceQuestion, verbose_name = 'pytanie' )
-    options  = models.ManyToManyField( Option, verbose_name = 'odpowiedzi', blank = True, null = True )
+    options  = models.ManyToManyField( Option, verbose_name = 'odpowiedzi', blank = True )
     other    = models.CharField( max_length = 100, verbose_name = 'inne', blank = True, null = True )
     
     class Meta:

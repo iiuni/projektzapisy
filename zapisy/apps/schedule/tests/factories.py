@@ -2,7 +2,7 @@
 
 from datetime import time, date, datetime
 import string
-import common
+from zapisy import common
 import random
 
 import factory

@@ -1,5 +1,5 @@
 {% extends 'schedule/classrooms.html' %}
-{% load url from future %}
+{% load static %}
 
 {% block bread %}
     <a href="/">Strona główna</a> &raquo;
@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block js %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='/site_media/js/fullcalendar/fullcalendar.css'/>
+    <link rel="stylesheet" type="text/css" href="{% static "js/fullcalendar/fullcalendar.css" %}">
     <style>
 
 
@@ -45,7 +45,7 @@
         }
 
     </style>
-    <script type="text/javascript" src="/site_media/js/fullcalendar/fullcalendar.js"></script>
+    <script type="text/javascript" src="{% static "js/fullcalendar/fullcalendar.js" %}"></script>
     <script>
 
         $(document).ready(function () {

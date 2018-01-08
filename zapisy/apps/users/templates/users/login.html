@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load url from future %}
 {% load compressed %}
 
 
@@ -28,7 +27,7 @@
 <div class="container space">
 <div class="row show-grid">
     <div class="span5 columns loginbox">
-<form class="form-stacked" action="{% url 'apps.users.views.login_plus_remember_me' %}" method="POST">
+<form class="form-stacked" action="{% url 'user-login' %}" method="POST">
         {% csrf_token %}
         <fieldset>
           <div class="clearfix">

@@ -7,9 +7,17 @@ import json
 from django.db.models import Q
 from autoslug import AutoSlugField
 
-floors = [(0, 'Parter'), (1, 'I piętro'), (2, 'II Piętro'), (3, 'III piętro')]
-types = [(0, u'Sala wykładowa'), (1, u'Sala ćwiczeniowa'), (2, u'Pracownia komputerowa - Windows'), (3, u'Pracownia komputerowa - Linux')]
+floors = [(0, 'Parter'),
+          (1, 'I piętro'),
+          (2, 'II Piętro'),
+          (3, 'III piętro')]
 
+types = [(0, u'Sala wykładowa'),
+         (1, u'Sala ćwiczeniowa'),
+         (2, u'Pracownia komputerowa - Windows'),
+         (3, u'Pracownia komputerowa - Linux'),
+         (4, u'Pracownia dwusystemowa (Windows+Linux)'),
+         (5, u'Poligon (109)')]
 
 
 class Classroom( models.Model ):
@@ -33,7 +41,10 @@ class Classroom( models.Model ):
         ordering = ['floor', 'number']
 
     def get_absolute_url(self):
-        return reverse('events:classroom', args=[self.slug])
+        try:
+            return reverse('events:classroom', args=[self.slug])
+        except:
+            return reverse('events:classrooms')
 
     def __unicode__(self):
         return str(self.number) + ' ('+str(self.capacity)+')'

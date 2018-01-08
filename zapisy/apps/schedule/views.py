@@ -26,9 +26,6 @@ from xhtml2pdf import pisa
 import StringIO
 
 
-__author__ = 'maciek'
-
-
 def classrooms(request):
     from apps.enrollment.courses.models import Classroom
 
@@ -96,6 +93,7 @@ def edit_event(request, event_id=None):
 
             messages.success(request, u'Zmieniono zdarzenie')
             return redirect(event)
+    errors = True
 
     return TemplateResponse(request, 'schedule/reservation.html', locals())
 

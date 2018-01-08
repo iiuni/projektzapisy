@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction, connection
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 from django import forms
@@ -52,7 +52,7 @@ def add_student(request):
     if result:
         run_rearanged(result, group)
 
-    url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
+    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
     return HttpResponseRedirect(url)
 
 
@@ -79,7 +79,7 @@ def remove_student(request):
     if result:
         run_rearanged(result, group)
 
-    url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
+    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
     return HttpResponseRedirect(url)
 
 @staff_member_required
@@ -109,7 +109,7 @@ def change_group_limit(request):
             group.save()
             run_rearanged(None, group)
 
-    url = reverse('admin:%s_%s_change' %(group._meta.app_label,  group._meta.module_name),  args=[group.id])
+    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
     return HttpResponseRedirect(url)
 
 
@@ -143,21 +143,19 @@ def import_semester(request):
             finally:
                 xmlfile.close()
 
-            return render_to_response(
-                'enrollment/courses/admin/import_semester.html',
-                {'form': form,
-                'errormsg': errormsg,
-                },
-                RequestContext(request, {}),
+            return render(
+                request, 'enrollment/courses/admin/import_semester.html',
+                {
+                    'form': form,
+                    'errormsg': errormsg,
+                }
             )
     else:
         form = SemesterImportForm()
 
-    return render_to_response(
-        'enrollment/courses/admin/import_semester.html',
-        {'form': form,
-        },
-        RequestContext(request, {}),
+    return render(
+        request, 'enrollment/courses/admin/import_semester.html',
+        { 'form': form }
     )
 
 

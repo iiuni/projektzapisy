@@ -86,7 +86,7 @@ class Term(models.Model):
         if self.room:
             if not self.room.can_reserve:
                 raise ValidationError(
-                    message={'classroom': [u'Ta sala nie jest przeznaczona do rezerwacji']},
+                    message={'room': [u'Ta sala nie jest przeznaczona do rezerwacji']},
                     code='invalid'
                 )
 
@@ -106,7 +106,7 @@ class Term(models.Model):
 
     def get_conflicted(self):
         if not self.room:
-            return EmptyQuerySet()
+            return Term.objects.none()
 
         # X < B AND A < Y
 

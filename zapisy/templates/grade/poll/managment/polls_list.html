@@ -1,25 +1,26 @@
 ﻿{% extends "grade/poll/managment/base.html" %}
-{% load url from future %}
+{% load static %}
 {% load dynamic_truncate_tag %}
 {% block scripts %}
-    <script src="/site_media/js/common/bootstrap-modal.js" type="text/javascript"></script>
-    <script src="/site_media/js/grade/managment/list.js" type="application/javascript"></script>
-    <script src="/site_media/js/grade/managment/poll_list.js" type="application/javascript"></script>
-    <script src="/site_media/js/grade/poll/create.js" type="text/javascript"></script>
+    <script src="{% static "js/common/bootstrap-modal.js" %}" type="text/javascript"></script>
+    <script src="{% static "js/grade/managment/list.js" %}" type="application/javascript"></script>
+    <script src="{% static "js/grade/managment/poll_list.js" %}" type="application/javascript"></script>
+    <script src="{% static "js/grade/poll/create.js" %}" type="text/javascript"></script>
 {% endblock %}
 
 
 
 {% block extra-styles %}
-    <link rel="stylesheet" href="/site_media/css/grade/create.css" type="text/css"/>
-    <link rel="stylesheet" href="/site_media/css/grade/answer.css" type="text/css"/>
-    <link rel="stylesheet" href="/site_media/css/grade/poll-managment.css" type="text/css"/>
-    <link rel="stylesheet" href="/site_media/css/ui-progressbar.css" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/grade/create.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/grade/answer.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/grade/poll-managment.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/ui-progressbar.css" %}" type="text/css"/>
 {% endblock %}
 
 {% block topContent %}
     <div id="pollsList-top-bar" class="main-top-bar">
         <form class="form-stacked" method="POST" id="filter-form">
+        {% csrf_token %}
             <fieldset>
                 <div class="main-filter-input">
                     <input class="text filter-phrase" name="q" type="text" value="{{ q }}"/>
@@ -33,7 +34,6 @@
                 <div class="clearfix">
                             <label for="pollFilter-semester">Semestr</label>
                             <div class="input">
-
                                 <select id="pollFilter-semester" name="filter-semester" class="large">
                                     <option value="0">dowolny</option>
                                     {% for semester in semesters %}
@@ -109,6 +109,7 @@
 
 {% block poll-managment %}
     <form method="POST" action="{% url 'grade-poll-poll_actions' %}">
+    {% csrf_token %}
                 <div class="well poll-list-actions">
                     <fieldset>
                         <div class="clearfix left">
@@ -166,21 +167,24 @@
     {% endif %}
     <div class="pagination">
         <ul>
-
-            <li class="prev{% if not polls.has_previous %} disabled{% endif %}"><a
-                    href="?page={{ polls.previous_page_number }}">&larr; Poprzednia</a></li>
+            {% if polls.has_previous %}
+                <li class="prev">
+                    <a href="?page={{ polls.previous_page_number }}">&larr; Poprzednia</a>
+                </li>
+            {% endif %}
             {% for page in pages %}
                 {% if page > 0 %}
-                    <li{% ifequal page polls.number %} class="active"{% endifequal %}><a
-                            href="?page={{ page }}">{{ page }}</a></li>
-
+                    <li{% ifequal page polls.number %} class="active"{% endifequal %}>
+                        <a href="?page={{ page }}">{{ page }}</a></li>
                 {% else %}
-                    .
                     <li class="disabled"><a href="#">...</a></li>
                 {% endif %}
             {% endfor %}
-            <li class="next{% if not polls.has_next %} disabled{% endif %}"><a
-                    href="?page={{ polls.next_page_number }}">Następna &rarr;</a></li>
+            {% if polls.has_next %}
+                <li class="next">
+                    <a href="?page={{ polls.next_page_number }}">Następna &rarr;</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 
@@ -194,6 +198,7 @@
           </div>
           <div class="modal-body">
               <form method="POST" id="poll-create">
+              {% csrf_token %}
                   <fieldset>
                             <div class="clearfix">
                               <label for="semester">Semestr</label>
@@ -271,14 +276,14 @@
                               <div class="input">
                                   <input type="text" name="title" id="title" class="required">
                               </div>
-                            </div>
+                  </div>
 
                   <div class="clearfix">
                               <label for="description">Opis</label>
                               <div class="input">
                                   <textarea name="description" id="description" rows="4"></textarea>
                               </div>
-                            </div>
+                  </div>
               </fieldset>
                   <hr>
                   <div id="sections-list">

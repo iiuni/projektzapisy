@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 #  This file is part of django-email-change.
 #
 #  django-email-change adds support for email address change and confirmation.
@@ -24,18 +22,18 @@
 #  limitations under the License.
 #
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
+from . import views
 
-
-urlpatterns = patterns('',
-    url(r'^email/change/$', 'apps.email_change.views.email_change_view', name='email_change'),
+urlpatterns = [
+    url(r'^email/change/$', views.email_change_view, name='email_change'),
     url(r'^email/verification/sent/$', TemplateView.as_view(template_name="email_change/email_verification_sent.html")),
     # Note taken from django-registration
     # Verification keys get matched by \w+ instead of the more specific
     # [a-fA-F0-9]{40} because a bad verification key should still get to the view;
     # that way it can return a sensible "invalid key" message instead of a
     # confusing 404.
-    url(r'^email/verify/(?P<verification_key>\w+)/$', 'apps.email_change.views.email_verify_view', name='email_verify'),
+    url(r'^email/verify/(?P<verification_key>\w+)/$', views.email_verify_view, name='email_verify'),
     url(r'^email/change/complete/$', TemplateView.as_view(template_name="email_change/email_change_complete.html")),
-)
+]

@@ -1,37 +1,29 @@
 # Packages from our development environment
-Django==1.7.11 --no-binary django # WIP
+Django==1.10.8 --no-binary django WIP
 Fabric==1.5.1 # (1.5.1) - Latest: 1.14.0
 argparse==1.2.1 # nieuzywany, wbudowany w pythona 2.7
-django-autoslug==1.6.1 # (1.6.1) - Latest: 1.9.3
-django-cas-ng==3.5.7 # (3.5.7) - Latest: 3.5.8
+django-autoslug==1.9.3
+django-cas-ng==3.5.7
 django-debug-toolbar==1.3.0 # (1.3.0) - Latest: 1.9
-django-extensions==1.6.7 # (1.6.7) - Latest: 1.9.7
-django-filter==0.11.0 # (0.11.0) - Latest: 1.1.0
-django-mailer==1.0.0 # (1.0) - Latest: 1.2.2
-django-modeltranslation==0.9 # (0.9) - Latest: 0.12.1
-django-pipeline==1.3.16 # (1.3.16) - Latest: 1.6.13
-django-test-without-migrations # 
-docutils==0.13.1 # (0.13.1) - Latest: 0.14 Nie widze uzyc, wymagane?
-ipdb==0.9.0 # (0.9.0) - Latest: 0.10.3 Dodatek do ipythona
-ipython==5.3.0 # (5.3.0) - Latest: 5.5.0 Mysle ze mozna podbic od reki
-paramiko==1.9.0 # (1.9.0) - Latest: 2.3.1 Nie widze uzyc
-psycopg2==2.7.3.1 # Dopiero co podbite, jest 2.7.3.2
+django-el-pagination==3.1.0
+django-extensions==1.9.7
+django-filter==0.15 # Latest: 1.1.0
+django-mailer==1.0.0# Latest: 1.2.2
+django-modeltranslation==0.12.1
+django-pipeline==1.3.16# Latest: 1.6.13
+django-test-without-migrations
+docutils==0.13.1# Latest: 0.14 Nie widze uzyc, wymagane?
+ipdb==0.9.0 # Latest: 0.10.3 Dodatek do ipythona
+ipython==5.5.0
+paramiko==1.9.0 # Latest: 2.3.1 Nie widze uzyc, prawdopodobnie zaleznosc
+psycopg2==2.7.3.1 # Dopiero co podbite, jest 2.7.3.2, jakies minimalne zmiany
 pyPdf==1.13 # Nieuzywany? abandonware
 pycrypto==2.6 # (2.6) - Latest: 2.6.1
-six==1.9.0 # (1.9.0) - Latest: 1.11.0 Zaleznosc innych paczek, samo sie zainstaluje
 rollbar==0.13.3 # (0.13.3) - Latest: 0.13.17
 wsgiref==0.1.2 # Bez uzyc? Wbudowane w pythona od 2.5
 yolk==0.4.3 # Utility, nie wiem, czy trzeba to instalowac
-django-paranoid-sessions==0.2.0 # stare, jakies testy tego sie wywalaja, abandonware, wywalic?
 newrelic==2.68.0.50 # (2.68.0.50) - Latest: 2.96.0.80
-pyvirtualdisplay # bez uzyc?
-https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/django-endless-pagination/django-endless-pagination-1.1.tar.gz # abandonware uzyte 1 raz (najwyrazniej)
-# potencjalny nastepca https://github.com/shtalinberg/django-el-pagination
-
-rq==0.7.1 # Bez uzyc?
-
-# Requested by lewymati, it makes shell_plus work reasonably as REPL
-readline==6.2.4.1 # Deprecated na rzecz tego https://pypi.python.org/pypi/gnureadline
+rq==0.7.1 # Bez uzyc?, zależność
 
 # Additional packages on production environment
 gunicorn==19.7.1 # Uzywamy? Pojawia sie w fabfile
@@ -55,8 +47,11 @@ vobject==0.8.2 # (0.8.2) - Latest: 0.9.5
 python-memcached==1.48 # (1.48) - Latest: 1.58
 
 
-# On production: PIL==1.1.7, but this version is no longer available
-Pillow==1.1 # Do czego nam to sluzy?
+# On production: 0.4, but it's only monitoring tool, may safely ignore
+# iotop==0.4
+
+# On production, but I don't even want to know what we were using it for
+# python-apt==0.7.100.1-squeeze1
 
 # On production, but one would need to find suitable version.
 xhtml2pdf==0.0.5 # zapisy/apps/enrollment/records/views.py Uzycia widze tylko tutaj, ale zmienne, ktore to tworzy nie sa uzywane

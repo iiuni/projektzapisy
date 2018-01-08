@@ -160,7 +160,7 @@ class CourseEntity(models.Model):
                              verbose_name=u'Przedmiot prowadzony przy pomocy środków pochodzących z Unii Europejskiej')
 
     tags = models.ManyToManyField(Tag, through='TagCourseEntity')
-    effects = models.ManyToManyField(Effects, verbose_name=u'Grupa efektów kształcenia', null=True, blank=True)
+    effects = models.ManyToManyField(Effects, verbose_name=u'Grupa efektów kształcenia', blank=True)
 
     objects = WithInformation()
     simple = models.Manager()
@@ -317,7 +317,10 @@ class CourseEntity(models.Model):
 
     @property
     def description(self):
-        return self.information.description
+        if self.information:
+            return self.information.description
+        else:
+            return None
 
 
     @property
@@ -480,7 +483,7 @@ class Related(models.Manager):
 
     def get_queryset(self):
         """ Returns all courses which have marked semester as visible """
-        return super(Related, self).get_queryset().select_related('semester', 'type', 'type__classroom', 'entity')
+        return super(Related, self).get_queryset().select_related('semester', 'entity')
 
 
 class VisibleManager(Related):
@@ -887,7 +890,7 @@ class CourseDescription(models.Model):
     requirements = models.ManyToManyField(CourseEntity, verbose_name='wymagania', related_name='+', blank=True)
     exam = models.BooleanField(verbose_name='egzamin', default=False)
 
-    created = models.DateTimeField(auto_now_add=True, auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'opis przedmiotu'

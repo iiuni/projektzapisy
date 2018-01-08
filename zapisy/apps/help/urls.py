@@ -1,9 +1,10 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('apps.help.views',
-    url(r'^$', 'main_page', name='help'),
-    url(r'^rules/$', 'rules', name='help-rules'),
-    url(r'^enrollment/$', 'enrollment', name='help-enrollment'),
-    url(r'^export/$', 'export', name='help-export'),
-    url(r'^errorpage/$', 'errorpage', name='help-errorpage'),
-)
+urlpatterns = [
+    url(r'^$', views.main_page, name='help'),
+    url(r'^rules/$', views.rules, name='help-rules'),
+    url(r'^enrollment/$', views.enrollment, name='help-enrollment'),
+    url(r'^export/$', views.export, name='help-export'),
+    url(r'^errorpage/$', views.errorpage, name='help-errorpage'),
+]

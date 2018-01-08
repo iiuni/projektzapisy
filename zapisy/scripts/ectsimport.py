@@ -2,6 +2,9 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from apps.users.models import Student
+import sys
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 ECTS_FILE = 'ects.txt'
 students = {}
@@ -24,10 +27,11 @@ def refresh(matricula, ects):
             print "***" + str(matricula) + " brak"
             return
 
-        print student
-        print student.ects
-        print ects_sum
-        print ""
+        if not TESTING:
+            print student
+            print student.ects
+            print ects_sum
+            print ""
         student.ects = max(student.ects, ects_sum)
         student.save()
 

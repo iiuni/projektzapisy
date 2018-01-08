@@ -54,12 +54,12 @@ a#enr-schedulePrototype-setLocked
 
 a#enr-schedulePrototype-setLocked.locked
 {
-	background-image: url('/site_media/images/padlock-locked.png');
+	background-image: url('/static/images/padlock-locked.png');
 }
 
 a#enr-schedulePrototype-setLocked.unlocked
 {
-	background-image: url('/site_media/images/padlock-unlocked.png');
+	background-image: url('/static/images/padlock-unlocked.png');
 }
 
 #enr-schedulePrototype-uncheckAll

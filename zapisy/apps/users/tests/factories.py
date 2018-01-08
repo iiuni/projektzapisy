@@ -7,9 +7,9 @@ import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from ..models import User, Student, UserProfile, Employee
-from settings import LANGUAGES
+from django.conf import settings
 
-langs = [x[0] for x in LANGUAGES]
+langs = [x[0] for x in settings.LANGUAGES]
 
 
 class UserFactory(DjangoModelFactory):

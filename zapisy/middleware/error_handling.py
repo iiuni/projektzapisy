@@ -2,7 +2,7 @@
 import traceback
 from logging import getLogger
 from django.http import HttpResponseNotAllowed
-from django.template import RequestContext, loader
+from django.template import loader
 
 logger = getLogger()
 
@@ -21,6 +21,5 @@ class ErrorHandlerMiddleware(object):
 	def process_response(self, request, response):
 		# obsługiwanie niestandardowych stron błędów
 		if isinstance(response, HttpResponseNotAllowed):
-			response.content = loader.render_to_string("405.html",
-				context_instance=RequestContext(request))
+			response.content = loader.render_to_string("405.html", {}, request)
 		return response

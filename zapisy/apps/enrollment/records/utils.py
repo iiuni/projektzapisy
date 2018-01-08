@@ -2,7 +2,7 @@
 import json
 
 from django.db.models.query import QuerySet
-
+from django.conf import settings
 from apps.enrollment.courses.models import Term
 from apps.enrollment.records.models import *
 from apps.users.models import *
@@ -139,13 +139,11 @@ def prepare_schedule_data(request, courses, semester=None):
     all_groups_json = prepare_groups_json(default_semester, all_groups, \
         student=student, employee=employee)
 
-    from settings import QUEUE_PRIORITY_LIMIT
-
     return {
         'courses_json': prepare_courses_json(all_groups, student),
         'groups_json': all_groups_json,
         'terms_by_days': terms_by_days,
-        'priority_limit': QUEUE_PRIORITY_LIMIT,
+        'priority_limit': settings.QUEUE_PRIORITY_LIMIT,
     }
 
 

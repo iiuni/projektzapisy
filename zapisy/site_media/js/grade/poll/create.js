@@ -25,7 +25,7 @@ Poll.create.init = function()
         $(Poll.create.sections).children('option[value="'+ value +'"]').hide();
     })
     $('.poll-section-title').each(function(i, elem){
-        var sectionRemove =  $('<img src="/site_media/images/remove-ico.png"'+
+        var sectionRemove =  $('<img src="/static/images/remove-ico.png"'+
                            'class="remove" alt="usuń">');
         $(elem).after(sectionRemove);
         $(sectionRemove).click(function()
@@ -183,7 +183,7 @@ Poll.create.addSection = function()
         return false;
 
     });
-    var sectionRemove =  $('<img src="/site_media/images/remove-ico.png"'+
+    var sectionRemove =  $('<img src="/static/images/remove-ico.png"'+
                            'class="remove" alt="usuń">');
 
     $('#poll-section-title-' + value).after(sectionRemove);

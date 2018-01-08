@@ -1,9 +1,10 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns( 'apps.statistics.views',
-    url('^$',     'main', name='main' ),
-    url('^students/$',     'students', name='students' ),
-    url('^groups/$',     'groups', name='groups' ),
-    url('^vote/$',     'votes', name='vote' ),
-    url('^swap/$',         'swap', name='swap')
-)
+urlpatterns = [
+    url('^$', views.main, name='main'),
+    url('^students/$', views.students, name='students'),
+    url('^groups/$', views.groups, name='groups'),
+    url('^vote/$', views.votes, name='vote'),
+    url('^swap/$', views.swap, name='swap')
+]

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load url from future %}
 {% load compressed %}
 
 
@@ -32,6 +31,8 @@
     <li{% block offer_menu_vote %}{% endblock %}><a
             href="{% url 'vote-main' %}">Głosowanie</a></li>{% endif %}
 
+    {% if user.employee and semester.desiderata_is_open %}
+    <li{% block offer_menu_desiderata %} {% endblock %}><a href="{% url 'change_desiderata' %}">Dezyderaty</a></li>{% endif %}
     {# end system_menu #}
 {% endblock %}
 

@@ -1,5 +1,5 @@
 {% extends "enrollment/courses/base.html" %}
-{% load url from future %}
+{% load static %}
 {% load i18n %}
 
 {% block main-subtitle %}
@@ -11,7 +11,7 @@
 
 {% block styles %}
     {{ block.super }}
-    <link href="/site_media/css/enrollment/courses.css"  rel="stylesheet">
+    <link href="{% static "css/enrollment/courses.css" %}"  rel="stylesheet">
 {% endblock %}
 
 

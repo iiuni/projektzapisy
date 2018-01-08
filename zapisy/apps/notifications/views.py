@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
@@ -35,7 +35,7 @@ def index(request):
 
     year = date.today().year
 
-    return render_to_response('notifications/index.html', { 'year': year }, context_instance=RequestContext(request))
+    return render(request, 'notifications/index.html', { 'year': year })
 
 @require_POST
 @staff_member_required

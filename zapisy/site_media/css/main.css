@@ -46,7 +46,7 @@
 
 #main-systemTypeBar span
 {
-	background: url('/site_media/images/main-system-selector-arrow.png') no-repeat right;
+	background: url('/static/images/main-system-selector-arrow.png') no-repeat right;
 	padding-right: 13px;
 }
 
@@ -348,7 +348,7 @@ a.main-sidebar-toggle-button:hover
 	border: 1px solid #999999;
 	height: 20px;
 	float: left;
-	background: white url('/site_media/images/search-ico.png') no-repeat 3px 4px;
+	background: white url('/static/images/search-ico.png') no-repeat 3px 4px;
 	padding: 1px 4px 1px 20px;
 
 	-moz-border-radius: 4px 0 0 4px;

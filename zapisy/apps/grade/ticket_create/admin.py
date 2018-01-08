@@ -13,12 +13,12 @@ class StudentGradedAdmin( admin.ModelAdmin ):
 
     list_filter = ('semester',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
        """
        Filter the objects displayed in the change_list to only
        display those for the currently signed in user.
        """
-       qs = super(StudentGradedAdmin, self).queryset(request)
+       qs = super(StudentGradedAdmin, self).get_queryset(request)
        return qs.select_related('semester', 'student', 'student__user')
 
 

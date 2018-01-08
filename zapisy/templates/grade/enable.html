@@ -1,16 +1,16 @@
 {% extends "grade/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% load compressed %}
 
 {% block styles %}
     {% compressed_css 'gradebase' %}
 
-    <link rel="stylesheet" href="/site_media/css/common/mainPage.css" type="text/css" />
-    <link rel="stylesheet" href="/site_media/css/grade/poll.css" type="text/css" />
-    <link rel="stylesheet" href="/site_media/css/grade/results.css" type="text/css" />
-    <link rel="stylesheet" href="/site_media/css/grade/answer.css" type="text/css" />
-    <link rel="stylesheet" href="/site_media/css/ui-progressbar.css" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/common/mainPage.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/grade/poll.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/grade/results.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/grade/answer.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/ui-progressbar.css" %}" type="text/css" />
 {% endblock %}
 
 {% block grade_active %} class="active"{% endblock %}

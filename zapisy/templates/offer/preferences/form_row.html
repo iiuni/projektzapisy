@@ -1,4 +1,3 @@
-{% load url from future %}
 		<tr{% if form.instance.hidden %} class="hiddenrow"{% endif %}>
             <input type="hidden" class="pref-id" name="pref-id" value="{{ form.instance.id }}">
             <td><a href="{% url 'offer-page' form.instance.proposal.slug %}">{{ form.instance.proposal }}</a></td>

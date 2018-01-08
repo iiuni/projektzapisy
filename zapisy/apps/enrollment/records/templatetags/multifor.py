@@ -1,6 +1,6 @@
 from itertools import izip_longest
 
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 register = Library()

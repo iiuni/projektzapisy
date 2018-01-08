@@ -39,8 +39,8 @@ class PollAdmin(admin.ModelAdmin):
 
 class TemplateAdmin(admin.ModelAdmin):
 
-    def queryset(self, request):
-       qs = super(TemplateAdmin, self).queryset(request)
+    def get_queryset(self, request):
+       qs = super(TemplateAdmin, self).get_queryset(request)
        return qs.select_related('studies_type', 'course', 'author', 'author__user')
 
 

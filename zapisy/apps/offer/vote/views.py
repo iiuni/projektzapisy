@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http                    import HttpResponseRedirect, Http404
-from django.shortcuts               import render_to_response
+from django.shortcuts               import render
 from django.template                import RequestContext
 from django.shortcuts               import redirect
 from django.template.response import TemplateResponse
@@ -17,8 +17,10 @@ from apps.enrollment.courses.models.course import CourseEntity
 
 from apps.offer.vote.models                   import SingleVote, SystemState
 from apps.enrollment.courses.models import Type
+from apps.enrollment.courses.models import Semester
 
 from apps.users.decorators      import student_required
+
 
 @student_required
 def vote( request ):
@@ -56,7 +58,8 @@ def vote( request ):
              'proposalTypes':       Type.objects.all().select_related('group'),
              'isCorrectionActive' : state.is_correction_active() }
 
-    return render_to_response ('offer/vote/form.html', data, context_instance = RequestContext( request ))
+    return render(request, 'offer/vote/form.html', data)
+
 
 @login_required
 def vote_main( request ):
@@ -64,8 +67,10 @@ def vote_main( request ):
         Vote main page
     """
     sytem_state = SystemState.get_state()
-    data        = { 'isVoteActive' : sytem_state.is_system_active(), 'max_points': sytem_state.max_points }
-    return render_to_response ('offer/vote/index.html', data, context_instance = RequestContext( request ))
+    data        = { 'isVoteActive' : sytem_state.is_system_active(), 'max_points': sytem_state.max_points,
+                   'semester' : Semester.get_current_semester()}
+    return render(request, 'offer/vote/index.html', data)
+
 
 @student_required
 def vote_view( request ):
@@ -78,6 +83,7 @@ def vote_view( request ):
     return TemplateResponse(request, 'offer/vote/view.html', locals())
 
 
+@login_required
 def vote_summary( request ):
     """
         summary for vote
@@ -100,15 +106,14 @@ def vote_summary( request ):
         elif sub.semester == 'u':
             unknown.append( (sub.votes, sub.voters, sub) )
 
-    data = { 'winter'  : winter,
-             'summer'  : summer,
-             'unknown' : unknown, }
+    data = {
+        'winter'  : winter,
+        'summer'  : summer,
+        'unknown' : unknown,
+        'is_voting_active': state.is_system_active()
+    }
 
-    return render_to_response(
-        'offer/vote/summary.html',
-        data,
-        context_instance=RequestContext(request, {'is_voting_active': state.is_system_active()})
-    )
+    return render(request, 'offer/vote/summary.html', data)
 
 
 @login_required
@@ -128,4 +133,4 @@ def proposal_vote_summary( request, slug ):
              'votes'    : votes,
              'voters'    : voters}
            
-    return render_to_response('offer/vote/proposal_summary.html', data, context_instance = RequestContext( request ))
+    return render(request, 'offer/vote/proposal_summary.html', data)

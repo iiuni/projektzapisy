@@ -32,7 +32,7 @@ from apps.email_change import settings
 
 
 class EmailChangeRequest(models.Model):
-    user = models.ForeignKey('auth.User', unique=True, related_name='%(class)s_user')
+    user = models.OneToOneField('auth.User', related_name='%(class)s_user')
     verification_key = models.CharField(max_length=40)
     email = models.EmailField(max_length=75)    # Contains the new email address
     date_created = models.DateTimeField(auto_now_add=True)

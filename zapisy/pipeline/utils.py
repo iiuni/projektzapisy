@@ -2,8 +2,8 @@ import os
 import sys
 import urllib
 
-from django.utils import importlib
 from django.utils.encoding import smart_str
+from django.utils.module_loading import import_string
 
 
 def to_class(class_str):
@@ -12,7 +12,7 @@ def to_class(class_str):
 
     module_bits = class_str.split('.')
     module_path, class_name = '.'.join(module_bits[:-1]), module_bits[-1]
-    module = importlib.import_module(module_path)
+    module = import_string(module_path)
     return getattr(module, class_name, None)
 
 

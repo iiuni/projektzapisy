@@ -1,5 +1,5 @@
-{% load url from future %}
 ﻿<form method="POST" id="poll-create" action="{% url 'grade-poll-poll-create' %}">
+{% csrf_token %}
     <table>
         <tr>
             <td>

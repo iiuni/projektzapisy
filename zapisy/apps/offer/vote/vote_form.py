@@ -15,7 +15,7 @@ from apps.offer.vote.models import SystemState
 from apps.offer.vote.models import SingleVote
 from django.core.urlresolvers import reverse
 
-import settings
+from django.conf import settings
 
 class VoteFormset(object):
     """

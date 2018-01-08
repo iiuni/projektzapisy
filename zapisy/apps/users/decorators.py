@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
+from functools import update_wrapper
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.utils.http import urlquote
-from functools import update_wrapper
 
 from apps.users.models import Employee, Student
 
-def student_required(function=None,
-                     redirect_to=None):
+
+def student_required(function=None, redirect_to=None):
     """
     Decorator that checks that the user has a student profile,
     redirecting to the given or the default login page as needed.
     """
+
     def test_f(user):
         try:
             sth = user.student

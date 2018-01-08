@@ -1,8 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns( 'apps.enrollment.courses.views',
-    url('^(?P<slug>[\w\-_]+)$', 'course', name='course-page'),
-    url('^$', 'courses',  name='course-list'),
-    url('^$', 'courses',  name='enrollment-main'),
-    url('^get_semester_info/(?P<semester_id>\d+)$', 'get_semester_info'),
-)
+urlpatterns = [
+    url('^(?P<slug>[\w\-_]+)$', views.course, name='course-page'),
+    url('^$', views.courses, name='course-list'),
+    url('^$', views.courses, name='enrollment-main'),
+    url('^get_semester_info/(?P<semester_id>\d+)$', views.get_semester_info),
+]

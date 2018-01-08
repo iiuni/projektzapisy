@@ -1,17 +1,17 @@
 {% extends "offer/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% block main-subtitle %}Wybór przedmiotów do oferty dydaktycznej{% endblock %}
 
 {% block styles %}
-	<link rel="stylesheet" href="/site_media/css/offer/proposal/offerCreate.css" type="text/css" />
-	<link rel="stylesheet" href="/site_media/css/jquery/jquery.colorbox.css" type="text/css" />
-    <link rel="stylesheet" href="/site_media/css/common/dialog_box.css" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/offer/proposal/offerCreate.css" %}" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/jquery/jquery.colorbox.css" %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "css/common/dialog_box.css" %}" type="text/css" />
 {% endblock %}
 
 {% block scripts %}    
-	<script type="text/javascript" src="/site_media/js/jquery/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="/site_media/js/offer/proposal/offerCreate.js"></script>
+	<script type="text/javascript" src="{% static "js/jquery/jquery.colorbox-min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/offer/proposal/offerCreate.js" %}"></script>
 {% endblock %}
 
 {% block main-navigation %}

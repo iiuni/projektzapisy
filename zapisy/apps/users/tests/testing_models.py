@@ -164,7 +164,7 @@ class IBANTest(TestCase):
 
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         sql_calls = [
             """
                 CREATE TABLE courses_studentpointsview (
@@ -178,7 +178,6 @@ class MailsToStudentsLinkTestCase(TestCase):
         for sql_call in sql_calls:
             cursor = connection.cursor()
             cursor.execute(sql_call)
-            connection.commit()
     
         cls.MSG_HEADER = 'Wyślij wiadomość do studentów'
         regular_user = User.objects.create_user('regular_user', 'user@user.com', 'password')
@@ -195,14 +194,13 @@ class MailsToStudentsLinkTestCase(TestCase):
         summer_semester.full_clean()
         
     @classmethod
-    def tearDownClass(cls):
+    def tearDownTestData(cls):
         sql_calls = [
             "DROP TABLE courses_studentpointsview;",
         ]
         for sql_call in sql_calls:
             cursor = connection.cursor()
             cursor.execute(sql_call)
-            connection.commit()
 
     def test_mailto_link_not_exists_regular_user(self):
         self.client.login(username='regular_user', password='password')
@@ -218,7 +216,7 @@ class MailsToStudentsLinkTestCase(TestCase):
 
 class MyProfileSemesterInfoTestCase(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         sql_calls = [
             """
                 CREATE TABLE courses_studentpointsview (
@@ -232,7 +230,6 @@ class MyProfileSemesterInfoTestCase(TestCase):
         for sql_call in sql_calls:
             cursor = connection.cursor()
             cursor.execute(sql_call)
-            connection.commit()
 
         student_user = User.objects.create_user('student_user', 'student@user.com', 'password')
         s = Student.objects.create(user=student_user, matricula=str(randint(100000, 200000)))
@@ -253,7 +250,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
         cls.semester.save()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownTestData(cls):
         sql_calls = [
             "DROP TABLE courses_studentpointsview;",
         ]

@@ -3,7 +3,7 @@ import json
 
 from django.contrib                      import messages
 from django.http                         import HttpResponse, HttpResponseRedirect
-from django.shortcuts                    import render_to_response
+from django.shortcuts                    import render
 from django.template                     import RequestContext
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.users.decorators             import student_required, employee_required
@@ -132,17 +132,17 @@ def connections_choice( request ):
                     StudentGraded.objects.get_or_create(student=request.user.student,
                                                       semester=semester)
 
-                return render_to_response( "grade/ticket_create/tickets_save.html", data, context_instance = RequestContext( request ))
+                return render(request, "grade/ticket_create/tickets_save.html", data)
 
         else:
            pass
 #             form = PollCombineForm( polls = groupped_polls )
 
         data = { 'polls':polls_lists, 'grade' : grade, 'general_polls': general_polls}
-        return render_to_response ('grade/ticket_create/connection_choice.html', data, context_instance = RequestContext ( request ))
+        return render(request, 'grade/ticket_create/connection_choice.html', data)
     else:
         messages.error( request, "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów" )
-        return render_to_response ('grade/ticket_create/connection_choice.html', {'grade': grade }, context_instance = RequestContext ( request ))
+        return render(request, 'grade/ticket_create/connection_choice.html', { 'grade': grade })
 
 
 @csrf_exempt
@@ -235,10 +235,10 @@ def client_connection( request ):
 @csrf_exempt
 def keys_list( request ):
     l = PublicKey.objects.all()#.order_by('poll__group__course__name')
-    return render_to_response('grade/ticket_create/keys_list.html', {'list': l,},context_instance = RequestContext( request ))
+    return render(request, 'grade/ticket_create/keys_list.html', {'list': l,})
 
 @csrf_exempt
 def keys_generate( request ):
     data = {}
     data['keys_to_create'] = Poll.count_polls_without_keys()
-    return render_to_response('grade/ticket_create/keys_generate.html', data,context_instance = RequestContext( request ))
+    return render(request, 'grade/ticket_create/keys_generate.html', data)

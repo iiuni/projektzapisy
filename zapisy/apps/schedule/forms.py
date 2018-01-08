@@ -24,6 +24,7 @@ class TermForm(forms.ModelForm):
 
     class Meta:
         model = Term
+        fields = '__all__'
         widgets = {
             'event': HiddenInput(),
             'day': HiddenInput(),

@@ -1,4 +1,3 @@
-{% load url from future %}
 <div id="employee-profile">
 	<h2>{{employee.get_full_name}}</h2>
 
@@ -49,8 +48,8 @@
         <h3>Plan zajęć:</h3>
     {% endif %}
 	<div id="user-schedule-scheduleContainer">
-		<script type="application/json" id="user-schedule-courses-json">{{ courses_json|safe }}</script>
-		<script type="application/json" id="user-schedule-groups-json">{{ groups_json|safe }}</script>
+		<script type="application/json" id="userScheduleCoursesJson">{{ courses_json|safe }}</script>
+		<script type="application/json" id="userScheduleGroupsJson">{{ groups_json|safe }}</script>
 		<input type="hidden" name="ajax-set-enrolled-url" value="{% url 'records-set-enrolled' '.json' %}" />
 		<input type="hidden" name="ajax-set-pinned-url" value="{% url 'schedule-prototype-set-pinned' %}" />
 		<input type="hidden" name="ajax-set-queue-priority-url" value="{% url 'records-set-queue-priority' '.json' %}" />

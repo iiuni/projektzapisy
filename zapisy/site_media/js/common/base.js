@@ -1,9 +1,10 @@
 $(function () {
-    var loginDropdown = $('#login-dropdown');
+    var loginDropdownLink = $('#login-dropdown');
     var btnShowLoginForm = $('#btn-no-usos');
     var loginForm = $('#login-without-usos');
+    var loginDropdown = $('#login-dp');
 
-    loginDropdown.bind('click', function () {
+    loginDropdownLink.bind('click', function () {
 	btnShowLoginForm.show();
 	loginForm.hide();
     });
@@ -12,5 +13,9 @@ $(function () {
 	event.stopPropagation();
 	$(this).hide();
 	loginForm.show();
+    });
+
+    loginDropdown.bind('click', function (event) {
+	event.stopPropagation();
     });
 });

@@ -1,4 +1,3 @@
-{% load url from future %}
 {% if page.has_previous %}
 <a href="{% url 'news-search' category %}?q={{query}}&page={{page.previous_page_number}}" title="Nowsze"
 	onclick="News.loadPage('{% url 'news-search' category %}?q={{query}}&page={{page.previous_page_number}}&json=true'); return false;">

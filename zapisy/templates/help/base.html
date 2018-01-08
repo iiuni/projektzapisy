@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% load url from future %}
 {% load compressed %}
+{% load static %}
 {% block styles %}
 	{% compressed_css 'help' %}
 {% endblock %}
@@ -19,7 +19,7 @@
     </ul>
 Udział w głosowaniu na ofertę dydaktyczną oraz ocenie zajęć umożliwia studentowi wcześniejsze zapisywanie się na zajęcia w Zapisach{% comment %}(<a href="{% url 'help-terms' %}">terminy</a>){% endcomment %}.
 <p>Na rysunku poniżej został przedstawiony "cykl życia" oferty dydaktycznej.</p><br/><br/>
-<img src="/site_media/help/main/cykl_oferty.png" id="cykl-oferty" title="Cykl życia oferty dydaktycznej" /><br/><br/>
+<img src="{% static "help/main/cykl_oferty.png" %}" id="cykl-oferty" title="Cykl życia oferty dydaktycznej" /><br/><br/>
 Podstawowy cykl opieki nad zajęciami w II UWr. wygląda następująco:
 <ul>
     <li>Przed rozpoczęciem roku akademickiego (i w trakcie trwania poprzedniego roku) składane są propozycje dotyczące oferty dydaktycznej (zgłaszanie przedmiotów i pomysłów na przedmioty). Propozycje te to także poprzednie oferty dydaktyczne - czyli z lat wcześniejszych.</li>

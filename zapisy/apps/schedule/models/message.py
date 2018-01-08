@@ -59,28 +59,6 @@ class Message(models.Model):
         return cls.objects.filter(event=event).select_related('author')
 
 
-class EventModerationMessage(Message):
-
-    class Meta:
-        app_label = 'schedule'
-        verbose_name = u'wiadomość moderacji wydarzenia'
-        verbose_name_plural = u'wiadomości moderacji wydarzenia'
-
-    def save(self, *args, **kwargs):
-        super(EventModerationMessage, self).save(*args, **kwargs)
-        # if self.author == self.event.author:
-        #     to = settings.EVENT_MODERATOR_EMAIL
-        # else:
-        #     to = self.author.email
-
-#        render_and_send_email(u'Nowa wiadomość moderatorska w wydarzeniu',
-#                               u'schedule/emails/new_moderation_message.txt',
-#                               u'schedule/emails/new_moderation_message.html',
-#                               {'event': self.event},
-#                               [to]
-#        )
-
-
 class EventMessage(Message):
 
     class Meta:

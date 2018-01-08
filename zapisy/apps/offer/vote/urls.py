@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-
-urlpatterns = patterns( 'apps.offer.vote.views',
-    url('^$',     'vote_main', name='vote-main' ),
-    url('^view$', 'vote_view', name='vote-view'),
-    url('^vote$', 'vote',      name='vote'),
-    url('^summary$', 'vote_summary', name='vote-summary'),
-    url('^summary/(?P<slug>[\w\-_]+)/$', 'proposal_vote_summary', name='proposal-vote-summary')
-)
+urlpatterns = [
+    url('^$', views.vote_main, name='vote-main' ),
+    url('^view$', views.vote_view, name='vote-view'),
+    url('^vote$', views.vote, name='vote'),
+    url('^summary$', views.vote_summary,  name='vote-summary'),
+    url('^summary/(?P<slug>[\w\-_]+)/$', views.proposal_vote_summary,
+        name='proposal-vote-summary')
+]

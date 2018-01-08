@@ -27,7 +27,7 @@ class Syllabus(models.Model):
     effects_txt = models.TextField(verbose_name=u'Zakładane efekty kształcenia', blank=True, default='')
     effects_codes = models.TextField(verbose_name=u'Symbole kierunkowych efektów kształcenia', blank=True, default='', help_text='Wypełnia DDD')
     contents = models.TextField(verbose_name=u'Treści programowe', blank=True, default='')
-    learning_methods = models.ManyToManyField(LearningMethod, verbose_name=u'Metody kształcenia', null=True, blank=True)
+    learning_methods = models.ManyToManyField(LearningMethod, verbose_name=u'Metody kształcenia', blank=True)
     literature = models.TextField(verbose_name=u'Zalecana literatura (podręczniki)', blank=True, default='')
     passing_form = models.TextField(verbose_name=u'Forma zaliczenia poszczególnych komponentów przedmiotu/modułu, sposób sprawdzenia osiągnięcia zamierzonych efektów kształcenia', blank=True, default='')
     exam_hours = models.IntegerField(null=True, blank=True, verbose_name="egzamin")

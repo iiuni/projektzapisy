@@ -1,10 +1,10 @@
 {% extends "offer/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% load fereol_common %}
 
 {% block styles %}
-	<link rel="stylesheet" href="/site_media/css/news.css" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/news.css" %}" type="text/css" />
 {% endblock %}
 
 {% block main-navigation %}

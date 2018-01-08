@@ -1,9 +1,9 @@
 {% extends "admin/base_site.html" %}
-{% load url from future %}
+{% load static %}
 {% load i18n staticfiles %}
 
 {% block extrastyle %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="/site_media/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="{% static "css/admin.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}" />
 {% endblock %}
 

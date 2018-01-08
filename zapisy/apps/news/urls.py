@@ -1,8 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-from apps.news.models import News
-
-urlpatterns = patterns('apps.news.views',
-    url(r'^$','all_news',name='news-all'),
-    url(r'^(?P<news_id>[0-9]+)/$', 'all_news_focus_one'),
-)
+urlpatterns = [
+    url(r'^$', views.all_news, name='news-all'),
+    url(r'^(?P<news_id>[0-9]+)/$', views.all_news_focus_one),
+]

@@ -22,7 +22,7 @@ from apps.enrollment.records.tests.factories import RecordFactory
 
 from apps.enrollment.records.models import Record
 import factories
-import common
+from zapisy import common
 
 
 class SpecialReservationTestCase(TestCase):

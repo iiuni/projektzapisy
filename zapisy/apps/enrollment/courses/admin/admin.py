@@ -74,13 +74,13 @@ class CourseAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(CourseAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def get_object(self, request, object_id):
+    def get_object(self, request, object_id, from_field=None):
         """
         Returns an instance matching the primary key provided. ``None``  is
         returned if no match is found (or the object_id failed validation
         against the primary key field).
         """
-        queryset = self.queryset(request)
+        queryset = self.get_queryset(request)
         model = queryset.model
         try:
             object_id = model._meta.pk.to_python(object_id)
@@ -88,13 +88,13 @@ class CourseAdmin(admin.ModelAdmin):
         except (model.DoesNotExist, ValidationError):
             return None
 
-    def queryset(self, request):
+    def get_queryset(self, request):
        """
        Filter the objects displayed in the change_list to only
        display those for the currently signed in user.
        """
-       qs = super(CourseAdmin, self).queryset(request)
-       return qs.select_related('semester', 'type')
+       qs = super(CourseAdmin, self).get_queryset(request)
+       return qs.select_related('semester')
 
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('number', 'capacity', 'building')
@@ -168,12 +168,12 @@ class CourseEntityAdmin(TranslationAdmin):
 
     inlines = [PointsInline, TagsInline]
 
-    def queryset(self, request):
+    def get_queryset(self, request):
        """
        Filter the objects displayed in the change_list to only
        display those for the currently signed in user.
        """
-       qs = super(CourseEntityAdmin, self).queryset(request)
+       qs = super(CourseEntityAdmin, self).get_queryset(request)
        return qs.select_related('owner', 'owner__user', 'type')
 
 class TermInline(admin.TabularInline):
@@ -302,7 +302,7 @@ class GroupAdmin(admin.ModelAdmin):
                                           Q(day__lte=semester.lectures_ending))\
                           .values_list('day', flat=True)
         changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms = T.objects.filter(group=obj).select_related('group', 'group__course', 'group__course__courseentity')
+        terms = T.objects.filter(group=obj).select_related('group', 'group__course', 'group__course__entity')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
         day = semester.lectures_beginning
@@ -361,13 +361,13 @@ class GroupAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(GroupAdmin,self).changelist_view(request, extra_context=extra_context)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
        """
        Filter the objects displayed in the change_list to only
        display those for the currently signed in user.
        """
-       qs = super(GroupAdmin, self).queryset(request)
-       return qs.select_related('teacher', 'teacher__user', 'course', 'course__semester', 'course__type').prefetch_related('term')
+       qs = super(GroupAdmin, self).get_queryset(request)
+       return qs.select_related('teacher', 'teacher__user', 'course', 'course__semester').prefetch_related('term')
 
     class Media:
         css = {
@@ -412,8 +412,8 @@ class CourseDescriptionAdmin(TranslationAdmin):
         entity.information = obj
         entity.save()
     class Media:
-        js = ('/site_media/js/tinymce/tinymce.min.js',
-              '/site_media/js/textareas.js',)
+        js = ('/static/js/tinymce/tinymce.min.js',
+              '/static/js/textareas.js',)
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseDescription, CourseDescriptionAdmin)

@@ -1,22 +1,22 @@
 {% extends "offer/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% load proposal_extras %}
 
 {% block main-subtitle %}Propozycje{% endblock %}
 
 {% block styles %}
-	<link type="text/css" rel="stylesheet" href="/site_media/css/offer/proposal/proposal.css" />
+	<link type="text/css" rel="stylesheet" href="{% static "css/offer/proposal/proposal.css" %}" />
 {% endblock %}
 
 {% block scripts %}
-	<script type="text/javascript" src="/site_media/js/components/sidebar.js"></script>
+	<script type="text/javascript" src="{% static "js/components/sidebar.js" %}"></script>
 
-	<script src="/site_media/js/components/topBarFilter.js" type="text/javascript"></script>
+	<script src="{% static "js/components/topBarFilter.js" %}" type="text/javascript"></script>
 
-	<script src="/site_media/js/common/listFilter.js" type="text/javascript"></script>
-	<script type="text/javascript" src="/site_media/js/offer/proposal/history.js"></script>
-    <script type="text/javascript" src="/site_media/js/offer/proposal/proposals-list.js"></script>
+	<script src="{% static "js/common/listFilter.js" %}" type="text/javascript"></script>
+	<script type="text/javascript" src="{% static "js/offer/proposal/history.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/offer/proposal/proposals-list.js" %}"></script>
 
 	{% include "common/tinymce.html" %}
 

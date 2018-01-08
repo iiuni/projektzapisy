@@ -4,9 +4,9 @@
  *  1. add:
  *         {% include 'common/dialog_box.html' %} any place in template
  *  2. add:
- *        <link rel="stylesheet" href="/site_media/css/common/dialog_box.css" type="text/css" />
+ *        <link rel="stylesheet" href="/static/css/common/dialog_box.css" type="text/css" />
  *  3. add:
- *      <script src="/site_media/js/common/dialog_box.js" type="text/javascript"></script>
+ *      <script src="/static/js/common/dialog_box.js" type="text/javascript"></script>
  *  4. Fereol.dialog.setHTML( html ) - adding html to dialog box
  *  5. Fereol.dialog.show()          -
  */

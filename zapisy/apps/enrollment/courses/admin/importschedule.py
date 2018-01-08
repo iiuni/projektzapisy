@@ -4,12 +4,12 @@ import os
 from django.db import transaction
 from django.template.defaultfilters import slugify
 from lxml import etree
-from settings import PROJECT_PATH
+from django.conf import settings
 from apps.enrollment.courses.models import Semester, Group, Course, Term, \
      CourseEntity, Type, Classroom
 from apps.users.models import Employee
 
-XSCHEMA = os.path.join(PROJECT_PATH, 'enrollment/courses/admin/xml/semesterschedule.xsd')
+XSCHEMA = os.path.join(settings.BASE_DIR, 'enrollment/courses/admin/xml/semesterschedule.xsd')
 
 
 @transaction.atomic

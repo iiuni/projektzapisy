@@ -1,13 +1,14 @@
 ﻿{% extends "grade/poll/managment/base.html" %}
+{% load static %}
 
 {% block scripts %}
 {% endblock %}
 
 {% block styles %}
-	<link rel="stylesheet" href="/site_media/css/grade/questionset_create.css" type="text/css" />
-	<link rel="stylesheet" href="/site_media/css/grade/answer.css" type="text/css" />
-	<link rel="stylesheet" href="/site_media/css/ui-progressbar.css" type="text/css" />
-	<link rel="stylesheet" href="/site_media/css/grade/poll-managment.css" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/grade/questionset_create.css" %}" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/grade/answer.css" %}" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/ui-progressbar.css" %}" type="text/css" />
+	<link rel="stylesheet" href="{% static "css/grade/poll-managment.css" %}" type="text/css" />
 {% endblock %}
 
 

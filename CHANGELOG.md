@@ -2,6 +2,40 @@
 
 # Current version
 
+* Fixed events' start time in iCalc
+
+# Version 18.01.05
+
+* Upgrade to Django 1.10
+* Fix for pulling student from queue
+
+# Version 17.12.16
+
+* Improved desideratas form
+* Upgrade to Django 1.9
+
+# Version 17.12.11
+
+* Show desiderates in offer menu
+* Upgraded the google analytics library
+
+# Version 17.11.28
+
+* Fixed users schedules
+* Fixed course proposal form
+* Fixed removing student from group in admin
+* Removed paranoid sessions
+* Fixed ignoring conflicts on reservation edition
+* Cleaned main repository directory
+
+# Version 17.11.21
+
+* Upgrade to Django 1.8
+* Loading courses with ajax
+* Fixed disappearing pop-up
+* Fixed issues with reservations and conflicts
+* Hid vote summary from non-users
+
 # Version 17.10.25
 
 * Fixed missing title for login page

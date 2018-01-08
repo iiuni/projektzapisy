@@ -230,7 +230,7 @@ Fereol.Enrollment.ScheduleCourseTerm.prototype._generatePopup = function()
 				', limit miejsc w grupie: ' + this.group.limit);
 		if (this.group.isFull() && !this.group.isEnrolledOrQueued())
 			$.create('img', {
-				src: '/site_media/images/warning.png',
+				src: '/static/images/warning.png',
 				alt: '(brak wolnych miejsc)',
 				title: 'nie ma wolnych miejsc w tej grupie, możesz zapisać ' +
 					'się do kolejki'

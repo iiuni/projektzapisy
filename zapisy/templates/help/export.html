@@ -1,5 +1,5 @@
 {% extends "help/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% block content %} 
 <h2>Eksport planu zajęć</h2><br/>
@@ -7,7 +7,7 @@
 Plan zajęć można wyeksportować do pliku w formacie <a href="http://www.google.com/search?q=iCalendar">iCalendar</a>.<br/>
 Jest to format pliku przechowującego dane kalendarzowe(terminy, plany zajęć). Można go zaimportować do swojej ulubionej aplikacji-organizera.<br/>
 Plik można pobrać w widoku planu zajęć klikając w link <a href="{% url 'ical' %}">Eksportuj do ical</a>.<br/><br/>
-    <img src="/site_media/help/enrollment/enrollment8.png" id="enrollment8" title="Zapisy"/><br/><br/>
+    <img src="{% static "help/enrollment/enrollment8.png" %}" id="enrollment8" title="Zapisy"/><br/><br/>
 
 
 {% endblock %} 

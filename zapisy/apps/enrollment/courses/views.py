@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
@@ -23,10 +23,7 @@ logger = logging.getLogger()
 
 
 def main(request):
-    return render_to_response(
-        'enrollment/main.html', {},
-        context_instance=RequestContext(request))
-
+    return render(request, 'enrollment/main.html')
 
 def get_courses_list_in_semester_with_history_info(user, semester):
     """
@@ -98,8 +95,10 @@ def prepare_courses_list_to_render_and_return_course(request,default_semester=No
     return render_data, result_course
 
 def courses(request):
-    return render_to_response('enrollment/courses/courses_list.html',
-        prepare_courses_list_to_render(request), context_instance=RequestContext(request))
+    return render(
+                request,
+                'enrollment/courses/courses_list.html',
+                prepare_courses_list_to_render(request))
 
 
 def get_semester_info(request, semester_id):
@@ -321,16 +320,14 @@ def course(request, slug):
         if request.is_ajax():
             rendered_html = render_to_string(
                 'enrollment/courses/course_info.html',
-                data, context_instance = RequestContext(request))
+                data, request)
             return JsonResponse({
                 'courseHtml': rendered_html,
                 'courseName': course.name,
                 'courseEditLink': reverse('admin:courses_course_change', args=[course.pk])
             })
         else:
-            return render_to_response(
-                'enrollment/courses/course.html',
-                data, context_instance = RequestContext(request))
+            return render(request, 'enrollment/courses/course.html', data)
 
     except (Course.DoesNotExist, NonCourseException):
         raise Http404

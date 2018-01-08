@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import LANGUAGE_SESSION_KEY
+
 from apps.users.models import UserProfile
 
 class LocalePrefMiddleware(object):
@@ -7,9 +9,9 @@ class LocalePrefMiddleware(object):
 
     def process_request(self, request):
         if request.user.is_authenticated():
-            if 'django_language' not in request.session:
+            if LANGUAGE_SESSION_KEY not in request.session:
                 try:
                     account = UserProfile.objects.get(user=request.user)
-                    request.session['django_language'] = account.preferred_language
+                    request.session[LANGUAGE_SESSION_KEY] = account.preferred_language
                 except UserProfile.DoesNotExist:
                     pass

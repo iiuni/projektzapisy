@@ -1,5 +1,5 @@
 {% extends "grade/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% load compressed %}
 {% block styles %}
@@ -9,9 +9,9 @@
 
 {% block js %}
     {{ block.super }}
-    <script type="text/javascript" src="/site_media/js/jquery/jquery-tmpl/jquery.tmpl.js"></script>
-    <script type="text/javascript" src="/site_media/js/jquery/jquery.validate.js"></script>
-    <script type="text/javascript" src="/site_media/js/jquery/jquery-validation-1.8.0/localization/messages_pl.js"></script>
+    <script type="text/javascript" src="{% static "js/jquery/jquery-tmpl/jquery.tmpl.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery/jquery.validate.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery/jquery-validation-1.8.0/localization/messages_pl.js" %}"></script>
 {% endblock %}
 
 {% block main-navigation %}

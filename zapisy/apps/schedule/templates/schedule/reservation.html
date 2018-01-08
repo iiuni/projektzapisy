@@ -1,5 +1,5 @@
 {% extends "schedule/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% block schedule_reservation %} class="active"{% endblock %}
 
@@ -11,9 +11,9 @@
 {% block styles %}
     {{ block.super }}
 
-    <link href="/site_media/css/jquery-ui-1.8.14.custom.css" rel="stylesheet" type="text/css"
+    <link href="{% static "css/jquery-ui-1.8.14.custom.css" %}" rel="stylesheet" type="text/css"
           media="screen,projection"/>
-    <link href="/site_media/js/timepicker/jquery.ui.timepicker.css" rel="stylesheet" type="text/css"
+    <link href="{% static "js/timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" type="text/css"
           media="screen,projection"/>
 {% endblock %}
 
@@ -61,9 +61,9 @@
 
 
     </style>
-    <script type="text/javascript" src="/site_media/js/timepicker/jquery.ui.timepicker.js"></script>
-    <script type="text/javascript" src="/site_media/js/timepicker/i18n/jquery.ui.timepicker-pl.js"></script>
-    <script type="text/javascript" src="/site_media/js/jquery/jquery.smooth-scroll.js"></script>
+    <script type="text/javascript" src="{% static "js/timepicker/jquery.ui.timepicker.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/timepicker/i18n/jquery.ui.timepicker-pl.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery/jquery.smooth-scroll.js" %}"></script>
     <script type="text/javascript">
 
     /* Modernizr 2.6.2 (Custom Build) | MIT & BSD
@@ -104,7 +104,7 @@
     HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
 
     var chosenbutton = new Image();
-    chosenbutton.src = '/site_media/images/choose.png';
+    chosenbutton.src = '{% static "images/choose.png" %}';
 
     var Loader = function (container) {
         {#        this.container = container;#}

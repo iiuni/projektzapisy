@@ -245,7 +245,7 @@ ul.proposals-list li a { color: #000000; }
     overflow: hidden;
     text-indent: 1000px;
 
-    background: #e6e6e6 url('/site_media/images/edit-ico.png') no-repeat center;
+    background: #e6e6e6 url('/static/images/edit-ico.png') no-repeat center;
 
     border: 1px solid #cccccc;
 

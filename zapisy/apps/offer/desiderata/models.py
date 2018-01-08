@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from apps.enrollment.courses.models import Term, Course, Semester
-import common
+from zapisy import common
 
 class Desiderata(models.Model):
     employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')
@@ -35,7 +35,7 @@ class Desiderata(models.Model):
 class DesiderataOther(models.Model):
     employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')
     semester = models.ForeignKey(Semester, verbose_name='semestr')
-    comment = models.CharField(verbose_name='uwagi', max_length=200, default='')
+    comment = models.TextField(verbose_name='uwagi', max_length=1000, default='')
 
     class Meta:
         unique_together = (("employee", "semester"),)

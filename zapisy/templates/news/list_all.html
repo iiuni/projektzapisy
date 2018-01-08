@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load static %}
 {% load fereol_common %}
 {% load compressed %}
 {% block main-subtitle %}Aktualności{% endblock %}
@@ -34,7 +35,7 @@ u
         
         <div class="od-news-navigator">
             <a href="/feeds/news/" title="Aktualności RSS" id="od-news-rss-icon">
-                <img src="/site_media/images/rss.png" alt="RSS"/>
+                <img src="{% static "images/rss.png" %}" alt="RSS"/>
             </a>
         </div>
 

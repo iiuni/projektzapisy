@@ -1,5 +1,5 @@
 {% extends 'schedule/base.html' %}
-{% load url from future %}
+{% load static %}
 
 {% block bread %}
     <a href="/">Strona główna</a> &raquo;
@@ -8,8 +8,8 @@
 {% block scedule_events %} class="active"{% endblock %}
 
 {% block js %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='/site_media/js/fullcalendar/fullcalendar.css'/>
-    <script type="text/javascript" src="/site_media/js/fullcalendar/fullcalendar.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "js/fullcalendar/fullcalendar.css" %}">
+    <script type="text/javascript" src="{% static "js/fullcalendar/fullcalendar.js" %}"></script>
     <script>
 
         $(document).ready(function () {
@@ -82,7 +82,7 @@
             <h2>Wydarzenia</h2>
         </div>
         <div class="span1" style="text-align: right;">
-            <a href="{% url 'events:events_feed' %}"><img src="/site_media/feed-icon.png" alt="RSS"></a>
+            <a href="{% url 'events:events_feed' %}"><img src="{% static "feed-icon.png" %}" alt="RSS"></a>
         </div>
     </div>
     <div class="row">

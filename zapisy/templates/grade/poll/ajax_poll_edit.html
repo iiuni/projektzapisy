@@ -1,4 +1,3 @@
-{% load url from future %}
 <form method="POST" id="poll-create" action="{% url 'grade-poll-poll-edit' %}">
     <input type="hidden" name="poll_id" value="{{ poll.pk }}">
     <label for="title">Tytuł:</label>

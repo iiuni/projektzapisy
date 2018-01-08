@@ -1,12 +1,12 @@
 {% extends "offer/proposal/base.html" %}
-{% load url from future %}
+{% load static %}
 
 {% load fereol_common %}
 
 {% block main-subtitle %}Propozycje: {{proposal.name}}{% endblock %}
 
 {% block proposal-scripts %}
-	<script type="text/javascript" src="/site_media/js/offer/proposal/view.js"></script>
+	<script type="text/javascript" src="{% static "js/offer/proposal/view.js" %}"></script>
 {% endblock %}
 
 {% block proposal-content %}

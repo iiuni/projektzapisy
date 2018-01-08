@@ -28,7 +28,7 @@
 
 .schedule .full
 {
-	background-image: url('/site_media/images/schedule-warning.png');
+	background-image: url('/static/images/schedule-warning.png');
 	background-repeat: no-repeat;
 	background-position: right top;
 }
@@ -110,7 +110,7 @@
 	overflow: hidden;
 	cursor: pointer;
 	background: no-repeat;
- 	background-image: url('/site_media/images/schedule-prototype-controls.png');
+ 	background-image: url('/static/images/schedule-prototype-controls.png');
 }
 
 .legend-box.icons {
@@ -150,7 +150,7 @@
 	height: 16px;
 	margin: 1px;
     float:left;
-	background: no-repeat url('/site_media/images/loading-small.gif');
+	background: no-repeat url('/static/images/loading-small.gif');
 }
 
 /*******************************************************************************

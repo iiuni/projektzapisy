@@ -411,3 +411,9 @@ table ul.voted-courses {
   background-size: 100px;
   opacity: 0.5; filter: alpha(opacity = 50); zoom: 1;
 }
+
+.version_info {
+  text-align: center;
+  font-size: 11px;
+  color: grey;
+}

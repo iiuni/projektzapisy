@@ -30,14 +30,14 @@ UserScheduleView.courseList = [];
 UserScheduleView.initGroups = function()
 {
 	const coursesRAW = JSON.parse($(
-		"#user-schedule-courses-json").html());
+		"#userScheduleCoursesJson").html());
 	coursesRAW.forEach(function(courseRAW)
 	{
 		Fereol.Enrollment.Course.fromJSON(courseRAW);
 	});
 
 	const groupsRAW = JSON.parse($(
-		"#user-schedule-groups-json").html());
+		"#userScheduleGroupsJson").html());
 	groupsRAW.forEach(function(groupRAW)
 	{
 		Fereol.Enrollment.CourseGroup.fromJSON(groupRAW);

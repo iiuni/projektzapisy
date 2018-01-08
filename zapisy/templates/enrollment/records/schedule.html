@@ -1,10 +1,10 @@
 {% extends "enrollment/base.html" %}
-{% load url from future %}
 {% load fereol_common %}
 {% load compressed %}
 {% load cache %}
 {% load multifor %}
 {% load i18n %}
+{% load static %}
 {% block main-subtitle %}{# Translators: podtytuł #}{% trans "Plan zajęć" %}{% endblock %}
 
 
@@ -12,11 +12,11 @@
 
 {% block styles %}
     {% compressed_css 'schedule' %}
-    <link rel='stylesheet' type='text/css' href='/site_media/js/fullcalendar/fullcalendar.css'/>
+    <link rel="stylesheet" type="text/css" href="{% static "js/fullcalendar/fullcalendar.css" %}">
 {% endblock %}
 {% block js %}
     {% compressed_js 'schedule' %}
-    <script type="text/javascript" src="/site_media/js/fullcalendar/fullcalendar.js"></script>
+    <script type="text/javascript" src="{% static "js/fullcalendar/fullcalendar.js" %}"></script>
     <script>
 
         $(document).ready(function () {

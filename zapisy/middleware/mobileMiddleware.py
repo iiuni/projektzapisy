@@ -14,19 +14,19 @@ class SubdomainMiddleware:
             if parts[0] == 'm':
                 request.META['HTTP_HOST'] = domain
                 request.mobile = True
-                request.urlconf = 'mobile_urls'#'mobile.urls'
+                request.urlconf = 'zapisy.mobile_urls'#'mobile.urls'
             else:
                 request.mobile = False
 
         elif parts[0] == 'm':
             request.mobile = True
-            request.urlconf = 'mobile_urls'
+            request.urlconf = 'zapisy.mobile_urls'
 
         #wiadomość przekazana z mobileDetection - wykryto urządzenie mobilne
         elif request.is_mobile:
             request.META['HTTP_HOST'] = 'm.' + domain.replace('www.', '')
             request.mobile = True
-            request.urlconf = 'mobile_urls'
+            request.urlconf = 'zapisy.mobile_urls'
             return HttpResponseRedirect(request.path)
 
         else:

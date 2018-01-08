@@ -25,8 +25,8 @@
 #
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
-from django.db.models.loading import cache
+from django.shortcuts import render, redirect
+from django.apps import apps
 from django.template import RequestContext, Context
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -35,6 +35,7 @@ from apps.email_change.forms import EmailChangeForm
 from apps.email_change.utils import generate_key
 from apps.email_change.models import EmailChangeRequest
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.contrib import messages
 
 @login_required
@@ -48,18 +49,14 @@ def email_change_view(request, extra_context={},
 
     """
     if request.method == 'POST':
-        form = EmailChangeForm(username=request.user.username, data=request.POST, files=request.FILES)
+        form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
-            
-            EmailChangeRequest = cache.get_model('email_change', 'EmailChangeRequest')
-            Site = cache.get_model('sites', 'Site')
-            
             email = form.cleaned_data.get('email')
             user = User.objects.filter(email=email)
 
             if user and user <> request.user:
                 messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render_to_response(template_name, {'form':form}, context_instance=RequestContext(request))
+                return render(request, template_name, {'form':form})
 
             verification_key = generate_key(request.user, email)
             
@@ -92,11 +89,10 @@ def email_change_view(request, extra_context={},
                 'protocol': protocol,
             }
             c.update(extra_context)
-            context = Context(c)
 
             # Send success email
-            subject = render_to_string(email_subject_template_name, context_instance=context)
-            message = render_to_string(email_message_template_name, context_instance=context)
+            subject = render_to_string(email_subject_template_name, c)
+            message = render_to_string(email_message_template_name, c)
             
             send_mail('[Fereol] Weryfikacja zmiany adresu email', message, None, [email])
             messages.success(request, "Mail zawierający link weryfikacyjny został wysłany na Twój nowy adres email. Postępuj zgodnie z instrukcjami w tym mailu by z sukcesem zmienić Twój obecny adres email.")
@@ -104,12 +100,12 @@ def email_change_view(request, extra_context={},
             return redirect(success_url)
     
     else:
-        form = EmailChangeForm(username=request.user.username, initial={'email' : request.user.email})
+        form = EmailChangeForm(instance=request.user)
     
     context = RequestContext(request, extra_context)
     context['form'] = form
     
-    return render_to_response(template_name, context_instance=context)
+    return render(context, template_name)
 
 
 
@@ -117,22 +113,19 @@ def email_change_view(request, extra_context={},
 def email_verify_view(request, verification_key, extra_context={},
         success_url='my-profile',#'email_change_complete',
         template_name='email_change/email_verify.html'):
-    """
-    """
-    EmailChangeRequest = cache.get_model('email_change', 'EmailChangeRequest')
     context = RequestContext(request, extra_context)
     try:
         ecr = EmailChangeRequest.objects.get(
             user=request.user, verification_key=verification_key)
     except EmailChangeRequest.DoesNotExist:
         # Return failure response
-        return render_to_response(template_name, context_instance=context)
+        return render(context, template_name)
     else:
         # Check if the email change request has expired
         if ecr.has_expired():
             ecr.delete()
             # Return failure response
-            return render_to_response(template_name, context_instance=context)
+            return render(context, template_name)
         
         # Success. Replace the user's email with the new email
         request.user.email = ecr.email
