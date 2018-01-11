@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from datetime import date, datetime
+from datetime import datetime
 
 import factory
 from factory.fuzzy import FuzzyInteger
 from factory.django import DjangoModelFactory
 
 from ..models.course import Course, CourseEntity, CourseDescription
-from ..models.semester import Semester
 from ..models.group import Group
 from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
-from apps.users.tests.factories import EmployeeFactory
 from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 
