@@ -1,84 +1,50 @@
 ﻿# -*- coding: utf-8 -*-
 import json
 
-from django.contrib                    import auth, messages
-from django.contrib.auth.decorators    import login_required
-from django.core.exceptions            import ObjectDoesNotExist, \
-                                              ValidationError
-from django.core.urlresolvers          import reverse
-from django.http                       import HttpResponse, \
-                                              HttpResponseRedirect,\
-                                              Http404
-from django.shortcuts                  import render, redirect
-from django.template                   import RequestContext
+from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import SafeUnicode, mark_safe
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 
-from apps.enrollment.courses.models.course import CourseEntity
 from apps.grade.poll.models.last_visit import LastVisit
-from apps.users.decorators             import employee_required
-from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
+from apps.users.decorators import employee_required
+from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.semester import Semester
-from apps.grade.ticket_create.utils  import from_plaintext
-from apps.grade.ticket_create.models import PublicKey, \
-                                              PrivateKey
-from apps.grade.poll.models          import Poll, Section, SectionOrdering, \
-                                              OpenQuestion, SingleChoiceQuestion, \
-                                              OpenQuestionOrdering, Option, \
-                                              SingleChoiceQuestionOrdering, \
-                                              MultipleChoiceQuestion, \
-                                              MultipleChoiceQuestionOrdering, \
-                                              SavedTicket, \
-                                              SingleChoiceQuestionAnswer, \
-                                              MultipleChoiceQuestionAnswer, \
-                                              OpenQuestionAnswer, Option, Template, \
-                                              TemplateSections, Origin
-from apps.grade.poll.forms           import TicketsForm, \
-                                              PollForm, \
-                                              FilterMenu
-from apps.grade.poll.utils           import check_signature, \
-                                              prepare_data, \
-                                              group_polls_and_tickets_by_course, \
-                                              create_slug, \
-                                              get_next, \
-                                              get_prev, \
-                                              get_ticket_and_signed_ticket_from_session,\
-                                              group_polls_by_course, \
-                                              group_polls_by_teacher, \
-                                              getGroups,\
-                                              declination_poll,\
-                                              declination_section,\
-                                              declination_template,\
-                                              csv_prepare,\
-                                              generate_csv_title, get_objects, \
-                                              delete_objects, \
-                                              make_paginator, groups_list, \
-                                              course_list, make_template_variables, \
-                                              prepare_template, prepare_sections_for_template, \
-                                              prepare_data_for_create_poll, make_polls_for_groups, \
-                                              make_message_from_polls, save_template_in_session, \
-                                              make_polls_for_all, get_templates,\
-                                              make_template_from_db,\
-                                              get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
-from apps.users.models               import Employee, Program
-from form_utils                        import get_section_form_data, \
-                                              validate_section_form, \
-                                              section_save
-from apps.grade.poll.exceptions import NoTitleException, NoSectionException, \
-                                    NoPollException
+from apps.grade.ticket_create.utils import from_plaintext
+from apps.grade.ticket_create.models import PublicKey
+from apps.grade.poll.models import Poll, Section, OpenQuestion, SingleChoiceQuestion, \
+    MultipleChoiceQuestion, SavedTicket, SingleChoiceQuestionAnswer, \
+    MultipleChoiceQuestionAnswer, OpenQuestionAnswer, Option, Template, Origin
+from apps.grade.poll.forms import TicketsForm, PollForm
+from apps.grade.poll.utils import check_signature, prepare_data, group_polls_and_tickets_by_course, \
+    create_slug, get_next, get_prev, get_ticket_and_signed_ticket_from_session, \
+    group_polls_by_course, group_polls_by_teacher, getGroups, declination_poll, \
+    declination_section, declination_template, csv_prepare, generate_csv_title, get_objects, \
+    delete_objects, make_paginator, groups_list, course_list, make_template_variables, \
+    prepare_template, prepare_sections_for_template, prepare_data_for_create_poll, make_polls_for_groups, \
+    make_message_from_polls, save_template_in_session, make_polls_for_all, get_templates, \
+    make_template_from_db, get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
+from apps.users.models import Employee, Program
+from form_utils import get_section_form_data, validate_section_form, section_save
+from apps.grade.poll.exceptions import NoTitleException, NoSectionException, NoPollException
 
 
 def main(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
     return TemplateResponse(request, 'grade/main.html', locals())
 
+
 @employee_required
-def template_form(request, group_id = 0):
-    grade =  Semester.objects.filter(is_grade_active=True).count() > 0
-    data = prepare_data_for_create_poll( request, group_id )
+def template_form(request, group_id=0):
+    grade = Semester.objects.filter(is_grade_active=True).count() > 0
+    data = prepare_data_for_create_poll(request, group_id)
     data['grade'] =  grade
     return TemplateResponse(request, 'grade/poll/ajax_template_create.html', data)
 
@@ -273,10 +239,10 @@ def autocomplete(request):
                 distinct().values_list('content', flat=True)
             results = [ x for x in model_results ]
     if results:
-        json = json.dumps(results)
+        json_ = json.dumps(results)
     else:
-        json = ""
-    return HttpResponse(json, content_type='application/javascript')
+        json_ = ""
+    return HttpResponse(json_, content_type='application/javascript')
 
 @employee_required
 def ajax_get_groups(request):

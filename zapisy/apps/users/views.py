@@ -10,26 +10,24 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.views import login
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
 
-import vobject
+from vobject import iCalendar
 
+from apps.enrollment.records.utils import prepare_schedule_courses, prepare_schedule_data
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser
+from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView
 from apps.enrollment.courses.models import Semester, Group
 from apps.enrollment.records.models import Record
 from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, BankAccountChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
-from apps.enrollment.records.utils import *
 from apps.notifications.forms import NotificationFormset
 from apps.notifications.models import NotificationPreferences
 from libs.ajax_messages import AjaxSuccessMessage
@@ -42,6 +40,7 @@ GTC = {'1': 'wy', '2': 'cw', '3': 'pr',
        '6': 'sem', '7': 'lek', '8': 'WF',
        '9': 'rep', '10': 'proj'}
 BREAK_DURATION = datetime.timedelta(minutes=15)
+
 
 @login_required
 def student_profile(request, user_id):
@@ -366,7 +365,7 @@ def create_ical_file(request):
     user_full_name = user.get_full_name()
     semester = Semester.get_default_semester()
 
-    cal = vobject.iCalendar()
+    cal = iCalendar()
     cal.add('x-wr-timezone').value = 'Europe/Warsaw'
     cal.add('version').value = '2.0'
     cal.add('prodid').value = 'Fereol'

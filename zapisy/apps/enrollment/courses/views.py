@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse

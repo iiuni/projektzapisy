@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.db.models   import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.template import RequestContext
 
 from apps.news.models import News
 from apps.news.utils import prepare_data_all
