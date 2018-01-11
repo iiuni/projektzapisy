@@ -179,7 +179,7 @@ class SpecialReservation(models.Model):
             term.room = self.classroom
             term.save()
 
-    def save(self, author_id=1, *args, **kwargs):
+    def save(self, author_id, *args, **kwargs):
         super(SpecialReservation, self).save(*args, **kwargs)
         self.create_event(author_id)
 
