@@ -32,9 +32,6 @@ lxml==4.1.1
 python-dateutil==2.6.1
 # reportlab==2.6
 
-unicodecsv==0.9.4
-html5lib==0.90
-
 # On production: 0.8.1c, but this version has problems with installation
 vobject==0.9.5
 
