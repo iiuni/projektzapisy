@@ -4,7 +4,6 @@ import json
 from django.contrib                      import messages
 from django.http                         import HttpResponse, HttpResponseRedirect
 from django.shortcuts                    import render
-from django.template                     import RequestContext
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.users.decorators             import student_required, employee_required
 from apps.users.models import BaseUser

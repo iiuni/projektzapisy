@@ -89,9 +89,15 @@ class News(models.Model):
             old = None
 
         super(News, self).save(*args, **kwargs)
-
         if self.is_published() and (old and not old.is_published() or not old):
-            Notification.send_notifications('send-news', {'news_id': self.pk, 'include_direct_link': True, 'subject': self.title, 'body': self.body})
+            Notification.send_notifications(
+                'send-news', {
+                    'news_id': self.pk,
+                    'include_direct_link': True,
+                    'subject': self.title,
+                    'body': self.body,
+                    'author': self.author
+                })
 
     def is_published(self):
         return self.category != '-'

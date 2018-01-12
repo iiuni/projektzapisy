@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import Http404
 from django.shortcuts import render
-from django.template import RequestContext
 from django.contrib import messages
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther

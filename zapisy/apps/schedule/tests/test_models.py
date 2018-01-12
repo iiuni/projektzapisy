@@ -36,6 +36,9 @@ class SpecialReservationTestCase(TestCase):
         room110 = ClassroomObjectMother.room110()
         room110.save()
 
+        reservation_author = factories.UserFactory()
+        reservation_author.save()
+
         reservation = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room110,
@@ -43,7 +46,7 @@ class SpecialReservationTestCase(TestCase):
                                          start_time=time(15),
                                          end_time=time(16))
         reservation.full_clean()
-        reservation.save()
+        reservation.save(author_id=reservation_author.pk)
 
         reservation_2 = SpecialReservation(semester=semester,
                                            title='ąęłżóćśśń',
@@ -52,7 +55,7 @@ class SpecialReservationTestCase(TestCase):
                                            start_time=time(15),
                                            end_time=time(16))
         reservation_2.full_clean()
-        reservation_2.save()
+        reservation_2.save(author_id=reservation_author.pk)
 
         reservation_3 = SpecialReservation(semester=semester_2,
                                            title='Reserve whole monday',
@@ -61,7 +64,7 @@ class SpecialReservationTestCase(TestCase):
                                            start_time=time(8),
                                            end_time=time(21))
         reservation_3.full_clean()
-        reservation_3.save()
+        reservation_3.save(author_id=reservation_author.pk)
 
         reservation_4 = SpecialReservation(semester=semester,
                                            title='Reserve just after reservation 2',
@@ -70,7 +73,7 @@ class SpecialReservationTestCase(TestCase):
                                            start_time=time(16),
                                            end_time=time(18))
         reservation_4.full_clean()
-        reservation_4.save()
+        reservation_4.save(author_id=reservation_author.pk)
 
     def test_reservation_created_terms(self):
         terms = EventTerm.get_terms_for_dates(
@@ -241,7 +244,12 @@ class TermTestCase(TestCase):
         room25 = enrollment_factories.ClassroomFactory()
         room25.save()
         room25.full_clean()
+
         today = date.today().strftime("%A")
+
+        reservation_author = factories.UserFactory()
+        reservation_author.save()
+
         reservation = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -249,7 +257,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation.full_clean()
-        reservation.save()
+        reservation.save(author_id=reservation_author.pk)
         reservation2 = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -257,7 +265,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation2.full_clean()
-        reservation2.save()
+        reservation2.save(author_id=reservation_author.pk)
         reservation3 = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -265,7 +273,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation3.full_clean()
-        reservation3.save()
+        reservation3.save(author_id=reservation_author.pk)
         reservation4 = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -273,7 +281,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation4.full_clean()
-        reservation4.save()
+        reservation4.save(author_id=reservation_author.pk)
         reservation5 = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -281,7 +289,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation5.full_clean()
-        reservation5.save()
+        reservation5.save(author_id=reservation_author.pk)
         reservation6 = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -289,7 +297,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation6.full_clean()
-        reservation6.save()
+        reservation6.save(author_id=reservation_author.pk)
         reservation7= SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
@@ -297,7 +305,7 @@ class TermTestCase(TestCase):
                                          start_time=time(8),
                                          end_time=time(16))
         reservation7.full_clean()
-        reservation7.save()
+        reservation7.save(author_id=reservation_author.pk)
 
         # It would fail, was this term in the same semester as the reservations.
         term = factories.TermFactory(room=room25,
@@ -624,12 +632,14 @@ class EventsOnChangedDayTestCase(TestCase):
 
         classroom = enrollment_factories.ClassroomFactory()
 
+        self.reservation_author = factories.UserFactory()
+        self.reservation_author.save()
         reservation = factories.SpecialReservationFactory.build(
             semester=summer_semester,
             classroom=classroom
         )
         reservation.full_clean()
-        reservation.save()
+        reservation.save(author_id=self.reservation_author.pk)
 
     def test_add_event_on_changed_day(self):
         classroom = Classroom.get_by_number('25')
@@ -657,7 +667,7 @@ class EventsOnChangedDayTestCase(TestCase):
             dayOfWeek=common.THURSDAY
         )
         reserv_thursday.full_clean()
-        reserv_thursday.save()
+        reserv_thursday.save(author_id=self.reservation_author.pk)
 
         ev = EventTerm.get_terms_for_dates(
             [self.thursday], classroom, start_time=reserv_thursday.start_time,

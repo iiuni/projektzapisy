@@ -26,7 +26,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.apps import apps
-from django.template import RequestContext, Context
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 
@@ -101,10 +100,9 @@ def email_change_view(request, extra_context={},
     else:
         form = EmailChangeForm(instance=request.user)
     
-    context = RequestContext(request, extra_context)
-    context['form'] = form
+    extra_context['form'] = form
     
-    return render(context, template_name)
+    return render(request, template_name, extra_context)
 
 
 
@@ -112,19 +110,18 @@ def email_change_view(request, extra_context={},
 def email_verify_view(request, verification_key, extra_context={},
         success_url='my-profile',#'email_change_complete',
         template_name='email_change/email_verify.html'):
-    context = RequestContext(request, extra_context)
     try:
         ecr = EmailChangeRequest.objects.get(
             user=request.user, verification_key=verification_key)
     except EmailChangeRequest.DoesNotExist:
         # Return failure response
-        return render(context, template_name)
+        return render(request, template_name, extra_context)
     else:
         # Check if the email change request has expired
         if ecr.has_expired():
             ecr.delete()
             # Return failure response
-            return render(context, template_name)
+            return render(request, template_name, extra_context)
         
         # Success. Replace the user's email with the new email
         request.user.email = ecr.email

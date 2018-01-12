@@ -233,7 +233,12 @@ class Semester( models.Model ):
 
     @staticmethod
     def get_default_semester():
-        """Jeżeli istnieje semestr na który zapisy są otwarte, zwracany jest ten semestr, jeżeli taki nie istnieje zwracany jest semestr, który obecnie trwa. W przypadku gdy nie trwa żaden semestr, zwracany jest najbliższy semestr na który będzie można się zapisać lub None w przypadku braku takiego semestru """
+        """
+        Jeżeli istnieje semestr na który zapisy są otwarte, zwracany jest ten semestr,
+        jeżeli taki nie istnieje zwracany jest semestr, który obecnie trwa.
+        W przypadku gdy nie trwa żaden semestr, zwracany jest najbliższy semestr na
+        który będzie można się zapisać lub None w przypadku braku takiego semestru
+        """
         now = datetime.now()
         now_date = now.date()
         semesters = list(Semester.objects.filter(
@@ -275,6 +280,14 @@ class Semester( models.Model ):
         """ Answers if course is sat as visible (displayed on course lists) """
         param = id
         return Semester.objects.get(id = param).visible
+
+    @staticmethod
+    def get_semester_year_from_raw_year(raw_year):
+        """
+        Convert a numeric year to the string format used in the Semester model,
+        e.g. 2017/18
+        """
+        return "{}/{}".format(raw_year, raw_year % 100 + 1)
 
 
     class Meta:

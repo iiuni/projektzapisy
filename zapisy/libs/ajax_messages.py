@@ -3,7 +3,6 @@ import json
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.template import RequestContext
 
 class AjaxMessage(HttpResponse):
 	def __init__(self, type, code, message, data = None):

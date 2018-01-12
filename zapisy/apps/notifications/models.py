@@ -167,16 +167,20 @@ class NotificationPreferences(models.Model):
         verbose_name = 'Ustawienie Notyfikacji'
         verbose_name_plural = 'Ustawienia Notyfikacji'
 
+def send_message_internal(email, subject, body_html):
+    body_plaintext = strip_tags(body_html)
+    Message.objects.create(
+        to_address=email, subject=subject,
+        message_body=body_plaintext, message_body_html=body_html)
 
 class Notification(object):
-
     @classmethod
     def send_notification(cls, user, notification, context):
         context['user'] = user
         preference = NotificationManager.user_has_notification_on(user, notification)
         if user.email and preference:
-            body = render_to_string('notifications/' + notification + '.html', context)
-            Message.objects.create(to_address=user.email, subject=preference.get_type_display(), message_body=body)
+            body_html = render_to_string("notifications/{0}.html".format(notification), context)
+            send_message_internal(user.email, preference.get_type_display(), body_html)
 
     @classmethod
     def send_notifications(cls, notification, context={}):
@@ -197,9 +201,8 @@ class Notification(object):
                 address = u.user.email
                 if address and preference:
                     context['user'] = u.user
-                    body_html = render_to_string('notifications/%s.html' % notification, context)
-                    body_plaintext = strip_tags(body_html)
-                    Message.objects.create(to_address=address, subject=subject, message_body=body_plaintext, message_body_html=body_html)
+                    body_html = render_to_string("notifications/{0}.html".format(notification), context)
+                    send_message_internal(address, subject, body_html)
 
         subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
         _send_to_users(Employee.get_actives(), notification, subject, context)
