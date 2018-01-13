@@ -15,20 +15,48 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='NotificationPreferences',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('type', models.CharField(max_length=50, verbose_name='typ', choices=[(b'send-news', 'Dodano nowy news'), (b'enrollment-limit', 'Podniesiono limit ECTS'), (b'vote-start', 'Rozpocz\u0119\u0142o si\u0119 g\u0142osowanie'), (b'grade-start', 'Rozpocz\u0119\u0142a si\u0119 ocena')])),
-                ('value', models.BooleanField(default=True, verbose_name='warto\u015b\u0107')),
-                ('user', models.ForeignKey(verbose_name='u\u017cytkownik', to=settings.AUTH_USER_MODEL)),
+                ('id',
+                 models.AutoField(
+                     verbose_name='ID',
+                     serialize=False,
+                     auto_created=True,
+                     primary_key=True)),
+                ('type',
+                 models.CharField(
+                     max_length=50,
+                     verbose_name='typ',
+                     choices=[
+                         (b'send-news',
+                          'Dodano nowy news'),
+                         (b'enrollment-limit',
+                          'Podniesiono limit ECTS'),
+                         (b'vote-start',
+                          'Rozpocz\u0119\u0142o si\u0119 g\u0142osowanie'),
+                         (b'grade-start',
+                          'Rozpocz\u0119\u0142a si\u0119 ocena')])),
+                ('value',
+                 models.BooleanField(
+                     default=True,
+                     verbose_name='warto\u015b\u0107')),
+                ('user',
+                 models.ForeignKey(
+                     verbose_name='u\u017cytkownik',
+                     to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ['id'],
                 'verbose_name': 'Ustawienie Notyfikacji',
                 'verbose_name_plural': 'Ustawienia Notyfikacji',
             },
-            bases=(models.Model,),
+            bases=(
+                models.Model,
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='notificationpreferences',
-            unique_together=set([('user', 'type')]),
+            unique_together=set(
+                [
+                    ('user',
+                     'type')]),
         ),
     ]

@@ -44,7 +44,8 @@ class BaseDesiderataFormSet(BaseFormSet):
                 result[form.initial['day']][form.initial['hour']] = form
             else:
                 result[form.data['day']][form.data['hour']] = form
-        result = map(lambda x: (REVERSE_DAY[x[0]], x[1]), sorted(result.items(), key=lambda x: x[0]))
+        result = map(lambda x: (REVERSE_DAY[x[0]], x[1]),
+                     sorted(result.items(), key=lambda x: x[0]))
         return iter(result)
 
     def hours(self):
@@ -64,9 +65,11 @@ class BaseDesiderataFormSet(BaseFormSet):
                 hour = form.cleaned_data['hour']
                 value = form.cleaned_data['value']
                 if value == False and desiderata[day][hour] is None:
-                    Desiderata.objects.create(employee=employee, semester=semester, day=day, hour=hour)
-                elif value == True and desiderata[day][hour] is not None:
-                    Desiderata.objects.filter(employee=employee, semester=semester, day=day, hour=hour).delete()
+                    Desiderata.objects.create(
+                        employee=employee, semester=semester, day=day, hour=hour)
+                elif value and desiderata[day][hour] is not None:
+                    Desiderata.objects.filter(
+                        employee=employee, semester=semester, day=day, hour=hour).delete()
 
 
 DesiderataFormSet = formset_factory(DesiderataForm, formset=BaseDesiderataFormSet, extra=0)

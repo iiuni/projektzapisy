@@ -15,4 +15,9 @@ class NotificationForm(forms.ModelForm):
         fields = ('value',)
         model = NotificationPreferences
 
-NotificationFormset = modelformset_factory(NotificationPreferences, form=NotificationForm, extra=0, can_delete=False)
+
+NotificationFormset = modelformset_factory(
+    NotificationPreferences,
+    form=NotificationForm,
+    extra=0,
+    can_delete=False)

@@ -20,7 +20,7 @@ import time
 from random import seed, randint, choice
 
 
-def open_course_for_student(student, course, opening_time = datetime.now()):
+def open_course_for_student(student, course, opening_time=datetime.now()):
     # OpeningTimesView has student as pk
     # so we cannot have more than one course opened at the moment
     otvs = OpeningTimesView.objects.filter(student=student)
@@ -81,16 +81,16 @@ class DummyTest(TransactionTestCase):
         return (user, employee)
 
     def createCourse(self, semester):
-        entity = CourseEntity(name = "Algorytmy i Struktury Danych")
+        entity = CourseEntity(name="Algorytmy i Struktury Danych")
         entity.save()
         course = Course(
-            lectures = 30,
-            exercises = 30,
-            laboratories = 30,
-            entity = entity,
-            semester = semester,
-            type = 1,
-            name = "Algorytmy i Struktury Danych")
+            lectures=30,
+            exercises=30,
+            laboratories=30,
+            entity=entity,
+            semester=semester,
+            type=1,
+            name="Algorytmy i Struktury Danych")
         course.save()
         return course
 
@@ -98,8 +98,8 @@ class DummyTest(TransactionTestCase):
         group = Group(
             type=2,
             limit=5,
-            course = course,
-            teacher = teacher)
+            course=course,
+            teacher=teacher)
         group.save()
         return group
 
@@ -107,8 +107,8 @@ class DummyTest(TransactionTestCase):
         group = Group(
             type=1,
             limit=100,
-            course = course,
-            teacher = teacher)
+            course=course,
+            teacher=teacher)
         group.save()
         return group
 
@@ -121,7 +121,7 @@ class DummyTest(TransactionTestCase):
                     entity_id integer
                 );
             """
-            ]
+        ]
 
         for sql_call in sql_calls:
             cursor = connection.cursor()
@@ -140,8 +140,8 @@ class DummyTest(TransactionTestCase):
     def testAddStudentToGroup(self):
         today = datetime.now()
         group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         student = StudentFactory()
         open_course_for_student(student, group.course)
@@ -154,15 +154,15 @@ class DummyTest(TransactionTestCase):
         today = datetime.now()
         course = CourseFactory()
         exercises_group = GroupFactory(
-            course = course,
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course=course,
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         lecture_group = GroupFactory(
-            course = course,
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6),
-            type = 1
+            course=course,
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6),
+            type=1
         )
         student = StudentFactory()
         open_course_for_student(student, course)
@@ -170,14 +170,22 @@ class DummyTest(TransactionTestCase):
         run_rearanged(result)
         self.assertTrue(result)
         self.assertEqual(messages_list, [u'Student dopisany do grupy'])
-        self.assertTrue(Record.objects.filter(group_id = lecture_group.id, student_id = student.id, status = Record.STATUS_ENROLLED).exists())
-        self.assertTrue(Record.objects.filter(group_id = exercises_group.id, student_id = student.id, status = Record.STATUS_ENROLLED).exists())
+        self.assertTrue(
+            Record.objects.filter(
+                group_id=lecture_group.id,
+                student_id=student.id,
+                status=Record.STATUS_ENROLLED).exists())
+        self.assertTrue(
+            Record.objects.filter(
+                group_id=exercises_group.id,
+                student_id=student.id,
+                status=Record.STATUS_ENROLLED).exists())
 
     def testAddingStudentToSameGroupAgainFails(self):
         today = datetime.now()
         exercises_group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         student = StudentFactory()
         open_course_for_student(student, exercises_group.course)
@@ -195,14 +203,14 @@ class DummyTest(TransactionTestCase):
         today = datetime.now()
         course = CourseFactory()
         exercises_group1 = GroupFactory(
-            course = course,
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course=course,
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         exercises_group2 = GroupFactory(
-            course = course,
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course=course,
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         student = StudentFactory()
         open_course_for_student(student, course)
@@ -215,31 +223,38 @@ class DummyTest(TransactionTestCase):
 
         self.assertTrue(result)
         self.assertEqual(messages_list, [u'Student dopisany do grupy'])
-        record_for_group1 = Record.objects.filter(student_id = student.id, group_id = exercises_group1.id)[0]
-        record_for_group2 = Record.objects.filter(student_id = student.id, group_id = exercises_group2.id)[0]
+        record_for_group1 = Record.objects.filter(
+            student_id=student.id, group_id=exercises_group1.id)[0]
+        record_for_group2 = Record.objects.filter(
+            student_id=student.id, group_id=exercises_group2.id)[0]
         self.assertEqual(record_for_group1.status, Record.STATUS_REMOVED)
         self.assertEqual(record_for_group2.status, Record.STATUS_ENROLLED)
 
     def testEnrollmentFailsIfEnrollmentNotYetStarted(self):
         today = datetime.now()
         exercises_group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6)
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6)
         )
         student = StudentFactory()
-        open_course_for_student(student, exercises_group.course, opening_time = today + timedelta(days = 1))
+        open_course_for_student(
+            student,
+            exercises_group.course,
+            opening_time=today +
+            timedelta(
+                days=1))
 
         result, messages_list = exercises_group.enroll_student(student)
         run_rearanged(result)
 
         self.assertFalse(result)
         self.assertEqual(messages_list, [u'Zapisy na ten przedmiot są dla Ciebie zamknięte'])
-        
+
     def testEnrollmentFailsIfEnrollmentHasEnded(self):
         today = datetime.now()
         exercises_group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-3),
-            course__semester__records_closing=today+timedelta(days=-2)
+            course__semester__records_opening=today + timedelta(days=-3),
+            course__semester__records_closing=today + timedelta(days=-2)
         )
         student = StudentFactory()
         open_course_for_student(student, exercises_group.course)
@@ -248,14 +263,16 @@ class DummyTest(TransactionTestCase):
         run_rearanged(result)
 
         self.assertFalse(result)
-        self.assertEqual(messages_list, [u'Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.'])
-        
+        self.assertEqual(
+            messages_list,
+            [u'Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.'])
+
     def testCannotLeaveGroupAfterRecordsEnded(self):
         today = datetime.now()
         exercises_group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-3),
-            course__semester__records_closing=today+timedelta(days=6),
-            course__semester__records_ending=today+timedelta(-2)
+            course__semester__records_opening=today + timedelta(days=-3),
+            course__semester__records_closing=today + timedelta(days=6),
+            course__semester__records_ending=today + timedelta(-2)
         )
         student = StudentFactory()
         open_course_for_student(student, exercises_group.course)
@@ -264,21 +281,23 @@ class DummyTest(TransactionTestCase):
         run_rearanged(result)
 
         self.assertTrue(result)
-        
+
         result, messages_list = exercises_group.remove_student(student)
         run_rearanged(result)
-        
+
         self.assertFalse(result)
-        self.assertEqual(messages_list, [u'Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.'])
-        
+        self.assertEqual(
+            messages_list,
+            [u'Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.'])
+
     def testCanLeaveQueueAfterRecordsEnded(self):
         today = datetime.now()
         exercises_group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-3),
-            course__semester__records_closing=today+timedelta(days=6),
-            course__semester__records_ending=today+timedelta(-2)
+            course__semester__records_opening=today + timedelta(days=-3),
+            course__semester__records_closing=today + timedelta(days=6),
+            course__semester__records_ending=today + timedelta(-2)
         )
-        
+
         students = StudentFactory.create_batch(10)
         for student in students:
             open_course_for_student(student, exercises_group.course)
@@ -286,25 +305,25 @@ class DummyTest(TransactionTestCase):
             run_rearanged(result)
             self.assertTrue(result)
             self.assertEqual(messages_list, [u'Student dopisany do grupy'])
-            
+
         student = StudentFactory()
         open_course_for_student(student, exercises_group.course)
-            
+
         result, messages_list = exercises_group.enroll_student(student)
         run_rearanged(result)
 
         self.assertTrue(result)
-        
+
         result, messages_list = exercises_group.remove_student(student)
         run_rearanged(result)
-        
+
         self.assertTrue(result)
 
     def testAddStudentToQueue(self):
         today = datetime.now()
         group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6),
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6),
         )
         students = StudentFactory.create_batch(15)
         for student in students:
@@ -327,8 +346,8 @@ class DummyTest(TransactionTestCase):
     def testIsQueueWorking(self):
         today = datetime.now()
         group = GroupFactory(
-            course__semester__records_opening=today+timedelta(days=-1),
-            course__semester__records_closing=today+timedelta(days=6),
+            course__semester__records_opening=today + timedelta(days=-1),
+            course__semester__records_closing=today + timedelta(days=6),
         )
         students = StudentFactory.create_batch(15)
         for student in students:
@@ -374,9 +393,9 @@ class DummyTest(TransactionTestCase):
     def testECTSLimit(self):
         today = datetime.now()
         semester = SemesterFactory(
-            records_opening=today+timedelta(days=-1),
-            records_closing=today+timedelta(days=6),
-            records_ects_limit_abolition=today+timedelta(days=3),
+            records_opening=today + timedelta(days=-1),
+            records_closing=today + timedelta(days=6),
+            records_ects_limit_abolition=today + timedelta(days=3),
         )
         groups = GroupFactory.create_batch(
             2,
@@ -400,9 +419,9 @@ class DummyTest(TransactionTestCase):
     def testECTSLimitAfterAbolition(self):
         today = datetime.now()
         semester = SemesterFactory(
-            records_opening=today+timedelta(days=-3),
-            records_closing=today+timedelta(days=6),
-            records_ects_limit_abolition=today+timedelta(days=-1),
+            records_opening=today + timedelta(days=-3),
+            records_closing=today + timedelta(days=6),
+            records_ects_limit_abolition=today + timedelta(days=-1),
         )
         largeGroups = GroupFactory.create_batch(
             2,
@@ -432,13 +451,12 @@ class DummyTest(TransactionTestCase):
         self.assertTrue(result)
         self.assertEqual(messages_list, [u'Student dopisany do grupy'])
 
-
     def testQueuesWithECTSLimit(self):
         today = datetime.now()
         semester = SemesterFactory(
-            records_opening=today+timedelta(days=-3),
-            records_closing=today+timedelta(days=6),
-            records_ects_limit_abolition=today+timedelta(days=1),
+            records_opening=today + timedelta(days=-3),
+            records_closing=today + timedelta(days=6),
+            records_ects_limit_abolition=today + timedelta(days=1),
         )
         groups = GroupFactory.create_batch(
             3,

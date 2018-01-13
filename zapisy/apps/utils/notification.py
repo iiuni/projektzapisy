@@ -8,11 +8,11 @@ from django.conf import settings
 
 class Notification(object):
 
-    def create(self, template, template_html, data, recipient_list, 
-               subject = u'Powiadomienie z Systemu Zapisów', 
+    def create(self, template, template_html, data, recipient_list,
+               subject=u'Powiadomienie z Systemu Zapisów',
                from_email=settings.MASS_MAIL_FROM, sign=False):
 
-        con = Context( data )
+        con = Context(data)
         tem = get_template(template)
         plaintext_body = tem.render(con)
         tem = get_template(template_html)

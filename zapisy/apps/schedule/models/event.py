@@ -8,6 +8,7 @@ from django.core.validators import ValidationError
 
 from apps.users.models import BaseUser
 
+
 class Event(models.Model):
     """
     Model of Event
@@ -86,8 +87,8 @@ class Event(models.Model):
         if not self.pk:
 
             # if author is an employee, accept any exam and test events
-            if (self.author.profile.is_employee and self.type in [Event.TYPE_EXAM, Event.TYPE_TEST]) or \
-                    self.author.has_perm('schedule.manage_events'):
+            if (self.author.profile.is_employee and self.type in [
+                    Event.TYPE_EXAM, Event.TYPE_TEST]) or self.author.has_perm('schedule.manage_events'):
                 self.status = self.STATUS_ACCEPTED
 
             # all exams and tests should be public
@@ -97,7 +98,8 @@ class Event(models.Model):
 
             # students can only add generic events that have to be accepted first
 
-            if self.author.profile.is_student and not self.author.has_perm('schedule.manage_events'):
+            if self.author.profile.is_student and not self.author.has_perm(
+                    'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(
                         message={'type': [u'Nie masz uprawnień aby dodawać wydarzenia tego typu']},
@@ -105,7 +107,8 @@ class Event(models.Model):
 
                 if self.status != Event.STATUS_PENDING:
                     raise ValidationError(
-                        message={'status': [u'Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
+                        message={
+                            'status': [u'Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
                         code='permission')
 
         else:

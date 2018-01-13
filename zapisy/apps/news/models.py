@@ -11,10 +11,12 @@ from django.db import models
 from datetime import datetime, timedelta
 from apps.notifications.models import Notification
 
+
 class NewsManager(models.Manager):
     """
         News management
     """
+
     def new(self, category):
         """
             Returns news marked as new
@@ -36,16 +38,16 @@ class NewsManager(models.Manager):
         """
             Get a number of news
         """
-        return self.category(category)[beginwith:(beginwith+quantity)]
+        return self.category(category)[beginwith:(beginwith + quantity)]
 
     def get_page_number_by_news_id(self, news_id):
         """
             If news doesn\'t exist the first page is returned
         """
-	ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
+        ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
         if not ids.filter(pk=news_id).exists():
             return 1
-        return ((ids.count()-1)/settings.NEWS_PER_PAGE) + 1
+        return ((ids.count() - 1) / settings.NEWS_PER_PAGE) + 1
 
     def get_published(self):
         """
@@ -57,7 +59,9 @@ class NewsManager(models.Manager):
         """
             Return news tagged with a given tag.
         """
-        return self.filter(category = category)
+        return self.filter(category=category)
+
+
 # suggested news items categories - not enforced
 CATEGORIES = (
     ('-', 'Hidden'),
@@ -65,6 +69,7 @@ CATEGORIES = (
     ('enrollment', 'Zapisy'),
     ('grade', 'Ocena zajęć'),
 )
+
 
 class News(models.Model):
     """

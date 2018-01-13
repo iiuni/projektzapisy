@@ -19,12 +19,11 @@ def run_rearanged(result, group=None):
         semester = course.semester
         now = datetime.datetime.now()
 
-        if semester.records_closing < now or not (course.records_start and course.records_end
-                                                  and course.records_start <= now < course.records_end):
+        if semester.records_closing < now or not (
+                course.records_start and course.records_end and course.records_start <= now < course.records_end):
             return False
 
         return True
-
 
     if isinstance(result, QuerySet) and test_course(result[0]):
         for g in result:
@@ -62,11 +61,12 @@ def prepare_courses_with_terms(terms=None, records=None):
 
     return sorted(courses, key=lambda item: item[0].name)
 
+
 def prepare_groups_json(semester, groups, student=None, employee=None):
     record_ids = Record.get_student_records_ids(student, semester)
     if student:
         queue_priorities = Queue.queue_priorities_map(
-        Queue.get_student_queues(student, semester))
+            Queue.get_student_queues(student, semester))
     else:
         queue_priorities = {}
     groups_json = []
@@ -77,34 +77,37 @@ def prepare_groups_json(semester, groups, student=None, employee=None):
         ))
     return json.dumps(groups_json)
 
+
 def prepare_courses_json(groups, student):
     courses_json = []
     for group in groups:
         courses_json.append(group.course.serialize_for_json(student))
     return json.dumps(courses_json)
 
-def prepare_schedule_courses(request, for_student = None, for_employee = None, semester=None):
+
+def prepare_schedule_courses(request, for_student=None, for_employee=None, semester=None):
     if not (for_student is None) and not (for_employee is None):
-        raise RuntimeError('Nie można wygenerować jednocześnie dla studenta' + \
-            ' i pracownika')
+        raise RuntimeError('Nie można wygenerować jednocześnie dla studenta' +
+                           ' i pracownika')
 
     default_semester = semester or Semester.objects.get_next()
 
-    if not for_employee is None:
+    if for_employee is not None:
         terms = Term.get_all_in_semester(default_semester, employee=for_employee)
     else:
         terms = Term.get_all_in_semester(default_semester, student=for_student)
 
     try:
         if BaseUser.is_student(request.user):
-            records = Record.get_student_enrolled_objects(request.user.student,\
-                default_semester)
+            records = Record.get_student_enrolled_objects(request.user.student,
+                                                          default_semester)
         else:
             records = []
     except Student.DoesNotExist:
         records = []
 
     return prepare_courses_with_terms(terms=terms, records=records)
+
 
 def prepare_schedule_data(request, courses, semester=None):
     if BaseUser.is_student(request.user):
@@ -117,7 +120,7 @@ def prepare_schedule_data(request, courses, semester=None):
         employee = None
     default_semester = semester or Semester.objects.get_next()
 
-    terms_by_days = [None for i in range(8)] # dni numerowane od 1
+    terms_by_days = [None for i in range(8)]  # dni numerowane od 1
     for item in courses:
         for term in item[1]:
             day = int(term.dayOfWeek)
@@ -136,8 +139,8 @@ def prepare_schedule_data(request, courses, semester=None):
 
     # TODO: tylko grupy, na które jest zapisany
     all_groups = Group.get_groups_by_semester(default_semester)
-    all_groups_json = prepare_groups_json(default_semester, all_groups, \
-        student=student, employee=employee)
+    all_groups_json = prepare_groups_json(default_semester, all_groups,
+                                          student=student, employee=employee)
 
     return {
         'courses_json': prepare_courses_json(all_groups, student),
@@ -147,12 +150,16 @@ def prepare_schedule_data(request, courses, semester=None):
     }
 
 
-import csv, codecs, cStringIO
+import csv
+import codecs
+import cStringIO
+
 
 class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
+
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f)
 
@@ -161,6 +168,7 @@ class UTF8Recoder:
 
     def next(self):
         return self.reader.next().encode("utf-8")
+
 
 class UnicodeReader:
     """
@@ -178,6 +186,7 @@ class UnicodeReader:
 
     def __iter__(self):
         return self
+
 
 class UnicodeWriter:
     """

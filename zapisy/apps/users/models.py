@@ -26,9 +26,9 @@ class Related(models.Manager):
 
 
 class ExtendedUser(User):
-    is_student = models.BooleanField(default = False, verbose_name="czy student?")
-    is_employee = models.BooleanField(default = False, verbose_name="czy pracownik?")
-    is_zamawiany = models.BooleanField(default = False, verbose_name="czy zamawiany?")
+    is_student = models.BooleanField(default=False, verbose_name="czy student?")
+    is_employee = models.BooleanField(default=False, verbose_name="czy pracownik?")
+    is_zamawiany = models.BooleanField(default=False, verbose_name="czy zamawiany?")
 
     objects = UserManager()
 
@@ -36,12 +36,13 @@ class ExtendedUser(User):
         verbose_name = 'użutkownik'
         verbose_name_plural = 'użytkownicy'
 
+
 class UserProfile(models.Model):
     # This field is required.
-    user         = models.OneToOneField(User, related_name='profile')
-    is_student   = models.BooleanField(default = False, verbose_name="czy student?")
-    is_employee  = models.BooleanField(default = False, verbose_name="czy pracownik?")
-    is_zamawiany = models.BooleanField(default = False, verbose_name="czy zamawiany?")
+    user = models.OneToOneField(User, related_name='profile')
+    is_student = models.BooleanField(default=False, verbose_name="czy student?")
+    is_employee = models.BooleanField(default=False, verbose_name="czy pracownik?")
+    is_zamawiany = models.BooleanField(default=False, verbose_name="czy zamawiany?")
     preferred_language = models.CharField(
         max_length=5,
         choices=settings.LANGUAGES,
@@ -52,7 +53,8 @@ class UserProfile(models.Model):
         super(UserProfile, self).clean()
         if not (self.is_employee or self.is_student) or (self.is_student and self.is_employee):
             raise ValidationError(
-                message={'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
+                message={
+                    'integrity': [u'Profil musi jedoznacznie określać rolę użytkownika w systemie']},
             )
 
 
@@ -62,13 +64,13 @@ class BaseUser(models.Model):
     We do not inherit after User directly, because of problems with logging beckend etc.
     '''
     receive_mass_mail_enrollment = models.BooleanField(
-        default = True,
+        default=True,
         verbose_name="otrzymuje mailem ogłoszenia Zapisów")
     receive_mass_mail_offer = models.BooleanField(
-        default = True,
+        default=True,
         verbose_name="otrzymuje mailem ogłoszenia OD")
     receive_mass_mail_grade = models.BooleanField(
-        default = True,
+        default=True,
         verbose_name="otrzymuje mailem ogłoszenia Oceny Zajęć")
     last_news_view = models.DateTimeField(default=datetime.datetime.now)
 
@@ -81,7 +83,8 @@ class BaseUser(models.Model):
     def get_number_of_news(self):
         from apps.news.models import News
         if not hasattr(self, '_count_news'):
-            self._count_news = News.objects.exclude(category='-').filter(date__gte=self.last_news_view).count()
+            self._count_news = News.objects.exclude(
+                category='-').filter(date__gte=self.last_news_view).count()
 
         return self._count_news
 
@@ -90,7 +93,9 @@ class BaseUser(models.Model):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            logger.error('Getter(user_id = %d) in BaseUser throws User.DoesNotExist exception.' % user_id )
+            logger.error(
+                'Getter(user_id = %d) in BaseUser throws User.DoesNotExist exception.' %
+                user_id)
             raise NonUserException
         return user
 
@@ -118,9 +123,12 @@ class Employee(BaseUser):
     consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True)
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
-    status = models.PositiveIntegerField(default=0, choices=EMPLOYEE_STATUS_CHOICES, verbose_name="Status")
+    status = models.PositiveIntegerField(
+        default=0,
+        choices=EMPLOYEE_STATUS_CHOICES,
+        verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
-    
+
     def make_preferences(self):
         from apps.offer.preferences.models import Preference
 
@@ -129,7 +137,6 @@ class Employee(BaseUser):
     def get_preferences(self):
         from apps.offer.preferences.models import Preference
         return Preference.for_employee(self)
-
 
     def has_privileges_for_group(self, group_id):
         """
@@ -142,7 +149,9 @@ class Employee(BaseUser):
             group = Group.objects.get(pk=group_id)
             return group.teacher == self or self in group.course.teachers.all() or self.user.is_staff
         except Group.DoesNotExist:
-            logger.error('Function Employee.has_privileges_for_group(group_id = %d) throws Group.DoesNotExist exception.' % group_id)
+            logger.error(
+                'Function Employee.has_privileges_for_group(group_id = %d) throws Group.DoesNotExist exception.' %
+                group_id)
         return False
 
     def get_sex(self):
@@ -154,9 +163,8 @@ class Employee(BaseUser):
     @staticmethod
     def get_actives():
         return Employee.objects.filter(user__is_active=True).order_by('user__last_name', 'user__first_name'). extra(
-                        where=["(SELECT COUNT(*) FROM courses_courseentity WHERE courses_courseentity.status > 0 AND NOT courses_courseentity.deleted AND courses_courseentity.owner_id=users_employee.id)>0"]
+            where=["(SELECT COUNT(*) FROM courses_courseentity WHERE courses_courseentity.status > 0 AND NOT courses_courseentity.deleted AND courses_courseentity.owner_id=users_employee.id)>0"]
         )
-
 
     @staticmethod
     def get_list(begin='All'):
@@ -167,19 +175,16 @@ class Employee(BaseUser):
                 return chr(90)
         if begin == 'Z':
             employees = Employee.objects.filter(user__last_name__gte=begin, status=0).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+                select_related().order_by('user__last_name', 'user__first_name')
         elif begin == 'All':
             employees = Employee.objects.filter(status=0).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+                select_related().order_by('user__last_name', 'user__first_name')
         else:
             end = next_char(begin)
             employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+                select_related().order_by('user__last_name', 'user__first_name')
 
         return employees
-
-
-
 
     @staticmethod
     def get_all_groups_in_semester(user_id):
@@ -191,8 +196,10 @@ class Employee(BaseUser):
             employee = user.employee
             groups = Group.objects.filter(teacher=employee, course__semester=semester)
         except Employee.DoesNotExist:
-             logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
-             raise NonEmployeeException()
+            logger.error(
+                'Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' %
+                user_id)
+            raise NonEmployeeException()
         return groups
 
     @staticmethod
@@ -204,8 +211,10 @@ class Employee(BaseUser):
             employee = user.employee
             groups = Group.objects.filter(teacher=employee)
         except Employee.DoesNotExist:
-             logger.error('Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
-             raise NonEmployeeException()
+            logger.error(
+                'Function Employee.get_all_groups(user_id = %d) throws Employee.DoesNotExist exception.' %
+                user_id)
+            raise NonEmployeeException()
         return groups
 
 #    @staticmethod
@@ -235,17 +244,23 @@ class Employee(BaseUser):
     def __unicode__(self):
         return unicode(self.user.get_full_name())
 
+
 class Student(BaseUser):
     '''
     Student.
     '''
 
     user = models.OneToOneField(User, verbose_name="Użytkownik", related_name='student')
-    matricula = models.CharField(max_length=20, default="", unique=True, verbose_name="Numer indeksu")
+    matricula = models.CharField(
+        max_length=20,
+        default="",
+        unique=True,
+        verbose_name="Numer indeksu")
     ects = models.PositiveIntegerField(verbose_name="punkty ECTS", default=0)
-    records_opening_bonus_minutes = models.PositiveIntegerField(default=0, verbose_name="Przyspieszenie otwarcia zapisów (minuty)")
+    records_opening_bonus_minutes = models.PositiveIntegerField(
+        default=0, verbose_name="Przyspieszenie otwarcia zapisów (minuty)")
     program = models.ForeignKey('Program', verbose_name='Program Studiów', null=True, default=None)
-    block = models.BooleanField(verbose_name="blokada planu", default = False)
+    block = models.BooleanField(verbose_name="blokada planu", default=False)
     semestr = models.PositiveIntegerField(default=0, verbose_name="Semestr")
     status = models.PositiveIntegerField(default=0, verbose_name="Status")
     status.help_text = "0 - aktywny student, 1 - skreślony student"
@@ -256,15 +271,12 @@ class Student(BaseUser):
 
     ects_in_semester = models.SmallIntegerField(default=0)
 
-    dyskretna_l  = models.BooleanField(default=False)
+    dyskretna_l = models.BooleanField(default=False)
     numeryczna_l = models.BooleanField(default=False)
     algorytmy_l = models.BooleanField(default=False)
     programowanie_l = models.BooleanField(default=False)
 
     objects = GettersManager()
-
-
-
 
     def make_t0(self, semester=None):
         from apps.enrollment.courses.models import Semester
@@ -283,8 +295,20 @@ class Student(BaseUser):
 
     def get_type_of_studies(self):
         """ returns type of studies """
-        semestr = {1:'pierwszy',2:'drugi',3:'trzeci',4:'czwarty',5:'piąty',6:'szósty',7:'siódmy',8:'ósmy',9:'dziewiąty',10:'dziesiąty',0:'niezdefiniowany'}[self.semestr]
-        return '%s, semestr %s' % (self.program , semestr)
+        semestr = {
+            1: 'pierwszy',
+            2: 'drugi',
+            3: 'trzeci',
+            4: 'czwarty',
+            5: 'piąty',
+            6: 'szósty',
+            7: 'siódmy',
+            8: 'ósmy',
+            9: 'dziewiąty',
+            10: 'dziesiąty',
+            0: 'niezdefiniowany'}[
+            self.semestr]
+        return '%s, semestr %s' % (self.program, semestr)
     get_type_of_studies.short_description = 'Studia'
 
     def participated_in_last_grades(self):
@@ -296,14 +320,15 @@ class Student(BaseUser):
         if hasattr(self, '_counted_t0'):
             return self._counted_t0
 
-        base =  self.ects * settings.ECTS_BONUS
-        points_for_one_day = 720 # =12h*60m
+        base = self.ects * settings.ECTS_BONUS
+        points_for_one_day = 720  # =12h*60m
         points_for_one_night = 720
         number_of_nights_to_add = base / points_for_one_day
         minutes = base + number_of_nights_to_add * points_for_one_night
         minutes += self.records_opening_bonus_minutes
         grade = self.participated_in_last_grades() * 1440
-        self._counted_t0 =  datetime.timedelta(minutes=minutes+grade+120)+datetime.timedelta(days=3)
+        self._counted_t0 = datetime.timedelta(
+            minutes=minutes + grade + 120) + datetime.timedelta(days=3)
         return self._counted_t0
 
     def get_voted_courses(self, given_points):
@@ -311,20 +336,26 @@ class Student(BaseUser):
         from apps.enrollment.courses.models import Semester
         current_semester = Semester.get_default_semester()
         from apps.offer.vote.models.single_vote import SingleVote
-        return map(lambda x: x.course, SingleVote.objects.filter(student=self, state__semester_winter=current_semester,
-                                              correction=given_points).select_related('course').order_by('course__entity__name'))
-        #return map(lambda x: x.course, StudentOptions.objects.filter(course__semester__id__exact=current_semester.id).filter(student=self, records_opening_bonus_minutes=minutes).order_by('course__name'))
+        return map(
+            lambda x: x.course,
+            SingleVote.objects.filter(
+                student=self,
+                state__semester_winter=current_semester,
+                correction=given_points).select_related('course').order_by('course__entity__name'))
+        # return map(lambda x: x.course,
+        # StudentOptions.objects.filter(course__semester__id__exact=current_semester.id).filter(student=self,
+        # records_opening_bonus_minutes=minutes).order_by('course__name'))
 
-    def get_records_history(self,default_semester=None):
+    def get_records_history(self, default_semester=None):
         '''
         Returns list of ids of course s that student was enrolled for.
         '''
         if not default_semester:
             from apps.enrollment.courses.models import Semester
             default_semester = Semester.get_default_semester()
-        records = self.records.exclude(group__course__semester = \
-            default_semester).select_related('group', 'group__course',
-            'group__course__entity')
+        records = self.records.exclude(
+            group__course__semester=default_semester).select_related(
+            'group', 'group__course', 'group__course__entity')
         records_list = map(lambda x: x.group.course.entity.id, records)
         return list(frozenset(records_list))
 
@@ -334,7 +365,12 @@ class Student(BaseUser):
         if not semester:
             semester = Semester.objects.get_next()
 
-        records = Record.objects.filter(student=self, group__course__semester=semester, status=1).values_list('group__course__entity_id', flat=True).distinct()
+        records = Record.objects.filter(
+            student=self,
+            group__course__semester=semester,
+            status=1).values_list(
+            'group__course__entity_id',
+            flat=True).distinct()
 
         return StudentPointsView.get_points_for_entities(self, records)
 
@@ -344,12 +380,16 @@ class Student(BaseUser):
         if not semester:
             semester = Semester.objects.get_next()
 
-        records = Record.objects.filter(student=self, group__course__semester=semester, status=1).values_list('group__course__entity_id', flat=True).distinct()
+        records = Record.objects.filter(
+            student=self,
+            group__course__semester=semester,
+            status=1).values_list(
+            'group__course__entity_id',
+            flat=True).distinct()
         if course.entity_id not in records:
             records = list(records) + [course.entity_id]
 
         return StudentPointsView.get_points_for_entities(self, records)
-
 
     def get_schedule(self, semester=None):
         from apps.enrollment.records.models import Record
@@ -358,9 +398,9 @@ class Student(BaseUser):
         if not semester:
             semester = Semester.get_current_semester()
         return Record.objects.filter(status=1, group__course__semester=semester, student=self)\
-          .select_related('group', 'group__course', 'group__course__type')\
-          .prefetch_related('group__term', 'group__term__classrooms')\
-          .order_by('group__course__entity__name')
+            .select_related('group', 'group__course', 'group__course__type')\
+            .prefetch_related('group__term', 'group__term__classrooms')\
+            .order_by('group__course__entity__name')
 
     @classmethod
     def get_active_students(cls):
@@ -374,27 +414,27 @@ class Student(BaseUser):
             except ValueError:
                 return chr(90)
         if begin == 'Z':
-            return Student.objects.filter(status=0,user__last_name__gte=begin).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+            return Student.objects.filter(status=0, user__last_name__gte=begin).\
+                select_related().order_by('user__last_name', 'user__first_name')
         elif begin == 'All':
             return Student.objects.filter(status=0).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+                select_related().order_by('user__last_name', 'user__first_name')
         else:
             end = next_char(begin)
-            return Student.objects.filter(status=0,user__last_name__range=(begin, end)).\
-                    select_related().order_by('user__last_name', 'user__first_name')
+            return Student.objects.filter(status=0, user__last_name__range=(begin, end)).\
+                select_related().order_by('user__last_name', 'user__first_name')
 
     @staticmethod
     def get_all_groups(student):
         try:
-            groups = map(lambda x: x.group, student.records.filter(status="1").\
-                        select_related('group', 'group__teacher',
-                                      'group__course__semester',
-                                      'group__course__term'))
+            groups = map(lambda x: x.group, student.records.filter(status="1").
+                         select_related('group', 'group__teacher',
+                                        'group__course__semester',
+                                        'group__course__term'))
         except Student.DoesNotExist:
-             logger.error('Function Student.get_all_groups(student = %d)' + \
-             'throws Student.DoesNotExist exception.' % student.pk )
-             raise NonStudentException()
+            logger.error('Function Student.get_all_groups(student = %d)' +
+                         'throws Student.DoesNotExist exception.' % student.pk)
+            raise NonStudentException()
         return groups
 
 #    @staticmethod
@@ -425,7 +465,7 @@ class Student(BaseUser):
             zamawiany = StudiaZamawiane.objects.get(student=student)
             return zamawiany
         except (User.DoesNotExist, Student.DoesNotExist, StudiaZamawiane.DoesNotExist):
-             return None
+            return None
 
     def zamawiany(self):
         return StudiaZamawiane.objects.get(student=self)
@@ -433,10 +473,11 @@ class Student(BaseUser):
     def zamawiany2012(self):
         return StudiaZamawiane2012.objects.get(student=self)
 
-    #TODO: to NIE MA być pole statyczne - najlepiej zrobić mapę (pole statyczne)
+    # TODO: to NIE MA być pole statyczne - najlepiej zrobić mapę (pole statyczne)
     is_zamawiany_cache = None
+
     def is_zamawiany(self):
-#        return self.zamawiane <> None
+        #        return self.zamawiane <> None
 
         if not (self.is_zamawiany_cache is None):
             return self.is_zamawiany_cache
@@ -448,9 +489,10 @@ class Student(BaseUser):
         return self.is_zamawiany_cache
 
     is_zamawiany_cache2012 = None
+
     def is_zamawiany2012(self):
 
-#        return self.zamawiane2012 <> None
+        #        return self.zamawiane2012 <> None
         if not (self.is_zamawiany_cache2012 is None):
             return self.is_zamawiany_cache2012
         try:
@@ -461,7 +503,7 @@ class Student(BaseUser):
         return self.is_zamawiany_cache2012
 
     def is_first_year_student(self):
-        return (self.semestr in [1,2]) and (self.program.id in [0,2])
+        return (self.semestr in [1, 2]) and (self.program.id in [0, 2])
 
     def is_fresh_student(self):
         return True
@@ -476,7 +518,7 @@ class Student(BaseUser):
         return unicode(self.user.get_full_name())
 
 
-class Program( models.Model ):
+class Program(models.Model):
     """
         Program of student studies
     """
@@ -490,17 +532,19 @@ class Program( models.Model ):
     def __unicode__(self):
         return self.name
 
+
 class ZamawianeAbstract(models.Model):
 
-
-    points =  models.FloatField(verbose_name='Punkty', null=True, blank=True)
+    points = models.FloatField(verbose_name='Punkty', null=True, blank=True)
     comments = models.TextField(verbose_name='Uwagi', blank=True, null=True)
-    bank_account = models.CharField(max_length=40, null=True, blank=True, verbose_name="Numer konta bankowego")
+    bank_account = models.CharField(
+        max_length=40,
+        null=True,
+        blank=True,
+        verbose_name="Numer konta bankowego")
 
     class Meta:
         abstract = True
-
-
 
     def clean(self):
         self.bank_account = self.bank_account.upper().replace(' ', '')
@@ -519,7 +563,7 @@ class ZamawianeAbstract(models.Model):
     def check_iban(cls, number):
         """Checks if given number is valid IBAN"""
         number = number.replace(' ', '')
-        if number=='PL' or number=='' or number is None:
+        if number == 'PL' or number == '' or number is None:
             return True
         lengths = {'pl': 28}
         if not number.isalnum():
@@ -544,42 +588,46 @@ class StudiaZamawiane(ZamawianeAbstract):
     student = models.OneToOneField(Student, related_name='zamawiane', verbose_name='Student')
 
     def __unicode__(self):
-        return 'Student zamawiany: '+str(self.student).decode('utf-8')
+        return 'Student zamawiany: ' + str(self.student).decode('utf-8')
 
     def save(self, *args, **kwargs):
         try:
             old_sz = StudiaZamawiane.objects.get(id=self.id)
-            if self.bank_account != old_sz.bank_account and not (self.bank_account.lower()=='pl' and old_sz.bank_account==''):
+            if self.bank_account != old_sz.bank_account and not (
+                    self.bank_account.lower() == 'pl' and old_sz.bank_account == ''):
                 current_site = Site.objects.get_current()
                 site_name, domain = current_site.name, current_site.domain
                 subject = '[Fereol] Zmiana numeru konta bankowego'
-                subject_employee = 'Zmiana numeru konta %s -> %s' % (self.student.matricula, self.bank_account and self.bank_account or '')
+                subject_employee = 'Zmiana numeru konta %s -> %s' % (
+                    self.student.matricula, self.bank_account and self.bank_account or '')
                 c = {
                     'site_domain': domain,
-                    'site_name': site_name.replace('\n',''),
+                    'site_name': site_name.replace('\n', ''),
                     'student': self.student,
-                    'old_account' : old_sz.bank_account and old_sz.bank_account or '',
-                    'new_account' : self.bank_account and self.bank_account or '',
+                    'old_account': old_sz.bank_account and old_sz.bank_account or '',
+                    'new_account': self.bank_account and self.bank_account or '',
                 }
                 message_user = render_to_string('users/bank_account_change_email.html', c)
-                message_employee = render_to_string('users/bank_account_change_email_employee.html', c)
+                message_employee = render_to_string(
+                    'users/bank_account_change_email_employee.html', c)
 
-                emails = map( lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
+                emails = map(lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
 
                 send_mail(subject, message_user, None, [self.student.user.email])
-                send_mail(subject_employee, message_employee, None ,emails)
-                logger.info('User_id %s student_id %s has changed his bank_account to \'%s\'' % (self.student.user.id, self.student.id, self.bank_account))
-        except:
+                send_mail(subject_employee, message_employee, None, emails)
+                logger.info(
+                    'User_id %s student_id %s has changed his bank_account to \'%s\'' %
+                    (self.student.user.id, self.student.id, self.bank_account))
+        except BaseException:
             pass
-        if self.bank_account=='':
+        if self.bank_account == '':
             self.bank_account = None
         super(StudiaZamawiane, self).save(*args, **kwargs)
-
-
 
     class Meta:
         verbose_name = 'Studia zamawiane2009'
         verbose_name_plural = 'Studia zamawiane2009'
+
 
 class StudiaZamawiane2012(ZamawianeAbstract):
     """
@@ -589,38 +637,41 @@ class StudiaZamawiane2012(ZamawianeAbstract):
     student = models.OneToOneField(Student, related_name='zamawiane2012', verbose_name='Student')
 
     def __unicode__(self):
-        return 'Student zamawiany: '+str(self.student).decode('utf-8')
+        return 'Student zamawiany: ' + str(self.student).decode('utf-8')
 
     def save(self, *args, **kwargs):
         try:
             old_sz = StudiaZamawiane2012.objects.get(id=self.id)
-            if self.bank_account != old_sz.bank_account and not (self.bank_account.lower()=='pl' and old_sz.bank_account==''):
+            if self.bank_account != old_sz.bank_account and not (
+                    self.bank_account.lower() == 'pl' and old_sz.bank_account == ''):
                 current_site = Site.objects.get_current()
                 site_name, domain = current_site.name, current_site.domain
                 subject = '[Fereol] Zmiana numeru konta bankowego'
-                subject_employee = 'Zmiana numeru konta %s -> %s' % (self.student.matricula, self.bank_account and self.bank_account or '')
+                subject_employee = 'Zmiana numeru konta %s -> %s' % (
+                    self.student.matricula, self.bank_account and self.bank_account or '')
                 c = {
                     'site_domain': domain,
-                    'site_name': site_name.replace('\n',''),
+                    'site_name': site_name.replace('\n', ''),
                     'student': self.student,
-                    'old_account' : old_sz.bank_account and old_sz.bank_account or '',
-                    'new_account' : self.bank_account and self.bank_account or '',
+                    'old_account': old_sz.bank_account and old_sz.bank_account or '',
+                    'new_account': self.bank_account and self.bank_account or '',
                 }
                 message_user = render_to_string('users/bank_account_change_email.html', c)
-                message_employee = render_to_string('users/bank_account_change_email_employee.html', c)
+                message_employee = render_to_string(
+                    'users/bank_account_change_email_employee.html', c)
 
-                emails = map( lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
+                emails = map(lambda x: x['email'], StudiaZamawianeMaileOpiekunow.objects.values())
 
                 send_mail(subject, message_user, None, [self.student.user.email])
-                send_mail(subject_employee, message_employee, None ,emails)
-                logger.info('User_id %s student_id %s has changed his bank_account to \'%s\'' % (self.student.user.id, self.student.id, self.bank_account))
-        except:
+                send_mail(subject_employee, message_employee, None, emails)
+                logger.info(
+                    'User_id %s student_id %s has changed his bank_account to \'%s\'' %
+                    (self.student.user.id, self.student.id, self.bank_account))
+        except BaseException:
             pass
-        if self.bank_account=='':
+        if self.bank_account == '':
             self.bank_account = None
         super(StudiaZamawiane2012, self).save(*args, **kwargs)
-
-
 
     class Meta:
         verbose_name = 'Studia zamawiane2012'
@@ -639,6 +690,7 @@ class StudiaZamawianeMaileOpiekunow(models.Model):
 
     def __unicode__(self):
         return self.email
+
 
 """
 CREATE OR REPLACE VIEW users_courses AS
@@ -670,13 +722,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 #post_save.connect(create_user_profile, sender=User)
 
 
-
-
-
 class OpeningTimesView(models.Model):
-    student  = models.OneToOneField(Student, primary_key=True,
-                                 related_name='opening_times')
-    course   = models.ForeignKey('courses.Course')
+    student = models.OneToOneField(Student, primary_key=True,
+                                   related_name='opening_times')
+    course = models.ForeignKey('courses.Course')
     semester = models.ForeignKey('courses.Semester')
     opening_time = models.DateTimeField()
 

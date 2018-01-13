@@ -3,7 +3,7 @@
     Django admin panel for polls
 """
 
-from django.contrib         import admin
+from django.contrib import admin
 from django import forms
 
 from apps.grade.poll.models.option import Option
@@ -23,9 +23,9 @@ from apps.grade.poll.models.poll import Poll
 class PollAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PollAdminForm, self).__init__(*args, **kwargs)
-        self.fields['group'].queryset  = self.fields['group'].queryset.select_related('course', 'course__entity', 'teacher', 'teacher__user')
+        self.fields['group'].queryset = self.fields['group'].queryset.select_related(
+            'course', 'course__entity', 'teacher', 'teacher__user')
         self.fields['author'].queryset = self.fields['author'].queryset.select_related('user')
-
 
 
 class PollAdmin(admin.ModelAdmin):
@@ -35,13 +35,15 @@ class PollAdmin(admin.ModelAdmin):
 
 #    def queryset(self, request):
 #       qs = super(PollAdmin, self).queryset(request)
-#       return qs.select_related('author', 'author__user', 'group', 'group__course', 'group__teacher', 'group__teacher__user')
+# return qs.select_related('author', 'author__user', 'group',
+# 'group__course', 'group__teacher', 'group__teacher__user')
+
 
 class TemplateAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-       qs = super(TemplateAdmin, self).get_queryset(request)
-       return qs.select_related('studies_type', 'course', 'author', 'author__user')
+        qs = super(TemplateAdmin, self).get_queryset(request)
+        return qs.select_related('studies_type', 'course', 'author', 'author__user')
 
 
 #admin.site.register( Option )
@@ -54,9 +56,8 @@ class TemplateAdmin(admin.ModelAdmin):
 #admin.site.register( MultipleChoiceQuestion )
 #admin.site.register( Section )
 #admin.site.register( Poll, PollAdmin )
-admin.site.register( SavedTicket )
+admin.site.register(SavedTicket)
 #admin.site.register( OpenQuestionAnswer )
 #admin.site.register( SingleChoiceQuestionAnswer )
 #admin.site.register( MultipleChoiceQuestionAnswer )
-admin.site.register( Template, TemplateAdmin )
-
+admin.site.register(Template, TemplateAdmin)

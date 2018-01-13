@@ -26,16 +26,17 @@ CATEGORIES = {
 MASS_MAIL_FROM = 'noreply@example.com'
 NEWS_PER_PAGE = 5
 
+
 def render_with_device_detection(request, full_tpl, mobi_tpl):
     """ Detects type of device and renders appropriate template"""
- 		
-    template=full_tpl
-    #if request.is_mobile:
+
+    template = full_tpl
+    # if request.is_mobile:
     if request.mobile:
-        template=mobi_tpl
-		
+        template = mobi_tpl
+
     return render(request, template)
-    
+
 
 def render_with_category_template(temp, context):
     """ Switch beetween top menus based on context['category'].
@@ -49,7 +50,8 @@ def render_with_category_template(temp, context):
     elif context.get('category', '') == 'offer':
         temp.nodelist[0].parent_name = 'offer/base.html'
     return HttpResponse(temp.render(context))
-    
+
+
 def render_items(request, items):
     """
         Renders items
@@ -57,89 +59,96 @@ def render_items(request, items):
     for item in items:
         item.category = CATEGORIES[item.category]
     con = RequestContext(request, {
-        'object_list':items,
-    } )
+        'object_list': items,
+    })
     tem = get_template('news/ajax_list.html')
     return tem.render(con)
+
 
 def render_newer_group(category, beginwith, quantity):
     """
         Renders newer group
     """
-    con = Context( {
-        'category':category,
-        'newer_no':quantity,
-        'newer_beginwith':beginwith,
-    } )
+    con = Context({
+        'category': category,
+        'newer_no': quantity,
+        'newer_beginwith': beginwith,
+    })
     tem = get_template('news/newer_group.html')
     return tem.render(con)
+
 
 def render_older_group(category, beginwith, quantity):
     """
         Renders older group
     """
-    con = Context( {
-        'category':category,
-        'older_no':quantity,
-        'older_beginwith':beginwith,
-    } )
+    con = Context({
+        'category': category,
+        'older_no': quantity,
+        'older_beginwith': beginwith,
+    })
     tem = get_template('news/older_group.html')
     return tem.render(con)
 
+
 def prepare_data(request, items,
                  beginwith=0, quantity=NEWS_PER_PAGE,
-                 archive_view=False, category = None):
+                 archive_view=False, category=None):
     """
         Prepares data
     """
     news_count = News.objects.category(category).count()
     data = {}
-    data['category']    = category
-    data['content']     = render_items(request, items)
+    data['category'] = category
+    data['content'] = render_items(request, items)
     data['older_group'] = render_older_group(category,
-        beginwith + quantity, 
-        max(news_count-(beginwith+quantity),0))
+                                             beginwith + quantity,
+                                             max(news_count - (beginwith + quantity), 0))
     data['newer_group'] = render_newer_group(category,
-        max(beginwith - quantity, 0),
-        beginwith)
+                                             max(beginwith - quantity, 0),
+                                             beginwith)
     data['archive_view'] = archive_view
-    data['search_view']  = False
+    data['search_view'] = False
     return data
 
+
 def prepare_data_all(request, items,
-                 beginwith=0, quantity=NEWS_PER_PAGE,
-                 archive_view=False, category = None):
+                     beginwith=0, quantity=NEWS_PER_PAGE,
+                     archive_view=False, category=None):
     """
         Prepares data
     """
     data = {}
-    data['content']     = render_items(request, items)
-    data['search_view']  = False
+    data['content'] = render_items(request, items)
+    data['search_view'] = False
     return data
+
 
 def render_search_newer_group(category, page, query):
     """
         Renders search result
     """
-    con = Context( {
+    con = Context({
         'category': category,
-        'page':  page,
+        'page': page,
         'query': query,
-    } )
+    })
     tem = get_template('news/search_newer_group.html')
     return tem.render(con)
+
 
 def render_search_older_group(category, page, query):
     """
         Renders search result
     """
-    con = Context( {
+    con = Context({
         'category': category,
-        'page':  page,
+        'page': page,
         'query': query,
-    } )
+    })
     tem = get_template('news/search_older_group.html')
     return tem.render(con)
+
 
 def get_search_results_data(request, category=None):
     """
@@ -147,7 +156,7 @@ def get_search_results_data(request, category=None):
     """
     try:
         page_n = request.GET.get('page', 1)
-        sqs  = SearchQuerySet().filter(category=category).order_by('-date')
+        sqs = SearchQuerySet().filter(category=category).order_by('-date')
         form = SearchForm(request.GET, searchqueryset=sqs,
                           load_all=False)
         data = {}
@@ -158,10 +167,10 @@ def get_search_results_data(request, category=None):
             paginator = Paginator(results, NEWS_PER_PAGE)
             page = paginator.page(page_n)
             data['content'] = render_items(request, page.object_list)
-            data['newer_group']  = render_search_newer_group(category, page, query)
-            data['older_group']  = render_search_older_group(category, page, query)
+            data['newer_group'] = render_search_newer_group(category, page, query)
+            data['older_group'] = render_search_older_group(category, page, query)
             data['archive_view'] = False
-            data['search_view']  = True
+            data['search_view'] = True
             return data
         else:
             msg = "Niewłaściwe zapytanie"
@@ -170,18 +179,19 @@ def get_search_results_data(request, category=None):
     except InvalidPage:
         raise Http404
 
+
 def render_email_from_news(news):
     """
     Creates multipart email message given a news instance.
 
     Returns (course, text_body, html_body) triple.
     """
-    con = Context( {
-        'news':  news,
+    con = Context({
+        'news': news,
         'news_url': "http://" +
-                  str(Site.objects.get_current().domain) +
-                  reverse('news-item', args=[news.id])
-    } )
+        str(Site.objects.get_current().domain) +
+        reverse('news-item', args=[news.id])
+    })
     tem = get_template('news/email_plaintext.html')
     plaintext_body = tem.render(con)
     tem = get_template('news/email_html.html')
@@ -189,6 +199,7 @@ def render_email_from_news(news):
     from_email = MASS_MAIL_FROM
     course = settings.EMAIL_COURSE_PREFIX + news.title
     return (course, plaintext_body, html_body)
+
 
 def send_mass_mail(msg_parts, users):
     """
@@ -199,32 +210,34 @@ def send_mass_mail(msg_parts, users):
     for email in emails:
         if email:
             send_html_mail(course, text_body, html_body,
-                       MASS_MAIL_FROM, [email])
-                       
+                           MASS_MAIL_FROM, [email])
+
+
 def mail_news_enrollment(news):
     """
     Queue news in form of a mail message to all users
     that haven't opted out.
     """
-    users  = list(Student.objects.filter(receive_mass_mail_enrollment=True).select_related())
-    users += list(Employee.objects.filter(receive_mass_mail_enrollment=True).select_related())    
+    users = list(Student.objects.filter(receive_mass_mail_enrollment=True).select_related())
+    users += list(Employee.objects.filter(receive_mass_mail_enrollment=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
+
 
 def mail_news_offer(news):
     """
     Queue news in form of a mail message to all users
     that haven't opted out.
     """
-    users  = list(Student.objects.filter(receive_mass_mail_offer=True).select_related())
+    users = list(Student.objects.filter(receive_mass_mail_offer=True).select_related())
     users += list(Employee.objects.filter(receive_mass_mail_offer=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
-    
+
+
 def mail_news_grade(news):
     """
     Queue news in form of a mail message to all users
     that haven't opted out.
     """
-    users  = list(Student.objects.filter(receive_mass_mail_grade=True).select_related())
+    users = list(Student.objects.filter(receive_mass_mail_grade=True).select_related())
     users += list(Employee.objects.filter(receive_mass_mail_grade=True).select_related())
     send_mass_mail(render_email_from_news(news), users)
-    

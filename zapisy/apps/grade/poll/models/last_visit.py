@@ -9,10 +9,9 @@ class LastVisit(models.Model):
     poll = models.ForeignKey(Poll)
     time = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         verbose_name_plural = 'ogladane'
-        verbose_name        = 'ogladane'
-        app_label           = 'poll'
+        verbose_name = 'ogladane'
+        app_label = 'poll'
 
         unique_together = ('user', 'poll')

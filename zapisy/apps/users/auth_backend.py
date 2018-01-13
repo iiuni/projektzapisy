@@ -2,6 +2,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 from apps.users.models import ExtendedUser
 
+
 class ExtendedUserModelBackend(ModelBackend):
     def authenticate(self, username=None, password=None):
         try:
@@ -24,7 +25,8 @@ class BetterBackend(ModelBackend):
         if hasattr(self, '__cached_user'):
             return self.__cached_user
         try:
-            self.__cached_user = User.objects.select_related('profile', 'student', 'employee').get(pk=user_id)
+            self.__cached_user = User.objects.select_related(
+                'profile', 'student', 'employee').get(pk=user_id)
             return self.__cached_user
         except User.DoesNotExist:
             return None

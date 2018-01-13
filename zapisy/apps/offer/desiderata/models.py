@@ -3,6 +3,7 @@ from django.db import models
 from apps.enrollment.courses.models import Term, Course, Semester
 from zapisy import common
 
+
 class Desiderata(models.Model):
     employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')
     semester = models.ForeignKey(Semester, verbose_name='semestr')
@@ -28,7 +29,7 @@ class Desiderata(models.Model):
         for day in desideratas:
             for hour in desideratas[day]:
                 value = not bool(desideratas[day][hour])
-                result_append({'day':day, 'hour': hour, 'value': value})
+                result_append({'day': day, 'hour': hour, 'value': value})
         return result
 
 
@@ -44,6 +45,6 @@ class DesiderataOther(models.Model):
     def get_desiderata_other(employee, semester):
         try:
             desiderata = DesiderataOther.objects.get(semester=semester, employee=employee)
-        except:
+        except BaseException:
             desiderata = DesiderataOther.objects.create(semester=semester, employee=employee)
         return desiderata

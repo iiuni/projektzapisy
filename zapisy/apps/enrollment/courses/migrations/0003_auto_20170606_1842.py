@@ -14,16 +14,24 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='coursedescription',
             name='created',
-            field=models.DateTimeField(auto_now_add=True),
+            field=models.DateTimeField(
+                auto_now_add=True),
         ),
         migrations.AlterField(
             model_name='courseentity',
             name='effects',
-            field=models.ManyToManyField(to='courses.Effects', verbose_name='Grupa efekt\xf3w kszta\u0142cenia', blank=True),
+            field=models.ManyToManyField(
+                to='courses.Effects',
+                verbose_name='Grupa efekt\xf3w kszta\u0142cenia',
+                blank=True),
         ),
         migrations.AlterField(
             model_name='term',
             name='classrooms',
-            field=models.ManyToManyField(related_name='new_classrooms', verbose_name=b'sale', to='courses.Classroom', blank=True),
+            field=models.ManyToManyField(
+                related_name='new_classrooms',
+                verbose_name=b'sale',
+                to='courses.Classroom',
+                blank=True),
         ),
     ]

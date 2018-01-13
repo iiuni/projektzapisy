@@ -6,6 +6,7 @@ from apps.enrollment.records.models import Record, Queue
 from apps.users.models import Student
 from apps.enrollment.records.utils import run_rearanged
 
+
 class Command(BaseCommand):
     args = ''
     help = ''
@@ -42,7 +43,8 @@ class Command(BaseCommand):
         print "No of Groups checked: ", len(groups)
 
     def refresh_enrolled(self, group, test):
-        records = Record.objects.filter(group=group, status=Record.STATUS_ENROLLED).prefetch_related('student')
+        records = Record.objects.filter(group=group,
+                                        status=Record.STATUS_ENROLLED).prefetch_related('student')
         error_cnt = 0
 
         enrolled_cnt = len(records)
@@ -57,7 +59,7 @@ class Command(BaseCommand):
             print "enrolled counter error for group:", group
             print "previous value: ", old_enrolled_cnt, ", new value: ", enrolled_cnt
             if old_enrolled_cnt > enrolled_cnt:
-                print "(runned rearanged ",old_enrolled_cnt - enrolled_cnt," times)"
+                print "(runned rearanged ", old_enrolled_cnt - enrolled_cnt, " times)"
             error_cnt += 1
 
         enrolled_zam_cnt = len([x for x in records if x.student.is_zamawiany()])
@@ -91,7 +93,6 @@ class Command(BaseCommand):
             error_cnt += 1
 
         return error_cnt
-
 
     def refresh_queued(self, group, test):
         queued_cnt = Queue.objects.filter(group=group, deleted=False).count()

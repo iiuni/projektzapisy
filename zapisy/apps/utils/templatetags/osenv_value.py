@@ -7,6 +7,7 @@ import os
 
 register = template.Library()
 
+
 @register.filter
 def osenv_value(name):
     return os.environ.get(name)

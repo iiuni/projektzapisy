@@ -15,19 +15,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='syllabus',
             name='entity',
-            field=models.OneToOneField(related_name='syllabus', verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity'),
+            field=models.OneToOneField(
+                related_name='syllabus',
+                verbose_name=b'podstawa przedmiotu',
+                to='courses.CourseEntity'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='syllabus',
             name='learning_methods',
-            field=models.ManyToManyField(to='proposal.LearningMethod', null=True, verbose_name='Metody kszta\u0142cenia', blank=True),
+            field=models.ManyToManyField(
+                to='proposal.LearningMethod',
+                null=True,
+                verbose_name='Metody kszta\u0142cenia',
+                blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='studentwork',
             name='syllabus',
-            field=models.ForeignKey(to='proposal.Syllabus'),
+            field=models.ForeignKey(
+                to='proposal.Syllabus'),
             preserve_default=True,
         ),
     ]

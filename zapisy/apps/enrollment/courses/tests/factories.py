@@ -16,6 +16,8 @@ from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 
 SEMESTER_YEAR_RANGE = 30
+
+
 def get_unique_new_semester_raw_year(semester_instance):
     start_year = datetime.now().year
     end_year = start_year + SEMESTER_YEAR_RANGE
@@ -26,6 +28,7 @@ def get_unique_new_semester_raw_year(semester_instance):
             Semester.objects.get(type=semester_instance.type, year=semester_year)
         except Semester.DoesNotExist:
             return year
+
 
 class SemesterFactory(DjangoModelFactory):
     class Meta:
@@ -45,26 +48,26 @@ class SemesterFactory(DjangoModelFactory):
         lectures_beginning = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 10, 1))
         lectures_ending = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 1, 31))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 1, 31))
         semester_beginning = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 10, 1))
         semester_ending = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 2, 22))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 22))
         records_ects_limit_abolition =  \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year-1, 10, 1))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year - 1, 10, 1))
     else:
         records_opening = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 2, 1))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 1))
         records_closing = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 3, 15))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 3, 15))
         lectures_beginning = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 2, 25))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 25))
         lectures_ending = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 6, 15))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 6, 15))
         semester_beginning = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 2, 25))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 25))
         semester_ending = \
-            factory.LazyAttribute(lambda x: datetime(x.raw_year+1, 9, 30))
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 9, 30))
         records_ects_limit_abolition = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 3, 1))
 
@@ -77,6 +80,7 @@ class CourseEntityFactory(DjangoModelFactory):
     ects = 5
     suggested_for_first_year = False
 
+
 class CourseDescriptionFactory(DjangoModelFactory):
     class Meta:
         model = CourseDescription
@@ -87,6 +91,7 @@ class CourseDescriptionFactory(DjangoModelFactory):
     exercises = 30
     laboratories = 30
 
+
 class CourseFactory(DjangoModelFactory):
     class Meta:
         model = Course
@@ -94,6 +99,7 @@ class CourseFactory(DjangoModelFactory):
     entity = factory.SubFactory(CourseEntityFactory)
     information = factory.SubFactory(CourseDescriptionFactory)
     semester = factory.SubFactory(SemesterFactory)
+
 
 class GroupFactory(DjangoModelFactory):
     class Meta:
@@ -110,6 +116,7 @@ class ChangedDayForFridayFactory(DjangoModelFactory):
         model = ChangedDay
 
     weekday = common.FRIDAY
+
 
 class ClassroomFactory(DjangoModelFactory):
     class Meta:
