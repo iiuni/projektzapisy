@@ -33,7 +33,7 @@ from apps.grade.poll.utils import check_signature, prepare_data, group_polls_and
     make_message_from_polls, save_template_in_session, make_polls_for_all, get_templates, \
     make_template_from_db, get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
 from apps.users.models import Employee, Program
-from form_utils import get_section_form_data, validate_section_form, section_save
+from .form_utils import get_section_form_data, validate_section_form, section_save
 from apps.grade.poll.exceptions import NoTitleException, NoSectionException, NoPollException
 
 
