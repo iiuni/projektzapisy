@@ -5,6 +5,7 @@ from django import forms
 from apps.enrollment.courses.models.course import CourseEntity, CourseDescription
 from apps.offer.proposal.models import Syllabus, StudentWork
 
+
 class ProposalForm(ModelForm):
     ects = forms.IntegerField(label='ECTS')
 
@@ -29,14 +30,32 @@ class ProposalForm(ModelForm):
             if instance.status in excluded_statuses:
                 self.fields.pop('status')
             else:
-                self.fields['status'].choices = filter(lambda x: x[0] not in excluded_statuses, self.fields['status'].choices)
+                self.fields['status'].choices = filter(
+                    lambda x: x[0] not in excluded_statuses,
+                    self.fields['status'].choices)
 
     class Meta:
-        fields = ('name', 'name_en', 'status', 'type', 'exam', 'english', 'semester', 'web_page','effects', 'repetitions', 'lectures', 'exercises', 'laboratories', 'exercises_laboratiories', 'seminars')
+        fields = (
+            'name',
+            'name_en',
+            'status',
+            'type',
+            'exam',
+            'english',
+            'semester',
+            'web_page',
+            'effects',
+            'repetitions',
+            'lectures',
+            'exercises',
+            'laboratories',
+            'exercises_laboratiories',
+            'seminars')
         model = CourseEntity
         widgets = {
             'effects': FilteredSelectMultiple(u"efekty kształcenia", is_stacked=False)
         }
+
 
 class ProposalDescriptionForm(ModelForm):
     class Meta:
@@ -47,9 +66,23 @@ class ProposalDescriptionForm(ModelForm):
             'requirements': FilteredSelectMultiple("wymagania", is_stacked=False)
         }
 
+
 class SyllabusForm(ModelForm):
     class Meta:
-        fields = ('requirements', 'studies_type', 'year', 'requirements', 'objectives', 'effects_txt', 'contents', 'learning_methods', 'literature', 'passing_form', 'exam_hours', 'tests_hours', 'project_presentation_hours')
+        fields = (
+            'requirements',
+            'studies_type',
+            'year',
+            'requirements',
+            'objectives',
+            'effects_txt',
+            'contents',
+            'learning_methods',
+            'literature',
+            'passing_form',
+            'exam_hours',
+            'tests_hours',
+            'project_presentation_hours')
         model = Syllabus
         widgets = {
             'learning_methods': FilteredSelectMultiple(u"Metody kształcenia", is_stacked=False)

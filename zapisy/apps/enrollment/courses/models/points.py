@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from apps.users.models import Student
 
+
 class PointTypes(models.Model):
     """types of points"""
     name = models.CharField(max_length=30, verbose_name='rodzaj punktów', default="", unique=False)
@@ -15,6 +16,7 @@ class PointTypes(models.Model):
 
     def __unicode__(self):
         return '%s' % (self.name, )
+
 
 class PointsOfCourseEntities(models.Model):
     """
@@ -41,7 +43,12 @@ class PointsOfCourseEntities(models.Model):
     """
     entity = models.ForeignKey('CourseEntity', verbose_name='podstawa przedmiotu')
     type_of_point = models.ForeignKey('PointTypes', verbose_name='rodzaj punktów')
-    program = models.ForeignKey('users.Program', verbose_name='Program Studiów', null=True, blank=True, default=None)
+    program = models.ForeignKey(
+        'users.Program',
+        verbose_name='Program Studiów',
+        null=True,
+        blank=True,
+        default=None)
     value = models.PositiveSmallIntegerField(verbose_name='liczba punktów', default=6)
 
     class Meta:
@@ -55,18 +62,17 @@ class PointsOfCourseEntities(models.Model):
 
 
 class StudentPointsView(models.Model):
-    value   = models.SmallIntegerField()
+    value = models.SmallIntegerField()
     student = models.OneToOneField(Student, primary_key=True)
-    entity  = models.ForeignKey('courses.CourseEntity')
+    entity = models.ForeignKey('courses.CourseEntity')
 
     # just for testing
-    #def save(self, **kwargs):
+    # def save(self, **kwargs):
     #    raise NotImplementedError()
 
     class Meta:
         managed = False
         app_label = 'courses'
-
 
     @classmethod
     def get_student_points_in_semester(cls, student, semester):
@@ -80,7 +86,9 @@ class StudentPointsView(models.Model):
         """
         from apps.enrollment.records.models import Record
 
-        records = Record.enrolled.filter(student=student, group__course__semester=semester).values_list('group__course__entity_id', flat=True).distinct()
+        records = Record.enrolled.filter(
+            student=student, group__course__semester=semester).values_list(
+            'group__course__entity_id', flat=True).distinct()
 
         return cls.get_points_for_entities(student, records)
 
@@ -95,6 +103,6 @@ class StudentPointsView(models.Model):
         @return:
         """
         points = cls.objects.\
-                 filter(student=student, entity__in=entities).\
-                 aggregate(Sum('value'))
+            filter(student=student, entity__in=entities).\
+            aggregate(Sum('value'))
         return points['value__sum']

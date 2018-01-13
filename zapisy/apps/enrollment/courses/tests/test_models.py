@@ -30,6 +30,7 @@ class FreedayTestCase(TestCase):
         freedays = Freeday.objects.all()
         self.assertEqual(len(freedays), 3)
 
+
 class ChangedDayTestCase(TestCase):
     def setUp(self):
         semester = SemesterObjectMother.winter_semester_2015_16()
@@ -54,7 +55,7 @@ class ChangedDayTestCase(TestCase):
 
     def test_count_added_sundays_winter_semester(self):
         semester = Semester.get_semester(datetime(2015, 11, 10))
-        self.assertNotEqual(semester,None)
+        self.assertNotEqual(semester, None)
         changed_days = ChangedDay.get_added_days_of_week(semester.semester_beginning,
                                                          semester.semester_ending,
                                                          common.SUNDAY)

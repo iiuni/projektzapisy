@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from apps.offer.proposal.models.proposal import Przedmiot
 from apps.users.models import Student, Employee
 
+
 class Command(BaseCommand):
     args = '<plik semester>'
     help = 'ocenia'
@@ -17,11 +18,10 @@ class Command(BaseCommand):
         courses = CourseEntity.get_proposals()
         file = open(args[0], 'w')
         for course in courses:
-            file.write(smart_unicode(course).encode('utf-8')+'\n')
+            file.write(smart_unicode(course).encode('utf-8') + '\n')
             for user in course.get_all_voters():
-                file.write(user.matricula+'\n')
+                file.write(user.matricula + '\n')
 
             file.write('\n')
 
         file.close()
-

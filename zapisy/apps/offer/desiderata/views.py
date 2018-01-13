@@ -42,6 +42,3 @@ def change_desiderata(request):
         'semester': semester
     }
     return render(request, 'offer/desiderata/change_desiderata.html', data)
-
-
-    

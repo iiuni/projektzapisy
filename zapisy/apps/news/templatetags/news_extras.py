@@ -6,6 +6,7 @@ register = template.Library()
 
 from apps.news.models import News
 
+
 @register.simple_tag
 def newscount(category):
     """Wyświetla liczbę nowych ogłoszeń."""

@@ -14,7 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='openingtimesview',
             name='student',
-            field=models.OneToOneField(related_name='opening_times', primary_key=True, serialize=False, to='users.Student'),
+            field=models.OneToOneField(
+                related_name='opening_times',
+                primary_key=True,
+                serialize=False,
+                to='users.Student'),
             preserve_default=True,
         ),
     ]

@@ -68,7 +68,13 @@ class SpecialReservation(models.Model):
     objects = SpecialReservationManager()
 
     @classmethod
-    def get_reservations_for_semester(cls, semester, day=None, classrooms=None, start_time=None, end_time=None):
+    def get_reservations_for_semester(
+            cls,
+            semester,
+            day=None,
+            classrooms=None,
+            start_time=None,
+            end_time=None):
         """
         A versatile function returning SpecialReservations. day is either datetime.date or string
 
@@ -102,7 +108,9 @@ class SpecialReservation(models.Model):
                                                          end_time=self.end_time)
 
         from .term import Term
-        candidate_days = self.semester.get_all_days_of_week(self.dayOfWeek, start_date=max(datetime.now().date(), self.semester.lectures_beginning))
+        candidate_days = self.semester.get_all_days_of_week(
+            self.dayOfWeek, start_date=max(
+                datetime.now().date(), self.semester.lectures_beginning))
 
         terms = Term.get_terms_for_dates(dates=candidate_days,
                                          classroom=self.classroom,
@@ -112,14 +120,23 @@ class SpecialReservation(models.Model):
 
         if course_terms:
             for t in course_terms:
-                msg_list.append(u'W tym samym czasie w tej sali odbywają się zajęcia: ' + t.group.course.name + ' ' + unicode(t))
+                msg_list.append(
+                    u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
+                    t.group.course.name +
+                    ' ' +
+                    unicode(t))
 
         if terms:
             for t in terms:
                 if t.event.reservation != self and t.event.type != Event.TYPE_CLASS:
-                    msg_list.append( u'W tym samym czasie ta sala jest zarezerwowana (wydarzenie): ' + unicode(t.event) + ' ' + unicode(t))
+                    msg_list.append(
+                        u'W tym samym czasie ta sala jest zarezerwowana (wydarzenie): ' +
+                        unicode(
+                            t.event) +
+                        ' ' +
+                        unicode(t))
 
-        if len(msg_list)>0:
+        if len(msg_list) > 0:
             raise ValidationError(message={'__all__': msg_list}, code='overlap')
 
     def clean(self):
@@ -168,7 +185,9 @@ class SpecialReservation(models.Model):
         ev.author_id = author_id
         ev.save()
 
-        term_days = semester.get_all_days_of_week(day_of_week=self.dayOfWeek, start_date=max(datetime.now().date(), semester.lectures_beginning))
+        term_days = semester.get_all_days_of_week(
+            day_of_week=self.dayOfWeek, start_date=max(
+                datetime.now().date(), semester.lectures_beginning))
 
         for day in term_days:
             term = Term()

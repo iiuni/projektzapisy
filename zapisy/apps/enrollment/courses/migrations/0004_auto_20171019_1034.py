@@ -13,6 +13,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='courseentity',
-            options={'ordering': ['name_pl'], 'verbose_name': 'Podstawa przedmiotu', 'verbose_name_plural': 'Podstawy przedmiot\xf3w'},
+            options={
+                'ordering': ['name_pl'],
+                'verbose_name': 'Podstawa przedmiotu',
+                'verbose_name_plural': 'Podstawy przedmiot\xf3w'},
         ),
     ]

@@ -16,11 +16,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='classroom',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=False, populate_from=b'number', unique_with=(b'number',)),
+            field=autoslug.fields.AutoSlugField(
+                editable=False,
+                populate_from=b'number',
+                unique_with=(
+                    b'number',
+                )),
         ),
         migrations.AlterField(
             model_name='classroom',
             name='type',
-            field=models.IntegerField(choices=[(0, 'Sala wyk\u0142adowa'), (1, 'Sala \u0107wiczeniowa'), (2, 'Pracownia komputerowa - Windows'), (3, 'Pracownia komputerowa - Linux'), (4, 'Pracownia dwusystemowa (Windows+Linux)'), (5, 'Poligon (109)')], default=1, verbose_name=b'typ'),
+            field=models.IntegerField(
+                choices=[
+                    (0,
+                     'Sala wyk\u0142adowa'),
+                    (1,
+                     'Sala \u0107wiczeniowa'),
+                    (2,
+                     'Pracownia komputerowa - Windows'),
+                    (3,
+                     'Pracownia komputerowa - Linux'),
+                    (4,
+                     'Pracownia dwusystemowa (Windows+Linux)'),
+                    (5,
+                     'Poligon (109)')],
+                default=1,
+                verbose_name=b'typ'),
         ),
     ]

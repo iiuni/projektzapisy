@@ -19,9 +19,9 @@ def view(request):
     employee = request.user.employee
     employee.make_preferences()
 
-    prefs     = employee.get_preferences()
-    formset   = PreferenceFormset(queryset=prefs)
-    semester  = Semester.get_current_semester()
+    prefs = employee.get_preferences()
+    formset = PreferenceFormset(queryset=prefs)
+    semester = Semester.get_current_semester()
 
     return render(request, 'offer/preferences/base.html', locals())
 

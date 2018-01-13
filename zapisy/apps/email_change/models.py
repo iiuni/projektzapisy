@@ -36,16 +36,15 @@ class EmailChangeRequest(models.Model):
     verification_key = models.CharField(max_length=40)
     email = models.EmailField(max_length=75)    # Contains the new email address
     date_created = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         verbose_name = 'email change request'
         verbose_name_plural = 'email change requests'
-    
+
     def __unicode__(self):
         return '(%s) %s --> %s' % (self.user.username, self.user.email, self.email)
-    
+
     def has_expired(self):
         dt = datetime.timedelta(days=settings.EMAIL_CHANGE_VERIFICATION_DAYS)
         expiration_date = self.date_created + dt
         return expiration_date <= datetime.datetime.now()
-

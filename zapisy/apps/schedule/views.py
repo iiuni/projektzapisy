@@ -24,6 +24,7 @@ from apps.users.models import BaseUser
 
 from xhtml2pdf import pisa
 import StringIO
+from functools import reduce
 
 
 def classrooms(request):
@@ -76,7 +77,7 @@ def edit_event(request, event_id=None):
     form = EventForm(data=request.POST or None, instance=event, user=request.user)
     formset = TermFormSet(request.POST or None, instance=event)
     reservation = event.reservation
-    
+
     if form.is_valid():
         event = form.save(commit=False)
         if not event.id:
@@ -119,6 +120,7 @@ def reservations(request):
     title = u'Zarządzaj rezerwacjami'
     return TemplateResponse(request, 'schedule/reservations.html', locals())
 
+
 @login_required
 @permission_required('schedule.manage_events')
 def conflicts(request):
@@ -138,6 +140,7 @@ def conflicts(request):
     terms = Term.prepare_conflict_dict(beg_date, end_date)
     title = u'Konflikty'
     return TemplateResponse(request, 'schedule/conflicts.html', locals())
+
 
 @login_required
 def history(request):
@@ -166,7 +169,8 @@ def decision(request, event_id):
             event_obj = form.save()
             msg = EventModerationMessage()
             msg.author = request.user
-            msg.message = u'Status wydarzenia został zmieniony na ' + unicode(event_obj.get_status_display())
+            msg.message = u'Status wydarzenia został zmieniony na ' + \
+                unicode(event_obj.get_status_display())
             msg.event = event_obj
             msg.save()
             messages.success(request, u'Status wydarzenia został zmieniony')
@@ -332,7 +336,7 @@ def events_report(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
-            for x in Classroom.get_in_institute(reservation=True)]
+                                        for x in Classroom.get_in_institute(reservation=True)]
         if form.is_valid():
             beg_date = form.cleaned_data["beg_date"]
             end_date = form.cleaned_data["end_date"]
@@ -341,7 +345,7 @@ def events_report(request):
     else:
         form = ReportForm()
         form.fields["rooms"].choices = [(x.pk, x.number)
-            for x in Classroom.get_in_institute(reservation=True)]
+                                        for x in Classroom.get_in_institute(reservation=True)]
     return TemplateResponse(request, 'schedule/events_report.html', locals())
 
 
@@ -362,7 +366,7 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
             day__lte=end_date,
             room=room,
             event__status=Event.STATUS_ACCEPTED,
-            ).order_by('day', 'start')))
+        ).order_by('day', 'start')))
 
     data = {
         'beg_date': beg_date,

@@ -17,25 +17,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='program',
             name='type_of_points',
-            field=models.ForeignKey(verbose_name=b'rodzaj punkt\xc3\xb3w', to='courses.PointTypes'),
+            field=models.ForeignKey(
+                verbose_name=b'rodzaj punkt\xc3\xb3w',
+                to='courses.PointTypes'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openingtimesview',
             name='course',
-            field=models.ForeignKey(to='courses.Course'),
+            field=models.ForeignKey(
+                to='courses.Course'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openingtimesview',
             name='semester',
-            field=models.ForeignKey(to='courses.Semester'),
+            field=models.ForeignKey(
+                to='courses.Semester'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='employee',
             name='user',
-            field=models.OneToOneField(related_name='employee', verbose_name=b'U\xc5\xbcytkownik', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(
+                related_name='employee',
+                verbose_name=b'U\xc5\xbcytkownik',
+                to=settings.AUTH_USER_MODEL),
             preserve_default=True,
         ),
     ]
