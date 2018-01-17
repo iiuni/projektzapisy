@@ -12,8 +12,6 @@ dependencies:
     - pip freeze
 
 test:
-  pre:
-    - cp ../env/settings_local_test.py settings_local.py
   override:
     - mkdir logs
     - coverage run manage.py test test_app --nomigrations
