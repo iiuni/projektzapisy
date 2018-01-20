@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, date
 
-from apps.enrollment.courses.models import Semester, Term
+from apps.enrollment.courses.models import Semester
 from django.core.validators import ValidationError
 from django.test import TestCase
 from zapisy import common

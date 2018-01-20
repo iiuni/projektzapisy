@@ -136,15 +136,9 @@ TEMPLATES = [
         'OPTIONS': {
             "debug": False,
             'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
             ],
             'loaders': [
                 ('django.template.loaders.cached.Loader', [
@@ -181,6 +175,8 @@ ROOT_URLCONF = 'zapisy.urls'
 
 INSTALLED_APPS = (
     'modeltranslation', # needs to be before django.contrib.admin
+
+    'rest_framework',
     
     # needed from 1.7 onwards to prevent Django from trying to apply
     # migrations when testing (slows down DB setup _a lot_)
@@ -323,6 +319,14 @@ STATICFILES_FINDERS = (
   'django.contrib.staticfiles.finders.FileSystemFinder',
   'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 LOCAL_SETTINGS = os.path.join(BASE_DIR, 'zapisy', 'settings_local.py')
 if os.path.isfile(LOCAL_SETTINGS):

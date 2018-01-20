@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
 from django.contrib.auth.views import (
-    login, password_change, password_change_done,
-    password_reset, password_reset_confirm,
+    password_change, password_reset, password_reset_confirm,
     password_reset_complete, password_reset_done
 )
 from . import views

@@ -5,7 +5,7 @@ Various utils.
 
 from django.conf import settings
 from mailer import send_html_mail
-from django.template import Context, RequestContext
+from django.template import Context
 from django.template.loader import get_template
 import codecs
 

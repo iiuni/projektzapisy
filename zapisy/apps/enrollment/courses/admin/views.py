@@ -10,7 +10,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import transaction, connection
 from django.shortcuts import render
-from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 from django import forms
 from django.http import HttpResponse, Http404, HttpResponseRedirect
