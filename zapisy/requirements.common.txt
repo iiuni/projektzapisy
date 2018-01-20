@@ -19,11 +19,9 @@ paramiko==1.9.0
 psycopg2==2.7.3.1
 pyPdf==1.13
 pycrypto==2.6
-rollbar==0.13.3
+rollbar==0.13.17
 wsgiref==0.1.2
-yolk==0.4.3
 newrelic==2.68.0.50
-rq==0.7.1
 
 # Additional packages on production environment
 gunicorn==19.7.1
