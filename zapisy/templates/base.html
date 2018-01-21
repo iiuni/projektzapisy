@@ -62,9 +62,7 @@
         {% compressed_css 'main' %}
     {% endblock %}
     <script type="text/javascript">
-        var user_is_authenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %},
-            user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
-
+            const user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
     </script>
     {% block js %}{% compressed_js 'main' %}{% endblock %}
     {% block rss %}{% endblock %}
