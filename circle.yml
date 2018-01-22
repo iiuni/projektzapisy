@@ -8,8 +8,6 @@ machine:
 dependencies:
   override:
     - pip install --upgrade pip
-    - pip freeze | xargs pip uninstall -y
-    - pip install --upgrade setuptools
     - pip install -r requirements.test.txt
     - pip freeze
 
