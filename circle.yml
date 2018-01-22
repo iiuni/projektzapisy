@@ -3,13 +3,11 @@ general:
 
 machine:
   python:
-    version: 2.7.10
-
+    version: 2.7.12
 
 dependencies:
   override:
     - pip install --upgrade pip
-    - pip install --upgrade setuptools
     - pip install -r requirements.test.txt
     - pip freeze
 
