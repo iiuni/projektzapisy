@@ -1,5 +1,4 @@
 # Packages from our development environment
-setuptools
 Django==1.10.8 --no-binary django
 Fabric==1.5.1
 argparse==1.2.1
