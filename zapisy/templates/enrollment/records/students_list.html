@@ -1,34 +1,36 @@
 {% load i18n %}
 
 <table class="zebra-striped">
-	<thead>
-		<th>{% trans "Imię" %}</th>
-		<th>{% trans "Nazwisko" %}</th>
-		<th>{% trans "Nr indeksu" %}</th>
-		<th>{% trans "Rodzaj studiów" %}</th>
-		<th>{% trans "Semestr" %}</th>
-	</thead>
-	<tbody>
-		{% for student in students %}
-			<tr>
-				<td><a href="{% url 'student-profile' student.user.id %}" class="person">
-				    {{student.user.first_name}}</a></td>
-				<td><a href="{% url 'student-profile' student.user.id %}" class="person">
-				    {{student.user.last_name}}</a></td>
-				<td>{{student.matricula}}</td>
-				<td>
-					{{student.program}}
-					{% if student.is_zamawiany %}
-						(zamawiani2009)
-                    {% elif student.is_zamawiany2012%}
-                        (zamawiani2012)
-					{% endif %}
-				</td>
-				<td>{{student.semestr}}</td>
-			</tr>
+    <thead>
+    <tr>
+        <th>{% trans "Imię" %}</th>
+        <th>{% trans "Nazwisko" %}</th>
+        <th>{% trans "Nr indeksu" %}</th>
+        <th>{% trans "Rodzaj studiów" %}</th>
+        <th>{% trans "Semestr" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for student in students %}
+        <tr>
+            <td><a href="{% url 'student-profile' student.user.id %}" class="person">
+                {{ student.user.first_name }}</a></td>
+            <td><a href="{% url 'student-profile' student.user.id %}" class="person">
+                {{ student.user.last_name }}</a></td>
+            <td>{{ student.matricula }}</td>
+            <td>
+                {{ student.program }}
+                {% if student.is_zamawiany %}
+                    (zamawiani2009)
+                {% elif student.is_zamawiany2012 %}
+                    (zamawiani2012)
+                {% endif %}
+            </td>
+            <td>{{ student.semestr }}</td>
+        </tr>
 
-		{% empty %}
-			{% trans "Brak zapisanych osób" %}.
-		{% endfor %}
-	</tbody>
+    {% empty %}
+        {% trans "Brak zapisanych osób" %}.
+    {% endfor %}
+    </tbody>
 </table>

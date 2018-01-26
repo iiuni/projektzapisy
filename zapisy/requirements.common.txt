@@ -48,4 +48,6 @@ python-memcached==1.48
 # On production, but one would need to find suitable version.
 xhtml2pdf==0.0.5
 
+# Remove accents from strings (diacritics converted to Latin equivalents)
+unidecode==1.0.22
 djangorestframework==3.7.7

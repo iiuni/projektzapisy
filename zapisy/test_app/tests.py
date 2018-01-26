@@ -28,6 +28,7 @@ from datetime import datetime, date, time, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from django.db import connection
+from django.core import mail
 
 from django.conf import settings
 from scripts.scheduleimport import run_test as scheduleimport_run_test
@@ -499,15 +500,15 @@ class NewSemesterTests(SeleniumTestCase):
 
         employees = {'{} {}'.format(empl.user.first_name, empl.user.last_name): empl.id for empl in self.employees}
 
-        Classroom.objects.create(number=5, type=1)
-        Classroom.objects.create(number=7, type=3)
-        Classroom.objects.create(number=25, type=0)
-        Classroom.objects.create(number=103, type=1)
-        Classroom.objects.create(number=104, type=1)
-        Classroom.objects.create(number=105, type=1)
-        Classroom.objects.create(number=108, type=3)
-        Classroom.objects.create(number=119, type=0)
-        Classroom.objects.create(number=139, type=1)
+        Classroom.objects.create(number=u'5', type=u'1')
+        Classroom.objects.create(number=u'7', type=u'3')
+        Classroom.objects.create(number=u'25', type=u'0')
+        Classroom.objects.create(number=u'103', type=u'1')
+        Classroom.objects.create(number=u'104', type=u'1')
+        Classroom.objects.create(number=u'105', type=u'1')
+        Classroom.objects.create(number=u'108', type=u'3')
+        Classroom.objects.create(number=u'119', type=u'0')
+        Classroom.objects.create(number=u'139', type=u'1')
 
         test_schedule = '''
 
@@ -710,3 +711,45 @@ def createSubPageTest(link_text):
 
 for idx, name in enumerate(AdminTests.SUB_PAGES):
     setattr(AdminTests, 'testSubpageId' + str(idx), createSubPageTest(name))
+
+
+class EmailChangeTest(SeleniumTestCase):
+    def createUser(self):
+        self.password = '11111'
+        self.user = User.objects.create_user(username='przemka',
+                                             password=self.password,
+                                             email='admin@admin.com')
+        self.user.save()
+
+    def setUp(self):
+        self.createUser()
+        self.driver.get(self.live_server_url)
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('login-dropdown').click()
+        )
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('btn-no-usos').click()
+        )
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
+        )
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+        )
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_xpath('//button[@type="submit"]').click()
+        )
+
+    def testEmailChange(self):
+        self.driver.get("{}/accounts/email/change/".format(self.live_server_url))
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('id_email').clear()
+        )
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_id('id_email').send_keys(u'lorem@ipsum.com')
+        )
+        current_len = len(mail.outbox)
+        self.wait_for_pass(
+          lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+        )
+        self.assertEqual(len(mail.outbox), current_len + 1)

@@ -3,11 +3,13 @@
 from django.db import models
 from django.db.models import signals
 from django.db.models import Count
-from django.core.cache import cache as mcache
 from django.db.models.query import QuerySet
-from django.conf import settings
-from apps.notifications.models import Notification
+from django.core.cache import cache as mcache
 from django.core.urlresolvers import reverse
+from django.conf import settings
+
+from apps.enrollment.records.exceptions import AlreadyNotAssignedException, NonGroupException, NonStudentException
+from apps.notifications.models import Notification
 
 from course import *
 
@@ -238,10 +240,25 @@ class Group(models.Model):
         return records or True
 
     def _add_to_lecture(self, student):
-        from apps.enrollment.records.models import Record
+        from apps.enrollment.records.models import Record, Queue
         groups = Group.objects.filter(type=settings.LETURE_TYPE, course=self.course)
-        result = []
+
+        affected_groups = []
         for group in groups:
+            try:
+                Queue.remove_student_from_queue(student.user.id, group.id)
+            except AlreadyNotAssignedException:
+                # student wasn't in queue
+                affected_groups.append(group)
+            except (NonGroupException, NonStudentException):
+                # shouldn't happen
+                return [u'Wystąpił błąd przy zapisie na wykład. Skontaktuj się z administratorem serwisu.']
+            else:
+                group.remove_from_queued_counter(student)
+                affected_groups.append(group)
+
+        result = []
+        for group in affected_groups:
             __, created = Record.objects.get_or_create(student=student, group=group, status=Record.STATUS_ENROLLED)
             if created:
                 result.append(u'Nastąpiło automatyczne dopisanie do grupy wykładowej')
@@ -255,12 +272,13 @@ class Group(models.Model):
         result = True
         #REMOVE FROM OTHER GROUP
 
+        lecture_result = []
         if self.type != settings.LETURE_TYPE:
             result = self._remove_from_other_groups(student)
 
-            self._add_to_lecture(student)
+            lecture_result = self._add_to_lecture(student)
 
-        r, created = Record.objects.get_or_create(student=student, group=self, status=Record.STATUS_ENROLLED)
+        __, created = Record.objects.get_or_create(student=student, group=self, status=Record.STATUS_ENROLLED)
         if created:
             self.add_to_enrolled_counter(student)
 
@@ -269,11 +287,11 @@ class Group(models.Model):
 
         if return_group:
             if isinstance(result, QuerySet):
-                return result,  [u'Student dopisany do grupy', u'Wypisano z poprzedniej grupy']
+                return result,  [u'Student dopisany do grupy', u'Wypisano z poprzedniej grupy'] + lecture_result
             else:
-                return result,  [u'Student dopisany do grupy']
+                return result,  [u'Student dopisany do grupy'] + lecture_result
 
-        return result, [u'Student dopisany do grupy']
+        return result, [u'Student dopisany do grupy'] + lecture_result
 
     def enroll_student(self, student):
         from apps.enrollment.courses.models import Semester
