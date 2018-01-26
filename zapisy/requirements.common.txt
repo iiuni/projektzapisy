@@ -18,6 +18,7 @@ ipython==5.5.0
 paramiko==1.9.0
 psycopg2==2.7.3.2
 pyPdf==1.13
+pycrypto==2.6.1
 rollbar==0.13.3
 wsgiref==0.1.2
 yolk==0.4.3
