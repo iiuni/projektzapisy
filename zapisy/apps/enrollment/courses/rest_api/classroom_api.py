@@ -1,5 +1,7 @@
 from rest_framework import serializers, viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+from apps.users.utils import StaffPermission
 from ..models.classroom import Classroom
 
 
@@ -12,5 +14,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 class ClassroomViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (StaffPermission,)
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
