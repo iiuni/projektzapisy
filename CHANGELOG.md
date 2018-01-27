@@ -2,6 +2,7 @@
 
 # Current version
 * Added simple semester REST API serving semesters
+* Classroom REST API serving classroom data
 
 # Version 18.01.24
 

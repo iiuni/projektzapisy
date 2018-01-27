@@ -9,13 +9,14 @@ from apps.feeds import LatestNews
 import apps.news.views
 from apps.users import views as users_views
 from apps.enrollment.courses.admin import views as courses_admin_views
-from apps.enrollment.courses.rest_api import semester_api
+from apps.enrollment.courses.rest_api import semester_api, classroom_api
 from django_cas_ng import views
 from rest_framework import routers
 
 admin.autodiscover()
 router = routers.DefaultRouter()
 router.register(r'semesters', semester_api.SemesterViewSet)
+router.register(r'classroom', classroom_api.ClassroomViewSet)
 
 
 urlpatterns = [
