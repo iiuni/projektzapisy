@@ -7,7 +7,7 @@ class Type(models.Model):
     """types of courses"""
     name = models.CharField(max_length=30, verbose_name='rodzaj zajec', default="", unique=False)
     short_name  = models.CharField(max_length=5, verbose_name='rodzaj zajec (króŧka forma)', default="", unique=False)
-    group     = models.ForeignKey("self", null=True, blank=True, verbose_name='grupa')
+    group     = models.ForeignKey("self", null=True, blank=True, verbose_name='grupa', on_delete=models.CASCADE)
     meta_type = models.BooleanField(default = False, verbose_name ='Grupa typow')
     free_in_vote = models.BooleanField(default=False)
 

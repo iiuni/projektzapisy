@@ -18,7 +18,7 @@ studies_types = (('isim','isim'), ('inf','informatyka'), ('both','informatyka, I
 year_choices = [(x, str(x)) for x in range(1, 6)]
 
 class Syllabus(models.Model):
-    entity = models.OneToOneField(CourseEntity, verbose_name='podstawa przedmiotu', related_name='syllabus')
+    entity = models.OneToOneField(CourseEntity, verbose_name='podstawa przedmiotu', related_name='syllabus', on_delete=models.CASCADE)
 
     studies_type = models.CharField(max_length=80, choices=studies_types, default='both', verbose_name=u'Kierunek studiów')
     year = models.IntegerField(null=True, blank=True, choices=year_choices, verbose_name=u'Rok studiów')

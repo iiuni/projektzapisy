@@ -13,10 +13,6 @@
     <meta name="description"
           content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
@@ -62,9 +58,7 @@
         {% compressed_css 'main' %}
     {% endblock %}
     <script type="text/javascript">
-        var user_is_authenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %},
-            user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
-
+            const user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
     </script>
     {% block js %}{% compressed_js 'main' %}{% endblock %}
     {% block rss %}{% endblock %}

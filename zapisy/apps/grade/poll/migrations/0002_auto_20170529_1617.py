@@ -18,13 +18,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='template',
             name='author',
-            field=models.ForeignKey(verbose_name=b'autor', to='users.Employee'),
+            field=models.ForeignKey(verbose_name=b'autor', to='users.Employee', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='template',
             name='course',
-            field=models.ForeignKey(verbose_name=b'przedmiot', blank=True, to='courses.CourseEntity', null=True),
+            field=models.ForeignKey(verbose_name=b'przedmiot', blank=True, to='courses.CourseEntity', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='template',
             name='studies_type',
-            field=models.ForeignKey(verbose_name=b'typ studi\xc3\xb3w', blank=True, to='users.Program', null=True),
+            field=models.ForeignKey(verbose_name=b'typ studi\xc3\xb3w', blank=True, to='users.Program', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -48,13 +48,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='singlechoicequestionordering',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.SingleChoiceQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.SingleChoiceQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='singlechoicequestionordering',
             name='sections',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -64,25 +64,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='singlechoicequestionanswer',
             name='option',
-            field=models.ForeignKey(verbose_name=b'odpowied\xc5\xba', blank=True, to='poll.Option', null=True),
+            field=models.ForeignKey(verbose_name=b'odpowied\xc5\xba', blank=True, to='poll.Option', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='singlechoicequestionanswer',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.SingleChoiceQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.SingleChoiceQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='singlechoicequestionanswer',
             name='saved_ticket',
-            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket'),
+            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='singlechoicequestionanswer',
             name='section',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -100,13 +100,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sectionordering',
             name='poll',
-            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll'),
+            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='sectionordering',
             name='section',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='savedticket',
             name='poll',
-            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll'),
+            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -132,43 +132,43 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='poll',
             name='author',
-            field=models.ForeignKey(related_name='author', verbose_name=b'autor', to='users.Employee'),
+            field=models.ForeignKey(related_name='author', verbose_name=b'autor', to='users.Employee', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='poll',
             name='group',
-            field=models.ForeignKey(verbose_name=b'grupa', blank=True, to='courses.Group', null=True),
+            field=models.ForeignKey(verbose_name=b'grupa', blank=True, to='courses.Group', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='poll',
             name='origin',
-            field=models.ForeignKey(default=None, blank=True, to='poll.Origin', null=True, verbose_name=b'zbi\xc3\xb3r'),
+            field=models.ForeignKey(default=None, blank=True, to='poll.Origin', null=True, verbose_name=b'zbi\xc3\xb3r', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='poll',
             name='semester',
-            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester'),
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='poll',
             name='studies_type',
-            field=models.ForeignKey(verbose_name=b'typ studi\xc3\xb3w', blank=True, to='users.Program', null=True),
+            field=models.ForeignKey(verbose_name=b'typ studi\xc3\xb3w', blank=True, to='users.Program', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openquestionordering',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.OpenQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.OpenQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openquestionordering',
             name='sections',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -178,19 +178,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='openquestionanswer',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.OpenQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.OpenQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openquestionanswer',
             name='saved_ticket',
-            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket'),
+            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='openquestionanswer',
             name='section',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -202,13 +202,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='multiplechoicequestionordering',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.MultipleChoiceQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.MultipleChoiceQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='multiplechoicequestionordering',
             name='sections',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -224,19 +224,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='multiplechoicequestionanswer',
             name='question',
-            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.MultipleChoiceQuestion'),
+            field=models.ForeignKey(verbose_name=b'pytanie', to='poll.MultipleChoiceQuestion', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='multiplechoicequestionanswer',
             name='saved_ticket',
-            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket'),
+            field=models.ForeignKey(verbose_name=b'zapisany bilet', to='poll.SavedTicket', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='multiplechoicequestionanswer',
             name='section',
-            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section'),
+            field=models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -254,13 +254,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='lastvisit',
             name='poll',
-            field=models.ForeignKey(to='poll.Poll'),
+            field=models.ForeignKey(to='poll.Poll', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='lastvisit',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

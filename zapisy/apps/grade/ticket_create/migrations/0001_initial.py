@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             name='UsedTicketStamp',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('poll', models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll')),
+                ('poll', models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'wykorzystany bilet',

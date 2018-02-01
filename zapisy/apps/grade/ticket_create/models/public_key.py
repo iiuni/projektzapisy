@@ -2,7 +2,7 @@
 from django.db                import models
 
 class PublicKey( models.Model ):
-    poll       = models.ForeignKey( 'poll.Poll', verbose_name = 'ankieta' )
+    poll       = models.ForeignKey( 'poll.Poll', verbose_name = 'ankieta' , on_delete=models.CASCADE)
     public_key = models.TextField(  verbose_name = 'klucz publiczny' )
     
     class Meta:
