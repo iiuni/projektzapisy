@@ -64,12 +64,12 @@ class Preference(models.Model):
         A model representing employee's will to give lectures and tutor
         for a course.
     """
-    employee   = models.ForeignKey(Employee, verbose_name='pracownik')
+    employee   = models.ForeignKey(Employee, verbose_name='pracownik', on_delete=models.CASCADE)
 
     hidden     = models.BooleanField(default=False, 
                                      verbose_name='ukryte')
 
-    proposal   = models.ForeignKey(CourseEntity, verbose_name='propozycja')
+    proposal   = models.ForeignKey(CourseEntity, verbose_name='propozycja', on_delete=models.CASCADE)
 
     # preferences
     lecture    = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,

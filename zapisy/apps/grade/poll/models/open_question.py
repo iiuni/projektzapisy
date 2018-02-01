@@ -27,8 +27,8 @@ class OpenQuestion( BaseQuestion ):
         return self, result        
 
 class OpenQuestionOrdering( models.Model ):
-    question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' )
-    sections = models.ForeignKey( 'Section', verbose_name = 'sekcja' )
+    question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' , on_delete=models.CASCADE)
+    sections = models.ForeignKey( 'Section', verbose_name = 'sekcja' , on_delete=models.CASCADE)
     position = models.IntegerField( verbose_name = 'pozycja' )
 
     class Meta:

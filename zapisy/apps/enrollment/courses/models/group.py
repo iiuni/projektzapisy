@@ -63,8 +63,8 @@ class StatisticManager(models.Manager):
 
 class Group(models.Model):
     """group for course"""
-    course = models.ForeignKey('Course', verbose_name='przedmiot', related_name='groups')
-    teacher = models.ForeignKey('users.Employee', null=True, blank=True, verbose_name='prowadzący')
+    course = models.ForeignKey('Course', verbose_name='przedmiot', related_name='groups', on_delete=models.CASCADE)
+    teacher = models.ForeignKey('users.Employee', null=True, blank=True, verbose_name='prowadzący', on_delete=models.CASCADE)
     type    = models.CharField(max_length=2, choices=GROUP_TYPE_CHOICES, verbose_name='typ zajęć')
     limit   = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
     limit_zamawiane = models.PositiveSmallIntegerField(default=0, verbose_name='miejsca dla zamawianych 2009', help_text='miejsca gwarantowane dla studentów zamawianych 2009')

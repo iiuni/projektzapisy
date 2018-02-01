@@ -102,14 +102,17 @@ def session(request, semester=None):
     from apps.schedule.models import Term
     from apps.enrollment.courses.models import Semester
 
-    exams = ExamFilter(request.GET, queryset=Term.get_exams())
+    exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
     if semester:
         semester = Semester.get_by_id(semester)
     else:
         semester = Semester.get_current_semester()
 
-    return TemplateResponse(request, 'schedule/session.html', locals())
+    return TemplateResponse(request, 'schedule/session.html', {
+        "semester": semester,
+        "exams": exams_filter.qs
+    })
 
 
 @login_required

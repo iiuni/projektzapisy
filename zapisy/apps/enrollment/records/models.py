@@ -45,8 +45,8 @@ class Record(models.Model):
 
     RECORD_STATUS = [(STATUS_REMOVED, u'usunięty'), (STATUS_ENROLLED, u'zapisany'), (STATUS_PINNED, u'przypięty')]
 
-    group = models.ForeignKey(Group, verbose_name='grupa')
-    student = models.ForeignKey(Student, verbose_name='student', related_name='records')
+    group = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, verbose_name='student', related_name='records', on_delete=models.CASCADE)
     status = models.CharField(max_length=1, choices=RECORD_STATUS, verbose_name='status')
 
     created = models.DateTimeField(auto_now_add=True, verbose_name='utworzono')
@@ -300,8 +300,8 @@ def queue_priority(value):
         raise ValidationError(u'%s is not a priority' % value)
 
 class Queue(models.Model):
-    group   = models.ForeignKey(Group, verbose_name='grupa')
-    student = models.ForeignKey(Student, verbose_name='student', related_name='queues')
+    group   = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, verbose_name='student', related_name='queues', on_delete=models.CASCADE)
     time = models.DateTimeField(verbose_name='Czas dołączenia do kolejki', auto_now_add=True)
     edited = models.DateTimeField(verbose_name='Czas ostatniej zmiany', auto_now=True)
     priority = models.PositiveSmallIntegerField(default=1, validators=[queue_priority], verbose_name='priorytet')

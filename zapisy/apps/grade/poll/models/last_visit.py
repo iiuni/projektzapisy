@@ -5,8 +5,8 @@ from apps.grade.poll.models.poll import Poll
 
 
 class LastVisit(models.Model):
-    user = models.ForeignKey(User)
-    poll = models.ForeignKey(Poll)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now=True)
 
 

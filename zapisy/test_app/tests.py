@@ -230,6 +230,11 @@ class NewSemesterTests(SeleniumTestCase):
     def prepare_course_entities_for_voting(self):
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
+          lambda: self.driver.find_element_by_xpath(
+            "//div[@aria-label='cookieconsent']//a"
+          ).click()
+        )
+        self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click()
                 )

@@ -381,10 +381,9 @@ def records_group_pdf(request, group_id):
         'pagesize': 'A4',
         'report': True
     }
-    context = Context(data)
 
     template = get_template('records/group_pdf.html')
-    html  = template.render(context)
+    html = template.render(data)
     result = StringIO.StringIO()
 
     pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
@@ -406,10 +405,9 @@ def records_queue_pdf(request, group_id):
         'pagesize': 'A4',
         'report': True
     }
-    context = Context(data)
 
     template = get_template('records/queue_pdf.html')
-    html  = template.render(context)
+    html  = template.render(data)
     result = StringIO.StringIO()
 
     pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')

@@ -6,8 +6,8 @@ from single_choice_question import SingleChoiceQuestion
 from option                 import Option
 
 class SingleChoiceQuestionAnswer( BaseAnswer ):
-    question = models.ForeignKey( SingleChoiceQuestion, verbose_name = 'pytanie' )
-    option   = models.ForeignKey( Option, verbose_name = 'odpowiedź', blank = True, null = True )
+    question = models.ForeignKey( SingleChoiceQuestion, verbose_name = 'pytanie' , on_delete=models.CASCADE)
+    option   = models.ForeignKey( Option, verbose_name = 'odpowiedź', blank = True, null = True , on_delete=models.CASCADE)
     
     class Meta:
         verbose_name_plural = 'odpowiedzi na pytania jednokrotnego wyboru'
