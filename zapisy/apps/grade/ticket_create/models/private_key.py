@@ -4,7 +4,7 @@ from django.db                import models
 from Crypto.PublicKey         import RSA
 
 class PrivateKey( models.Model ):
-    poll        = models.ForeignKey( 'poll.Poll', verbose_name = 'ankieta' )
+    poll        = models.ForeignKey( 'poll.Poll', verbose_name = 'ankieta' , on_delete=models.CASCADE)
     private_key = models.TextField(  verbose_name = 'klucz prywatny' )
 
     class Meta:

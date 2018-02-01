@@ -18,18 +18,18 @@ from origin                          import Origin
 
 class Poll( models.Model ):
 
-    author            = models.ForeignKey( Employee, verbose_name = 'autor', related_name = 'author' )
+    author            = models.ForeignKey( Employee, verbose_name = 'autor', related_name = 'author' , on_delete=models.CASCADE)
     title             = models.CharField( max_length = 40, verbose_name = 'tytuł' )
     description       = models.TextField( blank = True, verbose_name = 'opis' )
-    semester          = models.ForeignKey( Semester, verbose_name = 'semestr' )
-    group             = models.ForeignKey( Group, verbose_name = 'grupa', blank = True, null = True )
-    studies_type      = models.ForeignKey( Program, verbose_name = 'typ studiów', blank = True, null = True )
+    semester          = models.ForeignKey( Semester, verbose_name = 'semestr' , on_delete=models.CASCADE)
+    group             = models.ForeignKey( Group, verbose_name = 'grupa', blank = True, null = True , on_delete=models.CASCADE)
+    studies_type      = models.ForeignKey( Program, verbose_name = 'typ studiów', blank = True, null = True , on_delete=models.CASCADE)
     share_result      = models.BooleanField( verbose_name = 'udostępnij wyniki', default = False, blank = True )
 
     finished          = models.BooleanField( verbose_name="zakończona", default=False)
 
     deleted           = models.BooleanField( blank = False, null = False, default = False, verbose_name = 'usunięta' )
-    origin            = models.ForeignKey( Origin, verbose_name='zbiór', default=None, blank = True, null= True)
+    origin            = models.ForeignKey( Origin, verbose_name='zbiór', default=None, blank = True, null= True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name        = 'ankieta' 

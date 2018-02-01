@@ -16,13 +16,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='desiderataother',
             name='employee',
-            field=models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', to='users.Employee'),
+            field=models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', to='users.Employee', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='desiderataother',
             name='semester',
-            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester'),
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -32,13 +32,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='desiderata',
             name='employee',
-            field=models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', to='users.Employee'),
+            field=models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', to='users.Employee', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='desiderata',
             name='semester',
-            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester'),
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

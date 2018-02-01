@@ -75,7 +75,7 @@ class News(models.Model):
     body = models.TextField(verbose_name=u'Treść',
                             blank=True)
     date = models.DateTimeField(default=datetime.now)
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(max_length=15,
                                 verbose_name=u'Kategoria',
                                 choices=CATEGORIES,

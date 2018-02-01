@@ -4,10 +4,8 @@ from apps.users.models      import Student
 
 class UsedTicketStamp( models.Model ):
     from apps.grade.poll.models.poll import Poll
-    student = models.ForeignKey( Student,
-                                 verbose_name = "student" )
-    poll    = models.ForeignKey( Poll,
-                                 verbose_name = "ankieta" )
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name = "student" )
+    poll    = models.ForeignKey(Poll, on_delete=models.CASCADE, verbose_name = "ankieta" )
     class Meta:
         verbose_name        = 'wykorzystany bilet'
         verbose_name_plural = 'wykorzystane bilety'
