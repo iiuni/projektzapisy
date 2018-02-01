@@ -2,7 +2,6 @@
 
 from django.core.urlresolvers import reverse
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from .models import BaseUser
 
 
 def prepare_ajax_students_list(students):
@@ -30,13 +29,7 @@ class StaffPermission(BasePermission):
     message = 'Only for staff members'
 
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS and request.user.is_staff:
-            return True
-        else:
-            return False  # no writable permissions or user is not a member of staff
+        return bool(request.method in SAFE_METHODS and request.user.is_staff)
 
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS and request.user.is_staff:
-            return True
-        else:
-            return False  # no writable permissions or user is not a member of staff
+        return bool(request.method in SAFE_METHODS and request.user.is_staff)
