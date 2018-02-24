@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, date
 
-from apps.enrollment.courses.models import Semester
 from django.core.validators import ValidationError
 from django.test import TestCase
 from zapisy import common
 
-from apps.enrollment.courses.models import Freeday, ChangedDay
+from apps.enrollment.courses.models import Freeday, ChangedDay, Semester
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother
+from apps.enrollment.courses.tests.factories import GroupFactory
+from apps.users.tests.factories import StudentFactory
 
 
 class FreedayTestCase(TestCase):
@@ -112,3 +113,14 @@ class SemesterTestCase(TestCase):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
         sundays_added = winter_semester.get_all_added_days_of_week(common.SUNDAY)
         self.assertTrue(sundays_added)
+
+
+class GroupTestCase(TestCase):
+    def test_rearanged_short_circuits_if_records_are_closed(self):
+        student = StudentFactory()
+        group = GroupFactory(
+            course__semester__records_opening=datetime.now()+timedelta(days=-15),
+            course__semester__records_closing=datetime.now()+timedelta(days=-1)
+        )
+        group._add_student_to_queue(student)
+        self.assertIsNone(group.rearanged())
