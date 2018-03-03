@@ -78,7 +78,9 @@
                                     {% if t.signed %}
                                         {% if can_remove_record %}
                                         <input type="hidden" name="enroll" value="false"/>
-                                        <button type="submit" class="btn small danger setEnrolledButton">{% trans "wypisz" %}
+                                        <button type="submit" class="btn small danger setEnrolledButton"
+                                                onclick="return confirm('Czy na pewno chcesz to zrobić?');">
+                                            {% trans "wypisz" %}
                                         </button>
                                         {% else %}
                                             <button disabled="disabled" title="{% trans "Wypisy zostały zamknięte, nie możesz wypisać się z grupy." %}"
@@ -103,7 +105,8 @@
                                                 
                                             {% else %}{% if t.priority %}
                                                 <input type="hidden" name="enroll" value="false"/>
-                                                <button type="submit" class="btn small danger setEnrolledButton">
+                                                <button type="submit" class="btn small danger setEnrolledButton"
+                                                        onclick="return confirm('Czy na pewno chcesz to zrobić?');">
                                                     {% trans "wypisz z kolejki" %}
                                                 </button>
                                             {% else %}
