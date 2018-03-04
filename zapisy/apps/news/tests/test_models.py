@@ -6,7 +6,7 @@ from django.test import TestCase
 from datetime import datetime, timedelta
 
 from apps.news.models import News
-from utils import generate_random_news
+from .utils import generate_random_news
 
 
 class NewsModelTest(TestCase):

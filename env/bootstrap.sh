@@ -207,4 +207,4 @@ sudo npm i -g yarn
 # (npm uses symlinks and they don't work inside the shared folder on Windows)
 # Do it in this script because we need root
 cd /vagrant/zapisy
-./webpack_resources/create_modules_dir.sh vagrant
+./webpack_resources/create_modules_dir.sh ubuntu

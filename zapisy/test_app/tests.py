@@ -386,7 +386,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
-        sum_points = sum(points.itervalues())
+        sum_points = sum(points.values())
 
         for course_name, value in points.iteritems():
             select = Select(
