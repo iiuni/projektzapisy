@@ -39,6 +39,5 @@ def generate_key(user, email):
         The new email address
 
     """
-    return sha_constructor(
-            default_token_generator.make_token(user) + email + str(random.random())
-        ).hexdigest()
+    obj_to_hash = default_token_generator.make_token(user) + email + str(random.random())
+    return sha_constructor(obj_to_hash.encode("utf-8")).hexdigest()
