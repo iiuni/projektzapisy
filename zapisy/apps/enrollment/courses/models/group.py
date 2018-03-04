@@ -252,7 +252,7 @@ class Group(models.Model):
                 affected_groups.append(group)
             except (NonGroupException, NonStudentException):
                 # shouldn't happen
-                return [u'Wystąpił błąd przy zapisie na wykład. Skontaktuj się z administratorem serwisu.']
+                return ['Wystąpił błąd przy zapisie na wykład. Skontaktuj się z administratorem serwisu.']
             else:
                 group.remove_from_queued_counter(student)
                 affected_groups.append(group)

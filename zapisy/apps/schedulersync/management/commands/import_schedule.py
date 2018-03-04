@@ -25,41 +25,41 @@ GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
                'r': '5', 's': '6'}
 
 EMPLOYEE_MAP = {
-    'PWL': u'PWN',
-    'MBI': u'MBIEŃKOWSKI',
-    'KBACLAWSKI': u'KBACŁAWSKI',
-    'MABI': u'MBIERNACKA',
-    'PWI': u'48',
-    'IFD': u'IDO',
-    'JMA': u'31',
-    'ANL': u'AŁU',
-    'PAWIECZOREK': u'526',
-    'LPI': u'ŁPI',
-    'DABI': u'DBIERNACKI',
-    'MPIROG': u'MPIRÓG',
-    'WKWASNICKI': u'WKWAŚNICKI',
-    'ASIERON': u'ASIEROŃ',
-    'ZPLOSKI': u'ZPŁOSKI',
-    'ZSPLAWSKI': u'ZSPŁAWSKI',
-    'PACHOLSKI LESZEK': u'LPA',
-    'MML': u'MMŁ',
-    'LJE': u'ŁJE',
-    'MPI': u'MPIOTRÓW',
-    'SZDUDYCZ': u'SDUDYCZ'
+    'PWL': 'PWN',
+    'MBI': 'MBIEŃKOWSKI',
+    'KBACLAWSKI': 'KBACŁAWSKI',
+    'MABI': 'MBIERNACKA',
+    'PWI': '48',
+    'IFD': 'IDO',
+    'JMA': '31',
+    'ANL': 'AŁU',
+    'PAWIECZOREK': '526',
+    'LPI': 'ŁPI',
+    'DABI': 'DBIERNACKI',
+    'MPIROG': 'MPIRÓG',
+    'WKWASNICKI': 'WKWAŚNICKI',
+    'ASIERON': 'ASIEROŃ',
+    'ZPLOSKI': 'ZPŁOSKI',
+    'ZSPLAWSKI': 'ZSPŁAWSKI',
+    'PACHOLSKI LESZEK': 'LPA',
+    'MML': 'MMŁ',
+    'LJE': 'ŁJE',
+    'MPI': 'MPIOTRÓW',
+    'SZDUDYCZ': 'SDUDYCZ'
 }
 
 COURSES_MAP = {
-    u'ALGORYTMY I STRUKTURY DANYCH M': u'ALGORYTMY I STRUKTURY DANYCH (M)',
-    u'KURS PHP': u'Kurs: Projektowanie i implementacja zaawansowanych aplikacji PHP',
-    u'PROJEKT DYPLOMOWY (LATO)': u'PROJEKT DYPLOMOWY',
-    u'PROJEKT: SYSTEM ZAPISÓW (LATO)': u'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW',
-    u'PROJEKT ZESPOŁOWY: SILNIK UNITY3D I WIRTUALNA RZECZYWISTOŚĆ 2':
-        u'Projekt zespołowy: silnik Unity3D i wirtualna rzeczywistość LATO',
-    u'SEMINARIUM: ALGORYTMY  WYSZUKIWANIA ŚCIEŻEK': u'SEMINARIUM: ALGORYTMY WYSZUKIWANIA ŚCIEŻEK',
-    u'TUTORING (LATO)': u'Kształtowanie ścieżki akademicko-zawodowej'
+    'ALGORYTMY I STRUKTURY DANYCH M': 'ALGORYTMY I STRUKTURY DANYCH (M)',
+    'KURS PHP': 'Kurs: Projektowanie i implementacja zaawansowanych aplikacji PHP',
+    'PROJEKT DYPLOMOWY (LATO)': 'PROJEKT DYPLOMOWY',
+    'PROJEKT: SYSTEM ZAPISÓW (LATO)': 'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW',
+    'PROJEKT ZESPOŁOWY: SILNIK UNITY3D I WIRTUALNA RZECZYWISTOŚĆ 2':
+        'Projekt zespołowy: silnik Unity3D i wirtualna rzeczywistość LATO',
+    'SEMINARIUM: ALGORYTMY  WYSZUKIWANIA ŚCIEŻEK': 'SEMINARIUM: ALGORYTMY WYSZUKIWANIA ŚCIEŻEK',
+    'TUTORING (LATO)': 'Kształtowanie ścieżki akademicko-zawodowej'
 }
 
-COURSES_DONT_IMPORT = [u'XIV LO LATO', u'ZASADY KRYTYCZNEGO MYŚLENIA']
+COURSES_DONT_IMPORT = ['XIV LO LATO', 'ZASADY KRYTYCZNEGO MYŚLENIA']
 
 
 class Command(BaseCommand):
@@ -87,14 +87,14 @@ class Command(BaseCommand):
         try:
             ce = CourseEntity.objects.get(name_pl__iexact=name)
         except CourseEntity.DoesNotExist:
-            self.stdout.write(self.style.ERROR(u">Couldn't find course entity for {}"
+            self.stdout.write(self.style.ERROR(">Couldn't find course entity for {}"
                                                .format(name.decode('utf-8'))))
         except CourseEntity.MultipleObjectsReturned:
             ces = CourseEntity.objects.filter(name_pl__iexact=name, status=2).order_by('-id')
             if self.verbosity >= 1:
-                self.stdout.write(self.style.WARNING(u'Multiple course entity. Took first among:'))
+                self.stdout.write(self.style.WARNING('Multiple course entity. Took first among:'))
                 for ce in ces:
-                    self.stdout.write(self.style.WARNING(u'  {}'.format(str(ce).decode('utf-8'))))
+                    self.stdout.write(self.style.WARNING('  {}'.format(str(ce).decode('utf-8'))))
                 self.stdout.write('')
             ce = ces[0]
         return ce
@@ -106,7 +106,7 @@ class Command(BaseCommand):
             self.used_courses.add(course)
         except Course.DoesNotExist:
             if entity.slug is None:
-                self.stdout.write(self.style.ERROR(u"Couldn't find slug for {}"
+                self.stdout.write(self.style.ERROR("Couldn't find slug for {}"
                                                    .format(str(entity).decode('utf-8'))))
             else:
                 newslug = '{}_{}'.format(entity.slug,
@@ -125,7 +125,7 @@ class Command(BaseCommand):
                 if room.replace(' ', '') != '':
                     classrooms.append(Classroom.objects.get(number=room))
             except Classroom.DoesNotExist:
-                self.stdout.write(self.style.ERROR(u"Couldn't find classroom for {}"
+                self.stdout.write(self.style.ERROR("Couldn't find classroom for {}"
                                                    .format(room.decode('utf-8'))))
         return classrooms
 
@@ -152,12 +152,12 @@ class Command(BaseCommand):
         if len(emps) == 1:
             return emps[0]
         elif len(emps) > 1:
-            self.stdout.write(self.style.ERROR(u'Multiple employee matches for {}. Choices are:'
+            self.stdout.write(self.style.ERROR('Multiple employee matches for {}. Choices are:'
                               .format(name)))
             for e in emps:
-                self.stdout.write(self.style.ERROR(u' -{}'.format(e.user.get_full_name())))
+                self.stdout.write(self.style.ERROR(' -{}'.format(e.user.get_full_name())))
         else:
-            raise CommandError(u'Employee {} does not exists! Fix your input file.'.format(name))
+            raise CommandError('Employee {} does not exists! Fix your input file.'.format(name))
 
         return None
 
@@ -187,13 +187,13 @@ class Command(BaseCommand):
                 term.save()
                 self.all_creations.append(term)
                 TermSyncData.objects.create(term=term, scheduler_id=data['id'])
-            self.stdout.write(self.style.SUCCESS(u'Group with scheduler_id={} created!'
+            self.stdout.write(self.style.SUCCESS('Group with scheduler_id={} created!'
                                                  .format(data['id'])))
-            self.stdout.write(self.style.SUCCESS(u'  time: {}-{}'
+            self.stdout.write(self.style.SUCCESS('  time: {}-{}'
                                                  .format(data['start_time'], data['end_time'])))
-            self.stdout.write(self.style.SUCCESS(u'  teacher: {}'
+            self.stdout.write(self.style.SUCCESS('  teacher: {}'
                                                  .format(data['teacher'])))
-            self.stdout.write(self.style.SUCCESS(u'  classrooms: {}\n'
+            self.stdout.write(self.style.SUCCESS('  classrooms: {}\n'
                                                  .format(data['classrooms'])))
             self.created_terms += 1
         else:
@@ -218,15 +218,15 @@ class Command(BaseCommand):
                 if create_terms:
                     term.save()
                     term.group.save()
-                self.stdout.write(self.style.SUCCESS(u'Group {} {} updated. Difference:'
+                self.stdout.write(self.style.SUCCESS('Group {} {} updated. Difference:'
                                   .format(str(term.group).decode('utf-8'),
                                           str(term).decode('utf-8'))))
                 for diff in diffs:
-                    self.stdout.write(self.style.WARNING(u'  {}: '.format(diff[0])), ending='')
+                    self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
                     self.stdout.write(self.style.NOTICE(str(diff[1][0])).decode('utf-8'), ending='')
-                    self.stdout.write(self.style.WARNING(u' -> '), ending='')
+                    self.stdout.write(self.style.WARNING(' -> '), ending='')
                     self.stdout.write(self.style.SUCCESS(str(diff[1][1])).decode('utf-8'))
-                self.stdout.write(u'\n')
+                self.stdout.write('\n')
                 self.all_updates.append((term, diffs))
                 self.updated_terms += 1
 
@@ -280,7 +280,7 @@ class Command(BaseCommand):
             if prepared_group is not None:
                 groups.append(prepared_group)
             else:
-                self.stdout.write(self.style.WARNING(u'Group number {} does not have a term ({})\n'
+                self.stdout.write(self.style.WARNING('Group number {} does not have a term ({})\n'
                                   .format(g['id'], g['extra']['course'])))
         return groups
 
@@ -290,7 +290,7 @@ class Command(BaseCommand):
         for sync_data_object in sync_data_objects:
             if sync_data_object.scheduler_id not in self.scheduler_ids:
                 groups_to_remove.add(sync_data_object.term.group)
-                self.stdout.write(self.style.NOTICE(u'Term {} for group {} removed\n'
+                self.stdout.write(self.style.NOTICE('Term {} for group {} removed\n'
                                   .format(sync_data_object.term, sync_data_object.term.group)))
                 self.all_deletions.append((str(sync_data_object.term),
                                            str(sync_data_object.term.group)))
@@ -319,14 +319,14 @@ class Command(BaseCommand):
             if entity is not None:
                 course = self.get_course(entity, create_courses)
                 if course is None:
-                    raise CommandError(u'Course {} does not exist! Check your input file.'
+                    raise CommandError('Course {} does not exist! Check your input file.'
                                        .format(entity))
                 self.create_or_update_group(course, g, create_terms)
         self.remove_groups()
-        self.stdout.write(self.style.SUCCESS(u'Created {} courses successfully! '
+        self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
                                              'Moreover {} courses were already there.'
                           .format(self.created_courses, len(self.used_courses))))
-        self.stdout.write(self.style.SUCCESS(u'Created {} terms and updated {} terms successfully!'
+        self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
                           .format(self.created_terms, self.updated_terms)))
 
     def prepare_slack_message(self):

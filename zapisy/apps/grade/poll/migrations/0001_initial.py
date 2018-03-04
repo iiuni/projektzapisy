@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('other', models.CharField(max_length=100, null=True, verbose_name=b'inne', blank=True)),
             ],
             options={
-                'verbose_name': 'odpowied\u017a na pytanie wielokrotnego wyboru',
+                'verbose_name': 'odpowied\\u017a na pytanie wielokrotnego wyboru',
                 'verbose_name_plural': 'odpowiedzi na pytania wielokrotnego wyboru',
             },
             bases=(models.Model,),
@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['sections', 'position'],
-                'verbose_name': 'pozycja pyta\u0144 wielokrotnego wyboru',
-                'verbose_name_plural': 'pozycje pyta\u0144 wielokrotnego wyboru',
+                'verbose_name': 'pozycja pyta\\u0144 wielokrotnego wyboru',
+                'verbose_name_plural': 'pozycje pyta\\u0144 wielokrotnego wyboru',
             },
             bases=(models.Model,),
         ),
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                 ('content', models.TextField(null=True, verbose_name=b'tre\xc5\x9b\xc4\x87', blank=True)),
             ],
             options={
-                'verbose_name': 'odpowied\u017a na pytanie otwarte',
+                'verbose_name': 'odpowied\\u017a na pytanie otwarte',
                 'verbose_name_plural': 'odpowiedzi na pytania otwarte',
             },
             bases=(models.Model,),
@@ -99,8 +99,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['sections', 'position'],
-                'verbose_name': 'pozycja pyta\u0144 otwartych',
-                'verbose_name_plural': 'pozycje pyta\u0144 otwartych',
+                'verbose_name': 'pozycja pyta\\u0144 otwartych',
+                'verbose_name_plural': 'pozycje pyta\\u0144 otwartych',
             },
             bases=(models.Model,),
         ),
@@ -206,7 +206,7 @@ class Migration(migrations.Migration):
                 ('time', models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'odpowied\u017a na pytanie jednokrotnego wyboru',
+                'verbose_name': 'odpowied\\u017a na pytanie jednokrotnego wyboru',
                 'verbose_name_plural': 'odpowiedzi na pytania jednokrotnego wyboru',
             },
             bases=(models.Model,),
@@ -220,8 +220,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['sections', '-is_leading', 'position'],
-                'verbose_name': 'pozycja pyta\u0144 jednokrotnego wyboru',
-                'verbose_name_plural': 'pozycje pyta\u0144 jednokrotnego wyboru',
+                'verbose_name': 'pozycja pyta\\u0144 jednokrotnego wyboru',
+                'verbose_name_plural': 'pozycje pyta\\u0144 jednokrotnego wyboru',
             },
             bases=(models.Model,),
         ),

@@ -113,7 +113,7 @@ class ClassroomFactory(DjangoModelFactory):
     class Meta:
         model = Classroom
 
-    number = u'25'
+    number = '25'
     can_reserve = True
     type = 0
     floor = 0

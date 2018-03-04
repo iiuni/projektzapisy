@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='eventmoderationmessage',
-            options={'ordering': ['created'], 'get_latest_by': 'created', 'verbose_name': 'wiadomo\u015b\u0107 wydarzenia', 'verbose_name_plural': 'wiadomo\u015bci wydarzenia'},
+            options={'ordering': ['created'], 'get_latest_by': 'created', 'verbose_name': 'wiadomo\\u015b\\u0107 wydarzenia', 'verbose_name_plural': 'wiadomo\\u015bci wydarzenia'},
         ),
     ]

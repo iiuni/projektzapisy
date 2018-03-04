@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         semester = None
-        print(options['semester'])
+        print((options['semester']))
         if options['semester'] == 0:
             semester = Semester.get_default_semester()
         else:
@@ -37,9 +37,9 @@ class Command(BaseCommand):
         for group in groups:
             enrolled_errors += self.refresh_enrolled(group, options['test'])
             queued_errors += self.refresh_queued(group, options['test'])
-        print("Enrolled errors: ", enrolled_errors)
-        print("Queued errors: ", queued_errors)
-        print("No of Groups checked: ", len(groups))
+        print(("Enrolled errors: ", enrolled_errors))
+        print(("Queued errors: ", queued_errors))
+        print(("No of Groups checked: ", len(groups)))
 
     def refresh_enrolled(self, group, test):
         records = Record.objects.filter(group=group, status=Record.STATUS_ENROLLED).prefetch_related('student')
@@ -54,10 +54,10 @@ class Command(BaseCommand):
                 if old_enrolled_cnt > enrolled_cnt:
                     for _ in range(old_enrolled_cnt - enrolled_cnt):
                         run_rearanged(None, group)
-            print("enrolled counter error for group:", group)
-            print("previous value: ", old_enrolled_cnt, ", new value: ", enrolled_cnt)
+            print(("enrolled counter error for group:", group))
+            print(("previous value: ", old_enrolled_cnt, ", new value: ", enrolled_cnt))
             if old_enrolled_cnt > enrolled_cnt:
-                print("(runned rearanged ",old_enrolled_cnt - enrolled_cnt," times)")
+                print(("(runned rearanged ",old_enrolled_cnt - enrolled_cnt," times)"))
             error_cnt += 1
 
         enrolled_zam_cnt = len([x for x in records if x.student.is_zamawiany()])
@@ -66,8 +66,8 @@ class Command(BaseCommand):
             if not test:
                 group.enrolled_zam = enrolled_zam_cnt
                 group.save()
-            print("enrolled_zam counter error for group", group)
-            print("previous value: ", old_enrolled_zam_cnt, ", new value: ", enrolled_zam_cnt)
+            print(("enrolled_zam counter error for group", group))
+            print(("previous value: ", old_enrolled_zam_cnt, ", new value: ", enrolled_zam_cnt))
             error_cnt += 1
 
         enrolled_zam2012_cnt = len([x for x in records if x.student.is_zamawiany2012()])
@@ -76,8 +76,8 @@ class Command(BaseCommand):
             if not test:
                 group.enrolled_zam2012 = enrolled_zam2012_cnt
                 group.save()
-            print("enrolled_zam2012 counter error for group", group)
-            print("previous value: ", old_enrolled_zam2012_cnt, ", new value: ", enrolled_zam2012_cnt)
+            print(("enrolled_zam2012 counter error for group", group))
+            print(("previous value: ", old_enrolled_zam2012_cnt, ", new value: ", enrolled_zam2012_cnt))
             error_cnt += 1
 
         enrolled_isim_cnt = len([x for x in records if x.student.isim])
@@ -86,8 +86,8 @@ class Command(BaseCommand):
             if not test:
                 group.enrolled_isim = enrolled_isim_cnt
                 group.save()
-            print("enrolled_isim counter error for group", group)
-            print("previous value: ", old_enrolled_isim_cnt, ", new value: ", enrolled_isim_cnt)
+            print(("enrolled_isim counter error for group", group))
+            print(("previous value: ", old_enrolled_isim_cnt, ", new value: ", enrolled_isim_cnt))
             error_cnt += 1
 
         return error_cnt
@@ -100,7 +100,7 @@ class Command(BaseCommand):
             if not test:
                 group.queued = queued_cnt
                 group.save()
-            print("queued counter fixed for group:", group)
-            print("previous value: ", old_queued_cnt, ", new value: ", queued_cnt)
+            print(("queued counter fixed for group:", group))
+            print(("previous value: ", old_queued_cnt, ", new value: ", queued_cnt))
             return 1
         return 0

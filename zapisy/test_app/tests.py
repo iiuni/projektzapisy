@@ -47,7 +47,7 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
     def wait_for_pass(self, block, times=3):
-        for _ in xrange(times):
+        for _ in range(times):
             try:
                 return block()
             except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
@@ -388,7 +388,7 @@ class NewSemesterTests(SeleniumTestCase):
 
         sum_points = sum(points.values())
 
-        for course_name, value in points.iteritems():
+        for course_name, value in points.items():
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
@@ -482,7 +482,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
-        for course_name, value in points.iteritems():
+        for course_name, value in points.items():
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
@@ -503,15 +503,15 @@ class NewSemesterTests(SeleniumTestCase):
 
         employees = {'{} {}'.format(empl.user.first_name, empl.user.last_name): empl.id for empl in self.employees}
 
-        Classroom.objects.create(number=u'5', type=u'1')
-        Classroom.objects.create(number=u'7', type=u'3')
-        Classroom.objects.create(number=u'25', type=u'0')
-        Classroom.objects.create(number=u'103', type=u'1')
-        Classroom.objects.create(number=u'104', type=u'1')
-        Classroom.objects.create(number=u'105', type=u'1')
-        Classroom.objects.create(number=u'108', type=u'3')
-        Classroom.objects.create(number=u'119', type=u'0')
-        Classroom.objects.create(number=u'139', type=u'1')
+        Classroom.objects.create(number='5', type='1')
+        Classroom.objects.create(number='7', type='3')
+        Classroom.objects.create(number='25', type='0')
+        Classroom.objects.create(number='103', type='1')
+        Classroom.objects.create(number='104', type='1')
+        Classroom.objects.create(number='105', type='1')
+        Classroom.objects.create(number='108', type='3')
+        Classroom.objects.create(number='119', type='0')
+        Classroom.objects.create(number='139', type='1')
 
         test_schedule = '''
 
@@ -605,8 +605,8 @@ class NewSemesterTests(SeleniumTestCase):
         }
 
         test_ectsimport = ''
-        for student, points in students_ects.iteritems():
-            for deg, ects in points.iteritems():
+        for student, points in students_ects.items():
+            for deg, ects in points.items():
                 test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
@@ -706,7 +706,7 @@ class AdminTests(SeleniumTestCase):
 def createSubPageTest(link_text):
     def f(self):
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath(u'//th//a[@href="{}"]'.format(link_text)).click()
+            lambda: self.driver.find_element_by_xpath('//th//a[@href="{}"]'.format(link_text)).click()
             )
         self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
     return f
@@ -749,7 +749,7 @@ class EmailChangeTest(SeleniumTestCase):
           lambda: self.driver.find_element_by_id('id_email').clear()
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('id_email').send_keys(u'lorem@ipsum.com')
+          lambda: self.driver.find_element_by_id('id_email').send_keys('lorem@ipsum.com')
         )
         current_len = len(mail.outbox)
         self.wait_for_pass(

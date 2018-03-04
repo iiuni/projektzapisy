@@ -34,16 +34,16 @@ class Command(BaseCommand):
             for student in students:
                 records = Record.enrolled.filter(student=student, group__course__semester=semester)
                 for r in records:
-                    print(str(student.id) + ' ' + str(r.group_id))
+                    print((str(student.id) + ' ' + str(r.group_id)))
                     #print str(student.id) + ' ' + str(r.id)
 
         if options['group']:
             groups = Group.objects.filter(course__semester=semester)
             for g in groups:
                 for t in g.term.all():
-                    print(str(g.id) + ' ' + str(t))
+                    print((str(g.id) + ' ' + str(t)))
 
         if options['type']:
             groups = Group.objects.filter(course__semester=semester)
             for g in groups:
-                print(str(g.id) + ' ' + g.get_type_display())
+                print((str(g.id) + ' ' + g.get_type_display()))

@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'ocenia'
 
     def handle(self, *args, **options):
-        print("Plik: " + args[0])
+        print(("Plik: " + args[0]))
         f = open(args[0], 'r+')
         for line in f:
             print(line)

@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='courseentity',
             name='effects',
-            field=models.ManyToManyField(to='courses.Effects', verbose_name='Grupa efekt\xf3w kszta\u0142cenia', blank=True),
+            field=models.ManyToManyField(to='courses.Effects', verbose_name='Grupa efekt\xf3w kszta\\u0142cenia', blank=True),
         ),
         migrations.AlterField(
             model_name='term',

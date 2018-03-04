@@ -117,7 +117,7 @@ def course_groups(request, slug):
             {'course': course, 'teachers': teachers,
             'groups_with_teachers': groups_with_teachers, 'path': request.path})
     elif request.method == 'POST':
-        for group_id, teacher_id in request.POST.items():
+        for group_id, teacher_id in list(request.POST.items()):
             if group_id[:6] != "group_":
                 continue
             group_id = group_id[6:]

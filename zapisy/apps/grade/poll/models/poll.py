@@ -86,7 +86,7 @@ class Poll( models.Model ):
             if self.group:
                 if viewer == self.group.teacher: return True
 
-                lecture = next(filter( lambda x_y: x_y[1] == 'wykład', GROUP_TYPE_CHOICES ))[0]
+                lecture = next([x_y for x_y in GROUP_TYPE_CHOICES if x_y[1] == 'wykład'])[0]
                 groups  = Group.objects.filter( course = self.group.course,
                                                 teacher = viewer,
                                                 type    = lecture )

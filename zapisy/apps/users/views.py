@@ -361,7 +361,7 @@ def login_plus_remember_me(request, *args, **kwargs):
     return login(request, *args, **kwargs)
 
 def get_ical_filename(user, semester):
-    name_with_semester = u"{}_{}".format(user.get_full_name(), semester.get_short_name())
+    name_with_semester = "{}_{}".format(user.get_full_name(), semester.get_short_name())
     name_ascii_only = unidecode.unidecode(name_with_semester)
     path_safe_name = re.sub(r"[\s+/]", "_", name_ascii_only)
     return "fereol_schedule_{}.ical".format(path_safe_name.lower())
@@ -377,7 +377,7 @@ def create_ical_file(request):
     cal.add('version').value = '2.0'
     cal.add('prodid').value = 'Fereol'
     cal.add('calscale').value = 'GREGORIAN'
-    cal.add('calname').value = u"{} - schedule".format(user.get_full_name())
+    cal.add('calname').value = "{} - schedule".format(user.get_full_name())
     cal.add('method').value = 'PUBLISH'
 
     if BaseUser.is_student(user):
@@ -398,7 +398,7 @@ def create_ical_file(request):
             start_datetime += BREAK_DURATION
             end_datetime = datetime.datetime.combine(term.day, term.end)
             event = cal.add('vevent')
-            event.add('summary').value = u"{} - {}".format(course_name, group_type)
+            event.add('summary').value = "{} - {}".format(course_name, group_type)
             if term.room:
                 event.add('location').value = 'sala '+ term.room.number \
                     + ', Instytut Informatyki Uniwersytetu Wrocławskiego'

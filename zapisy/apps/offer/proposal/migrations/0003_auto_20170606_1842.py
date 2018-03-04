@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='syllabus',
             name='learning_methods',
-            field=models.ManyToManyField(to='proposal.LearningMethod', verbose_name='Metody kszta\u0142cenia', blank=True),
+            field=models.ManyToManyField(to='proposal.LearningMethod', verbose_name='Metody kszta\\u0142cenia', blank=True),
         ),
     ]

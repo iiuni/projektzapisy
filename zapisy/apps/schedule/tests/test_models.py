@@ -347,7 +347,7 @@ class EventTestCase(TestCase):
         self.event = factories.EventFactory(author=teacher)
         self.event.full_clean()
 
-        room110 = enrollment_factories.ClassroomFactory(number=u'110')
+        room110 = enrollment_factories.ClassroomFactory(number='110')
         room110.full_clean()
 
         term_1 = factories.TermFixedDayFactory(event=self.event, room=room110)
