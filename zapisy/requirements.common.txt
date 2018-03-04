@@ -1,35 +1,29 @@
 # Packages from our development environment
-Django==1.10.8 --no-binary django WIP
+Django==1.11.9 --no-binary django
 Fabric==1.5.1 # (1.5.1) - Latest: 1.14.0
-argparse==1.2.1 # nieuzywany, wbudowany w pythona 2.7
 django-autoslug==1.9.3
-django-cas-ng==3.5.7
-django-debug-toolbar==1.3.0 # (1.3.0) - Latest: 1.9
+django-cas-ng==3.5.8
 django-el-pagination==3.1.0
-django-extensions==1.9.7
-django-filter==0.15 # Latest: 1.1.0
+django-environ==0.4.4
+django-extensions==1.9.9
+django-filter==1.0.4 # Latest: 1.1.0
 django-mailer==1.0.0 # Latest: 1.2.2
 django-modeltranslation==0.12.1
 django-pipeline==1.3.16# Latest: 1.6.13
 django-test-without-migrations==0.6
-docutils==0.13.1# Latest: 0.14 Nie widze uzyc, wymagane?
-ipdb==0.9.0 # Latest: 0.10.3 Dodatek do ipythona
+docutils==0.13.1 # Latest: 0.14 Nie widze uzyc, wymagane?
+ipdb==0.10.3
 ipython==5.5.0
-paramiko==1.9.0 # Latest: 2.3.1 Nie widze uzyc, prawdopodobnie zaleznosc
-psycopg2==2.7.3.1 # Dopiero co podbite, jest 2.7.3.2, jakies minimalne zmiany
-pyPdf==1.13 # Nieuzywany? abandonware
-pycrypto==2.6 # (2.6) - Latest: 2.6.1
-rollbar==0.13.3 # (0.13.3) - Latest: 0.13.17
-wsgiref==0.1.2 # Bez uzyc? Wbudowane w pythona od 2.5
-yolk==0.4.3 # Utility, nie wiem, czy trzeba to instalowac
-newrelic==2.68.0.50 # (2.68.0.50) - Latest: 2.96.0.80
-rq==0.7.1 # Bez uzyc?, zależność
+paramiko==1.9.0 # Latest: 2.3.1 Zaleznosc, nowsza wersja sama ma kupe zaleznosci
+psycopg2==2.7.3.2
+pycrypto==2.6.1
+rollbar==0.13.17
+newrelic==2.68.0.50
 
 # Additional packages on production environment
 gunicorn==19.7.1
 lxml==3.0.1 # (3.0.1) - Latest: 4.1.1 Uzyty raz, trzeba przetestować, możliwe też że zależnosć
 python-dateutil==2.6.1
-reportlab==2.6 # Nie widze uzyc
 
 # Packages which have version in both environments
 #   I am choosing to install versions from production environment.
@@ -47,4 +41,12 @@ vobject==0.9.5
 python-memcached==1.48 # (1.48) - Latest: 1.58 Niby nic ale tych 10 wersji to jakieś 6 lat
 
 # On production, but one would need to find suitable version.
-xhtml2pdf==0.0.5 # zapisy/apps/enrollment/records/views.py Dwa uzycia, fajnie byoby to zastąpić bo straszny bloat (mnóstwo zależnosci)
+xhtml2pdf==0.0.6
+
+# Webpack for frontend development and staticfile bundling
+django-webpack-loader==0.5.0
+
+# Remove accents from strings (diacritics converted to Latin equivalents)
+unidecode==1.0.22
+
+djangorestframework==3.7.7

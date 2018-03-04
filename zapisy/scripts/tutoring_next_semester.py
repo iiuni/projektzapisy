@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-from zapisy.apps.users.models import Student
+from apps.users.models import Student
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models import Course, CourseEntity,Semester
 from apps.enrollment.records.models import Record
 from apps.offer.vote.models import SystemState
+
 
 def run():
     ent = CourseEntity.objects.get(name_pl="Kształtowanie ścieżki akademicko-zawodowej")
@@ -23,6 +24,4 @@ def run():
         for s in Record.get_students_in_group(g1):
             if s.status == 0:
                 g2.add_student(s)
-
-
-
+                print(g2, s, s.isim)

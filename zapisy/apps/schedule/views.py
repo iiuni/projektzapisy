@@ -102,14 +102,17 @@ def session(request, semester=None):
     from apps.schedule.models import Term
     from apps.enrollment.courses.models import Semester
 
-    exams = ExamFilter(request.GET, queryset=Term.get_exams())
+    exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
     if semester:
         semester = Semester.get_by_id(semester)
     else:
         semester = Semester.get_current_semester()
 
-    return TemplateResponse(request, 'schedule/session.html', locals())
+    return TemplateResponse(request, 'schedule/session.html', {
+        "semester": semester,
+        "exams": exams_filter.qs
+    })
 
 
 @login_required
@@ -364,21 +367,20 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
             event__status=Event.STATUS_ACCEPTED,
             ).order_by('day', 'start')))
 
-    data = {
+    context = {
         'beg_date': beg_date,
         'end_date': end_date,
         'events': sorted(events),
         'pagesize': 'A4',
         'report': True
     }
-    context = Context(data)
 
     template = get_template('schedule/events_report_pdf.html')
     html = template.render(context)
     result = StringIO.StringIO()
 
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result,
-                            encoding='UTF-8')
+    pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=raport.pdf'
 

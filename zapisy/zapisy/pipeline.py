@@ -329,7 +329,6 @@ PIPELINE_JS = {
             'js/common/listFilter-courseType.js',
             'js/common/FilteredCoursesList.js',
             'js/enrollment/views/CoursesList.js',
-            'js/enrollment/views/AjaxCourseLoad.js',
             'js/common/courses-list-filters-ui.js'
         ),
         'output_filename': 'js/courses.min.js',

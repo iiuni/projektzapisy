@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es6",
+    "alwaysStrict": true,
+    "strict": true,
+    "module": "commonjs",
+    "baseUrl": "/",
+    "paths": {
+      "*": [
+        "/vagrant/zapisy/assets/*",
+        "/webpack_modules/node_modules/*",
+        "./webpack_resources/typings/*"
+      ]
+    },
+    "typeRoots": [
+      "/webpack_modules/node_modules/@types",
+      "./webpack_resources/typings"
+    ],
+    "traceResolution": true
+  },
+  "include": [
+    "assets/tsfix/index.ts"
+  ]
+}

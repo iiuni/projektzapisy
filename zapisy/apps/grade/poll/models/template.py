@@ -11,8 +11,8 @@ from section                         import SectionOrdering, Section
 class Template( models.Model ):
     title             = models.CharField( max_length = 40, verbose_name = 'tytuł' )
     description       = models.TextField( blank = True, verbose_name = 'opis' )
-    studies_type      = models.ForeignKey( Program, verbose_name = 'typ studiów', blank = True, null = True )
-    course            = models.ForeignKey( CourseEntity, verbose_name = 'przedmiot', blank = True, null = True)
+    studies_type      = models.ForeignKey( Program, verbose_name = 'typ studiów', blank = True, null = True , on_delete=models.CASCADE)
+    course            = models.ForeignKey( CourseEntity, verbose_name = 'przedmiot', blank = True, null = True, on_delete=models.CASCADE)
     no_course         = models.BooleanField( blank = False, null = False, default = False, verbose_name = 'nie przypisany' )
     deleted           = models.BooleanField( blank = False, null = False, default = False, verbose_name = 'usunięty' )
     exam              = models.BooleanField( blank = False, null = False, default = True, verbose_name = 'przedmiot z egzaminem' )
@@ -22,7 +22,7 @@ class Template( models.Model ):
 
     in_grade          = models.BooleanField(default=False, verbose_name=u'Szablon wykorzystywany w ocenie')
 
-    author            = models.ForeignKey( Employee, verbose_name = 'autor' )
+    author            = models.ForeignKey( Employee, verbose_name = 'autor' , on_delete=models.CASCADE)
     
     class Meta:
         verbose_name        = 'szablon' 
@@ -45,8 +45,8 @@ class Template( models.Model ):
 
 class TemplateSections( models.Model ):
     id           = models.AutoField(primary_key=True)
-    template     = models.ForeignKey( Template,      verbose_name = 'ankieta' )
-    section      = models.ForeignKey( Section, verbose_name = 'sekcja' )
+    template     = models.ForeignKey( Template,      verbose_name = 'ankieta' , on_delete=models.CASCADE)
+    section      = models.ForeignKey( Section, verbose_name = 'sekcja' , on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'pozycje sekcji'

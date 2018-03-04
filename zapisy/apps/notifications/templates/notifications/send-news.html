@@ -3,5 +3,5 @@
 {% block content %}
 {{ body|safe }}
 
-{{ author }} 
+{{ author.get_full_name }} 
 {% endblock %}

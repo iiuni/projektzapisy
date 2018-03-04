@@ -1,7 +1,0 @@
-
-2012-05-26
-# Oferta
-  * Propozycje:
-    - brakujące tytuly stron
-    - "Moje przedmioty", wprowadzenie kolorow oznaczajacych status przedmiotu
-    - data utworzenia i ostatniej modyfikacji

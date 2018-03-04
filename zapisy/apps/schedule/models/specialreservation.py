@@ -55,9 +55,9 @@ class SpecialReservationManager(models.Manager):
 class SpecialReservation(models.Model):
     from apps.enrollment.courses.models import Semester, Term, Classroom
 
-    semester = models.ForeignKey(Semester)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    classroom = models.ForeignKey(Classroom)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     dayOfWeek = models.CharField(max_length=1,
                                  choices=common.DAYS_OF_WEEK,
                                  verbose_name='dzień tygodnia')

@@ -33,9 +33,8 @@ class SingleChoiceQuestion( BaseQuestion ):
         return self, result         
 
 class SingleChoiceQuestionOrdering( models.Model ):
-    question   = models.ForeignKey( SingleChoiceQuestion, 
-                                    verbose_name = 'pytanie' )
-    sections   = models.ForeignKey( 'Section', verbose_name = 'sekcja' )
+    question   = models.ForeignKey( SingleChoiceQuestion, on_delete=models.CASCADE, verbose_name = 'pytanie' )
+    sections   = models.ForeignKey( 'Section', verbose_name = 'sekcja' , on_delete=models.CASCADE)
     position   = models.IntegerField( verbose_name = 'pozycja' )
     is_leading = models.BooleanField( verbose_name = 'pytanie wiodące', default=False )
     hide_on    = models.ManyToManyField( Option,

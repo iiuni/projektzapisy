@@ -10,9 +10,7 @@ import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.users.tests.factories import UserFactory
-from apps.enrollment.courses.models import Semester
-from apps.enrollment.courses.tests.factories import GroupFactory, \
-    SemesterFactory, ClassroomFactory
+from apps.enrollment.courses.tests.factories import GroupFactory, ClassroomFactory
 from apps.schedule.models import Event, Term, SpecialReservation
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-from zapisy.apps.users.models import Student
+from apps.users.models import Student
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models import Course, CourseEntity, Semester
 from apps.enrollment.records.models import Record,Queue

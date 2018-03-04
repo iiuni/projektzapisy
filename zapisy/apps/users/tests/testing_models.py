@@ -2,24 +2,20 @@
 
 # tests marked by comment "TIME DEPENDENCY" should be free from this dependency
 
-from datetime import datetime, timedelta, date
+
 
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from apps.enrollment.records.models import Record
-from apps.enrollment.courses.models import Course, Term, Group
 from apps.users.models import Employee, Student, StudiaZamawiane
-from apps.users.exceptions import NonEmployeeException, NonStudentException
 from django.contrib.auth.models import Permission
 from django.db import connection
 
-from apps.users.tests.factories import UserFactory, StudentFactory
-from apps.enrollment.courses.models import Semester
-from random import *
+from random import randint
 from apps.enrollment.courses.models import Semester
 from datetime import datetime, timedelta
+
 
 # class EmployeeGroupsTest(TestCase):
 #     fixtures =  ['fixtures__users', 'fixtures__courses']

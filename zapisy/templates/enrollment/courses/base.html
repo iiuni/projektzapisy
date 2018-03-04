@@ -3,9 +3,11 @@
 {% load cache %}
 {% load i18n %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block js %}
-    {% compressed_js 'courses' %}
+	{% compressed_js 'courses' %}
+	{% render_bundle "courses-course-list" %}
 {% endblock %}
 
 {% block styles %}
@@ -13,7 +15,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% cache 3600 courses_list request.user %}
+	{% cache 3600 courses_list request.user %}
 	<div id="main-sidebar">
 		<div id="course-list">
             <p class="main-side-message hidden" id="fetchingListMessage">
@@ -41,5 +43,5 @@
             </div>
 		</div>
 	</div>
-    {% endcache %}
+	{% endcache %}
 {% endblock %}

@@ -50,7 +50,7 @@ class ClassroomObjectMother():
         room = Classroom(
             type=3,
             description='Pracownia z najszybszymi komputerami w instytucie',
-            number='110',
+            number=u'110',
             building='Instytut Informatyki',
             capacity=20,
             floor=1,

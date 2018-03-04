@@ -116,16 +116,10 @@ $('.checkall').live('click', function(){
 {% if user.student %}
 <p class="info-table-header">Moje studia</p>
     <table class="table-info">
-        {% comment %}
-        W tej chwili nie mamy aktualnych informacji z USOSa i znamy tylko
-        liczbę ECTS bez uwzględnienia ostatniego semestru, co jest mało
-        przydatne dla studenta (a pewnie nawet mylące). W związku z tym to pole
-        jest tymczasowo wyłączone.
         <tr>
-            <th>Punkty ECTS uzyskane do tej pory</th>
+            <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
             <td>{{user.student.ects}}</td>
         </tr>
-        {% endcomment %}
         <tr>
             <th>Program</th>
             <td>{{user.student.program}}</td>
@@ -138,23 +132,7 @@ $('.checkall').live('click', function(){
             <th>Aktualny semestr</th>
             <td>{{ semester }}</td>
         </tr>
-        <tr>
-            <th>Punkty ECTS na aktualny semestr</th>
-            <td>{{ current_semester_ects }}</td>
-        </tr>
      </table>
-{% endif %}
-
-{% if grade %}
-    <h4>Udział w Ocenie zajęć</h4>
-    <table class="table-info-big">
-            {% for semester in grade %}
-
-        <tr>
-            <td>{{ semester }}</td>
-        </tr>
-            {% endfor %}
-    </table>
 {% endif %}
 
 <p class="info-table-header">Terminy</p>

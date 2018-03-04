@@ -381,13 +381,13 @@ def records_group_pdf(request, group_id):
         'pagesize': 'A4',
         'report': True
     }
-    context = Context(data)
 
     template = get_template('records/group_pdf.html')
-    html  = template.render(context)
+    html = template.render(data)
     result = StringIO.StringIO()
 
-    pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
 
@@ -406,13 +406,12 @@ def records_queue_pdf(request, group_id):
         'pagesize': 'A4',
         'report': True
     }
-    context = Context(data)
 
     template = get_template('records/queue_pdf.html')
-    html  = template.render(context)
+    html  = template.render(data)
     result = StringIO.StringIO()
 
-    pdf      = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
 

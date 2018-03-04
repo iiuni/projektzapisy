@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import traceback
 from logging import getLogger
+
 from django.http import HttpResponseNotAllowed
 from django.template import loader
+from django.utils.deprecation import MiddlewareMixin
 
 logger = getLogger()
 
 # klasa zajmująca się błędami aplikacji
-class ErrorHandlerMiddleware(object):
+class ErrorHandlerMiddleware(MiddlewareMixin):
 
 	def process_exception(self, request, exception):
 		# logowanie nie przechwyconych wyjątków

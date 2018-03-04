@@ -2,9 +2,25 @@
 
 # Current version
 
+# Version 18.02.25
+
+* Added webpack
+* Fixed reports generation
+* Changed email signature for news
+
+# Version 18.02.02
+
+* Upgrade to Django 1.11
+* Fix email sending
+
+# Version 18.01.24
+
 * Fix changing email
 * added news author in emails
 * Fixed events' start time in iCalc
+* Fixed remove student from queue when enrolling to lecture
+* Fixed issue with contextprocessors
+* Fixed editing course in offer
 
 # Version 18.01.05
 

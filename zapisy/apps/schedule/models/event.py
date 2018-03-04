@@ -48,13 +48,13 @@ class Event(models.Model):
 
     status = models.CharField(choices=STATUSES, max_length=1, verbose_name=u'Stan', default='0')
 
-    course = models.ForeignKey(Course, null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, blank=True)
-    reservation = models.ForeignKey('schedule.SpecialReservation', null=True, blank=True)
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+    reservation = models.ForeignKey('schedule.SpecialReservation', null=True, blank=True, on_delete=models.CASCADE)
 
     interested = models.ManyToManyField(User, related_name='interested_events')
 
-    author = models.ForeignKey(User, verbose_name=u'Twórca')
+    author = models.ForeignKey(User, verbose_name=u'Twórca', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 

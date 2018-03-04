@@ -18,5 +18,9 @@ static/
 .DS_Store
 zapisy/logs/
 personal/
+static/
+node_modules/
+compiled_assets/
+zapisy/webpack_resources/webpack-stats.json
 *.gz
 *.sql

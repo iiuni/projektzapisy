@@ -42,10 +42,8 @@
                     <tbody>
                         {% for student in students_in_queue %}
                             <tr>
-                                <td><a href="{% url 'student-profile' student.user.id %}" class="person">
-                                    {{student.user.first_name}}</a></td>
-                                <td><a href="{% url 'student-profile' student.user.id %}" class="person">
-                                    {{student.user.last_name}}</a></td>
+                                <td>{{student.user.first_name}}</td>
+                                <td>{{student.user.last_name}}</td>
                                 <td style="width:60px;">{{student.matricula}}</td>
                                 <td style="font-size: 5px;">
                                     {{student.program}}
