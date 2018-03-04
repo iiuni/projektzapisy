@@ -9,6 +9,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/xenial64"
   config.vm.box_url = "https://app.vagrantup.com/ubuntu/boxes/xenial64"
   config.vm.provision :shell, path: "env/bootstrap.sh"
+  config.vm.provision :shell, path: "env/setup_npm.sh", privileged: false
   config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/env2.7_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/env3_setup.sh", privileged: false

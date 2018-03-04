@@ -90,7 +90,7 @@ ectslist = [(x, str(x)) for x in range(1, 16)]
 class CourseEntity(models.Model):
     """entity of particular course title"""
 
-    information = models.ForeignKey('CourseDescription', null=True, blank=True)
+    information = models.ForeignKey('CourseDescription', null=True, blank=True, on_delete=models.CASCADE)
 
     #Test name
     name = models.CharField(max_length=100,
@@ -117,7 +117,7 @@ class CourseEntity(models.Model):
 
     semester = models.CharField(max_length=1, choices=semesters, default='u', verbose_name='semestr')
 
-    type = models.ForeignKey('Type',
+    type = models.ForeignKey('Type',on_delete=models.CASCADE,
                              verbose_name='rodzaj',
                              null=True)
     english = models.BooleanField(default=False,
@@ -137,7 +137,7 @@ class CourseEntity(models.Model):
     exercises_laboratiories = models.IntegerField(null=True, blank=True, verbose_name='godzin ćwiczenio-pracowni')
 
     deleted = models.BooleanField(verbose_name='ukryty', default=False)
-    owner = models.ForeignKey('users.Employee', verbose_name='opiekun', blank=True, null=True)
+    owner = models.ForeignKey('users.Employee', verbose_name='opiekun', blank=True, null=True, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255, unique=True, verbose_name='odnośnik (nazwa pojawiająca się w urlach)',
                             null=True)
 
@@ -497,11 +497,11 @@ class Course(models.Model):
     """
     Instacja Przedmiotu w danym semestrze
     """
-    entity = models.ForeignKey(CourseEntity, verbose_name='podstawa przedmiotu')
-    information = models.ForeignKey('CourseDescription', verbose_name='opis', null=True, blank=True)
+    entity = models.ForeignKey(CourseEntity, verbose_name='podstawa przedmiotu', on_delete=models.CASCADE)
+    information = models.ForeignKey('CourseDescription', verbose_name='opis', null=True, blank=True, on_delete=models.CASCADE)
 
     slug = models.SlugField(max_length=255, unique=True, verbose_name='odnośnik', null=True)
-    semester = models.ForeignKey('Semester', null=True, verbose_name='semestr')
+    semester = models.ForeignKey('Semester', null=True, verbose_name='semestr', on_delete=models.CASCADE)
     teachers = models.ManyToManyField('users.Employee', verbose_name='prowadzący', blank=True)
 
     notes = models.TextField(null=True, blank=True, verbose_name='uwagi do tej edyci przedmiotu')
@@ -870,8 +870,8 @@ class CourseDescription(models.Model):
     Powiązania: :model:'course.CourseEntity'
     """
 
-    entity = models.ForeignKey(CourseEntity) #Podstawa do ktorej jestesmy przypisani
-    author = models.ForeignKey('users.Employee')
+    entity = models.ForeignKey(CourseEntity, on_delete=models.CASCADE) #Podstawa do ktorej jestesmy przypisani
+    author = models.ForeignKey('users.Employee', on_delete=models.CASCADE)
 
     is_ready = models.BooleanField(default=False)
 
@@ -912,8 +912,8 @@ CourseEntity it's assigned to, we need this special
 relationship glue model.
 """
 class TagCourseEntity(models.Model):
-    tag = models.ForeignKey(Tag)
-    courseentity = models.ForeignKey(CourseEntity)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    courseentity = models.ForeignKey(CourseEntity, on_delete=models.CASCADE)
     weight = models.IntegerField(verbose_name='Waga')
 
     class Meta:

@@ -5,7 +5,7 @@ from .base_answer   import BaseAnswer
 from .open_question import OpenQuestion
 
 class OpenQuestionAnswer( BaseAnswer ):
-    question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' )
+    question = models.ForeignKey( OpenQuestion, verbose_name = 'pytanie' , on_delete=models.CASCADE)
     content  = models.TextField( verbose_name = 'treść', blank = True, null = True )
 
     class Meta:

@@ -16,25 +16,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='record',
             name='group',
-            field=models.ForeignKey(verbose_name=b'grupa', to='courses.Group'),
+            field=models.ForeignKey(verbose_name=b'grupa', to='courses.Group', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='record',
             name='student',
-            field=models.ForeignKey(related_name='records', verbose_name=b'student', to='users.Student'),
+            field=models.ForeignKey(related_name='records', verbose_name=b'student', to='users.Student', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='queue',
             name='group',
-            field=models.ForeignKey(verbose_name=b'grupa', to='courses.Group'),
+            field=models.ForeignKey(verbose_name=b'grupa', to='courses.Group', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='queue',
             name='student',
-            field=models.ForeignKey(related_name='queues', verbose_name=b'student', to='users.Student'),
+            field=models.ForeignKey(related_name='queues', verbose_name=b'student', to='users.Student', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

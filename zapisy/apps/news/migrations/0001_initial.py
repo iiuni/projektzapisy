@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('body', models.TextField(verbose_name='Tre\u015b\u0107', blank=True)),
                 ('date', models.DateTimeField(default=datetime.datetime.now)),
                 ('category', models.CharField(default=b'-', max_length=15, verbose_name='Kategoria', choices=[(b'-', b'Hidden'), (b'offer', b'Oferta'), (b'enrollment', b'Zapisy'), (b'grade', b'Ocena zaj\xc4\x99\xc4\x87')])),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-date', '-id'],

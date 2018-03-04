@@ -48,8 +48,8 @@ class Semester( models.Model ):
 
     t0_are_ready = models.BooleanField( verbose_name= 'T0 zostały ustalone', default=False)
 
-    first_grade_semester  = models.ForeignKey('self', verbose_name='Pierwszy semestr oceny', null=True, blank=True, related_name='fgrade')
-    second_grade_semester = models.ForeignKey('self', verbose_name='Drugi semester oceny', null=True, blank=True, related_name='sgrade')
+    first_grade_semester  = models.ForeignKey('self', verbose_name='Pierwszy semestr oceny', null=True, blank=True, related_name='fgrade', on_delete=models.CASCADE)
+    second_grade_semester = models.ForeignKey('self', verbose_name='Drugi semester oceny', null=True, blank=True, related_name='sgrade', on_delete=models.CASCADE)
 
     objects = GetterManager()
 

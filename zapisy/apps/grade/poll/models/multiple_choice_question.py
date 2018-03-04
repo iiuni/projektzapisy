@@ -34,9 +34,8 @@ class MultipleChoiceQuestion( BaseQuestion ):
 
 
 class MultipleChoiceQuestionOrdering( models.Model ):
-    question = models.ForeignKey( MultipleChoiceQuestion,
-                                  verbose_name = 'pytanie' )
-    sections = models.ForeignKey( 'Section', verbose_name = 'sekcja' )
+    question = models.ForeignKey( MultipleChoiceQuestion, on_delete=models.CASCADE, verbose_name = 'pytanie' )
+    sections = models.ForeignKey( 'Section', verbose_name = 'sekcja', on_delete=models.CASCADE)
     position = models.IntegerField( verbose_name = 'pozycja' )
 
     class Meta:

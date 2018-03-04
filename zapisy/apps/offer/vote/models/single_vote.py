@@ -17,16 +17,14 @@ class SingleVote ( models.Model ):
     """
     votes = [(0,'0'), (1,'1'), (2, '2'), (3, '3')]
 
-    student = models.ForeignKey('users.Student',
-                                verbose_name='głosujący')
+    student = models.ForeignKey('users.Student', on_delete=models.CASCADE, verbose_name='głosujący')
 
-    entity = models.ForeignKey(CourseEntity, verbose_name='podstawa')
+    entity = models.ForeignKey(CourseEntity, verbose_name='podstawa', on_delete=models.CASCADE)
 
     course   = models.ForeignKey(Course, null=True, blank=True, on_delete=models.SET_NULL)
 
 
-    state = models.ForeignKey('vote.SystemState',
-                              verbose_name='ustawienia głosowania')
+    state = models.ForeignKey('vote.SystemState', on_delete=models.CASCADE, verbose_name='ustawienia głosowania')
 
     value      = models.IntegerField(choices=votes, default=0, verbose_name='punkty')
     correction = models.IntegerField(choices=votes, default=0, verbose_name='korekta')

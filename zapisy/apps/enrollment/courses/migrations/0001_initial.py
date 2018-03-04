@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='StudentPointsView',
             fields=[
                 ('value', models.SmallIntegerField()),
-                ('student', models.ForeignKey(primary_key=True, serialize=False, to='users.Student')),
+                ('student', models.ForeignKey(primary_key=True, serialize=False, to='users.Student', on_delete=models.CASCADE)),
             ],
             options={
                 'managed': False,
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 ('exercises_laboratories', models.IntegerField(default=0, null=True, verbose_name='r\xf3\u017cnica w godzinach \u0107w+prac', blank=True)),
                 ('exam', models.BooleanField(verbose_name=b'egzamin')),
                 ('created', models.DateTimeField(auto_now=True, auto_now_add=True)),
-                ('author', models.ForeignKey(to='users.Employee')),
+                ('author', models.ForeignKey(to='users.Employee', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'opis przedmiotu',
@@ -182,8 +182,8 @@ class Migration(migrations.Migration):
                 ('enrolled_isim', models.PositiveIntegerField(default=0, verbose_name=b'liczba zapisanych student\xc3\xb3w ISIM', editable=False)),
                 ('queued', models.PositiveIntegerField(default=0, verbose_name=b'liczba student\xc3\xb3w w kolejce', editable=False)),
                 ('usos_nr', models.IntegerField(help_text=b'UWAGA! Nie edytuj tego pola sam!', null=True, verbose_name='Nr grupy w usos', blank=True)),
-                ('course', models.ForeignKey(related_name='groups', verbose_name=b'przedmiot', to='courses.Course')),
-                ('teacher', models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', blank=True, to='users.Employee', null=True)),
+                ('course', models.ForeignKey(related_name='groups', verbose_name=b'przedmiot', to='courses.Course', on_delete=models.CASCADE)),
+                ('teacher', models.ForeignKey(verbose_name=b'prowadz\xc4\x85cy', blank=True, to='users.Employee', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'grupa',
@@ -196,8 +196,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.PositiveSmallIntegerField(default=6, verbose_name=b'liczba punkt\xc3\xb3w')),
-                ('entity', models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity')),
-                ('program', models.ForeignKey(default=None, blank=True, to='users.Program', null=True, verbose_name=b'Program Studi\xc3\xb3w')),
+                ('entity', models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity', on_delete=models.CASCADE)),
+                ('program', models.ForeignKey(default=None, blank=True, to='users.Program', null=True, verbose_name=b'Program Studi\xc3\xb3w', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'zale\u017cno\u015b\u0107 podstawa przedmiotu-punkty',
@@ -236,8 +236,8 @@ class Migration(migrations.Migration):
                 ('is_grade_active', models.BooleanField(verbose_name=b'Ocena aktywna')),
                 ('records_ects_limit_abolition', models.DateTimeField(null=True, verbose_name=b'Czas zniesienia limitu 35 ECTS')),
                 ('t0_are_ready', models.BooleanField(default=False, verbose_name='T0 zosta\u0142y ustalone')),
-                ('first_grade_semester', models.ForeignKey(related_name='fgrade', verbose_name=b'Pierwszy semestr oceny', blank=True, to='courses.Semester', null=True)),
-                ('second_grade_semester', models.ForeignKey(related_name='sgrade', verbose_name=b'Drugi semester oceny', blank=True, to='courses.Semester', null=True)),
+                ('first_grade_semester', models.ForeignKey(related_name='fgrade', verbose_name=b'Pierwszy semestr oceny', blank=True, to='courses.Semester', null=True, on_delete=models.CASCADE)),
+                ('second_grade_semester', models.ForeignKey(related_name='sgrade', verbose_name=b'Drugi semester oceny', blank=True, to='courses.Semester', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-year', 'type'],
@@ -251,8 +251,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('records_opening_bonus_minutes', models.IntegerField(default=0, verbose_name=b'Przyspieszenie otwarcia zapis\xc3\xb3w na ten przedmiot (minuty)')),
-                ('course', models.ForeignKey(verbose_name=b'przedmiot', to='courses.Course')),
-                ('student', models.ForeignKey(verbose_name=b'student', to='users.Student')),
+                ('course', models.ForeignKey(verbose_name=b'przedmiot', to='courses.Course', on_delete=models.CASCADE)),
+                ('student', models.ForeignKey(verbose_name=b'student', to='users.Student', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'zale\u017cno\u015b\u0107 przedmiot-student',
@@ -279,8 +279,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('weight', models.IntegerField(verbose_name='Waga')),
-                ('courseentity', models.ForeignKey(to='courses.CourseEntity')),
-                ('tag', models.ForeignKey(to='courses.Tag')),
+                ('courseentity', models.ForeignKey(to='courses.CourseEntity', on_delete=models.CASCADE)),
+                ('tag', models.ForeignKey(to='courses.Tag', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -293,9 +293,9 @@ class Migration(migrations.Migration):
                 ('dayOfWeek', models.CharField(max_length=1, verbose_name=b'dzie\xc5\x84 tygodnia', choices=[(b'1', 'poniedzialek'), (b'2', 'wtorek'), (b'3', 'sroda'), (b'4', 'czwartek'), (b'5', 'piatek'), (b'6', 'sobota'), (b'7', 'niedziela')])),
                 ('start_time', models.TimeField(verbose_name=b'rozpocz\xc4\x99cie')),
                 ('end_time', models.TimeField(verbose_name=b'zako\xc5\x84czenie')),
-                ('classroom', models.ForeignKey(verbose_name=b'sala', blank=True, to='courses.Classroom', null=True)),
+                ('classroom', models.ForeignKey(verbose_name=b'sala', blank=True, to='courses.Classroom', null=True, on_delete=models.CASCADE)),
                 ('classrooms', models.ManyToManyField(related_name='new_classrooms', null=True, verbose_name=b'sale', to='courses.Classroom', blank=True)),
-                ('group', models.ForeignKey(related_name='term', verbose_name=b'grupa', to='courses.Group')),
+                ('group', models.ForeignKey(related_name='term', verbose_name=b'grupa', to='courses.Group', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['dayOfWeek'],
@@ -320,7 +320,7 @@ class Migration(migrations.Migration):
                 ('have_seminar', models.BooleanField(default=False, verbose_name='Posiada seminarium')),
                 ('have_project', models.BooleanField(default=False, verbose_name='Posiada projekt')),
                 ('default_ects', models.IntegerField(default=6, verbose_name='Punkty ECTS')),
-                ('group', models.ForeignKey(verbose_name=b'grupa', blank=True, to='courses.Type', null=True)),
+                ('group', models.ForeignKey(verbose_name=b'grupa', blank=True, to='courses.Type', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'rodzaj przedmiotu',
@@ -339,7 +339,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pointsofcourseentities',
             name='type_of_point',
-            field=models.ForeignKey(verbose_name=b'rodzaj punkt\xc3\xb3w', to='courses.PointTypes'),
+            field=models.ForeignKey(verbose_name=b'rodzaj punkt\xc3\xb3w', to='courses.PointTypes', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -355,13 +355,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='courseentity',
             name='information',
-            field=models.ForeignKey(blank=True, to='courses.CourseDescription', null=True),
+            field=models.ForeignKey(blank=True, to='courses.CourseDescription', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='courseentity',
             name='owner',
-            field=models.ForeignKey(verbose_name=b'opiekun', blank=True, to='users.Employee', null=True),
+            field=models.ForeignKey(verbose_name=b'opiekun', blank=True, to='users.Employee', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -373,13 +373,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='courseentity',
             name='type',
-            field=models.ForeignKey(verbose_name=b'rodzaj', to='courses.Type', null=True),
+            field=models.ForeignKey(verbose_name=b'rodzaj', to='courses.Type', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='coursedescription',
             name='entity',
-            field=models.ForeignKey(to='courses.CourseEntity'),
+            field=models.ForeignKey(to='courses.CourseEntity', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -391,19 +391,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='entity',
-            field=models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity'),
+            field=models.ForeignKey(verbose_name=b'podstawa przedmiotu', to='courses.CourseEntity', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='information',
-            field=models.ForeignKey(verbose_name=b'opis', blank=True, to='courses.CourseDescription', null=True),
+            field=models.ForeignKey(verbose_name=b'opis', blank=True, to='courses.CourseDescription', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='semester',
-            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', null=True),
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

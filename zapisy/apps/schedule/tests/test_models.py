@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.core.validators import ValidationError
 from django.contrib.auth.models import Permission
 from django.http import Http404
+from django.utils.crypto import get_random_string
 
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
 from apps.users.tests.objectmothers import UserObjectMother
@@ -14,13 +15,12 @@ from apps.users.tests.factories import UserFactory, EmployeeProfileFactory, Stud
 from apps.enrollment.courses.models import Semester, Classroom
 from apps.schedule import feeds
 from apps.users.models import UserProfile
-from ..models import SpecialReservation, EventModerationMessage, EventMessage, Event,\
-    Term as EventTerm
-from django.utils.crypto import get_random_string
 import apps.enrollment.courses.tests.factories as enrollment_factories
 from apps.enrollment.records.tests.factories import RecordFactory
-
 from apps.enrollment.records.models import Record
+
+from ..models import SpecialReservation, EventModerationMessage, EventMessage, Event,\
+    Term as EventTerm
 from . import factories
 from zapisy import common
 
@@ -347,7 +347,7 @@ class EventTestCase(TestCase):
         self.event = factories.EventFactory(author=teacher)
         self.event.full_clean()
 
-        room110 = enrollment_factories.ClassroomFactory(number='110')
+        room110 = enrollment_factories.ClassroomFactory(number=u'110')
         room110.full_clean()
 
         term_1 = factories.TermFixedDayFactory(event=self.event, room=room110)
@@ -620,7 +620,7 @@ class EventsOnChangedDayTestCase(TestCase):
         return date
 
     def setUp(self):
-        summer_semester = factories.SemesterFactory(type=Semester.TYPE_SUMMER)
+        summer_semester = enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
         summer_semester.full_clean()
 
         self.thursday = \

@@ -39,9 +39,9 @@ class PointsOfCourseEntities(models.Model):
 
 
     """
-    entity = models.ForeignKey('CourseEntity', verbose_name='podstawa przedmiotu')
-    type_of_point = models.ForeignKey('PointTypes', verbose_name='rodzaj punktów')
-    program = models.ForeignKey('users.Program', verbose_name='Program Studiów', null=True, blank=True, default=None)
+    entity = models.ForeignKey('CourseEntity', verbose_name='podstawa przedmiotu', on_delete=models.CASCADE)
+    type_of_point = models.ForeignKey('PointTypes', verbose_name='rodzaj punktów', on_delete=models.CASCADE)
+    program = models.ForeignKey('users.Program', verbose_name='Program Studiów', null=True, blank=True, default=None, on_delete=models.CASCADE)
     value = models.PositiveSmallIntegerField(verbose_name='liczba punktów', default=6)
 
     class Meta:
@@ -56,8 +56,8 @@ class PointsOfCourseEntities(models.Model):
 
 class StudentPointsView(models.Model):
     value   = models.SmallIntegerField()
-    student = models.OneToOneField(Student, primary_key=True)
-    entity  = models.ForeignKey('courses.CourseEntity')
+    student = models.OneToOneField(Student, primary_key=True, on_delete=models.CASCADE)
+    entity  = models.ForeignKey('courses.CourseEntity', on_delete=models.CASCADE)
 
     # just for testing
     #def save(self, **kwargs):

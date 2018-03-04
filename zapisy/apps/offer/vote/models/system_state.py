@@ -27,15 +27,16 @@ class SystemState( models.Model ):
         System state for vote
     """
 
-    semester_winter  = models.ForeignKey( Semester,
-                    verbose_name= 'Semestr zimowy',
-                    related_name = 'winter_votes',
-                    null=True, blank=True)
+    semester_winter  = models.ForeignKey(Semester, on_delete=models.CASCADE,
+                                         verbose_name= 'Semestr zimowy',
+                                         related_name = 'winter_votes',
+                                         null=True, blank=True)
 
-    semester_summer = models.ForeignKey( Semester,
-                    verbose_name = 'Semestr letni',
-                    related_name = 'summer_votes',
-                    null=True, blank=True)
+    semester_summer = models.ForeignKey(Semester,
+                                        on_delete=models.CASCADE,
+                                        verbose_name = 'Semestr letni',
+                                        related_name = 'summer_votes',
+                                        null=True, blank=True)
 
     year      = models.IntegerField(
                     verbose_name = 'Rok akademicki',

@@ -17,31 +17,31 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='usedticketstamp',
             name='student',
-            field=models.ForeignKey(verbose_name=b'student', to='users.Student'),
+            field=models.ForeignKey(verbose_name=b'student', to='users.Student', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='studentgraded',
             name='semester',
-            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester'),
+            field=models.ForeignKey(verbose_name=b'semestr', to='courses.Semester', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='studentgraded',
             name='student',
-            field=models.ForeignKey(verbose_name=b'student', to='users.Student'),
+            field=models.ForeignKey(verbose_name=b'student', to='users.Student', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='publickey',
             name='poll',
-            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll'),
+            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='privatekey',
             name='poll',
-            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll'),
+            field=models.ForeignKey(verbose_name=b'ankieta', to='poll.Poll', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

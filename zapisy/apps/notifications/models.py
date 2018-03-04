@@ -154,7 +154,7 @@ class NotificationManager(models.Manager):
 
 
 class NotificationPreferences(models.Model):
-    user = models.ForeignKey(User, verbose_name='użytkownik')
+    user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
     type = models.CharField(choices=types_list(True, True), max_length=50, verbose_name='typ')
     value = models.BooleanField(default=True, verbose_name='wartość')
 

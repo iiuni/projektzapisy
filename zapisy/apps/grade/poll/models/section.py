@@ -46,8 +46,8 @@ class Section( models.Model ):
         return self, result
 
 class SectionOrdering( models.Model ):
-    poll     = models.ForeignKey( 'Poll',      verbose_name = 'ankieta' )
-    section  = models.ForeignKey( Section, verbose_name = 'sekcja' )
+    poll     = models.ForeignKey( 'Poll',      verbose_name = 'ankieta' , on_delete=models.CASCADE)
+    section  = models.ForeignKey( Section, verbose_name = 'sekcja' , on_delete=models.CASCADE)
     position = models.IntegerField( verbose_name = 'pozycja' )
 
     class Meta:

@@ -6,8 +6,8 @@ class EventModerationMessage(models.Model): #why two classes of the same name?
     from apps.schedule.models import Event
     from django.contrib.auth.models import User
 
-    author = models.ForeignKey(User, verbose_name='Autor')
-    event = models.ForeignKey(Event, verbose_name='Wydarzenie')
+    author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
     message = models.TextField(verbose_name='Wiadomość')
     created = models.DateTimeField(auto_now_add=True)
 
@@ -35,8 +35,8 @@ class Message(models.Model):
     from apps.schedule.models import Event
     from django.contrib.auth.models import User
 
-    author = models.ForeignKey(User, verbose_name='Autor')
-    event = models.ForeignKey(Event, verbose_name='Wydarzenie')
+    author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
     message = models.TextField(verbose_name='Wiadomość')
     created = models.DateTimeField(auto_now_add=True)
 

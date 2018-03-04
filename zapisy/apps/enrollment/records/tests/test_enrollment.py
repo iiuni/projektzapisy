@@ -169,9 +169,12 @@ class DummyTest(TransactionTestCase):
         result, messages_list = exercises_group.enroll_student(student)
         run_rearanged(result)
         self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        self.assertTrue(Record.objects.filter(group_id = lecture_group.id, student_id = student.id, status = Record.STATUS_ENROLLED).exists())
-        self.assertTrue(Record.objects.filter(group_id = exercises_group.id, student_id = student.id, status = Record.STATUS_ENROLLED).exists())
+        self.assertEqual(
+            messages_list, ['Student dopisany do grupy', 'Nastąpiło automatyczne dopisanie do grupy wykładowej'])
+        self.assertTrue(Record.objects.filter(group_id=lecture_group.id, student_id=student.id,
+                                              status=Record.STATUS_ENROLLED).exists())
+        self.assertTrue(Record.objects.filter(group_id=exercises_group.id, student_id=student.id,
+                                              status=Record.STATUS_ENROLLED).exists())
 
     def testAddingStudentToSameGroupAgainFails(self):
         today = datetime.now()

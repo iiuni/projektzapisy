@@ -248,8 +248,8 @@ class Migration(migrations.Migration):
             name='TemplateSections',
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True)),
-                ('section', models.ForeignKey(verbose_name=b'sekcja', to='poll.Section')),
-                ('template', models.ForeignKey(verbose_name=b'ankieta', to='poll.Template')),
+                ('section', models.ForeignKey(verbose_name=b'sekcja', to='poll.Section', on_delete=models.CASCADE)),
+                ('template', models.ForeignKey(verbose_name=b'ankieta', to='poll.Template', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['id'],

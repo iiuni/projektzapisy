@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('verification_key', models.CharField(max_length=40)),
                 ('email', models.EmailField(max_length=75)),
                 ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('user', models.OneToOneField(related_name='emailchangerequest_user', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='emailchangerequest_user', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'email change request',

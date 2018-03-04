@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ExtendedUser',
             fields=[
-                ('user_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('is_student', models.BooleanField(default=False, verbose_name=b'czy student?')),
                 ('is_employee', models.BooleanField(default=False, verbose_name=b'czy pracownik?')),
                 ('is_zamawiany', models.BooleanField(default=False, verbose_name=b'czy zamawiany?')),
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OpeningTimesView',
             fields=[
-                ('student', models.ForeignKey(related_name='opening_times', primary_key=True, serialize=False, to='users.Student')),
+                ('student', models.ForeignKey(related_name='opening_times', primary_key=True, serialize=False, to='users.Student', on_delete=models.CASCADE)),
                 ('opening_time', models.DateTimeField()),
             ],
             options={
@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                 ('points', models.FloatField(null=True, verbose_name=b'Punkty', blank=True)),
                 ('comments', models.TextField(null=True, verbose_name=b'Uwagi', blank=True)),
                 ('bank_account', models.CharField(max_length=40, null=True, verbose_name=b'Numer konta bankowego', blank=True)),
-                ('student', models.OneToOneField(related_name='zamawiane', verbose_name=b'Student', to='users.Student')),
+                ('student', models.OneToOneField(related_name='zamawiane', verbose_name=b'Student', to='users.Student', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Studia zamawiane2009',
@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                 ('points', models.FloatField(null=True, verbose_name=b'Punkty', blank=True)),
                 ('comments', models.TextField(null=True, verbose_name=b'Uwagi', blank=True)),
                 ('bank_account', models.CharField(max_length=40, null=True, verbose_name=b'Numer konta bankowego', blank=True)),
-                ('student', models.OneToOneField(related_name='zamawiane2012', verbose_name=b'Student', to='users.Student')),
+                ('student', models.OneToOneField(related_name='zamawiane2012', verbose_name=b'Student', to='users.Student', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Studia zamawiane2012',
@@ -151,7 +151,7 @@ class Migration(migrations.Migration):
                 ('is_employee', models.BooleanField(default=False, verbose_name=b'czy pracownik?')),
                 ('is_zamawiany', models.BooleanField(default=False, verbose_name=b'czy zamawiany?')),
                 ('preferred_language', models.CharField(default=b'pl', max_length=5, verbose_name=b'preferowany j\xc4\x99zyk Systemu Zapis\xc3\xb3w', choices=[(b'pl', b'Polish'), (b'en', b'English')])),
-                ('user', models.OneToOneField(related_name='_profile_cache', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='_profile_cache', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -160,13 +160,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='student',
             name='program',
-            field=models.ForeignKey(default=None, verbose_name=b'Program Studi\xc3\xb3w', to='users.Program', null=True),
+            field=models.ForeignKey(default=None, verbose_name=b'Program Studi\xc3\xb3w', to='users.Program', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='student',
             name='user',
-            field=models.OneToOneField(related_name='student', verbose_name=b'U\xc5\xbcytkownik', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(related_name='student', verbose_name=b'U\xc5\xbcytkownik', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

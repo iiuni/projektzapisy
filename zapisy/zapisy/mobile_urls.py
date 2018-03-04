@@ -28,7 +28,7 @@ urlpatterns = [
     
     
     url(r'^(?P<cat>[\w\-_]+)/$', 'apps.news.views.latest_news', name='latest_news'),
-    (r'^site_media/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'site_media')}),
+    (r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')}),
     url(r'^course/(?P<slug>[\w\-_]+)', 'apps.mobile.views.courseTerms', name='course-terms'),
     (r'^group/(?P<group_id>\d+)/assign/$', 'apps.mobile.views.assign'),
     (r'^group/(?P<group_id>\d+)/resign/$', 'apps.mobile.views.resign'),

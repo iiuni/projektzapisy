@@ -20,14 +20,14 @@ class Term(models.Model):
     Term representation
     """
 
-    event = models.ForeignKey(Event, verbose_name='Wydarzenie')
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
 
     day = models.DateField(verbose_name='Dzień')
 
     start = models.TimeField(verbose_name='Początek')
     end = models.TimeField(verbose_name='Koniec')
 
-    room = models.ForeignKey(to=Classroom, null=True, blank=True, verbose_name='Sala',
+    room = models.ForeignKey(to=Classroom, null=True, blank=True, verbose_name='Sala', on_delete=models.CASCADE,
                              related_name='event_terms')
     place = models.CharField(max_length=255, null=True, blank=True, verbose_name='Miejsce')
     ignore_conflicts = False

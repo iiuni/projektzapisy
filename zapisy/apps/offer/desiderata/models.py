@@ -4,8 +4,8 @@ from apps.enrollment.courses.models import Term, Course, Semester
 from zapisy import common
 
 class Desiderata(models.Model):
-    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')
-    semester = models.ForeignKey(Semester, verbose_name='semestr')
+    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący', on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
     day = models.CharField(max_length=1, choices=common.DAYS_OF_WEEK, verbose_name='dzień tygodnia')
     hour = models.IntegerField(verbose_name='godzina')
 
@@ -33,8 +33,8 @@ class Desiderata(models.Model):
 
 
 class DesiderataOther(models.Model):
-    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący')
-    semester = models.ForeignKey(Semester, verbose_name='semestr')
+    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący', on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
     comment = models.TextField(verbose_name='uwagi', max_length=1000, default='')
 
     class Meta:

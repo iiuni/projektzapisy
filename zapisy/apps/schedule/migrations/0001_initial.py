@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('start', models.TimeField(verbose_name='Pocz\u0105tek')),
                 ('end', models.TimeField(verbose_name='Koniec')),
                 ('place', models.CharField(max_length=255, null=True, verbose_name='Miejsce', blank=True)),
-                ('event', models.ForeignKey(verbose_name='Wydarzenie', to='schedule.Event')),
+                ('event', models.ForeignKey(verbose_name='Wydarzenie', to='schedule.Event', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['day', 'start', 'end'],

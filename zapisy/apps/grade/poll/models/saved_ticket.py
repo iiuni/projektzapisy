@@ -3,7 +3,7 @@ from django.db import models
 
 class SavedTicket( models.Model ):
     ticket   = models.TextField( verbose_name = 'bilet' )
-    poll     = models.ForeignKey( 'Poll', verbose_name = 'ankieta' )
+    poll     = models.ForeignKey( 'Poll', verbose_name = 'ankieta' , on_delete=models.CASCADE)
     finished = models.BooleanField( verbose_name = 'czy zakończona' , default=False)
 
     class Meta:

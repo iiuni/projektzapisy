@@ -5,6 +5,8 @@
 
 {% block main-subtitle %}{{ course.name }}{% endblock %}
 
+{# WARNING if you change the enr- links below make sure you don't break
+    break assets/ajaxCourseLoad.ts as it depends on the DOM layout #}
 {% block bread %}
     <a href="{% url "main-page" %}">{% trans "Strona główna" %}</a>&nbsp;&raquo;&nbsp;<a
         href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>&nbsp;<span

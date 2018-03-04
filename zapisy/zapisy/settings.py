@@ -2,57 +2,49 @@
 
 import os
 import logging
+import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = False
-RELEASE = False
+env = environ.Env()
 
-# With DEBUG = False Django will refuse to serve requests to hosts different
-# than this one.
-ALLOWED_HOSTS = ['zapisy.ii.uni.wroc.pl']
+environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+
+DEBUG = env.bool('DEBUG')
+RELEASE = env.bool('RELEASE')
+
+# With DEBUG = False Django will refuse to serve requests to hosts different than this one.
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+EMAIL_BACKEND = env.str('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EVENT_MODERATOR_EMAIL = 'zapisy@cs.uni.wroc.pl'
+DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
+EMAIL_HOST = env.str('EMAIL_HOST', default='')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
+EMAIL_PORT = env.int('EMAIL_PORT', default=25)
+SERVER_EMAIL = env.str('SERVER_EMAIL', default='root@localhost')
 
-"""
-DATABASES = {
-     'default' : {
-        'ENGINE' : 'postgresql_psycopg2',
-        'NAME' : 'fereol',
-        'PORT' : '',
-        'USER' : 'fereol',
-        'PASSWORD' : 'fereol',
-        'HOST' : '',
-        'CHARSET' : 'utf8',
-        'USE_UNICODE' : True,
-        },
 
-     'fereol2012' : {
-        'ENGINE' : 'postgresql_psycopg2',
-        'NAME' : 'fereol2012',
-        'PORT' : '',
-        'USER' : 'fereol',
-        'PASSWORD' : 'fereol',
-        'HOST' : '',
-        'CHARSET' : 'utf8',
-        'USE_UNICODE' : True,
-        }
- }
-"""
+# django-environ doesn't support nested arrays, but decoding json objects works fine
+ARRAY_VALS = env.json('ARRAY_VALS', {})
+ADMINS = ARRAY_VALS['ADMINS'] if ARRAY_VALS else []
 
+MANAGERS = ADMINS
 
 DATABASES = {
-     'default' : {
-        'ENGINE' : 'django.db.backends.sqlite3',
-        'NAME' : os.path.join(BASE_DIR, 'database/db.sqlite3'),
-        'PORT' : '',
-        'USER' : '',
-        'PASSWORD' : '',
-        'HOST' : '',
-        'CHARSET' : 'utf8',
-        'USE_UNICODE' : True,
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env.str('DATABASE_NAME', default='fereol'),
+        'PORT': env.str('DATABASE_PORT', default='5432'),
+        'USER': env.str('DATABASE_USER', default='fereol'),
+        'PASSWORD': env.str('DATABASE_PASSWORD'),
+        'HOST': 'localhost',
+        'CHARSET': 'utf8',
+        'USE_UNICODE': True,
+    }
 }
-
 
 # mass-mail account
 # You can test sending with:
@@ -121,7 +113,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
 USE_ETAGS = True
 
 # Make this unique, and don't share it with anybody.
@@ -134,7 +125,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'templates'),
         ],
         'OPTIONS': {
-            "debug": False,
+            "debug": env.bool('TEMPLATE_DEBUG'),
             'context_processors': [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
@@ -152,10 +143,10 @@ TEMPLATES = [
 ]
 
 
-# Be careful with the order! I'm aware that SessionMiddleware
+# Be careful with the order! SessionMiddleware
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'middleware.localePrefMiddleware.LocalePrefMiddleware',
@@ -163,18 +154,17 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'middleware.mobile_detector.mobileDetectionMiddleware',
-    #'middleware.mobileMiddleware.SubdomainMiddleware',
     'middleware.error_handling.ErrorHandlerMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
     'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
-)
+]
 
 ROOT_URLCONF = 'zapisy.urls'
 
 INSTALLED_APPS = (
     'modeltranslation', # needs to be before django.contrib.admin
+
+    'rest_framework',
     
     # needed from 1.7 onwards to prevent Django from trying to apply
     # migrations when testing (slows down DB setup _a lot_)
@@ -209,6 +199,7 @@ INSTALLED_APPS = (
     'apps.grade.ticket_create',
     #'apps.mobile',
     'apps.email_change',
+    'apps.schedulersync',
     'django_extensions',
     'django_filters',
     'autoslug',
@@ -216,7 +207,8 @@ INSTALLED_APPS = (
     'apps.notifications',
     'django_cas_ng',
 
-    'test_app'
+    'test_app',
+    'webpack_loader',
 )
 
 MODELTRANSLATION_FALLBACK_LANGUAGES = ('pl',)
@@ -225,6 +217,9 @@ AUTHENTICATION_BACKENDS = (
     'apps.users.auth_backend.BetterBackend',
     'django_cas_ng.backends.CASBackend',
 )
+
+TIME_FORMAT = "H:i"
+DATETIME_FORMAT = "j N Y, H:i"
 
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
@@ -246,12 +241,8 @@ M_PROGRAM = 1
 LETURE_TYPE = '1'
 QUEUE_PRIORITY_LIMIT = 5
 
-# that's only the example of settings_local.py file contents:
-#SESSION_COOKIE_DOMAIN = '.localhost.localhost' # without port number!
-#SESSION_COOKIE_DOMAIN = '.localhost.localhost' # without port number!
 SESSION_COOKIE_PATH = '/;HttpOnly'
-#DEBUG = False
-#TEMPLATE_DEBUG = DEBUG
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Since Django 1.6 the default session serializer is json, which
@@ -259,12 +250,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # custom objects, and we need this behavior.
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-DEBUG_TOOLBAR_ALLOWED_USERS = [
-    "209067", # Tomasz Wasilczyk
-    "209138", # Arkadiusz Flinik
-    "208934",
-    "gosia", "stanislaw"
-]
+DEBUG_TOOLBAR_ALLOWED_USERS = env.list('DEBUG_TOOLBAR_ALLOWED_USERS', default=[])
+DEBUG_TOOLBAR_PANELS = env.list('DEBUG_TOOLBAR_PANELS', default=[])
+
+ROLLBAR = env.dict('ROLLBAR', default={})
+
 
 def show_toolbar(request):
     if request.user and request.user.username in DEBUG_TOOLBAR_ALLOWED_USERS:
@@ -282,13 +272,10 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 86400,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
-        }
+        'TIMEOUT': 300,
     }
 }
-        
+
 NEWS_PER_PAGE = 15
 
 # The URL to the issue tracker where users
@@ -300,25 +287,48 @@ ISSUE_TRACKER_NEW_ISSUE_URL = "https://tracker-zapisy.ii.uni.wroc.pl/projects/za
 if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
     exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
 
-PIPELINE = True
+PIPELINE = env.bool('PIPELINE')
 PIPELINE_AUTO = False
 PIPELINE_VERSION = True
 PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
 #PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
 #PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.csstidy.CSSTidyCompressor'
 
+COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
+COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
+COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
-STATIC_ROOT =  os.path.join(BASE_DIR, 'site_media')
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, "compiled_assets"),
+)
+
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 PIPELINE_STORAGE = 'pipeline.storage.PipelineFinderStorage'
 PIPELINE_VERSIONING = 'pipeline.versioning.hash.MD5Versioning'
 STATICFILES_FINDERS = (
   'pipeline.finders.PipelineFinder',
   'django.contrib.staticfiles.finders.FileSystemFinder',
-  'django.contrib.staticfiles.finders.AppDirectoriesFinder'
+  'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-LOCAL_SETTINGS = os.path.join(BASE_DIR, 'zapisy', 'settings_local.py')
-if os.path.isfile(LOCAL_SETTINGS):
-    print("Running local settings file {0}".format(LOCAL_SETTINGS))
-    exec(open(LOCAL_SETTINGS).read())
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+		# This setting is badly named, it's the bundle dir relative
+		# to whatever you have in your STATICFILES_DIRS
+        'BUNDLE_DIR_NAME': '',
+        'STATS_FILE': os.path.join(BASE_DIR, "webpack_resources", 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('correction', models.IntegerField(default=0, verbose_name=b'korekta', choices=[(0, b'0'), (1, b'1'), (2, b'2'), (3, b'3')])),
                 ('free_vote', models.BooleanField(default=False, verbose_name='G\u0142os nie liczy si\u0119 do limitu')),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='courses.Course', null=True)),
-                ('entity', models.ForeignKey(verbose_name=b'podstawa', to='courses.CourseEntity')),
+                ('entity', models.ForeignKey(verbose_name=b'podstawa', to='courses.CourseEntity', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('student', 'entity', '-value'),
@@ -44,8 +44,8 @@ class Migration(migrations.Migration):
                 ('winter_correction_end', models.DateField(default=datetime.date(2015, 7, 31), verbose_name=b'Koniec korekty zimowej')),
                 ('summer_correction_beg', models.DateField(default=datetime.date(2015, 1, 1), verbose_name=b'Pocz\xc4\x85tek korekty letniej')),
                 ('summer_correction_end', models.DateField(default=datetime.date(2015, 7, 31), verbose_name=b'Koniec korekty letniej')),
-                ('semester_summer', models.ForeignKey(related_name='summer_votes', verbose_name=b'Semestr letni', blank=True, to='courses.Semester', null=True)),
-                ('semester_winter', models.ForeignKey(related_name='winter_votes', verbose_name=b'Semestr zimowy', blank=True, to='courses.Semester', null=True)),
+                ('semester_summer', models.ForeignKey(related_name='summer_votes', verbose_name=b'Semestr letni', blank=True, to='courses.Semester', null=True, on_delete=models.CASCADE)),
+                ('semester_winter', models.ForeignKey(related_name='winter_votes', verbose_name=b'Semestr zimowy', blank=True, to='courses.Semester', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'ustawienia g\u0142osowania',
@@ -56,13 +56,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='singlevote',
             name='state',
-            field=models.ForeignKey(verbose_name=b'ustawienia g\xc5\x82osowania', to='vote.SystemState'),
+            field=models.ForeignKey(verbose_name=b'ustawienia g\xc5\x82osowania', to='vote.SystemState', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='singlevote',
             name='student',
-            field=models.ForeignKey(verbose_name=b'g\xc5\x82osuj\xc4\x85cy', to='users.Student'),
+            field=models.ForeignKey(verbose_name=b'g\xc5\x82osuj\xc4\x85cy', to='users.Student', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
