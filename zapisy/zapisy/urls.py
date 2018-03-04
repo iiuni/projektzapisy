@@ -16,7 +16,7 @@ from rest_framework import routers
 admin.autodiscover()
 router = routers.DefaultRouter()
 router.register(r'semesters', semester_api.SemesterViewSet)
-router.register(r'classroom', classroom_api.ClassroomViewSet)
+router.register(r'classrooms', classroom_api.ClassroomViewSet)
 
 
 urlpatterns = [
