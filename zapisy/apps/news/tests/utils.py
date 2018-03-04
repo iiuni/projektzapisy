@@ -6,10 +6,6 @@ from datetime import datetime, timedelta
 from apps.news.models import News
 from apps.users.tests.factories import UserFactory
 
-
-from .models import News
-from apps.users.tests.factories import UserFactory
-
 def generate_random_news(category,
                          new=randint(1, 6),
                          old=randint(1, 6)):
