@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-import os
-from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -12,7 +9,6 @@ from apps.enrollment.courses.admin import views as courses_admin_views
 from django_cas_ng import views
 
 admin.autodiscover()
-
 
 urlpatterns = [
     url('^$', apps.news.views.main_page, name='main-page'),
@@ -50,24 +46,3 @@ urlpatterns = [
     url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
 ]
-
-"""
-if not settings.RELEASE:
-    urlpatterns += [
-    url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')}),
-    url(r'^vote/', include('apps.offer.vote.urls')),
-    # OD
-    #url('^offer/$', 'apps.offer.proposal.views.main', name='offer-main'),
-    # OCENA ZAJĘĆ
-
-    (r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')})
-
-    #
-
-    #CHANGE TO apps.mobile
-    #url(r'^mobile/$', 'apps.mobile.views.onMobile', name = 'on-mobile'),
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
-    # to INSTALLED_APPS to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-]
-"""

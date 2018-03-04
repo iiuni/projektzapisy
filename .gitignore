@@ -24,3 +24,4 @@ compiled_assets/
 zapisy/webpack_resources/webpack-stats.json
 *.gz
 *.sql
+*.sqlite3
