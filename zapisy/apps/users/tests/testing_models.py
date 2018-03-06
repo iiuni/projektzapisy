@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # tests marked by comment "TIME DEPENDENCY" should be free from this dependency
 

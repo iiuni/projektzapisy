@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from apps.enrollment.records.exceptions import NonGroupException
 from apps.enrollment.records.exceptions import ECTS_Limit_Exception

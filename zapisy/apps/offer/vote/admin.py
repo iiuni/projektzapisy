@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
     Django admin panel for vote

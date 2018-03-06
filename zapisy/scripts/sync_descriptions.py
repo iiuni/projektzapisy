@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from apps.enrollment.courses.models import Semester, Course, CourseEntity, CourseDescription
 

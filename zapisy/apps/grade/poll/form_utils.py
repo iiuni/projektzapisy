@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from apps.grade.poll.models import Section, \
                                    OpenQuestion, \

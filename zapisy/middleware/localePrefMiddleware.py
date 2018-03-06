@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.translation import LANGUAGE_SESSION_KEY
 from django.utils.deprecation import MiddlewareMixin
 

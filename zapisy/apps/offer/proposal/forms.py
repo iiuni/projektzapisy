@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms.models import ModelForm
 from django import forms

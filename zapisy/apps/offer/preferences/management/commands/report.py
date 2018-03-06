@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from django.core.management.base import BaseCommand, CommandError
 from apps.enrollment.courses.models.course import CourseEntity

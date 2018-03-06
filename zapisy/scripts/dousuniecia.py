@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist

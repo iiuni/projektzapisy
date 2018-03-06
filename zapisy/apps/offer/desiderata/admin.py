@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther

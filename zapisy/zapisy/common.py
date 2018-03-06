@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 MONDAY = '1'
 TUESDAY = '2'

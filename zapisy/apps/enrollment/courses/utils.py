@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import json
 
 def prepare_group_data(course, student):

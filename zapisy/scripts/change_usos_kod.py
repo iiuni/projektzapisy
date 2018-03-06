@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 from apps.enrollment.courses.models import CourseEntity
 import csv

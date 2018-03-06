@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 class NonStudentException(Exception):
     """is thrown when student does not exists"""
     pass

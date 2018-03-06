@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from apps.enrollment.courses.models.course import CourseEntity, CourseDescription

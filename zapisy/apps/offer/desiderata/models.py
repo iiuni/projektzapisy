@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from apps.enrollment.courses.models import Term, Course, Semester
 from zapisy import common

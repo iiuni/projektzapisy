@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
 from zapisy.apps.users.models import Student

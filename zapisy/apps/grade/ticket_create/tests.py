@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.test                       import TestCase
 from .utils                             import generate_keys_for_polls, \
                                               group_polls_by_course

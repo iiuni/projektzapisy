@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from apps.users.models import User, UserProfile, Employee
 
