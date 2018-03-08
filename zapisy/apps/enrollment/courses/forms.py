@@ -1,5 +1,7 @@
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.encoding import smart_str
+
 from apps.enrollment.courses.models import Course, CourseEntity
 
 __author__ = 'maciek'
@@ -92,7 +94,6 @@ class Parser(object):
         groups = []
 
         for line in file:
-            line = str(line)
             line = line.rstrip()
             if len(line) < 2:
                 continue
