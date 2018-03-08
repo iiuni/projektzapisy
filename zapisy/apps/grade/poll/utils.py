@@ -27,10 +27,8 @@ from django.utils.safestring           import SafeText, mark_safe
 from django.db.models import Q
 from functools import reduce, cmp_to_key
 
-def poll_and_ticket_cmp(ptst1, ptst2):
-    p1, t1, st1 = ptst1
-    p2, t2, st2 = ptst2
-    return poll_cmp(p1, p2)
+def poll_and_ticket_cmp(pollTuple1, pollTuple2):
+    return poll_cmp(pollTuple1[0], pollTuple2[0])
 
 def check_signature( ticket, signed_ticket, public_key ):
     pk = RSA.importKey( public_key.public_key )
