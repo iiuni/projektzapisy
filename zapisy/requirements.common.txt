@@ -14,22 +14,15 @@ django-test-without-migrations==0.6
 docutils==0.13.1
 ipdb==0.10.3
 ipython==5.5.0
-paramiko==2.4.0
 psycopg2==2.7.3.2
-pyPdf==1.13
-pycryptodome
-six==1.9.0
+pycryptodome==3.5.0
 rollbar==0.13.17
-yolk==0.4.3
 newrelic==2.68.0.50
-django-el-pagination==3.1.0
-rq==0.7.1
 
 # Additional packages on production environment
 gunicorn==19.7.1
 lxml==4.1.1
 python-dateutil==2.6.1
-# reportlab==2.6
 
 # On production: 0.8.1c, but this version has problems with installation
 vobject==0.9.5
