@@ -194,7 +194,9 @@ def log_edit_term(sender, instance, **kwargs):
             newstring.append(term.classroom.number)
 
         term_format = '-'.join(newstring)
-        message = '[09] term for group <%s> has been updated from <%s> to <%s>' % (term.group.id, old_term_format.encode('utf-8'), term_format.encode('utf-8'))
+        message = '[09] term for group {} has been updated from {} to {}'.format(
+            term.group.id, old_term_format, term_format,
+        )
         backup_logger.info(message)
     except Term.DoesNotExist:
         pass
@@ -208,7 +210,9 @@ def log_add_term(sender, instance, created, **kwargs):
         number = ''
     term_format = '-'.join([term.dayOfWeek,str(term.start_time),str(term.end_time),number])
     if created:
-        message = '[08] term <%s> for group <%s> has been created' % (term_format.encode('utf-8'), term.group.id)
+        message = '[08] term {} for group {} has been created'.format(
+            term_format, term.group.id,
+        )
         backup_logger.info(message)
 
 def log_delete_term(sender, instance, **kwargs):
@@ -218,7 +222,9 @@ def log_delete_term(sender, instance, **kwargs):
     if term.classroom:
         words += term.classroom.number
     term_format = '-'.join(words)
-    backup_logger.info('[10] term <%s> for group <%s> has been deleted' % (term_format.encode('utf-8'), term.group.id))
+    backup_logger.info('[10] term {} for group {} has been deleted'.format(
+        term_format, term.group.id
+    ))
 
 signals.pre_save.connect(log_edit_term, sender=Term)
 signals.post_save.connect(log_add_term, sender=Term)

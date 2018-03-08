@@ -579,7 +579,10 @@ def log_add_group(sender, instance, created, **kwargs):
         max_osoby = group.limit
         rodzaj_zajec = GROUP_TYPE_MAPPING[group.type]
         zamawiane_bonus = group.limit_zamawiane
-        message = '[06] group has been created <%s><%s><%s><%s><%s><%s>' % (kod_grupy,kod_przed_sem,kod_uz.encode('utf-8'),max_osoby,rodzaj_zajec,zamawiane_bonus)
+        message = '[06] group has been created {}{}{}{}{}{}'.format(
+            kod_grupy, kod_przed_sem, kod_uz,
+            max_osoby, rodzaj_zajec, zamawiane_bonus,
+        )
         backup_logger.info(message)
 
 def log_limits_change(sender, instance, **kwargs):

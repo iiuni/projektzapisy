@@ -13,13 +13,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         courses = CourseEntity.get_proposals()
-        file = open(args[0], 'w')
+        file = open(args[0], 'w', encoding="utf-8")
         for course in courses:
-            file.write(str(course).encode('utf-8')+'\n')
+            file.write("{}\n".format(course))
             for user in course.get_all_voters():
                 file.write(user.matricula+'\n')
 
             file.write('\n')
 
         file.close()
-

@@ -70,13 +70,13 @@ def send_all():
         for message in prioritize():
             subject = EMAIL_SUBJECT_TEMPLATE % message.subject
             if DontSendEntry.objects.has_address(message.to_address):
-                logger.info("skipping email to %s as on don't send list " % message.to_address.encode("utf-8"))
+                logger.info("skipping email to %s as on don't send list " % message.to_address)
                 MessageLog.objects.log(message, 2) # @@@ avoid using literal result code
                 message.delete()
                 dont_send += 1
             else:
                 try:
-                    logger.info("sending message '%s' to %s" % (subject.encode("utf-8"), message.to_address.encode("utf-8")))
+                    logger.info("sending message '%s' to %s" % (subject, message.to_address))
                     if not message.message_body_html:
                         core_send_mail(subject, message.message_body, message.from_address, [message.to_address], connection = connection)
                     else:

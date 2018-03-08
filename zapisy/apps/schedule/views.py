@@ -379,7 +379,7 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
     html = template.render(context)
     result = io.StringIO()
 
-    pisa.pisaDocument(io.StringIO(html.encode('UTF-8')), result, encoding='UTF-8')
+    pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
 
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=raport.pdf'
