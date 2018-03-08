@@ -38,7 +38,7 @@ def import_ects(file):
     for line  in file:
         process(line)
 
-    for key, value in list(students.items()):
+    for key, value in students.items():
         refresh(key, value)
 
 # for running ectsimport.py from tests

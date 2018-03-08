@@ -180,7 +180,7 @@ class Compressor(object):
             return "url(mhtml:%s!%s)" % (asset_url, paths[path])
         css = re.sub(URL_REPLACER, mhtml, css)
         mhtml = []
-        for path, location in list(paths.items()):
+        for path, location in paths.items():
             mime_type = self.mime_type(path)
             data = self.encoded_content(path)
             mhtml.extend([

@@ -57,7 +57,7 @@ def prepare_courses_with_terms(terms=None, records=None):
         if record.group.course not in courses_terms_map:
             courses_terms_map[record.group.course] = []
 
-    courses = [(course, terms) for course, terms in list(courses_terms_map.items())]
+    courses = [(course, terms) for course, terms in courses_terms_map.items()]
 
     return sorted(courses, key=lambda item: item[0].name)
 
