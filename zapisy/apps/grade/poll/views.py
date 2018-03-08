@@ -683,9 +683,18 @@ def tickets_enter(request):
                 msg += '</ul>'
                 msg  = mark_safe( str( msg ))
                 messages.error( request, msg)
-            request.session[ "polls" ]             = [((s_l[0], create_slug( s_l[0] )), s_l[1]) for s_l in group_polls_and_tickets_by_course( polls )]
-            request.session[ "finished" ]          = [((s_l2[0], create_slug( s_l2[0] )), s_l2[1]) for s_l2 in group_polls_and_tickets_by_course( finished )]
-
+            request.session["polls"] = [
+                (
+                    (poll_name, create_slug(poll_name)),
+                    poll_list,
+                ) for poll_name, poll_list in group_polls_and_tickets_by_course(polls)
+            ]
+            request.session["finished"] = [
+                (
+                    (poll_name, create_slug(poll_name)),
+                    poll_list,
+                ) for poll_name, poll_list in group_polls_and_tickets_by_course(finished)
+            ]
 
             return HttpResponseRedirect( '/grade/poll/polls/all' )
     else:

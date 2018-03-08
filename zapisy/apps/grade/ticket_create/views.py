@@ -53,14 +53,20 @@ def ajax_get_rsa_keys_step2( request ):
         if request.method == 'POST':
             students_polls = Poll.get_all_polls_for_student( request.user.student )
             groupped_polls = group_polls_by_course( students_polls )
-            form = PollCombineForm( request.POST,
-                                    polls = groupped_polls )
+            form = PollCombineForm(
+                request.POST,
+                polls = groupped_polls
+            )
             if form.is_valid():
-                ts               = json.loads(request.POST.get('ts'))
+                ts = json.loads(request.POST.get('ts'))
                 connected_groups = connect_groups( groupped_polls, form )
-                groups           = reduce(list.__add__, connected_groups )
-                tickets          = list(zip( groups, ts))
-                signed = [(g_t[0], int(g_t[1]), secure_signer_without_save( request.user, g_t[0], int(g_t[1]) )) for g_t in tickets]
+                groups = reduce(list.__add__, connected_groups )
+                tickets = list(zip(groups, ts))
+                signed = [(
+                    group,
+                    int(t),
+                    secure_signer_without_save(request.user, group, t))
+                ) for group, t in tickets]
                 unblinds = [(str(g_t_st[1]), unblind( g_t_st[0], g_t_st[2] ) ) for g_t_st in signed]
                 message = json.dumps(unblinds)
     return HttpResponse(message)

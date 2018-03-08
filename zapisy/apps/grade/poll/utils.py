@@ -89,13 +89,6 @@ def create_slug( name ):
     slug = re.sub("-$", "", slug)
     return slug
 
-def get_polls_for_course(xxx_todo_changeme, groupped_polls ):
-    ( ( sub, slug ), get) = xxx_todo_changeme
-    if get:
-        return ( sub, slug ), 'jest'
-    else:
-        return ( sub, slug ), []
-
 def prepare_data( request, slug ):
     data = { 'errors'   : [],
              'polls'    : [],
@@ -741,23 +734,23 @@ def make_pages( pages, page_number ):
     if pages < 12:
         return list(range(1, pages))
 
-    list = list(range(1, 6))
+    page_range = list(range(1, 6))
     if page_number > 8:
-        list.extend( [-1])
+        page_range.extend( [-1])
 
     first = max(page_number-2, 6)
     last = min(page_number+3, pages)
 
-    list.extend( list(range(first, last)))
+    page_range.extend(list(range(first, last)))
 
     if page_number < pages - 8:
         list.extend( [-1])
 
     last = min(page_number+3, pages)
     start = max(last, pages-5)
-    list.extend( list(range(start, pages)))
+    page_range.extend(list(range(start, pages)))
 
-    return list
+    return page_range
 
 def edit_poll(poll, request, origin):
     poll.title = request.POST.get('title', '')
