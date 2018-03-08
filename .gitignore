@@ -18,7 +18,7 @@ static/
 .DS_Store
 zapisy/logs/
 personal/
-**/.vscode/*
+.vscode/
 static/
 node_modules/
 compiled_assets/
