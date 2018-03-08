@@ -387,7 +387,7 @@ def records_group_pdf(request, group_id):
 
     template = get_template('records/group_pdf.html')
     html = template.render(data)
-    result = io.StringIO()
+    result = io.BytesIO()
 
     pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
 
@@ -412,7 +412,7 @@ def records_queue_pdf(request, group_id):
 
     template = get_template('records/queue_pdf.html')
     html = template.render(data)
-    result = io.StringIO()
+    result = io.BytesIO()
 
     pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
