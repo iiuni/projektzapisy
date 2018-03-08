@@ -10,7 +10,7 @@ def run():
 			dd[v.entity].append(v.student.matricula)
 
 	for entity in dd:
-		print(('['+entity.name_pl.encode('utf-8')+']'))
+		print('['+entity.name_pl.encode('utf-8')+']')
 		for matricula in dd[entity]:
 			print(matricula)
 		print('')

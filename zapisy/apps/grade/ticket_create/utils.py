@@ -174,7 +174,7 @@ def generate_keys_for_polls(semester=None):
         i = i + 1
     save_public_keys(list(zip(poll_list, pub_list)))
     save_private_keys(list(zip(poll_list, priv_list)))
-    print((i - 1))
+    print(i - 1)
     return
 
 def group_polls_by_course( poll_list ):

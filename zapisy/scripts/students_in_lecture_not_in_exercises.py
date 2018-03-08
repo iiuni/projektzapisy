@@ -16,13 +16,13 @@ for c in cs:
 			rc = rc.union(rr)
 			sum += len(rr)
 		if not rw == rc:
-			print((len(rw),len(rc),sum,c))
+			print(len(rw),len(rc),sum,c)
 			studs_q = rw.difference(rc).intersection(rq)
 			studs_not_q = rw.difference(rc).difference(studs_q)
 			print("bez kolejki:")
 			for s in studs_not_q:
-				print((s.user.get_full_name() + ' <'+s.user.email+'>'))
+				print(s.user.get_full_name() + ' <'+s.user.email+'>')
 			print("w kolejce:")
 			for s in studs_q:
-				print((s.user.get_full_name() + ' <'+s.user.email+'>'))
+				print(s.user.get_full_name() + ' <'+s.user.email+'>')
 			print("#################################")

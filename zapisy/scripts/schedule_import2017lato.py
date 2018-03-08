@@ -486,7 +486,7 @@ def find_teacher(t):
     if id:
         return Employee.objects.get(id=id)
     else:
-        print(("Not found: " + str(t)))
+        print("Not found: " + str(t))
         raise Exception("Teacher not found")
         return None
 
@@ -497,10 +497,10 @@ def get_classroom(rooms):
             room = int(room)
             classroom = Classroom.objects.get(number=room)
         except ObjectDoesNotExist:
-            print((bcolors.WARNING + room + ' <-wrong' + bcolors.ENDC))
+            print(bcolors.WARNING + room + ' <-wrong' + bcolors.ENDC)
             classroom = None
         except ValueError:
-            print((bcolors.WARNING + room + ' <-wrong' + bcolors.ENDC))
+            print(bcolors.WARNING + room + ' <-wrong' + bcolors.ENDC)
             classroom = None
         if classroom:
             classrooms.append(classroom)
@@ -569,7 +569,7 @@ def import_schedule(file, semester):
                 term.save()
                 
             except AttributeError:
-                print(('Error: line`'+line+'\' don\'t match regexp.'))
+                print('Error: line`'+line+'\' don\'t match regexp.')
 
         elif line.startswith(' '):
             if line==' \n':
@@ -579,7 +579,7 @@ def import_schedule(file, semester):
             try:
                 course = get_course(name)
             except Exception as e:
-                print(('Error during creating course:%s. \nError: %s ' % (name, e)))
+                print('Error during creating course:%s. \nError: %s ' % (name, e))
                 break
 
         else:
@@ -603,18 +603,18 @@ def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):
 def get_courses_ids(semester):
     cc = Course.objects.filter(semester=semester)
     for c in cc:
-        print(('"' + c.name.upper() + '" : '+ str(c.id) + ","))
+        print('"' + c.name.upper() + '" : '+ str(c.id) + ",")
 
 def get_employers_ids():
     ee = Employee.objects.filter(status = 0)
     for e in ee:
-        print(('"' + e.get_full_name().upper() + '" : '+ str(e.id) + ","))        
+        print('"' + e.get_full_name().upper() + '" : '+ str(e.id) + ",")        
 
 def run():
     semester = get_semester()
     # get_courses_ids(semester)
     # get_employers_ids()
-    print(('Przenosimy na semestr <%s>' % semester))
+    print('Przenosimy na semestr <%s>' % semester)
     file = open(SCHEDULE_FILE)
     import_schedule(file, semester)
 

@@ -11,7 +11,7 @@ def process(line):
         student.records_opening_bonus_minutes = bonus
         student.save()
     except ObjectDoesNotExist:
-        print((indeks + ': not found'))
+        print(indeks + ': not found')
 
 
 def run():

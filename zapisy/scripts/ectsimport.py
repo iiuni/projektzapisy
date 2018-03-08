@@ -23,12 +23,12 @@ def refresh(matricula, ects):
         try:
             student = Student.objects.get(matricula=matricula, status=0)
         except ObjectDoesNotExist:
-            print(("***" + str(matricula) + " brak"))
+            print("***" + str(matricula) + " brak")
             return
 
         if not TESTING:
             print(student)
-            print((student.ects))
+            print(student.ects)
             print(ects_sum)
             print("")
         student.ects = max(student.ects, ects_sum)

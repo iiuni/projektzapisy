@@ -20,7 +20,7 @@ def process(line):
         # g = Group.objects.get(id=group_id)
         # g.enroll_student(student)
     except ObjectDoesNotExist:
-        print((indeks + ' or ' + srt(group_id) + ' not found'))
+        print(indeks + ' or ' + srt(group_id) + ' not found')
 
 
 def run():

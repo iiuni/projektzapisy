@@ -16,12 +16,12 @@ def run():
 	for ce in CourseEntity.noremoved.all():
 		descs = CourseDescription.objects.filter(entity=ce).order_by('-id')
 		if len(descs) == 0:
-			print((bcolors.FAIL+'   [no description] '+ce.name_pl+bcolors.ENDC))
+			print(bcolors.FAIL+'   [no description] '+ce.name_pl+bcolors.ENDC)
 		else:
 			if ce.information == descs[0]:
-				print((bcolors.OKGREEN+ce.name_pl+bcolors.ENDC))
+				print(bcolors.OKGREEN+ce.name_pl+bcolors.ENDC)
 			else:
-				print((bcolors.WARNING+ce.name_pl+bcolors.ENDC))
-				print((str(descs[0]) + ' || ' + str(ce.information)))
+				print(bcolors.WARNING+ce.name_pl+bcolors.ENDC)
+				print(str(descs[0]) + ' || ' + str(ce.information))
 				ce.information = descs[0]
 				ce.save()
