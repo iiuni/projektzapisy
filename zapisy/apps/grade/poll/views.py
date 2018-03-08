@@ -713,10 +713,10 @@ def polls_for_user( request, slug ):
     return render(request, 'grade/poll/polls_for_user.html', data)
 
 def slug_cmp(t1, t2):
-    x, lx = t1
-    y, ly = t2
-    n1, slug1 = x
-    n2, slug2 = y
+    x = t1[0]
+    y = t2[0]
+    slug1 = x[1]
+    slug2 = y[1]
     if slug1 == "common": return -1
     if slug2 == "common": return 1
     return (x > y) - (x < y)
