@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='syllabus',
             name='learning_methods',
-            field=models.ManyToManyField(to='proposal.LearningMethod', null=True, verbose_name='Metody kszta\\u0142cenia', blank=True),
+            field=models.ManyToManyField(to='proposal.LearningMethod', null=True, verbose_name='Metody kszta\u0142cenia', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
