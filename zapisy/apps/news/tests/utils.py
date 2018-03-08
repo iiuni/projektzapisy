@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-
-from models import News
-from apps.users.tests.factories import UserFactory
-from datetime import datetime, timedelta
 from random import randint
+
+from datetime import datetime, timedelta
+
+from apps.news.models import News
+from apps.users.tests.factories import UserFactory
 
 
 def generate_random_news(category,

@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
+import datetime
 
-"""
-    News views
-"""
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db.models   import Q
-from django.http import HttpResponse
+from django.db.models import Q
 from django.shortcuts import render, redirect
 
 from apps.news.models import News
-from apps.news.utils import prepare_data_all
 from apps.users.models import BaseUser
-import datetime
 
-# NOWA WERSJA AKTUALNOŚCI ZE ZMERGOWANYMI SYSTEMAMI PONIZEJ
 
 def all_news(request):
     """
@@ -46,9 +39,10 @@ def all_news(request):
     except (PageNotAnInteger, EmptyPage):
         news = paginator.page(1)
 
-    data  = {'items': news, 'page_range': paginator.page_range, 'query': query}
+    data = {'items': news, 'page_range': paginator.page_range, 'query': query}
 
     return render(request, 'news/list_all.html', data)
+
 
 def all_news_focus_one(request, news_id):
     """
@@ -57,8 +51,9 @@ def all_news_focus_one(request, news_id):
     page = News.objects.get_page_number_by_news_id(int(news_id))
     return redirect('{0}?page={1}#od-news-{2}'.format(reverse('news-all'), page, news_id))
 
-def main_page( request ):
-    allNews = News.objects.exclude(category='-')\
-              .order_by("-date").select_related('author')
-    news = allNews[0] if len(allNews) > 0 else None
+
+def main_page(request):
+    all_news_except_hidden = News.objects.exclude(category='-') \
+        .order_by("-date").select_related('author')
+    news = all_news_except_hidden[0] if all_news_except_hidden else None
     return render(request, 'common/index.html', {'news': news})
