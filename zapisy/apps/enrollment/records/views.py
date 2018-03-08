@@ -253,9 +253,11 @@ def records_group_csv(request, group_id):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.csv'
 
-        writer = UnicodeWriter(response)
+        writer = csv.writer(response)
         for s in students_in_group:
-            writer.writerow([s.user.first_name, s.user.last_name, s.matricula, s.user.email])
+            writer.writerow(
+                [s.user.first_name, s.user.last_name, s.matricula, s.user.email]
+            )
 
         return response
 
@@ -271,9 +273,11 @@ def records_queue_csv(request, group_id):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.csv'
 
-        writer = UnicodeWriter(response)
+        writer = csv.writer(response)
         for s in students_in_queue:
-            writer.writerow([s.user.first_name, s.user.last_name, s.matricula, s.user.email])
+            writer.writerow(
+                [s.user.first_name, s.user.last_name, s.matricula, s.user.email]
+            )
 
         return response
 

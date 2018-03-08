@@ -294,34 +294,6 @@ def declination_template(num):
         return 'szablony'
     return 'szablonów'
 
-####  HELPER FOR UNICODE + CSV -- Python's CSV does not support unicode
-
-class UnicodeWriter(object):
-
-    def __init__(self, f, dialect=csv.excel_tab, encoding="utf-16", **kwds):
-        # Redirect output to a queue
-        self.queue = io.StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-        self.stream = f
-        self.encoding = encoding
-
-    def writerow(self, row):
-        # Modified from original: now using unicode(s) to deal with e.g. ints
-        self.writer.writerow([str(s).encode("utf-8") for s in row])
-        # Fetch UTF-8 output from the queue ...
-        data = self.queue.getvalue()
-        data = data.decode("utf-8")
-        # ... and reencode it into the target encoding
-        data = data.encode(self.encoding)
-        # write to the target stream
-        self.stream.write(data)
-        # empty queue
-        self.queue.truncate(0)
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
-
 #### CSV file preparation
 
 def generate_csv_title(poll):
@@ -351,11 +323,11 @@ def csv_prepare(handle, poll_sections, poll_data):
     csv_prepare prepares the entire csv file - typically this is a file for
     a specific poll
     """
-    #handle = StringIO.StringIO() #open(csv_title, 'wb')
-    writer = UnicodeWriter(handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL)
-    writer.writerow( csv_prepare_header(poll_sections) )
-    for poll in poll_data:
-        writer.writerow(poll)
+    writer = csv.writer(
+        handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL,0
+    )
+    writer.writerow(csv_prepare_header(poll_sections))
+    writer.writerows(poll_data)
     return handle
 
 ### POST DATA MANIPULATION
