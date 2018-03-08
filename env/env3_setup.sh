@@ -6,4 +6,4 @@ source env3/bin/activate
 # get requirements
 pip install -r /vagrant/zapisy/requirements.development.txt
 
-echo "Python-3.5 environment has been set up."
+echo "Python 3.6 environment has been set up."
