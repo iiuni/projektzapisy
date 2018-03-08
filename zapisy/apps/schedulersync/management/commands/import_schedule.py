@@ -224,6 +224,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS(
                         'Group {} {} updated. Difference:'.format(term.group, term)
                     )
+                )
                 for diff in diffs:
                     self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
                     self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
