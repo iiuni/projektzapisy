@@ -30,6 +30,3 @@ class StaffPermission(BasePermission):
 
     def has_permission(self, request, view):
         return bool(request.method in SAFE_METHODS and request.user.is_staff)
-
-    def has_object_permission(self, request, view, obj):
-        return bool(request.method in SAFE_METHODS and request.user.is_staff)
