@@ -3,7 +3,7 @@ general:
 
 machine:
   python:
-    version: 3.5.1
+    version: 3.6.2
   node:
     version: 9.20
 
