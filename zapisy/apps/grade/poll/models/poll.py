@@ -85,10 +85,10 @@ class Poll( models.Model ):
             if self.group:
                 if viewer == self.group.teacher: return True
 
-                lecture = [x_y for x_y in GROUP_TYPE_CHOICES if x_y[1] == 'wykład'][0][0]
+                lectureCode = next((code for code, desc in GROUP_TYPE_CHOICES if desc == 'wykład'))
                 groups  = Group.objects.filter( course = self.group.course,
                                                 teacher = viewer,
-                                                type    = lecture )
+                                                type    = lectureCode )
                 if groups: return True
             else:
                 # Zakładam, że wszyscy pracownicy powinni widzieć wyniki ankiet
