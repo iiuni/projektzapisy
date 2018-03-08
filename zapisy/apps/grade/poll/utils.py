@@ -324,7 +324,7 @@ def csv_prepare(handle, poll_sections, poll_data):
     a specific poll
     """
     writer = csv.writer(
-        handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL,0
+        handle, delimiter=';', quotechar='"', quoting = csv.QUOTE_ALL,
     )
     writer.writerow(csv_prepare_header(poll_sections))
     writer.writerows(poll_data)
