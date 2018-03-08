@@ -29,8 +29,7 @@ vobject==0.9.5
 
 python-memcached==1.58
 
-# On production, but one would need to find suitable version.
-xhtml2pdf==0.2b1
+xhtml2pdf==0.2.1
 
 # BBCode -> HTML
 postmarkup==1.2.2
