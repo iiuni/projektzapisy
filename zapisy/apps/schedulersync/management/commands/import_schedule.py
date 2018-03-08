@@ -86,14 +86,15 @@ class Command(BaseCommand):
         try:
             ce = CourseEntity.objects.get(name_pl__iexact=name)
         except CourseEntity.DoesNotExist:
-            self.stdout.write(self.style.ERROR(">Couldn't find course entity for {}"
-                                               .format(name.decode('utf-8'))))
+            self.stdout.write(
+                self.style.ERROR(">Couldn't find course entity for {}".format(name))
+            )
         except CourseEntity.MultipleObjectsReturned:
             ces = CourseEntity.objects.filter(name_pl__iexact=name, status=2).order_by('-id')
             if self.verbosity >= 1:
                 self.stdout.write(self.style.WARNING('Multiple course entity. Took first among:'))
                 for ce in ces:
-                    self.stdout.write(self.style.WARNING('  {}'.format(str(ce).decode('utf-8'))))
+                    self.stdout.write(self.style.WARNING('  {}'.format(str(ce))))
                 self.stdout.write('')
             ce = ces[0]
         return ce
@@ -105,8 +106,9 @@ class Command(BaseCommand):
             self.used_courses.add(course)
         except Course.DoesNotExist:
             if entity.slug is None:
-                self.stdout.write(self.style.ERROR("Couldn't find slug for {}"
-                                                   .format(str(entity).decode('utf-8'))))
+                self.stdout.write(
+                    self.style.ERROR("Couldn't find slug for {}".format(entity))
+                )
             else:
                 newslug = '{}_{}'.format(entity.slug,
                                          re.sub(r'[^\w]', '_', self.semester.get_short_name()))
@@ -124,8 +126,9 @@ class Command(BaseCommand):
                 if room.replace(' ', '') != '':
                     classrooms.append(Classroom.objects.get(number=room))
             except Classroom.DoesNotExist:
-                self.stdout.write(self.style.ERROR("Couldn't find classroom for {}"
-                                                   .format(room.decode('utf-8'))))
+                self.stdout.write(
+                    self.style.ERROR("Couldn't find classroom for {}".format(room))
+                )
         return classrooms
 
     def get_employee(self, name):
@@ -217,14 +220,15 @@ class Command(BaseCommand):
                 if create_terms:
                     term.save()
                     term.group.save()
-                self.stdout.write(self.style.SUCCESS('Group {} {} updated. Difference:'
-                                  .format(str(term.group).decode('utf-8'),
-                                          str(term).decode('utf-8'))))
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        'Group {} {} updated. Difference:'.format(term.group, term)
+                    )
                 for diff in diffs:
                     self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
-                    self.stdout.write(self.style.NOTICE(str(diff[1][0])).decode('utf-8'), ending='')
+                    self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
                     self.stdout.write(self.style.WARNING(' -> '), ending='')
-                    self.stdout.write(self.style.SUCCESS(str(diff[1][1])).decode('utf-8'))
+                    self.stdout.write(self.style.SUCCESS(diff[1][1]))
                 self.stdout.write('\n')
                 self.all_updates.append((term, diffs))
                 self.updated_terms += 1

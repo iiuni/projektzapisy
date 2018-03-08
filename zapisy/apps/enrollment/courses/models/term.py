@@ -88,7 +88,15 @@ class Term(models.Model):
         return "%s – %s" % (self.start_time.strftime("%H"), self.end_time.strftime("%H"))
 
     def get_dayOfWeek_display_short(self):
-        return { '1': 'pn', '2': 'wt', '3': 'śr', '4': 'cz', '5': 'pt', '6': 'so', '7': 'nd'}[self.dayOfWeek].decode('utf8')
+        return {
+            '1': 'pn',
+            '2': 'wt',
+            '3': 'śr',
+            '4': 'cz',
+            '5': 'pt',
+            '6': 'so',
+            '7': 'nd',
+        }[self.dayOfWeek]
 
     @staticmethod
     def get_day_of_week(date):

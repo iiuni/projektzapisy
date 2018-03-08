@@ -388,7 +388,7 @@ def create_ical_file(request):
         raise InvalidUserException()
     for group in groups:
         course_name = group.course.name
-        group_type = group.human_readable_type().decode('utf-8').lower()
+        group_type = group.human_readable_type().lower()
         try:
             terms = group.get_all_terms_for_export()
         except IndexError:

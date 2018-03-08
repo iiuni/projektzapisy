@@ -543,7 +543,7 @@ class StudiaZamawiane(ZamawianeAbstract):
     student = models.OneToOneField(Student, related_name='zamawiane', verbose_name='Student', on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'Student zamawiany: '+str(self.student).decode('utf-8')
+        return 'Student zamawiany: '+ str(self.student)
 
     def save(self, *args, **kwargs):
         try:
@@ -588,7 +588,7 @@ class StudiaZamawiane2012(ZamawianeAbstract):
     student = models.OneToOneField(Student, related_name='zamawiane2012', verbose_name='Student', on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'Student zamawiany: '+str(self.student).decode('utf-8')
+        return 'Student zamawiany: ' + str(self.student)
 
     def save(self, *args, **kwargs):
         try:
