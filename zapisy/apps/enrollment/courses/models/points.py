@@ -96,5 +96,5 @@ class StudentPointsView(models.Model):
         points = cls.objects.\
                  filter(student=student, entity__in=entities).\
                  aggregate(Sum('value'))
-        # Might not exist if there's no active term...
+        # If there's no active term, value__sum will be None
         return points['value__sum'] or 0
