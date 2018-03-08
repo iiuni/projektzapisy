@@ -1,6 +1,7 @@
 # projektzapisy Changelog
 
 # Current version
+* Added simple semester REST API serving semesters
 
 # Version 18.02.25
 

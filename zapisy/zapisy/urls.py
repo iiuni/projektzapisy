@@ -8,13 +8,18 @@ from apps.feeds import LatestNews
 import apps.news.views
 from apps.users import views as users_views
 from apps.enrollment.courses.admin import views as courses_admin_views
+from apps.enrollment.courses.rest_api import semester_api
 from django_cas_ng import views
+from rest_framework import routers
 
 admin.autodiscover()
+router = routers.DefaultRouter()
+router.register(r'semesters', semester_api.SemesterViewSet)
 
 
 urlpatterns = [
     url('^$', apps.news.views.main_page, name='main-page'),
+    url(r'^api/', include(router.urls)),
     url(r'^help/', include('apps.help.urls')),
     url(r'^courses/', include('apps.enrollment.courses.urls')),
     url(r'^records/', include('apps.enrollment.records.urls')),
