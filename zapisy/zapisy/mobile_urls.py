@@ -15,17 +15,17 @@ urlpatterns = [
     url(r'records/schedule/$', 'apps.mobile.views.studentSchedule', name = 'student-schedule'),
     url(r'records/schedule/(?P<schedule_owner>\w+)/$', 'apps.mobile.views.studentSchedule', name = 'student-schedule-owner'),
     url(r'records/schedule/(?P<schedule_owner>\w+)/(?P<delta>\-?\d+)/$', 'apps.mobile.views.studentSchedule', name = 'student-schedule-delta'),
-    
+
     url(r'employees/$', 'apps.mobile.views.employeesList', name = 'employees-list'),
     url(r'employees/(?P<key>\d)$', 'apps.mobile.views.employeesList', name = 'employees-list'),
-    
+
     url(r'employees/schedule/(?P<schedule_owner>\w+)/$', 'apps.mobile.views.employeeSchedule', name = 'employee-schedule-owner'),
     url(r'employees/schedule/(?P<schedule_owner>\w+)/(?P<delta>\-?\d+)/$', 'apps.mobile.views.employeeSchedule', name = 'employee-schedule-delta'),
-    
+
     url(r'students/$', 'apps.mobile.views.studentsList', name = 'students-list'),
     url(r'students/(?P<key>\d)$', 'apps.mobile.views.studentsList', name = 'students-list'),
-    
-    
+
+
     url(r'^(?P<cat>[\w\-_]+)/$', 'apps.news.views.latest_news', name='latest_news'),
     (r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')}),
     url(r'^course/(?P<slug>[\w\-_]+)', 'apps.mobile.views.courseTerms', name='course-terms'),

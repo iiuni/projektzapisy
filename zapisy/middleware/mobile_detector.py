@@ -59,4 +59,4 @@ class mobileDetectionMiddleware(object):
                     is_mobile = True
 
         request.is_mobile = is_mobile
-	#print "FROM mobile DETECTION " + str(request.is_mobile)
+        #print "FROM mobile DETECTION " + str(request.is_mobile)

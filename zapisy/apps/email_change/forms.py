@@ -28,20 +28,20 @@ from django.contrib.auth.models import User
 
 
 class EmailChangeForm(forms.ModelForm):
-    
+
     class Meta:
         fields = ['email']
         model = User
 
     email = forms.EmailField(label="adres email", max_length=75)
-    
+
     def __init__(self, *args, **kwargs):
         super(EmailChangeForm, self).__init__(*args, **kwargs)
 
         self.fields['email'].widget.attrs.update({
             'placeholder': self.instance.email,
         })
-    
+
     def clean_email(self):
         """
         Checks whether the new email address differs from the user's current
@@ -49,7 +49,7 @@ class EmailChangeForm(forms.ModelForm):
         """
 
         email = self.cleaned_data.get('email')
-        
+
         if self.instance.email == email:
             raise forms.ValidationError('New email address cannot be the same \
                 as your current email address')

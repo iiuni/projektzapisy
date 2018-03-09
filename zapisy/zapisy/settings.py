@@ -301,7 +301,7 @@ COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-	os.path.join(BASE_DIR, "compiled_assets"),
+        os.path.join(BASE_DIR, "compiled_assets"),
 )
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
@@ -316,8 +316,8 @@ STATICFILES_FINDERS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-		# This setting is badly named, it's the bundle dir relative
-		# to whatever you have in your STATICFILES_DIRS
+                # This setting is badly named, it's the bundle dir relative
+                # to whatever you have in your STATICFILES_DIRS
         'BUNDLE_DIR_NAME': '',
         'STATS_FILE': os.path.join(BASE_DIR, "webpack_resources", 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,

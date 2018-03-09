@@ -67,10 +67,10 @@ def import_ects(file):
 def process(line):
     line = line.strip()
     indeks,imie,nazwisko,email,bk_email,ects,program,etap,aisdL,numerycznaL,dyskretnaL = line.split('|')
-    
+
     if indeks == 'indeks':
         return
-    
+
     ects = int(ects)
     programs.add(program)
     try:
@@ -101,7 +101,7 @@ def process(line):
         return
 
     student.semestr = int(etap[-1])
-    
+
 
     aisdL = int(aisdL)
     numerycznaL = int(numerycznaL)

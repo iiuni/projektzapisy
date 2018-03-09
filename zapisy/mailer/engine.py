@@ -26,7 +26,7 @@ def prioritize():
     """
     Yield the messages in the queue in the order they should be sent.
     """
-    
+
     while True:
         while Message.objects.high_priority().count() or Message.objects.medium_priority().count():
             while Message.objects.high_priority().count():
@@ -44,9 +44,9 @@ def send_all():
     """
     Send all eligible messages in the queue.
     """
-    
+
     lock = FileLock("send_mail")
-    
+
     logger.debug("acquiring lock...")
     try:
         lock.acquire(LOCK_WAIT_TIMEOUT)
@@ -57,13 +57,13 @@ def send_all():
         logger.debug("waiting for the lock timed out. quitting.")
         return
     logger.debug("acquired.")
-    
+
     start_time = time.time()
-    
+
     dont_send = 0
     deferred = 0
     sent = 0
-    
+
     try:
         connection = mail.get_connection()
         connection.open()
@@ -96,7 +96,7 @@ def send_all():
         logger.debug("releasing lock...")
         lock.release()
         logger.debug("released.")
-    
+
     logger.info("")
     logger.info("%s sent; %s deferred; %s don't send" % (sent, deferred, dont_send))
     logger.info("done in %.2f seconds" % (time.time() - start_time))
@@ -106,7 +106,7 @@ def send_loop():
     Loop indefinitely, checking queue at intervals of EMPTY_QUEUE_SLEEP and
     sending messages if any are on queue.
     """
-    
+
     while True:
         while not Message.objects.all():
             logger.debug("sleeping for %s seconds before checking queue again" % EMPTY_QUEUE_SLEEP)

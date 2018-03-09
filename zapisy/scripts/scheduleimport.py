@@ -220,12 +220,12 @@ def import_schedule(file, semester):
             ('Obowiązkowy 2','O2'),
             ('Obowiązkowy 3','O3'),
             ('Obowiązkowy inż.','Oinż'),
-            ('Kurs','K'), 
-            ('Projekt','P'), 
-            ('Seminarium','S'), 
-            ('Nieinformatyczny','N'), 
-            ('Wychowanie fizyczne','WF'), 
-            ('Lektorat','L'), 
+            ('Kurs','K'),
+            ('Projekt','P'),
+            ('Seminarium','S'),
+            ('Nieinformatyczny','N'),
+            ('Wychowanie fizyczne','WF'),
+            ('Lektorat','L'),
             ('Inne','?')]
 
     COURSE_TYPE = {}
@@ -252,10 +252,10 @@ def import_schedule(file, semester):
                 group_type = GROUP_TYPES[g.group('type')]
                 teacher = find_teacher(g.group('teacher'))
                 limit = LIMITS[group_type]
-                
+
                 t = 15*(int(g.group('end_time'))-int(g.group('start_time')))
-                    
-                if group_type=='1':    
+
+                if group_type=='1':
                     group = Group.objects.get_or_create(course=course,
                                                         teacher=teacher,
                                                         type=group_type,
@@ -272,14 +272,14 @@ def import_schedule(file, semester):
                                            group=group)
                 term.classrooms = classrooms
                 term.save()
-                
+
             except AttributeError:
                 print('Error: line`'+line+'\' don\'t match regexp.')
 
         elif line.startswith(' '):
             if line==' \n':
                 continue
-            
+
             name = line.strip()
             try:
                 course = get_course(name)
@@ -312,4 +312,3 @@ def run():
         print('Przenosimy na semestr <%s>' % semester)
     file = open(SCHEDULE_FILE)
     import_schedule(file, semester)
-

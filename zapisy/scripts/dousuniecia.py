@@ -17,7 +17,7 @@ def process(line):
     print(student, student.status)
     # student.status = 0
     # student.save()
-    
+
 def run():
     file = open(studentsfile)
     for line in file:

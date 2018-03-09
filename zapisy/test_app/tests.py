@@ -667,19 +667,19 @@ class AdminTests(SeleniumTestCase):
         self.admin.first_name = 'przemka'
         self.admin.save()
     def createSemester(self):
-       today = datetime.now()
-       self.semester = Semester(
-           visible=True,
-           type=Semester.TYPE_WINTER,
-           year='2016/17',
-           records_opening=(today + timedelta(days=-1)),
-           records_closing=today + timedelta(days=6),
-           lectures_beginning=today + timedelta(days=4),
-           lectures_ending=today + timedelta(days=120),
-           semester_beginning=today,
-           semester_ending=today + timedelta(days=130),
-           records_ects_limit_abolition=(today + timedelta(days=1)))
-       self.semester.save()
+        today = datetime.now()
+        self.semester = Semester(
+            visible=True,
+            type=Semester.TYPE_WINTER,
+            year='2016/17',
+            records_opening=(today + timedelta(days=-1)),
+            records_closing=today + timedelta(days=6),
+            lectures_beginning=today + timedelta(days=4),
+            lectures_ending=today + timedelta(days=120),
+            semester_beginning=today,
+            semester_ending=today + timedelta(days=130),
+            records_ects_limit_abolition=(today + timedelta(days=1)))
+        self.semester.save()
 
     def setUp(self):
         self.createAdmin()

@@ -130,5 +130,5 @@ def proposal_vote_summary( request, slug ):
              'points'   : points,
              'votes'    : votes,
              'voters'    : voters}
-           
+
     return render(request, 'offer/vote/proposal_summary.html', data)

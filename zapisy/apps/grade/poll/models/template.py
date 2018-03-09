@@ -22,7 +22,7 @@ class Template( models.Model ):
     in_grade          = models.BooleanField(default=False, verbose_name='Szablon wykorzystywany w ocenie')
 
     author            = models.ForeignKey( Employee, verbose_name = 'autor' , on_delete=models.CASCADE)
-    
+
     class Meta:
         verbose_name        = 'szablon'
         verbose_name_plural = 'szablony'

@@ -960,7 +960,7 @@ def poll_answer( request, slug, pid ):
                                 break
                     else:
                         finit.append(((name, slug), [(int(pid), ticket, signed_ticket)]))
-                    
+
                     polls.sort(key = cmp_to_key(slug_cmp))
                     finit.sort(key = cmp_to_key(slug_cmp))
 

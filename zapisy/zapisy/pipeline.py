@@ -444,7 +444,7 @@ PIPELINE_JS = {
             'js/jquery/baseExtensions.js',
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
-        
+
         'admin/js/core.js',
         'admin/js/admin/RelatedObjectLookups.js',
         'admin/js/jquery.js',

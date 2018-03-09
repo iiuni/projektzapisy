@@ -3,7 +3,7 @@ from apps.enrollment.courses.models import CourseEntity
 
 class LearningMethod(models.Model):
     name = models.CharField(max_length=250, verbose_name='metoda kształcenia')
-    
+
     class Meta:
         verbose_name = 'Metoda kształcenia'
         verbose_name_plural = 'Metody kształcenia'
@@ -57,4 +57,3 @@ class StudentWork(models.Model):
 
     def __str__(self):
         return str(self.name)
-
