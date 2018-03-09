@@ -1,22 +1,23 @@
 import json
+from functools import reduce
 
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
+from django.contrib.auth import authenticate
+from django.utils.safestring import SafeText
+
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.users.decorators import student_required, employee_required
 from apps.users.models import BaseUser
-
 from apps.enrollment.courses.models import Semester
 from apps.grade.poll.models.poll import Poll
 from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_keys, group_polls_by_course, \
     secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark
 from apps.grade.ticket_create.models import PublicKey
-from django.contrib.auth import authenticate
 from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
-from django.views.decorators.csrf import csrf_exempt
-from django.core.cache import cache
-from functools import reduce
 
 
 ### KEYS generate:
@@ -65,7 +66,7 @@ def ajax_get_rsa_keys_step2( request ):
                 signed = [(
                     group,
                     int(t),
-                    secure_signer_without_save(request.user, group, t))
+                    secure_signer_without_save(request.user, group, t)
                 ) for group, t in tickets]
                 unblinds = [(str(g_t_st[1]), unblind( g_t_st[0], g_t_st[2] ) ) for g_t_st in signed]
                 message = json.dumps(unblinds)
