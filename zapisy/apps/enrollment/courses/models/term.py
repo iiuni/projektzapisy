@@ -124,7 +124,7 @@ class Term(models.Model):
             return self.classrooms_as_string
         classrooms = self.classrooms.all()
         if len(classrooms) > 0:
-            classrooms = '(s. {})'format(', '.join((x.number for x in classrooms)))
+            classrooms = '(s. {})'.format(', '.join((x.number for x in classrooms)))
         else:
             classrooms = ''
 
