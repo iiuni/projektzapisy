@@ -1,7 +1,6 @@
 from apps.enrollment.courses.models import Course, Semester, CourseEntity, Semester, CourseDescription
 from django.core.exceptions import ObjectDoesNotExist,MultipleObjectsReturned
 
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -13,15 +12,15 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def run():
-	for ce in CourseEntity.noremoved.all():
-		descs = CourseDescription.objects.filter(entity=ce).order_by('-id')
-		if len(descs) == 0:
-			print(bcolors.FAIL+'   [no description] '+ce.name_pl+bcolors.ENDC)
-		else:
-			if ce.information == descs[0]:
-				print(bcolors.OKGREEN+ce.name_pl+bcolors.ENDC)
-			else:
-				print(bcolors.WARNING+ce.name_pl+bcolors.ENDC)
-				print(str(descs[0]) + ' || ' + str(ce.information))
-				ce.information = descs[0]
-				ce.save()
+    for ce in CourseEntity.noremoved.all():
+        descs = CourseDescription.objects.filter(entity=ce).order_by('-id')
+        if len(descs) == 0:
+            print(bcolors.FAIL+'   [no description] '+ce.name_pl+bcolors.ENDC)
+        else:
+            if ce.information == descs[0]:
+                print(bcolors.OKGREEN+ce.name_pl+bcolors.ENDC)
+            else:
+                print(bcolors.WARNING+ce.name_pl+bcolors.ENDC)
+                print(str(descs[0]) + ' || ' + str(ce.information))
+                ce.information = descs[0]
+                ce.save()

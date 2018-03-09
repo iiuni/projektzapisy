@@ -37,9 +37,6 @@ class Syllabus(models.Model):
     def name(self):
         return self.entity.name
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Metoda kształcenia'
         verbose_name_plural = 'Metody kształcenia'
@@ -50,14 +47,14 @@ class Syllabus(models.Model):
 
 
 class StudentWork(models.Model):
-	name = models.CharField(max_length=250, verbose_name='nazwa aktywności')
-	hours = models.IntegerField(verbose_name='liczba godzin')
-	syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
+    name = models.CharField(max_length=250, verbose_name='nazwa aktywności')
+    hours = models.IntegerField(verbose_name='liczba godzin')
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
 
-	class Meta:
-		verbose_name = 'Praca własna studenta'
-		app_label = 'proposal'
+    class Meta:
+        verbose_name = 'Praca własna studenta'
+        app_label = 'proposal'
 
-	def __str__(self):
-		return str(self.name)
+    def __str__(self):
+        return str(self.name)
 
