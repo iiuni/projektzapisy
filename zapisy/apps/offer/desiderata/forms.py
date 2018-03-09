@@ -31,7 +31,6 @@ class DesiderataForm(forms.Form):
 
 
 class BaseDesiderataFormSet(BaseFormSet):
-
     def iter(self):
         result = {}
         for day in range(1, 8, 1):
@@ -43,7 +42,7 @@ class BaseDesiderataFormSet(BaseFormSet):
                 result[form.initial['day']][form.initial['hour']] = form
             else:
                 result[form.data['day']][form.data['hour']] = form
-        result = [(REVERSE_DAY[x[0]], x[1]) for x in sorted(list(result.items()), key=lambda x: x[0])]
+        result = [(REVERSE_DAY[x[0]], x[1]) for x in sorted(result.items(), key=lambda x: x[0])]
         return iter(result)
 
     def hours(self):

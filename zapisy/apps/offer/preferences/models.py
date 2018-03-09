@@ -120,7 +120,7 @@ class Preference(models.Model):
             Values are restricted with PREFERENCE_CHOICES.
         """
         valid_prefs = ['lecture', 'review_lecture', 'tutorial', 'lab']
-        valid_values = list(dict(PREFERENCE_CHOICES).keys())
+        valid_values = [key for key, _ in PREFERENCE_CHOICES]
         for pref in filter(valid_prefs.__contains__, list(kwargs.keys())):
             if kwargs[pref] not in valid_values:
                 raise UnknownPreferenceValue
