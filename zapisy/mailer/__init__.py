@@ -34,7 +34,7 @@ def send_mail(subject, message, from_email, recipient_list, priority="medium",
     message = force_unicode(message)
 
     if len(subject) > 100:
-        subject = u"%s..." % subject[:97]
+        subject = "%s..." % subject[:97]
 
     for to_address in recipient_list:
         Message(to_address=to_address,
@@ -78,7 +78,7 @@ def mail_admins(subject, message, fail_silently=False, priority="medium"):
     message = force_unicode(message)
 
     if len(subject) > 100:
-        subject = u"%s..." % subject[:97]
+        subject = "%s..." % subject[:97]
 
     for name, to_address in settings.ADMINS:
         Message(to_address=to_address,
@@ -99,7 +99,7 @@ def mail_managers(subject, message, fail_silently=False, priority="medium"):
     message = force_unicode(message)
 
     if len(subject) > 100:
-        subject = u"%s..." % subject[:97]
+        subject = "%s..." % subject[:97]
 
     for name, to_address in settings.MANAGERS:
         Message(to_address=to_address,
