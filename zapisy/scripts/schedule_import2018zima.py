@@ -1,5 +1,3 @@
-
-
 from django.core.exceptions import ObjectDoesNotExist,MultipleObjectsReturned
 
 class bcolors:

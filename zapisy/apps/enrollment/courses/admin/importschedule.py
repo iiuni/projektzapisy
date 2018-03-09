@@ -1,4 +1,3 @@
-
 import os
 from django.db import transaction
 from django.template.defaultfilters import slugify

@@ -1,4 +1,3 @@
-
 from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist
 from apps.enrollment.courses.models import Semester

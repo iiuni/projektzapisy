@@ -1,4 +1,3 @@
-
 from datetime import time, date
 
 from django.db import models

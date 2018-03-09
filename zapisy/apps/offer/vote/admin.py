@@ -1,4 +1,3 @@
-
 """
     Django admin panel for vote
 """

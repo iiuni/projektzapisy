@@ -1,4 +1,3 @@
-
 """
     News models
 """

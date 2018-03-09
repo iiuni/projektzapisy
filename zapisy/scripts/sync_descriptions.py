@@ -1,4 +1,3 @@
-
 from apps.enrollment.courses.models import Semester, Course, CourseEntity, CourseDescription
 
 def run():

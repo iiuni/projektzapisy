@@ -1,4 +1,3 @@
-
 # tests marked by comment "TIME DEPENDENCY" should be free from this dependency
 
 from django.test import TestCase

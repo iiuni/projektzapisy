@@ -1,4 +1,3 @@
-
 def getGroups(semester, group = None, type = None, course = None):
     if course == -1:
         return {}

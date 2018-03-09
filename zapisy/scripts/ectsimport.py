@@ -1,4 +1,3 @@
-
 from django.core.exceptions import ObjectDoesNotExist
 from apps.users.models import Student
 import sys

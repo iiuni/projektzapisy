@@ -1,4 +1,3 @@
-
 from django.db import models
 from .course import Course
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist

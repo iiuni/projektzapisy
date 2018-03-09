@@ -1,4 +1,3 @@
-
 from apps.grade.poll.models import Section, \
                                    OpenQuestion, \
                                    OpenQuestionOrdering, \

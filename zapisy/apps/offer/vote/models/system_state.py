@@ -1,4 +1,3 @@
-
 """
     System State for vote
     Default values are dafined as module variables

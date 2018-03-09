@@ -1,4 +1,3 @@
-
 from django.test import TransactionTestCase
 
 from django.contrib.auth.models import User

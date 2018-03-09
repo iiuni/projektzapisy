@@ -1,4 +1,3 @@
-
 from datetime import time, date, datetime
 import string
 from zapisy import common

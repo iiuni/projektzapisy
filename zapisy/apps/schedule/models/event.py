@@ -1,4 +1,3 @@
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import Http404

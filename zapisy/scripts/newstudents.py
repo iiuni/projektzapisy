@@ -1,4 +1,3 @@
-
 from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist
 from zapisy.apps.users.models import Student, Program, UserProfile

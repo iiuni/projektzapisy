@@ -1,4 +1,3 @@
-
 from django.test import TestCase
 
 from apps.schedule.forms import EventForm

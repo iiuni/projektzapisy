@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand, CommandError
 from apps.enrollment.courses.models.course import CourseEntity
 from apps.enrollment.courses.models.course_type import Type

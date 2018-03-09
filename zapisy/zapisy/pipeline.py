@@ -1,4 +1,3 @@
-
 PIPELINE_CSS = {
     'main': {
         'source_filenames': (

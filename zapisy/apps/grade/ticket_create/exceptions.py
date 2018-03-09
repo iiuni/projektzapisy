@@ -1,4 +1,3 @@
-
 class InvalidPollException( BaseException ):
     pass
 

@@ -1,4 +1,3 @@
-
 from django.core.urlresolvers import reverse
 from apps.news.models import News
 from django.contrib.syndication.views import Feed

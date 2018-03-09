@@ -1,4 +1,3 @@
-
 """
     Form for vote
 """

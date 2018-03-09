@@ -1,4 +1,3 @@
-
 """
 lockfile.py - Platform-independent advisory file locks.
 
