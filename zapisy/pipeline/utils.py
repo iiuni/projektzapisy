@@ -1,6 +1,6 @@
 import os
 import sys
-import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
 from django.utils.encoding import smart_str
 from django.utils.module_loading import import_string

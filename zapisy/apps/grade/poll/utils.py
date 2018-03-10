@@ -741,14 +741,14 @@ def make_pages( pages, page_number ):
     first = max(page_number-2, 6)
     last = min(page_number+3, pages)
 
-    page_range.extend(list(range(first, last)))
+    page_range.extend(range(first, last))
 
     if page_number < pages - 8:
-        list.extend( [-1])
+        page_range.extend([-1])
 
-    last = min(page_number+3, pages)
-    start = max(last, pages-5)
-    page_range.extend(list(range(start, pages)))
+    last = min(page_number + 3, pages)
+    start = max(last, pages - 5)
+    page_range.extend(range(start, pages))
 
     return page_range
 

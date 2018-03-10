@@ -563,7 +563,7 @@ class StudiaZamawiane(ZamawianeAbstract):
                 message_user = render_to_string('users/bank_account_change_email.html', c)
                 message_employee = render_to_string('users/bank_account_change_email_employee.html', c)
 
-                emails = [x['email'] for x in list(StudiaZamawianeMaileOpiekunow.objects.values())]
+                emails = [x['email'] for x in StudiaZamawianeMaileOpiekunow.objects.values()]
 
                 send_mail(subject, message_user, None, [self.student.user.email])
                 send_mail(subject_employee, message_employee, None ,emails)
@@ -608,7 +608,7 @@ class StudiaZamawiane2012(ZamawianeAbstract):
                 message_user = render_to_string('users/bank_account_change_email.html', c)
                 message_employee = render_to_string('users/bank_account_change_email_employee.html', c)
 
-                emails = [x['email'] for x in list(StudiaZamawianeMaileOpiekunow.objects.values())]
+                emails = [x['email'] for x in StudiaZamawianeMaileOpiekunow.objects.values()]
 
                 send_mail(subject, message_user, None, [self.student.user.email])
                 send_mail(subject_employee, message_employee, None ,emails)
