@@ -48,7 +48,6 @@ def save(request):
     if form.is_valid:
         available_fields = Preference._meta.get_all_field_names()
         changed_fields = list(set(available_fields) & set(request.POST.keys()))
-        a = ''
         for field in changed_fields:
             setattr(pref, field, form[field].value())
         pref.save()

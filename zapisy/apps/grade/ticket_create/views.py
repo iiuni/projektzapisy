@@ -62,7 +62,7 @@ def ajax_get_rsa_keys_step2( request ):
                 ts = json.loads(request.POST.get('ts'))
                 connected_groups = connect_groups( groupped_polls, form )
                 groups = reduce(list.__add__, connected_groups )
-                tickets = list(zip(groups, ts))
+                tickets = zip(groups, ts)
                 signed = [(
                     group,
                     int(t),
@@ -97,7 +97,7 @@ def connections_choice( request ):
                     groups           = reduce(list.__add__, connected_groups )
                 else:
                     groups = []
-                prepared_tickets = list(zip( groups, unblindt, unblindst ))
+                prepared_tickets = zip(groups, unblindt, unblindst)
                 #### final mark:
                 for g, t, unblind in prepared_tickets:
                     secure_mark(request.user, g, t )

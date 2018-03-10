@@ -60,7 +60,7 @@ def offer(request, slug=None):
 @permission_required('proposal.can_create_offer')
 def select_for_voting(request):
     courses = CourseEntity.noremoved.all()
-    courses = list(filter((lambda course: 1 <= course.get_status() <= 3), courses))
+    courses = filter((lambda course: 1 <= course.get_status() <= 3), courses)
     if request.method == 'POST':
         for course in courses:
             ids_for_voting = set(map(int, request.POST.getlist('for_voting')))
