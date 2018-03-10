@@ -1,0 +1,245 @@
+{% load fereol_common %}
+{% load compressed %}
+{% load staticfiles %}
+{% load settings_value %}
+{% load osenv_value %}
+{% load django_version %}
+{% load i18n %}
+{% load render_bundle from webpack_loader %}
+
+{# Bazowy template, który umożliwia korzystanie z biblioteki boostrap4 #}
+{# Powinien być rozszerzany (extend), przy przepisywaniu widoków do nowej wersji boostrapa #}
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
+    <meta name="description"
+          content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+    <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
+
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-touch-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-touch-icon-114x114.png' %}">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-109984921-1');
+    </script>
+
+    <script type="text/javascript" src="{% static "vendor.js" %}"></script>
+    {% render_bundle "main" %}
+    {% block rendered_bundles %}
+    {% endblock %}
+    {% block styles %}
+    {% endblock %}
+    <script type="text/javascript">
+        const user_is_student = {% if request.user.student %}true{% else %}false{%endif %};
+    </script>
+    {% block js %}{% endblock %}
+    {% block rss %}{% endblock %}
+    {% block head_extra %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}"/>
+    <script src="{% static 'js/cookieconsent.min.js' %}"></script>
+    <script>
+        window.addEventListener("load", function () {
+            window.cookieconsent.initialise({
+                "palette": {
+                    "popup": {
+                        "background": "#222222"
+                    },
+                    "button": {
+                        "background": "#00709e"
+                    }
+                },
+                "showLink": false,
+                "theme": "classic",
+                "position": "bottom",
+                "content": {
+                    "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
+                    "dismiss": "OK"
+                }
+            })
+        });
+    </script>
+    <script src="{% static "js/common/utils.js" %}"></script>
+    <script src="{% static "js/common/base.js" %}"></script>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="container collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li{% block enrollment_active %}{% endblock %} class="nav-item">
+                    <a href="{% url 'enrollment-main' %}" class="nav-link">System Zapisów</a>
+                </li>
+                <li{% block grade_active %}{% endblock %} class="nav-item">
+                    <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
+                </li>
+                <li{% block offer_active %}{% endblock %} class="nav-item">
+                    <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
+                </li>
+                {% if perms.courses.view_stats %}
+                    <li{% block statistics_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'statistics:main' %}" class="nav-link">Statystyki</a>
+                    </li>
+                {% endif %}
+                <li{% block events_active %}{% endblock %}>
+                    <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                </li>
+            </ul>
+            {% if user.is_authenticated %}
+                <div class="navbar-nav ml-auto">
+                <span class="navbar-text">
+                    <strong>
+                        {{ user.get_full_name }}
+                    </strong>
+                </span>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
+                        </li>
+                        {% if user.is_staff %}
+                            <li class="nav-item">
+                                <a href="/fereol_admin/" class="nav-link">Admin</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread nav-link">Aktualności ({{ user.student.get_number_of_news }})</a>
+                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread nav-link">Aktualności ({{ user.employee.get_number_of_news }})</a>
+                            {% else %}
+                                <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'help' %}" class="nav-link">Pomoc</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown" id="login-dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b>Zaloguj się</b><span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="social-buttons login-dp">
+                                <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
+                                    <img src="{% static 'images/usos-login-logo.png' %}"
+                                         alt="Uniwersytet Wrocławski">
+                                    <div class="clearfix"></div>
+                                    Zaloguj się przez USOS
+                                </a>
+                            </div>
+                            <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                {% csrf_token %}
+                                {% if request.path == '/' %}
+                                    <input type="hidden" name="next"
+                                           value="{% url 'schedule-own' %}"/>
+                                {% else %}
+                                    <input type="hidden" name="next" value="{{ request.path }}"/>
+                                {% endif %}
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="id_login" name="username"
+                                           placeholder="Użytkownik">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleDropdownFormPassword1">Password</label>
+                                    <input type="password" class="form-control" id="id_password"
+                                            {# name="password" placeholder="Hasło">
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" value="true"
+                                           id="remember" name="remember_me">
+                                    <label class="form-check-label" for="remember">
+                                        Pamiętaj mnie
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Zaloguj</button>
+                            </form>
+                        </div>
+                        {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="top">
+        <div class="logo header">
+            <div class="container">
+                <a href="/">
+                    <img src="{% static 'images/logotyp.jpg' %}" alt="Uniwersytet Wrocławski">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container p-0">
+    <ul class="nav nav-tabs">
+        {% block system_menu %}
+        {% endblock %}
+    </ul>
+    {% if request.path != '/' %}
+        <div class="row p-2">
+            <nav aria-label="breadcrumb" role="navigation">
+                <ol class="breadcrumb">
+                    {% block bread %}
+                    {% endblock %}
+                </ol>
+            </nav>
+        </div>
+    {% endif %}
+    <div class="row">
+        {% block messages %}
+            {% for message in messages %}
+                <div class="alert alert-info {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endblock %}
+    </div>
+    <div class="row">
+        {% block topContent %}{% endblock %}
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="row">
+        <footer>
+            <hr class="my-4">
+            <p class="text-left">
+                &copy; {% now "Y" %}<a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                    <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                {% endif %}
+                | Błędy i uwagi:
+                <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
+                {% if "DEBUG"|settings_value == True or "II_ZAPISY_STAGING"|osenv_value == "True" %}
+                    |<strong>Django {% django_version %}</strong>
+                {% endif %}
+            </p>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

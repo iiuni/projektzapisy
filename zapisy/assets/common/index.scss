@@ -1,0 +1,13 @@
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+
+div.header {
+  background: #00709e;
+  /* Old browsers */
+  height: 96px;
+}
+
+#course-types {
+  max-height: 20vh;
+  overflow-y: scroll;
+}
