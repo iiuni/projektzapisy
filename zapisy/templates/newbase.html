@@ -8,7 +8,7 @@
 {% load render_bundle from webpack_loader %}
 
 {# Bazowy template, który umożliwia korzystanie z biblioteki boostrap4 #}
-{# Powinien być wykorzystywany jako bazowy, przy przepisywaniu widoków do nowej wersji boostrapa #}
+{# Powinien być rozszerzany (extend), przy przepisywaniu widoków do nowej wersji boostrapa #}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -18,7 +18,7 @@
     <meta name="description"
           content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
-    <!-- Le fav and touch icons -->
+
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-touch-icon-72x72.png' %}">
@@ -35,7 +35,7 @@
         gtag('js', new Date());
         gtag('config', 'UA-109984921-1');
     </script>
-    <!-- Le styles -->
+
     <script type="text/javascript" src="{% static "vendor.js" %}"></script>
     {% render_bundle "main" %}
     {% block rendered_bundles %}
@@ -81,7 +81,7 @@
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="container collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li{% block enrollment_active %}{% endblock %} class="nav-item">
                     <a href="{% url 'enrollment-main' %}" class="nav-link">System Zapisów</a>
@@ -137,65 +137,49 @@
                     </ul>
                 </div>
             {% else %}
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav">
                     <li class="nav-item dropdown" id="login-dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>Zaloguj się</b><span class="caret"></span>
                         </a>
-                        {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}
-                        <div id="login-dp" class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <div class="col-12 dropdown-item">
-                                <div class="row">
-                                    <div class="social-buttons">
-                                        <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
-                                            <img src="{% static 'images/usos-login-logo.png' %}"
-                                                 alt="Uniwersytet Wrocławski">
-                                            <div class="clearfix"></div>
-                                            Zaloguj się przez USOS
-                                        </a>
-                                    </div>
-                                    <button class="btn primary" id="btn-no-usos">
-                                        lub użyj konta Systemu Zapisów
-                                    </button>
-                                    <div id="login-without-usos">
-                                        <form action="{% url 'user-login' %}"
-                                              method="POST" class="form" role="form">
-                                            {% csrf_token %}
-                                            {% if request.path == '/' %}
-                                                <input type="hidden" name="next"
-                                                       value="{% url 'schedule-own' %}"/>
-                                            {% else %}
-                                                <input type="hidden" name="next" value="{{ request.path }}"/>
-                                            {% endif %}
-                                            <div class="form-group">
-                                                <input tabindex="1" type="text" id="id_login" name="username"
-                                                       placeholder="Użytkownik">
-                                            </div>
-                                            <div class="form-group">
-                                                <input tabindex="2" type="password" id="id_password"
-                                                       name="password" placeholder="Hasło">
-                                            </div>
-                                            <div class="form-group">
-                                                <button type="submit" tabindex="4"
-                                                        class="btn btn-light btn-block">Zaloguj &raquo;
-                                                </button>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>
-                                                    <input type="checkbox" tabindex="3" value="true"
-                                                           id="xlInput3" name="remember_me">
-                                                    Pamiętaj mnie
-                                                </label>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="social-buttons login-dp">
+                                <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
+                                    <img src="{% static 'images/usos-login-logo.png' %}"
+                                         alt="Uniwersytet Wrocławski">
+                                    <div class="clearfix"></div>
+                                    Zaloguj się przez USOS
+                                </a>
                             </div>
+                            <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                {% csrf_token %}
+                                {% if request.path == '/' %}
+                                    <input type="hidden" name="next"
+                                           value="{% url 'schedule-own' %}"/>
+                                {% else %}
+                                    <input type="hidden" name="next" value="{{ request.path }}"/>
+                                {% endif %}
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="id_login" name="username"
+                                           placeholder="Użytkownik">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleDropdownFormPassword1">Password</label>
+                                    <input type="password" class="form-control" id="id_password"
+                                            {# name="password" placeholder="Hasło">
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" value="true"
+                                           id="remember" name="remember_me">
+                                    <label class="form-check-label" for="remember">
+                                        Pamiętaj mnie
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Zaloguj</button>
+                            </form>
                         </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="col-2"></div> <!-- this will keep some space on the right. -->
+                        {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}
                     </li>
                 </ul>
             {% endif %}
@@ -203,9 +187,11 @@
     </nav>
     <div class="top">
         <div class="logo header">
-            <a href="/">
-                <img src="{% static 'images/logotyp.jpg' %}" alt="Uniwersytet Wrocławski">
-            </a>
+            <div class="container">
+                <a href="/">
+                    <img src="{% static 'images/logotyp.jpg' %}" alt="Uniwersytet Wrocławski">
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -242,7 +228,6 @@
         <footer>
             <hr class="my-4">
             <p class="text-left">
-                {# <a href="{% url 'on-mobile' %}" class="go-mobile">Przejdź do wersji mobilnej</a> #}
                 &copy; {% now "Y" %}<a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
                 {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
                     <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
