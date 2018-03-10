@@ -196,28 +196,36 @@
     </div>
 </div>
 <div class="container p-0">
-    <ul class="nav nav-tabs">
-        {% block system_menu %}
-        {% endblock %}
-    </ul>
+    <div class="row">
+        <div class="col">
+            <ul class="nav nav-tabs">
+                {% block system_menu %}
+                {% endblock %}
+            </ul>
+        </div>
+    </div>
     {% if request.path != '/' %}
-        <div class="row p-2">
-            <nav aria-label="breadcrumb" role="navigation">
-                <ol class="breadcrumb">
-                    {% block bread %}
-                    {% endblock %}
-                </ol>
-            </nav>
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" role="navigation">
+                    <ol class="breadcrumb">
+                        {% block bread %}
+                        {% endblock %}
+                    </ol>
+                </nav>
+            </div>
         </div>
     {% endif %}
     <div class="row">
-        {% block messages %}
-            {% for message in messages %}
-                <div class="alert alert-info {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endblock %}
+        <div class="col">
+            {% block messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        </div>
     </div>
     <div class="row">
         {% block topContent %}{% endblock %}
@@ -225,20 +233,22 @@
         {% endblock %}
     </div>
     <div class="row">
-        <footer>
-            <hr class="my-4">
-            <p class="text-left">
-                &copy; {% now "Y" %}<a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-                {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                    <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-                {% endif %}
-                | Błędy i uwagi:
-                <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
-                {% if "DEBUG"|settings_value == True or "II_ZAPISY_STAGING"|osenv_value == "True" %}
-                    |<strong>Django {% django_version %}</strong>
-                {% endif %}
-            </p>
-        </footer>
+        <div class="col">
+            <footer>
+                <hr class="my-4">
+                <p class="text-left">
+                    &copy; {% now "Y" %}<a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                    {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                        <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                    {% endif %}
+                    | Błędy i uwagi:
+                    <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
+                    {% if "DEBUG"|settings_value == True or "II_ZAPISY_STAGING"|osenv_value == "True" %}
+                        |<strong>Django {% django_version %}</strong>
+                    {% endif %}
+                </p>
+            </footer>
+        </div>
     </div>
 </div>
 </body>
