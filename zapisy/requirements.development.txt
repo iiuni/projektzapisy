@@ -1,7 +1,7 @@
 -r requirements.common.txt
 
 # Additional test dependencies
-selenium==2.53.6
+selenium==2.53.6 # Trzeba ustawić środowisko przed podbiciem
 factory_boy==2.9.2
 coverage==4.4.2
 django-debug-toolbar==1.5
