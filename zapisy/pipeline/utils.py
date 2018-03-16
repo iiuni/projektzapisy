@@ -2,7 +2,6 @@ import os
 import sys
 import urllib.parse
 
-from django.utils.encoding import smart_str
 from django.utils.module_loading import import_string
 
 
@@ -19,7 +18,7 @@ def to_class(class_str):
 def filepath_to_uri(path):
     if path is None:
         return path
-    return urllib.parse.quote(smart_str(path).replace("\\", "/"), safe="/~!*()'#?")
+    return urllib.parse.quote(path.replace("\\", "/"), safe="/~!*()'#?")
 
 
 def _relpath_nt(path, start=os.path.curdir):

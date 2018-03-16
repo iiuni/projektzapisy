@@ -24,14 +24,13 @@ PRIORITY_MAPPING = {
 
 def send_mail(subject, message, from_email, recipient_list, priority="medium",
               fail_silently=False, auth_user=None, auth_password=None):
-    from django.utils.encoding import force_unicode
     from mailer.models import Message
 
     priority = PRIORITY_MAPPING[priority]
 
     # need to do this in case subject used lazy version of ugettext
-    subject = force_unicode(subject)
-    message = force_unicode(message)
+    subject = str(subject)
+    message = str(message)
 
     if len(subject) > 100:
         subject = "%s..." % subject[:97]
@@ -50,13 +49,12 @@ def send_html_mail(subject, message, message_html, from_email, recipient_list,
     """
     Function to queue HTML e-mails
     """
-    from django.utils.encoding import force_unicode
     from mailer.models import Message
 
     priority = PRIORITY_MAPPING[priority]
 
     # need to do this in case subject used lazy version of ugettext
-    subject = force_unicode(subject)
+    subject = str(subject)
 
     for to_address in recipient_list:
         Message(to_address=to_address,
@@ -68,14 +66,13 @@ def send_html_mail(subject, message, message_html, from_email, recipient_list,
 
 
 def mail_admins(subject, message, fail_silently=False, priority="medium"):
-    from django.utils.encoding import force_unicode
     from django.conf import settings
     from mailer.models import Message
 
     priority = PRIORITY_MAPPING[priority]
 
-    subject = settings.EMAIL_SUBJECT_PREFIX + force_unicode(subject)
-    message = force_unicode(message)
+    subject = settings.EMAIL_SUBJECT_PREFIX + str(subject)
+    message = str(message)
 
     if len(subject) > 100:
         subject = "%s..." % subject[:97]
@@ -89,14 +86,13 @@ def mail_admins(subject, message, fail_silently=False, priority="medium"):
 
 
 def mail_managers(subject, message, fail_silently=False, priority="medium"):
-    from django.utils.encoding import force_unicode
     from django.conf import settings
     from mailer.models import Message
 
     priority = PRIORITY_MAPPING[priority]
 
-    subject = settings.EMAIL_SUBJECT_PREFIX + force_unicode(subject)
-    message = force_unicode(message)
+    subject = settings.EMAIL_SUBJECT_PREFIX + str(subject)
+    message = str(message)
 
     if len(subject) > 100:
         subject = "%s..." % subject[:97]

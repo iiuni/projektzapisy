@@ -9,7 +9,6 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import SafeText, mark_safe
-from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 
 from apps.grade.poll.models.last_visit import LastVisit
@@ -1276,10 +1275,9 @@ def save_csv(request, mode, poll_id):
                     answer.append( str(question_answer[0]) )
         answers.append( answer )
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename='+ smart_str(csv_title)
+    response['Content-Disposition'] = 'attachment; filename={}'.format(csv_title)
     csv_content = csv_prepare(response, sections, answers)
     return response
-    #return HttpResponseRedirect(reverse( 'grade-poll-poll-results', args=[mode, poll_id] ))
 
 @login_required
 def share_results_toggle( request, mode, poll_id ):

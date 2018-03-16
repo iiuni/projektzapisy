@@ -39,7 +39,7 @@ class PollCombineForm(forms.Form):
                                  poll.group.get_teacher_full_name() + '</li>'
                 title += '</ul>'
 
-                field = forms.BooleanField(label=SafeUnicode(title),
+                field = forms.BooleanField(label=SafeText(title),
                                            required=False,
                                            initial=False,
                                            help_text='Powiąż ocenę'
@@ -52,7 +52,7 @@ class PollCombineForm(forms.Form):
         for name in self.poll_groups:
             result += "<tr><td colspan='2'>" + str(name) + "</td></tr>"
         result += super(PollCombineForm, self).as_table()
-        return SafeUnicode(result)
+        return SafeText(result)
 
 
 class ContactForm(forms.Form):

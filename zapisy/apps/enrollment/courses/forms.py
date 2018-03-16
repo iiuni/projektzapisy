@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.encoding import smart_str
 
 from apps.enrollment.courses.models import Course, CourseEntity
 
@@ -100,7 +99,7 @@ class Parser(object):
 
             elif line[1] != ' ':
                 if title and groups:
-                    result.append( {'name': smart_str(title), 'groups': groups} )
+                    result.append( {'name': title, 'groups': groups} )
                 title = self._parseTitle(line)
                 groups = []
             else:
