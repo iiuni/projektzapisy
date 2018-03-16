@@ -7,9 +7,9 @@ from django.utils.deprecation import MiddlewareMixin
 
 logger = getLogger()
 
+
 # klasa zajmująca się błędami aplikacji
 class ErrorHandlerMiddleware(MiddlewareMixin):
-
     def process_exception(self, request, exception):
         # logowanie nie przechwyconych wyjątków
         #

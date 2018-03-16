@@ -1071,16 +1071,16 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                         options  = question.options.all()
                         ans_data = []
                         for option in options:
-                            if sts_fin:
-                                perc = int(100 * (float(q_data.count( option )) / float(sts_fin)))
+                            if sts_all:
+                                perc = int(100 * (float(q_data.count(option)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(( option.content, q_data.count( option ), perc))
-                        if sts_fin:
-                            perc = int(100 * (float(sts_fin - len( q_data))/ float(sts_fin)))
+                            ans_data.append((option.content, q_data.count(option), perc))
+                        if sts_all:
+                            perc = int(100 * (float(sts_all - len(question_answers)) / float(sts_all)))
                         else:
                             perc = 0
-                        ans_data.append(("Brak odpowiedzi", sts_fin - len( q_data), perc))
+                        ans_data.append(("Brak odpowiedzi", sts_all - len(question_answers), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
 
                     elif isinstance( question, MultipleChoiceQuestion ):
@@ -1095,22 +1095,22 @@ def poll_results( request, mode='S', poll_id = None, semester=None ):
                         options            = question.options.all()
                         ans_data           = []
                         for option in options:
-                            if sts_fin:
-                                perc = int(100 * (float(q_data.count( option )) / float(sts_fin)))
+                            if sts_all:
+                                perc = int(100 * (float(q_data.count(option)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(( option.content, q_data.count( option ), perc))
+                            ans_data.append((option.content, q_data.count(option), perc))
                         if question.has_other:
-                            if sts_fin:
-                                perc = int(100 * (float(len( other_data)) / float(sts_fin)))
+                            if sts_all:
+                                perc = int(100 * (float(len(other_data)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(( "Inne", len( other_data ), perc, other_data))
-                        if sts_fin:
-                            perc = int(100 * (float(sts_fin - len(question_answers))/ float(sts_fin)))
+                            ans_data.append(("Inne", len(other_data), perc, other_data))
+                        if sts_all:
+                            perc = int(100 * (float(sts_all - len(question_answers)) / float(sts_all)))
                         else:
                             perc = 0
-                        ans_data.append(("Brak odpowiedzi", sts_fin - len( question_answers), perc))
+                        ans_data.append(("Brak odpowiedzi", sts_all - len(question_answers), perc))
                         s_ans.append(( mode, question.content, ans_data, ( 100 / len( ans_data ))-1))
 
                     elif isinstance( question, OpenQuestion ):
