@@ -1,5 +1,3 @@
-# Django settings for fereol project.
-
 import os
 import logging
 import environ
@@ -165,11 +163,11 @@ INSTALLED_APPS = (
     'modeltranslation', # needs to be before django.contrib.admin
 
     'rest_framework',
-    
+
     # needed from 1.7 onwards to prevent Django from trying to apply
     # migrations when testing (slows down DB setup _a lot_)
     'test_without_migrations',
-    
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -223,7 +221,7 @@ DATETIME_FORMAT = "j N Y, H:i"
 
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
-CAS_LOGIN_MSG = u'Sukces! Zalogowano przez USOS (login: %s).'
+CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
