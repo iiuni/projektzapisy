@@ -16,7 +16,7 @@ class FullCalendarAdapter(object):
         result = []
 
         for item in self.queryset:
-            result.append( self.item_as_json(item) )
+            result.append(self.item_as_json(item))
 
         return json.dumps(result)
 
@@ -33,10 +33,9 @@ class FullCalendarAdapter(object):
         className = self.get_className(item)
         editable = self.get_editable(item)
         color = self.get_color(item)
-        backgroundColor =  self.get_backgroundColor(item)
+        backgroundColor = self.get_backgroundColor(item)
         borderColor = self.get_borderColor(item)
         textColor = self.get_textColor(item)
-
 
         if id is not None:
             result['id'] = id
@@ -78,8 +77,6 @@ class FullCalendarAdapter(object):
             result['textColor'] = textColor
 
         return result
-
-
 
     def get_id(self, item):
         """
@@ -171,7 +168,6 @@ class FullCalendarAdapter(object):
         """
         return None
 
-
     def get_backgroundColor(self, item):
         """
         Sets an event's background color just like the calendar-wide eventBackgroundColor option.
@@ -197,7 +193,7 @@ class FullCalendarView(BaseListView):
 
     def get_queryset(self):
 
-        if not 'start' in self.request.GET or not 'end' in self.request.GET:
+        if 'start' in self.request.GET or not 'end' not in self.request.GET:
             raise Http404
 
         start = datetime.datetime.fromtimestamp(

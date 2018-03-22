@@ -5,27 +5,28 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
 from apps.users.models import Student
 
+
 class Command(BaseCommand):
     args = ''
     help = ''
 
     option_list = BaseCommand.option_list + (
         make_option('--person',
-            action='store_true',
-            dest='person',
-            default=False,
-            help='list by person'),
+                    action='store_true',
+                    dest='person',
+                    default=False,
+                    help='list by person'),
         make_option('--group',
-            action='store_true',
-            dest='group',
-            default=False,
-            help='list term by group'),
+                    action='store_true',
+                    dest='group',
+                    default=False,
+                    help='list term by group'),
         make_option('--type',
-            action='store_true',
-            dest='type',
-            default=False,
-            help='list group by type'),
-        )
+                    action='store_true',
+                    dest='type',
+                    default=False,
+                    help='list group by type'),
+    )
 
     def handle(self, *args, **options):
         semester = Semester.get_default_semester()

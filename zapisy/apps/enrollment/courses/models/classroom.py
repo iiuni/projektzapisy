@@ -19,19 +19,18 @@ types = [(0, 'Sala wykładowa'),
          (5, 'Poligon (109)')]
 
 
-class Classroom( models.Model ):
+class Classroom(models.Model):
     """classroom in institute"""
     type = models.IntegerField(choices=types, default=1, verbose_name='typ')
     description = models.TextField(null=True, blank=True, verbose_name='opis')
-    number = models.CharField( max_length = 20, verbose_name = 'numer sali' )
+    number = models.CharField(max_length=20, verbose_name='numer sali')
     # we don't use ordering properly
     order = models.IntegerField(null=True, blank=True)
-    building = models.CharField( max_length = 75, verbose_name = 'budynek', blank=True, default='' )
+    building = models.CharField(max_length=75, verbose_name='budynek', blank=True, default='')
     capacity = models.PositiveSmallIntegerField(default=0, verbose_name='liczba miejsc')
     floor = models.IntegerField(choices=floors, null=True, blank=True)
     can_reserve = models.BooleanField(default=False)
-    slug =  AutoSlugField(populate_from='number', unique_with='number')
-
+    slug = AutoSlugField(populate_from='number', unique_with='number')
 
     class Meta:
         verbose_name = 'sala'
@@ -42,11 +41,11 @@ class Classroom( models.Model ):
     def get_absolute_url(self):
         try:
             return reverse('events:classroom', args=[self.slug])
-        except:
+        except BaseException:
             return reverse('events:classrooms')
 
     def __str__(self):
-        return str(self.number) + ' ('+str(self.capacity)+')'
+        return str(self.number) + ' (' + str(self.capacity) + ')'
 
     @classmethod
     def get_by_number(cls, number):
@@ -77,8 +76,8 @@ class Classroom( models.Model ):
         for room in rooms:
 
             if room.number not in result:
-                result[room.number] = {'id'       : room.id,
-                                       'number'  : room.number,
+                result[room.number] = {'id': room.id,
+                                       'number': room.number,
                                        'capacity': room.capacity,
                                        'type': room.get_type_display(),
                                        'description': room.description,
@@ -87,14 +86,21 @@ class Classroom( models.Model ):
 
         # fill event terms
 
-        terms = EventTerm.objects.filter(day=date, room__in=rooms, event__status='1').select_related('room', 'event')
-        def make_dict(start_time,end_time,title):
+        terms = EventTerm.objects.filter(
+            day=date,
+            room__in=rooms,
+            event__status='1').select_related(
+            'room',
+            'event')
+
+        def make_dict(start_time, end_time, title):
             return {'begin': ':'.join(str(start_time).split(':')[:2]),
                     'end': ':'.join(str(end_time).split(':')[:2]),
                     'title': title}
 
         for term in terms:
-            result[term.room.number]['terms'].append(make_dict(term.start, term.end, term.event.title))
+            result[term.room.number]['terms'].append(
+                make_dict(term.start, term.end, term.event.title))
 
         if not Freeday.is_free(date):
 
@@ -126,11 +132,9 @@ class Classroom( models.Model ):
                                                                        course_term.group.course.name))
                 if course_term.classroom is None:
                     continue
-                result[course_term.classroom.number]['terms'].append(make_dict(course_term.start_time,
-                                                                               course_term.end_time,
-                                                                               course_term.group.course.name))
+                result[course_term.classroom.number]['terms'].append(make_dict(
+                    course_term.start_time, course_term.end_time, course_term.group.course.name))
         return json.dumps(result)
-
 
     @classmethod
     def get_in_institute(cls, reservation=False):

@@ -1,7 +1,6 @@
 # tests marked by comment "TIME DEPENDENCY" should be free from this dependency
 
 
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -95,38 +94,38 @@ from datetime import datetime, timedelta
 #
 #        self.assertRaises(NonStudentException, Student.get_schedule, self.user.student)
 
-#TIME DEPENDENCY
-    # def testStudentSchedule(self):
-    #     course_1 = Course.objects.get(id=1)
-    #     course_1.semester.date = datetime.now().year
-    #     course_1.semester.semester_begining = date.today()
-    #     course_1.semester.semester_ending = date.today() + timedelta(days = 5 * 30)
-    #     course_1.semester.save()
+# TIME DEPENDENCY
+# def testStudentSchedule(self):
+#     course_1 = Course.objects.get(id=1)
+#     course_1.semester.date = datetime.now().year
+#     course_1.semester.semester_begining = date.today()
+#     course_1.semester.semester_ending = date.today() + timedelta(days = 5 * 30)
+#     course_1.semester.save()
 
-    #     groups = Student.get_schedule(self.user.student)
+#     groups = Student.get_schedule(self.user.student)
 
-    #     term_1 = Term.objects.get(id=1).id
-    #     term_2 = Term.objects.get(id=3).id
+#     term_1 = Term.objects.get(id=1).id
+#     term_2 = Term.objects.get(id=3).id
 
-    #     groups_id = [g.id for g in groups]
-    #     groups_course = [g.course_ for g in groups]
-    #     groups_term_id = []
-    #     groups_term = [groups_term_id.extend(t) for t in [g.terms_ for g in groups]]
-    #     groups_term_id = map(lambda x: x.id, groups_term_id)
+#     groups_id = [g.id for g in groups]
+#     groups_course = [g.course_ for g in groups]
+#     groups_term_id = []
+#     groups_term = [groups_term_id.extend(t) for t in [g.terms_ for g in groups]]
+#     groups_term_id = map(lambda x: x.id, groups_term_id)
 
-    #     for g in groups_id:
-    #           self.assert_(g in [self.exercise_group.id, self.lecture_group.id, self.lecture_group_2.id])
-    #     for s in groups_course:
-    #           self.assert_(s in [course_1, course_1])
-    #     for t in groups_term_id:
-    #           self.assert_(t in [term_1, term_2])
+#     for g in groups_id:
+#           self.assert_(g in [self.exercise_group.id, self.lecture_group.id, self.lecture_group_2.id])
+#     for s in groups_course:
+#           self.assert_(s in [course_1, course_1])
+#     for t in groups_term_id:
+#           self.assert_(t in [term_1, term_2])
 
 class IBANTest(TestCase):
     def setUp(self):
         self.not_alphanum = 'PL0810&000049916589081209234'
         self.invalid_polish = 'PL08119000049916589081209234'
         self.invalid_without_country_code = '08109000039916589081209234'
-        self.invalid_polish_wrong_length= '0810900003991658908120923'
+        self.invalid_polish_wrong_length = '0810900003991658908120923'
         self.valid_polish = 'PL08109000049916589081209234'
         self.valid_polish_without_country_code = '08109000049916589081209234'
         self.valid_polish_spaced = '17 1140 2004 0000 3202 5905 0681'
@@ -156,6 +155,7 @@ class IBANTest(TestCase):
     def testWithValidGreece(self):
         self.assertTrue(StudiaZamawiane.check_iban(self.valid_greece))
 
+
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -167,7 +167,7 @@ class MailsToStudentsLinkTestCase(TestCase):
                     entity_id integer
                 );
             """
-            ]
+        ]
 
         for sql_call in sql_calls:
             cursor = connection.cursor()
@@ -199,7 +199,7 @@ class MailsToStudentsLinkTestCase(TestCase):
     def test_mailto_link_not_exists_regular_user(self):
         self.client.login(username='regular_user', password='password')
         response = self.client.get(reverse('my-profile'))
-        #print(response)
+        # print(response)
         self.assertNotContains(response, self.MSG_HEADER, status_code=200)
 
     def test_mailto_link_exists_dean_user(self):
@@ -219,7 +219,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
                     entity_id integer
                 );
             """
-            ]
+        ]
 
         for sql_call in sql_calls:
             cursor = connection.cursor()
@@ -234,11 +234,11 @@ class MyProfileSemesterInfoTestCase(TestCase):
         cls.semester = Semester(
             visible=True,
             type=Semester.TYPE_WINTER,
-            records_opening=datetime.now()-timedelta(days=15),
-            records_closing=datetime.now()+timedelta(days=15),
-            records_ects_limit_abolition=datetime.now()+timedelta(days=5),
-            semester_beginning=datetime.now()+timedelta(days=20),
-            semester_ending=datetime.now()+timedelta(days=100)
+            records_opening=datetime.now() - timedelta(days=15),
+            records_closing=datetime.now() + timedelta(days=15),
+            records_ects_limit_abolition=datetime.now() + timedelta(days=5),
+            semester_beginning=datetime.now() + timedelta(days=20),
+            semester_ending=datetime.now() + timedelta(days=100)
         )
         cls.semester.full_clean()
         cls.semester.save()
@@ -254,7 +254,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
             connection.commit()
 
     def test_my_profile_contains_records_closing_time(self):
-        self.semester.records_ending = datetime.now()+timedelta(days=10)
+        self.semester.records_ending = datetime.now() + timedelta(days=10)
         self.semester.save()
         self.client.login(username='student_user', password='password')
         response = self.client.get(reverse('my-profile'))

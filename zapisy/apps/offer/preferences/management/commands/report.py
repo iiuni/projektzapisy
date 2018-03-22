@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from apps.offer.proposal.models.proposal import Przedmiot
 from apps.users.models import Student, Employee
 
+
 class Command(BaseCommand):
     args = '<plik semester>'
     help = 'ocenia'
@@ -16,7 +17,7 @@ class Command(BaseCommand):
         for course in courses:
             file.write("{}\n".format(course))
             for user in course.get_all_voters():
-                file.write(user.matricula+'\n')
+                file.write(user.matricula + '\n')
 
             file.write('\n')
 

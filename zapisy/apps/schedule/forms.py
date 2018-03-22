@@ -34,7 +34,10 @@ class TermForm(forms.ModelForm):
 
         }
 
+
 TermFormSet = inlineformset_factory(Event, Term, extra=0, form=TermForm)
+
+
 class EventForm(forms.ModelForm):
 
     class Meta:
@@ -47,7 +50,6 @@ class EventForm(forms.ModelForm):
             data = deepcopy(data)
             if 'type' not in data:
                 data['type'] = Event.TYPE_GENERIC
-
 
         super(EventForm, self).__init__(data, **kwargs)
         if not self.instance.pk:
@@ -75,21 +77,24 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
-        self.fields['title'].widget.attrs.update({'class' : 'span7'})
-        self.fields['type'].widget.attrs.update({'class' : 'span7'})
-        self.fields['course'].widget.attrs.update({'class' : 'span7'})
-        self.fields['description'].widget.attrs.update({'class' : 'span7'})
+        self.fields['title'].widget.attrs.update({'class': 'span7'})
+        self.fields['type'].widget.attrs.update({'class': 'span7'})
+        self.fields['course'].widget.attrs.update({'class': 'span7'})
+        self.fields['description'].widget.attrs.update({'class': 'span7'})
         self.fields['visible'].widget.attrs.update({'checked': ''})
+
 
 class EventModerationMessageForm(forms.ModelForm):
     class Meta:
         model = EventModerationMessage
         fields = ('message', )
 
+
 class EventMessageForm(forms.ModelForm):
     class Meta:
         model = EventMessage
         fields = ('message', )
+
 
 class DecisionForm(forms.ModelForm):
     class Meta:
@@ -98,10 +103,27 @@ class DecisionForm(forms.ModelForm):
 
 
 class ReportForm(forms.Form):
-    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    beg_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
+    end_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
     rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
 
+
 class ConflictsForm(forms.Form):
-    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    beg_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
+    end_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))

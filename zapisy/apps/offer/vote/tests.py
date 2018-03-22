@@ -48,7 +48,7 @@ class VoteLinkTestCase(TestCase):
                     entity_id integer
                 );
             """
-            ]
+        ]
 
         for sql_call in sql_calls:
             cursor = connection.cursor()

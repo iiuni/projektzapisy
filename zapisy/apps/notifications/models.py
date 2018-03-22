@@ -167,11 +167,13 @@ class NotificationPreferences(models.Model):
         verbose_name = 'Ustawienie Notyfikacji'
         verbose_name_plural = 'Ustawienia Notyfikacji'
 
+
 def send_message_internal(email, subject, body_html):
     body_plaintext = strip_tags(body_html)
     Message.objects.create(
         to_address=email, subject=subject,
         message_body=body_plaintext, message_body_html=body_html)
+
 
 class Notification(object):
     @classmethod
@@ -201,9 +203,11 @@ class Notification(object):
                 address = u.user.email
                 if address and preference:
                     context['user'] = u.user
-                    body_html = render_to_string("notifications/{0}.html".format(notification), context)
+                    body_html = render_to_string(
+                        "notifications/{0}.html".format(notification), context)
                     send_message_internal(address, subject, body_html)
 
-        subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
+        subject = context['subject'] if 'subject' in context else _find_notification_name(
+            notification)
         _send_to_users(Employee.get_actives(), notification, subject, context)
         _send_to_users(Student.get_active_students(), notification, subject, context)

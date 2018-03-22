@@ -20,7 +20,8 @@ class PollCombineForm(forms.Form):
                             polls[0].group.course.name + \
                             ' ' + polls[0].group.get_type_display() + ': ' + \
                             polls[0].group.get_teacher_full_name()
-                if polls[0].studies_type: ', studia ' + polls[0].studies_type
+                if polls[0].studies_type:
+                    ', studia ' + polls[0].studies_type
 
                 self.poll_groups.append(str(title))
             else:

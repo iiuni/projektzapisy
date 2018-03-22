@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Sum
 from apps.users.models import Student
 
+
 class PointTypes(models.Model):
     """types of points"""
     name = models.CharField(max_length=30, verbose_name='rodzaj punktów', default="", unique=False)
@@ -13,6 +14,7 @@ class PointTypes(models.Model):
 
     def __str__(self):
         return '%s' % (self.name, )
+
 
 class PointsOfCourseEntities(models.Model):
     """
@@ -37,9 +39,21 @@ class PointsOfCourseEntities(models.Model):
 
 
     """
-    entity = models.ForeignKey('CourseEntity', verbose_name='podstawa przedmiotu', on_delete=models.CASCADE)
-    type_of_point = models.ForeignKey('PointTypes', verbose_name='rodzaj punktów', on_delete=models.CASCADE)
-    program = models.ForeignKey('users.Program', verbose_name='Program Studiów', null=True, blank=True, default=None, on_delete=models.CASCADE)
+    entity = models.ForeignKey(
+        'CourseEntity',
+        verbose_name='podstawa przedmiotu',
+        on_delete=models.CASCADE)
+    type_of_point = models.ForeignKey(
+        'PointTypes',
+        verbose_name='rodzaj punktów',
+        on_delete=models.CASCADE)
+    program = models.ForeignKey(
+        'users.Program',
+        verbose_name='Program Studiów',
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.CASCADE)
     value = models.PositiveSmallIntegerField(verbose_name='liczba punktów', default=6)
 
     class Meta:
@@ -53,18 +67,17 @@ class PointsOfCourseEntities(models.Model):
 
 
 class StudentPointsView(models.Model):
-    value   = models.SmallIntegerField()
+    value = models.SmallIntegerField()
     student = models.OneToOneField(Student, primary_key=True, on_delete=models.CASCADE)
-    entity  = models.ForeignKey('courses.CourseEntity', on_delete=models.CASCADE)
+    entity = models.ForeignKey('courses.CourseEntity', on_delete=models.CASCADE)
 
     # just for testing
-    #def save(self, **kwargs):
+    # def save(self, **kwargs):
     #    raise NotImplementedError()
 
     class Meta:
         managed = False
         app_label = 'courses'
-
 
     @classmethod
     def get_student_points_in_semester(cls, student, semester):
@@ -78,7 +91,9 @@ class StudentPointsView(models.Model):
         """
         from apps.enrollment.records.models import Record
 
-        records = Record.enrolled.filter(student=student, group__course__semester=semester).values_list('group__course__entity_id', flat=True).distinct()
+        records = Record.enrolled.filter(
+            student=student, group__course__semester=semester).values_list(
+            'group__course__entity_id', flat=True).distinct()
 
         return cls.get_points_for_entities(student, records)
 
@@ -93,7 +108,7 @@ class StudentPointsView(models.Model):
         @return:
         """
         points = cls.objects.\
-                 filter(student=student, entity__in=entities).\
-                 aggregate(Sum('value'))
+            filter(student=student, entity__in=entities).\
+            aggregate(Sum('value'))
         # If there's no active term, value__sum will be None
         return points['value__sum'] or 0

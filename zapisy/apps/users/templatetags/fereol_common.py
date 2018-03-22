@@ -1,12 +1,13 @@
 import math
 
 from django import template
-from django.utils.safestring  import mark_safe
+from django.utils.safestring import mark_safe
 import postmarkup
 import logging
 
 register = template.Library()
 logger = logging.getLogger()
+
 
 @register.filter
 def bbcode(str):
@@ -19,6 +20,7 @@ def bbcode(str):
 
     return markup.render_to_html(str)
 
+
 @register.filter
 def nl2br(str):
     return str.replace("\n", "<br />")
@@ -26,6 +28,8 @@ def nl2br(str):
 # filter checks url validity, and:
 # - if it's ok (modulo "http://" prefix) - returns it
 # - in the other case - returns "/" and logs it
+
+
 @register.filter
 def validate_url(str):
     from django.core.validators import URLValidator, ValidationError
@@ -46,9 +50,10 @@ def validate_url(str):
             trace = [str for str in trace if str.find('html') >= 0]
             trace = string.join(trace, '\n')
             logger.warning('Invalid URL couldn\'t be displayed in template: '
-                    + str + '\n' + trace)
+                           + str + '\n' + trace)
             return '/'
     return str
+
 
 @register.tag(name='captureas')
 def do_captureas(parser, token):
@@ -71,6 +76,7 @@ def do_captureas(parser, token):
     parser.delete_first_token()
     return CaptureasNode(nodelist, args)
 
+
 class CaptureasNode(template.Node):
     def __init__(self, nodelist, varname):
         self.nodelist = nodelist
@@ -81,9 +87,11 @@ class CaptureasNode(template.Node):
         context[self.varname] = output
         return ''
 
+
 @register.filter
-def safestring( str ):
-    return mark_safe( str )
+def safestring(str):
+    return mark_safe(str)
+
 
 @register.filter
 def timedelta(delta):
@@ -112,6 +120,7 @@ def timedelta(delta):
         return 'za ' + str(minutes) + ' minut'
     return 'za mniej niż minutę'
 
+
 @register.filter
 def hash(map, key):
     if not map:
@@ -120,6 +129,7 @@ def hash(map, key):
         return map[key]
     else:
         return None
+
 
 @register.filter
 def getattribute(object, attribute):

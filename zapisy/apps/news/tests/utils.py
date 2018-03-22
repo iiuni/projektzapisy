@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from apps.news.models import News
 from apps.users.tests.factories import UserFactory
 
+
 def generate_random_news(category,
                          new=randint(1, 6),
                          old=randint(1, 6)):
@@ -19,8 +20,8 @@ def generate_random_news(category,
         ns.append(n)
     for i in range(old):
         n = News(title="old news", body="news body",
-                date=datetime.now() - timedelta(days=randint(8,20)),
-                author_id=author_user.pk)
+                 date=datetime.now() - timedelta(days=randint(8, 20)),
+                 author_id=author_user.pk)
         n.category = category
         n.save()
         ns.append(n)

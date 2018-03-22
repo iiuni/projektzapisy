@@ -6,15 +6,15 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--force',
-            action='store_true',
-            default=False,
-            help='Force compression and/or cache busting.'
-        ),
+                    action='store_true',
+                    default=False,
+                    help='Force compression and/or cache busting.'
+                    ),
         make_option('--dry-run',
-            action='store_false',
-            default=True,
-            help='Don\'t attempt to compress package.'
-        )
+                    action='store_false',
+                    default=True,
+                    help='Don\'t attempt to compress package.'
+                    )
     )
     help = 'Updates and compresses CSS and JS on-demand'
     args = '<groups>'

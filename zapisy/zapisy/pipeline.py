@@ -204,9 +204,9 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
             'js/cookieconsent.min.js',
-            ),
-            'output_filename': 'js/main.min.js',
-        },
+        ),
+        'output_filename': 'js/main.min.js',
+    },
     'vote_form': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -219,9 +219,9 @@ PIPELINE_JS = {
             'js/common/listFilter.js',
             'js/common/listFilter-courseType.js',
             'js/offer/vote.js'
-            ),
-            'output_filename': 'js/vote_form.min.js',
-        },
+        ),
+        'output_filename': 'js/vote_form.min.js',
+    },
     'correction_form': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -235,9 +235,9 @@ PIPELINE_JS = {
             'js/common/listFilter-courseType.js',
             'js/offer/vote.js',
             'js/offer/correction.js'
-            ),
-            'output_filename': 'js/correction_form.min.js',
-        },
+        ),
+        'output_filename': 'js/correction_form.min.js',
+    },
     'connectionchoice': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -249,9 +249,9 @@ PIPELINE_JS = {
             'js/jquery/tooltip.jquery.js',
             'js/grade/ticket_create/BigInt.js',
             'js/grade/ticket_create/ticket_create.js',
-            ),
-            'output_filename': 'js/connectionchoice.min.js',
-        },
+        ),
+        'output_filename': 'js/connectionchoice.min.js',
+    },
     'keysgenerate': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -261,9 +261,9 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
             'js/grade/ticket_create/keys_generate.js'
-            ),
-            'output_filename': 'js/keysgenerate.min.js',
-        },
+        ),
+        'output_filename': 'js/keysgenerate.min.js',
+    },
     'pollresult': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -273,9 +273,9 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
             'js/grade/poll/poll_results.js',
-            ),
-            'output_filename': 'js/pollresult.min.js',
-        },
+        ),
+        'output_filename': 'js/pollresult.min.js',
+    },
     'pollbase': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -285,9 +285,9 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
             'js/grade/grade.js',
-            ),
-            'output_filename': 'js/pollbase.min.js',
-        },
+        ),
+        'output_filename': 'js/pollbase.min.js',
+    },
     'gradeuserpoll': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -297,9 +297,9 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
             'js/grade/poll/poll_answer.js'
-            ),
-            'output_filename': 'js/gradeuserpoll.min.js',
-        },
+        ),
+        'output_filename': 'js/gradeuserpoll.min.js',
+    },
     'news': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -311,9 +311,9 @@ PIPELINE_JS = {
             'js/components/messageBox.js',
             'js/news.js',
             'js/components/topBarFilter.js'
-            ),
-            'output_filename': 'js/news.min.js',
-        },
+        ),
+        'output_filename': 'js/news.min.js',
+    },
     'courses': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -444,20 +444,20 @@ PIPELINE_JS = {
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
 
-        'admin/js/core.js',
-        'admin/js/admin/RelatedObjectLookups.js',
-        'admin/js/jquery.js',
-        'admin/js/jquery.init.js',
-        'admin/js/actions.js',
-        'admin/js/urlify.js',
-        'admin/js/prepopulate.js',
-        'admin/js/SelectBox.js',
-        'admin/js/SelectFilter2.js',
-        'js/tinymce/tinymce.min.js',
-        'js/textareas.js',
-        'js/jquery/jquery.formset.js',
-        'js/offer/proposal/noAdmin.js',
-        'js/offer/proposal/proposal.js'
+            'admin/js/core.js',
+            'admin/js/admin/RelatedObjectLookups.js',
+            'admin/js/jquery.js',
+            'admin/js/jquery.init.js',
+            'admin/js/actions.js',
+            'admin/js/urlify.js',
+            'admin/js/prepopulate.js',
+            'admin/js/SelectBox.js',
+            'admin/js/SelectFilter2.js',
+            'js/tinymce/tinymce.min.js',
+            'js/textareas.js',
+            'js/jquery/jquery.formset.js',
+            'js/offer/proposal/noAdmin.js',
+            'js/offer/proposal/proposal.js'
 
         ),
         'output_filename': 'js/proposal_form.min.js',

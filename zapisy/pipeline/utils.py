@@ -32,10 +32,10 @@ def _relpath_nt(path, start=os.path.curdir):
         unc_start, rest = os.path.splitunc(start)
         if bool(unc_path) ^ bool(unc_start):
             raise ValueError("Cannot mix UNC and non-UNC paths (%s and %s)"
-                                                                % (path, start))
+                             % (path, start))
         else:
             raise ValueError("path is on drive %s, start on drive %s"
-                                                % (path_list[0], start_list[0]))
+                             % (path_list[0], start_list[0]))
     # Work out how much of the filepath is shared by start and path.
     for i in range(min(len(start_list), len(path_list))):
         if start_list[i].lower() != path_list[i].lower():

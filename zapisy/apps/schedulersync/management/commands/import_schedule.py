@@ -155,7 +155,7 @@ class Command(BaseCommand):
             return emps[0]
         elif len(emps) > 1:
             self.stdout.write(self.style.ERROR('Multiple employee matches for {}. Choices are:'
-                              .format(name)))
+                                               .format(name)))
             for e in emps:
                 self.stdout.write(self.style.ERROR(' -{}'.format(e.user.get_full_name())))
         else:
@@ -285,7 +285,7 @@ class Command(BaseCommand):
                 groups.append(prepared_group)
             else:
                 self.stdout.write(self.style.WARNING('Group number {} does not have a term ({})\n'
-                                  .format(g['id'], g['extra']['course'])))
+                                                     .format(g['id'], g['extra']['course'])))
         return groups
 
     def remove_groups(self):
@@ -294,8 +294,11 @@ class Command(BaseCommand):
         for sync_data_object in sync_data_objects:
             if sync_data_object.scheduler_id not in self.scheduler_ids:
                 groups_to_remove.add(sync_data_object.term.group)
-                self.stdout.write(self.style.NOTICE('Term {} for group {} removed\n'
-                                  .format(sync_data_object.term, sync_data_object.term.group)))
+                self.stdout.write(
+                    self.style.NOTICE(
+                        'Term {} for group {} removed\n' .format(
+                            sync_data_object.term,
+                            sync_data_object.term.group)))
                 self.all_deletions.append((str(sync_data_object.term),
                                            str(sync_data_object.term.group)))
                 if self.delete_groups:
@@ -329,16 +332,16 @@ class Command(BaseCommand):
         self.remove_groups()
         self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
                                              'Moreover {} courses were already there.'
-                          .format(self.created_courses, len(self.used_courses))))
+                                             .format(self.created_courses, len(self.used_courses))))
         self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
-                          .format(self.created_terms, self.updated_terms)))
+                                             .format(self.created_terms, self.updated_terms)))
 
     def prepare_slack_message(self):
         attachments = []
         for term in self.all_creations:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
-                 term.dayOfWeek, term.start_time, term.end_time, term.group.teacher
-                )
+                term.dayOfWeek, term.start_time, term.end_time, term.group.teacher
+            )
             attachment = {
                 "color": "good",
                 "title": "Created: {}".format(term.group),

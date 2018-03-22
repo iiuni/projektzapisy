@@ -8,6 +8,7 @@ from apps.grade.ticket_create.models import StudentGraded
 from django.core.exceptions import ObjectDoesNotExist
 from apps.users.models import Student, Employee
 
+
 class Command(BaseCommand):
     args = '<semester+>'
     help = 'Tworzy ankiety dla semestru. W przypadku braku argumentu bierze aktualny.'
@@ -16,43 +17,44 @@ class Command(BaseCommand):
         from apps.enrollment.courses.models.semester import Semester
 
         if len(args) > 0:
-            semester  = Semester.objects.get(id=args[0])
+            semester = Semester.objects.get(id=args[0])
         else:
             semester = Semester.get_current_semester()
         print(semester)
 
         templates = Template.objects.filter(in_grade=True)
         print(templates)
-        prych     = Employee.objects.get(user__pk=19) # nowym PRychem Przemka
+        prych = Employee.objects.get(user__pk=19)  # nowym PRychem Przemka
         print(prych)
         for template in templates:
             t = dict(
-                    type           = None if template.group_type == '--' else template.group_type,
-                    sections       = template.sections.all(),
-                    studies_type   = template.studies_type,
-                    title          = template.title,
-                    description    = template.description,
-                    no_course      = template.no_course,
-                    course         = template.course,
-                    exam           = template.exam,
-                    semester       = semester,
-                    groups_without = 'off',
-                    group          = None)
-            groups   = getGroups({}, t)
+                type=None if template.group_type == '--' else template.group_type,
+                sections=template.sections.all(),
+                studies_type=template.studies_type,
+                title=template.title,
+                description=template.description,
+                no_course=template.no_course,
+                course=template.course,
+                exam=template.exam,
+                semester=semester,
+                groups_without='off',
+                group=None)
+            groups = getGroups({}, t)
             origin = Origin()
             origin.save()
 
             if groups and not template.no_course:
                 for group in groups:
-                    if t['groups_without'] == 'on' and Poll.get_all_polls_for_group(group, semester).count()>0:
+                    if t['groups_without'] == 'on' and Poll.get_all_polls_for_group(
+                            group, semester).count() > 0:
                         continue
 
                     poll = Poll()
-                    poll.author       = prych
-                    poll.title        = t['title']
-                    poll.description  = t['description']
-                    poll.semester     = t['semester']
-                    poll.group        = group
+                    poll.author = prych
+                    poll.title = t['title']
+                    poll.description = t['description']
+                    poll.semester = t['semester']
+                    poll.group = group
                     poll.studies_type = t['studies_type']
                     poll.origin = origin
                     poll.save()
@@ -69,11 +71,11 @@ class Command(BaseCommand):
 
             else:
                 poll = Poll()
-                poll.author       = prych
-                poll.title        = t['title']
-                poll.description  = t['description']
-                poll.semester     = t['semester']
-                poll.group        = None
+                poll.author = prych
+                poll.title = t['title']
+                poll.description = t['description']
+                poll.semester = t['semester']
+                poll.group = None
                 poll.studies_type = t['studies_type']
                 poll.origin = origin
                 poll.save()

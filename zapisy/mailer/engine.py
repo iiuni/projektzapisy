@@ -22,6 +22,7 @@ LOCK_WAIT_TIMEOUT = getattr(settings, "MAILER_LOCK_WAIT_TIMEOUT", -1)
 
 EMAIL_SUBJECT_TEMPLATE = getattr(settings, "EMAIL_SUBJECT_TEMPLATE", "[ZAPISY] %s")
 
+
 def prioritize():
     """
     Yield the messages in the queue in the order they should be sent.
@@ -34,7 +35,8 @@ def prioritize():
                     yield message
             while Message.objects.high_priority().count() == 0 and Message.objects.medium_priority().count():
                 yield Message.objects.medium_priority().order_by('when_added')[0]
-        while Message.objects.high_priority().count() == 0 and Message.objects.medium_priority().count() == 0 and Message.objects.low_priority().count():
+        while Message.objects.high_priority().count() == 0 and Message.objects.medium_priority(
+        ).count() == 0 and Message.objects.low_priority().count():
             yield Message.objects.low_priority().order_by('when_added')[0]
         if Message.objects.non_deferred().count() == 0:
             break
@@ -71,25 +73,30 @@ def send_all():
             subject = EMAIL_SUBJECT_TEMPLATE % message.subject
             if DontSendEntry.objects.has_address(message.to_address):
                 logger.info("skipping email to %s as on don't send list " % message.to_address)
-                MessageLog.objects.log(message, 2) # @@@ avoid using literal result code
+                MessageLog.objects.log(message, 2)  # @@@ avoid using literal result code
                 message.delete()
                 dont_send += 1
             else:
                 try:
                     logger.info("sending message '%s' to %s" % (subject, message.to_address))
                     if not message.message_body_html:
-                        core_send_mail(subject, message.message_body, message.from_address, [message.to_address], connection = connection)
+                        core_send_mail(
+                            subject, message.message_body, message.from_address, [
+                                message.to_address], connection=connection)
                     else:
-                        email = EmailMultiAlternatives(subject, message.message_body, message.from_address, [message.to_address], connection = connection)
+                        email = EmailMultiAlternatives(
+                            subject, message.message_body, message.from_address, [
+                                message.to_address], connection=connection)
                         email.attach_alternative(message.message_body_html, "text/html")
                         email.send()
-                    MessageLog.objects.log(message, 1) # @@@ avoid using literal result code
+                    MessageLog.objects.log(message, 1)  # @@@ avoid using literal result code
                     message.delete()
                     sent += 1
                 except (socket_error, smtplib.SMTPSenderRefused, smtplib.SMTPRecipientsRefused, smtplib.SMTPAuthenticationError) as err:
                     message.defer()
                     logger.info("message deferred due to failure: %s" % err)
-                    MessageLog.objects.log(message, 3, log_message=str(err)) # @@@ avoid using literal result code
+                    # @@@ avoid using literal result code
+                    MessageLog.objects.log(message, 3, log_message=str(err))
                     deferred += 1
         connection.close()
     finally:
@@ -100,6 +107,7 @@ def send_all():
     logger.info("")
     logger.info("%s sent; %s deferred; %s don't send" % (sent, deferred, dont_send))
     logger.info("done in %.2f seconds" % (time.time() - start_time))
+
 
 def send_loop():
     """

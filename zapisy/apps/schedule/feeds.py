@@ -24,10 +24,10 @@ class Latest(Feed):
     def item_title(self, item):
         return item.title
 
+
 class LatestExams(Latest):
     title = "Zapisy - egzaminy"
     description = "Egzaminy w Instytucie Informatyki UWr"
-
 
     def link(self):
         return reverse('events:session')
@@ -42,7 +42,6 @@ class LatestExams(Latest):
 class LatestEvents(Latest):
     title = "Zapisy - wydarzenia"
     description = "Wydarzenia w Instytucie Informatyki UWr"
-
 
     def link(self):
         return reverse('events:event_show')

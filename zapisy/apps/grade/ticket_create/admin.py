@@ -1,11 +1,11 @@
-from django.contrib                    import admin
+from django.contrib import admin
 from apps.grade.ticket_create.models import PublicKey, \
-                                              PrivateKey, \
-                                              UsedTicketStamp, StudentGraded
+    PrivateKey, \
+    UsedTicketStamp, StudentGraded
 
 
-class StudentGradedAdmin( admin.ModelAdmin ):
-    list_display = ('student',  'semester')
+class StudentGradedAdmin(admin.ModelAdmin):
+    list_display = ('student', 'semester')
     search_fields = ('student__user__first_name',
                      'student__user__last_name',
                      'student__matricula',)
@@ -21,18 +21,20 @@ class StudentGradedAdmin( admin.ModelAdmin ):
         return qs.select_related('semester', 'student', 'student__user')
 
 
-class UsedTicketStampAdmin( admin.ModelAdmin ):
-    list_display = ['student', 'poll' ]
+class UsedTicketStampAdmin(admin.ModelAdmin):
+    list_display = ['student', 'poll']
     search_fields = ('student__user__first_name',
                      'student__user__last_name',
                      'student__matricula',)
 
-class PrivateKeyAdmin( admin.ModelAdmin ):
+
+class PrivateKeyAdmin(admin.ModelAdmin):
 
     list_display = ('poll', )
     search_fields = ('poll__title',)
 
-admin.site.register( PublicKey )
-admin.site.register( PrivateKey, PrivateKeyAdmin )
-admin.site.register( UsedTicketStamp, UsedTicketStampAdmin )
-admin.site.register( StudentGraded, StudentGradedAdmin )
+
+admin.site.register(PublicKey)
+admin.site.register(PrivateKey, PrivateKeyAdmin)
+admin.site.register(UsedTicketStamp, UsedTicketStampAdmin)
+admin.site.register(StudentGraded, StudentGradedAdmin)

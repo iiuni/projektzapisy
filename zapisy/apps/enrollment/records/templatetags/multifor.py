@@ -23,7 +23,7 @@ class ForNode(Node):
     get_overall_len = min
 
     def __init__(self, loopvars_list, sequence_list, is_reversed_list,
-        nodelist_loop, nodelist_empty=None, zip_func=None):
+                 nodelist_loop, nodelist_empty=None, zip_func=None):
         self.loopvars_list, self.sequence_list = loopvars_list, sequence_list
         self.is_reversed_list = is_reversed_list
         self.nodelist_loop = nodelist_loop
@@ -39,7 +39,7 @@ class ForNode(Node):
             return revd and ' reversed' or ''
         rev_text_list = [make_rev_txt(revd) for revd in self.is_reversed]
         zipped = zip(self.loopvars_list, self.sequence_list, rev_text_list)
-        sections = ['%s in %s%s'%(', '.join(l), s, r) for l, s, r in zipped]
+        sections = ['%s in %s%s' % (', '.join(l), s, r) for l, s, r in zipped]
         return "<For Node: for %s, tail_len: %d%s>" % \
             ('; '.join(sections), len(self.nodelist_loop))
 
@@ -73,6 +73,7 @@ class ForNode(Node):
             context.pop()
             return self.nodelist_empty.render(context)
         nodelist = NodeList()
+
         def rev(revd, values):
             return revd and reversed(values) or values
         values_list = [rev(*v) for v in zip(self.is_reversed_list, vals_list)]
@@ -83,7 +84,7 @@ class ForNode(Node):
         for i, items in enumerate(self.zip(*values_list)):
             # Shortcuts for current loop iteration number.
             loop_dict['counter0'] = i
-            loop_dict['counter'] = i+1
+            loop_dict['counter'] = i + 1
             # Reverse counter iteration numbers.
             loop_dict['revcounter'] = len_values - i
             loop_dict['revcounter0'] = len_values - i - 1
@@ -112,12 +113,15 @@ class ForNode(Node):
         context.pop()
         return nodelist.render(context)
 
+
 class ForLongestNode(ForNode):
     def zip(self, *args):
         return zip_longest(fillvalue=settings.TEMPLATE_STRING_IF_INVALID, *args)
     get_overall_len = max
 
 #@register.tag(name="for")
+
+
 def do_for(parser, token, ForNode=ForNode):
     all_bits = token.contents.split()[1:]
     sections = [s.strip() for s in ' '.join(all_bits).split(';')]
@@ -143,7 +147,7 @@ def do_for(parser, token, ForNode=ForNode):
                                               "invalid argument: %s"
                                               % token.contents)
 
-        sequence_list.append(parser.compile_filter(bits[in_index+1]))
+        sequence_list.append(parser.compile_filter(bits[in_index + 1]))
     nodelist_loop = parser.parse(('empty', 'endfor',))
     token = parser.next_token()
     if token.contents == 'empty':
@@ -155,10 +159,11 @@ def do_for(parser, token, ForNode=ForNode):
                    nodelist_loop, nodelist_empty)
 
 
-
 do_for = register.tag("for", do_for)
+
 
 def do_for_longest(*args, **kwargs):
     return do_for(ForNode=ForLongestNode, *args, **kwargs)
+
 
 do_for_longest = register.tag("for_longest", do_for_longest)

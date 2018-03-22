@@ -5,9 +5,10 @@ from .models import SpecialReservation, Term
 from django.core.validators import ValidationError
 import sys
 
+
 class SpecialReservationForm(forms.ModelForm):
 
-    ignore_conflicts = forms.BooleanField(required = False, label = "", widget=forms.HiddenInput())
+    ignore_conflicts = forms.BooleanField(required=False, label="", widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super(SpecialReservationForm, self).__init__(*args, **kwargs)
@@ -27,6 +28,7 @@ class SpecialReservationForm(forms.ModelForm):
         model = SpecialReservation
         fields = '__all__'
 
+
 class SpecialReservationAdmin(admin.ModelAdmin):
     form = SpecialReservationForm
 
@@ -41,6 +43,7 @@ class TermAdmin(admin.ModelAdmin):
     list_filter = ('room',)
     search_fields = ('event__title',)
     ordering = ('-day', 'start', 'end')
+
 
 admin.site.register(Term, TermAdmin)
 admin.site.register(SpecialReservation, SpecialReservationAdmin)

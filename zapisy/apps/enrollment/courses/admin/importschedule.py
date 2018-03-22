@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 from lxml import etree
 from django.conf import settings
 from apps.enrollment.courses.models import Semester, Group, Course, Term, \
-     CourseEntity, Type, Classroom
+    CourseEntity, Type, Classroom
 from apps.users.models import Employee
 
 XSCHEMA = os.path.join(settings.BASE_DIR, 'enrollment/courses/admin/xml/semesterschedule.xsd')
@@ -26,10 +26,12 @@ def import_semester_schedule(xmlfile):
 
         try:
             employee = Employee.objects.get(first_name=name,
-                                        last_name=surname
-                                        )
+                                            last_name=surname
+                                            )
         except Employee.DoesNotExist:
-            raise Employee.DoesNotExist('Employee name="%s"  surname="%s" does not exist' % (name, surname))
+            raise Employee.DoesNotExist(
+                'Employee name="%s"  surname="%s" does not exist' %
+                (name, surname))
 
         return employee
 
@@ -59,15 +61,15 @@ def import_semester_schedule(xmlfile):
         labs = el_course.find('laboratories').text
 
         course = Course.objects.create(entity=entity,
-                                         name=name,
-                                         slug=slug,
-                                         semester=semester,
-                                         type=sub_type,
-                                         description=desc,
-                                         lectures=lectures,
-                                         exercises=exercises,
-                                         laboratories=labs
-                                         )
+                                       name=name,
+                                       slug=slug,
+                                       semester=semester,
+                                       type=sub_type,
+                                       description=desc,
+                                       lectures=lectures,
+                                       exercises=exercises,
+                                       laboratories=labs
+                                       )
 
         course.teachers = teachers
         course.save()
@@ -107,13 +109,12 @@ def import_semester_schedule(xmlfile):
             limit = el_group.find('limit').text
 
             group = Group.objects.create(course=course,
-                         teacher=teacher,
-                         type=gr_type,
-                         limit=limit
-                         )
+                                         teacher=teacher,
+                                         type=gr_type,
+                                         limit=limit
+                                         )
 
             create_terms(el_group.find('terms'), group)
-
 
     def create_terms(el_terms, group):
         """ This function parses <terms> element and returns list of Terms objects """
@@ -143,11 +144,11 @@ def import_semester_schedule(xmlfile):
                                                         )[0]
 
             terms.append(Term.objects.create(dayOfWeek=day,
-                                                                                 start_time=start_time,
-                                                                                 end_time=end_time,
-                                                                                 classroom=classroom,
-                                                                                 group=group
-                                                                                 )
+                                             start_time=start_time,
+                                             end_time=end_time,
+                                             classroom=classroom,
+                                             group=group
+                                             )
                          )
 
         return terms
@@ -156,7 +157,7 @@ def import_semester_schedule(xmlfile):
     events = etree.iterparse(xmlfile,
                              remove_blank_text=True,
                              remove_comments=True,
-                             events=('start','end'),
+                             events=('start', 'end'),
                              schema=schema
                              )
 
@@ -165,9 +166,9 @@ def import_semester_schedule(xmlfile):
     for event, element in events:
         if event == 'start' and element.tag == 'semester':
             new_sem = True
-        elif new_sem == True and event == 'end' and element.tag == 'year':
+        elif new_sem and event == 'end' and element.tag == 'year':
             sem_year = element.text
-        elif new_sem == True and event == 'end' and element.tag == 'type':
+        elif new_sem and event == 'end' and element.tag == 'type':
             if element.text == 'winter':
                 sem_type = Semester.TYPE_WINTER
             elif element.text == 'summer':

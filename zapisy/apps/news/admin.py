@@ -12,6 +12,7 @@ class NewsForm(forms.ModelForm):
         }
         fields = '__all__'
 
+
 class NewsAdmin(admin.ModelAdmin):
     """
         News admin manager

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 studentsfile = 'dousuniecia.txt'
 
+
 def process(line):
     line = line.strip()
     matricula = line
@@ -16,6 +17,7 @@ def process(line):
     print(student, student.status)
     # student.status = 0
     # student.save()
+
 
 def run():
     file = open(studentsfile)

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class SimpleManager(models.Manager):
 
     def get_by_slug(self, slug):
@@ -7,7 +8,6 @@ class SimpleManager(models.Manager):
 
     def get_by_id(self, id):
         return self.get(id=id)
-
 
 
 class FullManager(SimpleManager):

@@ -6,6 +6,7 @@ dyskretna_l = 'dyskretna2016.txt'
 aisd_l = 'aisd2016.txt'
 numerki_l = 'numerki2016.txt'
 
+
 def process(line, t):
     line = line.split('|')
     matricula = int(line[0])
@@ -25,6 +26,7 @@ def process(line, t):
         print(student, student.numeryczna_l)
         student.numeryczna_l = True
     student.save()
+
 
 def run():
     file = open(dyskretna_l)

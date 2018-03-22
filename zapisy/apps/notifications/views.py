@@ -12,6 +12,7 @@ __author__ = 'maciek'
 
 GENERIC_ERROR = 'Wystąpił błąd podczas wysyłania powiadomień!'
 
+
 @require_POST
 @login_required
 def save(request):
@@ -27,13 +28,15 @@ def save(request):
 
     return redirect('my-profile')
 
+
 @staff_member_required
 def index(request):
     from datetime import date
 
     year = date.today().year
 
-    return render(request, 'notifications/index.html', { 'year': year })
+    return render(request, 'notifications/index.html', {'year': year})
+
 
 @require_POST
 @staff_member_required
@@ -63,10 +66,11 @@ def vote_start(request):
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu głosowania!')
     except ValueError as e:
         messages.error(request, e.message)
-    except:
+    except BaseException:
         messages.error(request, GENERIC_ERROR)
 
     return redirect('notifications:index')
+
 
 @staff_member_required
 def grade_start(request):
@@ -85,19 +89,22 @@ def grade_start(request):
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu oceny zajęć')
     except ValueError as e:
         messages.error(request, e.message)
-    except:
+    except BaseException:
         messages.error(request, GENERIC_ERROR)
 
     return redirect('notifications:index')
+
 
 @staff_member_required
 def enrollment_limit(request):
     from django.conf import settings
     try:
-        Notification.send_notifications('enrollment-limit', { 'ECTS_LIMIT': settings.ECTS_LIMIT, 'ECTS_FINAL_LIMIT': settings.ECTS_FINAL_LIMIT })
+        Notification.send_notifications('enrollment-limit',
+                                        {'ECTS_LIMIT': settings.ECTS_LIMIT,
+                                         'ECTS_FINAL_LIMIT': settings.ECTS_FINAL_LIMIT})
 
         messages.success(request, 'Wysłano powiadomienia o zwiększeniu limitu punktów ECTS')
-    except:
+    except BaseException:
         messages.error(request, GENERIC_ERROR)
 
     return redirect('notifications:index')

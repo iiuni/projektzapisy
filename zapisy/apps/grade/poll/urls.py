@@ -2,8 +2,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^ajax_get_courses$', views.ajax_get_courses,  name='grade-poll-get-courses'),
-    url(r'^ajax_get_groups$', views.ajax_get_groups,    name='grade-poll-get-groups'),
+    url(r'^ajax_get_courses$', views.ajax_get_courses, name='grade-poll-get-courses'),
+    url(r'^ajax_get_groups$', views.ajax_get_groups, name='grade-poll-get-groups'),
 
     url(r'^tickets_enter$', views.tickets_enter, name='grade-poll-tickets-enter'),
     url(r'^polls/(?P<slug>[\w\-_]+)$', views.polls_for_user, name='grade-poll-polls-for-user'),

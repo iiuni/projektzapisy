@@ -3,6 +3,7 @@ from apps.utils.fullcalendar import FullCalendarAdapter
 
 __author__ = 'maciek'
 
+
 def get_week_range_by_date(date):
     """
     Returns tuple of (monday, sunday) enclosing given date
@@ -31,7 +32,6 @@ class EventAdapter(FullCalendarAdapter):
 
         if not item.event.visible:
             return "#924420"
-
 
         if item.event.type in ['0', '1']:
             return "#7BD148"

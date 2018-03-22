@@ -28,6 +28,7 @@ def student_required(function=None, redirect_to=None):
         return _CheckProfileOr403(function, test_f, redirect_to)
     return (lambda f: _CheckProfileOr403(f, test_f, redirect_to))
 
+
 def employee_required(function=None,
                       redirect_to=None):
     """
@@ -49,6 +50,7 @@ def employee_required(function=None,
         return _CheckProfileOr403(function, test_f, redirect_to)
     return lambda f: _CheckProfileOr403(f, test_f, redirect_to)
 
+
 class _CheckProfileOr403(object):
     """
     Class that checks that the user passes the given test,
@@ -56,6 +58,7 @@ class _CheckProfileOr403(object):
 
     Check django.contrib.auth.decorators._CheckLogin for more info.
     """
+
     def __init__(self, view_func, test_func, redirect_to=None):
         self.view_func = view_func
         self.test_func = test_func

@@ -55,7 +55,6 @@ class SeleniumTestCase(LiveServerTestCase):
         return block()
 
 
-
 class NewSemesterTests(SeleniumTestCase):
 
     def setUp(self):
@@ -178,22 +177,34 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=self.current_semester.semester_ending + relativedelta(days=1),
-            semester_ending=self.current_semester.semester_ending + relativedelta(days=1, months=3),
-            records_ects_limit_abolition=self.current_semester.semester_ending + relativedelta(days=11),
+            semester_beginning=self.current_semester.semester_ending +
+            relativedelta(
+                days=1),
+            semester_ending=self.current_semester.semester_ending +
+            relativedelta(
+                days=1,
+                months=3),
+            records_ects_limit_abolition=self.current_semester.semester_ending +
+            relativedelta(
+                days=11),
             visible=True,
-            is_grade_active=False
-        )
+            is_grade_active=False)
 
         self.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=self.next_winter_semester.semester_ending + relativedelta(days=1),
-            semester_ending=self.next_winter_semester.semester_ending + relativedelta(days=1, months=3),
-            records_ects_limit_abolition=self.next_winter_semester.semester_ending + relativedelta(days=11),
+            semester_beginning=self.next_winter_semester.semester_ending +
+            relativedelta(
+                days=1),
+            semester_ending=self.next_winter_semester.semester_ending +
+            relativedelta(
+                days=1,
+                months=3),
+            records_ects_limit_abolition=self.next_winter_semester.semester_ending +
+            relativedelta(
+                days=11),
             visible=True,
-            is_grade_active=False
-        )
+            is_grade_active=False)
 
         self.system_state = SystemState.objects.create(
             semester_winter=self.next_winter_semester,
@@ -228,18 +239,18 @@ class NewSemesterTests(SeleniumTestCase):
     def prepare_course_entities_for_voting(self):
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_xpath(
-            "//div[@aria-label='cookieconsent']//a"
-          ).click()
+            lambda: self.driver.find_element_by_xpath(
+                "//div[@aria-label='cookieconsent']//a"
+            ).click()
         )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click()
-                )
+        )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'btn-no-usos').click()
-                )
+        )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
@@ -251,7 +262,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_xpath(
                 '//button[contains(text(), "Zaloguj")]').click()
-                )
+        )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
         self.wait_for_pass(
@@ -260,9 +271,11 @@ class NewSemesterTests(SeleniumTestCase):
             lambda: self.driver.find_element_by_link_text('Głosowanie').click())
 
         nonselected_select = Select(
-            self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
-                EC.element_to_be_clickable((By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting'))))
-        )
+            self.wait_for_pass(
+                lambda: WebDriverWait(
+                    self.driver, 1).until(
+                    EC.element_to_be_clickable(
+                        (By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting')))))
         # nonselected_select =
         # Select(self.driver.find_element_by_id('bootstrap-duallistbox-nonselected-list_for_voting'))
         selected_select = Select(
@@ -487,7 +500,7 @@ class NewSemesterTests(SeleniumTestCase):
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
                         '//li[label/a[text()="{}"]]/select'.format(course_name))
-                    )
+                )
             )
             select.select_by_value(str(value))
 
@@ -501,7 +514,10 @@ class NewSemesterTests(SeleniumTestCase):
         for course in Course.objects.filter(semester=self.next_winter_semester):
             courses[course.entity.name] = course.id
 
-        employees = {'{} {}'.format(empl.user.first_name, empl.user.last_name): empl.id for empl in self.employees}
+        employees = {
+            '{} {}'.format(
+                empl.user.first_name,
+                empl.user.last_name): empl.id for empl in self.employees}
 
         Classroom.objects.create(number='5', type='1')
         Classroom.objects.create(number='7', type='3')
@@ -640,24 +656,46 @@ class NewSemesterTests(SeleniumTestCase):
 class AdminTests(SeleniumTestCase):
 
     SUB_PAGES = [
-      "/fereol_admin/courses/freeday/", "/fereol_admin/courses/changedday/", "/fereol_admin/courses/group/",
-      "/fereol_admin/courses/effects/", "/fereol_admin/courses/coursedescription/",
-      "/fereol_admin/courses/courseentity/", "/fereol_admin/courses/course/", "/fereol_admin/courses/type/",
-      "/fereol_admin/courses/pointtypes/", "/fereol_admin/courses/classroom/", "/fereol_admin/courses/semester/",
-      "/fereol_admin/courses/tag/", "/fereol_admin/courses/pointsofcourseentities/",
-      "/fereol_admin/desiderata/desiderataother/", "/fereol_admin/desiderata/desiderata/",
-      "/fereol_admin/mailer/dontsendentry/", "/fereol_admin/mailer/messagelog/", "/fereol_admin/mailer/message/",
-      "/fereol_admin/news/news/", "/fereol_admin/notifications/notificationpreferences/",
-      "/fereol_admin/poll/template/",
-      "/fereol_admin/poll/savedticket/", "/fereol_admin/preferences/preference/",
-      "/fereol_admin/schedule/specialreservation/", "/fereol_admin/schedule/term/", "/fereol_admin/sites/site/",
-      "/fereol_admin/ticket_create/privatekey/", "/fereol_admin/ticket_create/publickey/",
-      "/fereol_admin/ticket_create/studentgraded/", "/fereol_admin/ticket_create/usedticketstamp/",
-      "/fereol_admin/users/employee/", "/fereol_admin/users/program/", "/fereol_admin/users/student/",
-      "/fereol_admin/users/studiazamawianemaileopiekunow/", "/fereol_admin/users/studiazamawiane/",
-      "/fereol_admin/users/studiazamawiane2012/", "/fereol_admin/auth/group/", "/fereol_admin/auth/user/",
-      "/fereol_admin/vote/singlevote/", "/fereol_admin/vote/systemstate/"
-      ]
+        "/fereol_admin/courses/freeday/",
+        "/fereol_admin/courses/changedday/",
+        "/fereol_admin/courses/group/",
+        "/fereol_admin/courses/effects/",
+        "/fereol_admin/courses/coursedescription/",
+        "/fereol_admin/courses/courseentity/",
+        "/fereol_admin/courses/course/",
+        "/fereol_admin/courses/type/",
+        "/fereol_admin/courses/pointtypes/",
+        "/fereol_admin/courses/classroom/",
+        "/fereol_admin/courses/semester/",
+        "/fereol_admin/courses/tag/",
+        "/fereol_admin/courses/pointsofcourseentities/",
+        "/fereol_admin/desiderata/desiderataother/",
+        "/fereol_admin/desiderata/desiderata/",
+        "/fereol_admin/mailer/dontsendentry/",
+        "/fereol_admin/mailer/messagelog/",
+        "/fereol_admin/mailer/message/",
+        "/fereol_admin/news/news/",
+        "/fereol_admin/notifications/notificationpreferences/",
+        "/fereol_admin/poll/template/",
+        "/fereol_admin/poll/savedticket/",
+        "/fereol_admin/preferences/preference/",
+        "/fereol_admin/schedule/specialreservation/",
+        "/fereol_admin/schedule/term/",
+        "/fereol_admin/sites/site/",
+        "/fereol_admin/ticket_create/privatekey/",
+        "/fereol_admin/ticket_create/publickey/",
+        "/fereol_admin/ticket_create/studentgraded/",
+        "/fereol_admin/ticket_create/usedticketstamp/",
+        "/fereol_admin/users/employee/",
+        "/fereol_admin/users/program/",
+        "/fereol_admin/users/student/",
+        "/fereol_admin/users/studiazamawianemaileopiekunow/",
+        "/fereol_admin/users/studiazamawiane/",
+        "/fereol_admin/users/studiazamawiane2012/",
+        "/fereol_admin/auth/group/",
+        "/fereol_admin/auth/user/",
+        "/fereol_admin/vote/singlevote/",
+        "/fereol_admin/vote/systemstate/"]
 
     def createAdmin(self):
         self.password = '11111'
@@ -666,6 +704,7 @@ class AdminTests(SeleniumTestCase):
                                                    email='admin@admin.com')
         self.admin.first_name = 'przemka'
         self.admin.save()
+
     def createSemester(self):
         today = datetime.now()
         self.semester = Semester(
@@ -687,13 +726,13 @@ class AdminTests(SeleniumTestCase):
         self.driver.get('{}/fereol_admin'.format(self.live_server_url))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_username').send_keys(self.admin.username)
-            )
+        )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
-            )
+        )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
-            )
+        )
 
     def tearDown(self):
         self.admin.delete()
@@ -706,8 +745,8 @@ class AdminTests(SeleniumTestCase):
 def createSubPageTest(link_text):
     def f(self):
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//th//a[@href="{}"]'.format(link_text)).click()
-            )
+            lambda: self.driver.find_element_by_xpath(
+                '//th//a[@href="{}"]'.format(link_text)).click())
         self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
     return f
 
@@ -728,31 +767,31 @@ class EmailChangeTest(SeleniumTestCase):
         self.createUser()
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('login-dropdown').click()
+            lambda: self.driver.find_element_by_id('login-dropdown').click()
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('btn-no-usos').click()
+            lambda: self.driver.find_element_by_id('btn-no-usos').click()
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
+            lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_xpath('//button[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath('//button[@type="submit"]').click()
         )
 
     def testEmailChange(self):
         self.driver.get("{}/accounts/email/change/".format(self.live_server_url))
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('id_email').clear()
+            lambda: self.driver.find_element_by_id('id_email').clear()
         )
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_id('id_email').send_keys('lorem@ipsum.com')
+            lambda: self.driver.find_element_by_id('id_email').send_keys('lorem@ipsum.com')
         )
         current_len = len(mail.outbox)
         self.wait_for_pass(
-          lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
         )
         self.assertEqual(len(mail.outbox), current_len + 1)

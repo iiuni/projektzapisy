@@ -9,7 +9,7 @@ __author__ = 'maciek'
 class Parser(object):
     def _convert_employee(self, name):
         _name_tables = {
-            '-00' : '',
+            '-00': '',
             '-05': '',
             'NN': '',
             'KRYSTIAN BACŁAWSKI': 97,
@@ -19,60 +19,59 @@ class Parser(object):
             'MARCIN BIEŃKOWSKI': 12,
             'WOJCIECH BOŻEJKO': 68,
             'JAROSŁAW BYRKA': 103,
-            'WITOLD CHARATONIK':55,
+            'WITOLD CHARATONIK': 55,
             'BŁAŻEJ CHĘCIŃSKI': 1355,
             'HANS DENIVELLE': 67,
             'INSTYTUT FIZYKI DOŚWIADCZALNEJ': 1413,
             'PATRYK FILIPIAK': 108,
             'TOMASZ GOGACZ': 1426,
-            'PRZEMYSŁAW GOSPODARCZYK':1658,
-            'LESZEK GROCHOLSKI':14,
-            'ALEKSANDER IWANOW':61,
-            'DARIUSZ JACKOWSKI':58,
-            'TOMASZ JURDZIŃSKI':17,
-            'PRZEMYSŁAWA KANAREK':19,
-            'WITOLD KARCZEWSKI':20,
-            'EMANUEL KIEROŃSKI':23,
-            'ANDRZEJ KISIELEWICZ':63,
-            'KORNEL KISIELEWICZ':82,
-            'WOJCIECH KLESZOWSKI':1334,
-            'ANTONI KOŚCIELSKI':25,
-            'KRZYSZTOF KRUPIŃSKI':64,
-            'JURIJ KRYAKIN':27,
-            'STANISŁAW LEWANOWICZ':30,
-            'KRZYSZTOF LORYŚ':31,
-            'JERZY MARCINKOWSKI':32,
-            'MAREK MATERZOK':93,
-            'MARCIN MŁOTKOWSKI':35,
-            'RAFAŁ NOWAK':36,
-            'LESZEK PACHOLSKI':37,
-            'KATARZYNA PALUCH':38,
-            'WITOLD PALUSZYŃSKI':39,
-            'MAREK PIOTRÓW':40,
-            'ŁUKASZ PIWOWAR':41,
-            'ZDZISŁAW PŁOSKI':42,
-            'PAWEŁ RAJBA':54,
-            'BARTOSZ RYBICKI':1648,
-            'PAWEŁ RYCHLIKOWSKI':43,
-            'PAWEŁ RZECHONEK':44,
-            'ZDZISŁAW SPŁAWSKI':4,
-            'GRZEGORZ STACHOWIAK':45,
-            'MACIEJ M. SYSŁO':1332,
-            'MAREK SZYKUŁA':91,
-            'ROMAN WENCEL':89,
-            'PIOTR WIECZOREK':49,
-            'TOMASZ WIERZBICKI':50,
-            'PIOTR WITKOWSKI':6,
-            'PIOTR WNUK-LIPIŃSKI':51,
-            'MIECZYSŁAW WODECKI':52,
-            'PAWEŁ WOŹNY':53,
-            'TOMASZ ZIELIŃSKI':100,
-            'WIKTOR ZYCHLA':8,
-            'ANDRZEJ ŁUKASZEWSKI':9
+            'PRZEMYSŁAW GOSPODARCZYK': 1658,
+            'LESZEK GROCHOLSKI': 14,
+            'ALEKSANDER IWANOW': 61,
+            'DARIUSZ JACKOWSKI': 58,
+            'TOMASZ JURDZIŃSKI': 17,
+            'PRZEMYSŁAWA KANAREK': 19,
+            'WITOLD KARCZEWSKI': 20,
+            'EMANUEL KIEROŃSKI': 23,
+            'ANDRZEJ KISIELEWICZ': 63,
+            'KORNEL KISIELEWICZ': 82,
+            'WOJCIECH KLESZOWSKI': 1334,
+            'ANTONI KOŚCIELSKI': 25,
+            'KRZYSZTOF KRUPIŃSKI': 64,
+            'JURIJ KRYAKIN': 27,
+            'STANISŁAW LEWANOWICZ': 30,
+            'KRZYSZTOF LORYŚ': 31,
+            'JERZY MARCINKOWSKI': 32,
+            'MAREK MATERZOK': 93,
+            'MARCIN MŁOTKOWSKI': 35,
+            'RAFAŁ NOWAK': 36,
+            'LESZEK PACHOLSKI': 37,
+            'KATARZYNA PALUCH': 38,
+            'WITOLD PALUSZYŃSKI': 39,
+            'MAREK PIOTRÓW': 40,
+            'ŁUKASZ PIWOWAR': 41,
+            'ZDZISŁAW PŁOSKI': 42,
+            'PAWEŁ RAJBA': 54,
+            'BARTOSZ RYBICKI': 1648,
+            'PAWEŁ RYCHLIKOWSKI': 43,
+            'PAWEŁ RZECHONEK': 44,
+            'ZDZISŁAW SPŁAWSKI': 4,
+            'GRZEGORZ STACHOWIAK': 45,
+            'MACIEJ M. SYSŁO': 1332,
+            'MAREK SZYKUŁA': 91,
+            'ROMAN WENCEL': 89,
+            'PIOTR WIECZOREK': 49,
+            'TOMASZ WIERZBICKI': 50,
+            'PIOTR WITKOWSKI': 6,
+            'PIOTR WNUK-LIPIŃSKI': 51,
+            'MIECZYSŁAW WODECKI': 52,
+            'PAWEŁ WOŹNY': 53,
+            'TOMASZ ZIELIŃSKI': 100,
+            'WIKTOR ZYCHLA': 8,
+            'ANDRZEJ ŁUKASZEWSKI': 9
         }
 
         return _name_tables[name]
-
 
     def _convert_day(self, day):
         _list = {
@@ -86,7 +85,6 @@ class Parser(object):
 
         return _list[day]
 
-
     def __init__(self, file):
         result = []
         title = ''
@@ -99,11 +97,11 @@ class Parser(object):
 
             elif line[1] != ' ':
                 if title and groups:
-                    result.append( {'name': title, 'groups': groups} )
+                    result.append({'name': title, 'groups': groups})
                 title = self._parseTitle(line)
                 groups = []
             else:
-                groups.append( self._parseGroup(line) )
+                groups.append(self._parseGroup(line))
 
         self.result = result
 
@@ -112,12 +110,12 @@ class Parser(object):
 
     def _convert_type(self, type):
         _types = {
-           '(ćwiczenia)': '2',
-           '(repetytorium)': '9',
-           '(wykład)': '1',
-           '(pracownia)': '3',
-           '(ćwicz+pracownia)': '5',
-           '(seminarium)': '6'
+            '(ćwiczenia)': '2',
+            '(repetytorium)': '9',
+            '(wykład)': '1',
+            '(pracownia)': '3',
+            '(ćwicz+pracownia)': '5',
+            '(seminarium)': '6'
         }
 
         return _types[type]
@@ -136,25 +134,24 @@ class Parser(object):
         i = 3
         while fields[i][-1] != ',':
             i += 1
-            tmpname.append( fields[i] )
+            tmpname.append(fields[i])
 
         name = ' '.join(tmpname)
         name = name[:-1]
         classrooms = []
-        if len(fields) > i+2:
-            classrooms = str(fields[i+2]).split(',')
-
+        if len(fields) > i + 2:
+            classrooms = str(fields[i + 2]).split(',')
 
         return {
             'teacher': self._convert_employee(name),
-            'day' : self._convert_day(day),
+            'day': self._convert_day(day),
             'start': str(start),
             'end': str(end),
             'type': self._convert_type(type),
             'rooms': classrooms
         }
 
-#class CourseImportForm(models.Form):
+# class CourseImportForm(models.Form):
 #
 #    class Meta:
 #        fiedls = ['e']
@@ -179,9 +176,6 @@ class ImportForm(object):
                 """
                 group -> termin, sala, osoba
               """
-
-
-
 
 
 """

@@ -3,6 +3,7 @@ from apps.grade.ticket_create.models import StudentGraded
 from django.core.exceptions import ObjectDoesNotExist
 from apps.users.models import Student
 
+
 class Command(BaseCommand):
     args = '<plik semester>'
     help = 'ocenia'

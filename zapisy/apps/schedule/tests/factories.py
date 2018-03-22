@@ -20,6 +20,7 @@ class EventCourseFactory(DjangoModelFactory):
     group = factory.SubFactory(GroupFactory)
     author = factory.SubFactory(UserFactory)
 
+
 class EventFactory(DjangoModelFactory):
     class Meta:
         model = Event
@@ -66,6 +67,7 @@ class TermThisYearFactory(DjangoModelFactory):
     start = time(10)
     end = time(12)
 
+
 class TermFactory(DjangoModelFactory):
     class Meta:
         model = Term
@@ -73,10 +75,11 @@ class TermFactory(DjangoModelFactory):
     event = factory.SubFactory(EventFactory)
     room = factory.SubFactory(ClassroomFactory)
     day = factory.fuzzy.FuzzyNaiveDateTime(datetime.now(), force_year=datetime.now().year)
-    start = random.randint(9,15)
-    end = random.randint(16,19)
+    start = random.randint(9, 15)
+    end = random.randint(16, 19)
     start = time(start)
     end = time(end)
+
 
 class TermFixedDayFactory(TermThisYearFactory):
     day = date(2016, 5, 20)

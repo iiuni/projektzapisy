@@ -48,7 +48,6 @@ Exceptions:
 """
 
 
-
 import sys
 import socket
 import os
@@ -56,7 +55,9 @@ import _thread
 import threading
 import time
 import errno
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 # Work with PEP8 and non-PEP8 versions of threading module.
 if not hasattr(threading, "current_thread"):
@@ -67,6 +68,7 @@ if not hasattr(threading.Thread, "get_name"):
 __all__ = ['Error', 'LockError', 'LockTimeout', 'AlreadyLocked',
            'LockFailed', 'UnlockError', 'NotLocked', 'NotMyLock',
            'LinkFileLock', 'MkdirFileLock', 'SQLiteFileLock']
+
 
 class Error(Exception):
     """
@@ -79,6 +81,7 @@ class Error(Exception):
     """
     pass
 
+
 class LockError(Error):
     """
     Base class for error arising from attempts to acquire the lock.
@@ -90,6 +93,7 @@ class LockError(Error):
     """
     pass
 
+
 class LockTimeout(LockError):
     """Raised when lock creation fails within a user-defined period of time.
 
@@ -99,6 +103,7 @@ class LockTimeout(LockError):
     ...   pass
     """
     pass
+
 
 class AlreadyLocked(LockError):
     """Some other thread/process is locking the file.
@@ -110,6 +115,7 @@ class AlreadyLocked(LockError):
     """
     pass
 
+
 class LockFailed(LockError):
     """Lock file creation failed for some other reason.
 
@@ -119,6 +125,7 @@ class LockFailed(LockError):
     ...   pass
     """
     pass
+
 
 class UnlockError(Error):
     """
@@ -131,6 +138,7 @@ class UnlockError(Error):
     """
     pass
 
+
 class NotLocked(UnlockError):
     """Raised when an attempt is made to unlock an unlocked file.
 
@@ -140,6 +148,7 @@ class NotLocked(UnlockError):
     ...   pass
     """
     pass
+
 
 class NotMyLock(UnlockError):
     """Raised when an attempt is made to unlock a file someone else locked.
@@ -151,8 +160,10 @@ class NotMyLock(UnlockError):
     """
     pass
 
+
 class LockBase:
     """Base class for platform-specific lock classes."""
+
     def __init__(self, path, threaded=True):
         """
         >>> lock = LockBase('somefile')
@@ -228,6 +239,7 @@ class LockBase:
         """
         self.release()
 
+
 class LinkFileLock(LockBase):
     """Lock access to a file using atomic property of link(2)."""
 
@@ -260,7 +272,7 @@ class LinkFileLock(LockBase):
                             raise LockTimeout
                         else:
                             raise AlreadyLocked
-                    time.sleep(timeout is not None and timeout/10 or 0.1)
+                    time.sleep(timeout is not None and timeout / 10 or 0.1)
             else:
                 # Link creation succeeded.  We're good to go.
                 return
@@ -285,8 +297,10 @@ class LinkFileLock(LockBase):
         if os.path.exists(self.lock_file):
             os.unlink(self.lock_file)
 
+
 class MkdirFileLock(LockBase):
     """Lock file by creating a directory."""
+
     def __init__(self, path, threaded=True):
         """
         >>> lock = MkdirFileLock('somefile')
@@ -299,10 +313,10 @@ class MkdirFileLock(LockBase):
             tname = ""
         # Lock file itself is a directory.  Place the unique file name into
         # it.
-        self.unique_name  = os.path.join(self.lock_file,
-                                         "%s.%s%s" % (self.hostname,
-                                                      tname,
-                                                      self.pid))
+        self.unique_name = os.path.join(self.lock_file,
+                                        "%s.%s%s" % (self.hostname,
+                                                     tname,
+                                                     self.pid))
 
     def acquire(self, timeout=None):
         end_time = time.time()
@@ -358,6 +372,7 @@ class MkdirFileLock(LockBase):
             for name in os.listdir(self.lock_file):
                 os.unlink(os.path.join(self.lock_file, name))
             os.rmdir(self.lock_file)
+
 
 class SQLiteFileLock(LockBase):
     "Demonstration of using same SQL-based locking."
@@ -490,6 +505,7 @@ class SQLiteFileLock(LockBase):
                        "  where lock_file = ?",
                        (self.lock_file,))
         self.connection.commit()
+
 
 if hasattr(os, "link"):
     FileLock = LinkFileLock

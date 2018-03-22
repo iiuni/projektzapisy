@@ -29,7 +29,8 @@ class PipelineManifest(Manifest):
             for package in self.packages:
                 filename_base, filename = os.path.split(package['output'])
                 version = self.packager.versioning.version_from_file(filename_base, filename)
-                output_filename = self.packager.versioning.output_filename(package['output'], version)
+                output_filename = self.packager.versioning.output_filename(
+                    package['output'], version)
                 yield str(self.packager.individual_url(output_filename))
         else:
             for package in self.packages:

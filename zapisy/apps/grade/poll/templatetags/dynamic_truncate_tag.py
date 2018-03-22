@@ -3,6 +3,7 @@ from django.template import Library, Node, TemplateSyntaxError
 
 register = template.Library()
 
+
 class TruncateNode(Node):
     def __init__(self, value, cutoff):
         self.value, self.cutoff = value, cutoff
@@ -14,10 +15,12 @@ class TruncateNode(Node):
             truncated = truncated[0:(size - 3)] + '...'
             return truncated
 
+
 def truncate(parser, token):
     bits = token.contents.split()
     if len(bits) != 3:
         raise TemplateSyntaxError("truncate takes exactly two arguments, string, size")
     return TruncateNode(bits[1], bits[2])
+
 
 register.tag('truncate', truncate)

@@ -9,10 +9,12 @@ from django.db import models
 from datetime import datetime, timedelta
 from apps.notifications.models import Notification
 
+
 class NewsManager(models.Manager):
     """
         News management
     """
+
     def new(self, category):
         """
             Returns news marked as new
@@ -34,7 +36,7 @@ class NewsManager(models.Manager):
         """
             Get a number of news
         """
-        return self.category(category)[beginwith:(beginwith+quantity)]
+        return self.category(category)[beginwith:(beginwith + quantity)]
 
     def get_page_number_by_news_id(self, news_id):
         """
@@ -55,7 +57,9 @@ class NewsManager(models.Manager):
         """
             Return news tagged with a given tag.
         """
-        return self.filter(category = category)
+        return self.filter(category=category)
+
+
 # suggested news items categories - not enforced
 CATEGORIES = (
     ('-', 'Hidden'),
@@ -63,6 +67,7 @@ CATEGORIES = (
     ('enrollment', 'Zapisy'),
     ('grade', 'Ocena zajęć'),
 )
+
 
 class News(models.Model):
     """

@@ -126,7 +126,7 @@ class Compressor(object):
                 if asset_path.startswith("http") or asset_path.startswith("//"):
                     return "url(%s)" % asset_path
                 asset_url = self.construct_asset_path(asset_path, path,
-                    variant, absolute_asset_paths)
+                                                      variant, absolute_asset_paths)
                 return "url(%s)" % asset_url
             content = self.read_file(path)
             content = re.sub(URL_DETECTOR, reconstruct, content)
@@ -157,7 +157,7 @@ class Compressor(object):
             return False
         if not (re.search(EMBEDDABLE, path) and storage.exists(path)):
             return False
-        if not ext in EMBED_EXTS:
+        if ext not in EMBED_EXTS:
             return False
         if not (font or len(self.encoded_content(path)) < MAX_IMAGE_SIZE):
             return False
@@ -173,9 +173,10 @@ class Compressor(object):
 
     def with_mhtml(self, css, asset_url):
         paths = {}
+
         def mhtml(match):
             path = match.group(1)
-            if not path in paths:
+            if path not in paths:
                 paths[path] = "%s-%s" % (match.start(), os.path.basename(path))
             return "url(mhtml:%s!%s)" % (asset_url, paths[path])
         css = re.sub(URL_REPLACER, mhtml, css)
@@ -250,7 +251,7 @@ class CompressorError(Exception):
 class SubProcessCompressor(CompressorBase):
     def execute_command(self, command, content):
         pipe = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
-            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+                                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
         pipe.stdin.write(content)
         pipe.stdin.close()
 

@@ -162,45 +162,47 @@ class SpecialReservationTestCase(TestCase):
 
 
 class MessageTestCase(TestCase):
-    def test_simpliest_message_autotimenow(self): #there are two classes of name EventModerationMessage but it works
+    # there are two classes of name EventModerationMessage but it works
+    def test_simpliest_message_autotimenow(self):
         event = factories.EventFactory()
         message = get_random_string(length=32)
         emm = EventModerationMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         emm.save()
         emm2 = EventModerationMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         emm2.save()
-        #event message should not be counted
+        # event message should not be counted
         em = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em.save()
 
         messages = EventModerationMessage.get_event_messages(event)
-        self.assertEqual(len(messages), 2) #the results should be 2 because em is not event moderation message
+        # the results should be 2 because em is not event moderation message
+        self.assertEqual(len(messages), 2)
 
-    def test_simpliest_eventmessage_autotimenow(self): #this classes are the same almost
+    def test_simpliest_eventmessage_autotimenow(self):  # this classes are the same almost
         event = factories.EventFactory()
         message = get_random_string(length=32)
         em = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em.save()
         em2 = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em2.save()
         messages = EventMessage.get_event_messages(event)
@@ -218,7 +220,7 @@ class TermTestCase(TestCase):
         term2 = factories.TermFactory()
         term2.full_clean()
         term2.save()
-        termsoftheday = EventTerm.get_terms_for_dates([term2.get_day()],term2.get_room())
+        termsoftheday = EventTerm.get_terms_for_dates([term2.get_day()], term2.get_room())
         self.assertEqual(len(termsoftheday), 1)
 
     def test_validation_on_overlapping(self):
@@ -235,7 +237,7 @@ class TermTestCase(TestCase):
         semester.save()
         semester.full_clean()
         other_semester = \
-                enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
+            enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
         other_semester.save()
         other_semester.full_clean()
 
@@ -257,51 +259,51 @@ class TermTestCase(TestCase):
         reservation.full_clean()
         reservation.save(author_id=reservation_author.pk)
         reservation2 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.TUESDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.TUESDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation2.full_clean()
         reservation2.save(author_id=reservation_author.pk)
         reservation3 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.WEDNESDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.WEDNESDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation3.full_clean()
         reservation3.save(author_id=reservation_author.pk)
         reservation4 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.THURSDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.THURSDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation4.full_clean()
         reservation4.save(author_id=reservation_author.pk)
         reservation5 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.FRIDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.FRIDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation5.full_clean()
         reservation5.save(author_id=reservation_author.pk)
         reservation6 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.SATURDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.SATURDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation6.full_clean()
         reservation6.save(author_id=reservation_author.pk)
-        reservation7= SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.SUNDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+        reservation7 = SpecialReservation(semester=semester,
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.SUNDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation7.full_clean()
         reservation7.save(author_id=reservation_author.pk)
 
@@ -311,8 +313,8 @@ class TermTestCase(TestCase):
                                      start=time(9), end=time(17))
         term.full_clean()
         term.save()
-        self.assertEqual(other_semester.semester_beginning,term.day)
-        self.assertEqual(reservation.classroom,term.room)
+        self.assertEqual(other_semester.semester_beginning, term.day)
+        self.assertEqual(reservation.classroom, term.room)
 
 
 class FeedsTestCase(TestCase):
@@ -320,16 +322,31 @@ class FeedsTestCase(TestCase):
         event = factories.EventFactory()
         event2 = factories.EventFactory()
         latest = feeds.Latest()
-        item_title = [feeds.Latest.item_title(latest,event),feeds.Latest.item_title(latest,event2)]
-        item_author = [feeds.Latest.item_author_name(latest,event),feeds.Latest.item_author_name(latest,event)]
-        item_pub= [feeds.Latest.item_pubdate(latest,event),feeds.Latest.item_pubdate(latest,event)]
-        item_desc = [feeds.Latest.item_description(latest,event),feeds.Latest.item_description(latest,event)]
-        item_auth_mail = [feeds.Latest.item_author_email(latest,event),feeds.Latest.item_author_email(latest,event)]
-        self.assertEqual(len(item_title),2)
-        self.assertEqual(len(item_author),2)
-        self.assertEqual(len(item_pub),2)
-        self.assertEqual(len(item_desc),2)
-        self.assertEqual(len(item_auth_mail),2)
+        item_title = [
+            feeds.Latest.item_title(
+                latest, event), feeds.Latest.item_title(
+                latest, event2)]
+        item_author = [
+            feeds.Latest.item_author_name(
+                latest, event), feeds.Latest.item_author_name(
+                latest, event)]
+        item_pub = [
+            feeds.Latest.item_pubdate(
+                latest, event), feeds.Latest.item_pubdate(
+                latest, event)]
+        item_desc = [
+            feeds.Latest.item_description(
+                latest, event), feeds.Latest.item_description(
+                latest, event)]
+        item_auth_mail = [
+            feeds.Latest.item_author_email(
+                latest, event), feeds.Latest.item_author_email(
+                latest, event)]
+        self.assertEqual(len(item_title), 2)
+        self.assertEqual(len(item_author), 2)
+        self.assertEqual(len(item_pub), 2)
+        self.assertEqual(len(item_desc), 2)
+        self.assertEqual(len(item_auth_mail), 2)
 
 
 class EventTestCase(TestCase):

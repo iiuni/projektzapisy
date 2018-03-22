@@ -59,11 +59,11 @@ def prototype_set_pinned(request):
     except NonStudentException:
         transaction.rollback()
         return AjaxFailureMessage('NonStudent',
-            'Nie możesz przypinać grup do planu, bo nie jesteś studentem.')
+                                  'Nie możesz przypinać grup do planu, bo nie jesteś studentem.')
     except NonGroupException:
         transaction.rollback()
         return AjaxFailureMessage('NonGroup',
-            'Nie możesz przypiąć tej grupy, bo już nie istnieje.')
+                                  'Nie możesz przypiąć tej grupy, bo już nie istnieje.')
     except AlreadyPinnedException:
         transaction.rollback()
         return AjaxSuccessMessage(
@@ -72,6 +72,7 @@ def prototype_set_pinned(request):
         transaction.rollback()
         return AjaxSuccessMessage(
             'Grupa jest już odpięta od Twojego planu.')
+
 
 @require_POST
 @transaction.atomic
@@ -87,24 +88,27 @@ def set_enrolled(request, method):
     message_context = None if is_ajax else request
 
     if not request.user.is_authenticated():
-        return AjaxFailureMessage.auto_render('NotAuthenticated', 'Nie jesteś zalogowany.', message_context)
+        return AjaxFailureMessage.auto_render(
+            'NotAuthenticated', 'Nie jesteś zalogowany.', message_context)
 
     try:
         group_id = int(request.POST['group'])
         set_enrolled = request.POST['enroll'] == 'true'
     except MultiValueDictKeyError:
-        return AjaxFailureMessage.auto_render('InvalidRequest', 'Nieprawidłowe zapytanie.', message_context)
-
+        return AjaxFailureMessage.auto_render(
+            'InvalidRequest', 'Nieprawidłowe zapytanie.', message_context)
 
     try:
         if request.user.student.block:
-            return AjaxFailureMessage.auto_render('ScheduleLocked',
-                'Twój plan jest zablokowany. Możesz go odblokować w prototypie', message_context)
+            return AjaxFailureMessage.auto_render(
+                'ScheduleLocked',
+                'Twój plan jest zablokowany. Możesz go odblokować w prototypie',
+                message_context)
         student = request.user.student
     except Student.DoesNotExist:
         transaction.savepoint_rollback(savept)
         return AjaxFailureMessage.auto_render('NonStudent',
-            'Nie jesteś studentem.', message_context)
+                                              'Nie jesteś studentem.', message_context)
 
     try:
         group = Group.objects.get(id=group_id)
@@ -113,8 +117,10 @@ def set_enrolled(request, method):
         group.course = course
     except ObjectDoesNotExist:
         transaction.savepoint_rollback(savept)
-        return AjaxFailureMessage.auto_render('NonGroup',
-            'Nie możesz zapisać lub wypisać się z grupy, ponieważ ona nie istnieje.', message_context)
+        return AjaxFailureMessage.auto_render(
+            'NonGroup',
+            'Nie możesz zapisać lub wypisać się z grupy, ponieważ ona nie istnieje.',
+            message_context)
 
     if set_enrolled:
         result, messages_list = group.enroll_student(student)
@@ -134,13 +140,14 @@ def set_enrolled(request, method):
 
         else:
             return AjaxFailureMessage.auto_render('SetEnrolledFailed',
-                message, message_context)
+                                                  message, message_context)
 
     else:
         for message in messages_list:
             messages.info(request, message)
 
         return redirect('course-page', slug=group.course_slug())
+
 
 @require_POST
 def records_set_locked(request, method):
@@ -152,18 +159,18 @@ def records_set_locked(request, method):
 
     if not request.user.is_authenticated():
         return AjaxFailureMessage.auto_render('NotAuthenticated',
-            'Nie jesteś zalogowany.', message_context)
+                                              'Nie jesteś zalogowany.', message_context)
 
     try:
         lock = request.POST['lock'] == 'true'
     except MultiValueDictKeyError:
         return AjaxFailureMessage.auto_render('InvalidRequest',
-            'Nieprawidłowe zapytanie.', message_context)
+                                              'Nieprawidłowe zapytanie.', message_context)
 
     try:
-        logger.info('User %s  <id: %d> %s his/her records' %\
-            (request.user.username, request.user.id,
-            ('locks' if lock else 'unlocks')))
+        logger.info('User %s  <id: %d> %s his/her records' %
+                    (request.user.username, request.user.id,
+                     ('locks' if lock else 'unlocks')))
         request.user.student.records_set_locked(lock)
 
         message = 'Plan został ' + ('zablokowany.' if lock else ' odblokowany.')
@@ -175,7 +182,8 @@ def records_set_locked(request, method):
     except Student.DoesNotExist:
         transaction.rollback()
         return AjaxFailureMessage.auto_render('NonStudent',
-            'Nie jesteś studentem.', message_context)
+                                              'Nie jesteś studentem.', message_context)
+
 
 @require_POST
 @login_required
@@ -192,18 +200,19 @@ def set_queue_priority(request, method):
         priority = int(request.POST['priority'])
     except MultiValueDictKeyError:
         return AjaxFailureMessage.auto_render('InvalidRequest',
-            'Nieprawidłowe zapytanie.', message_context)
+                                              'Nieprawidłowe zapytanie.', message_context)
 
     try:
         if request.user.student.block:
             return AjaxFailureMessage.auto_render('ScheduleLocked',
-                'Twój plan jest zablokowany.', message_context)
+                                                  'Twój plan jest zablokowany.', message_context)
 
-        queue = Queue.objects.select_related('group').get(student=request.user.student, group__id=group_id, deleted=False)
-        #priority = int(priority) WTF? to już jest int
+        queue = Queue.objects.select_related('group').get(
+            student=request.user.student, group__id=group_id, deleted=False)
+        # priority = int(priority) WTF? to już jest int
         if priority > settings.QUEUE_PRIORITY_LIMIT or priority < 1:
-            return AjaxFailureMessage.auto_render('FatalError',
-                'Nieprawidłowa wartość priorytetu.', message_context)
+            return AjaxFailureMessage.auto_render(
+                'FatalError', 'Nieprawidłowa wartość priorytetu.', message_context)
         if queue.priority != priority:
             queue.set_priority(priority)
         if is_ajax:
@@ -213,10 +222,11 @@ def set_queue_priority(request, method):
     except Queue.DoesNotExist:
         transaction.rollback()
         return AjaxFailureMessage.auto_render('NotQueued',
-            'Nie jesteś w kolejce do tej grupy.', message_context)
+                                              'Nie jesteś w kolejce do tej grupy.', message_context)
     except Student.DoesNotExist:
         return AjaxFailureMessage.auto_render('NonStudent',
-            'Nie jesteś studentem.', message_context)
+                                              'Nie jesteś studentem.', message_context)
+
 
 @login_required
 def records(request, group_id):
@@ -244,6 +254,7 @@ def records(request, group_id):
         messages.info(request, "Podana grupa nie istnieje.")
         return render(request, 'common/error.html')
 
+
 @employee_required
 def records_group_csv(request, group_id):
     try:
@@ -251,7 +262,8 @@ def records_group_csv(request, group_id):
         group = Group.objects.get(id=group_id)
 
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.csv'
+        response['Content-Disposition'] = 'attachment; filename=' + \
+            re.sub(r'\s', '', slugify(str(group))) + '-group.csv'
 
         writer = csv.writer(response)
         for s in students_in_group:
@@ -264,6 +276,7 @@ def records_group_csv(request, group_id):
     except (NonGroupException, ObjectDoesNotExist):
         raise Http404
 
+
 @employee_required
 def records_queue_csv(request, group_id):
     try:
@@ -271,7 +284,8 @@ def records_queue_csv(request, group_id):
         group = Group.objects.get(id=group_id)
 
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.csv'
+        response['Content-Disposition'] = 'attachment; filename=' + \
+            re.sub(r'\s', '', slugify(str(group))) + '-queue.csv'
 
         writer = csv.writer(response)
         for s in students_in_queue:
@@ -284,6 +298,7 @@ def records_queue_csv(request, group_id):
     except (NonGroupException, ObjectDoesNotExist):
         raise Http404
 
+
 @login_required
 def own(request):
     """ own schedule view """
@@ -293,12 +308,11 @@ def own(request):
         raise RuntimeError('Brak aktywnego semestru')
 
     employee = None
-    student  = None
+    student = None
     if BaseUser.is_student(request.user):
         student = request.user.student
         groups = Course.get_student_courses_in_semester(student, default_semester)
         sum_points = student.get_points()
-
 
     if not BaseUser.is_student(request.user) and \
        not BaseUser.is_employee(request.user):
@@ -312,8 +326,8 @@ def own(request):
 def get_schedule_prototype_courselist(student):
     courses = prepare_courses_with_terms()
     return [course.serialize_for_json(
-                student=student, terms=terms, includeWasEnrolled=True)
-            for course, terms in courses]
+        student=student, terms=terms, includeWasEnrolled=True)
+        for course, terms in courses]
 
 
 @cache_result
@@ -371,6 +385,7 @@ def schedule_prototype(request):
     }
     return render(request, 'enrollment/records/schedule_prototype.html', data)
 
+
 @employee_required
 def records_group_pdf(request, group_id):
     try:
@@ -392,9 +407,11 @@ def records_group_pdf(request, group_id):
     pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
 
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
+    response['Content-Disposition'] = 'attachment; filename=' + \
+        re.sub(r'\s', '', slugify(str(group))) + '-group.pdf'
 
     return response
+
 
 @employee_required
 def records_queue_pdf(request, group_id):
@@ -416,6 +433,7 @@ def records_queue_pdf(request, group_id):
 
     pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=' + re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
+    response['Content-Disposition'] = 'attachment; filename=' + \
+        re.sub(r'\s', '', slugify(str(group))) + '-queue.pdf'
 
     return response

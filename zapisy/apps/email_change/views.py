@@ -36,12 +36,13 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.contrib import messages
 
+
 @login_required
 def email_change_view(request, extra_context={},
-        success_url='my-profile',#'email_verification_sent',
-        template_name='email_change/email_change_form.html',
-        email_message_template_name='email_change/emails/verification_email_message.html',
-        email_subject_template_name='email_change/emails/verification_email_subject.html'):
+                      success_url='my-profile',  # 'email_verification_sent',
+                      template_name='email_change/email_change_form.html',
+                      email_message_template_name='email_change/emails/verification_email_message.html',
+                      email_subject_template_name='email_change/emails/verification_email_subject.html'):
     """Allow a user to change the email address associated with the user account.
 
 
@@ -54,7 +55,7 @@ def email_change_view(request, extra_context={},
 
             if user and user != request.user:
                 messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render(request, template_name, {'form':form})
+                return render(request, template_name, {'form': form})
 
             verification_key = generate_key(request.user, email)
 
@@ -72,16 +73,16 @@ def email_change_view(request, extra_context={},
 
             # Create an email change request
             EmailChangeRequest.objects.create(
-                user = request.user,
-                verification_key = verification_key,
-                email = email
-                )
+                user=request.user,
+                verification_key=verification_key,
+                email=email
+            )
 
             # Prepare context
             c = {
                 'email': email,
                 'site_domain': domain,
-                'site_name': site_name.replace('\n',''),
+                'site_name': site_name.replace('\n', ''),
                 'user': request.user,
                 'verification_key': verification_key,
                 'protocol': protocol,
@@ -93,7 +94,9 @@ def email_change_view(request, extra_context={},
             message = render_to_string(email_message_template_name, c)
 
             send_mail('[Fereol] Weryfikacja zmiany adresu email', message, None, [email])
-            messages.success(request, "Mail zawierający link weryfikacyjny został wysłany na Twój nowy adres email. Postępuj zgodnie z instrukcjami w tym mailu by z sukcesem zmienić Twój obecny adres email.")
+            messages.success(
+                request,
+                "Mail zawierający link weryfikacyjny został wysłany na Twój nowy adres email. Postępuj zgodnie z instrukcjami w tym mailu by z sukcesem zmienić Twój obecny adres email.")
             # Redirect
             return redirect(success_url)
 
@@ -105,11 +108,10 @@ def email_change_view(request, extra_context={},
     return render(request, template_name, extra_context)
 
 
-
 @login_required
 def email_verify_view(request, verification_key, extra_context={},
-        success_url='my-profile',#'email_change_complete',
-        template_name='email_change/email_verify.html'):
+                      success_url='my-profile',  # 'email_change_complete',
+                      template_name='email_change/email_verify.html'):
     try:
         ecr = EmailChangeRequest.objects.get(
             user=request.user, verification_key=verification_key)

@@ -12,6 +12,7 @@ class NonStudentException(Exception):
     """Thrown when a user is not a student"""
     pass
 
+
 class InvalidUserException(Exception):
     """
     Thrown when a user is considered to be invalid

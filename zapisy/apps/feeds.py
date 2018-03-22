@@ -2,12 +2,12 @@ from django.core.urlresolvers import reverse
 from apps.news.models import News
 from django.contrib.syndication.views import Feed
 
+
 class LatestNews(Feed):
     base_title_prefix = ""
     base_title_suffix = ": ogłoszenia"
     title = "Zapisy - newsy"
     description = "Aktualności z Systemu Zapisów Insytutu Informatyki UWr"
-
 
     def link(self):
         return ("/news/")
