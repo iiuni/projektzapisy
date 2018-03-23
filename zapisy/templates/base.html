@@ -5,7 +5,9 @@
 {% load osenv_value %}
 {% load django_version %}
 {% load python_version %}
+{% load git_info %}
 {% load i18n %}
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -275,6 +277,7 @@
             <br><br><hr>
             <p>Django <strong>{% django_version %}</strong></p>
             <p>Python <strong>{% python_version %}</strong></p>
+            <p>{% git_info %}</p>
             {% endif %}
         </p>
     </footer>
