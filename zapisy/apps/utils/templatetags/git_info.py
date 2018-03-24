@@ -1,5 +1,5 @@
 """
-A template filter to return git repo info:
+A template tag to return git repo info:
 The latest's commit hash, message author and date
 Displayed at the bottom of the main page if debug is on
 """
