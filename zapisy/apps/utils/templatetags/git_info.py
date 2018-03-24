@@ -9,16 +9,19 @@ import subprocess
 
 register = template.Library()
 
-
-@register.simple_tag
-def git_info():
-    p = subprocess.Popen([
-        "git", "log", "-n", "1",
-        "--pretty=format:%h %s --- %an %ad"
-        ],
-        stdout=subprocess.PIPE
-    )
+def getLineFromProcess(process):
+    p = subprocess.Popen(process, stdout=subprocess.PIPE)
     outlines = p.stdout.readlines()
     if len(outlines) < 1:
         return ""
     return outlines[0].decode("utf-8")
+@register.simple_tag
+def git_info():
+    logOutput = getLineFromProcess([
+        "git", "log", "-n", "1",
+        "--pretty=format:%h %s --- %an %ad"
+    ])
+    branchName = getLineFromProcess([
+        "git", "rev-parse", "--abbrev-ref", "HEAD"
+    ])
+    return "{} {}".format(branchName, logOutput)
