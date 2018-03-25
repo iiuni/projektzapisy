@@ -2,6 +2,7 @@ import re
 import io
 import csv
 from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
 from apps.grade.poll.models import Poll, Section, SectionOrdering, \
     OpenQuestion, SingleChoiceQuestion, \
     OpenQuestionOrdering, Option, \
@@ -34,7 +35,7 @@ def poll_and_ticket_cmp(pollTuple1, pollTuple2):
 
 def check_signature(ticket, signed_ticket, public_key):
     pk = RSA.importKey(public_key.public_key)
-    return pk.verify(ticket, (signed_ticket,))
+    return pkcs1_15.new(pk).verify(ticket, signed_ticket)
 
 
 def group_polls_and_tickets_by_course(poll_and_ticket_list):

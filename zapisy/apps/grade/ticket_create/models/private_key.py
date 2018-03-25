@@ -1,6 +1,7 @@
 from django.db import models
 
 from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
 
 
 class PrivateKey(models.Model):
@@ -13,12 +14,12 @@ class PrivateKey(models.Model):
         app_label = 'ticket_create'
 
     def __str__(self):
-        return "Klucz prywatny: " + str(self.poll)
+        return 'Klucz prywatny: {}'.format(self.poll)
 
     def sign_ticket(self, ticket):
         key = RSA.importKey(self.private_key)
-        return key.sign(ticket, 0)
+        return pkcs1_15.new(key).sign(ticket)
 
     def verify_signature(self, ticket, signed_ticket):
         key = RSA.importKey(self.private_key)
-        return key.verify(ticket, signed_ticket)
+        return pkcs1_15.new(key).verify(ticket, signed_ticket)
