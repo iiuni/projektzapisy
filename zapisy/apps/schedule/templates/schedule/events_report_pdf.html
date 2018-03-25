@@ -36,7 +36,7 @@
             <tr>
               <td>{{term.day|date:"Y-m-d"}} {{term.start}} - {{term.end}}</td>
               <td>{{term.event.title}}</td>
-              <td>{{term.event.author}}</td>
+              <td>{{term.event.author.get_full_name}}</td>
             </tr>
             {% endfor %}
           </tbody>

@@ -24,6 +24,7 @@ from apps.users.models import BaseUser
 from xhtml2pdf import pisa
 import io
 from functools import reduce
+import itertools
 
 
 def classrooms(request):
@@ -373,7 +374,7 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
     context = {
         'beg_date': beg_date,
         'end_date': end_date,
-        'events': sorted(events),
+        'events': events,
         'pagesize': 'A4',
         'report': True
     }
