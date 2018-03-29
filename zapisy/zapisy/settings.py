@@ -64,16 +64,19 @@ LOGGING = {
             # optionally raise to INFO to not fill the log file too quickly
             'level': 'DEBUG',  # DEBUG or higher goes to the log file
             'class': 'logging.handlers.RotatingFileHandler',
-            # IMPORTANT: replace with your desired logfile name!
             'filename': 'logs/djangoproject.log',
-                        'maxBytes': 50 * 10**6,  # will 50 MB do?
-                        'backupCount': 3,  # keep this many extra historical files
-                        'formatter': 'timestampthread'
+            'maxBytes': 50 * 10**6,  # will 50 MB do?
+            'backupCount': 3,  # keep this many extra historical files
+            'formatter': 'timestampthread'
+        },
+        'console': {
+           'class': 'logging.StreamHandler',
+           'level': 'INFO',
         },
     },
     'loggers': {
         'django': {  # configure all of Django's loggers
-            'handlers': ['logfile'],
+            'handlers': ['logfile', 'console'],
             'level': 'DEBUG',  # set to debug to see e.g. database queries
         },
         'apps': {
