@@ -1,8 +1,10 @@
+from string import whitespace
+import base64
+
 from Crypto.PublicKey import RSA
 from Crypto.Random.random import getrandbits, \
     randint
 from subprocess import *
-from string import whitespace
 
 from django.db.models import Q
 from django.utils.safestring import SafeText
@@ -340,6 +342,7 @@ def secure_signer(user, g, t):
 
 
 def unblind(poll, st):
+    print("unblind:", st)
     st = st[0]
     if st == "Nie jesteś przypisany do tej ankiety":
         return st
@@ -351,16 +354,15 @@ def unblind(poll, st):
         return (str(st), str(key.n), str(key.e))
 
 
-def get_valid_tickets(tl):
+def get_valid_tickets(ticket_list):
     err = []
     val = []
-    for g, t, st in tl:
+    for group, ticket, st in ticket_list:
         if st == "Nie jesteś przypisany do tej ankiety" or \
            st == "Bilet już pobrano":
-            err.append((str(g), st))
+            err.append((str(group), st))
         else:
-            val.append((g, t, st))
-
+            val.append((group, ticket, st))
     return err, val
 
 
@@ -384,6 +386,13 @@ def to_plaintext(vtl):
     return SafeText(str(res))
 
 
+### FIXME explanation of ticket parsing code: str(int())
+# The list is split into chunks, some of which are empty, and some of which
+# contain the tickets we want (e.g. ['123123', '', '', 'somecrap', '321321'])
+# The list is iterated until doing int(list[i]) succeeds; at this point
+# it's assumed we've found the key. However, we actually want to return
+# the tickets as strings, not ints.
+# This entire function should be rewritten from scratch
 def from_plaintext(tickets_plaintext):
     pre_tickets = tickets_plaintext.split('----------------------------------')
     pre_tickets = [[x] for x in pre_tickets]
@@ -394,6 +403,7 @@ def from_plaintext(tickets_plaintext):
     convert = False
     ids_tickets_signed = []
     for poll_info in pre_tickets:
+        print(poll_info)
         i = 0
         while i < len(poll_info):
             if convert:
@@ -411,7 +421,7 @@ def from_plaintext(tickets_plaintext):
                 j += 1
                 while True:
                     try:
-                        t = int(poll_info[j])
+                        t = str(int(poll_info[j]))
                         break
                     except BaseException:
                         j += 1

@@ -2,6 +2,7 @@ import re
 import io
 import csv
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from apps.grade.poll.models import Poll, Section, SectionOrdering, \
     OpenQuestion, SingleChoiceQuestion, \
@@ -14,8 +15,9 @@ from apps.grade.poll.models import Poll, Section, SectionOrdering, \
     MultipleChoiceQuestionAnswer, \
     OpenQuestionAnswer, Option, Template, \
     TemplateSections, Origin
-from apps.grade.ticket_create.utils import poll_cmp, \
-    flatten
+from apps.grade.ticket_create.utils import (
+    poll_cmp, flatten,
+)
 from apps.enrollment.records.models import Group
 from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
     NoSectionException
@@ -33,9 +35,21 @@ def poll_and_ticket_cmp(pollTuple1, pollTuple2):
     return poll_cmp(pollTuple1[0], pollTuple2[0])
 
 
-def check_signature(ticket, signed_ticket, public_key):
+def int_to_bytes(x: int) -> bytes:
+    return x.to_bytes((x.bit_length() + 7) // 8, 'big')
+
+def check_signature(ticket: str, ticket_signature: int, public_key):
     pk = RSA.importKey(public_key.public_key)
-    return pkcs1_15.new(pk).verify(ticket, signed_ticket)
+    ticket_hash = SHA256.new(ticket.encode("utf-8"))
+    signature_as_bytes = int_to_bytes(ticket_signature)
+    print("Verify (check_signature)", ticket_signature, signature_as_bytes)
+    try:
+        pkcs1_15.new(pk).verify(ticket_hash, signature_as_bytes)
+        print("OK")
+        return True
+    except (TypeError, ValueError):
+        print("FAIL")
+        return False
 
 
 def group_polls_and_tickets_by_course(poll_and_ticket_list):
