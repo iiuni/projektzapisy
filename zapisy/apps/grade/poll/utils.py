@@ -42,13 +42,10 @@ def check_signature(ticket: str, ticket_signature: int, public_key):
     pk = RSA.importKey(public_key.public_key)
     ticket_hash = SHA256.new(ticket.encode("utf-8"))
     signature_as_bytes = int_to_bytes(ticket_signature)
-    print("Verify (check_signature)", ticket_signature, signature_as_bytes)
     try:
         pkcs1_15.new(pk).verify(ticket_hash, signature_as_bytes)
-        print("OK")
         return True
     except (TypeError, ValueError):
-        print("FAIL")
         return False
 
 

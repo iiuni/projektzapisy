@@ -47,13 +47,11 @@ Ticket.create.step1 = function () {
 // tickets, then send them to the server for signing
 Ticket.create.step2 = function (keys) {
     $("#progressbar").progressbar("option", "value", 30);
-    console.warn("I received public keys from the server:", keys);
     $.each(keys, Ticket.create.t_generator);
     var hidden = document.createElement('input')
     hidden.name = 'ts'
     hidden.type = 'hidden'
     hidden.value = JSON.stringify(Ticket.create.t_array)
-    console.warn("Will ask Python to sign those tickets:", hidden.value);
     $("#connection_choice").append(hidden);
     dataString = $("#connection_choice").serialize()
     $.ajax({
@@ -120,7 +118,6 @@ Ticket.create.unblinds_generator = function (index, unblind) {
 
 Ticket.create.t_generator = function (key, val) {
     var m = randBigInt(512, 0)
-    console.warn("t_generator:", val); 
     $.each(val, function (nr, g) {
         var n = str2bigInt(g[0], 10, 10)
         var e = str2bigInt(g[1], 10, 10)

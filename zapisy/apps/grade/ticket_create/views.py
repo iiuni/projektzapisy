@@ -47,7 +47,6 @@ def ajax_get_rsa_keys_step1(request):
                 connected_groups = connect_groups(groupped_polls, form)
                 tickets = [generate_keys(gs) for gs in connected_groups]
                 message = json.dumps(tickets)
-    print("Ajax step1 response:", message)
     return HttpResponse(message)
 
 
@@ -64,7 +63,6 @@ def ajax_get_rsa_keys_step2(request):
             )
             if form.is_valid():
                 ts = json.loads(request.POST.get('ts'))
-                print("JS wants us to sign those tickets", ts)
                 connected_groups = connect_groups(groupped_polls, form)
                 groups = reduce(list.__add__, connected_groups)
                 tickets = zip(groups, ts)
@@ -76,7 +74,6 @@ def ajax_get_rsa_keys_step2(request):
                 unblinds = [
                     (str(ticket), unblind(group, ticket_signature))
                 for group, ticket, ticket_signature in signed]
-                print("unblinds: ", unblinds)
                 message = json.dumps(unblinds)
     return HttpResponse(message)
 

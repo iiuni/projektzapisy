@@ -342,7 +342,6 @@ def secure_signer(user, g, t):
 
 
 def unblind(poll, st):
-    print("unblind:", st)
     st = st[0]
     if st == "Nie jesteś przypisany do tej ankiety":
         return st
@@ -403,7 +402,6 @@ def from_plaintext(tickets_plaintext):
     convert = False
     ids_tickets_signed = []
     for poll_info in pre_tickets:
-        print(poll_info)
         i = 0
         while i < len(poll_info):
             if convert:

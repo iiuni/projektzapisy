@@ -20,16 +20,8 @@ class PrivateKey(models.Model):
         return 'Klucz prywatny: {}'.format(self.poll)
 
     def sign_ticket(self, ticket: str) -> str:
-        from apps.grade.poll.utils import check_signature
-        from apps.grade.ticket_create.models import PublicKey
-
         key = RSA.importKey(self.private_key)
         ticket_hash = SHA256.new(ticket.encode("utf-8"))
-        print("Attempt to sign", key, type(key), ticket_hash, type(ticket_hash))
         signed = pkcs1_15.new(key).sign(ticket_hash)
         signed_as_int = int_from_bytes(signed)
-        print("Signed: ", signed, signed_as_int)
-        print("Check the newly signed ticket:")
-        pkey = PublicKey.objects.get(poll=self.poll)
-        print(check_signature(ticket, signed_as_int, pkey))
         return (signed_as_int, )
