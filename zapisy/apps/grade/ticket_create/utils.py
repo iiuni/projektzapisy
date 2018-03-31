@@ -1,5 +1,4 @@
 from string import whitespace
-import base64
 
 from Crypto.PublicKey import RSA
 from Crypto.Random.random import getrandbits, \

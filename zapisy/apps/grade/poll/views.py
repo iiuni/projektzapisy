@@ -695,7 +695,6 @@ def tickets_enter(request):
             errors = []
             polls = []
             finished = []
-            print("ids_and_tickets:", ids_and_tickets)
             for (id, (ticket, signed_ticket)) in ids_and_tickets:
                 try:
                     poll = Poll.objects.get(pk=id)
@@ -714,9 +713,7 @@ def tickets_enter(request):
                             polls.append((poll, ticket, signed_ticket))
                     else:
                         errors.append((id, "Nie udało się zweryfikować podpisu pod biletem."))
-                except BaseException as e:
-                    import traceback
-                    traceback.print_exc()
+                except BaseException:
                     errors.append((id, "Podana ankieta nie istnieje"))
 
             if errors:
@@ -760,12 +757,12 @@ def polls_for_user(request, slug):
     data['grade'] = Semester.objects.filter(is_grade_active=True).count() > 0
     if data['polls']:
         (_, s), _, list_ = data['polls'][0]
-        id, _, _, _ = list_[0]
-        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id]))
+        id_, _, _, _ = list_[0]
+        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id_]))
     elif data['finished']:
         (_, s), _, list_ = data['finished'][0]
-        id, _, _, _ = list_[0]
-        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id]))
+        id_, _, _, _ = list_[0]
+        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id_]))
 
     return render(request, 'grade/poll/polls_for_user.html', data)
 
