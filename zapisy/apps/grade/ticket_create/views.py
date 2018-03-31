@@ -66,14 +66,10 @@ def ajax_get_rsa_keys_step2(request):
                 connected_groups = connect_groups(groupped_polls, form)
                 groups = reduce(list.__add__, connected_groups)
                 tickets = zip(groups, ts)
-                signed = [(
-                    group,
-                    int(t),
-                    secure_signer_without_save(request.user, group, t)
-                ) for group, t in tickets]
-                unblinds = [
-                    (str(ticket), unblind(group, ticket_signature))
-                for group, ticket, ticket_signature in signed]
+                signed = [(group, int(t), secure_signer_without_save(request.user, group, t))
+                          for group, t in tickets]
+                unblinds = [(str(ticket), unblind(group, ticket_signature))
+                            for group, ticket, ticket_signature in signed]
                 message = json.dumps(unblinds)
     return HttpResponse(message)
 
