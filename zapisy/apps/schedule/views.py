@@ -30,6 +30,8 @@ import itertools
 def classrooms(request):
     from apps.enrollment.courses.models import Classroom
 
+    # Avoids lookup of non existing variable during template rendering
+    room = None
     rooms = Classroom.get_in_institute(reservation=True)
     return TemplateResponse(request, 'schedule/classrooms.html', locals())
 
