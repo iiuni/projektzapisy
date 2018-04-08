@@ -1029,6 +1029,12 @@ def poll_answer(request, slug, pid):
             form = PollForm()
             form.setFields(poll, st)
 
+        # This is needed so that template code in poll_answer doesn't
+        # crash the server - {% if form.finish %} should work
+        # but ends up crashing gunicorn
+        if not hasattr(form, "finish"):
+            form.finish = None
+
         data['form'] = form
         data['pid'] = int(pid)
 
