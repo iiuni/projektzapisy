@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,7 +46,7 @@ def save(request):
     form = PreferenceForm(data=request.POST, instance=pref)
     if form.is_valid:
         available_fields = Preference._meta.get_all_field_names()
-        changed_fields = list(set(available_fields) & set(request.POST.keys()))
+        changed_fields = set(available_fields) & set(request.POST.keys())
         for field in changed_fields:
             setattr(pref, field, form[field].value())
         pref.save()

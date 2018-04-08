@@ -103,7 +103,7 @@ class Compressor(object):
     def base_path(self, paths):
         def names_equal(name):
             return all(n == name[0] for n in name[1:])
-        directory_levels = list(zip(*[p.split(os.sep) for p in paths]))
+        directory_levels = zip(*[p.split(os.sep) for p in paths])
         return os.sep.join(x[0] for x in takewhile(names_equal, directory_levels))
 
     def template_name(self, path, base):

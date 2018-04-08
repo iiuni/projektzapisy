@@ -1,5 +1,3 @@
-# -*- coding:utf-8 -*-
-
 """
     Preferences models
 """
@@ -121,12 +119,14 @@ class Preference(models.Model):
 
             Values are restricted with PREFERENCE_CHOICES.
         """
-        valid_prefs = ['lecture', 'review_lecture', 'tutorial', 'lab']
-        valid_values = [key for key, _ in PREFERENCE_CHOICES]
-        for pref in filter(valid_prefs.__contains__, list(kwargs.keys())):
-            if kwargs[pref] not in valid_values:
+        valid_prefs = {'lecture', 'review_lecture', 'tutorial', 'lab'}
+        valid_values = {key for key, _ in PREFERENCE_CHOICES}
+        for pref, val in kwargs.items():
+            if pref not in valid_prefs:
+                continue
+            if val not in valid_values:
                 raise UnknownPreferenceValue
-            self.__setattr__(pref, kwargs[pref])
+            self.__setattr__(pref, val)
         self.save()
 
     @staticmethod

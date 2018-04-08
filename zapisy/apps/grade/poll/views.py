@@ -750,7 +750,7 @@ def tickets_enter(request):
 
 
 def polls_for_user(request, slug):
-    if 'polls' not in list(request.session.keys()):
+    if 'polls' not in request.session:
         return HttpResponseRedirect(reverse('grade-poll-tickets-enter'))
 
     data = prepare_data(request, slug)
@@ -1156,7 +1156,7 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
                         if q_data:
                             q_data, other_data = list(zip(*q_data))
                             q_data = sum(q_data, [])
-                            other_data = list([x for x in other_data if x])
+                            other_data = [x for x in other_data if x]
                         else:
                             other_data = []
                         options = question.options.all()

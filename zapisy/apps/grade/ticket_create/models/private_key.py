@@ -17,7 +17,7 @@ class PrivateKey(models.Model):
         app_label = 'ticket_create'
 
     def __str__(self):
-        return 'Klucz prywatny: {}'.format(self.poll)
+        return f'Klucz prywatny: {self.poll}'
 
     @staticmethod
     def _int_from_bytes(xbytes: bytes) -> int:

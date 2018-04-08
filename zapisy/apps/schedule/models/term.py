@@ -219,6 +219,4 @@ class Term(models.Model):
         return conflicts
 
     def __str__(self):
-        return '{0:s}: {1:s} - {2:s}'.format(str(self.day),
-                                             str(self.start),
-                                             str(self.end))
+        return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
