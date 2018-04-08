@@ -76,7 +76,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {  # configure all of Django's loggers
-            'handlers': ['logfile', 'console'],
+            'handlers': ['logfile', 'console'] if DEBUG else ['logfile'],
             'level': 'DEBUG',  # set to debug to see e.g. database queries
         },
         'apps': {
