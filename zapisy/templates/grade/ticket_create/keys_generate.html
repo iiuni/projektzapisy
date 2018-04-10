@@ -1,17 +1,44 @@
 {% extends "grade/base.html" %}
-{% load compressed %}
+{#{% load compressed %}#}
 {% block js %}
     <script type="text/javascript">
-        var url_generate = "{% url 'grade-ticket-keys-generator' %}";
         var url_progress = "{% url 'grade-ticket-keys-progress' %}";
     </script>
-    {% compressed_js 'keysgenerate' %}
+    {#    {% compressed_js 'keysgenerate' %}#}
 {% endblock %}
+
+{% block main-subtitle %}Generator kluczy{% endblock %}
 
 {% block grade_active %} class="active"{% endblock %}
 
 {% block content %}
-<div style="display:none" id="keys_to_create">{{ keys_to_create }}</div>
-<div id="creator"></div>
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <p class="font-weight-bold">Uwaga: Proces może trwać nawet kilka minut.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_val }}%"
+                         aria-valuenow="{{ progress_val }}"
+                         aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <form method="post" action="{% url 'grade-ticket-keys-generate' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-secondary">Wygeneruj klucze</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
 {% endblock %}
 
