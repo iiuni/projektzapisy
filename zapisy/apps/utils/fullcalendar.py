@@ -193,7 +193,7 @@ class FullCalendarView(BaseListView):
 
     def get_queryset(self):
 
-        if 'start' in self.request.GET or not 'end' not in self.request.GET:
+        if 'start' not in self.request.GET or 'end' not in self.request.GET:
             raise Http404
 
         start = datetime.datetime.fromtimestamp(
