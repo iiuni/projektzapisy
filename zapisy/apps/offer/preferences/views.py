@@ -45,7 +45,7 @@ def save(request):
 
     form = PreferenceForm(data=request.POST, instance=pref)
     if form.is_valid:
-        available_fields = Preference._meta.get_all_field_names()
+        available_fields = [field.name for field in Preference._meta.get_fields()]
         changed_fields = set(available_fields) & set(request.POST.keys())
         for field in changed_fields:
             setattr(pref, field, form[field].value())
