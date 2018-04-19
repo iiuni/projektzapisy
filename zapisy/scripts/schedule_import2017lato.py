@@ -487,7 +487,7 @@ from datetime import time
 from apps.enrollment.courses.models import Course, Semester, CourseEntity, Type, Group, Term, PointsOfCourseEntities, PointTypes
 from apps.users.models import Student, Employee, Program
 
-from apps.enrollment.courses.models import Classroom
+from apps.enrollment.courses.models.classroom import Classroom
 
 import re
 import logging

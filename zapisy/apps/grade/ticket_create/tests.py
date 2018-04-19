@@ -6,7 +6,7 @@ from .models import PublicKey, \
 from apps.grade.poll.models import Poll
 from apps.users.models import Employee, \
     Student
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 
 class UtilsTest(TestCase):

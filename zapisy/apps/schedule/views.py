@@ -274,7 +274,7 @@ def statistics(request):
 
 @login_required
 def ajax_get_terms(request, year, month, day):
-    from apps.enrollment.courses.models import Classroom
+    from apps.enrollment.courses.models.classroom import Classroom
 
     time = datetime.date(int(year), int(month), int(day))
     terms = Classroom.get_terms_in_day(time, ajax=True)
