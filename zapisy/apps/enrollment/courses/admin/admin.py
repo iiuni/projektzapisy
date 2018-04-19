@@ -3,12 +3,22 @@ import datetime
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.db.models.query import EmptyQuerySet
 from django import forms
 from modeltranslation.admin import TranslationAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from apps.enrollment.courses.models import *
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course, CourseDescription, CourseEntity, TagCourseEntity
+from apps.enrollment.courses.models.course_type import Type
+from apps.enrollment.courses.models.effects import Effects
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointTypes
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.tag import Tag
+from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, Queue
 
 
@@ -312,7 +322,7 @@ class GroupAdmin(admin.ModelAdmin):
         obj.save()
 
     def after_saving_model_and_related_inlines(self, obj):
-        from apps.enrollment.courses.models import Term as T
+        from apps.enrollment.courses.models.term import Term as T
         from apps.schedule.models import Event, Term
         # Perform extra operation after all inlines are saved
 
@@ -336,7 +346,7 @@ class GroupAdmin(admin.ModelAdmin):
         while day <= semester.lectures_ending:
 
             if day in freedays:
-                day = day + timedelta(days=1)
+                day = day + datetime.timedelta(days=1)
                 continue
 
             weekday = day.weekday()
@@ -348,7 +358,7 @@ class GroupAdmin(admin.ModelAdmin):
 
             days[weekday].append(day)
 
-            day = day + timedelta(days=1)
+            day = day + datetime.timedelta(days=1)
 
         for t in terms:
             ev = Event()

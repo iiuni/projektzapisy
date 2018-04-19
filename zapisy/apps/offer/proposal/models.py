@@ -1,5 +1,6 @@
 from django.db import models
-from apps.enrollment.courses.models import CourseEntity
+
+from apps.enrollment.courses.models.course import CourseEntity
 
 
 class LearningMethod(models.Model):

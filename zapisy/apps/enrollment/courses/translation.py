@@ -1,5 +1,6 @@
 from modeltranslation.translator import translator, TranslationOptions
-from apps.enrollment.courses.models import CourseEntity, CourseDescription
+
+from apps.enrollment.courses.models.course import CourseEntity, CourseDescription
 
 
 class CourseEntityTranslationOptions(TranslationOptions):

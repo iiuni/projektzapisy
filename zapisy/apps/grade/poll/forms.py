@@ -13,7 +13,7 @@ from apps.grade.poll.models import SingleChoiceQuestionOrdering, \
     MultipleChoiceQuestionAnswer
 
 
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 
 class TicketsForm(forms.Form):

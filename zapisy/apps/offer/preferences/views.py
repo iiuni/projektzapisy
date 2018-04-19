@@ -8,7 +8,7 @@ from libs.ajax_messages import AjaxFailureMessage
 from apps.offer.preferences.forms import PreferenceFormset, PreferenceForm
 from apps.offer.preferences.models import Preference
 from apps.users.decorators import employee_required
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 logger = logging.getLogger()
 

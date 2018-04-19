@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 
-from apps.enrollment.courses.models import Course, CourseEntity
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
 
 __author__ = 'maciek'
 

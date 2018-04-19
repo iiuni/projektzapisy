@@ -12,7 +12,7 @@ from django.utils.safestring import SafeText
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.users.decorators import student_required, employee_required
 from apps.users.models import BaseUser
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models.poll import Poll
 from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_keys, group_polls_by_course, \
     secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark

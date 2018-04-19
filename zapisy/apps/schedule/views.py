@@ -3,16 +3,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.template import Context
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 import operator
 
-from apps.enrollment.courses.models import Classroom
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule.models import Event, Term
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
@@ -24,11 +23,9 @@ from apps.users.models import BaseUser
 from xhtml2pdf import pisa
 import io
 from functools import reduce
-import itertools
 
 
 def classrooms(request):
-    from apps.enrollment.courses.models import Classroom
 
     # Avoids lookup of non existing variable during template rendering
     room = None
@@ -37,7 +34,6 @@ def classrooms(request):
 
 
 def classroom(request, slug):
-    from apps.enrollment.courses.models import Classroom
 
     rooms = Classroom.get_in_institute(reservation=True)
     try:
@@ -103,7 +99,7 @@ def edit_event(request, event_id=None):
 
 def session(request, semester=None):
     from apps.schedule.models import Term
-    from apps.enrollment.courses.models import Semester
+    from apps.enrollment.courses.models.semester import Semester
 
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
@@ -315,7 +311,7 @@ class MyScheduleAjaxView(FullCalendarView):
     adapter = EventAdapter
 
     def get_queryset(self):
-        from apps.enrollment.courses.models import Group
+        from apps.enrollment.courses.models.group import Group
 
         query = []
 

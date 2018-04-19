@@ -13,7 +13,7 @@ from apps.users.models import (
     StudiaZamawianeMaileOpiekunow,
     UserProfile,
     StudiaZamawiane2012)
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
 
 

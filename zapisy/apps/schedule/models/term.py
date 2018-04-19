@@ -8,7 +8,9 @@ from django.db.models.query import EmptyQuerySet
 
 from .event import Event
 from .specialreservation import SpecialReservation
-from apps.enrollment.courses.models import Classroom, Term as CourseTerm, Semester
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.term import Term as CourseTerm
+from apps.enrollment.courses.models.semester import Semester
 
 
 class Term(models.Model):

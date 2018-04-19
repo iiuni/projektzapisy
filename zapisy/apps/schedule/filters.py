@@ -1,5 +1,5 @@
 import django_filters
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models import Event, Term
 
 FILTER_TYPE_CHOICES = [('', '---------')] + Event.TYPES

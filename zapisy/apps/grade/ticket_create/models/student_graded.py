@@ -1,6 +1,6 @@
 from django.db import models
 from apps.users.models import Student
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 
 class StudentGraded(models.Model):

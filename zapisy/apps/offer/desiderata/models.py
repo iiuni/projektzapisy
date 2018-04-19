@@ -1,5 +1,6 @@
 from django.db import models
-from apps.enrollment.courses.models import Term, Course, Semester
+
+from apps.enrollment.courses.models.semester import Semester
 from zapisy import common
 
 

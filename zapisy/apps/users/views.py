@@ -24,7 +24,8 @@ from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView
-from apps.enrollment.courses.models import Semester, Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record
 from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, BankAccountChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm

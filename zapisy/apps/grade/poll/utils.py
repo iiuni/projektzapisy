@@ -22,7 +22,9 @@ from apps.enrollment.records.models import Group
 from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
     NoSectionException
 
-from apps.enrollment.courses.models import Semester, Group, Course, GROUP_TYPE_CHOICES, CourseEntity
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
+from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.users.models import Program
 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
