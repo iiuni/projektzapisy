@@ -2,13 +2,13 @@ from datetime import date
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.utils.translation import get_language
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
 from apps.cache_utils import cache_result
 from apps.enrollment.courses.models.effects import Effects
+from apps.enrollment.courses.models.student_options import StudentOptions
 
 from apps.enrollment.courses.models.tag import Tag
 
@@ -214,22 +214,22 @@ class CourseEntity(models.Model):
         return (hours1 or 0) + (hours2 or 0)
 
     def get_lectures(self):
-        return _add_or_none(self.lectures, self.information.lectures)
+        return self._add_or_none(self.lectures, self.information.lectures)
 
     def get_exercises(self):
-        return _add_or_none(self.exercises, self.information.exercises)
+        return self._add_or_none(self.exercises, self.information.exercises)
 
     def get_laboratories(self):
-        return _add_or_none(self.laboratories, self.information.laboratories)
+        return self._add_or_none(self.laboratories, self.information.laboratories)
 
     def get_repetitions(self):
-        return _add_or_none(self.repetitions, self.information.repetitions)
+        return self._add_or_none(self.repetitions, self.information.repetitions)
 
     def get_seminars(self):
-        return _add_or_none(self.seminars, self.information.seminars)
+        return self._add_or_none(self.seminars, self.information.seminars)
 
     def get_exercises_laboratiories(self):
-        return _add_or_none(
+        return self._add_or_none(
             self.exercises_laboratiories,
             self.information.exercises_laboratories)
 
