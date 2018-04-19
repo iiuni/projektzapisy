@@ -216,7 +216,7 @@ class Group(models.Model):
         #        [Text] - text info about actions
 
         from apps.enrollment.records.models import Record, Queue
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         # admins are always allowed to remove students
         if not is_admin:
@@ -342,7 +342,7 @@ class Group(models.Model):
         return result, ['Student dopisany do grupy'] + lecture_result
 
     def enroll_student(self, student):
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
         from apps.enrollment.records.models import Record
 
         if Record.objects.filter(
@@ -395,7 +395,7 @@ class Group(models.Model):
 
     def rearanged(self):
         from apps.enrollment.records.models import Queue
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         queued = Queue.objects.filter(deleted=False,
                                       group=self).order_by('time').select_related('student')

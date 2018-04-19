@@ -4,7 +4,7 @@ from django.core.management import BaseCommand
 from django.db.models import Q
 
 from apps.enrollment.courses.models import Semester, Freeday, ChangedDay, Classroom
-from apps.enrollment.courses.models import Term as T
+from apps.enrollment.courses.models.term import Term as T
 from apps.schedule.models import Term, Event
 
 

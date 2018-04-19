@@ -10,7 +10,7 @@ from django.contrib.auth.models import Permission
 from django.db import connection
 
 from random import randint
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from datetime import datetime, timedelta
 
 

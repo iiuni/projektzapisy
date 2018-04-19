@@ -1,5 +1,5 @@
 from mailer.models import Message
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
 from apps.users.models import Employee, Student
 

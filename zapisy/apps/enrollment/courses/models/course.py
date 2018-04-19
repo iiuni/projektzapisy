@@ -703,7 +703,7 @@ class Course(models.Model):
 
     def student_is_in_ects_limit(self, student):
         # TODO: test me!
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         semester = Semester.get_current_semester()
 
