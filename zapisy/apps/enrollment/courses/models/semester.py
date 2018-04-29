@@ -106,6 +106,7 @@ class Semester(models.Model):
         return Course.objects.filter(semester=self.pk)
 
     def get_name(self):
+        return 'DUPAAAA'
         """ returns name of semester """
         # TODO: wymuszanie formatu roku "XXXX/YY" zamiast "XXXX"
         if len(self.year) != 7:

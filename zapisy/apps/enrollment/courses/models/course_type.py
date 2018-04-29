@@ -32,31 +32,17 @@ class Type(models.Model):
 
     # TODO: dodać unique na parę (meta_type, name)
 
-    @staticmethod
-    def get_all_types():
-        return Type.objects.select_related('group').all()
-
-    @staticmethod
-    def get_all_for_jsfilter():
-        return Type.objects.select_related('group').order_by('name').all()
-
-    def get_name(self):
-        self.name
-
     class Meta:
         verbose_name = 'rodzaj przedmiotu'
         verbose_name_plural = 'rodzaje przedmiotów'
         app_label = 'courses'
 
     def __str__(self):
-        return "%s" % (self.name)
+        return self.name
 
     @staticmethod
-    def get_types():
-        """
-            Zwraca wszystkie typy przedmiotów z wyjątkiem abstrakcyjnych
-        """
-        return Type.objects.filter(meta_type=False)
+    def get_all_for_jsfilter():
+        return Type.objects.select_related('group').order_by('name').all()
 
     @staticmethod
     def get_types_for_syllabus():

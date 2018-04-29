@@ -11,7 +11,7 @@ class Effects(models.Model):
         app_label = 'courses'
 
     def __str__(self):
-        return str(self.group_name)
+        return self.group_name
 
     def serialize_for_json(self):
         return {
