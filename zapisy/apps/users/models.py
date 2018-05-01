@@ -220,20 +220,6 @@ class Employee(BaseUser):
             raise NonEmployeeException()
         return groups
 
-#    @staticmethod
-#    def get_schedule(user_id):
-#        user = User.objects.get(id=user_id)
-#        try:
-#            employee = user.employee
-#            groups = [g for g in Employee.get_all_groups_in_semester(user_id) ]
-#            courses = set([group.course for group in groups])
-#            for group in groups:
-#                group.terms_ = group.get_all_terms()
-#                group.course_ = group.course
-#            return groups
-#        except Employee.DoesNotExist:
-#             logger.error('Function Employee.get_schedule(user_id = %d) throws Employee.DoesNotExist exception.' % user_id )
-#             raise NonEmployeeException()
 
     class Meta:
         verbose_name = 'pracownik'
@@ -245,7 +231,7 @@ class Employee(BaseUser):
         )
 
     def __str__(self):
-        return str(self.user.get_full_name())
+        return self.user.get_full_name()
 
 
 class Student(BaseUser):
@@ -448,22 +434,6 @@ class Student(BaseUser):
             raise NonStudentException()
         return groups
 
-#    @staticmethod
-#    def get_schedule(student):
-#        from apps.enrollment.courses.models import Semester
-#        try:
-#            default_semester = Semester.get_default_semester()
-#            groups = [g for g in Student.get_all_groups(student) \
-#                if g.course.semester == default_semester] #TODO: nieoptymalnie
-#            courses = set([group.course for group in groups])
-#            for group in groups:
-#                group.terms_ = group.get_all_terms()
-#                group.course_ = group.course
-#            return groups
-#        except Student.DoesNotExist:
-#             logger.error('Function Student.get_schedule(user_id = %d) throws Student.DoesNotExist exception.' % student )
-#             raise NonStudentException()
-
     def records_set_locked(self, locked):
         self.block = locked
         self.save()
@@ -526,7 +496,7 @@ class Student(BaseUser):
         ordering = ['user__last_name', 'user__first_name']
 
     def __str__(self):
-        return str(self.user.get_full_name())
+        return self.user.get_full_name()
 
 
 class Program(models.Model):

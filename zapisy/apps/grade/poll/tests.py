@@ -3,12 +3,7 @@ from django.contrib.auth.models import AnonymousUser, \
     User
 from apps.users.models import Student, \
     Employee
-from apps.grade.poll.models import Section, \
-    SingleChoiceQuestion, \
-    SingleChoiceQuestionOrdering, \
-    MultipleChoiceQuestion, \
-    OpenQuestion, \
-    Poll
+from apps.grade.poll.models import Section, SingleChoiceQuestionOrdering, Poll
 
 
 class SectionTest(TestCase):

@@ -14,8 +14,6 @@ from apps.enrollment.records.models import Record, Queue
 
 
 from datetime import datetime, timedelta
-import time
-from random import seed, randint, choice
 
 
 def open_course_for_student(student, course, opening_time=datetime.now()):
@@ -193,7 +191,7 @@ class DummyTest(TransactionTestCase):
         self.assertFalse(result)
         self.assertEqual(messages_list, ['Jesteś już w tej grupie'])
 
-    def testAddingStudentToSameGroupAgainFails(self):
+    def testAddingStudentToSameGroupAgainFails_2(self):
         today = datetime.now()
         course = CourseFactory()
         exercises_group1 = GroupFactory(

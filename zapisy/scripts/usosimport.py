@@ -59,7 +59,7 @@ def create_user(indeks, imie, nazwisko, mail):
     return s
 
 
-programs = set([])
+programs = set()
 
 
 def import_ects(file):
