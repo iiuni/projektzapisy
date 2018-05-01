@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.views import login
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
@@ -363,7 +363,7 @@ def login_plus_remember_me(request, *args, **kwargs):
     If the user clicked the 'Remember me' button (we read it from POST data), the
     session will expire after two weeks.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect("main-page")
     if 'polls' in request.session:
         del request.session['polls']

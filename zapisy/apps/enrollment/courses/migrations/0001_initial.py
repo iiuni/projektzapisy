@@ -1,5 +1,5 @@
 from django.db import models, migrations
-import autoslug.fields
+from django_extensions.db.fields import AutoSlugField
 
 
 class Migration(migrations.Migration):
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('capacity', models.PositiveSmallIntegerField(default=0, verbose_name=b'liczba miejsc')),
                 ('floor', models.IntegerField(blank=True, null=True, choices=[(0, b'Parter'), (1, b'I pi\xc4\x99tro'), (2, b'II Pi\xc4\x99tro'), (3, b'III pi\xc4\x99tro')])),
                 ('can_reserve', models.BooleanField(default=False)),
-                ('slug', autoslug.fields.AutoSlugField(editable=False)),
+                ('slug', AutoSlugField(populate_from='number', editable=False)),
             ],
             options={
                 'ordering': ['floor', 'number'],

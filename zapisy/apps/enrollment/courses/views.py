@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from apps.enrollment.courses.models import *
 from apps.enrollment.records.models import *
@@ -125,7 +125,7 @@ def course(request, slug):
         user = request.user
 
         # Sprawdzamy, czy mamy studenta
-        if user.is_anonymous():
+        if user.is_anonymous:
             student = None
             student_id = 0
         else:

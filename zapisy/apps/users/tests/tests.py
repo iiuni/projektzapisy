@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .factories import UserFactory
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class BaseUserTestCase(TestCase):

@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.contrib.syndication.views import Feed
 from apps.schedule.models import Event

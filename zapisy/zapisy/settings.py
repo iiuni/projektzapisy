@@ -140,7 +140,7 @@ TEMPLATES = [
                 ('django.template.loaders.cached.Loader', [
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader',
-                    'django.template.loaders.eggs.Loader',
+                    'django.template.loaders.filesystem.Loader',
                 ]),
             ]
         },
@@ -207,7 +207,6 @@ INSTALLED_APPS = (
     'apps.schedulersync',
     'django_extensions',
     'django_filters',
-    'autoslug',
     'el_pagination',
     'apps.notifications',
     'django_cas_ng',
