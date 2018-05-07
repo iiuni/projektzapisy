@@ -207,6 +207,8 @@ def keys_list(request):
 
 @csrf_exempt
 def keys_generate(request):
+    if request.method == 'POST':
+        generate_keys_for_polls()
     count = cache.get('generated-keys', 0)
     without_keys = Poll.count_polls_without_keys()
     data = {'progress_val': (count / without_keys) * 100}
