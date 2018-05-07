@@ -335,5 +335,13 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    # Throttles are used to control the rate of requests that clients can make to an API.
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        # Limit the number of rest calls made by unauthenticated users.
+        'anon': '100/day',
+    }
 }
