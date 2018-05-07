@@ -8,8 +8,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import NotificationFormset
 from .models import Notification
 
-__author__ = 'maciek'
-
 GENERIC_ERROR = 'Wystąpił błąd podczas wysyłania powiadomień!'
 
 

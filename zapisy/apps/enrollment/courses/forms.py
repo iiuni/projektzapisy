@@ -3,8 +3,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from apps.enrollment.courses.models import Course, CourseEntity
 
-__author__ = 'maciek'
-
 
 class Parser(object):
     def _convert_employee(self, name):
