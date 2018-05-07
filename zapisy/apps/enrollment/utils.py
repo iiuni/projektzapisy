@@ -40,13 +40,6 @@ def send_mail(msg_parts, user):
                        MASS_MAIL_FROM, [email])
 
 
-def mail_enrollment_from_queue(student, group):
-    """
-    Mail about enrollment from queue.
-    """
-    send_mail(render_email_enrollment_from_queue(student, group), student)
-
-
 def mailto(author, students, bcc=False):
     """Helper method to create mailto links"""
     result = author.email

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import factory
-from factory.fuzzy import FuzzyInteger
 from factory.django import DjangoModelFactory
 
 from ..models.course import Course, CourseEntity, CourseDescription
@@ -10,21 +9,9 @@ from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
 from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
+from .semester_year_provider import SemesterYearProvider
 
-SEMESTER_YEAR_RANGE = 30
-
-
-def get_unique_new_semester_raw_year(semester_instance):
-    start_year = datetime.now().year
-    end_year = start_year + SEMESTER_YEAR_RANGE
-    while True:
-        year = FuzzyInteger(start_year, end_year).fuzz()
-        try:
-            semester_year = Semester.get_semester_year_from_raw_year(year)
-            Semester.objects.get(type=semester_instance.type, year=semester_year)
-        except Semester.DoesNotExist:
-            return year
-
+factory.Faker.add_provider(SemesterYearProvider)
 
 class SemesterFactory(DjangoModelFactory):
     class Meta:
@@ -33,7 +20,7 @@ class SemesterFactory(DjangoModelFactory):
 
     visible = True
     type = factory.Iterator([Semester.TYPE_WINTER, Semester.TYPE_SUMMER])
-    raw_year = factory.LazyAttribute(get_unique_new_semester_raw_year)
+    raw_year = factory.Faker('semester_year')
     year = factory.LazyAttribute(lambda sem: Semester.get_semester_year_from_raw_year(sem.raw_year))
     is_grade_active = False
     if type == Semester.TYPE_WINTER:

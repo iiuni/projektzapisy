@@ -1,22 +1,19 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
-from apps.feeds import LatestNews
+
 import apps.news.views
-from apps.users import views as users_views
+from apps.api.rest.v1.urls import router as api_router_v1
 from apps.enrollment.courses.admin import views as courses_admin_views
-from apps.enrollment.courses.rest_api import semester_api, classroom_api
+from apps.feeds import LatestNews
+from apps.users import views as users_views
 from django_cas_ng import views
-from rest_framework import routers
 
 admin.autodiscover()
-router = routers.DefaultRouter()
-router.register(r'semesters', semester_api.SemesterViewSet)
-router.register(r'classrooms', classroom_api.ClassroomViewSet)
 
 urlpatterns = [
     url('^$', apps.news.views.main_page, name='main-page'),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/v1/', include(api_router_v1.urls)),
     url(r'^help/', include('apps.help.urls')),
     url(r'^courses/', include('apps.enrollment.courses.urls')),
     url(r'^records/', include('apps.enrollment.records.urls')),

@@ -1,26 +1,18 @@
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from apps.enrollment.records.exceptions import NonGroupException
-from apps.enrollment.records.exceptions import ECTS_Limit_Exception
-from apps.enrollment.records.exceptions import InactiveStudentException
+import logging
+from datetime import datetime, timedelta, date
 
-from apps.enrollment.courses.models.course import Course
-from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models.semester import Semester
-
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import models
 
+from apps.enrollment.records.exceptions import NonStudentException, AlreadyPinnedException, \
+    AlreadyNotPinnedException, AlreadyNotAssignedException, NonGroupException
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.exceptions import NonCourseException
 from apps.users.models import Student
 
-from apps.enrollment.records.exceptions import *
-from apps.enrollment.courses.exceptions import NonCourseException
-
-from datetime import datetime, timedelta, date
-from itertools import cycle
-
-from django.db.models import signals
-from apps.enrollment.utils import mail_enrollment_from_queue
-import logging
 logger = logging.getLogger('project.default')
 backup_logger = logging.getLogger('project.backup')
 
@@ -371,13 +363,6 @@ class Queue(models.Model):
     objects = models.Manager()
     queued = QueueManager()
 
-#    def delete(self, using=None):
-#        self.deleted = True
-#        old = Queue.objects.get(id=self.id)
-#        if not old.deleted:
-#            self.group.remove_from_queued_counter(self.student)
-#        self.save()
-
     def set_priority(self, value):
         self.priority = value
         self.save()
@@ -568,22 +553,3 @@ class Queue(models.Model):
         return "%s (%s - %s)" % (self.group.course,
                                  self.group.get_type_display(),
                                  self.group.get_teacher_full_name())
-
-
-def log_add_record(sender, instance, created, **kwargs):
-    if instance.status == Record.STATUS_ENROLLED:
-        backup_logger.info(
-            '[01] user <%s> is added to group <%s>' %
-            (instance.student.user.id, instance.group.id))
-
-
-def log_delete_record(sender, instance, **kwargs):
-    if instance.status == Record.STATUS_ENROLLED and instance.group:
-        backup_logger.info('[03] user <%s> is removed from group <%s>' %
-                           (instance.student.user.id, instance.group.id))
-
-
-#signals.post_save.connect(log_add_record, sender=Record)
-#signals.pre_delete.connect(log_delete_record, sender=Record)
-#signals.post_delete.connect(Record.on_student_remove_from_group, sender=Record)
-#signals.post_save.connect(add_people_from_queue, sender=Group)

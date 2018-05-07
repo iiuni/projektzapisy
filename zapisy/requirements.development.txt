@@ -2,7 +2,7 @@
 
 # Additional test dependencies
 selenium==2.53.6
-factory_boy==2.9.2
-coverage==4.4.2
+factory_boy==2.10.0
+coverage==4.5.1
 django-debug-toolbar==1.5
 click==6.7
