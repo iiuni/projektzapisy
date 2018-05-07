@@ -191,7 +191,7 @@ class DummyTest(TransactionTestCase):
         self.assertFalse(result)
         self.assertEqual(messages_list, ['Jesteś już w tej grupie'])
 
-    def testAddingStudentToSameGroupAgainFails_2(self):
+    def testAddingStudentToDifferentGroupSameCourseSucceeds(self):
         today = datetime.now()
         course = CourseFactory()
         exercises_group1 = GroupFactory(
