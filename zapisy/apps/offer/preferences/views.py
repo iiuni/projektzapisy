@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,9 +18,9 @@ def view(request):
     employee = request.user.employee
     employee.make_preferences()
 
-    prefs     = employee.get_preferences()
-    formset   = PreferenceFormset(queryset=prefs)
-    semester  = Semester.get_current_semester()
+    prefs = employee.get_preferences()
+    formset = PreferenceFormset(queryset=prefs)
+    semester = Semester.get_current_semester()
 
     return render(request, 'offer/preferences/base.html', locals())
 
@@ -32,26 +31,25 @@ def save(request):
 
     id = request.POST.get('prefid', None)
     if not id:
-        return AjaxFailureMessage('InvalidRequest', u'Niepoprawny identyfikator')
+        return AjaxFailureMessage('InvalidRequest', 'Niepoprawny identyfikator')
 
     id = int(id)
 
     try:
         pref = Preference.objects.get(id=id)
     except ObjectDoesNotExist:
-        return AjaxFailureMessage('InvalidRequest', u'Podany obiekt nie istnieje')
+        return AjaxFailureMessage('InvalidRequest', 'Podany obiekt nie istnieje')
 
     if not pref.employee == request.user.employee:
-        return AjaxFailureMessage('InvalidRequest', u'Nie możesz edytować nie swoich preferencji')
+        return AjaxFailureMessage('InvalidRequest', 'Nie możesz edytować nie swoich preferencji')
 
     form = PreferenceForm(data=request.POST, instance=pref)
     if form.is_valid:
-        available_fields = Preference._meta.get_all_field_names()
-        changed_fields = list(set(available_fields) & set(request.POST.keys()))
-        a = ''
+        available_fields = [field.name for field in Preference._meta.get_fields()]
+        changed_fields = set(available_fields) & set(request.POST.keys())
         for field in changed_fields:
             setattr(pref, field, form[field].value())
         pref.save()
         form = PreferenceForm(instance=pref)
         return render(request, 'offer/preferences/form_row.html', {'form': form, })
-    return AjaxFailureMessage('InvalidRequest', u'Coś poszło źle')
+    return AjaxFailureMessage('InvalidRequest', 'Coś poszło źle')

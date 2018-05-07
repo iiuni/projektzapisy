@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 
 from django.core.management import BaseCommand
@@ -16,9 +15,12 @@ class Command(BaseCommand):
         Event.objects.filter(course__semester=semester, type=3).delete()
         freedays = Freeday.objects.filter(Q(day__gte=semester.lectures_beginning),
                                           Q(day__lte=semester.lectures_ending))\
-                          .values_list('day', flat=True)
-        changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms = T.objects.filter(group__course__semester=semester).select_related('group', 'group__course', 'group__course__entity')
+            .values_list('day', flat=True)
+        changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(
+            day__lte=semester.lectures_ending)).values_list('day', 'weekday')
+        terms = T.objects.filter(
+            group__course__semester=semester).select_related(
+            'group', 'group__course', 'group__course__entity')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
         day = semester.lectures_beginning
@@ -40,7 +42,6 @@ class Command(BaseCommand):
 
             day = day + datetime.timedelta(days=1)
 
-
         for t in terms:
             ev = Event.objects.get_or_create(
                 group=t.group,
@@ -52,13 +53,13 @@ class Command(BaseCommand):
                 author=t.group.teacher.user)[0]
 
             for room in t.classrooms.all():
-                for day in days[int(t.dayOfWeek)-1]:
+                for day in days[int(t.dayOfWeek) - 1]:
                     minute = t.start_time.minute
                     if minute == 0:
                         minute = 15
                     Term.objects.get_or_create(
-                        event = ev,
-                        day = day,
-                        start = t.start_time,
-                        end = t.end_time,
-                        room = room)
+                        event=ev,
+                        day=day,
+                        start=t.start_time,
+                        end=t.end_time,
+                        room=room)

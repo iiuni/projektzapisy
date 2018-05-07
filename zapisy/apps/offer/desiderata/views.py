@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.http import Http404
 from django.shortcuts import render
 from django.contrib import messages
@@ -32,7 +31,7 @@ def change_desiderata(request):
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
         if other_form.is_valid():
             other_form.save()
-        messages.success(request, u'Zmiany zapisano pomyślnie!')
+        messages.success(request, 'Zmiany zapisano pomyślnie')
     else:
         other_form = DesiderataOtherForm(instance=other)
     formset = DesiderataFormSet(initial=desiderata_formset_initial)
@@ -42,6 +41,3 @@ def change_desiderata(request):
         'semester': semester
     }
     return render(request, 'offer/desiderata/change_desiderata.html', data)
-
-
-    

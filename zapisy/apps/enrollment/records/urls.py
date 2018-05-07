@@ -16,7 +16,7 @@ urlpatterns = [
     url('^(?P<group_id>[\d]+)/records/queue/csv$',
         views.records_queue_csv, name='queue-csv'),
     url('^(?P<group_id>[\d]+)/records/queue/pdf$',
-        views.records_queue_pdf, name='queue-pdf'), 
+        views.records_queue_pdf, name='queue-pdf'),
     url('^set-locked(?P<method>\.json)?$',
         views.records_set_locked, name='records-set-locked'),
 

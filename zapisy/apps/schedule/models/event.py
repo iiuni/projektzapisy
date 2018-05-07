@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import Http404
@@ -7,6 +5,7 @@ from django.http import Http404
 from django.core.validators import ValidationError
 
 from apps.users.models import BaseUser
+
 
 class Event(models.Model):
     """
@@ -22,39 +21,43 @@ class Event(models.Model):
     STATUS_ACCEPTED = '1'
     STATUS_REJECTED = '2'
 
-    STATUSES = [(STATUS_PENDING, u'Do rozpatrzenia'),
-                (STATUS_ACCEPTED, u'Zaakceptowane'),
-                (STATUS_REJECTED, u'Odrzucone')]
+    STATUSES = [(STATUS_PENDING, 'Do rozpatrzenia'),
+                (STATUS_ACCEPTED, 'Zaakceptowane'),
+                (STATUS_REJECTED, 'Odrzucone')]
 
-    TYPES = [(TYPE_EXAM, u'Egzamin'),
-             (TYPE_TEST, u'Kolokwium'),
-             (TYPE_GENERIC, u'Wydarzenie'),
-             (TYPE_CLASS, u'Zajęcia'),
-             (TYPE_OTHER, u'Inne')]
+    TYPES = [(TYPE_EXAM, 'Egzamin'),
+             (TYPE_TEST, 'Kolokwium'),
+             (TYPE_GENERIC, 'Wydarzenie'),
+             (TYPE_CLASS, 'Zajęcia'),
+             (TYPE_OTHER, 'Inne')]
 
-    TYPES_FOR_STUDENT = [(TYPE_GENERIC, u'Wydarzenie')]
+    TYPES_FOR_STUDENT = [(TYPE_GENERIC, 'Wydarzenie')]
 
-    TYPES_FOR_TEACHER = [(TYPE_EXAM, u'Egzamin'),
-                         (TYPE_TEST, u'Kolokwium'),
-                         (TYPE_GENERIC, u'Wydarzenie')]
+    TYPES_FOR_TEACHER = [(TYPE_EXAM, 'Egzamin'),
+                         (TYPE_TEST, 'Kolokwium'),
+                         (TYPE_GENERIC, 'Wydarzenie')]
 
     from apps.enrollment.courses.models import Course, Group
     from django.contrib.auth.models import User
 
-    title = models.CharField(max_length=255, verbose_name=u'Tytuł', null=True, blank=True)
-    description = models.TextField(verbose_name=u'Opis', blank=True)
-    type = models.CharField(choices=TYPES, max_length=1, verbose_name=u'Typ')
-    visible = models.BooleanField(verbose_name=u'Wydarzenie jest publiczne', default=False)
+    title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
+    description = models.TextField(verbose_name='Opis', blank=True)
+    type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
+    visible = models.BooleanField(verbose_name='Wydarzenie jest publiczne', default=False)
 
-    status = models.CharField(choices=STATUSES, max_length=1, verbose_name=u'Stan', default='0')
+    status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
 
     course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
-    reservation = models.ForeignKey('schedule.SpecialReservation', null=True, blank=True, on_delete=models.CASCADE)
+    reservation = models.ForeignKey(
+        'schedule.SpecialReservation',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
 
     interested = models.ManyToManyField(User, related_name='interested_events')
 
-    author = models.ForeignKey(User, verbose_name=u'Twórca', on_delete=models.CASCADE)
+    author = models.ForeignKey(User, verbose_name='Twórca', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 
@@ -67,11 +70,11 @@ class Event(models.Model):
 
     class Meta:
         app_label = 'schedule'
-        verbose_name = u'wydarzenie'
-        verbose_name_plural = u'wydarzenia'
+        verbose_name = 'wydarzenie'
+        verbose_name_plural = 'wydarzenia'
         ordering = ('-created',)
         permissions = (
-            ("manage_events", u"Może zarządzać wydarzeniami"),
+            ("manage_events", "Może zarządzać wydarzeniami"),
         )
 
     def clean(self, *args, **kwargs):
@@ -86,8 +89,8 @@ class Event(models.Model):
         if not self.pk:
 
             # if author is an employee, accept any exam and test events
-            if (self.author.profile.is_employee and self.type in [Event.TYPE_EXAM, Event.TYPE_TEST]) or \
-                    self.author.has_perm('schedule.manage_events'):
+            if (self.author.profile.is_employee and self.type in [
+                    Event.TYPE_EXAM, Event.TYPE_TEST]) or self.author.has_perm('schedule.manage_events'):
                 self.status = self.STATUS_ACCEPTED
 
             # all exams and tests should be public
@@ -97,15 +100,17 @@ class Event(models.Model):
 
             # students can only add generic events that have to be accepted first
 
-            if self.author.profile.is_student and not self.author.has_perm('schedule.manage_events'):
+            if self.author.profile.is_student and not self.author.has_perm(
+                    'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(
-                        message={'type': [u'Nie masz uprawnień aby dodawać wydarzenia tego typu']},
+                        message={'type': ['Nie masz uprawnień aby dodawać wydarzenia tego typu']},
                         code='permission')
 
                 if self.status != Event.STATUS_PENDING:
                     raise ValidationError(
-                        message={'status': [u'Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
+                        message={
+                            'status': ['Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
                         code='permission')
 
         else:
@@ -263,5 +268,5 @@ class Event(models.Model):
 
         return self.interested.values_list('email', flat=True)
 
-    def __unicode__(self):
-        return u'%s %s' % (self.title, self.description)
+    def __str__(self):
+        return '%s %s' % (self.title, self.description)

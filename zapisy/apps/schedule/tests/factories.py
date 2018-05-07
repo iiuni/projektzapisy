@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 from datetime import time, date, datetime
 import string
 from zapisy import common
 import random
 
 import factory
-import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.users.tests.factories import UserFactory
@@ -22,6 +19,7 @@ class EventCourseFactory(DjangoModelFactory):
     group = factory.SubFactory(GroupFactory)
     author = factory.SubFactory(UserFactory)
 
+
 class EventFactory(DjangoModelFactory):
     class Meta:
         model = Event
@@ -33,8 +31,8 @@ class EventFactory(DjangoModelFactory):
     visible = True
     status = Event.STATUS_ACCEPTED
     author = factory.SubFactory(UserFactory)
-    title = factory.fuzzy.FuzzyText(length=50, chars=string.letters)
-    description = factory.fuzzy.FuzzyText(length=120, chars=string.letters)
+    title = factory.Faker('text', max_nb_chars=50)
+    description = factory.Faker('text', max_nb_chars=120)
 
     @factory.post_generation
     def interested(self, create, extracted, **kwargs):
@@ -64,9 +62,10 @@ class TermThisYearFactory(DjangoModelFactory):
 
     event = factory.SubFactory(EventFactory)
     room = factory.SubFactory(ClassroomFactory)
-    day = factory.fuzzy.FuzzyNaiveDateTime(datetime.now(), force_year=datetime.now().year)
+    day = factory.Faker('date_time_this_year')
     start = time(10)
     end = time(12)
+
 
 class TermFactory(DjangoModelFactory):
     class Meta:
@@ -74,11 +73,12 @@ class TermFactory(DjangoModelFactory):
 
     event = factory.SubFactory(EventFactory)
     room = factory.SubFactory(ClassroomFactory)
-    day = factory.fuzzy.FuzzyNaiveDateTime(datetime.now(), force_year=datetime.now().year)
-    start = random.randint(9,15)
-    end = random.randint(16,19)
+    day = factory.Faker('date_time')
+    start = random.randint(9, 15)
+    end = random.randint(16, 19)
     start = time(start)
     end = time(end)
+
 
 class TermFixedDayFactory(TermThisYearFactory):
     day = date(2016, 5, 20)

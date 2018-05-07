@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-
-class InvalidPollException( BaseException ):
+class InvalidPollException(BaseException):
     pass
 
-class TicketUsed( BaseException ):
+
+class TicketUsed(BaseException):
     pass

@@ -11,7 +11,7 @@
                 <h7 style="margin-bottom: 10px;display:block;">{{field.label}}</h7>
                 {% if field.description %}<span class="poll-section-description">{{field.description}}</span>{% endif %}
                 {% if field.choice_limit %}{% if field.choice_limit > 0 %}<span class="poll-section-description">Możesz zaznaczyć maksymalnie {{field.choice_limit}} odpowiedzi</span>{% endif %}{% endif %}
-                {% if field.title in errors.keys %} 
+                {% if errors and field.title in errors.keys %} 
                     <div class="main-message"><ul>
                         {% for err in errors|get_value:field.title %}
                             <li>{{ err }}</li>

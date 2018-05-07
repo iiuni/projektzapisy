@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 
 
 class BaseUserTestCase(TestCase):
-
     def test_password_check(self):
         u = UserFactory()
         self.assertTrue(u.check_password('test'))

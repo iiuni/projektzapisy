@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
 from django.core.exceptions import ObjectDoesNotExist
 from zapisy.apps.users.models import Student
 timebonusfile = 'timebonus2016.txt'
+
 
 def process(line):
     line = line.strip()

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class NonUserException(Exception):
     """Thrown when an object does not represent a user"""
     pass
@@ -13,6 +11,7 @@ class NonEmployeeException(Exception):
 class NonStudentException(Exception):
     """Thrown when a user is not a student"""
     pass
+
 
 class InvalidUserException(Exception):
     """

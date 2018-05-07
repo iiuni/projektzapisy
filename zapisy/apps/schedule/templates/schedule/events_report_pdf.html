@@ -35,8 +35,16 @@
             {% for term in terms_list %}
             <tr>
               <td>{{term.day|date:"Y-m-d"}} {{term.start}} - {{term.end}}</td>
-              <td>{{term.event.title}}</td>
-              <td>{{term.event.author}}</td>
+              {% with term.event.title.strip as evt_title %}
+                <td>
+                {% if evt_title|length > 0 %}
+                  {{ evt_title }}
+                {% else %}
+                  &lt;brak nazwy&gt;
+                {% endif %}
+                </td>
+              {% endwith %}
+              <td>{{term.event.author.get_full_name}}</td>
             </tr>
             {% endfor %}
           </tbody>

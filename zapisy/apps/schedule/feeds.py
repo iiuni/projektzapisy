@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.core.urlresolvers import reverse
 
 from django.contrib.syndication.views import Feed
@@ -26,10 +24,10 @@ class Latest(Feed):
     def item_title(self, item):
         return item.title
 
+
 class LatestExams(Latest):
     title = "Zapisy - egzaminy"
-    description = u"Egzaminy w Instytucie Informatyki UWr"
-
+    description = "Egzaminy w Instytucie Informatyki UWr"
 
     def link(self):
         return reverse('events:session')
@@ -43,8 +41,7 @@ class LatestExams(Latest):
 
 class LatestEvents(Latest):
     title = "Zapisy - wydarzenia"
-    description = u"Wydarzenia w Instytucie Informatyki UWr"
-
+    description = "Wydarzenia w Instytucie Informatyki UWr"
 
     def link(self):
         return reverse('events:event_show')

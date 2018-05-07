@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.test import TestCase
 from django.utils import timezone
 from django.core.urlresolvers import reverse
@@ -41,7 +39,7 @@ class VoteLinkTestCase(TestCase):
 
         cls.s1 = StudentFactory()
         cls.s2 = StudentFactory(status=1)
-        
+
         sql_calls = [
             """
                 CREATE TABLE courses_studentpointsview (
@@ -50,7 +48,7 @@ class VoteLinkTestCase(TestCase):
                     entity_id integer
                 );
             """
-            ]
+        ]
 
         for sql_call in sql_calls:
             cursor = connection.cursor()
@@ -72,12 +70,12 @@ class VoteLinkTestCase(TestCase):
     def generic_voting_active_view_test_case(self, urlname):
         create_active_system_state()
         response = self.client.get(reverse(urlname))
-        self.assertEquals(response.context['is_voting_active'], True)
+        self.assertEqual(response.context['is_voting_active'], True)
         self.assertContains(response, self.VOTE_LINK, 1, html=True)
 
     def _generic_voting_inactive_view_test_case(self, urlname):
         response = self.client.get(reverse(urlname))
-        self.assertEquals(response.context['is_voting_active'], False)
+        self.assertEqual(response.context['is_voting_active'], False)
         self.assertNotContains(response, self.VOTE_LINK, html=True)
 
     def generic_voting_inactive_view_past_test_case(self, urlname):
@@ -97,7 +95,7 @@ class VoteLinkTestCase(TestCase):
         create_active_system_state()
         response = self.client.get(reverse('vote-view'), follow=True)
         self.assertNotContains(response, self.VOTE_LINK, html=True)
-        
+
     def test_vote_link_in_vote_view_when_system_is_inactive_in_past(self):
         self.client.login(username=self.s1.user.username, password='test')
         self.generic_voting_inactive_view_past_test_case('vote-view')

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage

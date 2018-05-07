@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django import forms
 from django.forms.formsets import formset_factory, BaseFormSet
 
@@ -32,7 +31,6 @@ class DesiderataForm(forms.Form):
 
 
 class BaseDesiderataFormSet(BaseFormSet):
-
     def iter(self):
         result = {}
         for day in range(1, 8, 1):
@@ -44,11 +42,11 @@ class BaseDesiderataFormSet(BaseFormSet):
                 result[form.initial['day']][form.initial['hour']] = form
             else:
                 result[form.data['day']][form.data['hour']] = form
-        result = map(lambda x: (REVERSE_DAY[x[0]], x[1]), sorted(result.items(), key=lambda x: x[0]))
+        result = [(REVERSE_DAY[x[0]], x[1]) for x in sorted(result.items(), key=lambda x: x[0])]
         return iter(result)
 
     def hours(self):
-        return range(8, 22, 1)
+        return list(range(8, 22, 1))
     """
     def is_valid(self):
         for form in self.forms:
@@ -64,9 +62,11 @@ class BaseDesiderataFormSet(BaseFormSet):
                 hour = form.cleaned_data['hour']
                 value = form.cleaned_data['value']
                 if value == False and desiderata[day][hour] is None:
-                    Desiderata.objects.create(employee=employee, semester=semester, day=day, hour=hour)
-                elif value == True and desiderata[day][hour] is not None:
-                    Desiderata.objects.filter(employee=employee, semester=semester, day=day, hour=hour).delete()
+                    Desiderata.objects.create(
+                        employee=employee, semester=semester, day=day, hour=hour)
+                elif value and desiderata[day][hour] is not None:
+                    Desiderata.objects.filter(
+                        employee=employee, semester=semester, day=day, hour=hour).delete()
 
 
 DesiderataFormSet = formset_factory(DesiderataForm, formset=BaseDesiderataFormSet, extra=0)

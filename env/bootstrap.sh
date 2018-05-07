@@ -62,7 +62,7 @@ PG_REPO_APT_SOURCE=/etc/apt/sources.list.d/pgdg.list
 if [ ! -f "$PG_REPO_APT_SOURCE" ]
 then
   # Add PG apt repo:
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > "$PG_REPO_APT_SOURCE"
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" > "$PG_REPO_APT_SOURCE"
 
   # Add PGDG repo key:
   wget --quiet -O - https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
@@ -187,9 +187,14 @@ apt-get -y install zlib1g-dev
 # Install redis
 apt-get -y install redis-server
 
-# This can be removed after upgrading Ubuntu.
+# For good measure
 pip install --upgrade pip
 pip install --upgrade virtualenv
+
+# Grab Python 3.6 (official repos only have 3.5)
+add-apt-repository -y ppa:jonathonf/python-3.6
+apt-get -y update
+apt-get -y install python3.6
 
 # Install nodejs
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
@@ -202,4 +207,4 @@ sudo npm i -g yarn
 # (npm uses symlinks and they don't work inside the shared folder on Windows)
 # Do it in this script because we need root
 cd /vagrant/zapisy
-./webpack_resources/create_modules_dir.sh vagrant
+./webpack_resources/create_modules_dir.sh ubuntu

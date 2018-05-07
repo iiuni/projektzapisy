@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import random
 
 import factory
-import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from ..models import User, Student, UserProfile, Employee
@@ -41,7 +38,7 @@ class UserProfileFactory(DjangoModelFactory):
         model = UserProfile
 
     user = factory.SubFactory(UserFactory)
-    preferred_language = factory.fuzzy.FuzzyChoice(langs)
+    preferred_language = factory.Faker('random_element', elements=langs)
     is_employee = random.choice([True, False])
     is_student = factory.LazyAttribute(lambda o: False if o.is_employee else True)
     is_zamawiany = factory.LazyAttribute(

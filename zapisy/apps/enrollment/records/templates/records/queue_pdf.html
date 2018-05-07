@@ -30,26 +30,24 @@
             {% if students_in_queue %}
                 <table class="zebra-striped">
                     <thead>
-                        <th style="width:80px;">{% trans "Imię" %}</th>
+                        <th>{% trans "Imię" %}</th>
                         <th>{% trans "Nazwisko" %}</th>
                         {# Translators: numer albumu #}
-                        <th style="width:60px;">{% trans "index" %}</th>
-                        <th>{% trans "Rodzaj studiów" %}</th>
+                        <th>{% trans "index" %}</th>
+                        <th style="width: 300px;">{% trans "Rodzaj studiów" %}</th>
                         {# Translators: numer semestru #}
-                        <th style="width:30px;">{% trans "Sem." %}</th>
-                        <th>{% trans "Uwagi" %}</th>
+                        <th>{% trans "Sem." %}</th>
                     </thead>
                     <tbody>
                         {% for student in students_in_queue %}
                             <tr>
                                 <td>{{student.user.first_name}}</td>
                                 <td>{{student.user.last_name}}</td>
-                                <td style="width:60px;">{{student.matricula}}</td>
-                                <td style="font-size: 5px;">
+                                <td>{{student.matricula}}</td>
+                                <td style="width: 300px;">
                                     {{student.program}}
                                 </td>
-                                <td style="width:30px;">{{student.semestr}}</td>
-                            <td></td>
+                                <td>{{student.semestr}}</td>
                             </tr>
 
                         {% empty %}

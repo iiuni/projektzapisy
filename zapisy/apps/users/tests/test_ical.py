@@ -3,6 +3,7 @@ from .factories import EmployeeFactory, StudentFactory
 from django.core.urlresolvers import reverse
 from apps.enrollment.courses.tests.factories import SemesterFactory
 
+
 class IcalExportTest(TestCase):
     def setUp(self):
         # We'll need an existing active semester
