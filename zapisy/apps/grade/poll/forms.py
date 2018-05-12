@@ -212,9 +212,8 @@ class PollForm(forms.Form):
                         initial=answer,
                         validators=[MaxAnswersValidator(question.choice_limit)],
                         error_messages={
-                            "max_length": "Można wybrać maksymalnie %d odpowiedzi (wybrano %d)" %
-                                          (question.choice_limit,
-                                           choosed)}
+                            "max_length": f"Można wybrać maksymalnie {question.choice_limit} odpowiedzi "
+                                          f"(wybrano {choosed})"}
                     )
                     field.choice_limit = question.choice_limit
                     field.has_other = question.has_other
