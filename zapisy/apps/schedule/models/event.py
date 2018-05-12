@@ -62,7 +62,7 @@ class Event(models.Model):
     edited = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
 
         if self.group:
             return reverse('records-group', args=[str(self.group_id)])

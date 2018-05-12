@@ -13,7 +13,7 @@ class PointTypes(models.Model):
         app_label = 'courses'
 
     def __str__(self):
-        return '%s' % (self.name, )
+        return self.name
 
 
 class PointsOfCourseEntities(models.Model):
@@ -70,10 +70,6 @@ class StudentPointsView(models.Model):
     value = models.SmallIntegerField()
     student = models.OneToOneField(Student, primary_key=True, on_delete=models.CASCADE)
     entity = models.ForeignKey('courses.CourseEntity', on_delete=models.CASCADE)
-
-    # just for testing
-    # def save(self, **kwargs):
-    #    raise NotImplementedError()
 
     class Meta:
         managed = False

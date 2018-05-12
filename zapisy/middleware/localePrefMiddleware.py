@@ -9,7 +9,7 @@ class LocalePrefMiddleware(MiddlewareMixin):
     locale settings accordingly to his preferences"""
 
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if LANGUAGE_SESSION_KEY not in request.session:
                 try:
                     account = UserProfile.objects.get(user=request.user)

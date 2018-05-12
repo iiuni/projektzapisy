@@ -6,7 +6,7 @@ import io
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -39,7 +39,7 @@ def prototype_set_pinned(request):
         Response for AJAX query for pinning or un-pinning group from student's
         schedule.
     """
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return AjaxFailureMessage('NotAuthenticated', 'Nie jesteś zalogowany.')
 
     try:
@@ -87,7 +87,7 @@ def set_enrolled(request, method):
     is_ajax = (method == '.json')
     message_context = None if is_ajax else request
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return AjaxFailureMessage.auto_render(
             'NotAuthenticated', 'Nie jesteś zalogowany.', message_context)
 
@@ -157,7 +157,7 @@ def records_set_locked(request, method):
     is_ajax = (method == '.json')
     message_context = None if is_ajax else request
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return AjaxFailureMessage.auto_render('NotAuthenticated',
                                               'Nie jesteś zalogowany.', message_context)
 
