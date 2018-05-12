@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .factories import EmployeeFactory, StudentFactory
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from apps.enrollment.courses.tests.factories import SemesterFactory
 
 

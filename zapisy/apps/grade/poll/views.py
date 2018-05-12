@@ -4,7 +4,7 @@ from functools import cmp_to_key
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
@@ -656,7 +656,7 @@ def grade_logout(request):
 
 
 def tickets_enter(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return render(request, 'grade/poll/user_is_authenticated.html', {})
 
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
@@ -780,7 +780,7 @@ def slug_cmp(t1, t2):
 
 
 def poll_answer(request, slug, pid):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return render(request, 'grade/poll/user_is_authenticated.html', {})
 
     poll = Poll.objects.get(pk=pid)

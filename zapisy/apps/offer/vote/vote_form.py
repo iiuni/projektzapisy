@@ -11,7 +11,7 @@ from apps.enrollment.courses.models.course import CourseEntity
 
 from apps.offer.vote.models import SystemState
 from apps.offer.vote.models import SingleVote
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.conf import settings
 

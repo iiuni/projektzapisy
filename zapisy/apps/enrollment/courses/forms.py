@@ -4,8 +4,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from apps.enrollment.courses.models.course import Course
 from apps.enrollment.courses.models.group import Group
 
-__author__ = 'maciek'
-
 
 class Parser(object):
     def _convert_employee(self, name):

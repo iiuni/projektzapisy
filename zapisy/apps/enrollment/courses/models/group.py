@@ -3,7 +3,7 @@ from django.db.models import signals
 from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.core.cache import cache as mcache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 from apps.enrollment.records.exceptions import AlreadyNotAssignedException, NonGroupException, NonStudentException

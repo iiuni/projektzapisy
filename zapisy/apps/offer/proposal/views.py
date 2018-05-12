@@ -4,7 +4,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -39,7 +39,7 @@ def offer(request, slug=None):
     else show proposal page
     """
     proposal = proposal_for_offer(slug)
-    proposals = CourseEntity.get_proposals(request.user.is_authenticated())
+    proposals = CourseEntity.get_proposals(request.user.is_authenticated)
     serialized_proposals = [prop.serialize_for_json()
                             for prop in proposals]
     proposals_json = json.dumps(serialized_proposals)

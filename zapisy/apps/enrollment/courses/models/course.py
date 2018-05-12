@@ -1,7 +1,7 @@
 from datetime import date
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
@@ -815,7 +815,7 @@ class Course(models.Model):
 
     def serialize_for_json(self, student=None,
                            terms=None, includeWasEnrolled=False):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
 
         data = self.entity.serialize_for_json()
         data['id'] = self.pk

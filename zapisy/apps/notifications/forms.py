@@ -2,8 +2,6 @@ from django import forms
 from django.forms.models import modelformset_factory
 from apps.notifications.models import NotificationPreferences, get_category
 
-__author__ = 'maciek'
-
 
 class NotificationForm(forms.ModelForm):
 

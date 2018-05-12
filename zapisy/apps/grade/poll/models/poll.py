@@ -99,7 +99,7 @@ class Poll(models.Model):
         return True
 
     def is_user_entitled_to_view_result(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
