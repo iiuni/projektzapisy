@@ -64,7 +64,7 @@ def select_for_voting(request):
     courses = filter((lambda course: 1 <= course.get_status() <= 3), courses)
     if request.method == 'POST':
         for course in courses:
-            ids_for_voting = set(map(int, request.POST.getlist('for_voting')))
+            ids_for_voting = {int(x) for x in request.POST.getlist('for_voting')}
             if not course.is_in_voting() and course.id in ids_for_voting:
                 course.mark_for_voting()
                 course.save()

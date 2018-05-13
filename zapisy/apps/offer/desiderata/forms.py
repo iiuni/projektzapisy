@@ -46,14 +46,7 @@ class BaseDesiderataFormSet(BaseFormSet):
         return iter(result)
 
     def hours(self):
-        return list(range(8, 22, 1))
-    """
-    def is_valid(self):
-        for form in self.forms:
-            if not form.is_valid():
-                return False
-        return True
-    """
+        return range(8, 22)
 
     def save(self, desiderata, employee, semester):
         for form in self.forms:
