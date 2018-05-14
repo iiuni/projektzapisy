@@ -203,7 +203,6 @@ INSTALLED_APPS = (
     #'debug_toolbar',
     'apps.grade.poll',
     'apps.grade.ticket_create',
-    #'apps.mobile',
     'apps.email_change',
     'apps.schedulersync',
     'django_extensions',
@@ -297,8 +296,6 @@ PIPELINE = env.bool('PIPELINE')
 PIPELINE_AUTO = False
 PIPELINE_VERSION = True
 PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
-#PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
-#PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.csstidy.CSSTidyCompressor'
 
 COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
 COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
@@ -328,7 +325,7 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, "webpack_resources", 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
     }
 }
 REST_FRAMEWORK = {
