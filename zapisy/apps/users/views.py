@@ -8,7 +8,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.views import login
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -358,7 +358,7 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
-def login_plus_remember_me(request, *args, **kwargs):
+def login_plus_remember_me(request, **kwargs):
     """
     Sign-in function with an option to save the session.
     If the user clicked the 'Remember me' button (we read it from POST data), the
@@ -376,7 +376,7 @@ def login_plus_remember_me(request, *args, **kwargs):
             request.session.set_expiry(datetime.timedelta(14).total_seconds())
         else:
             request.session.set_expiry(0)  # Expires on browser closing.
-    return login(request, *args, **kwargs)
+    return LoginView.as_view(**kwargs)(request)
 
 
 def get_ical_filename(user, semester):
