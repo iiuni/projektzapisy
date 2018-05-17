@@ -379,31 +379,63 @@ def generate_ticket(poll_list):
     return blinded
 
 
+"""
+Ponizsze funkcje implementuja protokol slepych podpisow
+"""
+
+
 def blind_ticket(ticket, pub_key, k):
+    """
+        Zaślepia kupon przy pomocy podanej przez użytkownika liczby k oraz klucza publicznego
+    :param ticket: kupon do zaślepienia
+    :param pub_key: klucz publiczny RSA
+    :param k: liczba od użytkownika
+    :return: Zaślepiony podpis kuponu
+    """
     return pub_key.blind(ticket, k)
 
 
 def sign_ticket(ticket, priv_key):
+    """
+        Podpisuje kupon kluczem prywatnym
+    :param ticket: kupon do podpisu
+    :param priv_key: prywatny klucz RSA
+    :return: podpisany kupon
+    """
     priv = RSA.importKey(priv_key.private_key)
     return priv.sign(ticket, 0)[0]
 
 
 def unblind_ticket(ticket, priv_key, k):
+    """
+        Odkrywa kupon przy pomocy klucza prywatnego oraz liczby k podanej przez użytkownika
+    :param ticket: kupon do odkrycia
+    :param priv_key: prywatny klucz RSA
+    :param k: liczba podana przez użytkownika
+    :return: uzyskany po odkryciu podpis ślepego kuponu
+    """
     return priv_key.unblind(ticket, k)
 
 
 def verify_ticket(ticket, signature, priv_key):
+    """
+        Weryfikuje przy pomocy podanego klucza prywatnego, czy kupon jest zgodny z podaną sygnaturą
+    :param ticket:
+    :param signature: podpis ślepego kuponu
+    :param priv_key: prywatny klucz RSA
+    :return:
+    """
     return priv_key.verify(ticket, (signature,))
 
 
 def convert_ticket_record(ticket):
     """
-    This function converts ticket in form of:
+    Konwertuje rekord postaci:
         poll_id: XYZ
         TICKET
-    to pair (poll_id, TICKET)
-    :param ticket: ticket submitted from client to sign
-    :return: ticket converted to pair
+    do pary (poll_id, TICKET)
+    :param ticket: kupon do konwersji
+    :return: wynik konwersji
     """
     t = ticket.strip().split('\r\n')
     if len(t) > 1:
@@ -412,6 +444,10 @@ def convert_ticket_record(ticket):
 
 
 class Signature:
+    """
+        Pomocnicza klasa, służy jako model dla widoku signed_tickets.html
+    """
+
     def __init__(self, poll_id, sign):
         self.poll_id = poll_id
         self.signature = sign
