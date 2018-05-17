@@ -3,8 +3,6 @@
 from django.test import LiveServerTestCase
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,7 +15,12 @@ from selenium.common.exceptions import (
 
 from django.contrib.auth.models import User
 from apps.users.models import Employee, Student
-from apps.enrollment.courses.models import Semester, CourseEntity, Course, Type, Group, Term, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.course import CourseEntity, Course
+from apps.enrollment.courses.models.course_type import Type
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
 
 import os
