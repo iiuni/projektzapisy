@@ -3,8 +3,9 @@ import random
 import factory
 from factory.django import DjangoModelFactory
 
-from ..models import User, Student, UserProfile, Employee
 from django.conf import settings
+
+from apps.users.models import Student, UserProfile, Employee, User
 
 langs = [x[0] for x in settings.LANGUAGES]
 

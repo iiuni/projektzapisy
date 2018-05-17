@@ -8,6 +8,10 @@ from django.http import Http404
 from django.utils.crypto import get_random_string
 
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term as EventTerm
+from apps.schedule.models.message import EventModerationMessage, EventMessage
+from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.tests.objectmothers import UserObjectMother
 from apps.users.tests.factories import UserFactory, EmployeeProfileFactory, StudentFactory
 from apps.enrollment.courses.models import Semester, Classroom
@@ -17,8 +21,6 @@ import apps.enrollment.courses.tests.factories as enrollment_factories
 from apps.enrollment.records.tests.factories import RecordFactory
 from apps.enrollment.records.models import Record
 
-from ..models import SpecialReservation, EventModerationMessage, EventMessage, Event,\
-    Term as EventTerm
 from . import factories
 from zapisy import common
 
