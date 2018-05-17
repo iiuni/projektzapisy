@@ -1,24 +1,23 @@
 ﻿# -*- coding: utf-8 -*-
 import json
 
-from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import render
-from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.users.decorators import student_required, employee_required
-from apps.users.models import BaseUser
-
 from apps.enrollment.courses.models import Semester
 from apps.grade.poll.models import Poll
+from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
+from apps.grade.ticket_create.models import PublicKey, PrivateKey
+from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_keys, group_polls_by_course, \
     secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark, \
     sign_ticket, convert_ticket_record, Signature
-from apps.grade.ticket_create.models import PublicKey, PrivateKey
+from apps.users.decorators import student_required, employee_required
+from apps.users.models import BaseUser
+from django.contrib import messages
 from django.contrib.auth import authenticate
-from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
-from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.utils.safestring import SafeUnicode
+from django.views.decorators.csrf import csrf_exempt
 
 
 @employee_required
@@ -202,12 +201,18 @@ def client_connection(request):
 
 @student_required
 def keys_list(request):
+    """
+        Strona, z ktorej student moze pobrac klucze publiczne ankiet, ktore ma prawo wypelnic
+    """
     polls = filter(lambda x: x.pk, Poll.get_all_polls_for_student(request.user.student))
     keys = PublicKey.objects.filter(poll_id__in=polls)
     return render(request, 'grade/ticket_create/keys_list.html', {'public_keys': keys, })
 
 
 def sign_tickets(request):
+    """
+        Student przekazuje swoje kupony do podpisu kluczami prywatnymi przedmiotow
+    """
     if request.method == 'POST':
         ticket_str = request.POST['tickets']
         tmp = ticket_str.split('**********************************')
@@ -226,6 +231,9 @@ def sign_tickets(request):
 
 
 def create_voter_account(request):
+    """
+        Student przekazuje swoje klucze i otrzymuje w zamian tymczasowe konto do głosowania
+    """
     if request.method == 'POST':
         pass
 
@@ -233,9 +241,12 @@ def create_voter_account(request):
 
 
 def keys_generate(request):
+    """
+        Widok odpowiadajacy za generowanie kluczy RSA dla ankiet
+    """
     if request.method == 'POST':
-        pass
-        # generate_keys_for_polls()
+        # TODO check if the keys exist and delete them? (known problem in the system)
+        generate_keys_for_polls()
     # count = cache.get('generated-keys', 0)
     # without_keys = Poll.count_polls_without_keys()
     data = {'progress_val': 50}
