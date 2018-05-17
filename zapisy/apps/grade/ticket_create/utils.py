@@ -16,6 +16,13 @@ from django.utils.safestring import SafeUnicode
 RAND_BITS = 512
 KEY_LENGTH = 1024
 
+"""
+1. W przeglądarce jest wygenrowane 512 rand bitów m - kuponik
+2. Wylosowana jest liczba k względnie pierwsza z n
+3. Szyfrujemy m za pomocą klucza publicznego
+4. Wysyłamy do podpisu kluczem prywatnym
+"""
+
 
 def poll_cmp(poll1, poll2):
     if poll1.group:
@@ -352,7 +359,7 @@ def from_plaintext(tickets_plaintext):
 
 
 def generate_ticket(poll_list):
-    ## TODO: Docelowo ma być po stronie przeglądarki
+    # TODO: Docelowo ma być po stronie przeglądarki
     m = getrandbits(RAND_BITS)
     blinded = []
 
@@ -370,3 +377,41 @@ def generate_ticket(poll_list):
 
         blinded.append((poll, t, (m, k)))
     return blinded
+
+
+def blind_ticket(ticket, pub_key, k):
+    return pub_key.blind(ticket, k)
+
+
+def sign_ticket(ticket, priv_key):
+    priv = RSA.importKey(priv_key.private_key)
+    return priv.sign(ticket, 0)[0]
+
+
+def unblind_ticket(ticket, priv_key, k):
+    return priv_key.unblind(ticket, k)
+
+
+def verify_ticket(ticket, signature, priv_key):
+    return priv_key.verify(ticket, (signature,))
+
+
+def convert_ticket_record(ticket):
+    """
+    This function converts ticket in form of:
+        poll_id: XYZ
+        TICKET
+    to pair (poll_id, TICKET)
+    :param ticket: ticket submitted from client to sign
+    :return: ticket converted to pair
+    """
+    t = ticket.strip().split('\r\n')
+    if len(t) > 1:
+        poll_id = str(t[0]).strip().split('poll_id:')[1]
+        return int(poll_id), str(t[1]).strip()
+
+
+class Signature:
+    def __init__(self, poll_id, sign):
+        self.poll_id = poll_id
+        self.signature = sign

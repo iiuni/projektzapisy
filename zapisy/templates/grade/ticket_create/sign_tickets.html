@@ -1,0 +1,46 @@
+{% extends "grade/base.html" %}
+
+{% block main-subtitle %}Podpisz kupony{% endblock %}
+
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Podpisz kupony</li>
+{% endblock %}
+
+{% block content %}
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <p class="lead">Jeśli jesteś zalogowany, to proszę <a href="/logout">wyloguj się</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p class="text">
+                    Do poniższego pola wklej podpisane odpowiednimi kluczami publicznymi kupony wraz z ich
+                    identyfikatorami
+                    (poll id) według wzoru:
+                </p>
+                <pre>
+                poll_id:1234
+                KUPON
+                ***
+                </pre>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form action="{% url 'grade-ticket-sign-tickets' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="tickets">Kupony</label>
+                        <textarea name="tickets" class="form-control" id="tickets" rows="6"></textarea>
+                    </div>
+                    <button class="btn btn-secondary" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

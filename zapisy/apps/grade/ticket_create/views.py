@@ -11,8 +11,9 @@ from apps.users.models import BaseUser
 from apps.enrollment.courses.models import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_keys, group_polls_by_course, \
-    secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark
-from apps.grade.ticket_create.models import PublicKey
+    secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark, \
+    sign_ticket, convert_ticket_record, Signature
+from apps.grade.ticket_create.models import PublicKey, PrivateKey
 from django.contrib.auth import authenticate
 from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
 from django.views.decorators.csrf import csrf_exempt
@@ -199,17 +200,43 @@ def client_connection(request):
                 return HttpResponse(to_plaintext([(p, u'***', u'%%%')]) + u'???' + unicode(a))
 
 
-@csrf_exempt
+@student_required
 def keys_list(request):
-    public_keys = PublicKey.objects.all()
-    return render(request, 'grade/ticket_create/keys_list.html', {'list': public_keys, })
+    polls = filter(lambda x: x.pk, Poll.get_all_polls_for_student(request.user.student))
+    keys = PublicKey.objects.filter(poll_id__in=polls)
+    return render(request, 'grade/ticket_create/keys_list.html', {'public_keys': keys, })
 
 
-@csrf_exempt
+def sign_tickets(request):
+    if request.method == 'POST':
+        ticket_str = request.POST['tickets']
+        tmp = ticket_str.split('**********************************')
+        signatures = []
+        try:
+            tickets = list(map(convert_ticket_record, tmp))
+            for ticket in tickets:
+                poll_id = ticket[0]
+                key = PrivateKey.objects.get(poll_id=poll_id)
+                result = sign_ticket(ticket[1], key)
+                signatures.append(Signature(poll_id, result))
+                return render(request, 'grade/ticket_create/signed_tickets.html', {'signatures': signatures})
+        except Exception:
+            pass
+    return render(request, 'grade/ticket_create/sign_tickets.html')
+
+
+def create_voter_account(request):
+    if request.method == 'POST':
+        pass
+
+        return render(request, 'grade/ticket_create/create_voter_account.html')
+
+
 def keys_generate(request):
     if request.method == 'POST':
-        generate_keys_for_polls()
-    count = cache.get('generated-keys', 0)
-    without_keys = Poll.count_polls_without_keys()
-    data = {'progress_val': (count / without_keys) * 100}
+        pass
+        # generate_keys_for_polls()
+    # count = cache.get('generated-keys', 0)
+    # without_keys = Poll.count_polls_without_keys()
+    data = {'progress_val': 50}
     return render(request, 'grade/ticket_create/keys_generate.html', data)

@@ -1,16 +1,40 @@
 {% extends "grade/base.html" %}
 
-{% block main-navigation %}
-	<a href="/">Strona główna</a>  &raquo;
-	<a href="{% url 'grade-main' %}">Ocena zajęć</a> &raquo;
-    Lista kluczy publicznych
+{% block main-subtitle %}Pobierz klucze publiczne{% endblock %}
+
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Lista kluczy publicznych</li>
 {% endblock %}
 
 {% block content %}
-    <table>
-    {% for l in list %}
-        {{ l.poll.as_row }}
-    {% endfor %}
-    </table>
+    <div class="row">
+        <div class="col">
+            <p class="text">
+                Poniżej znajdziesz klucze publiczne odpowiadające Twoim ankietom.
+                Zapisz je wraz z odpowiadającymi im identyfikatorami ankiet (poll_id) w celu
+                wygenerowania kuponów dla Oceny Zajęć.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card col-12">
+            <div class="card-body">
+                {% for key in public_keys %}
+                    <h5 class="card-title">
+                        {% if key.poll.group %}
+                            {{ key.poll.group }}
+                        {% else %}
+                            Ogół zajęć w Instytucie
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">poll_id:{{ key.poll.pk }}</p>
+                    <p class="card-text">{{ key.public_key }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 

@@ -1,18 +1,10 @@
 {% extends "newbase.html" %}
 
-{% load compressed %}
-
-{#{% block grade_active %} class="active"{% endblock %}#}
-{#{% block styles %}#}
-{#    {% compressed_css 'gradebase' %}#}
-{#{% endblock %}#}
-
 {% block title %}System Oceny{% endblock %}
 {% block bread %}
     <li class="breadcrumb-item">Strona główna</li>
     <li class="breadcrumb-item active" aria-current="page">Ocena zajęć</li>
 {% endblock %}
-
 
 {% block system_menu %}
     <li class="nav-item">
@@ -50,10 +42,16 @@
                 Pobierz klucze
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{% url 'grade-ticket-keys-list' %}" class="nav-link">Pobierz klucze publiczne</a>
+        </li>
     {% endif %}
     {% if grade %}
         <li class="nav-item">
-            <a href="{% url 'grade-poll-tickets-enter' %}">Oceń zajęcia</a></li>
+            <a href="{% url 'grade-ticket-sign-tickets' %}" class="nav-link">Podpisz kupony</a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'grade-poll-tickets-enter' %}" class="nav-link">Oceń zajęcia</a></li>
     {% endif %}
     {% if user.is_superuser %}
         <li class="nav-item">
