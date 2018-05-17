@@ -61,7 +61,7 @@ class Classroom(models.Model):
 
     @classmethod
     def get_terms_in_day(cls, date, ajax=False):
-        from apps.schedule.models import Term as EventTerm
+        from apps.schedule.models.term import Term as EventTerm
         from apps.enrollment.courses.models import Semester, Term, Freeday, ChangedDay
 
         rooms = cls.get_in_institute(reservation=True)

@@ -137,7 +137,7 @@ class Group(models.Model):
 
     def get_all_terms_for_export(self):
         """return all terms of current group"""
-        from apps.schedule.models import Term
+        from apps.schedule.models.term import Term
         return Term.objects.filter(event__group=self)
 
     def human_readable_type(self):

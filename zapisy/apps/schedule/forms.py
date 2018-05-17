@@ -3,7 +3,9 @@ from django import forms
 from django.forms import HiddenInput
 from apps.enrollment.courses.models.course import Course
 from apps.enrollment.courses.models.semester import Semester
-from apps.schedule.models import Event, Term, EventModerationMessage, EventMessage
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
+from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.users.models import BaseUser
 from django.contrib.admin.widgets import FilteredSelectMultiple
 

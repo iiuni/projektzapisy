@@ -8,7 +8,9 @@ from factory.django import DjangoModelFactory
 
 from apps.users.tests.factories import UserFactory
 from apps.enrollment.courses.tests.factories import GroupFactory, ClassroomFactory
-from apps.schedule.models import Event, Term, SpecialReservation
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
+from apps.schedule.models.specialreservation import SpecialReservation
 
 
 class EventCourseFactory(DjangoModelFactory):

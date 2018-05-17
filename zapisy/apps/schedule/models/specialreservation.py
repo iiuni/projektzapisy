@@ -4,7 +4,7 @@ from datetime import date, datetime
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
-from apps.schedule.models import Event
+from apps.schedule.models.event import Event
 
 from zapisy import common
 

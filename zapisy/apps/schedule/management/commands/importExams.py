@@ -6,7 +6,8 @@ from django.db.models import Q
 
 from apps.enrollment.courses.models import Semester, Freeday, ChangedDay, Classroom, Course
 from apps.enrollment.courses.models.term import Term as T
-from apps.schedule.models import Term, Event
+from apps.schedule.models.term import Term
+from apps.schedule.models.event import Event
 
 
 class Command(BaseCommand):

@@ -848,7 +848,7 @@ class Course(models.Model):
             Return True if  Course have reservation for exam
         """
 
-        from apps.schedule.models import Event
+        from apps.schedule.models.event import Event
 
         if not self.exam:
             return False

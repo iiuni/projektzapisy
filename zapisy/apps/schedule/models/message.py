@@ -2,7 +2,7 @@ from django.db import models
 
 
 class EventModerationMessage(models.Model):  # why two classes of the same name?
-    from apps.schedule.models import Event
+    from apps.schedule.models.event import Event
     from django.contrib.auth.models import User
 
     author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
@@ -31,7 +31,7 @@ class EventModerationMessage(models.Model):  # why two classes of the same name?
 
 
 class Message(models.Model):
-    from apps.schedule.models import Event
+    from apps.schedule.models.event import Event
     from django.contrib.auth.models import User
 
     author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
