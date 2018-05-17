@@ -95,7 +95,6 @@ def edit_event(request, event_id=None):
 
 
 def session(request, semester=None):
-    from apps.schedule.models.term import Term
     from apps.enrollment.courses.models.semester import Semester
 
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
@@ -178,7 +177,6 @@ def events(request):
 
 @login_required
 def event(request, event_id):
-    from apps.schedule.models.event import Event
     from apps.schedule.models.message import EventModerationMessage, EventMessage
 
     event = Event.get_event_or_404(event_id, request.user)
@@ -269,8 +267,6 @@ def ajax_get_terms(request, year, month, day):
 
 
 class ClassroomTermsAjaxView(FullCalendarView):
-    from apps.schedule.models.term import Term
-
     model = Term
     adapter = EventAdapter
 
