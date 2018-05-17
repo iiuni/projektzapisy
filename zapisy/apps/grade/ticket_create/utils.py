@@ -158,47 +158,29 @@ def connect_groups(groupped_polls, form):
 
 
 def check_poll_visiblity(user, poll):
-    """Checks, whether user is a student entitled to the poll.
-
-    Raises:
-        InvalidPollException: If the user in question is not entitled to the
-            poll.
-        Student.DoesNotExist: If the user in question is not a student.
     """
-    if not poll.is_student_entitled_to_poll(user.student):
-        raise InvalidPollException
+    Checks, whether user is a student entitled to the poll.
+    """
+    return poll.is_student_entitled_to_poll(user.student)
 
 
 def check_ticket_not_signed(user, poll):
-    """Checks, if the user is a student with a yet unused ticket for the poll.
-
-    Raises:
-        TicketUsed: If the user has already used the ticket for the poll.
-        Student.DoesNotExist: If the user in question is not a student.
+    """
+    Checks, if the user is a student with a yet unused ticket for the poll.
     """
     u = UsedTicketStamp.objects.filter(student=user.student, poll=poll)
-    if u:
-        raise TicketUsed
+    return True if u else False
 
 
 def mark_poll_used(user, poll):
     """Saves the user's stamp for the poll.
 
-    Raises:
+    :raises:
         Student.DoesNotExist: If the user in question is not a student.
     """
     u = UsedTicketStamp(student=user.student,
                         poll=poll)
     u.save()
-
-
-def secure_signer_without_save(user, g, t):
-    try:
-        return ticket_check_and_sign_without_mark(user, g, t),
-    except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
-    except TicketUsed:
-        return u"Bilet już pobrano",
 
 
 def secure_mark(user, g, t):
