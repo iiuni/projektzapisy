@@ -16,13 +16,6 @@ from django.utils.safestring import SafeUnicode
 RAND_BITS = 512
 KEY_LENGTH = 1024
 
-"""
-1. W przeglądarce jest wygenrowane 512 rand bitów m - kuponik
-2. Wylosowana jest liczba k względnie pierwsza z n
-3. Szyfrujemy m za pomocą klucza publicznego
-4. Wysyłamy do podpisu kluczem prywatnym
-"""
-
 
 def poll_cmp(poll1, poll2):
     if poll1.group:
@@ -164,16 +157,6 @@ def connect_groups(groupped_polls, form):
     return connected_groups
 
 
-def generate_keys(poll_list):
-    keys = []
-
-    for poll in poll_list:
-        key = RSA.importKey(PublicKey.objects.get(poll=poll).public_key)
-        keys.append((unicode(key.n), unicode(key.e)))
-
-    return keys
-
-
 def check_poll_visiblity(user, poll):
     """Checks, whether user is a student entitled to the poll.
 
@@ -207,28 +190,6 @@ def mark_poll_used(user, poll):
     u = UsedTicketStamp(student=user.student,
                         poll=poll)
     u.save()
-
-
-def ticket_check_and_mark(user, poll, ticket):
-    check_poll_visiblity(user, poll)
-    check_ticket_not_signed(user, poll)
-    mark_poll_used(user, poll)
-
-
-def ticket_check_and_sign(user, poll, ticket):
-    check_poll_visiblity(user, poll)
-    check_ticket_not_signed(user, poll)
-    key = PrivateKey.objects.get(poll=poll)
-    signed = key.sign_ticket(ticket)
-    mark_poll_used(user, poll)
-
-
-def ticket_check_and_sign_without_mark(user, poll, ticket):
-    check_poll_visiblity(user, poll)
-    check_ticket_not_signed(user, poll)
-    key = PrivateKey.objects.get(poll=poll)
-    signed = key.sign_ticket(ticket)
-    return signed
 
 
 def secure_signer_without_save(user, g, t):
@@ -356,27 +317,6 @@ def from_plaintext(tickets_plaintext):
             i += 1
 
     return ids_tickets_signed
-
-
-def generate_ticket(poll_list):
-    # TODO: Docelowo ma być po stronie przeglądarki
-    m = getrandbits(RAND_BITS)
-    blinded = []
-
-    for poll in poll_list:
-        key = RSA.importKey(PublicKey.objects.get(poll=poll).public_key)
-        n = key.n
-        e = key.e
-        k = randint(2, n)
-        while gcd(n, k) != 1:
-            k = randint(1, n)
-
-        a = (m % n)
-        b = expMod(k, e, n)
-        t = (a * b) % n
-
-        blinded.append((poll, t, (m, k)))
-    return blinded
 
 
 """
