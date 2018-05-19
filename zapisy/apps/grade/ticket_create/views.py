@@ -5,6 +5,7 @@ from apps.grade.ticket_create.models import PublicKey, PrivateKey
 from apps.grade.ticket_create.utils import generate_keys_for_polls, sign_ticket, convert_ticket_record, Signature
 from apps.users.decorators import student_required
 from django.shortcuts import render
+from django.contrib import messages
 
 
 @student_required
@@ -23,18 +24,21 @@ def sign_tickets(request):
     """
     if request.method == 'POST':
         ticket_str = request.POST['tickets']
-        tmp = ticket_str.split('**********************************')
-        signatures = []
-        try:
-            tickets = list(map(convert_ticket_record, tmp))
-            for ticket in tickets:
-                poll_id = ticket[0]
-                key = PrivateKey.objects.get(poll_id=poll_id)
-                result = sign_ticket(ticket[1], key)
-                signatures.append(Signature(poll_id, result))
-                return render(request, 'grade/ticket_create/signed_tickets.html', {'signatures': signatures})
-        except Exception:
-            pass
+        if ticket_str:
+            tmp = ticket_str.split('**********************************')
+            signatures = []
+            try:
+                tickets = list(map(convert_ticket_record, tmp))
+                for ticket in tickets:
+                    poll_id = ticket[0]
+                    key = PrivateKey.objects.get(poll_id=poll_id)
+                    result = sign_ticket(ticket[1], key)
+                    signatures.append(Signature(poll_id, result))
+                    return render(request, 'grade/ticket_create/signed_tickets.html', {'signatures': signatures})
+            except Exception:
+                messages.error(request, "Nie udało się podpisać kluczy")
+        else:
+            messages.info(request, "Nie podano kuponów do podpisu")
     return render(request, 'grade/ticket_create/sign_tickets.html')
 
 
