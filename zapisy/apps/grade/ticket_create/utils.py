@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
-from string import whitespace
 
 from Crypto.PublicKey import RSA
-from Crypto.Random.random import getrandbits, \
-    randint
 from apps.enrollment.courses.models import Semester
 from apps.grade.poll.models import Poll
-from apps.grade.ticket_create.exceptions import *
-from apps.grade.ticket_create.models import PublicKey, \
-    PrivateKey, \
-    UsedTicketStamp
-from django.contrib.admin.utils import flatten
-from django.utils.safestring import SafeUnicode
+from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
 
 RAND_BITS = 512
 KEY_LENGTH = 1024
@@ -181,124 +173,6 @@ def mark_poll_used(user, poll):
     u = UsedTicketStamp(student=user.student,
                         poll=poll)
     u.save()
-
-
-def secure_mark(user, g, t):
-    try:
-        return ticket_check_and_mark(user, g, t),
-    except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
-    except TicketUsed:
-        return u"Bilet już pobrano",
-
-
-def secure_signer(user, g, t):
-    try:
-        return ticket_check_and_sign(user, g, t),
-    except InvalidPollException:
-        return u"Nie jesteś przypisany do tej ankiety",
-    except TicketUsed:
-        return u"Bilet już pobrano",
-
-
-def unblind(poll, st):
-    st = st[0]
-    if st == u"Nie jesteś przypisany do tej ankiety":
-        return st
-    elif st == u"Bilet już pobrano":
-        return st
-    else:
-        st = st[0]
-        key = RSA.importKey(PublicKey.objects.get(poll=poll).public_key)
-        return (unicode(st), unicode(key.n), unicode(key.e))
-
-
-def get_valid_tickets(tl):
-    err = []
-    val = []
-    for g, t, st in tl:
-        if st == u"Nie jesteś przypisany do tej ankiety" or \
-                st == u"Bilet już pobrano":
-            err.append((unicode(g), st))
-        else:
-            val.append((g, t, st))
-
-    return err, val
-
-
-def to_plaintext(vtl):
-    res = ""
-    for p, t, st in vtl:
-        res += '[' + p.title + ']'
-        if not p.group:
-            res += u'Ankieta ogólna &#10;'
-        else:
-            res += unicode(p.group.course.name) + " &#10;"
-            res += unicode(p.group.get_type_display()) + ": "
-            res += unicode(p.group.get_teacher_full_name()) + " &#10;"
-        if p.studies_type:
-            res += u'typ studiów: ' + unicode(p.studies_type) + " &#10;"
-
-        res += u'id: ' + unicode(p.pk) + ' &#10;'
-        res += unicode(t) + " &#10;"
-        res += unicode(st) + " &#10;"
-        res += "---------------------------------- &#10;"
-    return SafeUnicode(unicode(res))
-
-
-def from_plaintext(tickets_plaintext):
-    pre_tickets = tickets_plaintext.split('----------------------------------')
-    pre_tickets = map(lambda x: [x], pre_tickets)
-    for sign in whitespace:
-        pre_tickets = map(lambda ls:
-                          flatten(
-                              map(
-                                  lambda x:
-                                  x.split(sign),
-                                  ls)),
-                          pre_tickets)
-
-    convert = False
-    ids_tickets_signed = []
-    for poll_info in pre_tickets:
-        i = 0
-        while i < len(poll_info):
-            if convert:
-                j = i
-                id = -1
-                t = -1
-                st = -1
-                while True:
-                    try:
-                        id = int(poll_info[j])
-                        break
-                    except:
-                        j += 1
-
-                j += 1
-                while True:
-                    try:
-                        t = long(poll_info[j])
-                        break
-                    except:
-                        j += 1
-
-                j += 1
-                while True:
-                    try:
-                        st = long(poll_info[j])
-                        break
-                    except:
-                        j += 1
-
-                i = j + 1
-                convert = False
-                ids_tickets_signed.append((id, (t, st)))
-            elif poll_info[i].startswith('id:'):
-                convert = True
-            i += 1
-
-    return ids_tickets_signed
 
 
 """
