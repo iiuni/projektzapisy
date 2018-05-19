@@ -9,16 +9,7 @@ from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PrivateKey, PublicKey
 from apps.users.tests.factories import StudentFactory, EmployeeFactory, UserFactory
 
-KEY_LENGTH = 256
-
-"""
-1. create user
-2. create courses
-3. create enrollment record
-4. create polls for course groups
-5. create keys for polls
-6. try flows
-"""
+KEY_LENGTH = 1024
 
 
 class ViewTestCase(TestCase):
@@ -82,7 +73,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(str(messages[0]), 'Nie podano kuponów do podpisu')
 
     def test_sign_user_tickets(self):
-        rsa = RSA.generate(1024)
+        rsa = RSA.generate(KEY_LENGTH)
         private_key = rsa.exportKey()
         public_key = rsa.publickey().exportKey()
 
