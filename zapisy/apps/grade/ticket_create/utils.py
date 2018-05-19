@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from string import whitespace
 
 from Crypto.PublicKey import RSA
 from apps.enrollment.courses.models import Semester
@@ -247,3 +248,125 @@ class Signature:
     def __init__(self, poll_id, sign):
         self.poll_id = poll_id
         self.signature = sign
+
+
+"""Legacy, needs to be here till we refactor voting"""
+
+
+def from_plaintext(tickets_plaintext):
+    pre_tickets = tickets_plaintext.split('----------------------------------')
+    pre_tickets = map(lambda x: [x], pre_tickets)
+    for sign in whitespace:
+        pre_tickets = map(lambda ls:
+                          flatten(
+                              map(
+                                  lambda x:
+                                  x.split(sign),
+                                  ls)),
+                          pre_tickets)
+
+    convert = False
+    ids_tickets_signed = []
+    for poll_info in pre_tickets:
+        i = 0
+        while i < len(poll_info):
+            if convert:
+                j = i
+                id = -1
+                t = -1
+                st = -1
+                while True:
+                    try:
+                        id = int(poll_info[j])
+                        break
+                    except:
+                        j += 1
+
+                j += 1
+                while True:
+                    try:
+                        t = long(poll_info[j])
+                        break
+                    except:
+                        j += 1
+
+                j += 1
+                while True:
+                    try:
+                        st = long(poll_info[j])
+                        break
+                    except:
+                        j += 1
+
+                i = j + 1
+                convert = False
+                ids_tickets_signed.append((id, (t, st)))
+            elif poll_info[i].startswith('id:'):
+                convert = True
+            i += 1
+
+    return ids_tickets_signed
+
+
+def flatten(x):
+    result = []
+    for el in x:
+        if isinstance(el, list):
+            if hasattr(el, "__iter__") and not isinstance(el, basestring):
+                result.extend(flatten(el))
+            else:
+                result.append(el)
+        else:
+            result.append(el)
+
+    return result
+
+
+def gcd(a, b):
+    if b > a:
+        a, b = b, a
+    while a:
+        a, b = b % a, a
+    return b
+
+
+def gcwd(u, v):
+    u1 = 1
+    u2 = 0
+    u3 = u
+    v1 = 0
+    v2 = 1
+    v3 = v
+    while v3 != 0:
+        q = u3 / v3
+        t1 = u1 - q * v1
+        t2 = u2 - q * v2
+        t3 = u3 - q * v3
+        u1 = v1
+        u2 = v2
+        u3 = v3
+        v1 = t1
+        v2 = t2
+        v3 = t3
+    return u1, u2, u3
+
+
+def expMod(a, b, q):
+    p = 1
+
+    while b > 0:
+        if b & 1:
+            p = (p * a) % q
+        a = (a * a) % q
+        b /= 2
+    return p
+
+
+def revMod(a, m):
+    x, y, d = gcwd(a, m)
+
+    if d != 1: return -1
+
+    x %= m
+    if x < 0: x += m
+    return x
