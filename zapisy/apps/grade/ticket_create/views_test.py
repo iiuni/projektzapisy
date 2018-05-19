@@ -1,7 +1,3 @@
-import django
-
-django.setup()
-
 from datetime import datetime, timedelta
 from django.test import TestCase
 
@@ -56,6 +52,8 @@ class ViewTestCase(TestCase):
 
     def test_user_gets_keys_for_polls(self):
         print("starting test case")
+
         self.client.login("testuser_0", "test")
         response = self.client.get("/grade/ticket/keys_list")
+
         self.assertEqual(response.status_code, 200)
