@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from Crypto.PublicKey import RSA
 
-from apps.enrollment.courses.tests.factories import CourseFactory, GroupFactory, SemesterFactory
+from apps.enrollment.courses.tests.factories import GroupFactory, SemesterFactory
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PrivateKey, PublicKey
 from apps.users.tests.factories import StudentFactory, EmployeeFactory, UserFactory
