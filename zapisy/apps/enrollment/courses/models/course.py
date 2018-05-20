@@ -169,7 +169,7 @@ class CourseEntity(models.Model):
     created = models.DateTimeField(verbose_name='Utworzono', auto_now_add=True)
     edited = models.DateTimeField(verbose_name='Ostatnia zmiana', auto_now=True)
 
-    in_prefs = models.BooleanField(verbose_name='w preferencjach', default=True)
+    in_prefs = models.BooleanField(verbose_name='w preferencjach', default=False)
 
     dyskretna_l = models.BooleanField(default=False,
                                       verbose_name='Przedmiot posiada również wersje: Dyskretna (L)')

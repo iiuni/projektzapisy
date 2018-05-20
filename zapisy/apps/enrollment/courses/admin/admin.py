@@ -178,7 +178,7 @@ class CourseEntityAdmin(TranslationAdmin):
         ('Zmiana sposobu liczenia punktów', {'fields': ['algorytmy_l', 'dyskretna_l', 'numeryczna_l', 'programowanie_l']}),
         (None, {'fields': ['ue', 'english', 'exam', 'suggested_for_first_year', 'deleted']}),
         ('USOS', {'fields': ['usos_kod'], 'classes': ['collapse']}),
-
+        ('W preferencjach', {'fields': ['in_prefs']}),
     ]
     list_filter = ('semester', 'status', 'type', EffectsListFilter, 'owner')
     form = CourseEntityForm

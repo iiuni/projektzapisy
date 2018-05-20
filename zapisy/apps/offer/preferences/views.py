@@ -16,9 +16,9 @@ logger = logging.getLogger()
 @employee_required
 def view(request):
     employee = request.user.employee
-    employee.make_preferences()
+    Preference.make_preferences(employee)
+    prefs = Preference.for_employee(employee)
 
-    prefs = employee.get_preferences()
     formset = PreferenceFormset(queryset=prefs)
     semester = Semester.get_current_semester()
 

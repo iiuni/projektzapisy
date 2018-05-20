@@ -132,11 +132,6 @@ class Employee(BaseUser):
         verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
 
-    def make_preferences(self):
-        from apps.offer.preferences.models import Preference
-
-        Preference.make_preferences(self)
-
     def get_preferences(self):
         from apps.offer.preferences.models import Preference
         return Preference.for_employee(self)
