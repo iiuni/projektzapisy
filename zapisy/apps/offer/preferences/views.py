@@ -51,6 +51,7 @@ def save(request):
             try:
                 new_value = int(form[field].value())
             except ValueError:
+                # We got an empty string - previously made choice has been taken back
                 new_value = None
             setattr(pref, field, new_value)
         pref.save()
