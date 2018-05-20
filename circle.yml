@@ -32,6 +32,7 @@ test:
     - coverage run manage.py test apps.enrollment.courses --nomigrations
     - coverage run manage.py test apps.enrollment.records.tests --nomigrations
     - coverage run manage.py test apps.grade.poll --nomigrations
+    - coverage run manage.py test apps.grade.ticket_create --nomigrations
     - coverage run manage.py test apps.users --nomigrations
   post:
     - coverage html -d $CIRCLE_ARTIFACTS
