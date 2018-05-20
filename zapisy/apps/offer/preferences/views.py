@@ -56,5 +56,5 @@ def save(request):
             setattr(pref, field, new_value)
         pref.save()
         form = PreferenceForm(instance=pref)
-        return render(request, 'offer/preferences/form_row.html', {'form': form, })
+        return render(request, 'offer/preferences/form_row.html', {'form': form})
     return AjaxFailureMessage('InvalidRequest', 'Coś poszło źle')
