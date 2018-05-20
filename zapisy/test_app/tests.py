@@ -217,7 +217,6 @@ class NewSemesterTests(SeleniumTestCase):
         self.add_new_students()
         self.import_ects()
         self.open_records()
-        self.generate_t0()
 
         self.driver.get_screenshot_as_file('screenshot.png')
 
@@ -621,16 +620,10 @@ class NewSemesterTests(SeleniumTestCase):
     def open_records(self):
         self.next_winter_semester.records_opening = datetime.today().replace(
             hour=00, minute=00)
-        self.next_winter_semester.records_closing = self.next_winter_semester.records_opening + \
-                                                    relativedelta(days=10)
+        self.next_winter_semester.records_closing = \
+            self.next_winter_semester.records_opening + \
+            relativedelta(days=10)
         self.next_winter_semester.save()
-
-    def generate_t0(self):
-        # cursor = connection.cursor()
-        # cursor.execute('SELECT
-        # users_openingtimesview_refresh_for_semester(%s)',
-        # [self.next_winter_semester.id])
-        pass
 
 
 class AdminTests(SeleniumTestCase):
