@@ -92,7 +92,6 @@ def generate_keys_for_polls(semester=None):
         i = i + 1
     save_keys(key_list)
     print i - 1
-    return
 
 
 def group_polls_by_course(poll_list):
