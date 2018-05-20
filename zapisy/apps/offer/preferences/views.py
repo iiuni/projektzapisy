@@ -48,7 +48,11 @@ def save(request):
         available_fields = [field.name for field in Preference._meta.get_fields()]
         changed_fields = set(available_fields) & set(request.POST.keys())
         for field in changed_fields:
-            setattr(pref, field, form[field].value())
+            try:
+                new_value = int(form[field].value())
+            except ValueError:
+                new_value = None
+            setattr(pref, field, new_value)
         pref.save()
         form = PreferenceForm(instance=pref)
         return render(request, 'offer/preferences/form_row.html', {'form': form, })
