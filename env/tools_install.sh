@@ -9,5 +9,4 @@ apt-get -y install libjpeg62-dev
 apt-get -y install libfreetype6-dev
 apt-get -y install liblcms1-dev
 apt-get -y install xvfb
-apt-get -y install firefox
 apt-get -y install memcached
