@@ -283,7 +283,7 @@ class CourseEntity(models.Model):
         ordering = ['name_pl']
 
     def get_points(self, student=None):
-        from apps.enrollment.courses.models import StudentPointsView, PointsOfCourseEntities
+        from apps.enrollment.courses.models.points import StudentPointsView, PointsOfCourseEntities
 
         if student:
             try:

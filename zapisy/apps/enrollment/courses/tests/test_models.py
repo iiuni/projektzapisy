@@ -4,7 +4,7 @@ from django.core.validators import ValidationError
 from django.test import TestCase
 from zapisy import common
 
-from apps.enrollment.courses.models import Freeday, ChangedDay, Semester
+from apps.enrollment.courses.models.semester import Freeday, ChangedDay, Semester
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother
 from apps.enrollment.courses.tests.factories import GroupFactory
 from apps.users.tests.factories import StudentFactory

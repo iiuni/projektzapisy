@@ -2,10 +2,9 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
-from django.db.models import Q
 
-from apps.enrollment.courses.models import Semester, Freeday, ChangedDay, Classroom, Course
-from apps.enrollment.courses.models.term import Term as T
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course
 from apps.schedule.models import Term, Event
 
 
