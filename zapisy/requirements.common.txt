@@ -14,16 +14,16 @@ djangorestframework==3.8.2
 Fabric3==1.14.post1
 ipdb==0.11
 ipython==6.4.0
-psycopg2==2.7.3.2
+psycopg2==2.7.4
 pycryptodome==3.6.1
 rollbar==0.13.17
 newrelic==2.68.0.50
 gunicorn==19.7.1
-lxml==4.1.1
-python-dateutil==2.6.1
+lxml==4.2.1
+python-dateutil==2.7.3
 vobject==0.9.5
 python-memcached==1.58
-xhtml2pdf==0.2.1
+xhtml2pdf==0.2.2
 # BBCode -> HTML
 postmarkup==1.2.2
 # Remove accents from strings (diacritics converted to Latin equivalents)
