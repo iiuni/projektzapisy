@@ -14,7 +14,8 @@ from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.tests.objectmothers import UserObjectMother
 from apps.users.tests.factories import UserFactory, EmployeeProfileFactory, StudentFactory
-from apps.enrollment.courses.models import Semester, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule import feeds
 from apps.users.models import UserProfile
 import apps.enrollment.courses.tests.factories as enrollment_factories

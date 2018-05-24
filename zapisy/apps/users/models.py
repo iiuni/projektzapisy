@@ -191,7 +191,8 @@ class Employee(BaseUser):
 
     @staticmethod
     def get_all_groups_in_semester(user_id):
-        from apps.enrollment.courses.models import Group, Semester
+        from apps.enrollment.courses.models.group import Group
+        from apps.enrollment.courses.models.semester import Semester
 
         user = User.objects.get(id=user_id)
         semester = Semester.get_default_semester()
@@ -357,7 +358,8 @@ class Student(BaseUser):
         return list(frozenset(records_list))
 
     def get_points(self, semester=None):
-        from apps.enrollment.courses.models import Semester, StudentPointsView
+        from apps.enrollment.courses.models.semester import Semester
+        from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
             semester = Semester.objects.get_next()
@@ -372,7 +374,8 @@ class Student(BaseUser):
         return StudentPointsView.get_points_for_entities(self, records)
 
     def get_points_with_course(self, course, semester=None):
-        from apps.enrollment.courses.models import Semester, StudentPointsView
+        from apps.enrollment.courses.models.semester import Semester
+        from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
             semester = Semester.objects.get_next()

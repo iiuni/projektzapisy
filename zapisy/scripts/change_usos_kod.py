@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from apps.enrollment.courses.models import CourseEntity
+from apps.enrollment.courses.models.course import CourseEntity
 import csv
 import unicodedata
 

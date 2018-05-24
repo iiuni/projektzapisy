@@ -3,7 +3,7 @@ import datetime
 from django.core.management import BaseCommand
 from django.db.models import Q
 
-from apps.enrollment.courses.models import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.term import Term as CoursesTerm
 from apps.schedule.models.term import Term as ScheduleTerm, Event
 from apps.schedule.models.event import Event

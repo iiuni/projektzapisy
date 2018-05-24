@@ -1,6 +1,8 @@
 import re
 import io
 import csv
+
+import unidecode
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
@@ -93,17 +95,8 @@ def create_slug(name):
         return "common"
 
     slug = name.lower()
-    slug = re.sub('ą', "a", slug)
-    slug = re.sub('ę', "e", slug)
-    slug = re.sub('ś', "s", slug)
-    slug = re.sub('ć', "c", slug)
-    slug = re.sub('ż', "z", slug)
-    slug = re.sub('ź', "z", slug)
-    slug = re.sub('ł', "l", slug)
-    slug = re.sub('ó', "o", slug)
-    slug = re.sub('ć', "c", slug)
-    slug = re.sub('ń', "n", slug)
-    slug = re.sub("\W", "-", slug)
+    slug = unidecode.unidecode(slug)
+    slug = re.sub(r"\W", "-", slug)
     slug = re.sub("-+", "-", slug)
     slug = re.sub("^-", "", slug)
     slug = re.sub("-$", "", slug)

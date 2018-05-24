@@ -4,12 +4,10 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.db.models.query import EmptyQuerySet
 from django import forms
 from modeltranslation.admin import TranslationAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from apps.enrollment.courses.models import *
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course import Course, CourseDescription, CourseEntity, TagCourseEntity
 from apps.enrollment.courses.models.course_type import Type

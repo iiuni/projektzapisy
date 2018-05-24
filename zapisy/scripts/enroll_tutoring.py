@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from zapisy.apps.users.models import Student
-from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models import Course, CourseEntity
+from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.offer.vote.models import SystemState
 from apps.offer.vote.models.single_vote import SingleVote
 
@@ -27,7 +26,7 @@ def process(line):
         # g = Group.objects.get(id=group_id)
         # g.enroll_student(student)
     except ObjectDoesNotExist:
-        print(indeks + ' or ' + srt(group_id) + ' not found')
+        print(indeks + ' or ' + str(group_id) + ' not found')
 
 
 def run():

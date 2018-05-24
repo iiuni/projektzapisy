@@ -247,7 +247,8 @@ def change_interested(request, event_id):
 @login_required
 @permission_required('schedule.manage_events')
 def statistics(request):
-    from apps.enrollment.courses.models import Course, Semester
+    from apps.enrollment.courses.models.course import Course
+    from apps.enrollment.courses.models.semester import Semester
 
     semester_id = request.GET.get('semester_id', None)
     semester = Semester.get_by_id_or_default(semester_id)
