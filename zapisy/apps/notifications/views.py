@@ -63,7 +63,7 @@ def vote_start(request):
 
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu głosowania!')
     except ValueError as e:
-        messages.error(request, e.message)
+        messages.error(request, str(e))
     except BaseException:
         messages.error(request, GENERIC_ERROR)
 
@@ -86,7 +86,7 @@ def grade_start(request):
 
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu oceny zajęć')
     except ValueError as e:
-        messages.error(request, e.message)
+        messages.error(request, str(e))
     except BaseException:
         messages.error(request, GENERIC_ERROR)
 

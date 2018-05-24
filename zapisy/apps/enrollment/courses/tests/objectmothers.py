@@ -1,4 +1,5 @@
-from apps.enrollment.courses.models import Semester, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from datetime import datetime
 
 

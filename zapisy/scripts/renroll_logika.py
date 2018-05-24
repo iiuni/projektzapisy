@@ -1,9 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
-from zapisy.apps.users.models import Student
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models import Course, CourseEntity
-from apps.offer.vote.models import SystemState
-from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.records.models import Record
 import math
 

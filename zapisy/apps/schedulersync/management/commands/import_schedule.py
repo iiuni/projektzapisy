@@ -8,9 +8,11 @@ from django.db import transaction
 import requests
 
 from apps.users.models import Employee
-from apps.enrollment.courses.models import (
-    Classroom, Course, Semester, CourseEntity, Group, Term
-)
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.group import Group
 from apps.schedulersync.models import TermSyncData
 
 URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
