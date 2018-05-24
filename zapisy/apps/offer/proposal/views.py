@@ -19,6 +19,7 @@ from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointT
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.course_type import Type
+from apps.offer.preferences.models import Preference
 
 from apps.offer.proposal.forms import ProposalForm, ProposalDescriptionForm, SyllabusForm
 from apps.offer.proposal.models import Syllabus, StudentWork
@@ -91,7 +92,7 @@ def course_groups(request, slug):
         teachers = Employee.objects.all()
 
         for teacher in teachers:
-            prefs = teacher.get_preferences().filter(proposal=course.entity).all()
+            prefs = Preference.for_employee(teacher).filter(proposal=course.entity).all()
             pref = None
             if len(prefs) > 0:
                 pref = prefs[len(prefs) - 1].tutorial

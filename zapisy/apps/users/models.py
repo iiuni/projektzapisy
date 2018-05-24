@@ -132,10 +132,6 @@ class Employee(BaseUser):
         verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
 
-    def get_preferences(self):
-        from apps.offer.preferences.models import Preference
-        return Preference.for_employee(self)
-
     def has_privileges_for_group(self, group_id):
         """
         Method used to verify whether user is allowed to create a poll for certain group
