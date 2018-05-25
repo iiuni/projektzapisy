@@ -1,12 +1,8 @@
-"""
-    Preferences models
-"""
-
 from django.db import models
 from apps.enrollment.courses.models.course import CourseEntity
 
 from apps.users.models import Employee
-from apps.offer.preferences.exceptions import *
+from apps.offer.preferences.exceptions import CoursePreferencesAlreadySet, UnknownPreferenceValue
 
 PREFERENCE_CHOICES = (
     (3, 'Chętnie'),
@@ -67,9 +63,6 @@ class Preference(models.Model):
     """
     employee = models.ForeignKey(Employee, verbose_name='pracownik', on_delete=models.CASCADE)
 
-    hidden = models.BooleanField(default=False,
-                                 verbose_name='ukryte')
-
     proposal = models.ForeignKey(CourseEntity, verbose_name='propozycja', on_delete=models.CASCADE)
 
     # preferences
@@ -91,24 +84,7 @@ class Preference(models.Model):
         verbose_name_plural = 'preferencje'
 
     def __str__(self):
-        rep = ''.join([self.employee.user.get_full_name(),
-                       ': ',
-                       self.proposal.name])
-        return rep
-
-    def hide(self):
-        """
-            Hides this preference in a default employee's view.
-        """
-        self.hidden = True
-        self.save()
-
-    def unhide(self):
-        """
-            Unhides this preference in a default employee's view.
-        """
-        self.hidden = False
-        self.save()
+        return f'{self.employee.user.get_full_name()}: {self.proposal.name}'
 
     def set_preference(self, **kwargs):
         """
@@ -131,19 +107,19 @@ class Preference(models.Model):
 
     @staticmethod
     def for_employee(employee):
-        return Preference.objects\
-            .filter(employee=employee, proposal__in_prefs=True, proposal__status__gte=1)\
+        return Preference.objects \
+            .filter(employee=employee, proposal__in_prefs=True, proposal__status__gte=1) \
             .select_related('proposal', 'proposal__type', 'employee', 'employee__user')
 
     @staticmethod
     def make_preferences(employee):
-        prefsid = Preference.objects\
-            .filter(employee=employee)\
-            .order_by('proposal__id')\
+        prefsid = Preference.objects \
+            .filter(employee=employee) \
+            .order_by('proposal__id') \
             .values_list('proposal__id')
 
-        free = CourseEntity.objects.\
-            exclude(id__in=prefsid).\
+        free = CourseEntity.objects. \
+            exclude(id__in=prefsid). \
             filter(in_prefs=True, status__gte=1)
 
         new_preferences = []
