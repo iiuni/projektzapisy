@@ -1,9 +1,9 @@
 from string import whitespace
+from subprocess import getstatusoutput
 
 from Crypto.PublicKey import RSA
 from Crypto.Random.random import getrandbits, \
     randint
-from subprocess import *
 
 from django.utils.safestring import SafeText
 

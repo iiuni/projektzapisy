@@ -8,8 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
-from django.urls import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template.loader import get_template
@@ -17,7 +16,6 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import transaction
-from django.core.cache import cache as mcache
 from xhtml2pdf import pisa
 
 from apps.enrollment.courses.models.course_type import Type
@@ -25,17 +23,16 @@ from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.student_options import StudentOptions
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.utils import prepare_group_data
+from apps.enrollment.records.utils import run_rearanged, prepare_courses_with_terms, prepare_groups_json
 from apps.users.decorators import employee_required
 
 from apps.cache_utils import cache_result
 from apps.users.models import *
 from apps.enrollment.records.models import *
-from apps.enrollment.records.exceptions import *
 from apps.enrollment.courses.views import prepare_courses_list_to_render
-from apps.enrollment.records.utils import *
 from apps.enrollment.utils import mailto
 
-from libs.ajax_messages import *
+from libs.ajax_messages import AjaxFailureMessage, AjaxSuccessMessage
 
 
 @require_POST
