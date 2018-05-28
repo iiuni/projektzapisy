@@ -5,13 +5,12 @@ from django.core.management import BaseCommand
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course import Course
-from apps.schedule.models import Term, Event
+from apps.schedule.models.term import Term
+from apps.schedule.models.event import Event
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
-
         s4 = Classroom.objects.get(number='4')
         s5 = Classroom.objects.get(number='5')
         s7 = Classroom.objects.get(number='7')

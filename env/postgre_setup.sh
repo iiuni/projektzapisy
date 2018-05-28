@@ -1,26 +1,9 @@
 #!/usr/bin/env bash
 
-##########################################################
-#  install apache  #######################################
-apt-get update
-apt-get install -y apache2
-if ! [ -L /var/www ]; then
-  rm -rf /var/www
-  ln -fs /vagrant /var/www
-fi
-apt-get install -y apache2-dev
-#  end install apache/////////////////////////////////////
-##########################################################
-
-
-##########################################################
-#  install postresql######################################
-##########################################################
 APP_DB_USER=fereol
 APP_DB_PASS=fereolpass
 APP_DB_NAME=fereol
 PG_VERSION=9.5
-#---------------------------------------------------------
 
 print_db_usage () {
   echo "Your PostgreSQL database has been setup and can be accessed on your local machine on the forwarded port (default: 15432)"
@@ -68,9 +51,6 @@ then
   wget --quiet -O - https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 fi
 
-# Update package list and upgrade all packages
-apt-get update
-apt-get -y upgrade
 
 # get Polish locale
 locale-gen pl_PL.UTF-8
@@ -139,46 +119,3 @@ EOF
 echo "Successfully created PostgreSQL dev virtual machine."
 echo ""
 print_db_usage
-#  end install postgresql/////////////////////////////////
-##########################################################
-
-# get tools and dev libs
-
-apt-get -y install git
-apt-get -y install libpq-dev
-apt-get -y install unzip
-apt-get -y install libxml2-dev libxslt1-dev
-apt-get -y install libc6-dev
-apt-get -y install libjpeg62-dev
-apt-get -y install libfreetype6-dev
-apt-get -y install liblcms1-dev
-apt-get -y install xvfb
-apt-get -y install firefox
-apt-get -y install memcached
-
-# install firefox45 and geckodriver for selenium
-# firefox45
-wget --no-verbose https://ftp.mozilla.org/pub/firefox/releases/45.0/linux-x86_64/en-US/firefox-45.0.tar.bz2
-tar -xjf firefox-45.0.tar.bz2
-sudo rm -rf  /opt/firefox
-sudo mv firefox /opt/firefox45
-sudo mv /usr/bin/firefox /usr/bin/firefoxold
-sudo ln -s /opt/firefox45/firefox /usr/bin/firefox
-# geckodriver
-wget --no-verbose https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-tar -xvzf geckodriver*
-chmod +x geckodriver
-sudo mv geckodriver /usr/local/bin/
-
-# Install nodejs
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install yarn, needed globally
-sudo npm i -g yarn
-
-# Create node dir outside VM shared folder for Windows compatibility
-# (npm uses symlinks and they don't work inside the shared folder on Windows)
-# Do it in this script because we need root
-cd /vagrant/zapisy
-./webpack_resources/create_modules_dir.sh ubuntu

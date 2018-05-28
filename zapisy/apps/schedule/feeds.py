@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from django.contrib.syndication.views import Feed
-from apps.schedule.models import Event
+from apps.schedule.models.event import Event
 
 
 class Latest(Feed):

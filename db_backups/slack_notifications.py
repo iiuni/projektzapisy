@@ -23,5 +23,5 @@ def send_success_notification(slack_client, dev_db_link: str, seconds_elapsed: i
     _send_slack_msg(slack_client, msg)
 
 def send_error_notification(slack_client, error_msg: str):
-    msg = f'*Failed to back up databases:*n\```{error_msg}```'
+    msg = f'*Failed to back up databases:*\n```{error_msg}```'
     _send_slack_msg(slack_client, msg)

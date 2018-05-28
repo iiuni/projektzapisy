@@ -5,8 +5,9 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
+
+from apps.notifications.models import Notification
 from .forms import NotificationFormset
-from .models import Notification
 
 GENERIC_ERROR = 'Wystąpił błąd podczas wysyłania powiadomień!'
 

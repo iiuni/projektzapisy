@@ -12,7 +12,8 @@ from django.views.decorators.http import require_POST
 import operator
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.schedule.models import Event, Term
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
     EventModerationMessageForm, EventMessageForm, ConflictsForm
@@ -46,8 +47,6 @@ def classroom(request, slug):
 
 @login_required
 def reservation(request, event_id=None):
-    from apps.schedule.models import Event
-
     form = EventForm(data=request.POST or None, user=request.user)
 
     if form.is_valid():
@@ -68,8 +67,6 @@ def reservation(request, event_id=None):
 
 @login_required
 def edit_event(request, event_id=None):
-    from apps.schedule.models import Event
-
     is_edit = True
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
     form = EventForm(data=request.POST or None, instance=event, user=request.user)
@@ -98,7 +95,6 @@ def edit_event(request, event_id=None):
 
 
 def session(request, semester=None):
-    from apps.schedule.models import Term
     from apps.enrollment.courses.models.semester import Semester
 
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
@@ -116,7 +112,6 @@ def session(request, semester=None):
 
 @login_required
 def reservations(request):
-    from apps.schedule.models import Event
     events = EventFilter(request.GET, queryset=Event.get_all_without_courses())
     title = 'Zarządzaj rezerwacjami'
     return TemplateResponse(request, 'schedule/reservations.html', locals())
@@ -145,8 +140,6 @@ def conflicts(request):
 
 @login_required
 def history(request):
-    from apps.schedule.models import Event
-
     events = EventFilter(request.GET, queryset=Event.get_for_user(request.user))
     title = 'Moje rezerwacje'
     return TemplateResponse(request, 'schedule/history.html', locals())
@@ -154,7 +147,6 @@ def history(request):
 
 @require_POST
 def decision(request, event_id):
-    from apps.schedule.models import Event
     from .models.message import EventModerationMessage
 
     event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
@@ -185,7 +177,7 @@ def events(request):
 
 @login_required
 def event(request, event_id):
-    from apps.schedule.models import Event, EventModerationMessage, EventMessage
+    from apps.schedule.models.message import EventModerationMessage, EventMessage
 
     event = Event.get_event_or_404(event_id, request.user)
     moderation_messages = EventModerationMessage.get_event_messages(event)
@@ -200,9 +192,6 @@ def event(request, event_id):
 @login_required
 @require_POST
 def moderation_message(request, event_id):
-
-    from apps.schedule.models import Event
-
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
     form = EventModerationMessageForm(request.POST)
     if form.is_valid():
@@ -222,8 +211,6 @@ def moderation_message(request, event_id):
 @login_required
 @require_POST
 def message(request, event_id):
-    from apps.schedule.models import Event
-
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
     form = EventMessageForm(request.POST)
     if form.is_valid():
@@ -244,8 +231,6 @@ def message(request, event_id):
 @login_required
 @require_POST
 def change_interested(request, event_id):
-    from apps.schedule.models import Event
-
     event = Event.get_event_or_404(event_id, request.user)
     if request.user in event.interested.all():
         event.interested.remove(request.user)
@@ -283,8 +268,6 @@ def ajax_get_terms(request, year, month, day):
 
 
 class ClassroomTermsAjaxView(FullCalendarView):
-    from apps.schedule.models import Term
-
     model = Term
     adapter = EventAdapter
 
@@ -294,8 +277,6 @@ class ClassroomTermsAjaxView(FullCalendarView):
 
 
 class EventsTermsAjaxView(FullCalendarView):
-    from apps.schedule.models import Term
-
     model = Term
     adapter = EventAdapter
 
@@ -306,8 +287,6 @@ class EventsTermsAjaxView(FullCalendarView):
 
 
 class MyScheduleAjaxView(FullCalendarView):
-    from apps.schedule.models import Term
-
     model = Term
     adapter = EventAdapter
 
