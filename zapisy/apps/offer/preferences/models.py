@@ -107,24 +107,25 @@ class Preference(models.Model):
 
     @staticmethod
     def for_employee(employee):
-        return Preference.objects \
-            .filter(employee=employee, proposal__in_prefs=True, proposal__status__gte=1) \
-            .select_related('proposal', 'proposal__type', 'employee', 'employee__user')
+        return (Preference.objects.filter(employee=employee, proposal__in_prefs=True)
+                .select_related('proposal', 'proposal__type', 'employee', 'employee__user'))
 
     @staticmethod
     def make_preferences(employee):
-        prefsid = Preference.objects \
-            .filter(employee=employee) \
-            .order_by('proposal__id') \
-            .values_list('proposal__id')
+        """
+        Creates preferences for courses that are in_prefs but do not have a preference object
+        for the given employee
+        """
+        existing_preferences_courses_ids = (Preference.objects
+                                            .filter(employee=employee)
+                                            .order_by('proposal__id')
+                                            .values_list('proposal__id'))
 
-        free = CourseEntity.objects. \
-            exclude(id__in=prefsid). \
-            filter(in_prefs=True, status__gte=1)
+        courses_without_preference = (CourseEntity.objects
+                                      .exclude(id__in=existing_preferences_courses_ids)
+                                      .filter(in_prefs=True))
 
-        new_preferences = []
-
-        for pref in free:
-            new_preferences.append(Preference(employee=employee, proposal=pref))
+        new_preferences = [Preference(employee=employee, proposal=course_entity)
+                           for course_entity in courses_without_preference]
 
         Preference.objects.bulk_create(new_preferences)
