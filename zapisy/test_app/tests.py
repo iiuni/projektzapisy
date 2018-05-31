@@ -231,10 +231,6 @@ class NewSemesterTests(SeleniumTestCase):
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click()
         )
-        # self.wait_for_pass(
-        #     lambda: self.driver.find_element_by_id(
-        #         'btn-no-usos').click()
-        # )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
@@ -258,8 +254,6 @@ class NewSemesterTests(SeleniumTestCase):
             self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
                 EC.element_to_be_clickable((By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting'))))
         )
-        # nonselected_select =
-        # Select(self.driver.find_element_by_id('bootstrap-duallistbox-nonselected-list_for_voting'))
         selected_select = Select(
             self.wait_for_pass(
                 lambda: self.driver.find_element_by_id(
@@ -358,10 +352,6 @@ class NewSemesterTests(SeleniumTestCase):
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click(
             ))
-        # self.wait_for_pass(
-        #     lambda: self.driver.find_element_by_id(
-        #         'btn-no-usos').click(
-        #     ))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
@@ -454,10 +444,6 @@ class NewSemesterTests(SeleniumTestCase):
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click(
             ))
-        # self.wait_for_pass(
-        #     lambda: self.driver.find_element_by_id(
-        #         'btn-no-usos').click(
-        #     ))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
@@ -720,9 +706,6 @@ class EmailChangeTest(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('login-dropdown').click()
         )
-        # self.wait_for_pass(
-        #     lambda: self.driver.find_element_by_id('btn-no-usos').click()
-        # )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
         )

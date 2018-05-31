@@ -104,7 +104,6 @@ class UtilsTest(TestCase):
     def set_up_user_roles(cls):
         cls.employee1 = EmployeeFactory(user=cls.user2)
         cls.student1 = StudentFactory(user=cls.user3)
-        cls.student2 = StudentFactory(user=cls.user4)
         cls.student3 = StudentFactory(user=cls.user5)
         cls.student4 = StudentFactory(user=cls.user6)
 
