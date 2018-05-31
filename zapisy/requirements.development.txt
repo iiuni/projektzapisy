@@ -1,8 +1,5 @@
 -r requirements.common.txt
+-r requirements.test.txt
 
-# Additional test dependencies
-selenium==2.53.6
-factory_boy==2.9.2
-coverage==4.4.2
 django-debug-toolbar==1.5
 click==6.7

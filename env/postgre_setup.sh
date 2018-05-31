@@ -1,26 +1,9 @@
 #!/usr/bin/env bash
 
-##########################################################
-#  install apache  #######################################
-apt-get update
-apt-get install -y apache2
-if ! [ -L /var/www ]; then
-  rm -rf /var/www
-  ln -fs /vagrant /var/www
-fi
-apt-get install -y apache2-dev
-#  end install apache/////////////////////////////////////
-##########################################################
-
-
-##########################################################
-#  install postresql######################################
-##########################################################
 APP_DB_USER=fereol
 APP_DB_PASS=fereolpass
 APP_DB_NAME=fereol
 PG_VERSION=9.5
-#---------------------------------------------------------
 
 print_db_usage () {
   echo "Your PostgreSQL database has been setup and can be accessed on your local machine on the forwarded port (default: 15432)"
@@ -62,15 +45,12 @@ PG_REPO_APT_SOURCE=/etc/apt/sources.list.d/pgdg.list
 if [ ! -f "$PG_REPO_APT_SOURCE" ]
 then
   # Add PG apt repo:
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > "$PG_REPO_APT_SOURCE"
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" > "$PG_REPO_APT_SOURCE"
 
   # Add PGDG repo key:
   wget --quiet -O - https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 fi
 
-# Update package list and upgrade all packages
-apt-get update
-apt-get -y upgrade
 
 # get Polish locale
 locale-gen pl_PL.UTF-8
@@ -139,67 +119,3 @@ EOF
 echo "Successfully created PostgreSQL dev virtual machine."
 echo ""
 print_db_usage
-#  end install postgresql/////////////////////////////////
-##########################################################
-
-# get tools and dev libs
-
-apt-get -y install git
-apt-get -y install python2.7 python-dev python-pip python-virtualenv
-apt-get -y install libpq-dev
-apt-get -y install unzip
-apt-get -y install libxml2-dev libxslt1-dev
-apt-get -y install build-essential
-apt-get -y install libncursesw5-dev libncurses5-dev
-apt-get -y install libreadline5-dev
-apt-get -y install libssl-dev
-apt-get -y install libgdbm-dev
-apt-get -y install libbz2-dev
-apt-get -y install libc6-dev
-apt-get -y install libsqlite3-dev
-apt-get -y install tk-dev
-apt-get -y install libjpeg62-dev
-apt-get -y install libfreetype6-dev
-apt-get -y install liblcms1-dev
-apt-get -y install xvfb
-apt-get -y install firefox
-apt-get -y install memcached
-
-# install firefox45 and geckodriver for selenium
-# firefox45
-wget https://ftp.mozilla.org/pub/firefox/releases/45.0/linux-x86_64/en-US/firefox-45.0.tar.bz2
-tar -xjf firefox-45.0.tar.bz2
-sudo rm -rf  /opt/firefox
-sudo mv firefox /opt/firefox45
-sudo mv /usr/bin/firefox /usr/bin/firefoxold
-sudo ln -s /opt/firefox45/firefox /usr/bin/firefox
-# geckodriver
-wget https://github.com/mozilla/geckodriver/releases/download/v0.13.0/geckodriver-v0.13.0-linux64.tar.gz
-tar -xvzf geckodriver*
-chmod +x geckodriver
-sudo mv geckodriver /usr/local/bin/
-
-# download and hack broken zlib
-apt-get -y install zlib1g-dev
-# cd /lib
-# ln -s x86_64-linux-gnu/libz.so.1 libz.so
-
-# Install redis
-apt-get -y install redis-server
-
-# This can be removed after upgrading Ubuntu.
-pip install --upgrade pip
-pip install --upgrade virtualenv
-
-# Install nodejs
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install yarn, needed globally
-sudo npm i -g yarn
-
-# Create node dir outside VM shared folder for Windows compatibility
-# (npm uses symlinks and they don't work inside the shared folder on Windows)
-# Do it in this script because we need root
-cd /vagrant/zapisy
-./webpack_resources/create_modules_dir.sh vagrant

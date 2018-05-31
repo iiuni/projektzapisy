@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import django_filters
-from apps.enrollment.courses.models import Semester
-from apps.schedule.models import Event, Term
+from apps.enrollment.courses.models.semester import Semester
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
 
-FILTER_TYPE_CHOICES = [('', u'---------')] + Event.TYPES
-FILTER_STATUS_CHOICES = [('', u'---------')] + Event.STATUSES
+FILTER_TYPE_CHOICES = [('', '---------')] + Event.TYPES
+FILTER_STATUS_CHOICES = [('', '---------')] + Event.STATUSES
+
+
 class EventFilter(django_filters.FilterSet):
     type = django_filters.ChoiceFilter(choices=FILTER_TYPE_CHOICES, label='Typ')
     status = django_filters.ChoiceFilter(choices=FILTER_STATUS_CHOICES, label='Status')
@@ -20,11 +21,9 @@ class ExamFilter(django_filters.FilterSet):
         model = Term
         fields = ['event__course__semester']
 
-
-
     def __init__(self, data=None, *args, **kwargs):
         if not data:
             semester = Semester.get_current_semester()
-            data = { 'event__course__semester': semester.id }
+            data = {'event__course__semester': semester.id}
 
         super(ExamFilter, self).__init__(data, *args, **kwargs)

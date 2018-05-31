@@ -16,7 +16,8 @@ class GitVersioningBase(VersioningBase):
         placeholder = settings.PIPELINE_VERSION_PLACEHOLDER
         try:
             placeholder_index = output_file.index(placeholder)
-            old_version = output_file_name[placeholder_index:placeholder_index + len(placeholder) - len(output_file)]
+            old_version = output_file_name[placeholder_index:placeholder_index +
+                                           len(placeholder) - len(output_file)]
             return (version != old_version), version
         except ValueError:
             # No placeholder found, do not update, manual update if needed
@@ -30,6 +31,7 @@ class GitRevVersioning(GitVersioningBase):
     """
     Version as hash of revision of all files in sources_files list.
     """
+
     def version(self, paths):
         repo = git.Repo(storage.path(paths[0]))
         kwargs = {'max_count': 1}
@@ -45,6 +47,7 @@ class GitHeadRevVersioning(GitVersioningBase):
     """
     Version as hash of latest revision in HEAD. Assumes all sources_files in same git repo.
     """
+
     def version(self, paths):
         repo = git.Repo(storage.path(paths[0]))
         return self.hexdigest(repo.head.commit.name_rev)[0:16]

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from zapisy.apps.users.models import Student
 from apps.enrollment.courses.models.group import Group
 

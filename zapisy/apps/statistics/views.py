@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import permission_required
 from django.template.response import TemplateResponse
 from apps.enrollment.records.models import Queue, Record
 from apps.users.models import Student
-from apps.enrollment.courses.models import Semester, Group, CourseEntity, Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.course import CourseEntity, Course
 
 
 @permission_required('courses.view_stats')
@@ -11,7 +12,7 @@ def main(request):
     return TemplateResponse(request, 'statistics/base.html')
 
 #@permission_required('courses.view_stats')
-#def students(request):
+# def students(request):
 #    students = Student.objects.get_list_full_info().order_by('t0_min')
 #    return TemplateResponse(request, 'statistics/students_list.html', locals())
 
@@ -36,6 +37,7 @@ def groups(request):
     groups = Group.statistics.in_semester(semester)
     return TemplateResponse(request, 'statistics/groups_list.html', locals())
 
+
 @permission_required('courses.view_stats')
 def votes(request):
     proposals = CourseEntity.statistics.in_year()
@@ -47,15 +49,17 @@ def swap(request):
     semester = Semester.objects.get_next()
     courses = Course.objects.filter(semester=semester).select_related('entity')
 
-    types = [ ('2', 'ćwiczenia'), ('3', 'pracownia'),
-        ('5', 'ćwiczenio-pracownia'),
-        ('6', 'seminarium'), ('10', 'projekt')]
+    types = [('2', 'ćwiczenia'), ('3', 'pracownia'),
+             ('5', 'ćwiczenio-pracownia'),
+             ('6', 'seminarium'), ('10', 'projekt')]
 
     for course in courses:
         course.groups_items = []
 
         for type in types:
-            groups = Group.objects.filter(course=course, type=type[0]).select_related('course', 'course__entity', 'teacher')
+            groups = Group.objects.filter(
+                course=course, type=type[0]).select_related(
+                'course', 'course__entity', 'teacher')
             queues = {}
             students = {}
             lists = {}
@@ -64,10 +68,14 @@ def swap(request):
             for g in groups:
                 lists[g.id] = []
                 queues[g.id] = []
-                for r in Record.objects.filter(group=g, status=1).select_related('student', 'student__user'):
+                for r in Record.objects.filter(
+                        group=g, status=1).select_related(
+                        'student', 'student__user'):
                     lists[g.id].append(r.student)
                     students[r.student_id] = g
-                for q in Queue.objects.filter(group=g, deleted=False).select_related('student', 'student__user'):
+                for q in Queue.objects.filter(
+                        group=g, deleted=False).select_related(
+                        'student', 'student__user'):
                     queues[g.id].append(q.student)
 
             for group in groups:

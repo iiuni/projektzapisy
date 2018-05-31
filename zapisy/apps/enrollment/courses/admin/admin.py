@@ -1,15 +1,22 @@
-# -*- coding: utf-8 -*-
 import datetime
 
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import ValidationError
-from django.db.models.query import EmptyQuerySet
+from django.db.models import Q
 from django import forms
 from modeltranslation.admin import TranslationAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from apps.enrollment.courses.models import *
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course, CourseDescription, CourseEntity, TagCourseEntity
+from apps.enrollment.courses.models.course_type import Type
+from apps.enrollment.courses.models.effects import Effects
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointTypes
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.tag import Tag
+from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, Queue
 
 
@@ -23,56 +30,59 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = '__all__' 
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CourseForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance'] if 'instance' in kwargs else None
         if instance is not None:
-            self.fields['information'].queryset = CourseDescription.objects.filter(entity=instance.entity)\
-                .select_related('entity')
+            self.fields['information'].queryset = CourseDescription.objects.filter(
+                entity=instance.entity) .select_related('entity')
         else:
             self.fields['information'].queryset = CourseDescription.objects.none()
+
 
 class CourseEntityForm(forms.ModelForm):
 
     class Meta:
         model = CourseEntity
-        fields = '__all__' 
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CourseEntityForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance'] if 'instance' in kwargs else None
         if instance is not None:
-            self.fields['information'].queryset = CourseDescription.objects.filter(entity=instance).select_related('entity')
+            self.fields['information'].queryset = CourseDescription.objects.filter(
+                entity=instance).select_related('entity')
         else:
             self.fields['information'].queryset = CourseDescription.objects.none()
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display =('entity', 'semester',)
+    list_display = ('entity', 'semester',)
     list_filter = ('semester',)
     search_fields = ('entity__name',)
     fieldsets = [
-        (None,               {'fields': ['entity'], 'classes': ['long_name']}),
-        (None, {'fields': ['information', 'english']}),
-        ('Szczegóły', {'fields': ['records_start', 'records_end', 'teachers','semester','slug','web_page'], 'classes': ['collapse']}),
-    ]
+        (None, {
+            'fields': ['entity'], 'classes': ['long_name']}), (None, {
+                'fields': [
+                    'information', 'english']}), ('Szczegóły', {
+                        'fields': [
+                            'records_start', 'records_end', 'teachers', 'semester', 'slug', 'web_page'], 'classes': ['collapse']}), ]
     inlines = [GroupInline, ]
 
     form = CourseForm
 
-
     def changelist_view(self, request, extra_context=None):
 
-        if not request.GET.has_key('semester__id__exact'):
+        if 'semester__id__exact' not in request.GET:
 
             q = request.GET.copy()
             semester = Semester.get_current_semester()
             q['semester__id__exact'] = semester.id
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(CourseAdmin,self).changelist_view(request, extra_context=extra_context)
+        return super(CourseAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_object(self, request, object_id, from_field=None):
         """
@@ -89,34 +99,38 @@ class CourseAdmin(admin.ModelAdmin):
             return None
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(CourseAdmin, self).get_queryset(request)
-       return qs.select_related('semester')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(CourseAdmin, self).get_queryset(request)
+        return qs.select_related('semester')
+
 
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('number', 'capacity', 'building')
-    list_filter = ('building','capacity')
+    list_filter = ('building', 'capacity')
+
 
 class SemesterAdmin(admin.ModelAdmin):
 
     list_display = ('get_name', 'visible')
-    list_filter = ('visible','year','type')
+    list_filter = ('visible', 'year', 'type')
     fieldsets = [
-        (None,               {'fields': ['year','type','visible']}),
+        (None, {'fields': ['year', 'type', 'visible']}),
         ('Ocena', {'fields': ['is_grade_active', 'first_grade_semester', 'second_grade_semester']}),
-        ('Czas trwania semestru', {'fields': ['semester_beginning','semester_ending']}),
-        ('Czas trwania zajęć', {'fields': ['lectures_beginning','lectures_ending']}),
-        ('Czas trwania zapisów', {'fields': ['records_opening','records_ects_limit_abolition','records_ending','records_closing']}),
+        ('Czas trwania semestru', {'fields': ['semester_beginning', 'semester_ending']}),
+        ('Czas trwania zajęć', {'fields': ['lectures_beginning', 'lectures_ending']}),
+        ('Czas trwania zapisów', {'fields': ['records_opening', 'records_ects_limit_abolition', 'records_ending', 'records_closing']}),
         ('Czas trwania dezyderat', {'fields': ['desiderata_opening', 'desiderata_closing']}),
     ]
     list_editable = ('visible',)
 
+
 class FreedayAdmin(admin.ModelAdmin):
     # todo: add filter with academic_year with newer django
     ordering = ('-day',)
+
 
 class CourseInline(admin.TabularInline):
     model = Course
@@ -126,13 +140,14 @@ class PointsInline(admin.TabularInline):
     model = PointsOfCourseEntities
     extra = 0
 
+
 class TagsInline(admin.TabularInline):
     model = TagCourseEntity
-    extra=0
+    extra = 0
 
 
 class EffectsListFilter(SimpleListFilter):
-    title = u'Grupa efektów kształcenia'
+    title = 'Grupa efektów kształcenia'
 
     # Parameter for the filter that will be used in the URL query.
     parameter_name = 'effects'
@@ -153,37 +168,39 @@ class EffectsListFilter(SimpleListFilter):
 
 class CourseEntityAdmin(TranslationAdmin):
     list_display = ('name', 'shortName', 'owner')
-    search_fields = ('name', 'shortName', 'owner__user__first_name', 'owner__user__last_name' )
+    search_fields = ('name', 'shortName', 'owner__user__first_name', 'owner__user__last_name')
     fieldsets = [
-        (None,               {'fields': ['name','shortName','type', 'information'], 'classes': ['long_name']}),
-        (None,               {'fields': ['owner', 'status', 'semester', 'effects']}),
-        (u'Godziny', {'fields': ['lectures', 'exercises', 'laboratories', 'repetitions', 'seminars', 'exercises_laboratiories']}),
-        (u'Zmiana sposobu liczenia punktów',               {'fields': ['algorytmy_l', 'dyskretna_l', 'numeryczna_l', 'programowanie_l']}),
-        (None,               {'fields': ['ue', 'english', 'exam', 'suggested_for_first_year', 'deleted']}),
-        ('USOS',             {'fields': ['usos_kod'], 'classes': ['collapse']}),
-
+        (None, {'fields': ['name', 'shortName', 'type', 'information'], 'classes': ['long_name']}),
+        (None, {'fields': ['owner', 'status', 'semester', 'effects']}),
+        ('Godziny', {'fields': ['lectures', 'exercises', 'laboratories', 'repetitions', 'seminars', 'exercises_laboratiories']}),
+        ('Zmiana sposobu liczenia punktów', {'fields': ['algorytmy_l', 'dyskretna_l', 'numeryczna_l', 'programowanie_l']}),
+        (None, {'fields': ['ue', 'english', 'exam', 'suggested_for_first_year', 'deleted']}),
+        ('USOS', {'fields': ['usos_kod'], 'classes': ['collapse']}),
+        ('W preferencjach', {'fields': ['in_prefs']}),
     ]
-    list_filter = ('semester',  'status', 'type', EffectsListFilter, 'owner')
+    list_filter = ('semester', 'status', 'type', EffectsListFilter, 'owner')
     form = CourseEntityForm
 
     inlines = [PointsInline, TagsInline]
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(CourseEntityAdmin, self).get_queryset(request)
-       return qs.select_related('owner', 'owner__user', 'type')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(CourseEntityAdmin, self).get_queryset(request)
+        return qs.select_related('owner', 'owner__user', 'type')
+
 
 class TermInline(admin.TabularInline):
     model = Term
     extra = 0
 
+
 class RecordInlineForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = '__all__' 
+        fields = '__all__'
 
     # def save(self, commit=True):
     #
@@ -222,10 +239,11 @@ class RecordInline(admin.TabularInline):
     readonly_fields = ('id', 'student', 'status')
     can_delete = False
 
+
 class QueuedInlineForm(forms.ModelForm):
     class Meta:
         model = Queue
-        fields = '__all__' 
+        fields = '__all__'
 
     # def save(self, commit=True):
     #     queue = super(QueuedInlineForm, self).save(commit=False)
@@ -246,6 +264,7 @@ class QueuedInlineForm(forms.ModelForm):
     #
     #     return queue
 
+
 class QueuedInline(admin.TabularInline):
     model = Queue
     extra = 0
@@ -255,16 +274,26 @@ class QueuedInline(admin.TabularInline):
     form = QueuedInlineForm
 
 
-
 class GroupAdmin(admin.ModelAdmin):
     readonly_fields = ('limit', 'id')
-    list_display = ('id', 'course', 'teacher','type','limit','limit_zamawiane','limit_zamawiane2012', 'limit_isim', 'get_terms_as_string')
+    list_display = (
+        'id',
+        'course',
+        'teacher',
+        'type',
+        'limit',
+        'limit_zamawiane',
+        'limit_zamawiane2012',
+        'limit_isim',
+        'get_terms_as_string')
     list_filter = ('type', 'course__semester', 'teacher')
-    search_fields = ('teacher__user__first_name','teacher__user__last_name','course__entity__name')
+    search_fields = (
+        'teacher__user__first_name',
+        'teacher__user__last_name',
+        'course__entity__name')
     inlines = [
-        TermInline,RecordInline, QueuedInline
+        TermInline, RecordInline, QueuedInline
     ]
-
 
     raw_id_fields = ('course', 'teacher')
 
@@ -291,8 +320,9 @@ class GroupAdmin(admin.ModelAdmin):
         obj.save()
 
     def after_saving_model_and_related_inlines(self, obj):
-        from apps.enrollment.courses.models import Term as T
-        from apps.schedule.models import Event, Term
+        from apps.enrollment.courses.models.term import Term as T
+        from apps.schedule.models.event import Event
+        from apps.schedule.models.term import Term
         # Perform extra operation after all inlines are saved
 
         Event.objects.filter(group=obj, type='3').delete()
@@ -300,9 +330,14 @@ class GroupAdmin(admin.ModelAdmin):
 
         freedays = Freeday.objects.filter(Q(day__gte=semester.lectures_beginning),
                                           Q(day__lte=semester.lectures_ending))\
-                          .values_list('day', flat=True)
-        changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms = T.objects.filter(group=obj).select_related('group', 'group__course', 'group__course__entity')
+            .values_list('day', flat=True)
+        changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(
+            day__lte=semester.lectures_ending)).values_list('day', 'weekday')
+        terms = T.objects.filter(
+            group=obj).select_related(
+            'group',
+            'group__course',
+            'group__course__entity')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
         day = semester.lectures_beginning
@@ -310,7 +345,7 @@ class GroupAdmin(admin.ModelAdmin):
         while day <= semester.lectures_ending:
 
             if day in freedays:
-                day = day + timedelta(days=1)
+                day = day + datetime.timedelta(days=1)
                 continue
 
             weekday = day.weekday()
@@ -322,7 +357,7 @@ class GroupAdmin(admin.ModelAdmin):
 
             days[weekday].append(day)
 
-            day = day + timedelta(days=1)
+            day = day + datetime.timedelta(days=1)
 
         for t in terms:
             ev = Event()
@@ -352,22 +387,23 @@ class GroupAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
 
-        if not request.GET.has_key('course__semester__id__exact'):
+        if 'course__semester__id__exact' not in request.GET:
 
             q = request.GET.copy()
             semester = Semester.get_current_semester()
             q['course__semester__id__exact'] = semester.id
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(GroupAdmin,self).changelist_view(request, extra_context=extra_context)
+        return super(GroupAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-       """
-       Filter the objects displayed in the change_list to only
-       display those for the currently signed in user.
-       """
-       qs = super(GroupAdmin, self).get_queryset(request)
-       return qs.select_related('teacher', 'teacher__user', 'course', 'course__semester').prefetch_related('term')
+        """
+        Filter the objects displayed in the change_list to only
+        display those for the currently signed in user.
+        """
+        qs = super(GroupAdmin, self).get_queryset(request)
+        return qs.select_related('teacher', 'teacher__user', 'course',
+                                 'course__semester').prefetch_related('term')
 
     class Media:
         css = {
@@ -377,23 +413,23 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class TypeAdmin(admin.ModelAdmin):
-    list_display = ('name','group','meta_type')
-    list_filter = ('group','meta_type')
+    list_display = ('name', 'group', 'meta_type')
+    list_filter = ('group', 'meta_type')
 
 
 class CourseDescriptionForm(forms.ModelForm):
     class Meta:
         model = CourseDescription
-        widgets = { 
+        widgets = {
             'description_pl': forms.Textarea(attrs={'class': 'tinymce'}),
             'description_en': forms.Textarea(attrs={'class': 'tinymce'}),
             'requirements': FilteredSelectMultiple("wymagania", is_stacked=False)
         }
-        fields = '__all__' 
+        fields = '__all__'
 
 
 class CourseDescriptionAdmin(TranslationAdmin):
-    list_display = ('entity','created', 'author',)
+    list_display = ('entity', 'created', 'author',)
     search_fields = ('entity__name',)
     list_filter = ('entity__type',)
 
@@ -411,9 +447,11 @@ class CourseDescriptionAdmin(TranslationAdmin):
         entity = obj.entity
         entity.information = obj
         entity.save()
+
     class Media:
         js = ('/static/js/tinymce/tinymce.min.js',
               '/static/js/textareas.js',)
+
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseDescription, CourseDescriptionAdmin)

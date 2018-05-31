@@ -1,8 +1,7 @@
 import os
 import sys
-import urllib
+import urllib.parse
 
-from django.utils.encoding import smart_str
 from django.utils.module_loading import import_string
 
 
@@ -19,7 +18,7 @@ def to_class(class_str):
 def filepath_to_uri(path):
     if path is None:
         return path
-    return urllib.quote(smart_str(path).replace("\\", "/"), safe="/~!*()'#?")
+    return urllib.parse.quote(path.replace("\\", "/"), safe="/~!*()'#?")
 
 
 def _relpath_nt(path, start=os.path.curdir):
@@ -33,10 +32,10 @@ def _relpath_nt(path, start=os.path.curdir):
         unc_start, rest = os.path.splitunc(start)
         if bool(unc_path) ^ bool(unc_start):
             raise ValueError("Cannot mix UNC and non-UNC paths (%s and %s)"
-                                                                % (path, start))
+                             % (path, start))
         else:
             raise ValueError("path is on drive %s, start on drive %s"
-                                                % (path_list[0], start_list[0]))
+                             % (path_list[0], start_list[0]))
     # Work out how much of the filepath is shared by start and path.
     for i in range(min(len(start_list), len(path_list))):
         if start_list[i].lower() != path_list[i].lower():

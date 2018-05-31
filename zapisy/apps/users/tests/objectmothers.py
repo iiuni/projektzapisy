@@ -1,21 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from apps.users.models import User, UserProfile, Employee
+from apps.users.models import UserProfile, Employee
 
 
-class UserObjectMother():
-
-    @staticmethod
-    def user_jan_kowalski():
-        user = User(first_name="Jan",
-                    last_name="Kowalski",
-                    is_staff=False,
-                    is_superuser=False,
-                    username="jkowalski",
-                    password="jkowalski")
-        user.full_clean()
-        return user
-
+class UserObjectMother:
     @staticmethod
     def student_profile(user):
         profile = UserProfile(user=user,

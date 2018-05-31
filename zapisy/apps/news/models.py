@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-    News models
-"""
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -11,10 +5,12 @@ from django.db import models
 from datetime import datetime, timedelta
 from apps.notifications.models import Notification
 
+
 class NewsManager(models.Manager):
     """
         News management
     """
+
     def new(self, category):
         """
             Returns news marked as new
@@ -36,16 +32,16 @@ class NewsManager(models.Manager):
         """
             Get a number of news
         """
-        return self.category(category)[beginwith:(beginwith+quantity)]
+        return self.category(category)[beginwith:(beginwith + quantity)]
 
     def get_page_number_by_news_id(self, news_id):
         """
             If news doesn\'t exist the first page is returned
         """
-	ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
+        ids = self.get_published().values_list('id').filter(pk__gte=news_id).order_by('-id')
         if not ids.filter(pk=news_id).exists():
             return 1
-        return ((ids.count()-1)/settings.NEWS_PER_PAGE) + 1
+        return ((ids.count() - 1) // settings.NEWS_PER_PAGE) + 1
 
     def get_published(self):
         """
@@ -57,7 +53,9 @@ class NewsManager(models.Manager):
         """
             Return news tagged with a given tag.
         """
-        return self.filter(category = category)
+        return self.filter(category=category)
+
+
 # suggested news items categories - not enforced
 CATEGORIES = (
     ('-', 'Hidden'),
@@ -66,18 +64,19 @@ CATEGORIES = (
     ('grade', 'Ocena zajęć'),
 )
 
+
 class News(models.Model):
     """
         Single news
     """
     title = models.CharField(max_length=255,
-                             verbose_name=u'Tytuł')
-    body = models.TextField(verbose_name=u'Treść',
+                             verbose_name='Tytuł')
+    body = models.TextField(verbose_name='Treść',
                             blank=True)
     date = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(max_length=15,
-                                verbose_name=u'Kategoria',
+                                verbose_name='Kategoria',
                                 choices=CATEGORIES,
                                 default='-')
 
@@ -106,8 +105,8 @@ class News(models.Model):
     class Meta:
         get_latest_by = 'date'
         ordering = ['-date', '-id']
-        verbose_name = u'Ogłoszenie'
-        verbose_name_plural = u'Ogłoszenia'
+        verbose_name = 'Ogłoszenie'
+        verbose_name_plural = 'Ogłoszenia'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title

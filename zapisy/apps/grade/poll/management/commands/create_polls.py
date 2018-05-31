@@ -1,10 +1,12 @@
+from django.core.management.base import BaseCommand, CommandError
 from apps.grade.poll.models.origin import Origin
 from apps.grade.poll.models.poll import Poll
 from apps.grade.poll.models.section import SectionOrdering
 from apps.grade.poll.models.template import Template
-from apps.grade.poll.utils import getGroups
-from apps.users.models import Employee
-from django.core.management.base import BaseCommand
+from apps.grade.poll.utils import getGroups, make_polls_for_groups
+from apps.grade.ticket_create.models import StudentGraded
+from django.core.exceptions import ObjectDoesNotExist
+from apps.users.models import Student, Employee
 
 
 class Command(BaseCommand):
@@ -18,12 +20,12 @@ class Command(BaseCommand):
             semester = Semester.objects.get(id=args[0])
         else:
             semester = Semester.get_current_semester()
-        print semester
+        print(semester)
 
         templates = Template.objects.filter(in_grade=True)
-        print templates
+        print(templates)
         prych = Employee.objects.get(user__pk=19)  # nowym PRychem Przemka
-        print prych
+        print(prych)
         for template in templates:
             t = dict(
                 type=None if template.group_type == '--' else template.group_type,
@@ -43,7 +45,8 @@ class Command(BaseCommand):
 
             if groups and not template.no_course:
                 for group in groups:
-                    if t['groups_without'] == 'on' and Poll.get_all_polls_for_group(group, semester).count() > 0:
+                    if t['groups_without'] == 'on' and Poll.get_all_polls_for_group(
+                            group, semester).count() > 0:
                         continue
 
                     poll = Poll()

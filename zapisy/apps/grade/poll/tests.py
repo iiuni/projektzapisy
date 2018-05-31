@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.contrib.auth.models import AnonymousUser, \
     User
 from apps.users.models import Student, \
     Employee
-from apps.grade.poll.models import Section, \
-    SingleChoiceQuestion, \
-    SingleChoiceQuestionOrdering, \
-    MultipleChoiceQuestion, \
-    OpenQuestion, \
-    Poll
+from apps.grade.poll.models import Section, SingleChoiceQuestionOrdering, Poll
 
 
 class SectionTest(TestCase):
@@ -38,7 +32,7 @@ class SectionTest(TestCase):
 
     def test_questions_ordering(self):
         for i, question in enumerate(self.section.all_questions()):
-            self.assertEqual(unicode(question).endswith(unicode(i + 1)), True)
+            self.assertTrue(str(question).endswith(str(i + 1)))
 
 
 class PollTest(TestCase):
@@ -70,34 +64,54 @@ class PollTest(TestCase):
         self.assertEqual(self.poll_group_only.is_student_entitled_to_poll(self.valid_student), True)
 
     def test_waiting_student_is_not_entitled(self):
-        self.assertEqual(self.poll_group_only.is_student_entitled_to_poll(self.waiting_student), False)
+        self.assertEqual(
+            self.poll_group_only.is_student_entitled_to_poll(
+                self.waiting_student), False)
 
     def test_student_without_record_is_not_entitled(self):
-        self.assertEqual(self.poll_group_only.is_student_entitled_to_poll(self.not_recorded_student), False)
+        self.assertEqual(
+            self.poll_group_only.is_student_entitled_to_poll(
+                self.not_recorded_student), False)
 
     def test_student_with_valid_studies_type_and_valid_record_is_entitled(self):
-        self.assertEqual(self.poll_group_and_s_type.is_student_entitled_to_poll(self.valid_student), True)
+        self.assertEqual(
+            self.poll_group_and_s_type.is_student_entitled_to_poll(
+                self.valid_student), True)
 
     def test_student_with_wrong_studies_type_and_valid_record_is_not_entitled(self):
-        self.assertEqual(self.poll_group_and_s_type.is_student_entitled_to_poll(self.invalid_s_type_stud), False)
+        self.assertEqual(
+            self.poll_group_and_s_type.is_student_entitled_to_poll(
+                self.invalid_s_type_stud), False)
 
     def test_student_with_valid_studies_type_is_entitled_to_global_poll(self):
-        self.assertEqual(self.poll_global_s_type.is_student_entitled_to_poll(self.valid_student), True)
+        self.assertEqual(
+            self.poll_global_s_type.is_student_entitled_to_poll(
+                self.valid_student), True)
 
     def test_student_with_wrong_studies_type_is_not_entitled_to_global_poll(self):
-        self.assertEqual(self.poll_global_s_type.is_student_entitled_to_poll(self.invalid_s_type_stud), False)
+        self.assertEqual(
+            self.poll_global_s_type.is_student_entitled_to_poll(
+                self.invalid_s_type_stud), False)
 
     def test_no_requirements_every_student_entitled(self):
         self.assertEqual(self.poll_global.is_student_entitled_to_poll(self.valid_student), True)
         self.assertEqual(self.poll_global.is_student_entitled_to_poll(self.waiting_student), True)
-        self.assertEqual(self.poll_global.is_student_entitled_to_poll(self.not_recorded_student), True)
-        self.assertEqual(self.poll_global.is_student_entitled_to_poll(self.invalid_s_type_stud), True)
+        self.assertEqual(
+            self.poll_global.is_student_entitled_to_poll(
+                self.not_recorded_student), True)
+        self.assertEqual(
+            self.poll_global.is_student_entitled_to_poll(
+                self.invalid_s_type_stud), True)
 
     def test_admin_can_see_each_poll_result(self):
         self.assertEqual(self.poll_global.is_user_entitled_to_view_result(self.admin), True)
         self.assertEqual(self.poll_lecture.is_user_entitled_to_view_result(self.admin), True)
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.admin), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.admin), True)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.admin), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.admin), True)
 
     def test_employee_can_see_each_global_poll_result(self):
         self.assertEqual(self.poll_global.is_user_entitled_to_view_result(self.lecturer.user), True)
@@ -105,30 +119,58 @@ class PollTest(TestCase):
         self.assertEqual(self.poll_global.is_user_entitled_to_view_result(self.private.user), True)
 
     def test_employee_can_see_his_result(self):
-        self.assertEqual(self.poll_lecture.is_user_entitled_to_view_result(self.lecturer.user), True)
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.private.user), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.sharer.user), True)
+        self.assertEqual(
+            self.poll_lecture.is_user_entitled_to_view_result(
+                self.lecturer.user), True)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.private.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.sharer.user), True)
 
     def test_lecturer_can_see_all_results_from_his_course(self):
-        self.assertEqual(self.poll_lecture.is_user_entitled_to_view_result(self.lecturer.user), True)
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.lecturer.user), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.lecturer.user), True)
+        self.assertEqual(
+            self.poll_lecture.is_user_entitled_to_view_result(
+                self.lecturer.user), True)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.lecturer.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.lecturer.user), True)
 
     def test_everyone_can_see_shared_result(self):
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.lecturer.user), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.sharer.user), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.private.user), True)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.student.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.lecturer.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.sharer.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.private.user), True)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.student.user), True)
 
     def test_no_one_can_see_private_result(self):
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.sharer.user), False)
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.student.user), False)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.sharer.user), False)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.student.user), False)
 
     def test_non_authenticated_user_cannot_see_results(self):
         self.assertEqual(self.poll_global.is_user_entitled_to_view_result(self.anonymous), False)
         self.assertEqual(self.poll_lecture.is_user_entitled_to_view_result(self.anonymous), False)
-        self.assertEqual(self.poll_exercisces_not_shared.is_user_entitled_to_view_result(self.anonymous), False)
-        self.assertEqual(self.poll_exercisces_shared.is_user_entitled_to_view_result(self.anonymous), False)
+        self.assertEqual(
+            self.poll_exercisces_not_shared.is_user_entitled_to_view_result(
+                self.anonymous), False)
+        self.assertEqual(
+            self.poll_exercisces_shared.is_user_entitled_to_view_result(
+                self.anonymous), False)
 
     # Nie ma testów pozostałych metod, bo byłyby to testy djangowych filtrów,
     # a tym ufamy, że działają

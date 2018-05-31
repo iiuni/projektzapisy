@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #  This file is part of django-email-change.
 #
@@ -31,15 +30,14 @@ from hashlib import sha1 as sha_constructor
 
 def generate_key(user, email):
     """Generates and returns unique keys.
-    
+
     **Arguments**
-    
+
     ``user``
         auth.User instance
     ``email``
         The new email address
-    
+
     """
-    return sha_constructor(
-            default_token_generator.make_token(user) + email + str(random.random())
-        ).hexdigest()
+    obj_to_hash = default_token_generator.make_token(user) + email + str(random.random())
+    return sha_constructor(obj_to_hash.encode("utf-8")).hexdigest()

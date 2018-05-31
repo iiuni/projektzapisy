@@ -6,15 +6,15 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--force',
-            action='store_true',
-            default=False,
-            help='Force compression and/or cache busting.'
-        ),
+                    action='store_true',
+                    default=False,
+                    help='Force compression and/or cache busting.'
+                    ),
         make_option('--dry-run',
-            action='store_false',
-            default=True,
-            help='Don\'t attempt to compress package.'
-        )
+                    action='store_false',
+                    default=True,
+                    help='Don\'t attempt to compress package.'
+                    )
     )
     help = 'Updates and compresses CSS and JS on-demand'
     args = '<groups>'
@@ -32,10 +32,10 @@ class Command(BaseCommand):
                 continue
             package = packager.package_for('css', package_name)
             if verbose:
-                print
+                print()
                 message = "CSS Group '%s'" % package_name
-                print message
-                print len(message) * '-'
+                print(message)
+                print(len(message) * '-')
             packager.pack_stylesheets(package, sync=sync, force=force)
 
         for package_name in packager.packages['js']:
@@ -43,8 +43,8 @@ class Command(BaseCommand):
                 continue
             package = packager.package_for('js', package_name)
             if verbose:
-                print
+                print()
                 message = "JS Group '%s'" % package_name
-                print message
-                print len(message) * '-'
+                print(message)
+                print(len(message) * '-')
             packager.pack_javascripts(package, sync=sync, force=force)

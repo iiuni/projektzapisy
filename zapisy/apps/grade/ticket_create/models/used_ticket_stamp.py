@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from apps.users.models import Student
 
@@ -13,8 +12,8 @@ class UsedTicketStamp(models.Model):
         verbose_name_plural = 'wykorzystane bilety'
         app_label = 'ticket_create'
 
-    def __unicode__(self):
-        return unicode(self.student) + " " + unicode(self.poll)
+    def __str__(self):
+        return str(self.student) + " " + str(self.poll)
 
     @staticmethod
     def check_exists(student, poll):

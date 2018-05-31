@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import json
 
@@ -7,7 +6,7 @@ from sys import exc_info, path
 import codecs
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, connection
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
@@ -15,18 +14,21 @@ from django import forms
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from tempfile import NamedTemporaryFile
 from django.template.response import TemplateResponse
-from django.utils.encoding import smart_unicode
-from apps.enrollment.courses.models import Course, Semester, Group, Classroom
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.enrollment.records.utils import run_rearanged
 from apps.users.models import Employee, Student
-from importschedule import import_semester_schedule
+from .importschedule import import_semester_schedule
 from apps.enrollment.courses.forms import Parser
 import os
 
 FEREOL_PATH = os.getcwd()
 path.append(FEREOL_PATH + '/dbimport/schedule')
+
 
 @staff_member_required
 @transaction.atomic
@@ -51,7 +53,12 @@ def add_student(request):
     if result:
         run_rearanged(result, group)
 
-    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
+    url = reverse(
+        'admin:{}_{}_change'.format(
+            group._meta.app_label,
+            group._meta.model_name),
+        args=[
+            group.id])
     return HttpResponseRedirect(url)
 
 
@@ -78,8 +85,14 @@ def remove_student(request):
     if result:
         run_rearanged(result, group)
 
-    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
+    url = reverse(
+        'admin:{}_{}_change'.format(
+            group._meta.app_label,
+            group._meta.model_name),
+        args=[
+            group.id])
     return HttpResponseRedirect(url)
+
 
 @staff_member_required
 @transaction.atomic
@@ -108,13 +121,18 @@ def change_group_limit(request):
             group.save()
             run_rearanged(None, group)
 
-    url = reverse('admin:{}_{}_change'.format(group._meta.app_label, group._meta.model_name), args=[group.id])
+    url = reverse(
+        'admin:{}_{}_change'.format(
+            group._meta.app_label,
+            group._meta.model_name),
+        args=[
+            group.id])
     return HttpResponseRedirect(url)
-
 
 
 class SemesterImportForm(forms.Form):
     file = forms.FileField(max_length=255, label='Plik XML')
+
 
 @staff_member_required
 def import_semester(request):
@@ -122,7 +140,7 @@ def import_semester(request):
         form = SemesterImportForm(request.POST, request.FILES)
 
         if form.is_valid():
-            xmlfile = NamedTemporaryFile();
+            xmlfile = NamedTemporaryFile()
 
             for chunk in request.FILES['file'].chunks():
                 xmlfile.write(chunk)
@@ -131,14 +149,14 @@ def import_semester(request):
 
             try:
                 import_semester_schedule(xmlfile)
-    	    except Exception:
-                errormsg = unicode(exc_info()[0]) + ' ' + unicode(exc_info()[1]) + '\n\n'
-                errormsg += u'Traceback:\n'
-                errormsg += u''.join([str for str in format_tb(exc_info()[2])])
-                messages.error(request, u"Błąd!")
+            except Exception:
+                errormsg = str(exc_info()[0]) + ' ' + str(exc_info()[1]) + '\n\n'
+                errormsg += 'Traceback:\n'
+                errormsg += ''.join([str for str in format_tb(exc_info()[2])])
+                messages.error(request, "Błąd!")
             else:
                 errormsg = None
-                messages.success(request, u"Plik został zaimportowany.")
+                messages.success(request, "Plik został zaimportowany.")
             finally:
                 xmlfile.close()
 
@@ -154,13 +172,13 @@ def import_semester(request):
 
     return render(
         request, 'enrollment/courses/admin/import_semester.html',
-        { 'form': form }
+        {'form': form}
     )
-
 
 
 class ScheduleImportForm(forms.Form):
     file = forms.FileField(max_length=255, label='Plik z planem zajęć')
+
 
 @staff_member_required
 def import_schedule(request):
@@ -173,16 +191,20 @@ def import_schedule(request):
         to_print = []
         for item in result:
             try:
-                item['course'] = Course.objects.get(entity__name__iexact=item['name'], semester=semester).id
+                item['course'] = Course.objects.get(
+                    entity__name__iexact=item['name'], semester=semester).id
             except ObjectDoesNotExist:
                 item['course'] = ''
 
             to_print.append(json.dumps(item))
 
-
-        return TemplateResponse(request, 'enrollment/courses/admin/import_schedule_step2.html', locals())
+        return TemplateResponse(
+            request,
+            'enrollment/courses/admin/import_schedule_step2.html',
+            locals())
 
     return TemplateResponse(request, 'enrollment/courses/admin/import_schedule.html', locals())
+
 
 @staff_member_required
 def refresh_semester(request):
@@ -191,6 +213,7 @@ def refresh_semester(request):
     cursor.execute("SELECT users_openingtimesview_refresh_for_semester(%s);" % str(semester.id))
     connection.commit()
     return HttpResponseRedirect('/fereol_admin/courses')
+
 
 @staff_member_required
 def finish_import_schedule(request):
@@ -203,7 +226,7 @@ def finish_import_schedule(request):
         for g in obj['groups']:
             gr = Group()
             gr.course = c
-            if g['teacher'] <> '':
+            if g['teacher'] != '':
                 gr.teacher_id = Employee.objects.get(user__id=g['teacher']).id
             gr.type = g['type']
             gr.limit = 0
@@ -218,9 +241,8 @@ def finish_import_schedule(request):
 
             for r in g['rooms']:
                 try:
-                    t.classrooms.add( Classroom.objects.get(number=r) )
-                except:
+                    t.classrooms.add(Classroom.objects.get(number=r))
+                except BaseException:
                     pass
-
 
     return TemplateResponse(request, 'enrollment/courses/admin/import_schedule.html', locals())

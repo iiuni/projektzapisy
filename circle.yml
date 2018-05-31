@@ -3,12 +3,14 @@ general:
 
 machine:
   python:
-    version: 2.7.12
+    version: 3.6.2
   node:
     version: 9.20
 
 dependencies:
   override:
+    - pip --version
+    - pip install -U setuptools
     - pip install --upgrade pip
     - pip install -r requirements.test.txt
     - npm i -g npm  # Make sure we're using the latest npm version

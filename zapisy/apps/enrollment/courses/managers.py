@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models
+
 
 class SimpleManager(models.Manager):
 
@@ -10,7 +8,6 @@ class SimpleManager(models.Manager):
 
     def get_by_id(self, id):
         return self.get(id=id)
-
 
 
 class FullManager(SimpleManager):

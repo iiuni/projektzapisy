@@ -1,92 +1,88 @@
-# -*- coding: utf-8 -*-
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.encoding import smart_unicode, smart_str
-from apps.enrollment.courses.models import Course, CourseEntity
 
-__author__ = 'maciek'
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
 
 
 class Parser(object):
     def _convert_employee(self, name):
         _name_tables = {
-            u'-00' : '',
-            u'-05': '',
-            u'NN': '',
-            u'KRYSTIAN BACŁAWSKI': 97,
-            u'SEBASTIAN BALA': 11,
-            u'MAŁGORZATA BIERNACKA': 74,
-            u'DARIUSZ BIERNACKI': 71,
-            u'MARCIN BIEŃKOWSKI': 12,
-            u'WOJCIECH BOŻEJKO': 68,
-            u'JAROSŁAW BYRKA': 103,
-            u'WITOLD CHARATONIK':55,
-            u'BŁAŻEJ CHĘCIŃSKI': 1355,
-            u'HANS DENIVELLE': 67,
-            u'INSTYTUT FIZYKI DOŚWIADCZALNEJ': 1413,
-            u'PATRYK FILIPIAK': 108,
-            u'TOMASZ GOGACZ': 1426,
-            u'PRZEMYSŁAW GOSPODARCZYK':1658,
-            u'LESZEK GROCHOLSKI':14,
-            u'ALEKSANDER IWANOW':61,
-            u'DARIUSZ JACKOWSKI':58,
-            u'TOMASZ JURDZIŃSKI':17,
-            u'PRZEMYSŁAWA KANAREK':19,
-            u'WITOLD KARCZEWSKI':20,
-            u'EMANUEL KIEROŃSKI':23,
-            u'ANDRZEJ KISIELEWICZ':63,
-            u'KORNEL KISIELEWICZ':82,
-            u'WOJCIECH KLESZOWSKI':1334,
-            u'ANTONI KOŚCIELSKI':25,
-            u'KRZYSZTOF KRUPIŃSKI':64,
-            u'JURIJ KRYAKIN':27,
-            u'STANISŁAW LEWANOWICZ':30,
-            u'KRZYSZTOF LORYŚ':31,
-            u'JERZY MARCINKOWSKI':32,
-            u'MAREK MATERZOK':93,
-            u'MARCIN MŁOTKOWSKI':35,
-            u'RAFAŁ NOWAK':36,
-            u'LESZEK PACHOLSKI':37,
-            u'KATARZYNA PALUCH':38,
-            u'WITOLD PALUSZYŃSKI':39,
-            u'MAREK PIOTRÓW':40,
-            u'ŁUKASZ PIWOWAR':41,
-            u'ZDZISŁAW PŁOSKI':42,
-            u'PAWEŁ RAJBA':54,
-            u'BARTOSZ RYBICKI':1648,
-            u'PAWEŁ RYCHLIKOWSKI':43,
-            u'PAWEŁ RZECHONEK':44,
-            u'ZDZISŁAW SPŁAWSKI':4,
-            u'GRZEGORZ STACHOWIAK':45,
-            u'MACIEJ M. SYSŁO':1332,
-            u'MAREK SZYKUŁA':91,
-            u'ROMAN WENCEL':89,
-            u'PIOTR WIECZOREK':49,
-            u'TOMASZ WIERZBICKI':50,
-            u'PIOTR WITKOWSKI':6,
-            u'PIOTR WNUK-LIPIŃSKI':51,
-            u'MIECZYSŁAW WODECKI':52,
-            u'PAWEŁ WOŹNY':53,
-            u'TOMASZ ZIELIŃSKI':100,
-            u'WIKTOR ZYCHLA':8,
-            u'ANDRZEJ ŁUKASZEWSKI':9
+            '-00': '',
+            '-05': '',
+            'NN': '',
+            'KRYSTIAN BACŁAWSKI': 97,
+            'SEBASTIAN BALA': 11,
+            'MAŁGORZATA BIERNACKA': 74,
+            'DARIUSZ BIERNACKI': 71,
+            'MARCIN BIEŃKOWSKI': 12,
+            'WOJCIECH BOŻEJKO': 68,
+            'JAROSŁAW BYRKA': 103,
+            'WITOLD CHARATONIK': 55,
+            'BŁAŻEJ CHĘCIŃSKI': 1355,
+            'HANS DENIVELLE': 67,
+            'INSTYTUT FIZYKI DOŚWIADCZALNEJ': 1413,
+            'PATRYK FILIPIAK': 108,
+            'TOMASZ GOGACZ': 1426,
+            'PRZEMYSŁAW GOSPODARCZYK': 1658,
+            'LESZEK GROCHOLSKI': 14,
+            'ALEKSANDER IWANOW': 61,
+            'DARIUSZ JACKOWSKI': 58,
+            'TOMASZ JURDZIŃSKI': 17,
+            'PRZEMYSŁAWA KANAREK': 19,
+            'WITOLD KARCZEWSKI': 20,
+            'EMANUEL KIEROŃSKI': 23,
+            'ANDRZEJ KISIELEWICZ': 63,
+            'KORNEL KISIELEWICZ': 82,
+            'WOJCIECH KLESZOWSKI': 1334,
+            'ANTONI KOŚCIELSKI': 25,
+            'KRZYSZTOF KRUPIŃSKI': 64,
+            'JURIJ KRYAKIN': 27,
+            'STANISŁAW LEWANOWICZ': 30,
+            'KRZYSZTOF LORYŚ': 31,
+            'JERZY MARCINKOWSKI': 32,
+            'MAREK MATERZOK': 93,
+            'MARCIN MŁOTKOWSKI': 35,
+            'RAFAŁ NOWAK': 36,
+            'LESZEK PACHOLSKI': 37,
+            'KATARZYNA PALUCH': 38,
+            'WITOLD PALUSZYŃSKI': 39,
+            'MAREK PIOTRÓW': 40,
+            'ŁUKASZ PIWOWAR': 41,
+            'ZDZISŁAW PŁOSKI': 42,
+            'PAWEŁ RAJBA': 54,
+            'BARTOSZ RYBICKI': 1648,
+            'PAWEŁ RYCHLIKOWSKI': 43,
+            'PAWEŁ RZECHONEK': 44,
+            'ZDZISŁAW SPŁAWSKI': 4,
+            'GRZEGORZ STACHOWIAK': 45,
+            'MACIEJ M. SYSŁO': 1332,
+            'MAREK SZYKUŁA': 91,
+            'ROMAN WENCEL': 89,
+            'PIOTR WIECZOREK': 49,
+            'TOMASZ WIERZBICKI': 50,
+            'PIOTR WITKOWSKI': 6,
+            'PIOTR WNUK-LIPIŃSKI': 51,
+            'MIECZYSŁAW WODECKI': 52,
+            'PAWEŁ WOŹNY': 53,
+            'TOMASZ ZIELIŃSKI': 100,
+            'WIKTOR ZYCHLA': 8,
+            'ANDRZEJ ŁUKASZEWSKI': 9
         }
 
         return _name_tables[name]
-
 
     def _convert_day(self, day):
         _list = {
             'pn': '1',
             'wt': '2',
-            u'śr': '3',
-            u'Śr': '3',
+            'śr': '3',
+            'Śr': '3',
             'czw': '4',
             'pi': '5'
         }
 
         return _list[day]
-
 
     def __init__(self, file):
         result = []
@@ -94,18 +90,17 @@ class Parser(object):
         groups = []
 
         for line in file:
-            line = smart_unicode(line)
             line = line.rstrip()
             if len(line) < 2:
                 continue
 
-            elif line[1] <> ' ':
+            elif line[1] != ' ':
                 if title and groups:
-                    result.append( {'name': smart_str(title), 'groups': groups} )
+                    result.append({'name': title, 'groups': groups})
                 title = self._parseTitle(line)
                 groups = []
             else:
-                groups.append( self._parseGroup(line) )
+                groups.append(self._parseGroup(line))
 
         self.result = result
 
@@ -114,12 +109,12 @@ class Parser(object):
 
     def _convert_type(self, type):
         _types = {
-           u'(ćwiczenia)': '2',
-           u'(repetytorium)': '9',
-           u'(wykład)': '1',
-           u'(pracownia)': '3',
-           u'(ćwicz+pracownia)': '5',
-           u'(seminarium)': '6'
+            '(ćwiczenia)': '2',
+            '(repetytorium)': '9',
+            '(wykład)': '1',
+            '(pracownia)': '3',
+            '(ćwicz+pracownia)': '5',
+            '(seminarium)': '6'
         }
 
         return _types[type]
@@ -136,27 +131,26 @@ class Parser(object):
         type = fields[2]
         tmpname = [fields[3]]
         i = 3
-        while fields[i][-1] <> ',':
+        while fields[i][-1] != ',':
             i += 1
-            tmpname.append( fields[i] )
+            tmpname.append(fields[i])
 
         name = ' '.join(tmpname)
         name = name[:-1]
         classrooms = []
-        if len(fields) > i+2:
-            classrooms = str(fields[i+2]).split(',')
-
+        if len(fields) > i + 2:
+            classrooms = str(fields[i + 2]).split(',')
 
         return {
             'teacher': self._convert_employee(name),
-            'day' : self._convert_day(day),
+            'day': self._convert_day(day),
             'start': str(start),
             'end': str(end),
             'type': self._convert_type(type),
             'rooms': classrooms
         }
 
-#class CourseImportForm(models.Form):
+# class CourseImportForm(models.Form):
 #
 #    class Meta:
 #        fiedls = ['e']
@@ -181,9 +175,6 @@ class ImportForm(object):
                 """
                 group -> termin, sala, osoba
               """
-
-
-
 
 
 """

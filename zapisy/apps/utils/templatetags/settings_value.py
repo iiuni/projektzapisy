@@ -12,6 +12,7 @@ from django.conf import settings
 
 register = template.Library()
 
+
 @register.filter
 def settings_value(name):
     return getattr(settings, name, "")

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from apps.enrollment.courses.models.course import CourseEntity, CourseDescription
@@ -20,7 +19,8 @@ def employee_proposal(user, slug):
     if slug:
         try:
             proposal = CourseEntity.get_employee_proposal(user, slug)
-            proposal.information = CourseDescription.objects.filter(entity=proposal).order_by('-id')[0]
+            proposal.information = CourseDescription.objects.filter(
+                entity=proposal).order_by('-id')[0]
         except (ObjectDoesNotExist, IndexError) as e:
             raise Http404
     else:
@@ -31,8 +31,13 @@ def employee_proposal(user, slug):
 
 def send_notification_to_3d(proposal, new=False):
     address = 'mabi@cs.uni.wroc.pl'
-    subject = 'Nowa propozycja: '+proposal.name
-    if new == False:
-        subject = 'Zmieniona propozycja: '+proposal.name
-    body = u'Cześć,\n\nw Systemie Zapisów masz do zaakceptowania propozycję:\n'+'Nazwa: '+proposal.name+'\n'+'Link do edycji: '+'https://zapisy.ii.uni.wroc.pl/offer/'+proposal.slug+'/edit'+'\n\n'+u'Zarządzanie propozycjami: https://zapisy.ii.uni.wroc.pl/offer/manage/proposals'+u'\n\nPozdrowienia,\nZespół zapisy.ii.uni.wroc.pl\n\n'
-    Message.objects.create(to_address=address, from_address=settings.SERVER_EMAIL, subject=subject, message_body=body)
+    subject = 'Nowa propozycja: ' + proposal.name
+    if not new:
+        subject = 'Zmieniona propozycja: ' + proposal.name
+    body = 'Cześć,\n\nw Systemie Zapisów masz do zaakceptowania propozycję:\n' + 'Nazwa: ' + proposal.name + '\n' + 'Link do edycji: ' + 'https://zapisy.ii.uni.wroc.pl/offer/' + \
+        proposal.slug + '/edit' + '\n\n' + 'Zarządzanie propozycjami: https://zapisy.ii.uni.wroc.pl/offer/manage/proposals' + '\n\nPozdrowienia,\nZespół zapisy.ii.uni.wroc.pl\n\n'
+    Message.objects.create(
+        to_address=address,
+        from_address=settings.SERVER_EMAIL,
+        subject=subject,
+        message_body=body)

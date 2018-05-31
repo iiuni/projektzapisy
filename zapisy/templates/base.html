@@ -1,10 +1,12 @@
 {% load fereol_common %}
 {% load compressed %}
 {% load staticfiles %}
-{% load settings_value %}
-{% load osenv_value %}
+{% load should_display_debug %}
 {% load django_version %}
+{% load python_version %}
+{% load git_info %}
 {% load i18n %}
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -270,7 +272,13 @@
             &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
             {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>{% endif %}
             | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
-            {% if "DEBUG"|settings_value == True or "II_ZAPISY_STAGING"|osenv_value == "True" %}| <strong>Django {% django_version %}</strong>{% endif %}
+            {% should_display_debug as display_debug %}
+            {% if display_debug == True %}
+                <br><br><hr>
+                <p>Django <strong>{% django_version %}</strong></p>
+                <p>Python <strong>{% python_version %}</strong></p>
+                <p>{% git_info %}</p>
+            {% endif %}
         </p>
     </footer>
 

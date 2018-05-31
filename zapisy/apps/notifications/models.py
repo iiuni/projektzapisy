@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.db import models
 from django.template.loader import render_to_string
@@ -9,7 +8,7 @@ from apps.users.models import Employee, Student, BaseUser
 NOTIFICATION_TYPES = (
     ('News', {
         'all': [
-            ('send-news', u'Dodano nowy news'),
+            ('send-news', 'Dodano nowy news'),
             #('send-dev-news', u'Dodano nowy news developerski'),
         ],
         'student': [
@@ -47,7 +46,7 @@ NOTIFICATION_TYPES = (
             #('enrollment-finish', u'Pozostały 24 godziny do końca zapisów'),
             #('enrollment-finish-dir', u'Pozostały 24 godziny do końca wypisów dyrektorskich'),
             #('enrollment-started', u'Twoje zapisy się rozpoczęły'),
-            ('enrollment-limit', u'Podniesiono limit ECTS'),
+            ('enrollment-limit', 'Podniesiono limit ECTS'),
         ],
         'employee': [
             #('student-enrolled', u'Po pierwszym tygodniu do grupy dołączył nowy student'),
@@ -61,12 +60,12 @@ NOTIFICATION_TYPES = (
             #('offer', u'Przypomnienie o aktualizacji oferty')
         ],
         'student': [
-            ('vote-start', u'Rozpoczęło się głosowanie'),
+            ('vote-start', 'Rozpoczęło się głosowanie'),
             #('vote-finish', u'Zostało 24 godziny do końca głosowania'),
             #('vote-correction', u'Rozpoczęła się korekta głosowania'),
             #('vote-correction-finish', u'Zostało 24 godziny do końca korekty'),
             #('vote-summary', u'Wyślij podsumowanie oddanego głosu'),
-            ('grade-start', u'Rozpoczęła się ocena')
+            ('grade-start', 'Rozpoczęła się ocena')
             #('grade-finish', u'Pozostało 24 godzin do końca oceny'),
             #('grade-info', u'Wyślij potwierdzenie wygenerowania kluczy')
         ],
@@ -155,9 +154,9 @@ class NotificationManager(models.Manager):
 
 
 class NotificationPreferences(models.Model):
-    user = models.ForeignKey(User, verbose_name=u'użytkownik', on_delete=models.CASCADE)
-    type = models.CharField(choices=types_list(True, True), max_length=50, verbose_name=u'typ')
-    value = models.BooleanField(default=True, verbose_name=u'wartość')
+    user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
+    type = models.CharField(choices=types_list(True, True), max_length=50, verbose_name='typ')
+    value = models.BooleanField(default=True, verbose_name='wartość')
 
     objects = NotificationManager()
 
@@ -165,14 +164,16 @@ class NotificationPreferences(models.Model):
         unique_together = ('user', 'type')
 
         ordering = ['id']
-        verbose_name = u'Ustawienie Notyfikacji'
-        verbose_name_plural = u'Ustawienia Notyfikacji'
+        verbose_name = 'Ustawienie Notyfikacji'
+        verbose_name_plural = 'Ustawienia Notyfikacji'
+
 
 def send_message_internal(email, subject, body_html):
     body_plaintext = strip_tags(body_html)
     Message.objects.create(
         to_address=email, subject=subject,
         message_body=body_plaintext, message_body_html=body_html)
+
 
 class Notification(object):
     @classmethod
@@ -202,10 +203,11 @@ class Notification(object):
                 address = u.user.email
                 if address and preference:
                     context['user'] = u.user
-                    body_html = render_to_string("notifications/{0}.html".format(notification), context)
+                    body_html = render_to_string(
+                        "notifications/{0}.html".format(notification), context)
                     send_message_internal(address, subject, body_html)
 
-        subject = context['subject'] if 'subject' in context else _find_notification_name(notification)
+        subject = context['subject'] if 'subject' in context else _find_notification_name(
+            notification)
         _send_to_users(Employee.get_actives(), notification, subject, context)
         _send_to_users(Student.get_active_students(), notification, subject, context)
-

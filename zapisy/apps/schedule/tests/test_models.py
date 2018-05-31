@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from datetime import time, date, timedelta
 import random
 
@@ -10,18 +8,21 @@ from django.http import Http404
 from django.utils.crypto import get_random_string
 
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term as EventTerm
+from apps.schedule.models.message import EventModerationMessage, EventMessage
+from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.tests.objectmothers import UserObjectMother
 from apps.users.tests.factories import UserFactory, EmployeeProfileFactory, StudentFactory
-from apps.enrollment.courses.models import Semester, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule import feeds
 from apps.users.models import UserProfile
 import apps.enrollment.courses.tests.factories as enrollment_factories
 from apps.enrollment.records.tests.factories import RecordFactory
 from apps.enrollment.records.models import Record
 
-from ..models import SpecialReservation, EventModerationMessage, EventMessage, Event,\
-    Term as EventTerm
-import factories
+from . import factories
 from zapisy import common
 
 
@@ -49,7 +50,7 @@ class SpecialReservationTestCase(TestCase):
         reservation.save(author_id=reservation_author.pk)
 
         reservation_2 = SpecialReservation(semester=semester,
-                                           title=u'ąęłżóćśśń',
+                                           title='ąęłżóćśśń',
                                            classroom=room110,
                                            dayOfWeek=common.THURSDAY,
                                            start_time=time(15),
@@ -132,7 +133,7 @@ class SpecialReservationTestCase(TestCase):
     def test_special_reservation_unicode_method(self):
         reservations = SpecialReservation.objects.all()
         for reservation in reservations:
-            unicode(reservation)
+            str(reservation)
 
     def test_try_clean_on_non_overlapping_reservation(self):
         semester = Semester.get_semester(date(2016, 5, 12))
@@ -164,45 +165,47 @@ class SpecialReservationTestCase(TestCase):
 
 
 class MessageTestCase(TestCase):
-    def test_simpliest_message_autotimenow(self): #there are two classes of name EventModerationMessage but it works
+    # there are two classes of name EventModerationMessage but it works
+    def test_simpliest_message_autotimenow(self):
         event = factories.EventFactory()
         message = get_random_string(length=32)
         emm = EventModerationMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         emm.save()
         emm2 = EventModerationMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         emm2.save()
-        #event message should not be counted
+        # event message should not be counted
         em = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em.save()
 
         messages = EventModerationMessage.get_event_messages(event)
-        self.assertEqual(len(messages), 2) #the results should be 2 because em is not event moderation message
+        # the results should be 2 because em is not event moderation message
+        self.assertEqual(len(messages), 2)
 
-    def test_simpliest_eventmessage_autotimenow(self): #this classes are the same almost
+    def test_simpliest_eventmessage_autotimenow(self):  # this classes are the same almost
         event = factories.EventFactory()
         message = get_random_string(length=32)
         em = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em.save()
         em2 = EventMessage(
-            author = factories.UserFactory(),
-            event = event,
-            message = message
+            author=factories.UserFactory(),
+            event=event,
+            message=message
         )
         em2.save()
         messages = EventMessage.get_event_messages(event)
@@ -220,14 +223,17 @@ class TermTestCase(TestCase):
         term2 = factories.TermFactory()
         term2.full_clean()
         term2.save()
-        termsoftheday = EventTerm.get_terms_for_dates([term2.get_day()],term2.get_room())
+        termsoftheday = EventTerm.get_terms_for_dates([term2.get_day()], term2.get_room())
         self.assertEqual(len(termsoftheday), 1)
 
     def test_validation_on_overlapping(self):
         term2 = factories.TermFactory()
         term2.full_clean()
         term2.save()
-        term3 = factories.Term(room = term2.get_room())
+        term3 = factories.TermFactory(
+            room=term2.get_room(),
+            day=term2.get_day()
+        )
         self.assertRaises(ValidationError, term3.full_clean)
 
     def test_different_semester_reservation(self):
@@ -236,7 +242,7 @@ class TermTestCase(TestCase):
         semester.save()
         semester.full_clean()
         other_semester = \
-                enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
+            enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
         other_semester.save()
         other_semester.full_clean()
 
@@ -258,51 +264,51 @@ class TermTestCase(TestCase):
         reservation.full_clean()
         reservation.save(author_id=reservation_author.pk)
         reservation2 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.TUESDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.TUESDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation2.full_clean()
         reservation2.save(author_id=reservation_author.pk)
         reservation3 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.WEDNESDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.WEDNESDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation3.full_clean()
         reservation3.save(author_id=reservation_author.pk)
         reservation4 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.THURSDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.THURSDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation4.full_clean()
         reservation4.save(author_id=reservation_author.pk)
         reservation5 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.FRIDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.FRIDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation5.full_clean()
         reservation5.save(author_id=reservation_author.pk)
         reservation6 = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.SATURDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.SATURDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation6.full_clean()
         reservation6.save(author_id=reservation_author.pk)
-        reservation7= SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=common.SUNDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
+        reservation7 = SpecialReservation(semester=semester,
+                                          title="A reservation",
+                                          classroom=room25,
+                                          dayOfWeek=common.SUNDAY,
+                                          start_time=time(8),
+                                          end_time=time(16))
         reservation7.full_clean()
         reservation7.save(author_id=reservation_author.pk)
 
@@ -312,8 +318,8 @@ class TermTestCase(TestCase):
                                      start=time(9), end=time(17))
         term.full_clean()
         term.save()
-        self.assertEquals(other_semester.semester_beginning,term.day)
-        self.assertEquals(reservation.classroom,term.room)
+        self.assertEqual(other_semester.semester_beginning, term.day)
+        self.assertEqual(reservation.classroom, term.room)
 
 
 class FeedsTestCase(TestCase):
@@ -321,16 +327,31 @@ class FeedsTestCase(TestCase):
         event = factories.EventFactory()
         event2 = factories.EventFactory()
         latest = feeds.Latest()
-        item_title = [feeds.Latest.item_title(latest,event),feeds.Latest.item_title(latest,event2)]
-        item_author = [feeds.Latest.item_author_name(latest,event),feeds.Latest.item_author_name(latest,event)]
-        item_pub= [feeds.Latest.item_pubdate(latest,event),feeds.Latest.item_pubdate(latest,event)]
-        item_desc = [feeds.Latest.item_description(latest,event),feeds.Latest.item_description(latest,event)]
-        item_auth_mail = [feeds.Latest.item_author_email(latest,event),feeds.Latest.item_author_email(latest,event)]
-        self.assertEquals(len(item_title),2)
-        self.assertEquals(len(item_author),2)
-        self.assertEquals(len(item_pub),2)
-        self.assertEquals(len(item_desc),2)
-        self.assertEquals(len(item_auth_mail),2)
+        item_title = [
+            feeds.Latest.item_title(
+                latest, event), feeds.Latest.item_title(
+                latest, event2)]
+        item_author = [
+            feeds.Latest.item_author_name(
+                latest, event), feeds.Latest.item_author_name(
+                latest, event)]
+        item_pub = [
+            feeds.Latest.item_pubdate(
+                latest, event), feeds.Latest.item_pubdate(
+                latest, event)]
+        item_desc = [
+            feeds.Latest.item_description(
+                latest, event), feeds.Latest.item_description(
+                latest, event)]
+        item_auth_mail = [
+            feeds.Latest.item_author_email(
+                latest, event), feeds.Latest.item_author_email(
+                latest, event)]
+        self.assertEqual(len(item_title), 2)
+        self.assertEqual(len(item_author), 2)
+        self.assertEqual(len(item_pub), 2)
+        self.assertEqual(len(item_desc), 2)
+        self.assertEqual(len(item_auth_mail), 2)
 
 
 class EventTestCase(TestCase):
@@ -346,7 +367,7 @@ class EventTestCase(TestCase):
         self.event = factories.EventFactory(author=teacher)
         self.event.full_clean()
 
-        room110 = enrollment_factories.ClassroomFactory(number=u'110')
+        room110 = enrollment_factories.ClassroomFactory(number='110')
         room110.full_clean()
 
         term_1 = factories.TermFixedDayFactory(event=self.event, room=room110)
@@ -378,15 +399,15 @@ class EventTestCase(TestCase):
     def test_event_unicode_method(self):
         events = Event.objects.all()
         for event in events:
-            self.assertEquals(unicode(event), u'%s %s' % (event.title, event.description))
+            self.assertEqual(str(event), '%s %s' % (event.title, event.description))
 
     def test_get_absolute_url__no_group(self):
         event = Event.objects.all()[0]
-        self.assertEquals(event.get_absolute_url(), '/events/%d' % event.pk)
+        self.assertEqual(event.get_absolute_url(), '/events/%d' % event.pk)
 
     def test_get_absolute_url__group(self):
         event = factories.EventCourseFactory.create()
-        self.assertEquals(event.get_absolute_url(), '/records/%s/records' % event.group_id)
+        self.assertEqual(event.get_absolute_url(), '/records/%s/records' % event.group_id)
 
     def test_clean__overlapping_term(self):
         event = Event.objects.all()[0]
@@ -494,7 +515,7 @@ class EventTestCase(TestCase):
         employee = UserProfile.objects.get(is_employee=True).user
         event = factories.EventFactory(author=employee)
         ret = Event.get_event_or_404(event.id, employee)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_or_404_raises_error404_if_user_cant_see_event(self):
         user = UserFactory()
@@ -506,7 +527,7 @@ class EventTestCase(TestCase):
         user = UserFactory()
         event = factories.EventFactory(author=user)
         ret = Event.get_event_for_moderation_or_404(event.id, user)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_for_moderation_returns_event_if_it_exists_and_user_has_perms(self):
         event = factories.EventFactory()
@@ -514,7 +535,7 @@ class EventTestCase(TestCase):
         permission = Permission.objects.get(codename='manage_events')
         user_w_perms.user_permissions.add(permission)
         ret = Event.get_event_for_moderation_or_404(event.id, user_w_perms)
-        self.assertEquals(event, ret)
+        self.assertEqual(event, ret)
 
     def test_get_event_for_moderation_throws_Http404_if_event_doesnt_exist(self):
         user = UserFactory.build()
@@ -530,7 +551,7 @@ class EventTestCase(TestCase):
         perm = Permission.objects.get(codename='manage_events')
         user = UserFactory()
         user.user_permissions.add(perm)
-        self.assertEquals(Event.get_event_for_moderation_only_or_404(ev.id, user), ev)
+        self.assertEqual(Event.get_event_for_moderation_only_or_404(ev.id, user), ev)
 
     def test_get_for_moderation_only_raises_404_if_user_doesnt_have_perms(self):
         ev = factories.EventFactory()
@@ -549,7 +570,7 @@ class EventTestCase(TestCase):
         events = factories.EventFactory.create_batch(random.randint(50, 100))
         events.append(self.event)
         get_all_wo_courses_res = Event.get_all_without_courses()
-        events_wo_courses = filter(lambda x: x.type != Event.TYPE_CLASS, events)
+        events_wo_courses = [x for x in events if x.type != Event.TYPE_CLASS]
         self.assertEqual(len(events_wo_courses), len(get_all_wo_courses_res))
         get_all_res_pk = [x.pk for x in get_all_wo_courses_res]
         for i in range(0, len(events_wo_courses)):
@@ -563,7 +584,7 @@ class EventTestCase(TestCase):
         events.append(self.event)
         user = random.choice(users)
         events_for_user = Event.get_for_user(user)
-        filtered_events = filter(lambda x: x.author == user, events)
+        filtered_events = [x for x in events if x.author == user]
         self.assertEqual(len(filtered_events), len(events_for_user))
         filtered_pk = [x.pk for x in filtered_events]
         for i in range(0, len(events_for_user)):
@@ -573,7 +594,7 @@ class EventTestCase(TestCase):
         events = factories.EventFactory.create_batch(random.randint(50, 100))
         events.append(self.event)
         get_exams_res = Event.get_exams()
-        filtered_events = filter(lambda x: x.type == Event.TYPE_EXAM, events)
+        filtered_events = [x for x in events if x.type == Event.TYPE_EXAM]
         self.assertEqual(len(get_exams_res), len(filtered_events))
         get_exams_pk = [x.pk for x in get_exams_res]
         for i in range(0, len(filtered_events)):
@@ -608,7 +629,7 @@ class EventTestCase(TestCase):
 
     def test_unicode(self):
         event = factories.EventFactory()
-        self.assertEqual(u'{0} {1}'.format(event.title, event.description), str(event))
+        self.assertEqual('{0} {1}'.format(event.title, event.description), str(event))
 
 
 class EventsOnChangedDayTestCase(TestCase):

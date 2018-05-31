@@ -10,19 +10,22 @@ PIPELINE_VERSION = getattr(settings, 'PIPELINE_VERSION', False)
 PIPELINE_VERSION_PLACEHOLDER = getattr(settings, 'PIPELINE_VERSION_PLACEHOLDER', '?')
 PIPELINE_VERSION_DEFAULT = getattr(settings, 'PIPELINE_VERSION_DEFAULT', '0')
 PIPELINE_VERSION_REMOVE_OLD = getattr(settings, 'PIPELINE_VERSION_REMOVE_OLD', True)
-PIPELINE_VERSIONING = getattr(settings, 'PIPELINE_VERSIONING', 'pipeline.versioning.mtime.MTimeVersioning')
+PIPELINE_VERSIONING = getattr(
+    settings,
+    'PIPELINE_VERSIONING',
+    'pipeline.versioning.mtime.MTimeVersioning')
 
 PIPELINE_CACHE_TIMEOUT = getattr(settings, 'PIPELINE_CACHE_TIMEOUT', 63072000)
 
 PIPELINE_STORAGE = getattr(settings, 'PIPELINE_STORAGE',
-    'pipeline.storage.PipelineStorage')
+                           'pipeline.storage.PipelineStorage')
 
 PIPELINE_CSS_COMPRESSOR = getattr(settings, 'PIPELINE_CSS_COMPRESSOR',
-    'pipeline.compressors.yui.YUICompressor'
-)
+                                  'pipeline.compressors.yui.YUICompressor'
+                                  )
 PIPELINE_JS_COMPRESSOR = getattr(settings, 'PIPELINE_JS_COMPRESSOR',
-    'pipeline.compressors.yui.YUICompressor'
-)
+                                 'pipeline.compressors.yui.YUICompressor'
+                                 )
 PIPELINE_COMPILERS = getattr(settings, 'PIPELINE_COMPILERS', [])
 
 PIPELINE_CSS = getattr(settings, 'PIPELINE_CSS', {})
@@ -45,7 +48,10 @@ PIPELINE_CLOSURE_ARGUMENTS = getattr(settings, 'PIPELINE_CLOSURE_ARGUMENTS', '')
 PIPELINE_UGLIFYJS_BINARY = getattr(settings, 'PIPELINE_UGLIFYJS_BINARY', '/usr/local/bin/uglifyjs')
 PIPELINE_UGLIFYJS_ARGUMENTS = getattr(settings, 'PIPELINE_UGLIFYJS_ARGUMENTS', '')
 
-PIPELINE_COFFEE_SCRIPT_BINARY = getattr(settings, 'PIPELINE_COFFEE_SCRIPT_BINARY', '/usr/local/bin/coffee')
+PIPELINE_COFFEE_SCRIPT_BINARY = getattr(
+    settings,
+    'PIPELINE_COFFEE_SCRIPT_BINARY',
+    '/usr/local/bin/coffee')
 PIPELINE_COFFEE_SCRIPT_ARGUMENTS = getattr(settings, 'PIPELINE_COFFEE_SCRIPT_ARGUMENTS', '')
 
 PIPELINE_SASS_BINARY = getattr(settings, 'PIPELINE_SASS_BINARY', '/usr/local/bin/sass')
@@ -62,4 +68,4 @@ if PIPELINE_COMPILERS is None:
 
 if not PIPELINE_URL:
     raise ImproperlyConfigured("You're using the pipeline app "
-            "without having set the required STATIC_URL setting.")
+                               "without having set the required STATIC_URL setting.")

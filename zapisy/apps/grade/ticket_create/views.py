@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+import json
 
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey
@@ -6,6 +6,11 @@ from apps.grade.ticket_create.utils import generate_keys_for_polls, sign_ticket,
 from apps.users.decorators import student_required
 from django.shortcuts import render
 from django.contrib import messages
+
+from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
+from django.contrib.auth import authenticate
+from django.utils.safestring import SafeText
 
 
 @student_required

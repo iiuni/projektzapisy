@@ -5,6 +5,7 @@ from Crypto.PublicKey import RSA
 from apps.enrollment.courses.models import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
+from functools import cmp_to_key
 
 RAND_BITS = 512
 KEY_LENGTH = 1024
@@ -98,7 +99,7 @@ def group_polls_by_course(poll_list):
     if not poll_list:
         return []
 
-    poll_list.sort(poll_cmp)
+    poll_list.sort(key=cmp_to_key(poll_cmp))
 
     res = []
     act_polls = []
@@ -136,7 +137,7 @@ def connect_groups(groupped_polls, form):
         if not polls[0].group:
             label = 'join_common'
         else:
-            label = u'join_' + unicode(polls[0].group.course.pk)
+            label = 'join_' + str(polls[0].group.course.pk)
 
         if len(polls) == 1:
             connected_groups.append(polls)
@@ -278,7 +279,7 @@ def from_plaintext(tickets_plaintext):
                     try:
                         id = int(poll_info[j])
                         break
-                    except:
+                    except BaseException:
                         j += 1
 
                 j += 1
@@ -286,7 +287,7 @@ def from_plaintext(tickets_plaintext):
                     try:
                         t = long(poll_info[j])
                         break
-                    except:
+                    except BaseException:
                         j += 1
 
                 j += 1
@@ -294,7 +295,7 @@ def from_plaintext(tickets_plaintext):
                     try:
                         st = long(poll_info[j])
                         break
-                    except:
+                    except BaseException:
                         j += 1
 
                 i = j + 1

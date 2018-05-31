@@ -1,4 +1,5 @@
-from apps.enrollment.courses.models import Semester, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from datetime import datetime
 
 
@@ -50,7 +51,7 @@ class ClassroomObjectMother():
         room = Classroom(
             type=3,
             description='Pracownia z najszybszymi komputerami w instytucie',
-            number=u'110',
+            number='110',
             building='Instytut Informatyki',
             capacity=20,
             floor=1,

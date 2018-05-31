@@ -1,5 +1,3 @@
-# Django settings for fereol project.
-
 import os
 import logging
 import environ
@@ -36,9 +34,9 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env.str('DATABASE_NAME', default='fereol'),
-        'PORT': env.str('DATABASE_PORT', default='5432'),
-        'USER': env.str('DATABASE_USER', default='fereol'),
+        'NAME': env.str('DATABASE_NAME'),
+        'PORT': env.str('DATABASE_PORT'),
+        'USER': env.str('DATABASE_USER'),
         'PASSWORD': env.str('DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'CHARSET': 'utf8',
@@ -51,42 +49,45 @@ DATABASES = {
 # $ python -m smtpd -n -c DebuggingServer localhost:1025
 
 MASS_MAIL_FROM = 'zapisy@cs.uni.wroc.pl'
-EMAIL_COURSE_PREFIX = '[System Zapisow] ' # please don't remove the trailing space
+EMAIL_COURSE_PREFIX = '[System Zapisow] '  # please don't remove the trailing space
 
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False, # keep Django's default loggers
-        'formatters': {
-                'timestampthread': {
-                        'format': "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s] [%(name)-20.20s]  %(message)s",
-                },
+    'version': 1,
+    'disable_existing_loggers': False,  # keep Django's default loggers
+    'formatters': {
+        'timestampthread': {
+            'format': "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s] [%(name)-20.20s]  %(message)s",
         },
-        'handlers': {
-                'logfile': {
-                        # optionally raise to INFO to not fill the log file too quickly
-                        'level': 'DEBUG', # DEBUG or higher goes to the log file
-                        'class':'logging.handlers.RotatingFileHandler',
-                        # IMPORTANT: replace with your desired logfile name!
-                        'filename': 'logs/djangoproject.log',
-                        'maxBytes': 50 * 10**6, # will 50 MB do?
-                        'backupCount': 3, # keep this many extra historical files
-                        'formatter': 'timestampthread'
-                },
+    },
+    'handlers': {
+        'logfile': {
+            # optionally raise to INFO to not fill the log file too quickly
+            'level': 'DEBUG',  # DEBUG or higher goes to the log file
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoproject.log',
+            'maxBytes': 50 * 10**6,  # will 50 MB do?
+            'backupCount': 3,  # keep this many extra historical files
+            'formatter': 'timestampthread'
         },
-        'loggers': {
-                'django': { # configure all of Django's loggers
-                        'handlers': ['logfile'],
-                        'level': 'DEBUG', # set to debug to see e.g. database queries
-                },
-                'apps': {
-                        'handlers': ['logfile'],
-                        'level': 'DEBUG',
-                },
+        'console': {
+           'class': 'logging.StreamHandler',
+           'level': 'INFO',
         },
-        'root': {
-                'handlers': ['logfile'],
-                'level': 'DEBUG'
-        }
+    },
+    'loggers': {
+        'django': {  # configure all of Django's loggers
+            'handlers': ['logfile', 'console'] if DEBUG else ['logfile'],
+            'level': 'DEBUG',  # set to debug to see e.g. database queries
+        },
+        'apps': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+        },
+    },
+    'root': {
+        'handlers': ['logfile'],
+        'level': 'DEBUG'
+    }
 }
 
 
@@ -102,7 +103,11 @@ TIME_ZONE = 'Europe/Warsaw'
 LANGUAGE_CODE = 'pl-pl'
 
 # Available languages for using the service. The first one is the default.
-ugettext = lambda s: s
+
+
+def ugettext(s): return s
+
+
 LANGUAGES = (
     ('pl', ugettext('Polish')),
     ('en', ugettext('English')),
@@ -113,7 +118,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-USE_ETAGS = True
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6$u2ggeh-!^hxep3s4h$3z&2-+3c@sy7-sy8349+l-1m)9r0fn'
@@ -135,7 +139,7 @@ TEMPLATES = [
                 ('django.template.loaders.cached.Loader', [
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader',
-                    'django.template.loaders.eggs.Loader',
+                    'django.template.loaders.filesystem.Loader',
                 ]),
             ]
         },
@@ -147,6 +151,7 @@ TEMPLATES = [
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
 MIDDLEWARE = [
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'middleware.localePrefMiddleware.LocalePrefMiddleware',
@@ -162,14 +167,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'zapisy.urls'
 
 INSTALLED_APPS = (
-    'modeltranslation', # needs to be before django.contrib.admin
+    'modeltranslation',  # needs to be before django.contrib.admin
 
     'rest_framework',
-    
+    'rest_framework.authtoken',
+
     # needed from 1.7 onwards to prevent Django from trying to apply
     # migrations when testing (slows down DB setup _a lot_)
     'test_without_migrations',
-    
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -197,12 +203,10 @@ INSTALLED_APPS = (
     #'debug_toolbar',
     'apps.grade.poll',
     'apps.grade.ticket_create',
-    #'apps.mobile',
     'apps.email_change',
     'apps.schedulersync',
     'django_extensions',
     'django_filters',
-    'autoslug',
     'el_pagination',
     'apps.notifications',
     'django_cas_ng',
@@ -223,15 +227,16 @@ DATETIME_FORMAT = "j N Y, H:i"
 
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
-CAS_LOGIN_MSG = u'Sukces! Zalogowano przez USOS (login: %s).'
+CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-#settings for enrollment
-ECTS_BONUS = 5 # ECTS_BONUS * ECTS = abs(t0-t1); set to 7, if changed, change also get_t0_interval()
+# settings for enrollment
+# ECTS_BONUS * ECTS = abs(t0-t1); set to 7, if changed, change also get_t0_interval()
+ECTS_BONUS = 5
 ECTS_LIMIT = 35
 ECTS_FINAL_LIMIT = 45
 
@@ -264,7 +269,7 @@ def show_toolbar(request):
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': show_toolbar,
-    'INTERCEPT_REDIRECTS' : False,
+    'INTERCEPT_REDIRECTS': False,
 }
 
 
@@ -285,14 +290,12 @@ ISSUE_TRACKER_URL = "https://tracker-zapisy.ii.uni.wroc.pl"
 ISSUE_TRACKER_NEW_ISSUE_URL = "https://tracker-zapisy.ii.uni.wroc.pl/projects/zapisy-tracker/issues/new"
 
 if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
-    execfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py'))
+    exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
 
 PIPELINE = env.bool('PIPELINE')
 PIPELINE_AUTO = False
 PIPELINE_VERSION = True
 PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
-#PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.jsmin.JSMinCompressor'
-#PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.csstidy.CSSTidyCompressor'
 
 COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
 COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
@@ -301,34 +304,47 @@ COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-	os.path.join(BASE_DIR, "compiled_assets"),
+    os.path.join(BASE_DIR, "compiled_assets"),
 )
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 PIPELINE_STORAGE = 'pipeline.storage.PipelineFinderStorage'
 PIPELINE_VERSIONING = 'pipeline.versioning.hash.MD5Versioning'
 STATICFILES_FINDERS = (
-  'pipeline.finders.PipelineFinder',
-  'django.contrib.staticfiles.finders.FileSystemFinder',
-  'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-		# This setting is badly named, it's the bundle dir relative
-		# to whatever you have in your STATICFILES_DIRS
+        # This setting is badly named, it's the bundle dir relative
+        # to whatever you have in your STATICFILES_DIRS
         'BUNDLE_DIR_NAME': '',
         'STATS_FILE': os.path.join(BASE_DIR, "webpack_resources", 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
     }
 }
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    # Throttles are used to control the rate of requests that clients can make to an API.
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        # Limit the number of rest calls made by unauthenticated users.
+        'anon': '100/day',
+    }
 }

@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 from django.conf.urls import url
-from django.contrib.auth.views import (
-    password_change, password_reset, password_reset_confirm,
-    password_reset_complete, password_reset_done
-)
+from django.contrib.auth.views import password_reset, password_reset_confirm, \
+    password_reset_complete, password_reset_done, PasswordChangeView
 from . import views
 
 urlpatterns = [
@@ -15,11 +12,12 @@ urlpatterns = [
     url('^setlang/$', views.set_language, name='setlang'),
     url('^employee-data-change/$', views.consultations_change, name='consultations-change'),
     url('^bank-account-change/$', views.bank_account_change, name='bank-account-change'),
-    url('^password-change/$', password_change, {'template_name' : 'users/password_change_form.html', 'post_change_redirect' : '/users/password-change-done/'}, name='password_change'),
+    url('^password-change/$', PasswordChangeView.as_view(template_name='users/password_change_form.html'),
+        name='password_change'),
     url('^password-change-done/$', views.password_change_done, name='password_change_done'),
     url('^password-reset/$', password_reset, {'template_name': 'users/password_reset_form.html'}, name='password_reset'),
     url('^password-reset-done/$', password_reset_done, {'template_name': 'users/password_reset_done.html'}, name='password_reset_done'),
-    url('^password-reset-confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', password_reset_confirm, {'template_name': 'users/password_reset_confirm.html'}, name='password_reset_confirm'),
+    url(r'^password-reset-confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', password_reset_confirm, {'template_name': 'users/password_reset_confirm.html'}, name='password_reset_confirm'),
     url('^password-reset-complete/$', password_reset_complete, {'template_name': 'users/password_reset_complete.html'}, name='password_reset_complete'),
     url('^logout/$', views.logout, name='user-logout'),
     url('^employees/$', views.employees_list, name='employees-list'),

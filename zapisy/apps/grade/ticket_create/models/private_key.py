@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-
-from Crypto.PublicKey import RSA
-
+from django.db                import models
 
 class PrivateKey(models.Model):
     poll = models.ForeignKey('poll.Poll', verbose_name='ankieta', on_delete=models.CASCADE)
@@ -13,5 +11,5 @@ class PrivateKey(models.Model):
         verbose_name_plural = 'klucze prywatne'
         app_label = 'ticket_create'
 
-    def __unicode__(self):
-        return u"Klucz prywatny: " + unicode(self.poll)
+    def __str__(self):
+        return f'Klucz prywatny: {self.poll}'
