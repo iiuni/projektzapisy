@@ -3,7 +3,7 @@ from django.db import models
 
 class TermSyncData(models.Model):
     """Stores the group numbers for the scheduler IDs so the importer can detect changes"""
-    term = models.ForeignKey('courses.Term', verbose_name='termin')
+    term = models.ForeignKey('courses.Term', on_delete=models.CASCADE, verbose_name='termin')
     scheduler_id = models.PositiveIntegerField(null=True,
                                                verbose_name='id grupy w schedulerze')
 

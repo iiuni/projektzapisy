@@ -2,7 +2,9 @@ from django.contrib.auth.decorators import permission_required
 from django.template.response import TemplateResponse
 from apps.enrollment.records.models import Queue, Record
 from apps.users.models import Student
-from apps.enrollment.courses.models import Semester, Group, CourseEntity, Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.course import CourseEntity, Course
 
 
 @permission_required('courses.view_stats')

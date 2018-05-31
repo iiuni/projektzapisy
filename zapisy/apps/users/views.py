@@ -8,9 +8,9 @@ from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.views import login
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
@@ -24,7 +24,8 @@ from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView
-from apps.enrollment.courses.models import Semester, Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record
 from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, BankAccountChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
@@ -357,13 +358,13 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
-def login_plus_remember_me(request, *args, **kwargs):
+def login_plus_remember_me(request, **kwargs):
     """
     Sign-in function with an option to save the session.
     If the user clicked the 'Remember me' button (we read it from POST data), the
     session will expire after two weeks.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect("main-page")
     if 'polls' in request.session:
         del request.session['polls']
@@ -375,7 +376,7 @@ def login_plus_remember_me(request, *args, **kwargs):
             request.session.set_expiry(datetime.timedelta(14).total_seconds())
         else:
             request.session.set_expiry(0)  # Expires on browser closing.
-    return login(request, *args, **kwargs)
+    return LoginView.as_view(**kwargs)(request)
 
 
 def get_ical_filename(user, semester):

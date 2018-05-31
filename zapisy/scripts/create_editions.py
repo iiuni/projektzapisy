@@ -1,4 +1,5 @@
-from apps.enrollment.courses.models import Course, Semester, CourseEntity, Semester, CourseDescription
+from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.semester import Semester
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 

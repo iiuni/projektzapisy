@@ -3,8 +3,13 @@ from django.db import transaction
 from django.template.defaultfilters import slugify
 from lxml import etree
 from django.conf import settings
-from apps.enrollment.courses.models import Semester, Group, Course, Term, \
-    CourseEntity, Type, Classroom
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course_type import Type
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.semester import Semester
 from apps.users.models import Employee
 
 XSCHEMA = os.path.join(settings.BASE_DIR, 'enrollment/courses/admin/xml/semesterschedule.xsd')

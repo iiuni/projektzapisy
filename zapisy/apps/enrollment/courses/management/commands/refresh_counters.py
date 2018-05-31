@@ -1,14 +1,12 @@
 from optparse import make_option
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models import Semester, Group
 from apps.enrollment.records.models import Record, Queue
-from apps.users.models import Student
 from apps.enrollment.records.utils import run_rearanged
 
 
 class Command(BaseCommand):
-    args = ''
     help = ''
 
     option_list = BaseCommand.option_list + (

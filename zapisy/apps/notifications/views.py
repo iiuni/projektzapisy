@@ -5,10 +5,9 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
-from .forms import NotificationFormset
-from .models import Notification
 
-__author__ = 'maciek'
+from apps.notifications.models import Notification
+from .forms import NotificationFormset
 
 GENERIC_ERROR = 'Wystąpił błąd podczas wysyłania powiadomień!'
 
@@ -65,7 +64,7 @@ def vote_start(request):
 
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu głosowania!')
     except ValueError as e:
-        messages.error(request, e.message)
+        messages.error(request, str(e))
     except BaseException:
         messages.error(request, GENERIC_ERROR)
 
@@ -88,7 +87,7 @@ def grade_start(request):
 
         messages.success(request, 'Wysłano powiadomienia o rozpoczęciu oceny zajęć')
     except ValueError as e:
-        messages.error(request, e.message)
+        messages.error(request, str(e))
     except BaseException:
         messages.error(request, GENERIC_ERROR)
 

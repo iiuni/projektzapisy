@@ -205,62 +205,6 @@ class Term(models.Model):
                                classrooms)
 
 
-def log_edit_term(sender, instance, **kwargs):
-    return
-    try:
-        term = instance
-        old_term = Term.objects.get(id=term.id)
-        string = [old_term.dayOfWeek, str(old_term.start_time), str(old_term.end_time)]
-        if old_term.classroom:
-            string.append(old_term.classroom.number)
-        string = '-'.join(string)
-        old_term_format = string
-
-        newstring = [term.dayOfWeek, str(term.start_time), str(term.end_time)]
-        if term.classroom:
-            newstring.append(term.classroom.number)
-
-        term_format = '-'.join(newstring)
-        message = '[09] term for group {} has been updated from {} to {}'.format(
-            term.group.id, old_term_format, term_format,
-        )
-        backup_logger.info(message)
-    except Term.DoesNotExist:
-        pass
-
-
-def log_add_term(sender, instance, created, **kwargs):
-    return
-    term = instance
-    if term.classroom and hasattr(term.classroom, "number"):
-        number = term.classroom.number
-    else:
-        number = ''
-    term_format = '-'.join([term.dayOfWeek, str(term.start_time), str(term.end_time), number])
-    if created:
-        message = '[08] term {} for group {} has been created'.format(
-            term_format, term.group.id,
-        )
-        backup_logger.info(message)
-
-
-def log_delete_term(sender, instance, **kwargs):
-    return
-    term = instance
-    words = [term.dayOfWeek, str(term.start_time), str(term.end_time)]
-    if term.classroom:
-        words += term.classroom.number
-    term_format = '-'.join(words)
-    backup_logger.info('[10] term {} for group {} has been deleted'.format(
-        term_format, term.group.id
-    ))
-
-
-signals.pre_save.connect(log_edit_term, sender=Term)
-signals.post_save.connect(log_add_term, sender=Term)
-signals.pre_delete.connect(log_delete_term, sender=Term)
-
-
 def recache(sender, **kwargs):
     mcache.clear()
 

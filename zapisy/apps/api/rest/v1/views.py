@@ -17,7 +17,6 @@ class SemesterViewSet(viewsets.ModelViewSet):
 
 class ClassroomViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
-    authentication_classes = (BasicAuthentication, SessionAuthentication)
     permission_classes = (StaffPermission,)
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer

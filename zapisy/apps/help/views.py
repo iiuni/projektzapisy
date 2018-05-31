@@ -1,11 +1,5 @@
-"""
-    Help views
-"""
-
 from django.shortcuts import render
-
 from django.contrib.admin.views.decorators import staff_member_required
-from apps.users.decorators import employee_required
 
 
 def main_page(request):
@@ -40,15 +34,6 @@ def offer(request):
     return render(request, 'help/offer.html', {})
 
 
-def errorpage(request):
-    raise Exception('Example exception')
-
-
 @staff_member_required
 def admin(request):
     return render(request, 'help/admin.html', {})
-
-
-@employee_required
-def employee(request):
-    return render(request, 'help/employee.html', {})

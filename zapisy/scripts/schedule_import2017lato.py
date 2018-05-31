@@ -478,16 +478,16 @@ TECH = {
 
 ####  #####
 
-import sys
-import os
-from django.core.management import setup_environ
 from datetime import time
 
 
-from apps.enrollment.courses.models import Course, Semester, CourseEntity, Type, Group, Term, PointsOfCourseEntities, PointTypes
-from apps.users.models import Student, Employee, Program
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.group import Group
+from apps.users.models import Employee
 
-from apps.enrollment.courses.models import Classroom
+from apps.enrollment.courses.models.classroom import Classroom
 
 import re
 import logging

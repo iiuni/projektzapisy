@@ -1,5 +1,9 @@
 # projektzapisy Changelog
 
+# Version 18.05.18
+
+* implemented new backups
+* moved rest api to seperate app
 * added limit on the number of rest calls made by unauthenticated users (100/day)
 
 # Version 18.04.16

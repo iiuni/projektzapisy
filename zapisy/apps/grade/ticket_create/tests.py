@@ -1,20 +1,13 @@
 from django.test import TestCase
-from .utils import generate_keys_for_polls, \
-    group_polls_by_course
-from .models import PublicKey, \
-    PrivateKey
+from .utils import generate_keys_for_polls, group_polls_by_course
 from apps.grade.poll.models import Poll
-from apps.users.models import Employee, \
-    Student
-from apps.enrollment.courses.models import Semester
+from apps.users.models import Employee, Student
+from apps.enrollment.courses.models.semester import Semester
 
 
 class UtilsTest(TestCase):
 
     fixtures = ['test_ticket_create.json']
-
-    def setUp(self):
-        pass
 
     def test_generate_keys_for_polls_generates_keys_for_each_poll(self):
         polls = Poll.objects.all()

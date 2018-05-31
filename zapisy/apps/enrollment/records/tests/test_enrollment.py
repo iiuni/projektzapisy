@@ -1,8 +1,10 @@
 from django.test import TransactionTestCase
 
 from django.contrib.auth.models import User
-from apps.enrollment.courses.models import Group, Course, CourseEntity, \
-    Semester, StudentPointsView
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.points import StudentPointsView
 from apps.enrollment.records.utils import run_rearanged
 from apps.users.models import Student, Employee
 from django.db import connection
@@ -14,8 +16,6 @@ from apps.enrollment.records.models import Record, Queue
 
 
 from datetime import datetime, timedelta
-import time
-from random import seed, randint, choice
 
 
 def open_course_for_student(student, course, opening_time=datetime.now()):
@@ -193,7 +193,7 @@ class DummyTest(TransactionTestCase):
         self.assertFalse(result)
         self.assertEqual(messages_list, ['Jesteś już w tej grupie'])
 
-    def testAddingStudentToSameGroupAgainFails(self):
+    def testAddingStudentToDifferentGroupsSameCourseSucceeds(self):
         today = datetime.now()
         course = CourseFactory()
         exercises_group1 = GroupFactory(

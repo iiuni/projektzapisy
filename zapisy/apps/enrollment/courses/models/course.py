@@ -1,14 +1,14 @@
 from datetime import date
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.utils.translation import get_language
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
 from apps.cache_utils import cache_result
 from apps.enrollment.courses.models.effects import Effects
+from apps.enrollment.courses.models.student_options import StudentOptions
 
 from apps.enrollment.courses.models.tag import Tag
 
@@ -169,7 +169,7 @@ class CourseEntity(models.Model):
     created = models.DateTimeField(verbose_name='Utworzono', auto_now_add=True)
     edited = models.DateTimeField(verbose_name='Ostatnia zmiana', auto_now=True)
 
-    in_prefs = models.BooleanField(verbose_name='w preferencjach', default=True)
+    in_prefs = models.BooleanField(verbose_name='w preferencjach', default=False)
 
     dyskretna_l = models.BooleanField(default=False,
                                       verbose_name='Przedmiot posiada również wersje: Dyskretna (L)')
@@ -214,22 +214,22 @@ class CourseEntity(models.Model):
         return (hours1 or 0) + (hours2 or 0)
 
     def get_lectures(self):
-        return _add_or_none(self.lectures, self.information.lectures)
+        return self._add_or_none(self.lectures, self.information.lectures)
 
     def get_exercises(self):
-        return _add_or_none(self.exercises, self.information.exercises)
+        return self._add_or_none(self.exercises, self.information.exercises)
 
     def get_laboratories(self):
-        return _add_or_none(self.laboratories, self.information.laboratories)
+        return self._add_or_none(self.laboratories, self.information.laboratories)
 
     def get_repetitions(self):
-        return _add_or_none(self.repetitions, self.information.repetitions)
+        return self._add_or_none(self.repetitions, self.information.repetitions)
 
     def get_seminars(self):
-        return _add_or_none(self.seminars, self.information.seminars)
+        return self._add_or_none(self.seminars, self.information.seminars)
 
     def get_exercises_laboratiories(self):
-        return _add_or_none(
+        return self._add_or_none(
             self.exercises_laboratiories,
             self.information.exercises_laboratories)
 
@@ -283,7 +283,7 @@ class CourseEntity(models.Model):
         ordering = ['name_pl']
 
     def get_points(self, student=None):
-        from apps.enrollment.courses.models import StudentPointsView, PointsOfCourseEntities
+        from apps.enrollment.courses.models.points import StudentPointsView, PointsOfCourseEntities
 
         if student:
             try:
@@ -703,7 +703,7 @@ class Course(models.Model):
 
     def student_is_in_ects_limit(self, student):
         # TODO: test me!
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         semester = Semester.get_current_semester()
 
@@ -815,7 +815,7 @@ class Course(models.Model):
 
     def serialize_for_json(self, student=None,
                            terms=None, includeWasEnrolled=False):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
 
         data = self.entity.serialize_for_json()
         data['id'] = self.pk
@@ -848,7 +848,7 @@ class Course(models.Model):
             Return True if  Course have reservation for exam
         """
 
-        from apps.schedule.models import Event
+        from apps.schedule.models.event import Event
 
         if not self.exam:
             return False

@@ -3,9 +3,10 @@ import datetime
 from django.core.management import BaseCommand
 from django.db.models import Q
 
-from apps.enrollment.courses.models import Semester, Freeday, ChangedDay
-from apps.enrollment.courses.models import Term as T
-from apps.schedule.models import Term, Event
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.term import Term as CoursesTerm
+from apps.schedule.models.term import Term as ScheduleTerm, Event
+from apps.schedule.models.event import Event
 
 
 class Command(BaseCommand):
@@ -18,7 +19,7 @@ class Command(BaseCommand):
             .values_list('day', flat=True)
         changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(
             day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms = T.objects.filter(
+        terms = CoursesTerm.objects.filter(
             group__course__semester=semester).select_related(
             'group', 'group__course', 'group__course__entity')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
@@ -57,7 +58,7 @@ class Command(BaseCommand):
                     minute = t.start_time.minute
                     if minute == 0:
                         minute = 15
-                    Term.objects.get_or_create(
+                    ScheduleTerm.objects.get_or_create(
                         event=ev,
                         day=day,
                         start=t.start_time,

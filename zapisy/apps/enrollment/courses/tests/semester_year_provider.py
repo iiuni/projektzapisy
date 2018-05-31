@@ -3,7 +3,7 @@ from datetime import datetime
 from faker.providers import BaseProvider
 from faker import Faker
 
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 
 SEMESTER_YEAR_RANGE = 50
 

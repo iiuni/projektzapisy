@@ -2,18 +2,13 @@
     Forms used to apps.grade courses
 """
 from django import forms
-from django.utils.safestring import SafeText
-from django.core.exceptions import ValidationError, \
-    ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxLengthValidator
 
 from apps.grade.poll.models import SingleChoiceQuestionOrdering, \
     Section, OpenQuestionAnswer, \
     SingleChoiceQuestionAnswer, \
     MultipleChoiceQuestionAnswer
-
-
-from apps.enrollment.courses.models import Semester
 
 
 class TicketsForm(forms.Form):
@@ -62,12 +57,11 @@ class PollForm(forms.Form):
         self.sections = []
 
         if section_id:
-            sections_set = []
-            sections_set.append(Section.objects.get(pk=section_id))
+            sections_set = [Section.objects.get(pk=section_id)]
         elif poll:
             sections_set = poll.all_sections()
         else:
-            section_set = {}
+            sections_set = {}
 
         for section in sections_set:
             title = 'poll-%d_section-%d' % (ppk, section.pk)
@@ -109,7 +103,6 @@ class PollForm(forms.Form):
 
                     field.is_leading = True
                     poll_section.leading = True
-                    section
                     field.hide_on = [x.pk for x in questionOrdering.hide_on.all()]
                     field.title = title
                     field.description = questions[0].description
@@ -213,18 +206,15 @@ class PollForm(forms.Form):
                         choosed = 0
                     field = forms.MultipleChoiceField(
                         choices=choices,
-                        label=str(
-                            question.content),
+                        label=str(question.content),
                         required=False,
                         widget=forms.widgets.CheckboxSelectMultiple(),
                         initial=answer,
-                        validators=[
-                            MaxAnswersValidator(
-                                question.choice_limit)],
+                        validators=[MaxAnswersValidator(question.choice_limit)],
                         error_messages={
-                            "max_length": "Można wybrać maksymalnie %d odpowiedzi (wybrano %d)" %
-                            (question.choice_limit,
-                             choosed)})
+                            "max_length": f"Można wybrać maksymalnie {question.choice_limit} odpowiedzi "
+                                          f"(wybrano {choosed})"}
+                    )
                     field.choice_limit = question.choice_limit
                     field.has_other = question.has_other
                     field.description = question.description
@@ -286,42 +276,3 @@ class PollForm(forms.Form):
             field.type = 'finish'
             self.finish = field
             self.fields['finish'] = field
-
-
-class FilterMenu(forms.Form):
-
-    sem = Semester.objects.all()
-
-    li = []
-
-    for s in sem:
-        li.append(s.year)
-
-    li.sort()
-
-    li = list(set(li))
-
-    begin = []
-    end = []
-
-    for l in li:
-        begin.append((l, l))
-        end.append((l, l))
-
-    semestr_date_begin = forms.ChoiceField(label='od', choices=begin)
-    semestr_date_end = forms.ChoiceField(label='do', choices=begin)
-
-    semestr_winter = forms.BooleanField(label='zimowy')
-    semestr_summer = forms.BooleanField(label='letni')
-
-    own_resource = forms.BooleanField(label='własne')
-    available_resource = forms.BooleanField(label='udostępnione')
-
-    lecture = forms.BooleanField(label='wykłady')
-    tutorial = forms.BooleanField(label='ćwiczenia')
-    lab = forms.BooleanField(label='pracownie')
-
-    order = forms.TypedChoiceField(widget=forms.RadioSelect, choices=(
-        (1, "wg nazwisk prowadzących"), (2, "wg nazw przedmiotów")))
-
-    special = forms.BooleanField()

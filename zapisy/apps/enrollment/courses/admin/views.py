@@ -6,7 +6,7 @@ from sys import exc_info, path
 import codecs
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, connection
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
@@ -14,7 +14,10 @@ from django import forms
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from tempfile import NamedTemporaryFile
 from django.template.response import TemplateResponse
-from apps.enrollment.courses.models import Course, Semester, Group, Classroom
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.enrollment.records.utils import run_rearanged

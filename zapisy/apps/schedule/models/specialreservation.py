@@ -1,11 +1,14 @@
 from django.db import models
 from django.core.validators import ValidationError
 from datetime import date, datetime
-from apps.schedule.models import Event
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.schedule.models.event import Event
 
 from zapisy import common
 
-from apps.enrollment.courses.models import Semester, Term as CourseTerm
+from apps.enrollment.courses.models.term import Term as CourseTerm
 
 
 class SpecialReservationQuerySet(models.query.QuerySet):
@@ -52,7 +55,6 @@ class SpecialReservationManager(models.Manager):
 
 
 class SpecialReservation(models.Model):
-    from apps.enrollment.courses.models import Semester, Term, Classroom
 
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)

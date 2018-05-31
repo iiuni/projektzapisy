@@ -1,6 +1,6 @@
 from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from zapisy.apps.users.models import Student, Program, UserProfile
 from django.contrib.auth.models import User
 from django.db import transaction, connection

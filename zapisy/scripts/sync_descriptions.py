@@ -1,4 +1,4 @@
-from apps.enrollment.courses.models import Semester, Course, CourseEntity, CourseDescription
+from apps.enrollment.courses.models.semester import Semester
 
 
 def run():

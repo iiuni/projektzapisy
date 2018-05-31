@@ -4,6 +4,8 @@ from django.http import Http404
 
 from django.core.validators import ValidationError
 
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
 from apps.users.models import BaseUser
 
 
@@ -37,7 +39,6 @@ class Event(models.Model):
                          (TYPE_TEST, 'Kolokwium'),
                          (TYPE_GENERIC, 'Wydarzenie')]
 
-    from apps.enrollment.courses.models import Course, Group
     from django.contrib.auth.models import User
 
     title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
@@ -62,7 +63,7 @@ class Event(models.Model):
     edited = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
 
         if self.group:
             return reverse('records-group', args=[str(self.group_id)])

@@ -1,23 +1,17 @@
 from string import whitespace
+from subprocess import getstatusoutput
 
 from Crypto.PublicKey import RSA
 from Crypto.Random.random import getrandbits, \
     randint
-from subprocess import *
 
-from django.db.models import Q
 from django.utils.safestring import SafeText
 
-from apps.enrollment.courses.models import Course, \
-    Group
-from apps.enrollment.records.models import Record
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, \
     PrivateKey, \
     UsedTicketStamp
 from apps.grade.ticket_create.exceptions import *
-from time import sleep
-from django.core.cache import cache
 from functools import cmp_to_key
 
 RAND_BITS = 512
@@ -173,7 +167,7 @@ def save_private_keys(polls_private_keys):
 
 
 def generate_keys_for_polls(semester=None):
-    from apps.enrollment.courses.models import Semester
+    from apps.enrollment.courses.models.semester import Semester
     if not semester:
         semester = Semester.get_current_semester()
     poll_list = Poll.get_polls_without_keys(semester)

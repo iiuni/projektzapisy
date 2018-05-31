@@ -1,15 +1,11 @@
 from django.db import models
-from django.db.models import signals
-from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.core.cache import cache as mcache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 from apps.enrollment.records.exceptions import AlreadyNotAssignedException, NonGroupException, NonStudentException
 from apps.notifications.models import Notification
-
-from .course import *
 
 import logging
 
@@ -137,7 +133,7 @@ class Group(models.Model):
 
     def get_all_terms_for_export(self):
         """return all terms of current group"""
-        from apps.schedule.models import Term
+        from apps.schedule.models.term import Term
         return Term.objects.filter(event__group=self)
 
     def human_readable_type(self):
@@ -216,7 +212,7 @@ class Group(models.Model):
         #        [Text] - text info about actions
 
         from apps.enrollment.records.models import Record, Queue
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         # admins are always allowed to remove students
         if not is_admin:
@@ -342,7 +338,7 @@ class Group(models.Model):
         return result, ['Student dopisany do grupy'] + lecture_result
 
     def enroll_student(self, student):
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
         from apps.enrollment.records.models import Record
 
         if Record.objects.filter(
@@ -395,7 +391,7 @@ class Group(models.Model):
 
     def rearanged(self):
         from apps.enrollment.records.models import Queue
-        from apps.enrollment.courses.models import Semester
+        from apps.enrollment.courses.models.semester import Semester
 
         queued = Queue.objects.filter(deleted=False,
                                       group=self).order_by('time').select_related('student')

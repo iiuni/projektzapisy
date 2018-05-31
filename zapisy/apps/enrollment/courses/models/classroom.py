@@ -1,10 +1,10 @@
 from datetime import time
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.db import models
 import json
 from django.db.models import Q
-from autoslug import AutoSlugField
+from django_extensions.db.fields import AutoSlugField
 
 floors = [(0, 'Parter'),
           (1, 'I piętro'),
@@ -30,7 +30,7 @@ class Classroom(models.Model):
     capacity = models.PositiveSmallIntegerField(default=0, verbose_name='liczba miejsc')
     floor = models.IntegerField(choices=floors, null=True, blank=True)
     can_reserve = models.BooleanField(default=False)
-    slug = AutoSlugField(populate_from='number', unique_with='number')
+    slug = AutoSlugField(populate_from='number')
 
     class Meta:
         verbose_name = 'sala'
@@ -61,8 +61,9 @@ class Classroom(models.Model):
 
     @classmethod
     def get_terms_in_day(cls, date, ajax=False):
-        from apps.schedule.models import Term as EventTerm, SpecialReservation
-        from apps.enrollment.courses.models import Semester, Term, Freeday, ChangedDay
+        from apps.schedule.models.term import Term as EventTerm
+        from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+        from apps.enrollment.courses.models.term import Term
 
         rooms = cls.get_in_institute(reservation=True)
 

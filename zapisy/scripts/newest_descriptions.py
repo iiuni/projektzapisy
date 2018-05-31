@@ -1,5 +1,4 @@
-from apps.enrollment.courses.models import Course, Semester, CourseEntity, Semester, CourseDescription
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from apps.enrollment.courses.models.course import CourseEntity, CourseDescription
 
 
 class bcolors:

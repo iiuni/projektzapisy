@@ -1,9 +1,7 @@
 from django.contrib import admin
-from django.db import models
 from django import forms
-from .models import SpecialReservation, Term
-from django.core.validators import ValidationError
-import sys
+from .models.term import Term
+from .models.specialreservation import SpecialReservation
 
 
 class SpecialReservationForm(forms.ModelForm):

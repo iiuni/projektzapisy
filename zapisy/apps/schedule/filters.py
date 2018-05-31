@@ -1,6 +1,7 @@
 import django_filters
-from apps.enrollment.courses.models import Semester
-from apps.schedule.models import Event, Term
+from apps.enrollment.courses.models.semester import Semester
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
 
 FILTER_TYPE_CHOICES = [('', '---------')] + Event.TYPES
 FILTER_STATUS_CHOICES = [('', '---------')] + Event.STATUSES
