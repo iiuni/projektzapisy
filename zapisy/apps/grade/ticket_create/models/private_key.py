@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 from django.db import models
-from django.db                import models
+
 
 class PrivateKey(models.Model):
     poll = models.ForeignKey('poll.Poll', verbose_name='ankieta', on_delete=models.CASCADE)

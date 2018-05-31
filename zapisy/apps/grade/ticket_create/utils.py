@@ -177,7 +177,7 @@ def mark_poll_used(user, poll):
 
 
 """
-Ponizsze funkcje implementuja protokol slepych podpisow
+Poniższe funkcje implementują protokół ślepych podpisów
 """
 
 
@@ -253,17 +253,18 @@ class Signature:
 """Legacy, needs to be here till we refactor voting"""
 
 
+# FIXME explanation of ticket parsing code: str(int())
+# The list is split into chunks, some of which are empty, and some of which
+# contain the tickets we want (e.g. ['123123', '', '', 'somecrap', '321321'])
+# The list is iterated until doing int(list[i]) succeeds; at this point
+# it's assumed we've found the key. However, we actually want to return
+#  the tickets as strings, not ints.
+# This entire function should be rewritten from scratch
 def from_plaintext(tickets_plaintext):
     pre_tickets = tickets_plaintext.split('----------------------------------')
-    pre_tickets = map(lambda x: [x], pre_tickets)
+    pre_tickets = [[x] for x in pre_tickets]
     for sign in whitespace:
-        pre_tickets = map(lambda ls:
-                          flatten(
-                              map(
-                                  lambda x:
-                                  x.split(sign),
-                                  ls)),
-                          pre_tickets)
+        pre_tickets = [flatten([x.split(sign) for x in ls]) for ls in pre_tickets]
 
     convert = False
     ids_tickets_signed = []

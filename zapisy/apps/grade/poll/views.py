@@ -873,8 +873,8 @@ def poll_answer(request, slug, pid):
                             option = Option.objects.get(pk=ansx)
                             ans.option = option
                             ans.save()
-                            if option in question.singlechoicequestionordering_set.filter(sections=section)[
-                                0].hide_on.all():
+                            if option in question.singlechoicequestionordering_set. \
+                                    filter(sections=section)[0].hide_on.all():
                                 delete = True
                         else:
                             ans.delete()
@@ -1042,7 +1042,6 @@ def poll_end_grading(request):
 # Poll results
 @login_required
 def poll_results(request, mode='S', poll_id=None, semester=None):
-
     data = {}
     try:
         if not semester:
@@ -1196,7 +1195,6 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
     return render(request, 'grade/poll/poll_total_results.html', data)
 
 
-
 @login_required
 def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
     data = {}
@@ -1279,8 +1277,7 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
             data['connected'] = []
             for cst in SavedTicket.objects.filter(
                     ticket=st.ticket,
-                    finished=True).exclude(
-                    poll=poll):
+                    finished=True).exclude(poll=poll):
                 cform = PollForm()
                 cform.setFields(cst.poll, cst)
                 data['connected'].append(cform)
@@ -1300,7 +1297,6 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
         messages.error(request, "Nie masz uprawnień do oglądania wyników tej ankiety.")
 
     return render(request, 'grade/poll/poll_detailed_results.html', data)
-
 
 
 @login_required
@@ -1336,7 +1332,6 @@ def save_csv(request, mode, poll_id):
     response['Content-Disposition'] = 'attachment; filename={}'.format(csv_title)
     csv_content = csv_prepare(response, sections, answers)
     return response
-
 
 
 @login_required

@@ -640,7 +640,7 @@ class NewSemesterTests(SeleniumTestCase):
             hour=00, minute=00)
         self.next_winter_semester.records_closing = \
             self.next_winter_semester.records_opening + \
-                                                    relativedelta(days=10)
+            relativedelta(days=10)
         self.next_winter_semester.save()
 
 
@@ -691,10 +691,9 @@ class AdminTests(SeleniumTestCase):
         self.password = '11111'
         self.admin = User.objects.create_superuser(username='przemka',
                                                    password=self.password,
-                                         email='admin@admin.com')
+                                                   email='admin@admin.com')
         self.admin.first_name = 'przemka'
         self.admin.save()
-
 
     def createSemester(self):
         today = datetime.now()
