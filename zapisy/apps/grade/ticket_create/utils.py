@@ -2,7 +2,7 @@
 from string import whitespace
 
 from Crypto.PublicKey import RSA
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
 from functools import cmp_to_key
