@@ -1,21 +1,7 @@
 # Run these tests with 'xvfb-run python manage.py test test_app'
 
-import os
-from collections import defaultdict
-from datetime import datetime, date, time, timedelta
-from time import sleep
-
-from apps.enrollment.courses.models import Semester, CourseEntity, Course, Type, Group, Term, Classroom
-from apps.offer.vote.models import SystemState
-from apps.users.models import Employee, Student
-from dateutil.relativedelta import relativedelta
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core import mail
-from django.db import connection
 from django.test import LiveServerTestCase
-from scripts.ectsimport import run_test as ectsimport_run_test
-from scripts.scheduleimport import run_test as scheduleimport_run_test
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,8 +15,25 @@ from selenium.common.exceptions import (
 
 from django.contrib.auth.models import User
 from apps.users.models import Employee, Student
-from apps.enrollment.courses.models import Semester, CourseEntity, Course, Type, Group, Term, Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.course import CourseEntity, Course
+from apps.enrollment.courses.models.course_type import Type
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
+
+import os
+from time import sleep
+from datetime import datetime, date, time, timedelta
+from dateutil.relativedelta import relativedelta
+from collections import defaultdict
+from django.db import connection
+from django.core import mail
+
+from django.conf import settings
+from scripts.scheduleimport import run_test as scheduleimport_run_test
+from scripts.ectsimport import run_test as ectsimport_run_test
 
 import os
 from time import sleep
