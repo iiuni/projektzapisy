@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from string import whitespace
 
 from Crypto.PublicKey import RSA
