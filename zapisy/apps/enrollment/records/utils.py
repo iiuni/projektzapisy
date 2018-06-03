@@ -2,9 +2,12 @@ import json
 
 from django.db.models.query import QuerySet
 from django.conf import settings
+
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import *
-from apps.users.models import BaseUser
+from apps.enrollment.records.models import Record, Queue
+from apps.users.models import BaseUser, Student
 
 
 def run_rearanged(result, group=None):

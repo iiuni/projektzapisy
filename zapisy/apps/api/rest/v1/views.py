@@ -1,5 +1,4 @@
 from rest_framework import viewsets
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
