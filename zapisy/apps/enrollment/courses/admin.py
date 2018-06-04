@@ -313,8 +313,8 @@ class GroupAdmin(admin.ModelAdmin):
             rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit_zamawiane != old.limit_zamawiane or
                                        obj.limit_zamawiane2012 != old.limit_zamawiane2012 or obj.limit != old.limit)
             if rearrange:
-                from ...records.utils import run_rearanged
                 for _ in range(obj.limit - obj.enrolled):
+                    from apps.enrollment.records.utils import run_rearanged
                     run_rearanged(None, obj)
 
         obj.save()
