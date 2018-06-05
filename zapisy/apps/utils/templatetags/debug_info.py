@@ -3,11 +3,15 @@ A template tag to return git repo info:
 The latest's commit hash, message author and date
 Displayed at the bottom of the main page if debug is on
 """
-
-from django import template
+from functools import lru_cache
 import subprocess
+import sys
 
-register = template.Library()
+import django
+from django import template
+
+register = django.template.Library()
+
 
 def get_line_from_process(process):
     p = subprocess.Popen(process, stdout=subprocess.PIPE)
@@ -16,8 +20,10 @@ def get_line_from_process(process):
         return ""
     return outlines[0].decode("utf-8")
 
+
 @register.simple_tag
-def git_info():
+@lru_cache()
+def debug_info():
     log_output = get_line_from_process([
         "git", "log", "-n", "1",
         "--pretty=format:%h %s --- %an %ad"
@@ -25,4 +31,7 @@ def git_info():
     branch_name = get_line_from_process([
         "git", "rev-parse", "--abbrev-ref", "HEAD"
     ])
-    return f'{branch_name} {log_output}'
+    python_info = f'<p>Python <strong>{sys.version}</strong></p>'
+    django_info = f'<p>Django <strong>{django.get_version()}</strong></p>'
+    git_info = f'<p>{branch_name} {log_output}</p>'
+    return f'{python_info}{django_info}{git_info}'
