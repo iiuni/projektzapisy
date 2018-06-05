@@ -23,43 +23,35 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
+        function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'UA-109984921-1');
     </script>
     <!-- Le styles -->
     <style>
         .label {
-            padding: 1px 3px 2px;
-            font-size: 9.75px;
-            font-weight: bold;
-            color: #ffffff;
-            text-transform: uppercase;
-            white-space: nowrap;
-            background-color: #bfbfbf;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            border-radius: 3px;
+          padding: 1px 3px 2px;
+          font-size: 9.75px;
+          font-weight: bold;
+          color: #ffffff;
+          text-transform: uppercase;
+          white-space: nowrap;
+          background-color: #bfbfbf;
+          -webkit-border-radius: 3px;
+          -moz-border-radius: 3px;
+          border-radius: 3px;
         }
-
         .label.important {
-            background-color: #c43c35;
+          background-color: #c43c35;
         }
-
         .label.warning {
-            background-color: #f89406;
+          background-color: #f89406;
         }
-
         .label.success {
-            background-color: #46a546;
+          background-color: #46a546;
         }
-
         .label.notice {
-            background-color: #62cffc;
+          background-color: #62cffc;
         }
 
     </style>
@@ -67,33 +59,33 @@
         {% compressed_css 'main' %}
     {% endblock %}
     <script type="text/javascript">
-        const user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
+            const user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
     </script>
     {% block js %}{% compressed_js 'main' %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
     <script src="{% static 'js/cookieconsent.min.js' %}"></script>
     <script>
-        window.addEventListener("load", function () {
-            window.cookieconsent.initialise({
-                "palette": {
-                    "popup": {
-                        "background": "#222222"
-                    },
-                    "button": {
-                        "background": "#00709e"
-                    }
-                },
-                "showLink": false,
-                "theme": "classic",
-                "position": "bottom",
-                "content": {
-                    "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
-                    "dismiss": "OK"
-                }
-            })
-        });
+    window.addEventListener("load", function(){
+        window.cookieconsent.initialise({
+          "palette": {
+            "popup": {
+              "background": "#222222"
+            },
+            "button": {
+              "background": "#00709e"
+            }
+          },
+          "showLink": false,
+          "theme": "classic",
+          "position": "bottom",
+          "content": {
+            "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
+            "dismiss": "OK"
+          }
+        })
+    });
     </script>
     <script src="{% static "js/common/utils.js" %}"></script>
     <script src="{% static "js/common/base.js" %}"></script>
@@ -107,9 +99,9 @@
 </form>
 <script type="text/javascript">
     jQuery.dataInvalidate_check();
-    $(document).ready(function () {
-        $('.dropdown-menu input,label').click(function (e) {
-            e.stopPropagation(); //This will prevent the event from bubbling up and close the dropdown when you type/click on text boxes.
+    $(document).ready(function() {
+        $('.dropdown-menu input,label').click(function(e) {
+                e.stopPropagation(); //This will prevent the event from bubbling up and close the dropdown when you type/click on text boxes.
         });
     });
 </script>
@@ -143,7 +135,7 @@
                 {% if user.is_authenticated %}
                     <div class="user-panel">
                         <strong>
-                            {{ user.get_full_name }}
+                        {{ user.get_full_name }}
                         </strong>
                         |
                         <a href="{% url 'my-profile' %}">Moje konto</a> |
@@ -153,67 +145,57 @@
                         {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
                             <a href="{% url 'news-all' %}"
                                class="unread">Aktualności ({{ user.student.get_number_of_news }})</a> |
-                        {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
-                            <a href="{% url 'news-all' %}"
-                               class="unread">Aktualności ({{ user.employee.get_number_of_news }})</a> |
-                        {% else %}
-                            <a href="{% url 'news-all' %}">Aktualności</a> |
+                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread">Aktualności ({{ user.employee.get_number_of_news }})</a> |
+                            {% else %}
+                                <a href="{% url 'news-all' %}">Aktualności</a> |
 
                         {% endif %}
                         <a href="{% url 'help' %}">Pomoc</a> |
                         <a href="{% url 'cas_ng_logout' %}">Wyloguj</a>
                     </div>
                 {% else %}
-                    <ul class="nav secondary-nav">
-                        <li class="dropdown" data-dropdown="dropdown">
-                            <a href="#" id="login-dropdown" class="dropdown-toggle" data-toggle="dropdown"><b>Zaloguj
-                                się</b> <span class="caret"></span></a>
-                            <ul id="login-dp" class="dropdown-menu">
-                                <li>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos"><img
-                                                    src="{% static 'images/usos-login-logo.png' %}"
-                                                    alt="Uniwersytet Wrocławski">Zaloguj się przez USOS</a>
-                                            <button class="btn primary" id="btn-no-usos">
-                                                lub użyj konta Systemu Zapisów
-                                            </button>
-                                            <div id="login-without-usos">
-                                                <form action="{% url 'user-login' %}" method="POST">
-                                                    {% csrf_token %}
-                                                    {% if request.path == '/' %}
-                                                        <input type="hidden" name="next"
-                                                               value="{% url 'schedule-own' %}"/>
-                                                    {% else %}
-                                                        <input type="hidden" name="next" value="{{ request.path }}"/>
-                                                    {% endif %}
-                                                    <div class="form-group">
-                                                        <input tabindex="1" type="text" id="id_login" name="username"
-                                                               placeholder="Użytkownik">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input tabindex="2" type="password" id="id_password"
-                                                               name="password" placeholder="Hasło">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <button type="submit" tabindex="4"
-                                                                class="btn btn-primary btn-block">Zaloguj &raquo;
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>
-                                                            <input type="checkbox" tabindex="3" value="true"
-                                                                   id="xlInput3" name="remember_me"> Pamiętaj
-                                                            mnie</label>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
+      <ul class="nav secondary-nav">
+          <li class="dropdown" data-dropdown="dropdown">
+              <a href="#" id="login-dropdown" class="dropdown-toggle" data-toggle="dropdown"><b>Zaloguj się</b> <span class="caret"></span></a>
+                <ul id="login-dp" class="dropdown-menu">
+                    <li>
+                         <div class="row">
+                                <div class="col-md-12">
+                                    <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos"><img src="{% static 'images/usos-login-logo.png'%}" alt="Uniwersytet Wrocławski">Zaloguj się przez USOS</a>
+                                    <button class="btn primary" id="btn-no-usos">
+                                      lub użyj konta Systemu Zapisów
+                                    </button>
+                                    <div id="login-without-usos">
+                                      <form action="{% url 'user-login' %}" method="POST">
+                                          {% csrf_token %}
+                                          {% if request.path == '/' %}
+                                              <input type="hidden" name="next" value="{% url 'schedule-own' %}"/>
+                                          {% else %}
+                                              <input type="hidden" name="next" value="{{request.path}}"/>
+                                          {% endif %}
+                                          <div class="form-group">
+                                              <input tabindex="1" type="text" id="id_login" name="username" placeholder="Użytkownik">
+                                          </div>
+                                          <div class="form-group">
+                                              <input tabindex="2" type="password" id="id_password" name="password" placeholder="Hasło">
+                                          </div>
+                                          <div class="form-group">
+                                               <button type="submit" tabindex="4" class="btn btn-primary btn-block">Zaloguj &raquo;</button>
+                                          </div>
+                                          <div class="form-group">
+                                              <label>
+                                              <input type="checkbox" tabindex="3"  value="true" id="xlInput3" name="remember_me"> Pamiętaj mnie</label>
+                                          </div>
+                                      </form>
                                     </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                                </div>
+                         </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
                 {% endif %}
             </div>
             <!-- end up-menu  -->
@@ -226,7 +208,7 @@
         <div class="container">
             <div class="logo">
                 <a href="/">
-                    <img src="{% static 'images/logotyp.jpg' %}" alt="Uniwersytet Wrocławski">
+                    <img src="{% static 'images/logotyp.jpg'%}" alt="Uniwersytet Wrocławski">
                 </a>
             </div>
         </div>
@@ -249,6 +231,7 @@
 </div>
 
 
+
 <div class="container">
     <div class="container space">
         <div class="bread">
@@ -256,11 +239,11 @@
             {% endblock %}
         </div>
         {% block messages %}
-            {% for message in messages %}
-                <div class="alert-message {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
+        {% for message in messages %}
+            <div class="alert-message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
         {% endblock %}
         <div id="main-content-container" class="row show-grid sidebar-right marginFix">
             {% block topContent %}{% endblock %}
@@ -289,11 +272,11 @@
             | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
             {% should_display_debug as display_debug %}
         </p>
-            {% if display_debug == True %}
-                {% autoescape off %}
+        {% if display_debug == True %}
+            {% autoescape off %}
                 {% debug_info %}
-                {% endautoescape %}
-            {% endif %}
+            {% endautoescape %}
+        {% endif %}
     </footer>
 
 </div>
