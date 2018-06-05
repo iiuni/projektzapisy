@@ -1,8 +1,3 @@
-"""
-A template tag to return git repo info:
-The latest's commit hash, message author and date
-Displayed at the bottom of the main page if debug is on
-"""
 from functools import lru_cache
 import subprocess
 import sys
@@ -24,6 +19,13 @@ def get_line_from_process(process):
 @register.simple_tag
 @lru_cache()
 def debug_info():
+    """
+    A template tag to return debug info:
+    Python version and compiler
+    Django version
+    The latest's commit hash, message author and date
+    Displayed at the bottom of the main page if debug is on
+    """
     log_output = get_line_from_process([
         "git", "log", "-n", "1",
         "--pretty=format:%h %s --- %an %ad"
