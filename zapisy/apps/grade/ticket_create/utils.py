@@ -8,10 +8,10 @@ from Crypto.Random.random import getrandbits, \
 from django.utils.safestring import SafeText
 
 from apps.grade.poll.models import Poll
+from apps.grade.ticket_create.exceptions import InvalidPollException, TicketUsed
 from apps.grade.ticket_create.models import PublicKey, \
     PrivateKey, \
     UsedTicketStamp
-from apps.grade.ticket_create.exceptions import *
 from functools import cmp_to_key
 
 RAND_BITS = 512
