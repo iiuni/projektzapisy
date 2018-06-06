@@ -1,8 +1,8 @@
 from django.db import models
 from apps.enrollment.courses.models.course import CourseEntity
+from apps.offer.preferences.exceptions import CoursePreferencesAlreadySet, UnknownPreferenceValue
 
 from apps.users.models import Employee
-from apps.offer.preferences.exceptions import CoursePreferencesAlreadySet, UnknownPreferenceValue
 
 PREFERENCE_CHOICES = (
     (3, 'Chętnie'),

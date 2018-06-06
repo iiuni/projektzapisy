@@ -1,7 +1,9 @@
 from django.db import models
+
+from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException, \
+    MoreThanOneSemesterWithOpenRecordsException
 from .course import Course
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from apps.enrollment.courses.exceptions import *
 from django.db.models import Q
 from django.core.validators import ValidationError
 from datetime import datetime, timedelta

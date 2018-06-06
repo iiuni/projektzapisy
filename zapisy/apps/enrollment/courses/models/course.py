@@ -445,16 +445,6 @@ class CourseEntity(models.Model):
         return CourseEntity.noremoved.filter(status=CourseEntity.STATUS_TO_VOTE)
 
     @staticmethod
-    def get_voters():
-        from apps.offer.vote.models.single_vote import SingleVote
-        from apps.offer.vote.models.system_state import SystemState
-
-        year = date.today().year
-        current_state = SystemState.get_state(year)
-
-        return SingleVote.objects.distinct('student').filter(state=current_state)
-
-    @staticmethod
     def get_proposals(is_authenticated=False):
         # TODO: in the order_by clause, we could just use "name";
         # the model translation plugin will actually check the user's language

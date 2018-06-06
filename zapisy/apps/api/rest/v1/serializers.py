@@ -4,6 +4,7 @@ from rest_framework import serializers
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.users.models import Employee
+from apps.offer.desiderata.models import Desiderata, DesiderataOther
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -36,3 +37,15 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ('id', 'user', 'consultations', 'homepage', 'room')
+
+
+class DesiderataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Desiderata
+        fields = '__all__'
+
+
+class DesiderataOtherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DesiderataOther
+        fields = '__all__'
