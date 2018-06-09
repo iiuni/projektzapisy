@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import (Course, CourseDescription,
+                                                   CourseEntity)
 from apps.enrollment.courses.models.semester import Semester
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.schedule.models.specialreservation import SpecialReservation
@@ -55,4 +57,22 @@ class DesiderataOtherSerializer(serializers.ModelSerializer):
 class SpecialReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecialReservation
+        fields = '__all__'
+
+
+class CourseEntitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseEntity
+        fields = '__all__'
+
+
+class CourseDescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseDescription
+        fields = '__all__'
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
         fields = '__all__'

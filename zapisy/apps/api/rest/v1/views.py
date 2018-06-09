@@ -3,15 +3,19 @@ from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication)
 
 from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import (Course, CourseDescription,
+                                                   CourseEntity)
 from apps.enrollment.courses.models.semester import Semester
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee
 from apps.users.utils import StaffPermission
 
-from .serializers import (ClassroomSerializer, DesiderataOtherSerializer,
-                          DesiderataSerializer, EmployeeSerializer,
-                          SemesterSerializer, SpecialReservationSerializer)
+from .serializers import (ClassroomSerializer, CourseDescriptionSerializer,
+                          CourseEntitySerializer, CourseSerializer,
+                          DesiderataOtherSerializer, DesiderataSerializer,
+                          EmployeeSerializer, SemesterSerializer,
+                          SpecialReservationSerializer)
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
@@ -53,4 +57,25 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     queryset = SpecialReservation.objects.all()
     serializer_class = SpecialReservationSerializer
+    filter_fields = '__all__'
+
+
+class CourseEntityViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    queryset = CourseEntity.objects.all()
+    serializer_class = CourseEntitySerializer
+    filter_fields = '__all__'
+
+
+class CourseDescriptionViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    queryset = CourseDescription.objects.all()
+    serializer_class = CourseDescriptionSerializer
+    filter_fields = '__all__'
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
     filter_fields = '__all__'
