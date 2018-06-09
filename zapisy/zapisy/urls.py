@@ -13,7 +13,6 @@ admin.autodiscover()
 
 urlpatterns = [
     url('^$', apps.news.views.main_page, name='main-page'),
-    url(r'^api/v1/', include(api_router_v1.urls)),
     url(r'^help/', include('apps.help.urls')),
     url(r'^courses/', include('apps.enrollment.courses.urls')),
     url(r'^records/', include('apps.enrollment.records.urls')),
@@ -47,4 +46,5 @@ urlpatterns = [
     url(r'^accounts/login$', views.login, name='cas_ng_login'),
     url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
+    url(r'^api/v1/', include(api_router_v1.urls)),
 ]
