@@ -1,5 +1,11 @@
 # projektzapisy Changelog
 
+# Version 10.06.18
+
+* added consent for students
+* small improvement in desideratas
+* special reservations api
+
 # Version 18.05.18
 
 * implemented new backups

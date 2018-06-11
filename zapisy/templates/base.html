@@ -230,6 +230,9 @@
     <!-- end down-menu  -->
 </div>
 
+    {% if user.student and not user.student.consent_answered %}
+      {% include "consent-dialog.html" %}
+    {% endif %}
 
 
 <div class="container">

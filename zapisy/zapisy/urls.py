@@ -1,13 +1,13 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django_cas_ng import views
 
 import apps.news.views
 from apps.api.rest.v1.urls import router as api_router_v1
-from apps.enrollment.courses.admin import views as courses_admin_views
+from apps.enrollment.courses import admin_views as courses_admin_views
 from apps.feeds import LatestNews
 from apps.users import views as users_views
-from django_cas_ng import views
 
 admin.autodiscover()
 

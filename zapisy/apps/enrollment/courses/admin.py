@@ -18,6 +18,7 @@ from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDa
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, Queue
+from apps.enrollment.records.utils import run_rearanged
 
 
 class GroupInline(admin.TabularInline):
@@ -313,7 +314,6 @@ class GroupAdmin(admin.ModelAdmin):
             rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit_zamawiane != old.limit_zamawiane or
                                        obj.limit_zamawiane2012 != old.limit_zamawiane2012 or obj.limit != old.limit)
             if rearrange:
-                from ...records.utils import run_rearanged
                 for _ in range(obj.limit - obj.enrolled):
                     run_rearanged(None, obj)
 

@@ -18,19 +18,24 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.db import transaction
 from xhtml2pdf import pisa
 
+from apps.enrollment.courses.models.course import Course
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.student_options import StudentOptions
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.utils import prepare_group_data
+from apps.enrollment.records.exceptions import NonGroupException, AlreadyPinnedException, AlreadyNotPinnedException, \
+    NonStudentException
+from apps.enrollment.records.models import Record, Queue, logger
 from apps.enrollment.records.utils import run_rearanged, prepare_courses_with_terms, prepare_groups_json
 from apps.users.decorators import employee_required
 
 from apps.cache_utils import cache_result
-from apps.users.models import *
-from apps.enrollment.records.models import *
 from apps.enrollment.courses.views import prepare_courses_list_to_render
 from apps.enrollment.utils import mailto
+from apps.users.models import BaseUser, Student
 
 from libs.ajax_messages import AjaxFailureMessage, AjaxSuccessMessage
 
@@ -86,7 +91,6 @@ def set_enrolled(request, method):
     # Used to roll the transaction back if an error occurrs.
     savept = transaction.savepoint()
 
-    from django.db.models.query import QuerySet
     is_ajax = (method == '.json')
     message_context = None if is_ajax else request
 

@@ -64,21 +64,6 @@ class SingleVote (models.Model):
                 a[str(v.student_id)] = {}
 
     @staticmethod
-    def connect_with_courses(state, tag):
-        if tag == 'summer':
-            semester = state.semester_summer
-
-        elif tag == 'winter':
-            semester = state.semester_winter
-
-        else:
-            return
-
-        for c in Course.objects.filter(semester=semester):
-            if c.entity:
-                SingleVote.objects.filter(state=state, entity=c.entity).update(course=c)
-
-    @staticmethod
     def get_votes(voter, year=None, state=None,):
         """
             Gets user votes in specified year
@@ -130,32 +115,6 @@ class SingleVote (models.Model):
         return value, voters, votes
 
     @staticmethod
-    def get_voters(proposal, year=None):
-        """
-            Gets users who voted for specified proposal
-        """
-        if not year:
-            year = date.today().year
-        current_state = SystemState.get_state(year)
-        votes = SingleVote.objects.filter(
-            votes__gte=1,
-            entity=proposal,
-            state=current_state).select_related(
-            'student',
-            'student__user')
-
-        voters = []
-        for vote in votes:
-            voters.append({'user': vote.student.user, 'points': vote.correction})
-        return voters
-
-    @staticmethod
-    def get_points_for_student(student, year=None):
-        if not year:
-            year = date.today().year
-        pass
-
-    @staticmethod
     def make_votes(student, year=None, state=None, tag='summer'):
         """
             Makes 'zero' vote for student - only for proposal without
@@ -202,23 +161,6 @@ class SingleVote (models.Model):
         current_state = SystemState.get_state(year)
 
         return SingleVote.objects.filter(student=voter, state=current_state, entity__in=proposals)\
-            .select_related('entity',
-                            'entity__owner',
-                            'entity__owner__user',
-                            'entity__type')
-
-    @staticmethod
-    def get_votes_in_semester(voter, state, tag):
-        #        """
-        #            Gets user votes in specified year for proposal set
-        #        """
-        if tag == 'summer':
-            semester = state.semester_summer
-
-        elif tag == 'winter':
-            semester = state.semester_winter
-
-        return SingleVote.objects.filter(student=voter, entity__courses__semester=semester)\
             .select_related('entity',
                             'entity__owner',
                             'entity__owner__user',
