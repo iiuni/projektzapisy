@@ -268,7 +268,8 @@
         <p>
             &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
             {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>{% endif %}
+                <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+            {% endif %}
             | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
         </p>
         {% should_display_debug as display_debug %}
