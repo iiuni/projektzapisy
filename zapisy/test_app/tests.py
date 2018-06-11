@@ -14,7 +14,7 @@ from selenium.common.exceptions import (
 )
 
 from django.contrib.auth.models import User
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
 from apps.enrollment.courses.models.course_type import Type
@@ -115,7 +115,14 @@ class NewSemesterTests(SeleniumTestCase):
             user=user_student3, matricula='333333')
         self.student4 = Student.objects.create(
             user=user_student4, matricula='444444')
-
+        PersonalDataConsent.objects.update_or_create(student=self.student1,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student2,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student3,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student4,
+                                                     defaults={'granted': True})
         self.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(

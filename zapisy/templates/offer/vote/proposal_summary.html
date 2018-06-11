@@ -32,8 +32,8 @@
 				<tbody>
 					{% for voter in voters %}
 						<tr>
-							<td>{{ voter.student.user.first_name }}</td>
-							<td>{{ voter.student.user.last_name }}</td>
+							<td>{% if user.employee or voter.student.consent_granted %}{{ voter.student.user.first_name }}{% endif %}</td>
+							<td>{% if user.employee or voter.student.consent_granted %}{{ voter.student.user.last_name }}{% endif %}</td>
 							<td>{{ voter.student.matricula }}</td>
 							<td class="number">{{ voter.correction   }}</td>
 						</tr>

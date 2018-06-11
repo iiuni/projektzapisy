@@ -22,8 +22,7 @@
     <h3>Dezyderaty</h3>
 
     {% if semester.desiderata_is_open %}
-    Zaznacz godziny, w których możesz prowadzić zajęcia. 
-    <p id="desiderata-emphasis">Proszę zwrócić uwagę, że zaznaczamy odwrotnie, niż było przyjęte na papierowych dezyderatach.</p><br>
+    <p>Pozostaw zaznaczone te godziny, w których <strong>możesz</strong> prowadzić zajęcia:</p>
     <form method="post">{% csrf_token %}
     <table>
         <thead>
@@ -53,7 +52,7 @@
     </table>
     {{ formset.management_form }}
     <br>
-    Proszę również o wypisanie seminariów, rad, spotkań i innych zajęć, na które będziesz uczęszczać oraz preferowanych sal i laboratoriów.<br>
+    Inne uwagi:<br>
     <br>{{ other_form.comment }}<br><br>
     <button type="submit" class="btn btn-primary">Zapisz</button>
     </form>
