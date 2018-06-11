@@ -23,7 +23,7 @@ def debug_info():
     A template tag to return debug info:
     Python version and compiler
     Django version
-    The latest's commit hash, message author and date
+    The latest commit's hash, message, author and date
     Displayed at the bottom of the main page if debug is on
     """
     log_output = get_line_from_process([
