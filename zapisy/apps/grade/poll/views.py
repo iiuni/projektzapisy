@@ -641,21 +641,7 @@ def tickets_enter(request):
         form = TicketsForm(request.POST, request.FILES)
 
         if form.is_valid():
-            if request.FILES:
-                keysfile = request.FILES['ticketsfile']
-                if keysfile.size > 1048576:
-                    from django.template.defaultfilters import filesizeformat
-                    messages.error(request,
-                                   'Proszę przesłać plik o maksymalnym rozmiarze: \
-                        %s. Obecny rozmiar to: %s' %
-                                   (filesizeformat(1048576), filesizeformat(keysfile.size)))
-                    data['form'] = form
-                    data['grade'] = grade
-                    return render(request, 'grade/poll/tickets_enter.html', data)
-                else:
-                    tickets_plaintext = keysfile.read()
-            else:
-                tickets_plaintext = form.cleaned_data['ticketsfield']
+            tickets_plaintext = form.cleaned_data['ticketsfield']
             try:
                 ids_and_tickets = from_plaintext(tickets_plaintext)
             except BaseException:
@@ -714,7 +700,6 @@ def tickets_enter(request):
                     poll_list,
                 ) for poll_name, poll_list in group_polls_and_tickets_by_course(finished)
             ]
-            return HttpResponseRedirect('/grade/poll/polls/all')
             return HttpResponseRedirect('/grade/poll/polls/all')
     else:
         form = TicketsForm()

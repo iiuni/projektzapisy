@@ -1,6 +1,8 @@
 from string import whitespace
 
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
@@ -191,6 +193,8 @@ def blind_ticket(ticket, pub_key, k):
     return pub_key.blind(ticket, k)
 
 
+# FIXME the return type of this method is due to legacy ticket
+# handling code in ticket_create/views and poll/utils
 def sign_ticket(ticket, priv_key):
     """
         Podpisuje kupon kluczem prywatnym
@@ -199,7 +203,14 @@ def sign_ticket(ticket, priv_key):
     :return: podpisany kupon
     """
     priv = RSA.importKey(priv_key.private_key)
-    return priv.sign(ticket, 0)[0]
+    ticket_hash = SHA256.new(ticket.encode("utf-8"))
+    signed = pkcs1_15.new(priv).sign(ticket_hash)
+    signed_as_int = _int_from_bytes(signed)
+    return signed_as_int
+
+
+def _int_from_bytes(xbytes: bytes) -> int:
+    return int.from_bytes(xbytes, 'big')
 
 
 def unblind_ticket(ticket, priv_key, k):
@@ -235,7 +246,7 @@ def convert_ticket_record(ticket):
     """
     t = ticket.strip().split('\r\n')
     if len(t) > 1:
-        poll_id = str(t[0]).strip().split('poll_id:')[1]
+        poll_id = str(t[0]).strip().split('id:')[1]
         return int(poll_id), str(t[1]).strip()
 
 

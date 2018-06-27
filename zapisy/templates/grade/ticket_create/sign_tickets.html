@@ -13,7 +13,7 @@
     <div class="col">
         <div class="row">
             <div class="col">
-                <p class="lead">Jeśli jesteś zalogowany, to proszę <a href="/logout">wyloguj się</a></p>
+                <p class="lead">Jeśli jesteś zalogowany, to proszę <a href="{% url 'user-logout' %}">wyloguj się</a></p>
             </div>
         </div>
         <div class="row">
@@ -21,12 +21,12 @@
                 <p class="text">
                     Do poniższego pola wklej podpisane odpowiednimi kluczami publicznymi kupony wraz z ich
                     identyfikatorami
-                    (poll id) według wzoru:
+                    (id) według wzoru:
                 </p>
                 <pre>
-                poll_id:1234
+                id:1234
                 KUPON
-                ***
+                **********************************
                 </pre>
             </div>
         </div>

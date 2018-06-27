@@ -14,7 +14,7 @@
         <div class="col">
             <p class="text">
                 Poniżej znajdziesz Twoje kupony podpisane kluczami prywatnymi odpowiadajacych im ankiet.
-                Zapisz je wraz z odpowiadającymi im identyfikatorami ankiet (poll_id) - to jest Twoja przepustka do
+                Zapisz je wraz z odpowiadającymi im identyfikatorami ankiet - to jest Twoja przepustka do
                 Oceny Zajec.
             </p>
         </div>
@@ -24,7 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     {% for sign in signatures %}
-                        <p class="card-text">poll_id:{{ sign.poll_id }}</p>
+                        <p class="card-text">id:{{ sign.poll_id }}</p>
                         <p class="card-text">{{ sign.signature }}</p>
                         ----------------------------------
                     {% endfor %}
