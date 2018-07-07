@@ -1,4 +1,4 @@
-{% extends "grade/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 
@@ -12,9 +12,7 @@
 {{ fdata }}
 
 {% block content %}
-    <div>
-        {% block poll-managment %}
+    {% block poll-managment %}
 
-        {% endblock %}
-    </div>
+    {% endblock %}
 {% endblock %}
