@@ -1,34 +1,37 @@
 {% extends "grade/base.html" %}
-{% load compressed %}
-{% block styles %}
-    {% compressed_css 'ticketssave' %}
-{% endblock %}
+{#{% load compressed %}#}
+{#{% block styles %}#}
+{#    {% compressed_css 'ticketssave' %}#}
+{#{% endblock %}#}
 
-{% block main-navigation %}
-	<a href="/">Strona Główna</a> &raquo;
-	<a href="{% url 'grade-main' %}">Ocena zajęć</a> &raquo;
-	Pobieranie biletów
-{% endblock %}
+{#{% block main-navigation %}#}
+{#	<a href="/">Strona Główna</a> &raquo;#}
+{#	<a href="{% url 'grade-main' %}">Ocena zajęć</a> &raquo;#}
+{#	Pobieranie biletów#}
+{#{% endblock %}#}
 
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Pobieranie biletów</li>
+{% endblock %}
 
 {% block connection-choice %} class="active"{% endblock %}
 
 {% block main-subtitle %}Pobierz klucze{% endblock %}
 
 {% block content %}
-
     {% if tickets %}
-        <div id='grade-tickets-save-form'>
-                <h3> Pomyślnie wygenerowano klucze.</h3><h3>Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
-            <form action=".">
-    	        <textarea id="keys" name="keys" cols="80" rows="20" readonly="readonly">{{ tickets }}
+        <div class="row">
+            <div class="col">
+                <h3> Pomyślnie wygenerowano klucze.</h3>
+                <h3>Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
+                <form action=".">
+    	        <textarea name="keys" cols="80" rows="20" readonly="readonly">
+                    {{ tickets }}
                 </textarea>
-            </form>
-{#            <input id="download-keys" #}
-{#                   class="download-keys-button" #}
-{#                   type="button" #}
-{#                   value="Zapisz bilety do pliku"#}
-{#                   onclick='window.open("data:application/octet-stream," + encodeURIComponent($("#keys").text()))'>#}
+                </form>
+            </div>
         </div>
     {% else %}
         <div class="alert-message">

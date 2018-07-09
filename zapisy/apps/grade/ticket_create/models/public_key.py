@@ -1,4 +1,5 @@
 from django.db import models
+from Crypto.PublicKey import RSA
 
 
 class PublicKey(models.Model):
@@ -12,3 +13,6 @@ class PublicKey(models.Model):
 
     def __str__(self):
         return "Klucz publiczny: " + str(self.poll)
+
+    def import_rsa_key(self):
+        return RSA.importKey(self.public_key)

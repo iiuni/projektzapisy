@@ -1,12 +1,16 @@
 from string import whitespace
 
 from Crypto.PublicKey import RSA
+from Crypto.Random import get_random_bytes
+from Crypto.Random import random
+from Crypto.Util import number
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
 from functools import cmp_to_key
+from django.utils.safestring import SafeText
 
 RAND_BITS = 512
 KEY_LENGTH = 1024
@@ -182,6 +186,23 @@ Poniższe funkcje implementują protokół ślepych podpisów
 """
 
 
+def generate_random_coupon():
+    """
+    :return: Losowa liczba o dlugosci RAND_BITS bitow
+    """
+    return _int_from_bytes(get_random_bytes(RAND_BITS))
+
+
+def generate_blinding_factor():
+    """
+    :return: losowa liczba wzglednie pierwsza z RAND_BITS
+    """
+    k = random.getrandbits(RAND_BITS)
+    while number.GCD(RAND_BITS, k) != 1:
+        k = random.getrandbits(RAND_BITS)
+    return k
+
+
 def blind_ticket(ticket, pub_key, k):
     """
         Zaślepia kupon przy pomocy podanej przez użytkownika liczby k oraz klucza publicznego
@@ -190,7 +211,7 @@ def blind_ticket(ticket, pub_key, k):
     :param k: liczba od użytkownika
     :return: Zaślepiony podpis kuponu
     """
-    return pub_key.blind(ticket, k)
+    return pkcs1_15.new(pub_key).blind(ticket, k)
 
 
 # FIXME the return type of this method is due to legacy ticket
@@ -261,6 +282,36 @@ class Signature:
 
 
 """Legacy, needs to be here till we refactor voting"""
+
+
+def generate_keys(poll_list):
+    keys = []
+
+    for poll in poll_list:
+        key = RSA.importKey(PublicKey.objects.get(poll=poll).public_key)
+        keys.append((str(key.n), str(key.e)))
+
+    return keys
+
+
+def to_plaintext(vtl):
+    res = ""
+    for p, t, st in vtl:
+        res += '[' + p.title + ']'
+        if not p.group:
+            res += 'Ankieta ogólna &#10;'
+        else:
+            res += str(p.group.course.name) + " &#10;"
+            res += str(p.group.get_type_display()) + ": "
+            res += str(p.group.get_teacher_full_name()) + " &#10;"
+        if p.studies_type:
+            res += 'typ studiów: ' + str(p.studies_type) + " &#10;"
+
+        res += 'id: ' + str(p.pk) + ' &#10;'
+        res += str(t) + " &#10;"
+        res += str(st) + " &#10;"
+        res += "---------------------------------- &#10;"
+    return SafeText(str(res))
 
 
 # FIXME explanation of ticket parsing code: str(int())

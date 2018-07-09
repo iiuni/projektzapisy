@@ -1,0 +1,75 @@
+{% extends "grade/base.html" %}
+{#{% load render_bundle from webpack_loader %}#}
+{% load compressed %}
+{% block main-subtitle %}Pobieranie kluczy{% endblock %}
+
+{% block js %}
+    {% compressed_js 'ticket_create_generate_tickets' %}
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Pobieranie kluczy</li>
+{% endblock %}
+
+{% block content %}
+    {% if grade %}
+        {#        <div id="app"></div>#}
+        <div class="col">
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"
+                             aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h2>
+                        Pobieranie kluczy do następujących ankiet:
+                    </h2>
+                    <form id="get-tickets-form" method="post">
+                        {% csrf_token %}
+                        <h4>Ankiety przypisane do przedmiotu:</h4>
+                        {% for k, poll in polls.items %}
+                            <ul>
+                                <li>
+                                    <h4>
+                                        <a href="{% url 'course-page' poll.courses.slug %}">{{ poll.courses }}</a>
+                                    </h4>
+                                    <ul>
+                                        {% for g in poll.polls %}
+                                            <li>{{ g }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% empty %}
+                            <h6>Brak ankiet</h6>
+                        {% endfor %}
+                        <h4>Ankiety ogólne:</h4>
+                        {% if general_polls %}
+                            <ul>
+                                {% for p in general_polls %}
+                                    <li>{{ p }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <h6>Brak ankiet</h6>
+                        {% endif %}
+                        {% if general_polls or polls %}
+                            <div style="text-align: center">
+                                <input id="connections-choice-button" class="btn" type="submit" value="Pobierz klucze">
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {#    {% render_bundle "ticket_create-get-tickets" %}#}
+{% endblock %}

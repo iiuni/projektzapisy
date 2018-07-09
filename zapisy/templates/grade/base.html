@@ -39,11 +39,18 @@
         <li class="nav-item">
             <a href="{% url 'grade-ticket-keys-list' %}" class="nav-link">Pobierz klucze publiczne</a>
         </li>
+        <li class="nav-item">
+            <a href="{% url 'grade-ticket-get-tickets' %}" class="nav-link {% if tab == "connections-choice" %}
+            active {% endif %}">
+                Pobierz klucze
+            </a>
+        </li>
     {% endif %}
     {% if grade %}
         <li class="nav-item">
             <a href="{% url 'grade-ticket-sign-tickets' %}" class="nav-link">Podpisz kupony</a>
         </li>
+
         <li class="nav-item">
             <a href="{% url 'grade-poll-tickets-enter' %}" class="nav-link">Oceń zajęcia</a></li>
     {% endif %}

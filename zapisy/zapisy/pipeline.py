@@ -238,15 +238,15 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/correction_form.min.js',
     },
-    'connectionchoice': {
+    'ticket_create_generate_tickets': {
         'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/jquery/tooltip.jquery.js',
+            # 'js/jquery/jquery-1.5.2.js',
+            # 'js/jquery/jquery-ui-1.8.17.custom.js',
+            # 'js/jquery/jquery.cookies.2.2.0.min.js',
+            # 'js/jquery/baseExtensions.js',
+            # 'js/main.js',
+            # 'js/common/bootstrap-dropdown.js',
+            # 'js/jquery/tooltip.jquery.js',
             'js/grade/ticket_create/BigInt.js',
             'js/grade/ticket_create/ticket_create.js',
         ),
@@ -464,7 +464,6 @@ PIPELINE_JS = {
 
     },
 
-
     'preferences': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -475,9 +474,9 @@ PIPELINE_JS = {
             'js/common/bootstrap-dropdown.js',
             'js/components/messageBox.js',
             'js/components/topBarFilter.js',
-            #'js/common/listFilter.js',
-            #'js/common/listFilter-courseType.js',
-            #'js/offer/proposal/proposals-list.js'
+            # 'js/common/listFilter.js',
+            # 'js/common/listFilter-courseType.js',
+            # 'js/offer/proposal/proposals-list.js'
         ),
         'output_filename': 'js/preferenes.min.js',
 

@@ -1,142 +1,109 @@
-/*
- required: Big Integers
- http://www.leemon.com/crypto/BigInt.html
- */
+class CreateTickets {
+    constructor() {
+        this.tickets = []; // t_array
+        this.coupons = []; // m_array
+        this.blindingFactors = []; // k_array
+        this.unblindst = []; // unblindst_array
+        this.unblindt = []; // unblindt_array
+        this.randBits = 512;
+        this.used = false;
+        this.progressBar = document.getElementById("progress-bar");
+        this.button = document.getElementById("connections-choice-button");
+    }
 
-if (typeof Ticket != 'undefined') {
-} else {
-    var Ticket = new Object();
-}
-Ticket.create = Object();
-Ticket.create.init = function () {
-    $("#progressbar").progressbar({ value:0 });
-    Ticket.create.t_array = new Array();
-    Ticket.create.m_array = new Array();
-    Ticket.create.unblindst_array = new Array();
-    Ticket.create.unblindt_array = new Array();
-    Ticket.create.k_array = new Array();
-    Ticket.create.RAND_BITS = 512;
-    Ticket.create.used = false;
-
-    $("#connection_choice_button").click(function (event) {
-        event.preventDefault();
-        if (Ticket.create.used) {
-            return false;
+    init() {
+        if (this.button != null) {
+            this.button.onclick = (event) => {
+                event.preventDefault();
+                if (!this.used) {
+                    this.used = true;
+                    this.getKeys()
+                        .then(keys => {
+                                keys.forEach(key => this.generateTicket(key));
+                                this.setProgressBar(30);
+                                return JSON.stringify(this.tickets);
+                            }
+                        ).then(tickets => {
+                        let formData = $("#get-tickets-form").serialize();
+                        let csrftoken = formData.split("csrfmiddlewaretoken=")[1];
+                        let form = new FormData();
+                        form.append('ts', JSON.stringify(this.tickets));
+                        return fetch("/grade/ticket/ajax_tickets2", {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                // 'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': csrftoken
+                            },
+                            credentials: "same-origin",
+                            body: form
+                        }).then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                return []
+                            }
+                        }).then(signedTickets => {
+                            console.log(signedTickets);
+                        });
+                    });
+                }
+            }
         }
-        Ticket.create.used = true;
-
-        Ticket.create.step1();
-    })
-}
-
-// Request public keys from the server
-Ticket.create.step1 = function () {
-    dataString = $("#connection_choice").serialize()
-    $("#progressbar").progressbar("option", "value", 10);
-    $.ajax({
-        type:"POST",
-        url:"/grade/ticket/ajax_tickets1",
-        dataType:'json',
-        data:dataString,
-        success:Ticket.create.step2
-    });
-    return false;
-}
-
-// Once we have the public keys, use them to generate
-// tickets, then send them to the server for signing
-Ticket.create.step2 = function (keys) {
-    $("#progressbar").progressbar("option", "value", 30);
-    $.each(keys, Ticket.create.t_generator);
-    var hidden = document.createElement('input')
-    hidden.name = 'ts'
-    hidden.type = 'hidden'
-    hidden.value = JSON.stringify(Ticket.create.t_array)
-    $("#connection_choice").append(hidden);
-    dataString = $("#connection_choice").serialize()
-    $.ajax({
-        type:"POST",
-        url:"/grade/ticket/ajax_tickets2",
-        dataType:'json',
-        data:dataString,
-        success:Ticket.create.step3
-    });
-}
-
-// The server signed our generated tickets and sent
-// them to us; previously we'd shuffle them with some modular
-// arithmetic, but this is now disabled as that algorithm
-// it not compatible with pycryptodome anymore and it provided
-// no extra security one way or another
-// Now this function essentially just resends the server's response
-// back to it so it can render the tickets in tickets_save.html
-Ticket.create.step3 = function (unblinds) {
-    $("#progressbar").progressbar("option", "value", 70);
-    $.each(unblinds, Ticket.create.unblinds_generator);
-
-    var hidden = document.createElement('input')
-    hidden.name = 'unblindst'
-    hidden.type = 'hidden'
-    hidden.value = JSON.stringify(Ticket.create.unblindst_array)
-    $("#connection_choice").append(hidden);
-    var hidden = document.createElement('input')
-    hidden.name = 'unblindt'
-    hidden.type = 'hidden'
-    hidden.value = JSON.stringify(Ticket.create.unblindt_array)
-    $("#connection_choice").append(hidden);
-    $("#progressbar").progressbar("option", "value", 100);
-    $('#connection_choice').submit();
-}
-
-Ticket.create.unblinds_generator = function (index, unblind) {
-    if (unblind[1] == "Nie jesteś przypisany do tej ankiety") {
-        Ticket.create.unblindst_array.push(unblind[1])
-        Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
     }
-    else if (unblind[1] == "Bilet już pobrano") {
-        Ticket.create.unblindst_array.push(unblind[1])
-        Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
+
+    getKeys() {
+        this.setProgressBar(10);
+        let formData = $("#get-tickets-form").serialize();
+        let csrftoken = formData.split("csrfmiddlewaretoken=")[1];
+        return fetch("/grade/ticket/ajax_tickets1", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrftoken
+            },
+            credentials: "same-origin"
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return [];
+            }
+        });
     }
-    else {
-        var ticket = unblind[0];
-        var ticketSignature = unblind[1][0];
-        Ticket.create.unblindt_array.push(ticket);
-        Ticket.create.unblindst_array.push(ticketSignature);
 
-        // FIXME disabled this after we transition to Python3/pycryptodome
-        // the legacy signing/verification algo used by pycrypto
-        // that allowed this to work is no longer supported
+    finished() {
+        this.setProgressBar(100);
+        this.used = false;
+    }
 
-        //var st = str2bigInt(unblind[1][0], 10, 10)
-        // var n = str2bigInt(unblind[1][1], 10, 10)
-        // var e = str2bigInt(unblind[1][2], 10, 10)
-        // var rk = inverseMod(Ticket.create.k_array[index], n)
-        // Ticket.create.unblindst_array.push(bigInt2str(multMod(mod(st, n), mod(rk, n), n), 10))
-        // Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
+    generateTicket(value) {
+        const m = randBigInt(this.randBits, 0);
+        let n = str2bigInt(value[0][0], 10, 10);
+        let e = str2bigInt(value[0][1], 10, 10);
+        let bits = bitSize(n);
+        let k = 0;
+        do {
+            k = randBigInt(bits, 0);
+        } while ((greater(k, n) || greater(int2bigInt(2, 2, 1), k)) && !equalsInt(GCD(k, n), 1));
+        this.blindingFactors.push(k);
+        let a = mod(m, n);
+        this.coupons.push(a);
+        let b = powMod(k, e, n);
+
+        this.tickets.push(bigInt2str(multMod(a, b, n), 10));
+    }
+
+    setProgressBar(value) {
+        if (this.progressBar != null) {
+            this.progressBar.style.width = value + "%";
+        }
     }
 }
 
-Ticket.create.t_generator = function (key, val) {
-    var m = randBigInt(512, 0)
-    $.each(val, function (nr, g) {
-        var n = str2bigInt(g[0], 10, 10)
-        var e = str2bigInt(g[1], 10, 10)
-        var bits = bitSize(n)
-
-        do
-        {
-            var k = randBigInt(bits, 0)
-        } while ((greater(k, n) || greater(int2bigInt(2, 2, 1), k)) && !equalsInt(GCD(k, n), 1)) ;
-
-        Ticket.create.k_array.push(k);
-        Ticket.create.m_array.push(mod(m, n));
-        var a = mod(m, n)
-        var b = powMod(k, e, n)
-        var t = multMod(a, b, n)
-
-        Ticket.create.t_array.push(bigInt2str(t, 10))
-    });
-
-}
-
-$(Ticket.create.init)
+$(() => {
+    new CreateTickets().init();
+});
