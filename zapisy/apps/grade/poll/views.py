@@ -635,7 +635,6 @@ def tickets_enter(request):
         return render(request, 'grade/poll/user_is_authenticated.html', {})
 
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
-    data = {}
 
     if request.method == "POST":
         form = TicketsForm(request.POST, request.FILES)
@@ -649,9 +648,7 @@ def tickets_enter(request):
 
             if not ids_and_tickets:
                 messages.error(request, "Podano niepoprawne bilety.")
-                data['form'] = form
-                data['grade'] = grade
-                return render(request, 'grade/poll/tickets_enter.html', data)
+                return render(request, 'grade/poll/tickets_enter.html', {'form': form, 'grade': grade})
 
             errors = []
             polls = []
@@ -662,8 +659,7 @@ def tickets_enter(request):
                     public_key = PublicKey.objects.get(poll=poll)
                     if check_signature(ticket, signed_ticket, public_key):
                         try:
-                            st = SavedTicket.objects.get(poll=poll,
-                                                         ticket=ticket)
+                            st = SavedTicket.objects.get(poll=poll, ticket=ticket)
                             if st.finished:
                                 finished.append((poll, ticket, signed_ticket))
                             else:
@@ -704,9 +700,7 @@ def tickets_enter(request):
     else:
         form = TicketsForm()
 
-    data['form'] = form
-    data['grade'] = grade
-    return render(request, 'grade/poll/tickets_enter.html', data)
+    return render(request, 'grade/poll/tickets_enter.html', {'form': form, 'grade': grade})
 
 
 def polls_for_user(request, slug):
@@ -769,7 +763,6 @@ def poll_answer(request, slug, pid):
         poll_cands = []
 
     try:
-
         finished_cands = []
         for poll_to_show in data['finished']:
 
@@ -1182,8 +1175,7 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
 
 @login_required
 def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
-    data = {}
-    data['grade'] = Semester.objects.filter(is_grade_active=True).count() > 0
+    data = {'grade': Semester.objects.filter(is_grade_active=True).count() > 0}
 
     if mode == 'S':
         data['mode'] = 'course'

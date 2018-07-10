@@ -1,15 +1,13 @@
+from functools import cmp_to_key
 from string import whitespace
-
-from Crypto.PublicKey import RSA
-from Crypto.Random import get_random_bytes
-from Crypto.Random import random
-from Crypto.Util import number
+from math import gcd
 from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from Crypto.Random.random import getrandbits, randint
 from Crypto.Signature import pkcs1_15
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
-from functools import cmp_to_key
 from django.utils.safestring import SafeText
 
 RAND_BITS = 512
@@ -87,6 +85,10 @@ def save_keys(keys_list):
 
 
 def generate_keys_for_polls(semester=None):
+    """
+    Generates RSA key pair for each poll in given semester
+    :param semester: if none then current semester is taken
+    """
     if not semester:
         semester = Semester.get_current_semester()
     poll_list = Poll.get_polls_without_keys(semester)
@@ -101,6 +103,11 @@ def generate_keys_for_polls(semester=None):
 
 
 def group_polls_by_course(poll_list):
+    """
+    Groups polls into lists by course and returns them inside list
+    :param poll_list: list of polls
+    :return: list of list of polls grouped by course
+    """
     if not poll_list:
         return []
 
@@ -136,9 +143,15 @@ def group_polls_by_course(poll_list):
     return res
 
 
-def connect_groups(groupped_polls, form):
+def connect_groups(grouped_polls, form):
+    """
+
+    :param grouped_polls: list of grouped polls by course
+    :param form: form
+    :return: polls with connections
+    """
     connected_groups = []
-    for polls in groupped_polls:
+    for polls in grouped_polls:
         if not polls[0].group:
             label = 'join_common'
         else:
@@ -155,14 +168,19 @@ def connect_groups(groupped_polls, form):
     return connected_groups
 
 
-def check_poll_visiblity(user, poll):
+"""
+Functions below implement blind signature protocol
+"""
+
+
+def is_poll_visible(user, poll):
     """
     Checks, whether user is a student entitled to the poll.
     """
     return poll.is_student_entitled_to_poll(user.student)
 
 
-def check_ticket_not_signed(user, poll):
+def is_ticket_signed(user, poll):
     """
     Checks, if the user is a student with a yet unused ticket for the poll.
     """
@@ -181,47 +199,48 @@ def mark_poll_used(user, poll):
     u.save()
 
 
-"""
-Poniższe funkcje implementują protokół ślepych podpisów
-"""
+def get_valid_tickets(ticket_list):
+    """
+    Returns the list of valid tickets and list of errors
+    :param ticket_list list of tickets from user input
+    :return list of errors and list of tickets
+    """
+    err = []
+    val = []
+    for group, ticket, st in ticket_list:
+        if st == "Nie jesteś przypisany do tej ankiety" or \
+                st == "Bilet już pobrano":
+            err.append((str(group), st))
+        else:
+            val.append((group, ticket, st))
+    return err, val
 
 
-def generate_random_coupon():
+def secure_signer_without_save(user, poll, ticket):
     """
-    :return: Losowa liczba o dlugosci RAND_BITS bitow
-    """
-    return _int_from_bytes(get_random_bytes(RAND_BITS))
 
+    :param user: user to be checked against poll
+    :param poll: poll to verify
+    :param ticket: ticket for verification
+    :return: either signed ticket or one of error strings: "Nie jesteś przypisany do tej ankiety","Bilet już pobrano"
+    """
+    if not is_poll_visible(user, poll):
+        return "Nie jesteś przypisany do tej ankiety"
+    if is_ticket_signed(user, poll):
+        return "Bilet już pobrano"
 
-def generate_blinding_factor():
-    """
-    :return: losowa liczba wzglednie pierwsza z RAND_BITS
-    """
-    k = random.getrandbits(RAND_BITS)
-    while number.GCD(RAND_BITS, k) != 1:
-        k = random.getrandbits(RAND_BITS)
-    return k
-
-
-def blind_ticket(ticket, pub_key, k):
-    """
-        Zaślepia kupon przy pomocy podanej przez użytkownika liczby k oraz klucza publicznego
-    :param ticket: kupon do zaślepienia
-    :param pub_key: klucz publiczny RSA
-    :param k: liczba od użytkownika
-    :return: Zaślepiony podpis kuponu
-    """
-    return pkcs1_15.new(pub_key).blind(ticket, k)
+    key = PrivateKey.objects.get(poll=poll)
+    return sign_ticket(ticket, key)
 
 
 # FIXME the return type of this method is due to legacy ticket
 # handling code in ticket_create/views and poll/utils
 def sign_ticket(ticket, priv_key):
     """
-        Podpisuje kupon kluczem prywatnym
-    :param ticket: kupon do podpisu
-    :param priv_key: prywatny klucz RSA
-    :return: podpisany kupon
+        Signs ticket using private key
+    :param ticket: ticket to be signed
+    :param priv_key: RSA private key
+    :return: signed ticket as int
     """
     priv = RSA.importKey(priv_key.private_key)
     ticket_hash = SHA256.new(ticket.encode("utf-8"))
@@ -234,36 +253,14 @@ def _int_from_bytes(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, 'big')
 
 
-def unblind_ticket(ticket, priv_key, k):
-    """
-        Odkrywa kupon przy pomocy klucza prywatnego oraz liczby k podanej przez użytkownika
-    :param ticket: kupon do odkrycia
-    :param priv_key: prywatny klucz RSA
-    :param k: liczba podana przez użytkownika
-    :return: uzyskany po odkryciu podpis ślepego kuponu
-    """
-    return priv_key.unblind(ticket, k)
-
-
-def verify_ticket(ticket, signature, priv_key):
-    """
-        Weryfikuje przy pomocy podanego klucza prywatnego, czy kupon jest zgodny z podaną sygnaturą
-    :param ticket:
-    :param signature: podpis ślepego kuponu
-    :param priv_key: prywatny klucz RSA
-    :return:
-    """
-    return priv_key.verify(ticket, (signature,))
-
-
 def convert_ticket_record(ticket):
     """
-    Konwertuje rekord postaci:
-        poll_id: XYZ
+    Converts record:
+        id: XYZ
         TICKET
-    do pary (poll_id, TICKET)
-    :param ticket: kupon do konwersji
-    :return: wynik konwersji
+    to pair (id, TICKET)
+    :param ticket: ticket to convert
+    :return: result pair
     """
     t = ticket.strip().split('\r\n')
     if len(t) > 1:
@@ -273,7 +270,7 @@ def convert_ticket_record(ticket):
 
 class Signature:
     """
-        Pomocnicza klasa, służy jako model dla widoku signed_tickets.html
+        Model for signed_tickets.html
     """
 
     def __init__(self, poll_id, sign):
@@ -281,35 +278,56 @@ class Signature:
         self.signature = sign
 
 
-"""Legacy, needs to be here till we refactor voting"""
+"""Legacy, needs to be here till we refactor voting - pycryptodome does not support blinding natively"""
 
 
-def generate_keys(poll_list):
-    keys = []
+def generate_ticket(poll_list):
+    """
+    Generates tickets for polls
+    :param poll_list: list of polls for generation
+    :return: list of tickets
+    """
+    m = getrandbits(RAND_BITS)
+    blinded = []
 
     for poll in poll_list:
         key = RSA.importKey(PublicKey.objects.get(poll=poll).public_key)
-        keys.append((str(key.n), str(key.e)))
+        n = key.n
+        e = key.e
+        k = randint(2, n)
 
-    return keys
+        while gcd(n, k) != 1:
+            k = randint(1, n)
+
+        a = (m % n)
+        b = pow(k, e, n)
+        t = (a * b) % n
+
+        blinded.append((poll, t, m, k))
+    return blinded
 
 
-def to_plaintext(vtl):
+def to_plaintext(ticket_list):
+    """
+    Converts recorts to plaintext for user
+    :param ticket_list: list of tickets with polls and their signatures
+    :return: pretty printed version of tickets
+    """
     res = ""
-    for p, t, st in vtl:
-        res += '[' + p.title + ']'
-        if not p.group:
+    for poll, ticket, signed_ticket in ticket_list:
+        res += '[' + poll.title + ']'
+        if not poll.group:
             res += 'Ankieta ogólna &#10;'
         else:
-            res += str(p.group.course.name) + " &#10;"
-            res += str(p.group.get_type_display()) + ": "
-            res += str(p.group.get_teacher_full_name()) + " &#10;"
-        if p.studies_type:
-            res += 'typ studiów: ' + str(p.studies_type) + " &#10;"
+            res += str(poll.group.course.name) + " &#10;"
+            res += str(poll.group.get_type_display()) + ": "
+            res += str(poll.group.get_teacher_full_name()) + " &#10;"
+        if poll.studies_type:
+            res += 'typ studiów: ' + str(poll.studies_type) + " &#10;"
 
-        res += 'id: ' + str(p.pk) + ' &#10;'
-        res += str(t) + " &#10;"
-        res += str(st) + " &#10;"
+        res += 'id: ' + str(poll.pk) + ' &#10;'
+        res += str(ticket) + " &#10;"
+        res += str(signed_ticket) + " &#10;"
         res += "---------------------------------- &#10;"
     return SafeText(str(res))
 
@@ -322,10 +340,16 @@ def to_plaintext(vtl):
 #  the tickets as strings, not ints.
 # This entire function should be rewritten from scratch
 def from_plaintext(tickets_plaintext):
+    """
+    Converts printed version of tickets to list of poll ids, tickets and their signatures
+    :param tickets_plaintext: list of tickets
+    :return: converted tickets
+    """
     pre_tickets = tickets_plaintext.split('----------------------------------')
     pre_tickets = [[x] for x in pre_tickets]
     for sign in whitespace:
-        pre_tickets = [flatten([x.split(sign) for x in ls]) for ls in pre_tickets]
+        pre_tickets = [flatten(
+            [x.split(sign) for x in ls]) for ls in pre_tickets]
 
     convert = False
     ids_tickets_signed = []
@@ -347,7 +371,7 @@ def from_plaintext(tickets_plaintext):
                 j += 1
                 while True:
                     try:
-                        t = long(poll_info[j])
+                        t = str(int(poll_info[j]))
                         break
                     except BaseException:
                         j += 1
@@ -355,7 +379,7 @@ def from_plaintext(tickets_plaintext):
                 j += 1
                 while True:
                     try:
-                        st = long(poll_info[j])
+                        st = int(poll_info[j])
                         break
                     except BaseException:
                         j += 1
@@ -374,7 +398,7 @@ def flatten(x):
     result = []
     for el in x:
         if isinstance(el, list):
-            if hasattr(el, "__iter__") and not isinstance(el, basestring):
+            if hasattr(el, "__iter__") and not isinstance(el, str):
                 result.extend(flatten(el))
             else:
                 result.append(el)
@@ -382,14 +406,6 @@ def flatten(x):
             result.append(el)
 
     return result
-
-
-def gcd(a, b):
-    if b > a:
-        a, b = b, a
-    while a:
-        a, b = b % a, a
-    return b
 
 
 def gcwd(u, v):
@@ -411,24 +427,3 @@ def gcwd(u, v):
         v2 = t2
         v3 = t3
     return u1, u2, u3
-
-
-def expMod(a, b, q):
-    p = 1
-
-    while b > 0:
-        if b & 1:
-            p = (p * a) % q
-        a = (a * a) % q
-        b /= 2
-    return p
-
-
-def revMod(a, m):
-    x, y, d = gcwd(a, m)
-
-    if d != 1: return -1
-
-    x %= m
-    if x < 0: x += m
-    return x

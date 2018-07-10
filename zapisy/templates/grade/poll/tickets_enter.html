@@ -9,25 +9,30 @@
 {% endblock %}
 {% block content %}
     <div class="col">
-        {% if user.is_authenticated %}
-            <div class="alert alert-warning" role="alert">
-                <strong>Uwaga!</strong> Aby ankieta pozostała anonimowa należy się <a href="{% url 'grade-logout' %}">wylogować</a>.
-            </div>
-        {% else %}
-            <div id='grade-tickets-enter'>
-                <form action="{% url 'grade-poll-tickets-enter' %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <h2>Wprowadzanie kluczy</h2>
-                    <div class="form-group">
-                        <label for="id_ticketsfield">Podaj wygenerowane klucze</label>
-                        <textarea class="form-control" name="ticketsfield" cols="80" rows="20"
-                                  id="id_ticketsfield"></textarea>
+        <div class="row">
+            <div class="col">
+                {% if user.is_authenticated %}
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Uwaga!</strong> Aby ankieta pozostała anonimowa należy się <a
+                            href="{% url 'grade-logout' %}">wylogować</a>.
                     </div>
-                    <p class="help-block">
-                        Jeżeli nie posiadasz jeszcze kluczy, zaloguj się i je wygeneruj.</p>
-                    <button class="btn btn-primary" type="submit">Rozpocznij ocenę</button>
-                </form>
+                {% else %}
+                    <div id='grade-tickets-enter'>
+                        <form action="{% url 'grade-poll-tickets-enter' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <h2>Wprowadzanie kluczy</h2>
+                            <div class="form-group">
+                                <label for="id_ticketsfield">Podaj wygenerowane klucze</label>
+                                <textarea class="form-control" name="ticketsfield" cols="80" rows="20"
+                                          id="id_ticketsfield"></textarea>
+                            </div>
+                            <p class="help-block">
+                                Jeżeli nie posiadasz jeszcze kluczy, zaloguj się i je wygeneruj.</p>
+                            <button class="btn btn-primary" type="submit">Rozpocznij ocenę</button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
     </div>
 {% endblock %}

@@ -22,15 +22,18 @@
 
 {% block content %}
     {% if tickets %}
-        <div class="row">
-            <div class="col">
-                <h3> Pomyślnie wygenerowano klucze.</h3>
-                <h3>Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
-                <form action=".">
-    	        <textarea name="keys" cols="80" rows="20" readonly="readonly">
-                    {{ tickets }}
-                </textarea>
-                </form>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h3> Pomyślnie wygenerowano klucze.</h3>
+                    <h3>Zapisz je w bezpiecznym miejscu - <strong>nie ma powrotu do tego ekranu</strong>.</h3>
+                    <form action=".">
+                        <div class="form-group">
+                            <textarea class="form-control" id="keys" name="keys" cols="80" rows="20"
+                                      readonly>{{ tickets }}</textarea>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     {% else %}
