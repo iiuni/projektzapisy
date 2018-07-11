@@ -1,10 +1,11 @@
 {% load fereol_common %}
 {% load compressed %}
 {% load staticfiles %}
-{% load settings_value %}
-{% load osenv_value %}
-{% load django_version %}
+{% load should_display_debug %}
+{% load debug_info %}
 {% load i18n %}
+{% load render_bundle from webpack_loader %}
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -14,6 +15,7 @@
           content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
     <script src="{% static "vendor.js" %}"></script>
+    {% render_bundle "main" %}
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
@@ -230,6 +232,9 @@
     <!-- end down-menu  -->
 </div>
 
+    {% if user.student and not user.student.consent_answered %}
+      {% include "consent-dialog.html" %}
+    {% endif %}
 
 
 <div class="container">
@@ -266,12 +271,18 @@
 
     <footer>
         <p>
-            {# <a href="{% url 'on-mobile' %}" class="go-mobile">Przejdź do wersji mobilnej</a> #}
             &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>{% endif %}
+            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+            {% endif %}
             | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
-            {% if "DEBUG"|settings_value == True or "II_ZAPISY_STAGING"|osenv_value == "True" %}| <strong>Django {% django_version %}</strong>{% endif %}
         </p>
+        {% should_display_debug as display_debug %}
+        {% if display_debug is True %}
+            {% autoescape off %}
+                {% debug_info %}
+            {% endautoescape %}
+        {% endif %}
     </footer>
 
 </div>

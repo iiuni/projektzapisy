@@ -1,10 +1,14 @@
-# -*- coding: utf-8 -*-
 from django.db import models
-from apps.enrollment.courses.models import Term, Course, Semester
+
+from apps.enrollment.courses.models.semester import Semester
 from zapisy import common
 
+
 class Desiderata(models.Model):
-    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący', on_delete=models.CASCADE)
+    employee = models.ForeignKey(
+        'users.Employee',
+        verbose_name='prowadzący',
+        on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
     day = models.CharField(max_length=1, choices=common.DAYS_OF_WEEK, verbose_name='dzień tygodnia')
     hour = models.IntegerField(verbose_name='godzina')
@@ -28,12 +32,15 @@ class Desiderata(models.Model):
         for day in desideratas:
             for hour in desideratas[day]:
                 value = not bool(desideratas[day][hour])
-                result_append({'day':day, 'hour': hour, 'value': value})
+                result_append({'day': day, 'hour': hour, 'value': value})
         return result
 
 
 class DesiderataOther(models.Model):
-    employee = models.ForeignKey('users.Employee', verbose_name='prowadzący', on_delete=models.CASCADE)
+    employee = models.ForeignKey(
+        'users.Employee',
+        verbose_name='prowadzący',
+        on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
     comment = models.TextField(verbose_name='uwagi', max_length=1000, default='')
 
@@ -44,6 +51,6 @@ class DesiderataOther(models.Model):
     def get_desiderata_other(employee, semester):
         try:
             desiderata = DesiderataOther.objects.get(semester=semester, employee=employee)
-        except:
+        except BaseException:
             desiderata = DesiderataOther.objects.create(semester=semester, employee=employee)
         return desiderata

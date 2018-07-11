@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
 from copy import deepcopy
 from django import forms
-from django.db.models.query import EmptyQuerySet
 from django.forms import HiddenInput
-from apps.enrollment.courses.models import Course, Semester
-from apps.schedule.models import Event, Term, EventModerationMessage, EventMessage
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.semester import Semester
+from apps.schedule.models.event import Event
+from apps.schedule.models.term import Term
+from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.users.models import BaseUser
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
@@ -16,7 +17,7 @@ from datetime import timedelta, datetime
 
 class TermForm(forms.ModelForm):
     ignore_conflicts = forms.BooleanField(required=False, label="", widget=forms.HiddenInput())
-    
+
     def clean(self):
         cleaned_data = super(TermForm, self).clean()
         self.instance.ignore_conflicts = cleaned_data.get('ignore_conflicts')
@@ -35,7 +36,10 @@ class TermForm(forms.ModelForm):
 
         }
 
+
 TermFormSet = inlineformset_factory(Event, Term, extra=0, form=TermForm)
+
+
 class EventForm(forms.ModelForm):
 
     class Meta:
@@ -48,7 +52,6 @@ class EventForm(forms.ModelForm):
             data = deepcopy(data)
             if 'type' not in data:
                 data['type'] = Event.TYPE_GENERIC
-
 
         super(EventForm, self).__init__(data, **kwargs)
         if not self.instance.pk:
@@ -76,21 +79,24 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
-        self.fields['title'].widget.attrs.update({'class' : 'span7'})
-        self.fields['type'].widget.attrs.update({'class' : 'span7'})
-        self.fields['course'].widget.attrs.update({'class' : 'span7'})
-        self.fields['description'].widget.attrs.update({'class' : 'span7'})
+        self.fields['title'].widget.attrs.update({'class': 'span7'})
+        self.fields['type'].widget.attrs.update({'class': 'span7'})
+        self.fields['course'].widget.attrs.update({'class': 'span7'})
+        self.fields['description'].widget.attrs.update({'class': 'span7'})
         self.fields['visible'].widget.attrs.update({'checked': ''})
+
 
 class EventModerationMessageForm(forms.ModelForm):
     class Meta:
         model = EventModerationMessage
         fields = ('message', )
 
+
 class EventMessageForm(forms.ModelForm):
     class Meta:
         model = EventMessage
         fields = ('message', )
+
 
 class DecisionForm(forms.ModelForm):
     class Meta:
@@ -99,11 +105,27 @@ class DecisionForm(forms.ModelForm):
 
 
 class ReportForm(forms.Form):
-    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
+    beg_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
+    end_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
     rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
 
-class ConflictsForm(forms.Form):
-    beg_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd', 'class':'datepicker'}))
 
+class ConflictsForm(forms.Form):
+    beg_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))
+    end_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'yyyy-mm-dd',
+                'class': 'datepicker'}))

@@ -30,6 +30,6 @@ li.vote2013, li.vote2013 a { color:green!important; font-weight: bold;}
   vertical-align: middle;
 }
 
-#desiderata-emphasis {
-    color: green;
+#id_comment {
+	width: 650px;
 }

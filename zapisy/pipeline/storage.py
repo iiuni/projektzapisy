@@ -32,7 +32,7 @@ class PipelineStorage(FileSystemStorage):
     def modified_time(self, name):
         return datetime.fromtimestamp(os.path.getmtime(self.path(name)))
 
-    def get_available_name(self, name, max_length = None):
+    def get_available_name(self, name, max_length=None):
         if self.exists(name):
             self.delete(name)
         return name
@@ -43,7 +43,7 @@ class PipelineStorage(FileSystemStorage):
         if not os.path.exists(directory):
             try:
                 os.makedirs(directory)
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
         if not os.path.isdir(directory):
@@ -58,7 +58,9 @@ class BaseFinderStorage(PipelineStorage):
         if finders is not None:
             self.finders = finders
         if self.finders is None:
-            raise ImproperlyConfigured("The storage %r doesn't have a finders class assigned." % self.__class__)
+            raise ImproperlyConfigured(
+                "The storage %r doesn't have a finders class assigned." %
+                self.__class__)
         super(BaseFinderStorage, self).__init__(*args, **kwargs)
 
     def path(self, name):
@@ -68,7 +70,7 @@ class BaseFinderStorage(PipelineStorage):
         return path
 
     def exists(self, name):
-        exists = self.finders.find(name) != None
+        exists = self.finders.find(name) is not None
         if not exists:
             exists = super(BaseFinderStorage, self).exists(name)
         return exists

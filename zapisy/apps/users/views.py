@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import json
 import datetime
@@ -10,9 +8,10 @@ from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.views import login
+from django.views.decorators.http import require_POST
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
@@ -25,8 +24,9 @@ from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView
-from apps.enrollment.courses.models import Semester, Group
+from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView, PersonalDataConsent
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record
 from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, BankAccountChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
@@ -50,9 +50,11 @@ def student_profile(request, user_id):
     """student profile"""
     try:
         student = Student.objects.select_related('user').get(user=user_id)
+        if not BaseUser.is_employee(request.user) and not student.consent_granted:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         courses_with_terms = prepare_schedule_courses(
             request, for_student=student)
-        votes   = SingleVote.get_votes(student)
+        votes = SingleVote.get_votes(student)
         data = prepare_schedule_data(request, courses_with_terms)
         courses_for_template = []
         for course, terms in courses_with_terms:
@@ -70,7 +72,7 @@ def student_profile(request, user_id):
         if request.is_ajax():
             return render(request, 'users/student_profile_contents.html', data)
         else:
-            students = Student.get_list()
+            students = Student.get_list('All', not BaseUser.is_employee(request.user))
             enrolled_students = Record.recorded_students(students)
             data['students'] = enrolled_students
             data['char'] = "All"
@@ -91,6 +93,7 @@ def student_profile(request, user_id):
         messages.error(request, "Nie ma takiego użytkownika.")
         return render(request, 'common/error.html')
 
+
 def employee_profile(request, user_id):
     """employee profile"""
     try:
@@ -101,11 +104,15 @@ def employee_profile(request, user_id):
             raise Employee.DoesNotExist
 
     except Employee.DoesNotExist:
-        logger.error('Function employee_profile(user_id = %s) throws NonEmployeeException while acessing to non existing employee.' % str(user_id) )
+        logger.error(
+            'Function employee_profile(user_id = %s) throws NonEmployeeException while acessing to non existing employee.' %
+            str(user_id))
         messages.error(request, "Nie ma takiego pracownika.")
         return render(request, 'common/error.html')
     except User.DoesNotExist:
-        logger.error('Function employee_profile(id = %s) throws User.DoesNotExist while acessing to non existing user.' % str(user_id) )
+        logger.error(
+            'Function employee_profile(id = %s) throws User.DoesNotExist while acessing to non existing user.' %
+            str(user_id))
         messages.error(request, "Nie ma takiego użytkownika.")
         return render(request, 'common/error.html')
 
@@ -125,20 +132,24 @@ def employee_profile(request, user_id):
             active_employees = Group.teacher_in_present(employees, semester)
 
             for e in active_employees:
-                e.short_new = e.user.first_name[:1] + e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
-                e.short_old = e.user.first_name[:2] + e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
+                e.short_new = e.user.first_name[:1] + \
+                    e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
+                e.short_old = e.user.first_name[:2] + \
+                    e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
 
             data['employees'] = active_employees
             data['char'] = 'All'
 
             return render(request, 'users/employee_profile.html', data)
 
-
     except MoreThanOneCurrentSemesterException:
-        data = {'employee' : employee}
-        logger.error('Function employee_profile throws MoreThanOneCurrentSemesterException.' )
-        messages.error(request, "Przepraszamy, system jest obecnie nieaktywny z powodu niewłaściwej konfiguracji semestrów. Prosimy spróbować później.")
+        data = {'employee': employee}
+        logger.error('Function employee_profile throws MoreThanOneCurrentSemesterException.')
+        messages.error(
+            request,
+            "Przepraszamy, system jest obecnie nieaktywny z powodu niewłaściwej konfiguracji semestrów. Prosimy spróbować później.")
         return render(request, 'users/employee_profile.html', data)
+
 
 @login_required
 def set_language(request):
@@ -178,17 +189,18 @@ def email_change(request):
 
             user = User.objects.filter(email=email)
 
-            if user and user <> request.user:
+            if user and user != request.user:
                 messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render(request, 'users/email_change_form.html', {'form':form})
+                return render(request, 'users/email_change_form.html', {'form': form})
 
             form.save()
             logger.info('User (%s) changed email' % request.user.get_full_name())
             messages.success(request, message="Twój adres e-mail został zmieniony.")
             return HttpResponseRedirect(reverse('my-profile'))
     else:
-        form = EmailChangeForm({'email' : request.user.email})
-    return render(request, 'users/email_change_form.html', {'form':form})
+        form = EmailChangeForm({'email': request.user.email})
+    return render(request, 'users/email_change_form.html', {'form': form})
+
 
 @login_required
 def bank_account_change(request):
@@ -205,7 +217,8 @@ def bank_account_change(request):
     else:
         zamawiany = Student.get_zamawiany(request.user.id)
         form = BankAccountChangeForm({'bank_account': zamawiany.bank_account})
-    return render(request, 'users/bank_account_change_form.html', {'form':form})
+    return render(request, 'users/bank_account_change_form.html', {'form': form})
+
 
 @login_required
 def consultations_change(request):
@@ -221,11 +234,13 @@ def consultations_change(request):
                 messages.success(request, "Twoje dane zostały zmienione.")
                 return HttpResponseRedirect(reverse('my-profile'))
         else:
-            form = ConsultationsChangeForm({'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
-        return render(request, 'users/consultations_change_form.html', {'form':form})
+            form = ConsultationsChangeForm(
+                {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
+        return render(request, 'users/consultations_change_form.html', {'form': form})
     except Employee.DoesNotExist:
         messages.error(request, 'Nie jesteś pracownikiem.')
         return render(request, 'common/error.html')
+
 
 @login_required
 def password_change_done(request):
@@ -233,6 +248,7 @@ def password_change_done(request):
     logger.info('User (%s) changed password' % request.user.get_full_name())
     messages.success(request, "Twoje hasło zostało zmienione.")
     return HttpResponseRedirect(reverse('my-profile'))
+
 
 @login_required
 def my_profile(request):
@@ -242,7 +258,9 @@ def my_profile(request):
     comments = zamawiany and zamawiany.comments or ''
     points = zamawiany and zamawiany.points or 0
 
-    notifications = NotificationFormset(queryset=NotificationPreferences.objects.create_and_get(request.user))
+    notifications = NotificationFormset(
+        queryset=NotificationPreferences.objects.create_and_get(
+            request.user))
 
     if BaseUser.is_employee(request.user):
         consultations = request.user.employee.consultations
@@ -275,14 +293,14 @@ def my_profile(request):
             grade = {}
             courses = None
 
-
     else:
         grade = None
         courses = None
 
     return TemplateResponse(request, 'users/my_profile.html', locals())
 
-def employees_list(request, begin = 'All', query=None):
+
+def employees_list(request, begin='All', query=None):
 
     employees = Employee.get_list(begin)
 
@@ -291,12 +309,13 @@ def employees_list(request, begin = 'All', query=None):
         return AjaxSuccessMessage(message="ok", data=employees)
     else:
         data = {
-            "employees" : employees,
+            "employees": employees,
             "char": begin,
             "query": query
-            }
+        }
 
     return render(request, 'users/employees_list.html', data)
+
 
 def consultations_list(request, begin='A'):
 
@@ -309,15 +328,15 @@ def consultations_list(request, begin='A'):
         return AjaxSuccessMessage(message="ok", data=employees)
     else:
         data = {
-            "employees" : employees,
+            "employees": employees,
             "char": begin
-            }
+        }
         return render(request, 'users/consultations_list.html', data)
 
 
 @login_required
-def students_list(request, begin = 'All', query=None):
-    students = Student.get_list(begin)
+def students_list(request, begin='All', query=None):
+    students = Student.get_list(begin, not BaseUser.is_employee(request.user))
 #    students = Record.recorded_students(students)
 
     if request.is_ajax():
@@ -325,13 +344,14 @@ def students_list(request, begin = 'All', query=None):
         return AjaxSuccessMessage(message="ok", data=students)
     else:
         data = {
-            "students" : students,
+            "students": students,
             "char": begin,
             "query": query,
             'mailto_group': mailto(request.user, students),
             'mailto_group_bcc': mailto(request.user, students, True)
         }
         return render(request, 'users/students_list.html', data)
+
 
 @login_required
 def logout(request):
@@ -341,13 +361,13 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
-def login_plus_remember_me(request, *args, **kwargs):
+def login_plus_remember_me(request, **kwargs):
     """
     Sign-in function with an option to save the session.
     If the user clicked the 'Remember me' button (we read it from POST data), the
     session will expire after two weeks.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect("main-page")
     if 'polls' in request.session:
         del request.session['polls']
@@ -359,10 +379,11 @@ def login_plus_remember_me(request, *args, **kwargs):
             request.session.set_expiry(datetime.timedelta(14).total_seconds())
         else:
             request.session.set_expiry(0)  # Expires on browser closing.
-    return login(request, *args, **kwargs)
+    return LoginView.as_view(**kwargs)(request)
+
 
 def get_ical_filename(user, semester):
-    name_with_semester = u"{}_{}".format(user.get_full_name(), semester.get_short_name())
+    name_with_semester = "{}_{}".format(user.get_full_name(), semester.get_short_name())
     name_ascii_only = unidecode.unidecode(name_with_semester)
     path_safe_name = re.sub(r"[\s+/]", "_", name_ascii_only)
     return "fereol_schedule_{}.ical".format(path_safe_name.lower())
@@ -378,18 +399,18 @@ def create_ical_file(request):
     cal.add('version').value = '2.0'
     cal.add('prodid').value = 'Fereol'
     cal.add('calscale').value = 'GREGORIAN'
-    cal.add('calname').value = u"{} - schedule".format(user.get_full_name())
+    cal.add('calname').value = "{} - schedule".format(user.get_full_name())
     cal.add('method').value = 'PUBLISH'
 
     if BaseUser.is_student(user):
         groups = [g for g in Record.get_groups_for_student(user) if g.course.semester == semester]
     elif BaseUser.is_employee(user):
-        groups = list(Group.objects.filter(course__semester = semester, teacher = user.employee))
+        groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
     else:
         raise InvalidUserException()
     for group in groups:
         course_name = group.course.name
-        group_type = group.human_readable_type().decode('utf-8').lower()
+        group_type = group.human_readable_type().lower()
         try:
             terms = group.get_all_terms_for_export()
         except IndexError:
@@ -399,12 +420,12 @@ def create_ical_file(request):
             start_datetime += BREAK_DURATION
             end_datetime = datetime.datetime.combine(term.day, term.end)
             event = cal.add('vevent')
-            event.add('summary').value = u"{} - {}".format(course_name, group_type)
+            event.add('summary').value = "{} - {}".format(course_name, group_type)
             if term.room:
-                event.add('location').value = 'sala '+ term.room.number \
-                    + u', Instytut Informatyki Uniwersytetu Wrocławskiego'
+                event.add('location').value = 'sala ' + term.room.number \
+                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
 
-            event.add('description').value = u'prowadzący: ' \
+            event.add('description').value = 'prowadzący: ' \
                 + group.get_teacher_full_name()
             event.add('dtstart').value = start_datetime
             event.add('dtend').value = end_datetime
@@ -435,14 +456,38 @@ def email_students(request):
                 address = student.user.email
                 if address:
                     counter += 1
-                    Message.objects.create(to_address=address, from_address=form.cleaned_data['sender'], subject=subject, message_body=body)
-            if form.cleaned_data['cc_myself'] == True:
-                Message.objects.create(to_address=request.user.email, from_address=form.cleaned_data['sender'], subject=subject, message_body=body)
-            messages.success(request, u'Wysłano wiadomość do %d studentów' % counter)
+                    Message.objects.create(
+                        to_address=address,
+                        from_address=form.cleaned_data['sender'],
+                        subject=subject,
+                        message_body=body)
+            if form.cleaned_data['cc_myself']:
+                Message.objects.create(
+                    to_address=request.user.email,
+                    from_address=form.cleaned_data['sender'],
+                    subject=subject,
+                    message_body=body)
+            messages.success(request, 'Wysłano wiadomość do %d studentów' % counter)
             return HttpResponseRedirect(reverse('my-profile'))
         else:
-            messages.error(request, u'Wystąpił błąd przy wysyłaniu wiadomości')
+            messages.error(request, 'Wystąpił błąd przy wysyłaniu wiadomości')
     else:
         form = EmailToAllStudentsForm(initial={'sender': 'zapisy@cs.uni.wroc.pl'})
         form.fields['sender'].widget.attrs['readonly'] = True
-    return render(request, 'users/email_students.html', {'form':form, 'students_mails': studentsmails})
+    return render(request, 'users/email_students.html',
+                  {'form': form, 'students_mails': studentsmails})
+
+
+@login_required
+@require_POST
+def personal_data_consent(request):
+    if request.POST:
+        if 'yes' in request.POST:
+            PersonalDataConsent.objects.update_or_create(student=request.user.student,
+                                                         defaults={'granted': True})
+            messages.success(request, 'Zgoda udzielona')
+        if 'no' in request.POST:
+            PersonalDataConsent.objects.update_or_create(student=request.user.student,
+                                                 defaults={'granted': False})
+            messages.success(request, 'Brak zgody zapisany')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

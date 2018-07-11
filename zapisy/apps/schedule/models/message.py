@@ -1,22 +1,20 @@
-# -*- coding: utf-8 -*-
 from django.db import models
+from apps.schedule.models.event import Event
+from django.contrib.auth.models import User
 
 
-class EventModerationMessage(models.Model): #why two classes of the same name?
-    from apps.schedule.models import Event
-    from django.contrib.auth.models import User
-
-    author = models.ForeignKey(User, verbose_name=u'Autor', on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, verbose_name=u'Wydarzenie', on_delete=models.CASCADE)
-    message = models.TextField(verbose_name=u'Wiadomość')
+class EventModerationMessage(models.Model):
+    author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
+    message = models.TextField(verbose_name='Wiadomość')
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'schedule'
         get_latest_by = 'created'
         ordering = ['created']
-        verbose_name = u'wiadomość wydarzenia'
-        verbose_name_plural = u'wiadomości wydarzenia'
+        verbose_name = 'wiadomość wydarzenia'
+        verbose_name_plural = 'wiadomości wydarzenia'
 
     @classmethod
     def get_event_messages(cls, event):
@@ -32,12 +30,9 @@ class EventModerationMessage(models.Model): #why two classes of the same name?
 
 
 class Message(models.Model):
-    from apps.schedule.models import Event
-    from django.contrib.auth.models import User
-
-    author = models.ForeignKey(User, verbose_name=u'Autor', on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, verbose_name=u'Wydarzenie', on_delete=models.CASCADE)
-    message = models.TextField(verbose_name=u'Wiadomość')
+    author = models.ForeignKey(User, verbose_name='Autor', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
+    message = models.TextField(verbose_name='Wiadomość')
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -60,19 +55,7 @@ class Message(models.Model):
 
 
 class EventMessage(Message):
-
     class Meta:
         app_label = 'schedule'
-        verbose_name = u'wiadomość wydarzenia'
-        verbose_name_plural = u'wiadomości wydarzenia'
-
-    def save(self, *args, **kwargs):
-        super(EventMessage, self).save(*args, **kwargs)
-
-#
-#        render_and_send_email(u'Nowa wiadomość w wydarzeniu',
-#                               u'schedule/emails/new_message.txt',
-#                               u'schedule/emails/new_message.html',
-#                               {'event': self.event},
-#                               self.event.get_followers()
-#        )
+        verbose_name = 'wiadomość wydarzenia'
+        verbose_name_plural = 'wiadomości wydarzenia'

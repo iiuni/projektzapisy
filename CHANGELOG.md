@@ -1,7 +1,24 @@
 # projektzapisy Changelog
 
-# Current version
+# Version 10.06.18
+
+* added consent for students
+* small improvement in desideratas
+* special reservations api
+
+# Version 18.05.18
+
+* implemented new backups
+* moved rest api to seperate app
+* added limit on the number of rest calls made by unauthenticated users (100/day)
+
+# Version 18.04.16
+
+* Upgrade to python3
 * Added simple semester REST API serving semesters
+* Classroom REST API serving classroom data
+* Fixed negative counts in grade summary
+* Added confirmation pop-up before direct disenrollment
 
 # Version 18.02.25
 

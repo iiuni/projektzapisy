@@ -1,8 +1,8 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from ..models import Record
 from apps.enrollment.courses.tests.factories import GroupFactory
+from apps.enrollment.records.models import Record
 from apps.users.tests.factories import StudentFactory
 
 

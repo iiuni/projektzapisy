@@ -14,7 +14,7 @@ from selenium.common.exceptions import (
 )
 
 from django.contrib.auth.models import User
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
 from apps.enrollment.courses.models.course_type import Type
@@ -22,18 +22,6 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
-
-import os
-from time import sleep
-from datetime import datetime, date, time, timedelta
-from dateutil.relativedelta import relativedelta
-from collections import defaultdict
-from django.db import connection
-from django.core import mail
-
-from django.conf import settings
-from scripts.scheduleimport import run_test as scheduleimport_run_test
-from scripts.ectsimport import run_test as ectsimport_run_test
 
 import os
 from time import sleep
@@ -127,7 +115,14 @@ class NewSemesterTests(SeleniumTestCase):
             user=user_student3, matricula='333333')
         self.student4 = Student.objects.create(
             user=user_student4, matricula='444444')
-
+        PersonalDataConsent.objects.update_or_create(student=self.student1,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student2,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student3,
+                                                     defaults={'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student4,
+                                                     defaults={'granted': True})
         self.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(
@@ -643,7 +638,7 @@ class NewSemesterTests(SeleniumTestCase):
             hour=00, minute=00)
         self.next_winter_semester.records_closing = \
             self.next_winter_semester.records_opening + \
-            relativedelta(days=10)
+                                                    relativedelta(days=10)
         self.next_winter_semester.save()
 
 
@@ -697,6 +692,7 @@ class AdminTests(SeleniumTestCase):
                                                    email='admin@admin.com')
         self.admin.first_name = 'przemka'
         self.admin.save()
+
 
     def createSemester(self):
         today = datetime.now()

@@ -1,8 +1,7 @@
 import os
-import urlparse
+import urllib.parse
 
 from django.core.files.base import ContentFile
-from django.utils.encoding import smart_str
 
 from pipeline.conf import settings
 from pipeline.compilers import Compiler
@@ -41,15 +40,15 @@ class Packager(object):
 
     def individual_url(self, filename):
         relative_path = self.compressor.relative_path(filename)[1:]
-        return urlparse.urljoin(settings.PIPELINE_URL,
-            filepath_to_uri(relative_path))
+        return urllib.parse.urljoin(settings.PIPELINE_URL,
+                                    filepath_to_uri(relative_path))
 
     def pack_stylesheets(self, package, **kwargs):
         variant = package.get('variant', None)
         absolute_asset_paths = package.get('absolute_asset_paths', True)
         return self.pack(package, self.compressor.compress_css, css_compressed,
-            variant=variant, absolute_asset_paths=absolute_asset_paths,
-            **kwargs)
+                         variant=variant, absolute_asset_paths=absolute_asset_paths,
+                         **kwargs)
 
     def compile(self, paths):
         return self.compiler.compile(paths)
@@ -65,11 +64,11 @@ class Packager(object):
                 )
                 self.versioning.cleanup(package['output'])
                 if self.verbose:
-                    print "Version: %s" % version
-                    print "Saving: %s" % output_filename
+                    print("Version: %s" % version)
+                    print("Saving: %s" % output_filename)
                 paths = self.compile(package['paths'])
                 content = compress(paths,
-                    asset_url=self.individual_url(output_filename), **kwargs)
+                                   asset_url=self.individual_url(output_filename), **kwargs)
                 self.save_file(output_filename, content)
         else:
             filename_base, filename = os.path.split(package['output'])
@@ -80,13 +79,18 @@ class Packager(object):
     def pack_javascripts(self, package, **kwargs):
         if 'externals' in package:
             return
-        return self.pack(package, self.compressor.compress_js, js_compressed, templates=package['templates'], **kwargs)
+        return self.pack(
+            package,
+            self.compressor.compress_js,
+            js_compressed,
+            templates=package['templates'],
+            **kwargs)
 
     def pack_templates(self, package):
         return self.compressor.compile_templates(package['templates'])
 
     def save_file(self, path, content):
-        return storage.save(path, ContentFile(smart_str(content)))
+        return storage.save(path, ContentFile(content))
 
     def create_packages(self, config):
         packages = {}
@@ -100,10 +104,14 @@ class Packager(object):
             paths = []
             for pattern in config[name]['source_filenames']:
                 for path in glob(pattern):
-                    if not path in paths:
+                    if path not in paths:
                         paths.append(str(path))
-            packages[name]['paths'] = [path for path in paths if not path.endswith(settings.PIPELINE_TEMPLATE_EXT)]
-            packages[name]['templates'] = [path for path in paths if path.endswith(settings.PIPELINE_TEMPLATE_EXT)]
+            packages[name]['paths'] = [
+                path for path in paths if not path.endswith(
+                    settings.PIPELINE_TEMPLATE_EXT)]
+            packages[name]['templates'] = [
+                path for path in paths if path.endswith(
+                    settings.PIPELINE_TEMPLATE_EXT)]
             packages[name]['output'] = config[name]['output_filename']
             packages[name]['context'] = {}
             packages[name]['manifest'] = True

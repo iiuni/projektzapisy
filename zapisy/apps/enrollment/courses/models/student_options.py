@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import models
 
 from datetime import timedelta
@@ -7,11 +5,13 @@ from datetime import timedelta
 import logging
 logger = logging.getLogger()
 
-class StudentOptions( models.Model ):
+
+class StudentOptions(models.Model):
     """ Used for defining time bonus in records - for Student, Course. Student gets bonuses if voted for course. """
-    course  = models.ForeignKey('Course', verbose_name = 'przedmiot', on_delete=models.CASCADE)
-    student = models.ForeignKey('users.Student', verbose_name = 'student', on_delete=models.CASCADE)
-    records_opening_bonus_minutes = models.IntegerField(default=0, verbose_name='Przyspieszenie otwarcia zapisów na ten przedmiot (minuty)')
+    course = models.ForeignKey('Course', verbose_name='przedmiot', on_delete=models.CASCADE)
+    student = models.ForeignKey('users.Student', verbose_name='student', on_delete=models.CASCADE)
+    records_opening_bonus_minutes = models.IntegerField(
+        default=0, verbose_name='Przyspieszenie otwarcia zapisów na ten przedmiot (minuty)')
 
     options_cache = {}
 
@@ -20,14 +20,13 @@ class StudentOptions( models.Model ):
         '''
             Preloads cache with courses for certain student and semester.
         '''
-        if not student.id in StudentOptions.options_cache:
+        if student.id not in StudentOptions.options_cache:
             StudentOptions.options_cache[student.id] = {}
-        if not semester.id in StudentOptions.options_cache[student.id]:
+        if semester.id not in StudentOptions.options_cache[student.id]:
             StudentOptions.options_cache[student.id][semester.id] = {}
-        for option in StudentOptions.objects.filter(course__semester=semester,\
-            student=student).all().select_related('course'):
-            StudentOptions.options_cache[student.id][semester.id]\
-                [option.course.id] = option
+        for option in StudentOptions.objects.filter(course__semester=semester,
+                                                    student=student).all().select_related('course'):
+            StudentOptions.options_cache[student.id][semester.id][option.course.id] = option
 
     @staticmethod
     def get_cached(student, course):
@@ -36,23 +35,23 @@ class StudentOptions( models.Model ):
             Doesn't make new query, if record is already cached.
         '''
         cache = StudentOptions.options_cache
-        if not student.id in cache:
+        if student.id not in cache:
             cache[student.id] = {}
-        if not course.semester.id in cache[student.id]: # miss
+        if course.semester.id not in cache[student.id]:  # miss
             cache[student.id][course.semester.id] = {}
         if not cache[student.id][course.semester.id]:
             options = StudentOptions.objects.filter(student=student)
             for o in options:
                 cache[student.id][course.semester.id][o.course_id] = o
 
-        if course.id in cache[student.id][course.semester.id]: # get
+        if course.id in cache[student.id][course.semester.id]:  # get
             return cache[student.id][course.semester.id][course.id]
-        else: # not miss, but doesn't exists
+        else:  # not miss, but doesn't exists
             raise StudentOptions.DoesNotExist()
 
     def get_opening_delay_timedelta(self):
         """ returns records opening delay as timedelta """
-        return timedelta(minutes=(-1)*self.records_opening_bonus_minutes+4320)
+        return timedelta(minutes=(-1) * self.records_opening_bonus_minutes + 4320)
 
     class Meta:
         verbose_name = 'zależność przedmiot-student'
@@ -60,6 +59,6 @@ class StudentOptions( models.Model ):
         unique_together = (('course', 'student'),)
         app_label = 'courses'
 
-    def __unicode__(self):
+    def __str__(self):
         """ returns printable name of StudentOptions """
-        return u'Przedmiot: %s, Student: %s ' % (self.course, self.student)
+        return 'Przedmiot: %s, Student: %s ' % (self.course, self.student)

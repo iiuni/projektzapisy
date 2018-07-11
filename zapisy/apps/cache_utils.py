@@ -8,6 +8,7 @@ http://james.lin.net.nz/2011/09/08/python-decorator-caching-your-functions/
 from django.core.cache import cache
 import hashlib
 
+
 def cache_get_key(*args, **kwargs):
     """
     Get cache key for storage. MD5-based.
@@ -18,8 +19,9 @@ def cache_get_key(*args, **kwargs):
     for key, arg in kwargs.items():
         serialise.append(str(key))
         serialise.append(str(arg))
-    key = hashlib.md5("".join(serialise)).hexdigest()
+    key = hashlib.md5("".join(serialise).encode("utf-8")).hexdigest()
     return key
+
 
 """
 If passed a negative timeout value, this function
@@ -27,6 +29,8 @@ will not pass it to Django's cache.set function,
 which will cause Django to use the default timeout
 set in the CACHES configuration in settings.py
 """
+
+
 def _cache_decorator_internal(time):
     def decorator(fn):
         def wrapper(*args, **kwargs):
@@ -41,6 +45,7 @@ def _cache_decorator_internal(time):
             return result
         return wrapper
     return decorator
+
 
 def cache_result_for(time):
     """

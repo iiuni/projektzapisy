@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.grade.ticket_create.models.used_ticket_stamp import UsedTicketStamp
 
+
 class Command(BaseCommand):
     args = '<semester( szablon)+>'
     help = 'tworzy ankiety na podstawie szablony'

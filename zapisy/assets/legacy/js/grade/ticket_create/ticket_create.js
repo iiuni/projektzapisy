@@ -5,7 +5,7 @@
 
 if (typeof Ticket != 'undefined') {
 } else {
-    var Ticket = new Object();﻿
+    var Ticket = new Object();
 }
 Ticket.create = Object();
 Ticket.create.init = function () {
@@ -26,14 +26,10 @@ Ticket.create.init = function () {
         Ticket.create.used = true;
 
         Ticket.create.step1();
-
     })
-
-
-
 }
 
-
+// Request public keys from the server
 Ticket.create.step1 = function () {
     dataString = $("#connection_choice").serialize()
     $("#progressbar").progressbar("option", "value", 10);
@@ -47,6 +43,8 @@ Ticket.create.step1 = function () {
     return false;
 }
 
+// Once we have the public keys, use them to generate
+// tickets, then send them to the server for signing
 Ticket.create.step2 = function (keys) {
     $("#progressbar").progressbar("option", "value", 30);
     $.each(keys, Ticket.create.t_generator);
@@ -65,6 +63,13 @@ Ticket.create.step2 = function (keys) {
     });
 }
 
+// The server signed our generated tickets and sent
+// them to us; previously we'd shuffle them with some modular
+// arithmetic, but this is now disabled as that algorithm
+// it not compatible with pycryptodome anymore and it provided
+// no extra security one way or another
+// Now this function essentially just resends the server's response
+// back to it so it can render the tickets in tickets_save.html
 Ticket.create.step3 = function (unblinds) {
     $("#progressbar").progressbar("option", "value", 70);
     $.each(unblinds, Ticket.create.unblinds_generator);
@@ -93,12 +98,21 @@ Ticket.create.unblinds_generator = function (index, unblind) {
         Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
     }
     else {
-        var st = str2bigInt(unblind[1][0], 10, 10)
-        var n = str2bigInt(unblind[1][1], 10, 10)
-        var e = str2bigInt(unblind[1][2], 10, 10)
-        var rk = inverseMod(Ticket.create.k_array[index], n)
-        Ticket.create.unblindst_array.push(bigInt2str(multMod(mod(st, n), mod(rk, n), n), 10))
-        Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
+        var ticket = unblind[0];
+        var ticketSignature = unblind[1][0];
+        Ticket.create.unblindt_array.push(ticket);
+        Ticket.create.unblindst_array.push(ticketSignature);
+
+        // FIXME disabled this after we transition to Python3/pycryptodome
+        // the legacy signing/verification algo used by pycrypto
+        // that allowed this to work is no longer supported
+
+        //var st = str2bigInt(unblind[1][0], 10, 10)
+        // var n = str2bigInt(unblind[1][1], 10, 10)
+        // var e = str2bigInt(unblind[1][2], 10, 10)
+        // var rk = inverseMod(Ticket.create.k_array[index], n)
+        // Ticket.create.unblindst_array.push(bigInt2str(multMod(mod(st, n), mod(rk, n), n), 10))
+        // Ticket.create.unblindt_array.push(bigInt2str(Ticket.create.m_array[index], 10))
     }
 }
 

@@ -1,4 +1,4 @@
-import cStringIO
+import io
 from hashlib import md5, sha1
 
 from pipeline.conf import settings
@@ -16,7 +16,8 @@ class HashVersioningBase(VersioningBase):
         placeholder = settings.PIPELINE_VERSION_PLACEHOLDER
         try:
             placeholder_index = output_file.index(placeholder)
-            old_version = output_file_name[placeholder_index:placeholder_index + len(placeholder) - len(output_file)]
+            old_version = output_file_name[placeholder_index:placeholder_index +
+                                           len(placeholder) - len(output_file)]
             return (version != old_version), version
         except ValueError:
             # no placeholder found, do not update, manual update if needed
@@ -35,14 +36,14 @@ class HashVersioningBase(VersioningBase):
 
     def version(self, paths):
         buf = self.concatenate(paths)
-        s = cStringIO.StringIO(buf)
+        s = io.StringIO(buf)
         version = self.get_hash(s)
         s.close()
         return version
 
     def get_hash(self, f, CHUNK=2 ** 16):
         m = self.hash_method()
-        while 1:
+        while True:
             chunk = f.read(CHUNK)
             if not chunk:
                 break

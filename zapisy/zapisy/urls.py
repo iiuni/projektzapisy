@@ -1,30 +1,23 @@
-# -*- coding: utf-8 -*-
-
-import os
-from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
-from apps.feeds import LatestNews
-import apps.news.views
-from apps.users import views as users_views
-from apps.enrollment.courses.admin import views as courses_admin_views
-from apps.enrollment.courses.rest_api import semester_api
 from django_cas_ng import views
-from rest_framework import routers
+
+import apps.news.views
+from apps.api.rest.v1.urls import router as api_router_v1
+from apps.enrollment.courses import admin_views as courses_admin_views
+from apps.feeds import LatestNews
+from apps.users import views as users_views
 
 admin.autodiscover()
-router = routers.DefaultRouter()
-router.register(r'semesters', semester_api.SemesterViewSet)
-
 
 urlpatterns = [
     url('^$', apps.news.views.main_page, name='main-page'),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/v1/', include(api_router_v1.urls)),
     url(r'^help/', include('apps.help.urls')),
     url(r'^courses/', include('apps.enrollment.courses.urls')),
     url(r'^records/', include('apps.enrollment.records.urls')),
-    url(r'^statistics/', include('apps.statistics.urls', namespace='statistics')),
+    url(r'^statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 
     url(r'^news/', include('apps.news.urls')),
@@ -46,33 +39,12 @@ urlpatterns = [
     url(r'^offer/', include('apps.offer.proposal.urls')),
     url(r'^prefs/', include('apps.offer.preferences.urls')),
     url(r'^desiderata/', include('apps.offer.desiderata.urls')),
-    url(r'^', include('apps.schedule.urls', namespace='events')),
-    url(r'^', include('apps.notifications.urls', namespace='notifications')),
+    url(r'^', include(('apps.schedule.urls', 'events'), namespace='events')),
+    url(r'^', include(('apps.notifications.urls', 'notifications'), namespace='notifications')),
     url(r'^vote/', include('apps.offer.vote.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^fereol_admin/', include(admin.site.urls)),
+    url(r'^fereol_admin/', admin.site.urls),
     url(r'^accounts/login$', views.login, name='cas_ng_login'),
     url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
 ]
-
-"""
-if not settings.RELEASE:
-    urlpatterns += [
-    url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')}),
-    url(r'^vote/', include('apps.offer.vote.urls')),
-    # OD
-    #url('^offer/$', 'apps.offer.proposal.views.main', name='offer-main'),
-    # OCENA ZAJĘĆ
-
-    (r'^static/(.*)$', 'django.views.static.serve', {'document_root': os.path.join(os.path.dirname(__file__), 'static')})
-
-    #
-
-    #CHANGE TO apps.mobile
-    #url(r'^mobile/$', 'apps.mobile.views.onMobile', name = 'on-mobile'),
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
-    # to INSTALLED_APPS to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-]
-"""

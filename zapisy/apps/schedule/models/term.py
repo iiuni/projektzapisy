@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import collections
 import datetime
 
@@ -7,13 +5,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
 from django.db.models.query import EmptyQuerySet
-from django.utils.encoding import smart_unicode
 
 from .event import Event
 from .specialreservation import SpecialReservation
-from apps.enrollment.courses.models import Classroom, Term as CourseTerm, Semester
-
-
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.term import Term as CourseTerm
+from apps.enrollment.courses.models.semester import Semester
 
 
 class Term(models.Model):
@@ -21,16 +18,21 @@ class Term(models.Model):
     Term representation
     """
 
-    event = models.ForeignKey(Event, verbose_name=u'Wydarzenie', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
 
-    day = models.DateField(verbose_name=u'Dzień')
+    day = models.DateField(verbose_name='Dzień')
 
-    start = models.TimeField(verbose_name=u'Początek')
-    end = models.TimeField(verbose_name=u'Koniec')
+    start = models.TimeField(verbose_name='Początek')
+    end = models.TimeField(verbose_name='Koniec')
 
-    room = models.ForeignKey(to=Classroom, null=True, blank=True, verbose_name=u'Sala', on_delete=models.CASCADE,
-                             related_name='event_terms')
-    place = models.CharField(max_length=255, null=True, blank=True, verbose_name=u'Miejsce')
+    room = models.ForeignKey(
+        to=Classroom,
+        null=True,
+        blank=True,
+        verbose_name='Sala',
+        on_delete=models.CASCADE,
+        related_name='event_terms')
+    place = models.CharField(max_length=255, null=True, blank=True, verbose_name='Miejsce')
     ignore_conflicts = False
 
     def validate_against_event_terms(self):
@@ -45,14 +47,15 @@ class Term(models.Model):
 
         if terms:
             raise ValidationError(
-                message={'__all__': [u'W tym samym czasie ta sala jest zarezerwowana: ' +
-                                     unicode(terms[0].event) + ' (wydarzenie)']},
+                message={'__all__': ['W tym samym czasie ta sala jest zarezerwowana: ' +
+                                     str(terms[0].event) + ' (wydarzenie)']},
                 code='overlap')
 
     def validate_against_course_terms(self):
         assert(self.room is not None)
         semester = Semester.get_semester(self.day)
-        if not semester: return
+        if not semester:
+            return
         if semester.lectures_beginning <= self.day and self.day <= semester.lectures_ending:
 
             course_terms = CourseTerm.get_terms_for_semester(semester=semester,
@@ -62,10 +65,14 @@ class Term(models.Model):
                                                              end_time=self.end)
             if course_terms:
                 raise ValidationError(
-                    message={'__all__': [u'W tym samym czasie w tej sali odbywają się zajęcia: ' +
-                                         course_terms[0].group.course.name + ' ' + unicode(course_terms[0])]},
-                    code='overlap'
-                )
+                    message={
+                        '__all__': [
+                            'W tym samym czasie w tej sali odbywają się zajęcia: ' +
+                            course_terms[0].group.course.name +
+                            ' ' +
+                            str(
+                                course_terms[0])]},
+                    code='overlap')
 
     def clean(self):
         """
@@ -73,20 +80,20 @@ class Term(models.Model):
         """
         if self.start >= self.end:
             raise ValidationError(
-                message={'end': [u'Koniec musi następować po początku']},
+                message={'end': ['Koniec musi następować po początku']},
                 code='overlap')
 
         if not self.room and not self.place:
             raise ValidationError(
-                message={'room': [u'Musisz wybrać salę lub miejsce zewnętrzne'],
-                         'place': [u'Musisz wybrać salę lub miejsce zewnętrzne']},
+                message={'room': ['Musisz wybrać salę lub miejsce zewnętrzne'],
+                         'place': ['Musisz wybrać salę lub miejsce zewnętrzne']},
                 code='invalid'
             )
 
         if self.room:
             if not self.room.can_reserve:
                 raise ValidationError(
-                    message={'room': [u'Ta sala nie jest przeznaczona do rezerwacji']},
+                    message={'room': ['Ta sala nie jest przeznaczona do rezerwacji']},
                     code='invalid'
                 )
 
@@ -96,13 +103,12 @@ class Term(models.Model):
 
         super(Term, self).clean()
 
-
     class Meta:
         app_label = 'schedule'
         get_latest_by = 'end'
         ordering = ['day', 'start', 'end']
-        verbose_name = u'termin'
-        verbose_name_plural = u'terminy'
+        verbose_name = 'termin'
+        verbose_name_plural = 'terminy'
 
     def get_conflicted(self):
         if not self.room:
@@ -110,9 +116,11 @@ class Term(models.Model):
 
         # X < B AND A < Y
 
-        terms = Term.objects.filter(Q(room=self.room), Q(day=self.day), Q(event__status=Event.STATUS_ACCEPTED),
-                                    Q(start__lt=self.end), Q(end__gt=self.start)) \
-            .select_related('event')
+        terms = Term.objects.filter(Q(room=self.room),
+                                    Q(day=self.day),
+                                    Q(event__status=Event.STATUS_ACCEPTED),
+                                    Q(start__lt=self.end),
+                                    Q(end__gt=self.start)) .select_related('event')
 
         if self.pk:
             terms = terms.exclude(pk=self.pk)
@@ -140,8 +148,18 @@ class Term(models.Model):
 
         @return: Term QuerySet
         """
-        return cls.objects.filter(event__type__in=['0', '1']).order_by('day', 'event__course__entity__name', 'room') \
-            .select_related('event', 'room', 'event__course', 'event__course__entity', 'event__course__semester')
+        return cls.objects.filter(
+            event__type__in=[
+                '0',
+                '1']).order_by(
+            'day',
+            'event__course__entity__name',
+            'room') .select_related(
+                'event',
+                'room',
+                'event__course',
+                'event__course__entity',
+            'event__course__semester')
 
     @classmethod
     def get_terms_for_dates(cls, dates, classroom, start_time=None, end_time=None):
@@ -173,7 +191,15 @@ class Term(models.Model):
         current_result stores conflicts for given current head
         @return OrderedDict[day][room][head|conflicted]
         """
-        candidates = Term.objects.filter(day__gte=start_time, day__lte=end_time).order_by('day', 'room', 'start', 'end').select_related('room', 'event')
+        candidates = Term.objects.filter(
+            day__gte=start_time,
+            day__lte=end_time).order_by(
+            'day',
+            'room',
+            'start',
+            'end').select_related(
+            'room',
+            'event')
         conflicts = collections.OrderedDict()
         current_result = dict()
         head = None
@@ -190,11 +216,9 @@ class Term(models.Model):
                 current_result = {}
                 current_result['head'] = head
                 current_result['conflicted'] = list()
-            elif head.end >= term.end and term.start >= head.start: # conflict
+            elif head.end >= term.end and term.start >= head.start:  # conflict
                 current_result['conflicted'].append(term)
         return conflicts
 
-    def __unicode__(self):
-        return '{0:s}: {1:s} - {2:s}'.format(smart_unicode(self.day),
-                                             smart_unicode(self.start),
-                                             smart_unicode(self.end))
+    def __str__(self):
+        return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
