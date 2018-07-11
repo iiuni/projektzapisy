@@ -14,7 +14,7 @@ from selenium.common.exceptions import (
 )
 
 from django.contrib.auth.models import User
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
 from apps.enrollment.courses.models.course_type import Type
@@ -22,18 +22,6 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
-
-import os
-from time import sleep
-from datetime import datetime, date, time, timedelta
-from dateutil.relativedelta import relativedelta
-from collections import defaultdict
-from django.db import connection
-from django.core import mail
-
-from django.conf import settings
-from scripts.scheduleimport import run_test as scheduleimport_run_test
-from scripts.ectsimport import run_test as ectsimport_run_test
 
 import os
 from time import sleep
@@ -65,7 +53,8 @@ class SeleniumTestCase(LiveServerTestCase):
         for _ in range(times):
             try:
                 return block()
-            except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
+            except (ElementNotVisibleException, NoSuchElementException,
+                    TimeoutException):
                 sleep(3)
         return block()
 
@@ -127,7 +116,18 @@ class NewSemesterTests(SeleniumTestCase):
             user=user_student3, matricula='333333')
         self.student4 = Student.objects.create(
             user=user_student4, matricula='444444')
-
+        PersonalDataConsent.objects.update_or_create(student=self.student1,
+                                                     defaults={
+                                                         'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student2,
+                                                     defaults={
+                                                         'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student3,
+                                                     defaults={
+                                                         'granted': True})
+        PersonalDataConsent.objects.update_or_create(student=self.student4,
+                                                     defaults={
+                                                         'granted': True})
         self.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(
@@ -192,32 +192,30 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=self.current_semester.semester_ending +
-                               relativedelta(
-                                   days=1),
-            semester_ending=self.current_semester.semester_ending +
-                            relativedelta(
-                                days=1,
-                                months=3),
-            records_ects_limit_abolition=self.current_semester.semester_ending +
-                                         relativedelta(
-                                             days=11),
+            semester_beginning=
+            self.current_semester.semester_ending + relativedelta(days=1),
+            semester_ending=
+            self.current_semester.semester_ending + relativedelta(
+                days=1,
+                months=3),
+            records_ects_limit_abolition=self.current_semester
+                                             .semester_ending + relativedelta(
+                days=11),
             visible=True,
             is_grade_active=False)
 
         self.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=self.next_winter_semester.semester_ending +
-                               relativedelta(
-                                   days=1),
-            semester_ending=self.next_winter_semester.semester_ending +
-                            relativedelta(
-                                days=1,
-                                months=3),
-            records_ects_limit_abolition=self.next_winter_semester.semester_ending +
-                                         relativedelta(
-                                             days=11),
+            semester_beginning=
+            self.next_winter_semester.semester_ending + relativedelta(days=1),
+            semester_ending=
+            self.next_winter_semester.semester_ending + relativedelta(
+                days=1,
+                months=3),
+            records_ects_limit_abolition=self.next_winter_semester
+                                             .semester_ending + relativedelta(
+                days=11),
             visible=True,
             is_grade_active=False)
 
@@ -278,14 +276,17 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Zarządzaj').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
 
         nonselected_select = Select(
             self.wait_for_pass(
                 lambda: WebDriverWait(
                     self.driver, 1).until(
                     EC.element_to_be_clickable(
-                        (By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting')))))
+                        (By.ID,
+                         'bootstrap-duallistbox-'
+                         'nonselected-list_for_voting')))))
         selected_select = Select(
             self.wait_for_pass(
                 lambda: self.driver.find_element_by_id(
@@ -358,9 +359,11 @@ class NewSemesterTests(SeleniumTestCase):
 
         # check voting results
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
-            EC.element_to_be_clickable((By.LINK_TEXT, 'Podsumowanie głosowania'))).click())
+            EC.element_to_be_clickable(
+                (By.LINK_TEXT, 'Podsumowanie głosowania'))).click())
         rows = self.wait_for_pass(
             lambda: self.driver.find_elements_by_xpath('//table/tbody/tr'))
         for row in rows:
@@ -399,7 +402,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
@@ -409,7 +413,8 @@ class NewSemesterTests(SeleniumTestCase):
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
-                        '//li[label/a[text()="{}"]]/select'.format(course_name))))
+                        '//li[label/a[text()="{}"]]/select'.format(
+                            course_name))))
             select.select_by_value(str(value))
             if sum_points <= self.system_state.max_points:
                 self.results_points[course_name] += value
@@ -441,8 +446,8 @@ class NewSemesterTests(SeleniumTestCase):
     def perform_winter_correction(self):
         # winter correction starts
         self.system_state.winter_correction_beg = date.today()
-        self.system_state.winter_correction_end = date.today() + relativedelta(
-            days=1)
+        self.system_state.winter_correction_end = \
+            date.today() + relativedelta(days=1)
         self.system_state.save()
 
         self.correction(
@@ -463,10 +468,10 @@ class NewSemesterTests(SeleniumTestCase):
         )
 
         # winter correction ends
-        self.system_state.winter_correction_beg = date.today() - relativedelta(
-            days=2)
-        self.system_state.winter_correction_end = date.today() - relativedelta(
-            days=1)
+        self.system_state.winter_correction_beg = \
+            date.today() - relativedelta(days=2)
+        self.system_state.winter_correction_end = \
+            date.today() - relativedelta(days=1)
         self.system_state.save()
 
     def correction(self, student, points):
@@ -491,7 +496,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
@@ -499,7 +505,8 @@ class NewSemesterTests(SeleniumTestCase):
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
-                        '//li[label/a[text()="{}"]]/select'.format(course_name))
+                        '//li[label/a[text()="{}"]]/select'.format(
+                            course_name))
                 )
             )
             select.select_by_value(str(value))
@@ -511,7 +518,8 @@ class NewSemesterTests(SeleniumTestCase):
 
     def import_winter_schedule(self):
         courses = {}
-        for course in Course.objects.filter(semester=self.next_winter_semester):
+        for course in Course.objects.filter(
+                semester=self.next_winter_semester):
             courses[course.entity.name] = course.id
 
         employees = {
@@ -586,19 +594,19 @@ class NewSemesterTests(SeleniumTestCase):
             1)
 
     def start_winter_semester(self):
-        self.current_semester.semester_beginning = date.today() - relativedelta(
-            days=3)
-        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(
-            days=2)
-        self.current_semester.semester_ending = date.today() - relativedelta(
-            days=1)
+        self.current_semester.semester_beginning = \
+            date.today() - relativedelta(days=3)
+        self.current_semester.records_ects_limit_abolition = \
+            date.today() - relativedelta(days=2)
+        self.current_semester.semester_ending = \
+            date.today() - relativedelta(days=1)
         self.current_semester.save()
 
         self.next_winter_semester.semester_beginning = date.today()
-        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(
-            days=11)
-        self.next_winter_semester.semester_ending = date.today() + relativedelta(
-            months=3)
+        self.next_winter_semester.records_ects_limit_abolition = \
+            date.today() + relativedelta(days=11)
+        self.next_winter_semester.semester_ending = \
+            date.today() + relativedelta(months=3)
         self.next_winter_semester.save()
 
     def add_new_students(self):
@@ -606,7 +614,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.new_students = []
         for i in range(1, 6):
             user = User.objects.create_user(
-                username='student{}'.format(i + number_of_students), password=self.password)
+                username='student{}'.format(i + number_of_students),
+                password=self.password)
             student = Student.objects.create(
                 user=user,
                 matricula=str(i + number_of_students))
@@ -623,7 +632,8 @@ class NewSemesterTests(SeleniumTestCase):
         test_ectsimport = ''
         for student, points in students_ects.items():
             for deg, ects in points.items():
-                test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
+                test_ectsimport += '{} {} T {} stopnia\n'.format(
+                    student.matricula, ects, deg)
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
         with open(test_ectsimport_path, 'w') as file:
@@ -718,13 +728,16 @@ class AdminTests(SeleniumTestCase):
         self.createSemester()
         self.driver.get('{}/fereol_admin'.format(self.live_server_url))
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_username').send_keys(self.admin.username)
+            lambda: self.driver.find_element_by_id('id_username').send_keys(
+                self.admin.username)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            lambda: self.driver.find_element_by_id('id_password').send_keys(
+                self.password)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//input[@type="submit"]').click()
         )
 
     def tearDown(self):
@@ -732,7 +745,8 @@ class AdminTests(SeleniumTestCase):
         self.semester.delete()
 
     def testAdminLogin(self):
-        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('user-tools'))
 
 
 def createSubPageTest(link_text):
@@ -740,7 +754,8 @@ def createSubPageTest(link_text):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_xpath(
                 '//th//a[@href="{}"]'.format(link_text)).click())
-        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('user-tools'))
 
     return f
 
@@ -764,25 +779,31 @@ class EmailChangeTest(SeleniumTestCase):
             lambda: self.driver.find_element_by_id('login-dropdown').click()
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
+            lambda: self.driver.find_element_by_id('id_login').send_keys(
+                self.user.username)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            lambda: self.driver.find_element_by_id('id_password').send_keys(
+                self.password)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//button[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//button[@type="submit"]').click()
         )
 
     def testEmailChange(self):
-        self.driver.get("{}/accounts/email/change/".format(self.live_server_url))
+        self.driver.get(
+            "{}/accounts/email/change/".format(self.live_server_url))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_email').clear()
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_email').send_keys('lorem@ipsum.com')
+            lambda: self.driver.find_element_by_id('id_email').send_keys(
+                'lorem@ipsum.com')
         )
         current_len = len(mail.outbox)
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//input[@type="submit"]').click()
         )
         self.assertEqual(len(mail.outbox), current_len + 1)

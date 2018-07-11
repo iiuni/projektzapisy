@@ -21,9 +21,14 @@ SLACK_WEBHOOK_URL = (
     'https://hooks.slack.com/services/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'
 )
 
-LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15}
+# The mapping between group types in scheduler and enrollment system
+# w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
+# e (repetytorium), o (projekt)
 GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
-               'r': '5', 's': '6'}
+               'r': '5', 's': '6', 'o': '10'}
+
+# The default limits for group types
+LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
 
 EMPLOYEE_MAP = {
     'PWL': 'PWN',

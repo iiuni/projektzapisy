@@ -1,29 +1,10 @@
-"""
-    Form for vote
-"""
-
-from django import forms
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import connection
 from django.db.models import Sum
-from django.utils.safestring import SafeText
+
 from apps.enrollment.courses.models.course import CourseEntity
-
-from apps.offer.vote.models import SystemState
 from apps.offer.vote.models import SingleVote
-from django.urls import reverse
-
-from django.conf import settings
 
 
 class VoteFormset(object):
-    """
-        Class
-
-        które do poprawki? te które mają
-
-    """
-
     def __init__(self, post, *args, **kwargs):
         from django.forms.models import modelformset_factory
         tag = kwargs.pop('tag', None)
@@ -32,9 +13,8 @@ class VoteFormset(object):
         semester_id = None
         self.correction = kwargs.pop('correction', False)
 
-        query = {}
-        query['status'] = CourseEntity.STATUS_TO_VOTE
-        query['deleted'] = False
+        query = {'status': CourseEntity.STATUS_TO_VOTE,
+                 'deleted': False}
 
         if tag == 'winter':
             query['semester'] = 'z'
@@ -53,10 +33,6 @@ class VoteFormset(object):
                     '(SELECT COUNT(*) FROM courses_course cc WHERE cc.entity_id = vote_singlevote.entity_id AND cc.semester_id = ' +
                     str(semester_id) +
                     ') > 0'])
-        counter = votes.exclude(entity__type__free_in_vote=True).aggregate(Sum('value'))
-
-#        if self.correction:
-#            votes = votes.filter(course__isnull=False)
 
         fields = ('correction',) if self.correction else ('value',)
 

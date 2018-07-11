@@ -8,6 +8,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -23,7 +24,7 @@ from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView
+from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record
@@ -49,6 +50,8 @@ def student_profile(request, user_id):
     """student profile"""
     try:
         student = Student.objects.select_related('user').get(user=user_id)
+        if not BaseUser.is_employee(request.user) and not student.consent_granted:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         courses_with_terms = prepare_schedule_courses(
             request, for_student=student)
         votes = SingleVote.get_votes(student)
@@ -69,7 +72,7 @@ def student_profile(request, user_id):
         if request.is_ajax():
             return render(request, 'users/student_profile_contents.html', data)
         else:
-            students = Student.get_list()
+            students = Student.get_list('All', not BaseUser.is_employee(request.user))
             enrolled_students = Record.recorded_students(students)
             data['students'] = enrolled_students
             data['char'] = "All"
@@ -333,7 +336,7 @@ def consultations_list(request, begin='A'):
 
 @login_required
 def students_list(request, begin='All', query=None):
-    students = Student.get_list(begin)
+    students = Student.get_list(begin, not BaseUser.is_employee(request.user))
 #    students = Record.recorded_students(students)
 
     if request.is_ajax():
@@ -473,3 +476,18 @@ def email_students(request):
         form.fields['sender'].widget.attrs['readonly'] = True
     return render(request, 'users/email_students.html',
                   {'form': form, 'students_mails': studentsmails})
+
+
+@login_required
+@require_POST
+def personal_data_consent(request):
+    if request.POST:
+        if 'yes' in request.POST:
+            PersonalDataConsent.objects.update_or_create(student=request.user.student,
+                                                         defaults={'granted': True})
+            messages.success(request, 'Zgoda udzielona')
+        if 'no' in request.POST:
+            PersonalDataConsent.objects.update_or_create(student=request.user.student,
+                                                 defaults={'granted': False})
+            messages.success(request, 'Brak zgody zapisany')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

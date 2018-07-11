@@ -6,7 +6,7 @@
     <br />
     <br />
     <h2>Do poprawienia</h2>
-    {% if for_review|length > 0 %}
+    {% if for_review %}
         <ul>
         {% for proposal in for_review %}
             <li><a href={{proposal.slug}}>{{proposal.name}}</a></li>
@@ -16,7 +16,7 @@
         <p>Brak</p>
     {% endif %}
     <h2>Niezaakceptowane</h2>
-    {% if not_accepted|length > 0 %}
+    {% if not_accepted %}
         <ul>
         {% for proposal in not_accepted %}
             <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
@@ -25,8 +25,18 @@
     {% else %}
         <p>Brak</p>
     {% endif %}
+    <h2>Poddane pod głosowanie</h2>
+    {% if in_vote %}
+        <ul>
+        {% for proposal in in_vote %}
+            <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
     <h2>W ofercie</h2>
-    {% if in_offer|length > 0 %}
+    {% if in_offer %}
         <ul>
         {% for proposal in in_offer %}
             <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
@@ -36,7 +46,7 @@
         <p>Brak</p>
     {% endif %}
     <h2>Wycofane z oferty</h2>
-    {% if removed|length > 0 %}
+    {% if removed %}
         <ul>
         {% for proposal in removed %}
             <li><a href={{proposal.slug}}>{{ proposal.name}}</a></li>
