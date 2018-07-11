@@ -9,12 +9,18 @@ machine:
 
 dependencies:
   override:
+    # Make sure we're operating on a clean repo
+    - git clean -f && git clean -fd
     - pip --version
     - pip install -U setuptools
     - pip install --upgrade pip
     - pip install -r requirements.test.txt
     - npm i -g npm  # Make sure we're using the latest npm version
+    - npm --version
+    - npm root -g
     - npm i -g yarn
+    - which yarn
+    - yarn --version
     - ./npm.sh
     - pip freeze
 
