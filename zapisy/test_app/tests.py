@@ -117,13 +117,17 @@ class NewSemesterTests(SeleniumTestCase):
         self.student4 = Student.objects.create(
             user=user_student4, matricula='444444')
         PersonalDataConsent.objects.update_or_create(student=self.student1,
-                                                     defaults={'granted': True})
+                                                     defaults={
+                                                         'granted': True})
         PersonalDataConsent.objects.update_or_create(student=self.student2,
-                                                     defaults={'granted': True})
+                                                     defaults={
+                                                         'granted': True})
         PersonalDataConsent.objects.update_or_create(student=self.student3,
-                                                     defaults={'granted': True})
+                                                     defaults={
+                                                         'granted': True})
         PersonalDataConsent.objects.update_or_create(student=self.student4,
-                                                     defaults={'granted': True})
+                                                     defaults={
+                                                         'granted': True})
         self.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(
@@ -188,13 +192,12 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=self.current_semester.semester_ending +
-                               relativedelta(
-                                   days=1),
-            semester_ending=self.current_semester.semester_ending +
-                            relativedelta(
-                                days=1,
-                                months=3),
+            semester_beginning=
+            self.current_semester.semester_ending + relativedelta(days=1),
+            semester_ending=
+            self.current_semester.semester_ending + relativedelta(
+                days=1,
+                months=3),
             records_ects_limit_abolition=self.current_semester
                                              .semester_ending + relativedelta(
                 days=11),
@@ -204,11 +207,12 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=self.next_winter_semester.semester_ending +
-                               relativedelta(
-                                   days=1),
-            semester_ending=self.next_winter_semester.semester_ending +
-                            relativedelta(days=1, months=3),
+            semester_beginning=
+            self.next_winter_semester.semester_ending + relativedelta(days=1),
+            semester_ending=
+            self.next_winter_semester.semester_ending + relativedelta(
+                days=1,
+                months=3),
             records_ects_limit_abolition=self.next_winter_semester
                                              .semester_ending + relativedelta(
                 days=11),
@@ -272,7 +276,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Zarządzaj').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
 
         nonselected_select = Select(
             self.wait_for_pass(
@@ -280,7 +285,8 @@ class NewSemesterTests(SeleniumTestCase):
                     self.driver, 1).until(
                     EC.element_to_be_clickable(
                         (By.ID,
-                         'bootstrap-duallistbox-nonselected-list_for_voting')))))
+                         'bootstrap-duallistbox-'
+                         'nonselected-list_for_voting')))))
         selected_select = Select(
             self.wait_for_pass(
                 lambda: self.driver.find_element_by_id(
@@ -353,7 +359,8 @@ class NewSemesterTests(SeleniumTestCase):
 
         # check voting results
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable(
                 (By.LINK_TEXT, 'Podsumowanie głosowania'))).click())
@@ -395,7 +402,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
@@ -438,8 +446,8 @@ class NewSemesterTests(SeleniumTestCase):
     def perform_winter_correction(self):
         # winter correction starts
         self.system_state.winter_correction_beg = date.today()
-        self.system_state.winter_correction_end = date.today() + relativedelta(
-            days=1)
+        self.system_state.winter_correction_end = \
+            date.today() + relativedelta(days=1)
         self.system_state.save()
 
         self.correction(
@@ -460,10 +468,10 @@ class NewSemesterTests(SeleniumTestCase):
         )
 
         # winter correction ends
-        self.system_state.winter_correction_beg = date.today() - relativedelta(
-            days=2)
-        self.system_state.winter_correction_end = date.today() - relativedelta(
-            days=1)
+        self.system_state.winter_correction_beg = \
+            date.today() - relativedelta(days=2)
+        self.system_state.winter_correction_end = \
+            date.today() - relativedelta(days=1)
         self.system_state.save()
 
     def correction(self, student, points):
@@ -488,7 +496,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Oferta').click())
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_link_text('Głosowanie').click())
+            lambda: self.driver.find_element_by_link_text(
+                'Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
             EC.element_to_be_clickable((By.LINK_TEXT, 'Głosuj'))).click())
 
@@ -496,7 +505,8 @@ class NewSemesterTests(SeleniumTestCase):
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
-                        '//li[label/a[text()="{}"]]/select'.format(course_name))
+                        '//li[label/a[text()="{}"]]/select'.format(
+                            course_name))
                 )
             )
             select.select_by_value(str(value))
@@ -508,7 +518,8 @@ class NewSemesterTests(SeleniumTestCase):
 
     def import_winter_schedule(self):
         courses = {}
-        for course in Course.objects.filter(semester=self.next_winter_semester):
+        for course in Course.objects.filter(
+                semester=self.next_winter_semester):
             courses[course.entity.name] = course.id
 
         employees = {
@@ -734,7 +745,8 @@ class AdminTests(SeleniumTestCase):
         self.semester.delete()
 
     def testAdminLogin(self):
-        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('user-tools'))
 
 
 def createSubPageTest(link_text):
@@ -742,7 +754,8 @@ def createSubPageTest(link_text):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_xpath(
                 '//th//a[@href="{}"]'.format(link_text)).click())
-        self.wait_for_pass(lambda: self.driver.find_element_by_id('user-tools'))
+        self.wait_for_pass(
+            lambda: self.driver.find_element_by_id('user-tools'))
 
     return f
 
