@@ -53,7 +53,8 @@ class SeleniumTestCase(LiveServerTestCase):
         for _ in range(times):
             try:
                 return block()
-            except (ElementNotVisibleException, NoSuchElementException, TimeoutException):
+            except (ElementNotVisibleException, NoSuchElementException,
+                    TimeoutException):
                 sleep(3)
         return block()
 
@@ -194,9 +195,9 @@ class NewSemesterTests(SeleniumTestCase):
                             relativedelta(
                                 days=1,
                                 months=3),
-            records_ects_limit_abolition=self.current_semester.semester_ending +
-                                         relativedelta(
-                                             days=11),
+            records_ects_limit_abolition=self.current_semester
+                                             .semester_ending + relativedelta(
+                days=11),
             visible=True,
             is_grade_active=False)
 
@@ -207,12 +208,10 @@ class NewSemesterTests(SeleniumTestCase):
                                relativedelta(
                                    days=1),
             semester_ending=self.next_winter_semester.semester_ending +
-                            relativedelta(
-                                days=1,
-                                months=3),
-            records_ects_limit_abolition=self.next_winter_semester.semester_ending +
-                                         relativedelta(
-                                             days=11),
+                            relativedelta(days=1, months=3),
+            records_ects_limit_abolition=self.next_winter_semester
+                                             .semester_ending + relativedelta(
+                days=11),
             visible=True,
             is_grade_active=False)
 
@@ -280,7 +279,8 @@ class NewSemesterTests(SeleniumTestCase):
                 lambda: WebDriverWait(
                     self.driver, 1).until(
                     EC.element_to_be_clickable(
-                        (By.ID, 'bootstrap-duallistbox-nonselected-list_for_voting')))))
+                        (By.ID,
+                         'bootstrap-duallistbox-nonselected-list_for_voting')))))
         selected_select = Select(
             self.wait_for_pass(
                 lambda: self.driver.find_element_by_id(
@@ -355,7 +355,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_link_text('Głosowanie').click())
         self.wait_for_pass(lambda: WebDriverWait(self.driver, 1).until(
-            EC.element_to_be_clickable((By.LINK_TEXT, 'Podsumowanie głosowania'))).click())
+            EC.element_to_be_clickable(
+                (By.LINK_TEXT, 'Podsumowanie głosowania'))).click())
         rows = self.wait_for_pass(
             lambda: self.driver.find_elements_by_xpath('//table/tbody/tr'))
         for row in rows:
@@ -404,7 +405,8 @@ class NewSemesterTests(SeleniumTestCase):
             select = Select(
                 self.wait_for_pass(
                     lambda: self.driver.find_element_by_xpath(
-                        '//li[label/a[text()="{}"]]/select'.format(course_name))))
+                        '//li[label/a[text()="{}"]]/select'.format(
+                            course_name))))
             select.select_by_value(str(value))
             if sum_points <= self.system_state.max_points:
                 self.results_points[course_name] += value
@@ -581,19 +583,19 @@ class NewSemesterTests(SeleniumTestCase):
             1)
 
     def start_winter_semester(self):
-        self.current_semester.semester_beginning = date.today() - relativedelta(
-            days=3)
-        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(
-            days=2)
-        self.current_semester.semester_ending = date.today() - relativedelta(
-            days=1)
+        self.current_semester.semester_beginning = \
+            date.today() - relativedelta(days=3)
+        self.current_semester.records_ects_limit_abolition = \
+            date.today() - relativedelta(days=2)
+        self.current_semester.semester_ending = \
+            date.today() - relativedelta(days=1)
         self.current_semester.save()
 
         self.next_winter_semester.semester_beginning = date.today()
-        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(
-            days=11)
-        self.next_winter_semester.semester_ending = date.today() + relativedelta(
-            months=3)
+        self.next_winter_semester.records_ects_limit_abolition = \
+            date.today() + relativedelta(days=11)
+        self.next_winter_semester.semester_ending = \
+            date.today() + relativedelta(months=3)
         self.next_winter_semester.save()
 
     def add_new_students(self):
@@ -601,7 +603,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.new_students = []
         for i in range(1, 6):
             user = User.objects.create_user(
-                username='student{}'.format(i + number_of_students), password=self.password)
+                username='student{}'.format(i + number_of_students),
+                password=self.password)
             student = Student.objects.create(
                 user=user,
                 matricula=str(i + number_of_students))
@@ -618,7 +621,8 @@ class NewSemesterTests(SeleniumTestCase):
         test_ectsimport = ''
         for student, points in students_ects.items():
             for deg, ects in points.items():
-                test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
+                test_ectsimport += '{} {} T {} stopnia\n'.format(
+                    student.matricula, ects, deg)
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
         with open(test_ectsimport_path, 'w') as file:
@@ -638,7 +642,7 @@ class NewSemesterTests(SeleniumTestCase):
             hour=00, minute=00)
         self.next_winter_semester.records_closing = \
             self.next_winter_semester.records_opening + \
-                                                    relativedelta(days=10)
+            relativedelta(days=10)
         self.next_winter_semester.save()
 
 
@@ -693,7 +697,6 @@ class AdminTests(SeleniumTestCase):
         self.admin.first_name = 'przemka'
         self.admin.save()
 
-
     def createSemester(self):
         today = datetime.now()
         self.semester = Semester(
@@ -714,13 +717,16 @@ class AdminTests(SeleniumTestCase):
         self.createSemester()
         self.driver.get('{}/fereol_admin'.format(self.live_server_url))
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_username').send_keys(self.admin.username)
+            lambda: self.driver.find_element_by_id('id_username').send_keys(
+                self.admin.username)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            lambda: self.driver.find_element_by_id('id_password').send_keys(
+                self.password)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//input[@type="submit"]').click()
         )
 
     def tearDown(self):
@@ -760,25 +766,31 @@ class EmailChangeTest(SeleniumTestCase):
             lambda: self.driver.find_element_by_id('login-dropdown').click()
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
+            lambda: self.driver.find_element_by_id('id_login').send_keys(
+                self.user.username)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_password').send_keys(self.password)
+            lambda: self.driver.find_element_by_id('id_password').send_keys(
+                self.password)
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//button[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//button[@type="submit"]').click()
         )
 
     def testEmailChange(self):
-        self.driver.get("{}/accounts/email/change/".format(self.live_server_url))
+        self.driver.get(
+            "{}/accounts/email/change/".format(self.live_server_url))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_email').clear()
         )
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('id_email').send_keys('lorem@ipsum.com')
+            lambda: self.driver.find_element_by_id('id_email').send_keys(
+                'lorem@ipsum.com')
         )
         current_len = len(mail.outbox)
         self.wait_for_pass(
-            lambda: self.driver.find_element_by_xpath('//input[@type="submit"]').click()
+            lambda: self.driver.find_element_by_xpath(
+                '//input[@type="submit"]').click()
         )
         self.assertEqual(len(mail.outbox), current_len + 1)
