@@ -1,113 +1,38 @@
-{% extends "grade/base.html" %}
-{% load compressed %}
+{% extends "grade/newbase.html" %}
+
 {% block js %}
-    {% compressed_js "gradeuserpoll" %}
-{% endblock %}
+    <script>
+        let isDirty = true;
 
-{% block styles %}{{ block.super }}
-  <style>
-      .sitemap, .sitemap ul, .sitemap li {
-          margin: 0;
-          padding: 0;
-          list-style: none;
-      }
+        function submitForm() {
+            isDirty = false;
+        }
 
-      .sitemap ul {
-          display: none;
-      }
-
-      .sitemap li {
-          line-height: 200%;
-          margin-top: 1px;
-          background: #eee;
-          position: relative;
-          width: 250px;
-      }
-
-      /* IE leaves a blank space where span is added so this is to avoid that */
-      * html .sitemap li {
-          float: left;
-          display: inline;
-      }
-
-      .sitemap li a {
-          padding-left: 28px;
-      }
-
-      .sitemap li span {
-          float: left;
-          position: absolute;
-          top: 5px;
-          left: 5px;
-          width: 13px;
-          height: 13px;
-          cursor: auto;
-          font-size: 0;
-      }
-
-      .sitemap li span, .sitemap li span.collapsed {
-          background: url(../images/collapsed.gif) no-repeat 0 0;
-      }
-
-      .sitemap li span.expanded {
-          background: url(../images/expanded.gif) no-repeat 0 0;
-      }
-
-      /* second level */
-
-      .sitemap li li {
-          background: #fff;
-      }
-
-      .sitemap li li a {
-          padding-left: 56px;
-      }
-
-      .sitemap li li span {
-          left: 28px;
-      }
-
-      /* third level */
-
-      .sitemap li li li a {
-          padding-left: 84px;
-      }
-
-      .sitemap li li li span {
-          left: 56px;
-      }
-
-      p {
-          margin: 0 auto;
-          width: 680px;
-          padding: 1em 0;
-      }
-  </style>
-  <script>
-    let isDirty = true;
-     function submitForm() {
-        isDirty = false;
-    }
-
-    window.addEventListener('load', () => {
-        window.addEventListener('beforeunload', (e) => {
-            const dialogText = 'Czy na pewno chcesz wyjść?';
-            if (isDirty) {
-                e.returnValue = dialogText;
-                return dialogText;
-            }
-            else {
-                return undefined;
-            }
+        window.addEventListener('load', () => {
+            window.addEventListener('beforeunload', (e) => {
+                const dialogText = 'Czy na pewno chcesz wyjść?';
+                if (isDirty) {
+                    e.returnValue = dialogText;
+                    return dialogText;
+                }
+                else {
+                    return undefined;
+                }
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}
 
 {% block main-navigation %}
     <li><a href="/">Strona główna</a></li>
     <li><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
     <li>Twoje ankiety</li>
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Twoje ankiety</li>
 {% endblock %}
 
 
@@ -122,27 +47,36 @@
             </ul>
         </div>
     {% endif %}
-
 {% endblock %}
-
-{% block content-width %}11{% endblock %}
 
 {% block topContent %}
-    <div id="grade-progressbar-div">
-        <div id="progressbar"></div>
-        Zakończono <span id="finished-polls">{{ finished_polls }}</span> spośród <span
-            id="all-polls">{{ all_polls }}</span></div>
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                Zakończono <span>{{ finished_polls }}</span> spośród <span id="all-polls">{{ all_polls }}</span>
+            </div>
+            <div class="col">
+                <a href="{% url 'poll-end-grading' %}">Zakończ oceniać</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
-{% block sidebar %}
-    <div>
+{% block content %}
+    <div class="col-8">
+        {% block poll-content %}
+            Brak ankiet
+        {% endblock %}
+    </div>
+    <div class="col-4">
         {% if polls or finished %}
             <h3>Twoje ankiety</h3>
         {% endif %}
         {% if polls %}
             <h4>Ankiety</h4>
-            <ul class="sitemap">
+            <ul>
                 {% for poll_sub in polls %}
-                    <li><a class="grade-fillable-poll-link"
+                    <li>
+                        <a class="grade-fillable-poll-link"
                            href="{% url 'grade-poll-polls-for-user' poll_sub.0.1 %}">{{ poll_sub.0.0 }}</a>
                         <ul class="grade-fillable-poll-sublist">
                             {% for poll in poll_sub.2 %}
@@ -158,7 +92,7 @@
         {% endif %}
         {% if finished %}
             <h4>Ankiety zakończone</h4>
-            <ul class="sitemap">
+            <ul>
                 {% for fin_sub in finished %}
                     <li><a class="grade-fillable-poll-link"
                            href="{% url 'grade-poll-polls-for-user' fin_sub.0.1 %}">{{ fin_sub.0.0 }}</a>
@@ -175,13 +109,4 @@
             </ul>
         {% endif %}
     </div>
-{% endblock %}
-{% block content %}
-    <div id="grade-poll-content">
-        {% block poll-content %}
-            Brak ankiet
-        {% endblock %}
-    </div>
-
-    <div id="grade-end-grading"><a href="{% url 'poll-end-grading' %}">Zakończ oceniać</a></div>
 {% endblock %}

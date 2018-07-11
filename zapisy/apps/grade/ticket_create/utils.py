@@ -85,6 +85,7 @@ def save_keys(keys_list):
 
 
 def generate_keys_for_polls(semester=None):
+    # TODO check if keys exist
     """
     Generates RSA key pair for each poll in given semester
     :param semester: if none then current semester is taken
@@ -99,7 +100,7 @@ def generate_keys_for_polls(semester=None):
         key_list.append((poll, pub, priv))
         i = i + 1
     save_keys(key_list)
-    print(i - 1)
+    return i - 1
 
 
 def group_polls_by_course(poll_list):

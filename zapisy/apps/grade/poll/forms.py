@@ -4,7 +4,7 @@
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxLengthValidator
-
+from django.template import loader
 from apps.grade.poll.models import SingleChoiceQuestionOrdering, \
     Section, OpenQuestionAnswer, \
     SingleChoiceQuestionAnswer, \
@@ -31,14 +31,12 @@ class PollForm(forms.Form):
     class myObject:
         pass
 
-    #- wydzielic do forma Section
+    # - wydzielic do forma Section
     def as_edit(self):
-        from django.template import loader
-        return loader.render_to_string(
-            'grade/poll/section_as_edit.html', {"sections": self.sections})
+        return loader.render_to_string('grade/poll/section_as_edit.html',
+                                       {"sections": self.sections})
 
     def as_divs(self, errors=None):
-        from django.template import loader
         return loader.render_to_string('grade/poll/poll_show.html',
                                        {"errors": errors, "sections": self.sections})
 
@@ -66,7 +64,6 @@ class PollForm(forms.Form):
         for section in sections_set:
             title = 'poll-%d_section-%d' % (ppk, section.pk)
             questions = section.all_questions()
-            fields = []
             poll_section = self.myObject()
             poll_section.title = section.title
             poll_section.description = section.description
@@ -269,10 +266,10 @@ class PollForm(forms.Form):
             self.sections.append(poll_section)
         if not self.finished:
             field = forms.BooleanField(
-                label='Zakończ oceniać',
+                label='Ankieta zakończona - Jeśli zaznaczysz to pole, utracisz mozliwość edycji tej ankiety.',
                 required=False,
-                initial=False,
-                help_text='Ankieta zakończona - Jeśli zaznaczysz to pole, utracisz mozliwość edycji tej ankiety.')
+                initial=False)
+            field.widget.attrs = {'class': 'form-check-input', 'id': 'poll-finish-checkbox'}
             field.type = 'finish'
             self.finish = field
             self.fields['finish'] = field

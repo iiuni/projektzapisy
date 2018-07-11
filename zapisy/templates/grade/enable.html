@@ -1,44 +1,37 @@
-{% extends "grade/base.html" %}
-{% load static %}
-
-{% load compressed %}
-
-{% block styles %}
-    {% compressed_css 'gradebase' %}
-
-    <link rel="stylesheet" href="{% static "css/common/mainPage.css" %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "css/grade/poll.css" %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "css/grade/results.css" %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "css/grade/answer.css" %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "css/ui-progressbar.css" %}" type="text/css" />
-{% endblock %}
+{% extends "grade/newbase.html" %}
 
 {% block main-subtitle %}Otwieranie oceny{% endblock %}
 
-{% block grade_active %} class="active"{% endblock %}
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active">Otwórz ocenę</li>
+{% endblock %}
 
 {% block content %}
-    <div id="mainPage-container">
-        <table>
-            <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for semester in semesters %}
-                    <tr>
-                    <form action="{% if semester.is_grade_active %}{% url 'grade-disable-grade' %}{% else %}{% url 'grade-enable-grade' %}{% endif %}" method="POST">
+    <div class="col-4 mx-auto">
+        {% for semester in semesters %}
+            <div class="card">
+                <div class="card-body">
+                    <form action="{% if semester.is_grade_active %}{% url 'grade-disable-grade' %}{% else %}
+                                    {% url 'grade-enable-grade' %}{% endif %}" method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="semester_id" value="{{ semester.id }}">
-                        <td>{{ semester }}</td>
-                        <td><button type="submit" class="btn{% if not semester.is_grade_active %} success{% else %} delete{% endif %}">{% if semester.is_grade_active %}Zamknij{% else %}Otwórz{% endif %} ocenę</button></td>
+                        <div class="form-group row">
+                            <input type="hidden" name="semester_id" value="{{ semester.id }}">
+                            <div class="col">
+                                <label class="col-form-label">{{ semester }}</label>
+                            </div>
+                            <div class="col">
+                                <input type="submit"
+                                       class="btn{% if not semester.is_grade_active %} btn-success{% else %}
+                               btn-secondary{% endif %} form-control"
+                                       value="{% if semester.is_grade_active %}Zamknij{% else %}Otwórz{% endif %} ocenę">
+                            </div>
+                        </div>
                     </form>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}
 

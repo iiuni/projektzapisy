@@ -631,10 +631,10 @@ def grade_logout(request):
 
 
 def tickets_enter(request):
-    if request.user.is_authenticated:
-        return render(request, 'grade/poll/user_is_authenticated.html', {})
-
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
+
+    if request.user.is_authenticated:
+        return render(request, 'grade/poll/user_is_authenticated.html', {'grade': grade})
 
     if request.method == "POST":
         form = TicketsForm(request.POST, request.FILES)
@@ -752,20 +752,17 @@ def poll_answer(request, slug, pid):
     try:
         poll_cands = []
         for poll_to_show in data['polls']:
-
             polls = []
             for poll_details in poll_to_show[2]:
                 polls.append((poll_details, poll_to_show[0][1]))
 
             poll_cands.extend(polls)
-
     except IndexError:
         poll_cands = []
 
     try:
         finished_cands = []
         for poll_to_show in data['finished']:
-
             polls = []
             for poll_details in poll_to_show[2]:
                 polls.append((poll_details, poll_to_show[0][1]))

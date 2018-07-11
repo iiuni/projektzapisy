@@ -5,7 +5,7 @@ from apps.grade.ticket_create.models import PublicKey, PrivateKey
 from apps.grade.ticket_create.utils import group_polls_by_course, generate_keys_for_polls, sign_ticket, \
     convert_ticket_record, connect_groups, get_valid_tickets, to_plaintext, \
     generate_ticket, secure_signer_without_save, mark_poll_used, Signature
-from apps.users.decorators import student_required
+from apps.users.decorators import student_required, employee_required
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from django.shortcuts import render
 from django.contrib import messages
@@ -34,8 +34,8 @@ def get_tickets(request):
                 prepared_tickets = [(poll, int(ticket), secure_signer_without_save(request.user, poll, str(ticket)))
                                     for poll, ticket, _, _ in reduced_tickets]
 
-                # for poll, _, _ in prepared_tickets:
-                #     mark_poll_used(request.user, poll)
+                for poll, _, _ in prepared_tickets:
+                    mark_poll_used(request.user, poll)
 
                 errors, tickets_to_serve = get_valid_tickets(prepared_tickets)
                 if errors:
@@ -47,9 +47,9 @@ def get_tickets(request):
                         message += "</li>"
                     message += "</ul>"
                     messages.error(request, SafeText(message))
-                # print('')
-                # if tickets_to_serve:
-                #     StudentGraded.objects.get_or_create(student=request.user.student, semester=semester)
+
+                if tickets_to_serve:
+                    StudentGraded.objects.get_or_create(student=request.user.student, semester=semester)
 
             return render(request, 'grade/ticket_create/tickets_save.html',
                           {'tickets': to_plaintext(tickets_to_serve), 'grade': grade})
@@ -101,6 +101,7 @@ def sign_tickets(request):
     return render(request, 'grade/ticket_create/sign_tickets.html', {'grade': grade})
 
 
+@employee_required
 def keys_generate(request):
     """
         Widok odpowiadajacy za generowanie kluczy RSA dla ankiet

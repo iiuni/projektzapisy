@@ -1,20 +1,19 @@
 {% extends "grade/poll/polls_for_user.html" %}
 {% load poll_answers_extra %}
 
-
 {% block main-subtitle %}Ankiety{% endblock %}
 
-{% block main-navigation %}
-    <li><a href="/">Strona główna</a></li>
-    <li><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
-    <li><a href="{% url 'grade-poll-polls-for-user' slug %}">Twoje ankiety</a></li>
-    <li>{{ link_name }}</li>
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-poll-polls-for-user' slug %}">Twoje ankiety</a></li>
+    <li class="breadcrumb-item active">{{ link_name }}</li>
 {% endblock %}
 
-
 {% block poll-content %}
-    <form id="poll-form" action="." method="post" onclick="submitForm()">{% csrf_token %}
-    	<input type="hidden" id="poll-form-id" value="{{pid}}">
+    <form id="poll-form" action="." method="post" onclick="submitForm()">
+        {% csrf_token %}
+        <input type="hidden" id="poll-form-id" value="{{ pid }}">
         {% if form.instance.group %}
             <h2>{{ form.instance.group.course }}</h2>
         {% else %}
@@ -28,31 +27,28 @@
             {{ form.as_divs }}
         {% endif %}
         {% if form.finish %}
-            <div class="fieldWrapper">
+            <div class="form-group form-check">
                 {{ form.finish.errors }}
                 {{ form.finish }}
-                <helptext>{{ form.finish.help_text }}</helptext>
+                <label class="form-check-label" for="poll-finish-checkbox">{{ form.finish.label }}</label>
             </div>
         {% endif %}
         {% if not errors %}
-            <input type="submit"
-                   name="Prev"
-                   class="btn"
-                    {% if not prev %}
-                   disabled="True"
-                    {% endif %}
-                   value="<< Poprzednia ankieta"/>
-            {% if not form.finished %}
-                <input class="btn" type="submit" name="Save" value="Zapisz ankietę"/>
-            {% endif %}
-            <input type="submit"
-                   name="Next"
-                   class="btn"
-                    {% if not next %}
-                   disabled="True"
-                    {% endif %}
-                   value="Następna ankieta >>"/>
+            <div class="row">
+                <div class="col">
+                    <input type="submit" name="Prev" class="btn"{% if not prev %} disabled{% endif %}
+                           value="<< Poprzednia ankieta"/>
+                </div>
+                {% if not form.finished %}
+                    <div class="col">
+                        <input class="btn" type="submit" name="Save" value="Zapisz ankietę"/>
+                    </div>
+                {% endif %}
+                <div class="col">
+                    <input type="submit" name="Next" class="btn"{% if not next %} disabled{% endif %}
+                           value="Następna ankieta >>"/>
+                </div>
+            </div>
         {% endif %}
-
     </form>
 {% endblock %}
