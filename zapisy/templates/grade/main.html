@@ -21,12 +21,49 @@
                         <p>
                             Student po zalogowaniu powinien pobrać klucze, które umożliwią mu wypełnienie ankiet
                             oceniających zajęcia, na które był zapisany w danym semestrze. Klucze (które są fragmentem
-                            tekstu) są tworzone przez aplikację działającą po stronie klienta i nie są w żaden sposób
-                            powiązane z użytkownikiem. Należy je skopiować z okna przeglądarki i zapisać w bezpiecznym
+                            tekstu) moga zostac stworzone na dwa sposoby i nie są w żaden sposób
+                            powiązane z użytkownikiem. Pierwszy sposób to wygenerowanie kluczy przez System Zapisow po
+                            stronie serwera. Drugi to samodzielne stworzenie kluczy do oceny według kroków
+                            opisanych poniżej.
+                            Klucze należy skopiować z okna przeglądarki i zapisać w bezpiecznym
                             miejscu. W czasie, gdy ocena jest aktywna, każdy użytkownik może, używając swoich kluczy,
                             dokonać oceny (oczywiście bez logowania się do systemu). Operację tę można wykonywać
                             wielokrotnie, dodając nowe oceny i ewentualnie zmieniając swoje poprzednie wpisy.
                         </p>
+                    </li>
+                    <li>
+                        <h4>Samodzielne generowanie kluczy</h4>
+                        <p>
+                            Ocena Systemu Zapisow opiera się na protokole ślepych podpisów z użyciem kluczy RSA.
+                            Aby samodzielnie wygenerować klucze należy wykonać nastepujace kroki:
+                        </p>
+                        <ol>
+                            <li>
+                                Pobierz klucze publiczne dla swoich ankiet
+                                <a href="{% url 'grade-ticket-keys-list' %}">tutaj</a>
+                                i zapisz je w bezpiecznym miejscu.
+                            </li>
+                            <li>Wygeneruj losową, {{ rand_bits }}-bitową liczbe zwaną dalej m - jest to klucz, który
+                                będziemy zaciemniać i podpisywać.
+                            </li>
+                            <li>Dla każdej ankiety, wylosuj liczbę k względnie pierwszą z {{ rand_bits }}, oraz przy
+                                użyciu odpowiadającego ankiecie klucza publicznego ukryj (blinding) klucz m.
+                            </li>
+                            <li>
+                                Zaślepione kupony t, razem z odpowiadającymi im identyfikatorami ankiet wyślij do
+                                podpisu <a href="{% url 'grade-ticket-sign-tickets' %}">tutaj</a>. Otrzymasz podpisane
+                                kluczami prywatnymi kupony st.
+                            </li>
+                            <li>
+                                Aby uzyskać dostęp do <a href="{% url 'grade-poll-tickets-enter' %}">Oceny</a> wprowadź
+                                przy jej otwieraniu dane w postaci:
+                                <pre>
+                                id: identyfikator ankiety\n
+                                t\n
+                                st\n
+                                </pre>
+                            </li>
+                        </ol>
                     </li>
                     <li>
                         <h4>Bonus</h4>

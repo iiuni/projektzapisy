@@ -7,7 +7,8 @@ from Crypto.Random.random import getrandbits, randint
 from Crypto.Signature import pkcs1_15
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll
-from apps.grade.ticket_create.models import PublicKey, PrivateKey, UsedTicketStamp
+from apps.grade.ticket_create.models import PublicKey, PrivateKey, \
+    UsedTicketStamp
 from django.utils.safestring import SafeText
 
 RAND_BITS = 512
@@ -219,11 +220,11 @@ def get_valid_tickets(ticket_list):
 
 def secure_signer_without_save(user, poll, ticket):
     """
-
     :param user: user to be checked against poll
     :param poll: poll to verify
     :param ticket: ticket for verification
-    :return: either signed ticket or one of error strings: "Nie jesteś przypisany do tej ankiety","Bilet już pobrano"
+    :return: either signed ticket or one of error strings:
+    "Nie jesteś przypisany do tej ankiety", "Bilet już pobrano"
     """
     if not is_poll_visible(user, poll):
         return "Nie jesteś przypisany do tej ankiety"
@@ -304,7 +305,7 @@ def generate_ticket(poll_list):
         b = pow(k, e, n)
         t = (a * b) % n
 
-        blinded.append((poll, t, m, k))
+        blinded.append((poll, t))
     return blinded
 
 
