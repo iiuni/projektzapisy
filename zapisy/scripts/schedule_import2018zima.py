@@ -209,8 +209,6 @@ TECH = {
 
 from datetime import time
 
-
-
 from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
@@ -221,8 +219,8 @@ from apps.enrollment.courses.models.classroom import Classroom
 
 import re
 import logging
-logger = logging.getLogger()
 
+logger = logging.getLogger()
 
 regex = re.compile(
     '\s+(?P<day>pn|wt|śr|czw|pi|so|ni)\s+(?P<start_time>\d{1,2})-(?P<end_time>\d{1,2})\s+\((?P<type>wykład|repetytorium|ćwiczenia|pracownia|ćwicz\+pracownia|seminarium)\)\s+(?P<teacher>[^,]*),\s+(?P<rooms>.*)')

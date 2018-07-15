@@ -54,7 +54,7 @@ class BaseDesiderataFormSet(BaseFormSet):
                 day = form.cleaned_data['day']
                 hour = form.cleaned_data['hour']
                 value = form.cleaned_data['value']
-                if value == False and desiderata[day][hour] is None:
+                if value is False and desiderata[day][hour] is None:
                     Desiderata.objects.create(
                         employee=employee, semester=semester, day=day, hour=hour)
                 elif value and desiderata[day][hour] is not None:

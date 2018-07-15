@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.5-stretch-node-browsers
+    steps:
+      - checkout
+      - run: sudo apt-get install -y postgresql postgresql-contrib
+      - run: sudo bash env/postgre_setup.sh
+      # CircleCI automatically caches node_modules which is just stupid
+      # as we can and do have different versions of the same packages between
+      # branches
+      # It seems you can't disable this, see https://discuss.circleci.com/t/how-to-always-rebuild-without-npm-cache/1196
+      - run: rm -rf zapisy/node_modules/
+      # For good measure also clear any other crap they might have restored from the cache
+      - run: git clean -nd
+      - run: git clean -fd
+      - run: sudo pip install --upgrade pip
+      - run: sudo pip install --upgrade setuptools
+      - run: sudo pip install -r zapisy/requirements.test.txt
+      - run: pip --version
+      - run: pip freeze
+      - run: sudo npm install -g npm # Update to the latest version
+      - run: npm --version
+      - run: npm root -g
+      - run: sudo npm install -g yarn
+      - run: which yarn
+      - run: yarn --version
+      - run: cd zapisy && yarn
+      - run: mv env/.env_circleci env/.env
+      - run: mkdir zapisy/logs zapisy/static
+      - run: cd zapisy && yarn build
+      - run: cd zapisy && python manage.py collectstatic --noinput
+      - run: cd zapisy && sudo coverage run manage.py test apps.news.tests --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.schedule --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.enrollment.courses --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.enrollment.records.tests --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.grade.poll --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.users --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test test_app --nomigrations
+      - run: cd zapisy && sudo coverage html
+      - store_artifacts:
+          path: zapisy/htmlcov

@@ -44,7 +44,7 @@ def server(ip, port, no_package_install):
               "Only use this option if you know what you're doing.")
         print("******************************************")
     else:
-        npm_result = os.system("./npm.sh")
+        npm_result = os.system("yarn")
         npm_exit_code = os.WEXITSTATUS(npm_result)
         if npm_exit_code != 0:
             click.echo(click.style("Package installation failed with exit code {}".format(

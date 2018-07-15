@@ -44,23 +44,15 @@
                         {% endfor %}
                     </td>
                     <td class="number termLimit">
-                        {% if t.limit_zamawiane or t.limit_zamawiane2012 %}
-                            {{ t.limit_non_zamawiane }}
-                            {% if t.limit_zamawiane %} + {{ t.limit_zamawiane }}{% endif %}
-                            {% if t.limit_zamawiane2012 %} + {{ t.limit_zamawiane2012 }}{% endif %}
-                        {% elif t.limit_isim  %}
-                            {{ t.limit_non_isim }}
-                            {% if t.limit_isim %} + {{ t.limit_isim }}{% endif %}
+                        {% if t.limit_isim %}
+                            {{ t.limit_non_isim }} + {{ t.limit_isim }}
                         {% else %}
                             {{ t.limit }}
                         {% endif %}
                     </td>
                     <td class="number termEnrolledCount">
-                        {% if t.limit_zamawiane or t.limit_zamawiane2012 or t.limit_isim %}
-                            {{ t.get_count_of_enrolled_non_zamawiane }}
-                            {% if t.limit_zamawiane %} + {{ t.get_count_of_enrolled_zamawiane }}{% endif %}
-                            {% if t.limit_zamawiane2012 %} + {{ t.get_count_of_enrolled_zamawiane2012 }}{% endif %}
-                            {% if t.limit_isim %} + {{ t.enrolled_isim }}{% endif %}
+                        {% if t.limit_isim %}
+                            {{ t.enrolled_isim }}
                         {% else %}
                             {{ t.enrolled }}
                         {% endif %}
@@ -167,13 +159,3 @@
 
 <hr>
 {% include "enrollment/courses/course_consultations.html" %}
-
-{% if course.entity.ue %}
-<hr>
-<div class="row">
-    <h6>{% trans "Przedmiot współfinansowany ze środków Unii Europejskiej w ramach Europejskiego Funduszu Społecznego" %}</h6>
-    <div class="span14">
-        <img style="width:640px" src="https://zamawiane.ii.uni.wroc.pl/loga_www.png">
-    </div>
-</div>
-{% endif %}

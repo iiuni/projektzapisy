@@ -31,13 +31,4 @@
     {% if proposal %}
         {% include 'offer/proposal.html' with course=proposal %}
     {% endif %}
-
-    {% if proposal.ue %}
-    <div class="row">
-        <h6>Przedmiot współfinansowany ze środków Unii Europejskiej w ramach Europejskiego Funduszu Społecznego</h6>
-        <div class="span14">
-            <img style="width:640px" src="https://zamawiane.ii.uni.wroc.pl/loga_www.png">
-        </div>
-    </div>
-    {% endif %}
 {% endblock %}

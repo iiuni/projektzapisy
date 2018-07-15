@@ -20,11 +20,6 @@
             <td>{{ student.matricula }}</td>
             <td>
                 {{ student.program }}
-                {% if student.is_zamawiany %}
-                    (zamawiani2009)
-                {% elif student.is_zamawiany2012 %}
-                    (zamawiani2012)
-                {% endif %}
             </td>
             <td>{{ student.semestr }}</td>
         </tr>

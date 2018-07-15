@@ -21,12 +21,8 @@ Fereol.Enrollment.CourseGroup = function()
 	this.isTeacher = null; // czy jest prowadzącym daną grupę
 	this.queuePriority = null; // jeżeli jest w kolejce, to jaki ma priorytet
 
-	// w przypadku studentów nie zamawianych - zamawiana część grupy jest
-	// "niedostępna"
 	this.limit = null;
-	this.unavailableLimit = null;
 	this.enrolledCount = null;
-	this.unavailableEnrolledCount = null;
 	this.queuedCount = null;
 
 	this.updateListeners = [];
@@ -119,9 +115,7 @@ Fereol.Enrollment.CourseGroup.prototype.updateFromJSON = function(json)
 	this.isTeacher = !!raw['is_teacher'];
 
 	this.limit = raw['limit'].castToInt();
-	this.unavailableLimit = raw['unavailable_limit'].castToInt();
 	this.enrolledCount = raw['enrolled_count'].castToInt();
-	this.unavailableEnrolledCount = raw['unavailable_enrolled_count'].castToInt();
 	this.queuedCount = raw['queued_count'].castToInt();
 	if (this.isQueued)
 		this.queuePriority = raw['queue_priority'].castToInt();
@@ -129,18 +123,16 @@ Fereol.Enrollment.CourseGroup.prototype.updateFromJSON = function(json)
 
 Fereol.Enrollment.CourseGroup.prototype.availableLimit = function()
 {
-	if (this.limit === null ||
-		this.unavailableLimit === null)
+	if (this.limit === null)
 		throw new Error('NullPointerException');
-	return this.limit - this.unavailableLimit;
+	return this.limit;
 };
 
 Fereol.Enrollment.CourseGroup.prototype.availableEnrolledCount = function()
 {
-	if (this.enrolledCount === null ||
-		this.unavailableEnrolledCount === null)
+	if (this.enrolledCount === null)
 		throw new Error('NullPointerException');
-	return this.enrolledCount - this.unavailableEnrolledCount;
+	return this.enrolledCount;
 };
 
 /**

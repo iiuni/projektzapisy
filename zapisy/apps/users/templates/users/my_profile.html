@@ -56,27 +56,6 @@ $('.checkall').live('click', function(){
             <th>email</th>
             <td>{{user.email}}</td>
         </tr>
-        {%if zamawiany%}
-            <tr>
-            <th>numer konta bankowego</th>
-            <td>{% if zamawiany.bank_account != None %}{{zamawiany.bank_account}}{% endif %}</td>
-        </tr>{%endif%}
-        {% if user.student %}
-        <form action="{% url 'personal_data_consent' %}" method="post">
-            {% csrf_token %}
-            <tr>
-                <th>Zgoda na udostępnianie danych innym studentom</th>
-                <td>
-                {% if user.student.consent_granted %}
-                    Tak&emsp;
-                    <input type="submit" value="Wycofaj zgodę" name="no" class="btn secondary" />
-                {% else %}
-                    Nie&emsp;
-                    <input type="submit" value="Udziel zgody" name="yes" class="btn secondary" />
-                {% endif %}</td>
-            </tr>
-        </form>
-        {% endif %}
     {% if user.employee %}
         <tr>
             <th>pokój</th>
@@ -96,10 +75,6 @@ $('.checkall').live('click', function(){
     <a class="change_profile" href="{% url 'password_change' %}">zmień hasło</a>
 &nbsp;
 <a href="{% url 'email_change' %}">zmień adres email</a>
-{%if zamawiany%}
-&nbsp;
-<a class="change_bank_account" href="{% url 'bank-account-change' %}">zmień numer konta bankowego</a>
-{%endif%}
 {% if user.employee %}
 &nbsp;
 <a href="{% url 'consultations-change' %}">zmień inne dane</a>
@@ -112,20 +87,6 @@ $('.checkall').live('click', function(){
     {% else %}
         Brak informacji
     {% endif %}
-{% endif %}
-
-{% if zamawiany %}
-<p class="info-table-header">Studia zamawiane</p>
-        <table class="table-info">
-            <tr>
-                <th>Punkty</th>
-                <td>{% if points %}{{points}}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Uwagi</th>
-                <td>{{ comments|safe }}</td>
-            </tr>            
-        </table>
 {% endif %}
 
 {% if user.student %}

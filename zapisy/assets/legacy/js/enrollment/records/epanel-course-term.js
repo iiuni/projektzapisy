@@ -134,18 +134,8 @@ Fereol.Enrollment.EPanelCourseTerm.prototype.refreshView = function()
     this._setEnrolledButton.removeClass('success')
     this._setEnrolledButton.removeClass('danger')
     this._setEnrolledButton.addClass(typeClass)
-	this._groupLimitCell.text(
-		this.group.unavailableLimit ?
-			(this.group.availableLimit() + ' + ' +
-				this.group.unavailableLimit) :
-			this.group.limit
-	);
-	this._enrolledCountCell.text(
-		this.group.unavailableLimit ?
-			(this.group.availableEnrolledCount() + ' + ' +
-				this.group.unavailableEnrolledCount) :
-			this.group.enrolledCount
-	);
+	this._groupLimitCell.text(this.group.limit);
+	this._enrolledCountCell.text(this.group.enrolledCount);
 	this._queuedCountCell.text(this.group.queuedCount);
 };
 

@@ -1,9 +1,11 @@
+from typing import List, Union, Any
 from django.conf.urls import url
+from django.urls.resolvers import RegexURLPattern, RegexURLResolver
 from django.contrib.auth.views import password_reset, password_reset_confirm, \
     password_reset_complete, password_reset_done, PasswordChangeView
 from . import views
 
-urlpatterns = [
+urlpatterns: List[Union[Union[RegexURLResolver, RegexURLPattern], Any]] = [
     url('^login/$', views.login_plus_remember_me, {'template_name': 'users/login.html'}, name='user-login'),
     url(r'^profile/employee/(?P<user_id>(\d+))?$', views.employee_profile, name='employee-profile'),
     url(r'^profile/student/(?P<user_id>(\d+))?$', views.student_profile, name='student-profile'),
@@ -11,7 +13,6 @@ urlpatterns = [
     url('^email-change/$', views.email_change, name='email-change'),
     url('^setlang/$', views.set_language, name='setlang'),
     url('^employee-data-change/$', views.consultations_change, name='consultations-change'),
-    url('^bank-account-change/$', views.bank_account_change, name='bank-account-change'),
     url('^password-change/$', PasswordChangeView.as_view(template_name='users/password_change_form.html'),
         name='password_change'),
     url('^password-change-done/$', views.password_change_done, name='password_change_done'),

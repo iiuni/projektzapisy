@@ -1,6 +1,6 @@
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-function getVueCssLoaders(options: any) {
+export function getVueCssLoaders(options: any) {
 	// generate loader string to be used with extract text plugin
 	function generateLoaders (loaders: Array<string>) {
 	  	let sourceLoader = loaders.map(function (loader: string) {
@@ -44,4 +44,10 @@ function getVueCssLoaders(options: any) {
 	};
 }
 
-export { getVueCssLoaders };
+export function parseBool(stringVal: string | undefined | null): boolean {
+	if (stringVal == null) {
+		return false;
+	}
+	const lower = stringVal.toLowerCase();
+	return ["1", "true"].includes(lower);
+}

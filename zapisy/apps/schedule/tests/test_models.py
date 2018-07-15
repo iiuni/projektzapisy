@@ -8,16 +8,15 @@ from django.http import Http404
 from django.utils.crypto import get_random_string
 
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
+from apps.users.models import Employee
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term as EventTerm
 from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.tests.objectmothers import UserObjectMother
-from apps.users.tests.factories import UserFactory, EmployeeProfileFactory, StudentFactory
+from apps.users.tests.factories import UserFactory, EmployeeFactory, StudentFactory
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule import feeds
-from apps.users.models import UserProfile
 import apps.enrollment.courses.tests.factories as enrollment_factories
 from apps.enrollment.records.tests.factories import RecordFactory
 from apps.enrollment.records.models import Record
@@ -356,12 +355,10 @@ class FeedsTestCase(TestCase):
 
 class EventTestCase(TestCase):
     def setUp(self):
-        teacher = factories.UserFactory()
+        employee = EmployeeFactory()
+        teacher = employee.user
         teacher.full_clean()
-        teacher_profile = UserObjectMother.teacher_profile(teacher)
-        teacher_profile.save()
-
-        employee = UserObjectMother.employee(teacher)
+        teacher.save()
         employee.save()
 
         self.event = factories.EventFactory(author=teacher)
@@ -379,8 +376,6 @@ class EventTestCase(TestCase):
 
         u = factories.UserFactory()
         u.full_clean()
-        student = UserObjectMother.student_profile(u)
-        student.save()
 
         self.users = [u, teacher]
 
@@ -422,46 +417,53 @@ class EventTestCase(TestCase):
         self.assertRaises(ValidationError, term.full_clean)
 
     def test_clean__student_cant_add_exam(self):
-        student = UserProfile.objects.get(is_student=True).user
+        student = StudentFactory().user
         event = factories.EventFactory.build(author=student, type=Event.TYPE_EXAM)
         self.assertRaises(ValidationError, event.full_clean)
 
     def test_clean__student_cant_add_test(self):
-        student = UserProfile.objects.get(is_student=True).user
+        student = StudentFactory().user
+
         event = factories.EventFactory.build(author=student, type=Event.TYPE_TEST)
         self.assertRaises(ValidationError, event.full_clean)
 
     def test_clean__employee_can_add_exam(self):
-        employee = UserProfile.objects.get(is_employee=True).user
+        employee = EmployeeFactory().user
+
         event = factories.EventFactory.build(author=employee, type=Event.TYPE_EXAM)
         event.full_clean()
 
     def test_clean__employee_can_add_test(self):
-        employee = UserProfile.objects.get(is_employee=True).user
+        employee = EmployeeFactory().user
+
         event = factories.EventFactory.build(author=employee, type=Event.TYPE_TEST)
         event.full_clean()
 
     def test_clean__student_cant_add_accepted_event(self):
-        user = UserProfile.objects.get(is_student=True).user
-        event = factories.EventFactory.build(author=user)
+        student = StudentFactory().user
+
+        event = factories.EventFactory.build(author=student)
         self.assertRaises(ValidationError, event.full_clean)
 
     def test_clean__employee_can_add_accepted_event(self):
-        employee = UserProfile.objects.get(is_employee=True).user
+        employee = EmployeeFactory().user
+
         event = factories.EventFactory.build(author=employee)
         event.full_clean()
 
     def test_new_exam_after_clean_is_public(self):
         exam = factories.EventFactory(type=Event.TYPE_EXAM)
-        user_profile = EmployeeProfileFactory(user=exam.author)
-        user_profile.full_clean()
+
+        employee = EmployeeFactory(user=exam.author)
+        employee.full_clean()
         exam.full_clean()
         self.assertTrue(exam.visible)
 
     def test_after_clean_new_test_is_public(self):
         test = factories.EventFactory(type=Event.TYPE_TEST)
-        user_profile = EmployeeProfileFactory(user=test.author)
-        user_profile.full_clean()
+
+        employee = EmployeeFactory(user=test.author)
+        employee.full_clean()
         test.full_clean()
         self.assertTrue(test.visible)
 
@@ -512,14 +514,14 @@ class EventTestCase(TestCase):
         self.assertRaises(Http404, Event.get_event_or_404, 0, user)
 
     def test_get_event_or_404_returns_event_if_exists_and_user_can_see(self):
-        employee = UserProfile.objects.get(is_employee=True).user
+        employee = Employee.objects.get().user
         event = factories.EventFactory(author=employee)
         ret = Event.get_event_or_404(event.id, employee)
         self.assertEqual(event, ret)
 
     def test_get_event_or_404_raises_error404_if_user_cant_see_event(self):
         user = UserFactory()
-        employee = UserProfile.objects.get(is_employee=True).user
+        employee = Employee.objects.get().user
         event = factories.EventInvisibleFactory(author=employee)
         self.assertRaises(Http404, Event.get_event_or_404, event.id, user)
 

@@ -13,6 +13,7 @@ from .semester_year_provider import SemesterYearProvider
 
 factory.Faker.add_provider(SemesterYearProvider)
 
+
 class SemesterFactory(DjangoModelFactory):
     class Meta:
         model = Semester

@@ -25,12 +25,6 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: apps/enrollment/records/templates/records/group_pdf.html:29
-#: apps/enrollment/records/templates/records/records_list.html:5
-msgid "Zapisanych w ramach limitu studiów zamawianych"
-msgstr ""
-
-#. Translators: limit dodatkowy to ten poza limitem dla zamawianych
 #: apps/enrollment/records/templates/records/group_pdf.html:33
 #: apps/enrollment/records/templates/records/records_list.html:10
 msgid "Zapisanych w ramach limitu dodatkowego"

@@ -10,7 +10,6 @@ from django.contrib.auth import authenticate
 from django.utils.safestring import SafeText
 
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.users.decorators import student_required, employee_required
 from apps.users.models import BaseUser
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models.poll import Poll
@@ -18,6 +17,7 @@ from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_key
     secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark
 from apps.grade.ticket_create.models import PublicKey
 from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
+from apps.users.decorators import employee_required, student_required
 
 
 # KEYS generate:
@@ -76,7 +76,6 @@ def ajax_get_rsa_keys_step2(request):
 
 @student_required
 def connections_choice(request):
-
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
     students_polls = Poll.get_all_polls_for_student(request.user.student)
     if students_polls:
@@ -101,7 +100,7 @@ def connections_choice(request):
                     groups = []
                 prepared_tickets = list(zip(groups, unblindt, unblindst))
                 # final mark:
-                for g, t, unblind in prepared_tickets:
+                for g, t, _ in prepared_tickets:
                     secure_mark(request.user, g, t)
                 errors, tickets_to_serve = get_valid_tickets(prepared_tickets)
                 if errors:
@@ -124,7 +123,7 @@ def connections_choice(request):
 
         else:
             pass
-#             form = PollCombineForm( polls = groupped_polls )
+        #             form = PollCombineForm( polls = groupped_polls )
 
         data = {'polls': polls_lists, 'grade': grade, 'general_polls': general_polls}
         return render(request, 'grade/ticket_create/connection_choice.html', data)
@@ -184,7 +183,7 @@ def client_connection(request):
                                 st += 'Ankiety ogólne: %%%   [' + poll.title + '] '
                             else:
                                 st += 'Przedmiot: ' + polls[0].group.course.name + '%%%    [' + poll.title + '] ' + \
-                                    poll.group.get_type_display() + ': ' + poll.group.get_teacher_full_name() + '***'
+                                      poll.group.get_type_display() + ': ' + poll.group.get_teacher_full_name() + '***'
                                 st += str(PublicKey.objects.get(poll=poll.pk).public_key) + '&&&'
                         st += '???'
 
@@ -196,7 +195,6 @@ def client_connection(request):
 
             for students_poll in students_polls:
                 if int(students_poll.pk) == int(groupNumber):
-
                     st = secure_signer_without_save(user, students_poll, groupKey)
                     secure_signer(user, students_poll, groupKey)
                     p = students_poll
@@ -218,8 +216,8 @@ def client_connection(request):
 
 @csrf_exempt
 def keys_list(request):
-    l = PublicKey.objects.all()  # .order_by('poll__group__course__name')
-    return render(request, 'grade/ticket_create/keys_list.html', {'list': l, })
+    keys = PublicKey.objects.all()  # .order_by('poll__group__course__name')
+    return render(request, 'grade/ticket_create/keys_list.html', {'list': keys})
 
 
 @csrf_exempt

@@ -1,11 +1,10 @@
-from django.http import Http404
 from django.shortcuts import render
 from django.contrib import messages
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.desiderata.forms import DesiderataFormSet, DesiderataOtherForm
-from apps.users.decorators import employee_required
 from apps.enrollment.courses.models.semester import Semester
+from apps.users.decorators import employee_required
 
 
 @employee_required

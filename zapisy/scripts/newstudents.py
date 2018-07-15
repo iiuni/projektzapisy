@@ -1,24 +1,24 @@
-from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist
-from zapisy.apps.users.models import Student, Program, UserProfile
-from django.contrib.auth.models import User
+from apps.users.models import Student, Program
+from django.contrib.auth.models import User, Group
 import random
 
 studentsfile = 'newstudents2016.txt'
 
 
-def create_user(indeks, imie, nazwisko, mail, isim, pswd):
+def create_user(indeks, imie, nazwisko, mail, pswd):
     p = Program.objects.get(id=4)
+    students = Group.objects.get(name='students')
     user = User.objects.create_user(username=indeks, email=mail, password=pswd)
     user.first_name = imie
     user.last_name = nazwisko
     user.save()
+    students.user_set.add(user)
+    students.save()
     s = Student.objects.create(user=user, matricula=indeks)
-    s.isim = isim
     s.semestr = 1
     s.program = p
     s.save()
-    up = UserProfile.objects.create(user=user, is_student=True)
     return user
 
 
@@ -48,10 +48,7 @@ def process(line):
         student = Student.objects.get(matricula=indeks)
     except ObjectDoesNotExist:
         haslo = random_pass()
-        isim = False
-        if program == 'ISIM':
-            isim = True
-        create_user(indeks, imie, nazwisko, mail, isim, haslo)
+        create_user(indeks, imie, nazwisko, mail, haslo)
         print(imie + ',' + nazwisko + ',' + indeks + ',' + haslo + ',' + program)
     else:
         print(str(indeks) + ': already exists')

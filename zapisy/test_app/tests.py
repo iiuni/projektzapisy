@@ -13,7 +13,7 @@ from selenium.common.exceptions import (
     TimeoutException,
 )
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as UserGroup
 from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
@@ -72,6 +72,9 @@ class NewSemesterTests(SeleniumTestCase):
             """
         ]
 
+        students, _ = UserGroup.objects.get_or_create(name='students')
+        employees, _ = UserGroup.objects.get_or_create(name='employees')
+
         for sql_call in sql_calls:
             cursor = connection.cursor()
             cursor.execute(sql_call)
@@ -81,8 +84,10 @@ class NewSemesterTests(SeleniumTestCase):
         self.admin = User.objects.create_superuser(username='przemka',
                                                    password=self.password,
                                                    email='admin@admin.com')
+
         self.admin.first_name = 'przemka'
         self.admin.save()
+        employees.user_set.add(self.admin)
         self.employee = Employee.objects.create(user=self.admin)
 
         self.employees = []
@@ -93,8 +98,10 @@ class NewSemesterTests(SeleniumTestCase):
             user.first_name = 'Employee'
             user.last_name = str(i)
             user.save()
+            employees.user_set.add(user)
             employee = Employee.objects.create(user=user)
             self.employees.append(employee)
+        employees.save()
 
         user_student1 = User.objects.create_user(
             username='student1',
@@ -108,6 +115,13 @@ class NewSemesterTests(SeleniumTestCase):
         user_student4 = User.objects.create_user(
             username='student4',
             password=self.password)
+
+        students.user_set.add(user_student1)
+        students.user_set.add(user_student2)
+        students.user_set.add(user_student3)
+        students.user_set.add(user_student4)
+        students.save()
+
         self.student1 = Student.objects.create(
             user=user_student1, matricula='264823')
         self.student2 = Student.objects.create(
@@ -381,6 +395,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.system_state.save()
 
     def vote(self, student, points):
+        assert(hasattr(student.user, "student") and student.user.student)
         self.driver.get('{}{}'.format(self.live_server_url, '/users/logout/'))
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
@@ -612,14 +627,17 @@ class NewSemesterTests(SeleniumTestCase):
     def add_new_students(self):
         number_of_students = Student.objects.all().count()
         self.new_students = []
+        students, _ = UserGroup.objects.get_or_create(name='students')
         for i in range(1, 6):
             user = User.objects.create_user(
-                username='student{}'.format(i + number_of_students),
-                password=self.password)
+                username='student{}'.format(i + number_of_students), password=self.password
+            )
+            students.user_set.add(user)
             student = Student.objects.create(
                 user=user,
                 matricula=str(i + number_of_students))
             self.new_students.append(student)
+        students.save()
 
     def import_ects(self):
         students_ects = {
@@ -692,21 +710,21 @@ class AdminTests(SeleniumTestCase):
         "/fereol_admin/users/employee/",
         "/fereol_admin/users/program/",
         "/fereol_admin/users/student/",
-        "/fereol_admin/users/studiazamawianemaileopiekunow/",
-        "/fereol_admin/users/studiazamawiane/",
-        "/fereol_admin/users/studiazamawiane2012/",
         "/fereol_admin/auth/group/",
         "/fereol_admin/auth/user/",
         "/fereol_admin/vote/singlevote/",
         "/fereol_admin/vote/systemstate/"]
 
     def createAdmin(self):
+        employees, _ = UserGroup.objects.get_or_create(name='employees')
         self.password = '11111'
         self.admin = User.objects.create_superuser(username='przemka',
                                                    password=self.password,
                                                    email='admin@admin.com')
         self.admin.first_name = 'przemka'
         self.admin.save()
+        employees.user_set.add(self.admin)
+        employees.save()
 
     def createSemester(self):
         today = datetime.now()

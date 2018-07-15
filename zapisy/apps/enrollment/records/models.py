@@ -188,7 +188,7 @@ class Record(models.Model):
         try:
             return Student.objects.filter(
                 records__group_id=group_id, records__status=1).select_related(
-                'program', 'user', 'zamawiane', 'zamawiane2012')
+                'program', 'user')
         except Group.DoesNotExist:
             raise NonGroupException()
 

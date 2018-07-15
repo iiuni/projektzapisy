@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -15,13 +15,12 @@ from apps.enrollment.courses.models.course import CourseEntity
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.semester import Semester
-
 from apps.users.decorators import student_required
 
 
 @student_required
 def vote(request):
-    from .vote_form import VoteFormsets
+    from apps.offer.vote.vote_form import VoteFormsets
 
     student = request.user.student
     state = SystemState.get_state()

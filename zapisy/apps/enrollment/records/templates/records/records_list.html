@@ -1,17 +1,7 @@
 {% load i18n %}
 
 <h3>{% trans "Lista osób zapisanych na przedmiot" %}:</h3>
-		{% if group.limit_zamawiane %}
-			<p>{% trans "Zapisanych w ramach limitu studiów zamawianych" %}:
-				{{ group.get_count_of_enrolled_zamawiane }}
-				/ {{ group.limit_zamawiane }}.
-			</p>
-			{# Translators: limit dodatkowy to ten poza limitem dla zamawianych #}
-			<p>{% trans "Zapisanych w ramach limitu dodatkowego" %}:
-				{{ group.get_count_of_enrolled_non_zamawiane }}
-				/ {{ group.limit_non_zamawiane }}.
-			</p>
-        {% elif group.limit_isim > 0 %}
+        {% if group.limit_isim > 0 %}
 			<p>Zapisanych w ramach limitu ISIM:
 				{{ group.enrolled_isim }}
 				/ {{ group.limit_isim }}.

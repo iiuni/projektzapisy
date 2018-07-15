@@ -3,8 +3,17 @@
         ["env", {
           "targets": {
             "browsers": ["last 2 versions", "ie >= 10"]
-          }
+          },
+          "modules": false
         }]
     ],
-    "plugins": ["transform-runtime"]
+    "plugins": [
+      "transform-runtime",
+      ["transform-imports", {
+        "lodash": {
+          "transform": "lodash/${member}",
+          "preventFullImport": true
+        }
+      }]
+    ]
 }

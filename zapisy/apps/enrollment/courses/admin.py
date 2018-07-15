@@ -283,8 +283,6 @@ class GroupAdmin(admin.ModelAdmin):
         'teacher',
         'type',
         'limit',
-        'limit_zamawiane',
-        'limit_zamawiane2012',
         'limit_isim',
         'get_terms_as_string')
     list_filter = ('type', 'course__semester', 'teacher')
@@ -311,8 +309,7 @@ class GroupAdmin(admin.ModelAdmin):
         if obj.pk:
             rearrange = obj.queued > 0 and obj.enrolled < obj.limit
             old = Group.objects.get(pk=obj.pk)
-            rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit_zamawiane != old.limit_zamawiane or
-                                       obj.limit_zamawiane2012 != old.limit_zamawiane2012 or obj.limit != old.limit)
+            rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit != old.limit)
             if rearrange:
                 for _ in range(obj.limit - obj.enrolled):
                     run_rearanged(None, obj)

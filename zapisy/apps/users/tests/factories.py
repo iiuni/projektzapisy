@@ -1,11 +1,12 @@
-import random
-
+from typing import Any
+from django.contrib.auth.models import Group
 import factory
 from factory.django import DjangoModelFactory
+from factory import post_generation
 
 from django.conf import settings
 
-from apps.users.models import Student, UserProfile, Employee, User
+from apps.users.models import Student, Employee, User
 
 langs = [x[0] for x in settings.LANGUAGES]
 
@@ -29,40 +30,31 @@ class UserFactory(DjangoModelFactory):
 class StudentFactory(DjangoModelFactory):
     class Meta:
         model = Student
+        exclude = ("group",)
+
+    @post_generation
+    def group(self, create: Any, extracted: Any, **kwargs: Any) -> Group:
+        """Method taking care of checking whether user was added to students group."""
+        students, _ = Group.objects.get_or_create(name='students')
+        students.user_set.add(self.user)
+        students.save()
+        return students
 
     user = factory.SubFactory(UserFactory, suff_username="_s")
     matricula = factory.Sequence(lambda n: ('9%05d' % n))
 
 
-class UserProfileFactory(DjangoModelFactory):
-    class Meta:
-        model = UserProfile
-
-    user = factory.SubFactory(UserFactory)
-    preferred_language = factory.Faker('random_element', elements=langs)
-    is_employee = random.choice([True, False])
-    is_student = factory.LazyAttribute(lambda o: False if o.is_employee else True)
-    is_zamawiany = factory.LazyAttribute(
-        lambda o: random.choice([True, False]) if o.is_student else False
-    )
-
-
-class StudentProfileFactory(UserProfileFactory):
-    is_student = True
-    is_employee = False
-
-
-class EmployeeProfileFactory(UserProfileFactory):
-    is_employee = True
-
-
-class OrderedStudentProfileFactory(UserProfileFactory):
-    is_zamawiany = True
-    is_employee = False
-
-
 class EmployeeFactory(DjangoModelFactory):
     class Meta:
         model = Employee
+        exclude = ("group",)
+
+    @post_generation
+    def group(self, create: Any, extracted: Any, **kwargs: Any) -> Group:
+        """Method taking care of checking whether user was added to employees group."""
+        employees, _ = Group.objects.get_or_create(name='employees')
+        employees.user_set.add(self.user)
+        employees.save()
+        return employees
 
     user = factory.SubFactory(UserFactory, suff_username="_e")

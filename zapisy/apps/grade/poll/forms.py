@@ -24,14 +24,15 @@ class TicketsForm(forms.Form):
 
 
 class MaxAnswersValidator(MaxLengthValidator):
-    def compare(self, a, b): return (b != 0) and (a > b)
+    def compare(self, a, b):
+        return (b != 0) and (a > b)
 
 
 class PollForm(forms.Form):
     class myObject:
         pass
 
-    #- wydzielic do forma Section
+    # - wydzielic do forma Section
     def as_edit(self):
         from django.template import loader
         return loader.render_to_string(

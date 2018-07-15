@@ -3,6 +3,7 @@ import json
 import datetime
 import unidecode
 import re
+from typing import Any, Optional
 
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
@@ -12,7 +13,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
@@ -24,12 +25,12 @@ from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, UserProfile, OpeningTimesView, PersonalDataConsent
+from apps.users.models import Employee, Student, BaseUser, OpeningTimesView, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record
 from apps.enrollment.utils import mailto
-from apps.users.forms import EmailChangeForm, BankAccountChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
+from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
 from apps.notifications.forms import NotificationFormset
 from apps.notifications.models import NotificationPreferences
@@ -46,7 +47,7 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 
 
 @login_required
-def student_profile(request, user_id):
+def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """student profile"""
     try:
         student = Student.objects.select_related('user').get(user=user_id)
@@ -94,7 +95,7 @@ def student_profile(request, user_id):
         return render(request, 'common/error.html')
 
 
-def employee_profile(request, user_id):
+def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """employee profile"""
     try:
         user = User.objects.select_related('employee').get(id=user_id)
@@ -152,7 +153,7 @@ def employee_profile(request, user_id):
 
 
 @login_required
-def set_language(request):
+def set_language(request: HttpRequest) -> HttpResponse:
     """
     Redirect to a given url while setting the chosen language in the
     session or cookie. The url and the language code need to be
@@ -168,9 +169,6 @@ def set_language(request):
     if request.method == 'POST':
         lang_code = request.POST.get('language', None)
         if lang_code and check_for_language(lang_code):
-            account = UserProfile.objects.get(user=request.user)
-            account.preferred_language = lang_code
-            account.save()
             if hasattr(request, 'session'):
                 request.session[LANGUAGE_SESSION_KEY] = lang_code
             else:
@@ -179,7 +177,7 @@ def set_language(request):
 
 
 @login_required
-def email_change(request):
+def email_change(request: HttpRequest) -> HttpResponse:
     """function that enables mail changing"""
     if request.POST:
         data = request.POST.copy()
@@ -203,25 +201,7 @@ def email_change(request):
 
 
 @login_required
-def bank_account_change(request):
-    """function that enables bank account changing"""
-    if request.POST:
-        data = request.POST.copy()
-        zamawiany = Student.get_zamawiany(request.user.id)
-        form = BankAccountChangeForm(data, instance=zamawiany)
-        if form.is_valid():
-            form.save()
-            logger.info('User (%s) changed bank account' % request.user.get_full_name())
-            messages.success(request, "Twój numer konta bankowego został zmieniony.")
-            return HttpResponseRedirect(reverse('my-profile'))
-    else:
-        zamawiany = Student.get_zamawiany(request.user.id)
-        form = BankAccountChangeForm({'bank_account': zamawiany.bank_account})
-    return render(request, 'users/bank_account_change_form.html', {'form': form})
-
-
-@login_required
-def consultations_change(request):
+def consultations_change(request: HttpRequest) -> HttpResponse:
     """function that enables consultations changing"""
     try:
         employee = request.user.employee
@@ -243,7 +223,7 @@ def consultations_change(request):
 
 
 @login_required
-def password_change_done(request):
+def password_change_done(request: HttpRequest) -> HttpResponse:
     """informs if password were changed"""
     logger.info('User (%s) changed password' % request.user.get_full_name())
     messages.success(request, "Twoje hasło zostało zmienione.")
@@ -251,12 +231,9 @@ def password_change_done(request):
 
 
 @login_required
-def my_profile(request):
+def my_profile(request: HttpRequest) -> HttpResponse:
     """profile site"""
     semester = Semester.objects.get_next()
-    zamawiany = Student.get_zamawiany(request.user.id)
-    comments = zamawiany and zamawiany.comments or ''
-    points = zamawiany and zamawiany.points or 0
 
     notifications = NotificationFormset(
         queryset=NotificationPreferences.objects.create_and_get(
@@ -300,7 +277,7 @@ def my_profile(request):
     return TemplateResponse(request, 'users/my_profile.html', locals())
 
 
-def employees_list(request, begin='All', query=None):
+def employees_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
 
     employees = Employee.get_list(begin)
 
@@ -317,7 +294,7 @@ def employees_list(request, begin='All', query=None):
     return render(request, 'users/employees_list.html', data)
 
 
-def consultations_list(request, begin='A'):
+def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
 
     employees = Employee.get_list('All')
     semester = Semester.get_current_semester()
@@ -335,9 +312,8 @@ def consultations_list(request, begin='A'):
 
 
 @login_required
-def students_list(request, begin='All', query=None):
+def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
     students = Student.get_list(begin, not BaseUser.is_employee(request.user))
-#    students = Record.recorded_students(students)
 
     if request.is_ajax():
         students = prepare_ajax_students_list(students)
@@ -354,14 +330,14 @@ def students_list(request, begin='All', query=None):
 
 
 @login_required
-def logout(request):
+def logout(request: HttpRequest) -> HttpResponse:
     """logout"""
     logger.info('User %s <id: %s> is logged out ' % (request.user.username, request.user.id))
     auth.logout(request)
     return HttpResponseRedirect('/')
 
 
-def login_plus_remember_me(request, **kwargs):
+def login_plus_remember_me(request: HttpRequest, **kwargs: Any) -> HttpResponse:
     """
     Sign-in function with an option to save the session.
     If the user clicked the 'Remember me' button (we read it from POST data), the
@@ -382,7 +358,7 @@ def login_plus_remember_me(request, **kwargs):
     return LoginView.as_view(**kwargs)(request)
 
 
-def get_ical_filename(user, semester):
+def get_ical_filename(user: User, semester: Semester) -> str:
     name_with_semester = "{}_{}".format(user.get_full_name(), semester.get_short_name())
     name_ascii_only = unidecode.unidecode(name_with_semester)
     path_safe_name = re.sub(r"[\s+/]", "_", name_ascii_only)
@@ -390,7 +366,7 @@ def get_ical_filename(user, semester):
 
 
 @login_required
-def create_ical_file(request):
+def create_ical_file(request: HttpRequest) -> HttpResponse:
     user = request.user
     semester = Semester.get_default_semester()
 
@@ -438,7 +414,7 @@ def create_ical_file(request):
 
 
 @permission_required('users.mailto_all_students')
-def email_students(request):
+def email_students(request: HttpRequest) -> HttpResponse:
     """function that enables mailing all students"""
     students = Student.get_list('All')
     if students:
@@ -488,6 +464,6 @@ def personal_data_consent(request):
             messages.success(request, 'Zgoda udzielona')
         if 'no' in request.POST:
             PersonalDataConsent.objects.update_or_create(student=request.user.student,
-                                                 defaults={'granted': False})
+                                                         defaults={'granted': False})
             messages.success(request, 'Brak zgody zapisany')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -25,21 +25,6 @@
     <h6>{% for term in group.term.all %}{{ term }} {% endfor %}</h6>
 
         <hr>
-    		{% if group.limit_zamawiane %}
-    			<p>{% trans "Zapisanych w ramach limitu studiów zamawianych" %}:
-    				{{ group.get_count_of_enrolled_zamawiane }}
-    				/ {{ group.limit_zamawiane }}.
-    			</p>
-    			<p>{% trans "Zapisanych w ramach limitu dodatkowego" %}:
-    				{{ group.get_count_of_enrolled_non_zamawiane }}
-    				/ {{ group.limit_non_zamawiane }}.
-    			</p>
-    		{% else %}
-    			<p>{% trans "Liczba zapisanych osób" %}: {{students_in_group|length}} /
-    			{{group.get_group_limit}}</p>
-    		{% endif %}
-
-
             {% if students_in_group %}
                 <table class="zebra-striped">
                 	<thead>

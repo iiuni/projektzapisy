@@ -13,9 +13,9 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "env/postgre_setup.sh"
   config.vm.provision :shell, path: "env/tools_install.sh"
   config.vm.provision :shell, path: "env/firefox_and_geckodriver_setup.sh"
-  config.vm.provision :shell, path: "env/js_setup.sh"
+  config.vm.provision :shell, path: "env/nodejs_setup.sh"
   config.vm.provision :shell, path: "env/py3_build.sh"
-  config.vm.provision :shell, path: "env/npm_setup.sh", privileged: false
+  config.vm.provision :shell, path: "env/webpack_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/env3_setup.sh", privileged: false
   config.vm.network :forwarded_port, guest: 80, host: 8001
@@ -25,5 +25,9 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM:
     vb.memory = "1024"
+    # Fix symlinks on Win32, see https://blog.rudylee.com/2014/10/27/symbolic-links-with-vagrant-windows/
+    # NOTE: apart from this, you'll need to run `vagrant up` as admin on Win32
+    # for symlinks (webpack) to work
+    vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
 end

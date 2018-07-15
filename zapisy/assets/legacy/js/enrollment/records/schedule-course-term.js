@@ -207,27 +207,9 @@ Fereol.Enrollment.ScheduleCourseTerm.prototype._generatePopup = function()
 		var groupLink = $.create('a', {
 			href: this.group.url
 		}).appendTo(enrolled);
-		if (this.group.unavailableLimit)
-		{
-			groupLink.text(this.group.availableEnrolledCount() + '/' +
-				this.group.availableLimit()).
-				attr('title',
-				'zapisanych osób w sumie: ' + this.group.enrolledCount +
-				', limit miejsc w grupie: ' + this.group.limit +
-				', zapisanych studentów zamawianych: ' +
-					this.group.unavailableEnrolledCount +
-				', miejsca gwarantowane dla studentów zamawianych: ' +
-					this.group.unavailableLimit
-			);
-			$.createText(' + ' +
-				this.group.unavailableEnrolledCount + '/' +
-				this.group.unavailableLimit + ' stud. zamawianych').
-				appendTo(enrolled);
-		}
-		else
-			groupLink.text(this.group.enrolledCount + '/' + this.group.limit).
-				attr('title', 'zapisanych osób: ' + this.group.enrolledCount +
-				', limit miejsc w grupie: ' + this.group.limit);
+		groupLink.text(this.group.enrolledCount + '/' + this.group.limit).
+			attr('title', 'zapisanych osób: ' + this.group.enrolledCount +
+			', limit miejsc w grupie: ' + this.group.limit);
 		if (this.group.isFull() && !this.group.isEnrolledOrQueued())
 			$.create('img', {
 				src: '/static/images/warning.png',
