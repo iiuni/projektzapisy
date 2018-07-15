@@ -125,8 +125,7 @@ class Semester(models.Model):
         """ Answers to question: is semester current semester"""
         if self.semester_beginning is None or self.semester_ending is None:
             return False
-        return (self.semester_beginning <= datetime.now().date()
-                and self.semester_ending >= datetime.now().date())
+        return self.semester_beginning <= datetime.now().date() <= self.semester_ending
 
     def get_previous_semester(self):
         """ returns previous semester """
@@ -264,8 +263,7 @@ class Semester(models.Model):
         now = datetime.now()
         now_date = now.date()
         semesters = list(Semester.objects.filter(
-            Q(semester_beginning__lte=now_date, semester_ending__gte=now_date)
-            |
+            Q(semester_beginning__lte=now_date, semester_ending__gte=now_date) |
             Q(records_opening__lte=now, records_closing__gte=now)))
 
         if len(semesters) > 1:

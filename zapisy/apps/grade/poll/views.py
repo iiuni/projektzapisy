@@ -898,8 +898,8 @@ def poll_answer(request, slug, pid):
                             option = Option.objects.get(pk=ansx)
                             ans.option = option
                             ans.save()
-                            if option in question.singlechoicequestionordering_set.filter(sections=section)[
-                                0].hide_on.all():
+                            if option in question.singlechoicequestionordering_set.filter(
+                                    sections=section)[0].hide_on.all():
                                 delete = True
                         else:
                             ans.delete()
@@ -1304,8 +1304,7 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
             data['connected'] = []
             for cst in SavedTicket.objects.filter(
                     ticket=st.ticket,
-                    finished=True).exclude(
-                poll=poll):
+                    finished=True).exclude(poll=poll):
                 cform = PollForm()
                 cform.setFields(cst.poll, cst)
                 data['connected'].append(cform)

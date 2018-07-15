@@ -10,13 +10,13 @@ from django.db.models import QuerySet
 
 from apps.users.exceptions import NonUserException
 from apps.users.managers import GettersManager, T0Manager
+from apps.enrollment.courses.models.semester import Semester
 
 # The TYPE_CHECKING constant is always False at runtime, so the import won't be evaluated,
 # but mypy (and other type-checking tools) will evaluate the contents of that block.
 # It protects us from circular imports.
 
 if TYPE_CHECKING:
-    from apps.enrollment.courses.models.semester import Semester
     from apps.enrollment.courses.models.course import Course
     from apps.offer.preferences.models import Preference
 
@@ -149,11 +149,10 @@ class Employee(BaseUser):
                 select_related().order_by('user__last_name', 'user__first_name')
         else:
             end = next_char(begin)
-            employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0).\
+            employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0). \
                 select_related().order_by('user__last_name', 'user__first_name')
 
         return employees
-
 
     class Meta:
         verbose_name = 'pracownik'
@@ -259,7 +258,6 @@ class Student(BaseUser):
         return self._counted_t0
 
     def get_points(self, semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
@@ -275,7 +273,6 @@ class Student(BaseUser):
         return StudentPointsView.get_points_for_entities(self, records)
 
     def get_points_with_course(self, course: 'Course', semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:

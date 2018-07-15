@@ -18,6 +18,7 @@ jobs:
       - run: sudo pip install --upgrade pip
       - run: sudo pip install --upgrade setuptools
       - run: sudo pip install -r zapisy/requirements.test.txt
+      - run: flake8 --statistics --ignore=E265,E266,E402,E501,F401,F821,F841 --exclude=node_modules,*migrations --max-line-length 120 .
       - run: pip --version
       - run: pip freeze
       - run: sudo npm install -g npm # Update to the latest version

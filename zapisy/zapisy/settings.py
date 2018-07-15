@@ -137,7 +137,7 @@ TEMPLATES = [
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE
             if DEBUG else
-            [ ('django.template.loaders.cached.Loader', TEMPLATE_LOADERS_TO_USE) ]
+            [('django.template.loaders.cached.Loader', TEMPLATE_LOADERS_TO_USE)]
         },
     },
 ]
