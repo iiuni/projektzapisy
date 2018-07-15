@@ -632,7 +632,6 @@ class NewSemesterTests(SeleniumTestCase):
             user = User.objects.create_user(
                 username='student{}'.format(i + number_of_students), password=self.password
             )
-            students.user_set.add(user)
             student = Student.objects.create(
                 user=user,
                 matricula=str(i + number_of_students))
