@@ -258,11 +258,11 @@ class Student(BaseUser):
         return self._counted_t0
 
     def get_points(self, semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
+        from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
-            semester = Semester.objects.get_next()
+            semester = Semester_.objects.get_next()
 
         records = Record.objects.filter(
             student=self,
@@ -274,11 +274,11 @@ class Student(BaseUser):
         return StudentPointsView.get_points_for_entities(self, records)
 
     def get_points_with_course(self, course: 'Course', semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
+        from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
-            semester = Semester.objects.get_next()
+            semester = Semester_.objects.get_next()
 
         records = Record.objects.filter(
             student=self,
