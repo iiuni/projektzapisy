@@ -257,7 +257,8 @@ class Student(BaseUser):
             minutes=minutes + grade + 120) + datetime.timedelta(days=3)
         return self._counted_t0
 
-    def get_points(self, semester: 'Semester'=None) -> int:
+    def get_points(self, semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
         from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
@@ -273,7 +274,8 @@ class Student(BaseUser):
 
         return StudentPointsView.get_points_for_entities(self, records)
 
-    def get_points_with_course(self, course: 'Course', semester: 'Semester'=None) -> int:
+    def get_points_with_course(self, course: 'Course', semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
         from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
