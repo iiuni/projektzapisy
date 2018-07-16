@@ -1,3 +1,7 @@
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.records.models import Record, Queue
+from apps.users.models import Student
+
 print("Studenci zapisani na wykład ale nie na ćwiczenia\n")
 s = Semester.get_current_semester()
 cs = s.get_courses()

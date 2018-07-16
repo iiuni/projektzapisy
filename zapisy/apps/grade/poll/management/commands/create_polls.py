@@ -1,12 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from apps.grade.poll.models.origin import Origin
 from apps.grade.poll.models.poll import Poll
 from apps.grade.poll.models.section import SectionOrdering
 from apps.grade.poll.models.template import Template
-from apps.grade.poll.utils import getGroups, make_polls_for_groups
-from apps.grade.ticket_create.models import StudentGraded
-from django.core.exceptions import ObjectDoesNotExist
-from apps.users.models import Student, Employee
+from apps.grade.poll.utils import getGroups
+from apps.users.models import Employee
 
 
 class Command(BaseCommand):
