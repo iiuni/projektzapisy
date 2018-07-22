@@ -275,10 +275,6 @@ class NewSemesterTests(SeleniumTestCase):
         )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
-                'btn-no-usos').click()
-        )
-        self.wait_for_pass(
-            lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
                 self.admin.username))
         self.wait_for_pass(
@@ -798,9 +794,6 @@ class EmailChangeTest(SeleniumTestCase):
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('login-dropdown').click()
-        )
-        self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('btn-no-usos').click()
         )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_login').send_keys(
