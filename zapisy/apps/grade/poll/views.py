@@ -239,7 +239,8 @@ def disable_grade(request):
     return HttpResponseRedirect(reverse('grade-main'))
 
 
-#### Poll creation ####
+"""Poll creation"""
+
 
 @employee_required
 def autocomplete(request):
@@ -646,7 +647,7 @@ def questionset_create(request):
     return HttpResponseRedirect('/grade/poll/managment/sections_list')
 
 
-#### Poll answering ####
+"""Poll answering"""
 
 
 @login_required
@@ -1064,7 +1065,7 @@ def poll_end_grading(request):
     return HttpResponseRedirect(reverse('grade-main'))
 
 
-#### Poll results ####
+"""Poll results"""
 
 
 @login_required

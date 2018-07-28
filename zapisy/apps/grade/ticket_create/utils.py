@@ -378,7 +378,7 @@ def to_plaintext(vtl):
     return SafeText(str(res))
 
 
-### FIXME explanation of ticket parsing code: str(int())
+# FIXME explanation of ticket parsing code: str(int())
 # The list is split into chunks, some of which are empty, and some of which
 # contain the tickets we want (e.g. ['123123', '', '', 'somecrap', '321321'])
 # The list is iterated until doing int(list[i]) succeeds; at this point

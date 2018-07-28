@@ -1,5 +1,4 @@
 import re
-import io
 import csv
 
 import unidecode
@@ -29,7 +28,6 @@ from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.users.models import Program
 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.utils.safestring import SafeText, mark_safe
 from django.db.models import Q
 from functools import reduce, cmp_to_key
 
