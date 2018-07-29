@@ -110,9 +110,6 @@ class ForLongestNode(ForNode):
     get_overall_len = max
 
 
-# @register.tag(name="for")
-
-
 def do_for(parser, token, ForNode=ForNode):
     all_bits = token.contents.split()[1:]
     sections = [s.strip() for s in ' '.join(all_bits).split(';')]
