@@ -4,6 +4,7 @@
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxLengthValidator
+
 from django.template import loader
 from apps.grade.poll.models import SingleChoiceQuestionOrdering, \
     Section, OpenQuestionAnswer, \
@@ -28,9 +29,6 @@ class MaxAnswersValidator(MaxLengthValidator):
 
 
 class PollForm(forms.Form):
-    class myObject:
-        pass
-
     # - wydzielic do forma Section
     def as_edit(self):
         return loader.render_to_string('grade/poll/section_as_edit.html',
@@ -38,7 +36,8 @@ class PollForm(forms.Form):
 
     def as_divs(self, errors=None):
         return loader.render_to_string('grade/poll/poll_show.html',
-                                       {"errors": errors, "sections": self.sections})
+                                       {"errors": errors,
+                                        "sections": self.sections})
 
     def setFields(self, poll=None, st=None, section_id=None, post_data=None):
         self.instance = poll
@@ -100,7 +99,8 @@ class PollForm(forms.Form):
 
                     field.is_leading = True
                     poll_section.leading = True
-                    field.hide_on = [x.pk for x in questionOrdering.hide_on.all()]
+                    field.hide_on = [x.pk for x in
+                                     questionOrdering.hide_on.all()]
                     field.title = title
                     field.description = questions[0].description
                     if not field.description:
@@ -117,7 +117,8 @@ class PollForm(forms.Form):
                     questions = questions[1:]
 
             for question in questions:
-                title = 'poll-%d_section-%d_question-%d' % (ppk, section.pk, question.pk)
+                title = 'poll-%d_section-%d_question-%d' % (
+                    ppk, section.pk, question.pk)
                 if str(type(question)) == \
                         "<class 'apps.grade.poll.models.single_choice_question.SingleChoiceQuestion'>":
                     title += '-single'
@@ -207,7 +208,8 @@ class PollForm(forms.Form):
                         required=False,
                         widget=forms.widgets.CheckboxSelectMultiple(),
                         initial=answer,
-                        validators=[MaxAnswersValidator(question.choice_limit)],
+                        validators=[
+                            MaxAnswersValidator(question.choice_limit)],
                         error_messages={
                             "max_length": f"Można wybrać maksymalnie {question.choice_limit} odpowiedzi "
                                           f"(wybrano {choosed})"}
@@ -266,10 +268,12 @@ class PollForm(forms.Form):
             self.sections.append(poll_section)
         if not self.finished:
             field = forms.BooleanField(
-                label='Ankieta zakończona - Jeśli zaznaczysz to pole, utracisz mozliwość edycji tej ankiety.',
+                label='Ankieta zakończona - Jeśli zaznaczysz to pole, '
+                      'utracisz możliwość edycji tej ankiety.',
                 required=False,
                 initial=False)
-            field.widget.attrs = {'class': 'form-check-input', 'id': 'poll-finish-checkbox'}
+            field.widget.attrs = {'class': 'form-check-input',
+                                  'id': 'poll-finish-checkbox'}
             field.type = 'finish'
             self.finish = field
             self.fields['finish'] = field

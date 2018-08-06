@@ -1,4 +1,4 @@
-﻿import json
+﻿﻿import json
 from functools import cmp_to_key
 
 from django.contrib import auth, messages
@@ -12,42 +12,31 @@ from django.utils.safestring import SafeText, mark_safe
 from django.views.decorators.http import require_POST
 
 from apps.grade.poll.models.last_visit import LastVisit
-from apps.grade.ticket_create.utils import RAND_BITS
 from apps.users.decorators import employee_required
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.ticket_create.utils import from_plaintext
 from apps.grade.ticket_create.models import PublicKey
-from apps.grade.poll.models import Poll, Section, OpenQuestion, \
-    SingleChoiceQuestion, \
+from apps.grade.poll.models import Poll, Section, OpenQuestion, SingleChoiceQuestion, \
     MultipleChoiceQuestion, SavedTicket, SingleChoiceQuestionAnswer, \
     MultipleChoiceQuestionAnswer, OpenQuestionAnswer, Option, Template, Origin
 from apps.grade.poll.forms import TicketsForm, PollForm
-from apps.grade.poll.utils import check_signature, prepare_data, \
-    group_polls_and_tickets_by_course, \
+from apps.grade.poll.utils import check_signature, prepare_data, group_polls_and_tickets_by_course, \
     create_slug, get_next, get_prev, get_ticket_and_signed_ticket_from_session, \
     group_polls_by_course, group_polls_by_teacher, getGroups, declination_poll, \
-    declination_section, declination_template, csv_prepare, generate_csv_title, \
-    get_objects, \
-    delete_objects, make_paginator, groups_list, course_list, \
-    make_template_variables, \
-    prepare_template, prepare_sections_for_template, \
-    prepare_data_for_create_poll, make_polls_for_groups, \
-    make_message_from_polls, save_template_in_session, make_polls_for_all, \
-    get_templates, \
-    make_template_from_db, get_groups_for_user, make_pages, edit_poll, \
-    prepare_data_for_create_template
+    declination_section, declination_template, csv_prepare, generate_csv_title, get_objects, \
+    delete_objects, make_paginator, groups_list, course_list, make_template_variables, \
+    prepare_template, prepare_sections_for_template, prepare_data_for_create_poll, make_polls_for_groups, \
+    make_message_from_polls, save_template_in_session, make_polls_for_all, get_templates, \
+    make_template_from_db, get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
 from apps.users.models import Employee, Program
-from .form_utils import get_section_form_data, validate_section_form, \
-    section_save
-from apps.grade.poll.exceptions import NoTitleException, NoSectionException, \
-    NoPollException
+from .form_utils import get_section_form_data, validate_section_form, section_save
+from apps.grade.poll.exceptions import NoTitleException, NoSectionException, NoPollException
 
 
 def main(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
-    rand_bits = RAND_BITS
     return TemplateResponse(request, 'grade/main.html', locals())
 
 
@@ -56,8 +45,7 @@ def template_form(request, group_id=0):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
     data = prepare_data_for_create_poll(request, group_id)
     data['grade'] = grade
-    return TemplateResponse(request, 'grade/poll/ajax_template_create.html',
-                            data)
+    return TemplateResponse(request, 'grade/poll/ajax_template_create.html', data)
 
 
 @employee_required
@@ -93,17 +81,14 @@ def template_actions(request):
         # delete
         if action == 'delete_selected':
             data['templates'] = get_objects(request, Template)
-            return render(request,
-                          'grade/poll/managment/templates_confirm.html', data)
+            return render(request, 'grade/poll/managment/templates_confirm.html', data)
 
         # use
         elif action == 'use_selected':
             semester_id = request.POST['semester']
             data['semester'] = Semester.objects.get(id=semester_id)
             data['templates'] = get_objects(request, Template)
-            return render(request,
-                          'grade/poll/managment/templates_confirm_use.html',
-                          data)
+            return render(request, 'grade/poll/managment/templates_confirm_use.html', data)
 
     # Nothing happend, back to list.
     return HttpResponseRedirect(reverse('grade-poll-templates'))
@@ -113,8 +98,7 @@ def template_actions(request):
 def delete_templates(request):
     if request.method == 'POST':
         counter = delete_objects(request, Template, 'templates[]')
-        message = 'Usunięto ' + str(counter) + ' ' + declination_template(
-            counter)
+        message = 'Usunięto ' + str(counter) + ' ' + declination_template(counter)
         messages.info(request, SafeText(message))
 
     return HttpResponseRedirect(reverse('grade-poll-templates'))
@@ -134,8 +118,7 @@ def use_templates(request):
             messages.error(request, "Nie można utworzyć ankiety; brak tytułu")
             return HttpResponseRedirect(reverse('grade-poll-templates'))
         except NoSectionException:
-            messages.error(request,
-                           "Nie można utworzyć ankiety; ankieta jest pusta")
+            messages.error(request, "Nie można utworzyć ankiety; ankieta jest pusta")
             return HttpResponseRedirect(reverse('grade-poll-templates'))
         except NoPollException:
             messages.info(request, "Nie utworzono żadnej ankiety")
@@ -153,8 +136,7 @@ def create_poll_from_template(request, templates):
             origin.save()
             for group in groups:
                 if template['groups_without'] == 'on' \
-                        and Poll.get_all_polls_for_group(group,
-                                                         template.semeter).count() > 0:
+                        and Poll.get_all_polls_for_group(group, template.semeter).count() > 0:
                     continue
 
             polls = make_polls_for_groups(request, groups, template)
@@ -178,8 +160,7 @@ def show_template(request, template_id):
         'grade': Semester.objects.filter(
             is_grade_active=True).count() > 0}
     if request.is_ajax():
-        return render(request, 'grade/poll/managment/ajax_show_template.html',
-                      data)
+        return render(request, 'grade/poll/managment/ajax_show_template.html', data)
     else:
         return render(request, 'grade/poll/managment/show_poll.html', data)
 
@@ -216,15 +197,11 @@ def enable_grade(request):
 
         if semester:
             if semester.is_grade_active:
-                messages.error(request,
-                               "Nie można otworzyć oceny; ocena jest już otwarta")
+                messages.error(request, "Nie można otworzyć oceny; ocena jest już otwarta")
             elif not Poll.get_polls_for_semester(semester=semester).count():
-                messages.error(request,
-                               "Nie można otworzyć oceny; brak ankiet")
-            elif Poll.get_semester_polls_without_keys(
-                    semester=semester).count():
-                messages.error(request,
-                               "Nie można otworzyć oceny; brak kluczy dla ankiet")
+                messages.error(request, "Nie można otworzyć oceny; brak ankiet")
+            elif Poll.get_semester_polls_without_keys(semester=semester).count():
+                messages.error(request, "Nie można otworzyć oceny; brak kluczy dla ankiet")
             else:
                 semester.is_grade_active = True
                 semester.save()
@@ -251,8 +228,7 @@ def disable_grade(request):
 
         messages.success(request, "Zamknięto ocenę zajęć")
     else:
-        messages.error(request,
-                       "Nie można zamknąć oceny; system nie był uruchomiony")
+        messages.error(request, "Nie można zamknąć oceny; system nie był uruchomiony")
 
     return HttpResponseRedirect(reverse('grade-main'))
 
@@ -296,8 +272,7 @@ def ajax_get_courses(request):
     if request.is_ajax():
         if request.method == 'POST':
             semester = int(request.POST.get('semester', '0'))
-            courses = course_list(
-                Course.objects.filter(semester=semester).order_by('name'))
+            courses = course_list(Course.objects.filter(semester=semester).order_by('name'))
             message = json.dumps(courses)
     return HttpResponse(message)
 
@@ -307,8 +282,7 @@ def edit_section(request, section_id):
     form = PollForm()
     form.setFields(None, None, section_id)
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
-    return render(request, 'grade/poll/section_edit.html',
-                  {"form": form, 'grade': grade})
+    return render(request, 'grade/poll/section_edit.html', {"form": form, 'grade': grade})
 
 
 @employee_required
@@ -394,8 +368,7 @@ def poll_create(request):
             messages.error(request, "Nie można utworzyć ankiety; brak tytułu")
             return HttpResponseRedirect(reverse('grade-poll-list'))
         except NoSectionException:
-            messages.error(request,
-                           "Nie można utworzyć ankiety; ankieta jest pusta")
+            messages.error(request, "Nie można utworzyć ankiety; ankieta jest pusta")
             return HttpResponseRedirect(reverse('grade-poll-list'))
         except NoPollException:
             messages.info(request, "Nie utworzono żadnej ankiety")
@@ -441,13 +414,10 @@ def show_section(request, section_id):
         return HttpResponseRedirect(reverse('grade-main'))
     form = PollForm()
     form.setFields(None, None, section_id)
-    form.setFields(None, None, section_id)
-    data = {'form': form, 'grade': grade,
-            'section': Section.objects.get(pk=section_id)}
+    data = {'form': form, 'grade': grade, 'section': Section.objects.get(pk=section_id)}
 
     if request.is_ajax():
-        return render(request, 'grade/poll/managment/ajax_show_section.html',
-                      data)
+        return render(request, 'grade/poll/managment/ajax_show_section.html', data)
     else:
         return render(request, 'grade/poll/managment/show_section.html', data)
 
@@ -470,9 +440,7 @@ def section_actions(request):
         action = request.POST.get('action')
         if action == 'delete_selected':
             data['sections'] = get_objects(request, Section)
-            return render(request,
-                          'grade/poll/managment/section_confirm_delete.html',
-                          data)
+            return render(request, 'grade/poll/managment/section_confirm_delete.html', data)
 
     return HttpResponseRedirect(reverse('grade-poll-sections-list'))
 
@@ -481,8 +449,7 @@ def section_actions(request):
 def delete_sections(request):
     if request.method == 'POST':
         counter = delete_objects(request, Section, 'sections[]')
-        message = 'Usunięto ' + str(counter) + ' ' + declination_section(
-            counter)
+        message = 'Usunięto ' + str(counter) + ' ' + declination_section(counter)
         messages.info(request, SafeText(message))
 
     return HttpResponseRedirect(reverse('grade-poll-sections-list'))
@@ -516,15 +483,12 @@ def polls_list(request):
             data['filter_semester'] = int(request.POST['filter-semester'])
 
         if int(request.POST['filter-course']) > 0:
-            kwargs['group__course__entity__pk'] = int(
-                request.POST['filter-course'])
+            kwargs['group__course__entity__pk'] = int(request.POST['filter-course'])
             data['filter_course'] = int(request.POST['filter-course'])
 
         if int(request.POST['filter-studies_type']) > 0:
-            kwargs['studies_type__pk'] = int(
-                request.POST['filter-studies_type'])
-            data['filter_studies_type'] = int(
-                request.POST['filter-studies_type'])
+            kwargs['studies_type__pk'] = int(request.POST['filter-studies_type'])
+            data['filter_studies_type'] = int(request.POST['filter-studies_type'])
 
         if int(request.POST['filter-type']) > 0:
             kwargs['group__type'] = int(request.POST['filter-type'])
@@ -571,8 +535,7 @@ def show_poll(request, poll_id):
     data['poll_id'] = poll_id
     data['grade'] = Semester.objects.filter(is_grade_active=True).count() > 0
     if request.is_ajax():
-        return render(request, 'grade/poll/managment/ajax_show_poll.html',
-                      data)
+        return render(request, 'grade/poll/managment/ajax_show_poll.html', data)
     else:
         return render(request, 'grade/poll/managment/show_poll.html', data)
 
@@ -585,9 +548,7 @@ def poll_actions(request):
         action = request.POST.get('action')
         if action == 'delete_selected':
             data['polls'] = get_objects(request, Poll)
-            return render(request,
-                          'grade/poll/managment/poll_confirm_delete.html',
-                          data)
+            return render(request, 'grade/poll/managment/poll_confirm_delete.html', data)
     return HttpResponseRedirect(reverse('grade-poll-list'))
 
 
@@ -605,24 +566,21 @@ def delete_polls(request):
 def groups_without_poll(request):
     return render(request, 'grade/poll/managment/groups_without_polls.html',
                   {'groups': Poll.get_groups_without_poll(),
-                   'grade': Semester.objects.filter(
-                       is_grade_active=True).count() > 0,
+                   'grade': Semester.objects.filter(is_grade_active=True).count() > 0,
                    'tab': "group_without"})
 
 
 @employee_required
 def poll_manage(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
-    return render(request, 'grade/poll/manage.html',
-                  {'semesters': Semester.objects.all(), 'grade': grade})
+    return render(request, 'grade/poll/manage.html', {'semesters': Semester.objects.all(), 'grade': grade})
 
 
 @employee_required()
 def get_section_form(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
 
-    return render(request, 'grade/poll/ajax_section_create.html',
-                  {'grade': grade})
+    return render(request, 'grade/poll/ajax_section_create.html', {'grade': grade})
 
 
 @employee_required
@@ -630,8 +588,7 @@ def questionset_create(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
 
     if grade:
-        messages.error(request,
-                       "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona")
+        messages.error(request, "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona")
         return HttpResponseRedirect(reverse('grade-main'))
 
     if request.method == "POST":
@@ -676,8 +633,7 @@ def tickets_enter(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
 
     if request.user.is_authenticated:
-        return render(request, 'grade/poll/user_is_authenticated.html',
-                      {'grade': grade})
+        return render(request, 'grade/poll/user_is_authenticated.html', {'grade': grade})
 
     if request.method == "POST":
         form = TicketsForm(request.POST, request.FILES)
@@ -691,8 +647,7 @@ def tickets_enter(request):
 
             if not ids_and_tickets:
                 messages.error(request, "Podano niepoprawne bilety.")
-                return render(request, 'grade/poll/tickets_enter.html',
-                              {'form': form, 'grade': grade})
+                return render(request, 'grade/poll/tickets_enter.html', {'form': form, 'grade': grade})
 
             errors = []
             polls = []
@@ -703,8 +658,7 @@ def tickets_enter(request):
                     public_key = PublicKey.objects.get(poll=poll)
                     if check_signature(ticket, signed_ticket, public_key):
                         try:
-                            st = SavedTicket.objects.get(poll=poll,
-                                                         ticket=ticket)
+                            st = SavedTicket.objects.get(poll=poll, ticket=ticket)
                             if st.finished:
                                 finished.append((poll, ticket, signed_ticket))
                             else:
@@ -714,8 +668,7 @@ def tickets_enter(request):
                             st.save()
                             polls.append((poll, ticket, signed_ticket))
                     else:
-                        errors.append((id,
-                                       "Nie udało się zweryfikować podpisu pod biletem."))
+                        errors.append((id, "Nie udało się zweryfikować podpisu pod biletem."))
                 except BaseException:
                     errors.append((id, "Podana ankieta nie istnieje"))
 
@@ -734,22 +687,19 @@ def tickets_enter(request):
                 (
                     (poll_name, create_slug(poll_name)),
                     poll_list,
-                ) for poll_name, poll_list in
-                group_polls_and_tickets_by_course(polls)
+                ) for poll_name, poll_list in group_polls_and_tickets_by_course(polls)
             ]
             request.session["finished"] = [
                 (
                     (poll_name, create_slug(poll_name)),
                     poll_list,
-                ) for poll_name, poll_list in
-                group_polls_and_tickets_by_course(finished)
+                ) for poll_name, poll_list in group_polls_and_tickets_by_course(finished)
             ]
             return HttpResponseRedirect('/grade/poll/polls/all')
     else:
         form = TicketsForm()
 
-    return render(request, 'grade/poll/tickets_enter.html',
-                  {'form': form, 'grade': grade})
+    return render(request, 'grade/poll/tickets_enter.html', {'form': form, 'grade': grade})
 
 
 def polls_for_user(request, slug):
@@ -761,13 +711,11 @@ def polls_for_user(request, slug):
     if data['polls']:
         (_, s), _, list_ = data['polls'][0]
         id_, _, _, _ = list_[0]
-        return HttpResponseRedirect(
-            reverse('grade-poll-poll-answer', args=[s, id_]))
+        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id_]))
     elif data['finished']:
         (_, s), _, list_ = data['finished'][0]
         id_, _, _, _ = list_[0]
-        return HttpResponseRedirect(
-            reverse('grade-poll-poll-answer', args=[s, id_]))
+        return HttpResponseRedirect(reverse('grade-poll-poll-answer', args=[s, id_]))
 
     return render(request, 'grade/poll/polls_for_user.html', data)
 
@@ -791,8 +739,7 @@ def poll_answer(request, slug, pid):
     poll = Poll.objects.get(pk=pid)
     public_key = PublicKey.objects.get(poll=poll)
 
-    (ticket, signed_ticket) = get_ticket_and_signed_ticket_from_session(
-        request.session, slug, pid)
+    (ticket, signed_ticket) = get_ticket_and_signed_ticket_from_session(request.session, slug, pid)
 
     data = prepare_data(request, slug)
     data['link_name'] = poll.to_url_title()
@@ -826,8 +773,7 @@ def poll_answer(request, slug, pid):
     data['next'] = get_next(poll_cands, finished_cands, int(pid))
     data['prev'] = get_prev(poll_cands, finished_cands, int(pid))
 
-    if ticket and signed_ticket and check_signature(ticket, signed_ticket,
-                                                    public_key):
+    if ticket and signed_ticket and check_signature(ticket, signed_ticket, public_key):
         st = SavedTicket.objects.get(ticket=str(ticket), poll=poll)
 
         if request.method == "POST" and not st.finished:
@@ -882,8 +828,7 @@ def poll_answer(request, slug, pid):
                     section = Section.objects.get(pk=section_id)
                     delete = False
                     if section_answers[0].endswith('leading'):
-                        question_id = \
-                            section_answers[0].split('_')[2].split('-')[1]
+                        question_id = section_answers[0].split('_')[2].split('-')[1]
                         question = SingleChoiceQuestion.objects.get(
                             pk=question_id)
                         try:
@@ -902,10 +847,8 @@ def poll_answer(request, slug, pid):
                             option = Option.objects.get(pk=ansx)
                             ans.option = option
                             ans.save()
-                            if option in \
-                                    question.singlechoicequestionordering_set. \
-                                            filter(sections=section)[
-                                        0].hide_on.all():
+                            if option in question.singlechoicequestionordering_set. \
+                                    filter(sections=section)[0].hide_on.all():
                                 delete = True
                         else:
                             ans.delete()
@@ -979,35 +922,29 @@ def poll_answer(request, slug, pid):
                                     ans.delete()
                                 elif value:
                                     if '-1' in value:
-                                        ans.other = request.POST.get(
-                                            answer + '-other', None)
+                                        ans.other = request.POST.get(answer + '-other', None)
                                         value.remove('-1')
                                     else:
                                         ans.other = None
                                     ans.options = []
-                                    options = Option.objects.filter(
-                                        pk__in=value)
+                                    options = Option.objects.filter(pk__in=value)
                                     for option in options:
                                         ans.options.add(option)
                                     ans.save()
                                 else:
                                     ans.delete()
                 if 'finish' in request.POST:
-                    messages.success(request,
-                                     "Ankieta: " + poll.title + " zakończona")
+                    messages.success(request, "Ankieta: " + poll.title + " zakończona")
                     finit = request.session.get('finished', default=[])
                     polls = request.session.get('polls', default=[])
 
-                    slug_polls = [x_s_ls for x_s_ls in polls if
-                                  slug == x_s_ls[0][1]]
-                    slug_finit = [x_s_ls1 for x_s_ls1 in finit if
-                                  slug == x_s_ls1[0][1]]
+                    slug_polls = [x_s_ls for x_s_ls in polls if slug == x_s_ls[0][1]]
+                    slug_finit = [x_s_ls1 for x_s_ls1 in finit if slug == x_s_ls1[0][1]]
 
                     name = None
 
                     for ((n, s), ls) in slug_polls:
-                        pd = [x for x in ls if
-                              x == (int(pid), ticket, signed_ticket)]
+                        pd = [x for x in ls if x == (int(pid), ticket, signed_ticket)]
                         if pd:
                             polls.remove(((n, s), ls))
                             for poll_data in pd:
@@ -1025,8 +962,7 @@ def poll_answer(request, slug, pid):
                                 finit.append(((n, s), ls))
                                 break
                     else:
-                        finit.append(((name, slug),
-                                      [(int(pid), ticket, signed_ticket)]))
+                        finit.append(((name, slug), [(int(pid), ticket, signed_ticket)]))
 
                     polls.sort(key=cmp_to_key(slug_cmp))
                     finit.sort(key=cmp_to_key(slug_cmp))
@@ -1037,8 +973,7 @@ def poll_answer(request, slug, pid):
                     st.finished = True
                     st.save()
                 else:
-                    messages.success(request,
-                                     "Ankieta: " + poll.title + " zapisana")
+                    messages.success(request, "Ankieta: " + poll.title + " zapisana")
         else:
             form = PollForm()
             form.setFields(poll, st)
@@ -1053,24 +988,19 @@ def poll_answer(request, slug, pid):
         data['pid'] = int(pid)
 
         if request.method == "POST" and (
-                not ('form_errors' in data and data[
-                    'form_errors']) or st.finished):
+                not ('form_errors' in data and data['form_errors']) or st.finished):
             if request.POST.get('Next', default=None):
                 return HttpResponseRedirect('/grade/poll/poll_answer/' +
-                                            str(data['next'][3]) + '/' + str(
-                    data['next'][0]))
+                                            str(data['next'][3]) + '/' + str(data['next'][0]))
             if request.POST.get('Prev', default=None):
                 return HttpResponseRedirect('/grade/poll/poll_answer/' +
-                                            str(data['prev'][3]) + '/' + str(
-                    data['prev'][0]))
+                                            str(data['prev'][3]) + '/' + str(data['prev'][0]))
             if request.POST.get('Save', default=None):
-                return HttpResponseRedirect(
-                    '/grade/poll/poll_answer/' + slug + '/' + str(pid))
+                return HttpResponseRedirect('/grade/poll/poll_answer/' + slug + '/' + str(pid))
     else:
-        data = {'errors': [
-            "Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title()],
-            'slug': slug,
-            'link_name': poll.to_url_title()}
+        data = {'errors': ["Nie masz uprawnień do wypełnienia ankiety " + poll.to_url_title()],
+                'slug': slug,
+                'link_name': poll.to_url_title()}
 
     data['grade'] = Semester.objects.filter(is_grade_active=True).count() > 0
 
@@ -1105,8 +1035,7 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
         data['mode'] = 'teacher'
 
     if semester.is_grade_active:
-        messages.info(request,
-                      "Ocena zajęć jest otwarta; wyniki nie są kompletne.")
+        messages.info(request, "Ocena zajęć jest otwarta; wyniki nie są kompletne.")
 
     if not poll_id:
         polls = [
@@ -1136,17 +1065,14 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
             messages.error(request, "Podana ankieta nie istnieje.")
             return render(request, 'grade/poll/poll_total_results.html', data)
 
-        last_visit, created = LastVisit.objects.get_or_create(
-            user=request.user, poll=poll)
+        last_visit, created = LastVisit.objects.get_or_create(user=request.user, poll=poll)
         data['last_visit'] = last_visit.time
         last_visit.save()
 
         if poll.is_user_entitled_to_view_result(request.user):
             poll_answers = poll.all_answers()
-            sts_fin = SavedTicket.objects.filter(poll=poll,
-                                                 finished=True).count()
-            sts_not_fin = SavedTicket.objects.filter(poll=poll,
-                                                     finished=False).count()
+            sts_fin = SavedTicket.objects.filter(poll=poll, finished=True).count()
+            sts_not_fin = SavedTicket.objects.filter(poll=poll, finished=False).count()
             sts_all = sts_fin + sts_not_fin
 
             answers = []
@@ -1160,28 +1086,20 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
                         ans_data = []
                         for option in options:
                             if sts_all:
-                                perc = int(100 * (float(
-                                    q_data.count(option)) / float(sts_all)))
+                                perc = int(100 * (float(q_data.count(option)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(
-                                (option.content, q_data.count(option), perc))
+                            ans_data.append((option.content, q_data.count(option), perc))
                         if sts_all:
-                            perc = int(100 * (float(
-                                sts_all - len(question_answers)) / float(
-                                sts_all)))
+                            perc = int(100 * (float(sts_all - len(question_answers)) / float(sts_all)))
                         else:
                             perc = 0
-                        ans_data.append(("Brak odpowiedzi",
-                                         sts_all - len(question_answers),
-                                         perc))
-                        s_ans.append((mode, question.content, ans_data,
-                                      (100 / len(ans_data)) - 1))
+                        ans_data.append(("Brak odpowiedzi", sts_all - len(question_answers), perc))
+                        s_ans.append((mode, question.content, ans_data, (100 / len(ans_data)) - 1))
 
                     elif isinstance(question, MultipleChoiceQuestion):
                         mode = 'multi'
-                        q_data = [(list(x.options.all()), x.other) for x in
-                                  question_answers]
+                        q_data = [(list(x.options.all()), x.other) for x in question_answers]
                         if q_data:
                             q_data, other_data = list(zip(*q_data))
                             q_data = sum(q_data, [])
@@ -1192,38 +1110,27 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
                         ans_data = []
                         for option in options:
                             if sts_all:
-                                perc = int(100 * (float(
-                                    q_data.count(option)) / float(sts_all)))
+                                perc = int(100 * (float(q_data.count(option)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(
-                                (option.content, q_data.count(option), perc))
+                            ans_data.append((option.content, q_data.count(option), perc))
                         if question.has_other:
                             if sts_all:
-                                perc = int(100 * (
-                                        float(len(other_data)) / float(
-                                    sts_all)))
+                                perc = int(100 * (float(len(other_data)) / float(sts_all)))
                             else:
                                 perc = 0
-                            ans_data.append(
-                                ("Inne", len(other_data), perc, other_data))
+                            ans_data.append(("Inne", len(other_data), perc, other_data))
                         if sts_all:
-                            perc = int(100 * (float(
-                                sts_all - len(question_answers)) / float(
-                                sts_all)))
+                            perc = int(100 * (float(sts_all - len(question_answers)) / float(sts_all)))
                         else:
                             perc = 0
-                        ans_data.append(("Brak odpowiedzi",
-                                         sts_all - len(question_answers),
-                                         perc))
-                        s_ans.append((mode, question.content, ans_data,
-                                      (100 / len(ans_data)) - 1))
+                        ans_data.append(("Brak odpowiedzi", sts_all - len(question_answers), perc))
+                        s_ans.append((mode, question.content, ans_data, (100 / len(ans_data)) - 1))
 
                     elif isinstance(question, OpenQuestion):
                         mode = 'open'
                         s_ans.append(
-                            (mode, question.content, question_answers,
-                             len(question_answers)))
+                            (mode, question.content, question_answers, len(question_answers)))
 
                 answers.append((section.title, s_ans))
 
@@ -1257,8 +1164,7 @@ def poll_results(request, mode='S', poll_id=None, semester=None):
             data['share_state'] = poll.share_result
             data['results'] = answers
         else:
-            messages.error(request,
-                           "Nie masz uprawnień do oglądania wyników tej ankiety.")
+            messages.error(request, "Nie masz uprawnień do oglądania wyników tej ankiety.")
 
     return render(request, 'grade/poll/poll_total_results.html', data)
 
@@ -1284,8 +1190,7 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
     data['semesters'] = Semester.objects.all()
 
     if semester.is_grade_active:
-        messages.info(request,
-                      "Ocena zajęć jest otwarta; wyniki nie są kompletne.")
+        messages.info(request, "Ocena zajęć jest otwarta; wyniki nie są kompletne.")
 
     try:
         data['polls_by_course'] = request.session['polls_by_course']
@@ -1330,8 +1235,7 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
                     err = False
                     break
             if err:
-                messages.error(request,
-                               "Nie istnieje taka odpowiedź na ankietę")
+                messages.error(request, "Nie istnieje taka odpowiedź na ankietę")
 
         sts = list(sts)
         if sts:
@@ -1363,8 +1267,7 @@ def poll_results_detailed(request, mode, poll_id, st_id=None, semester=None):
             messages.error(request, "Brak odpowiedzi na tą ankietę.")
 
     else:
-        messages.error(request,
-                       "Nie masz uprawnień do oglądania wyników tej ankiety.")
+        messages.error(request, "Nie masz uprawnień do oglądania wyników tej ankiety.")
 
     return render(request, 'grade/poll/poll_detailed_results.html', data)
 
@@ -1399,8 +1302,7 @@ def save_csv(request, mode, poll_id):
                     answer.append(str(question_answer[0]))
         answers.append(answer)
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename={}'.format(
-        csv_title)
+    response['Content-Disposition'] = 'attachment; filename={}'.format(csv_title)
     csv_content = csv_prepare(response, sections, answers)
     return response
 
@@ -1414,8 +1316,7 @@ def share_results_toggle(request, mode, poll_id):
         messages.info(request, "Udostępniono wyniki ankiety.")
     else:
         messages.info(request, "Przestano udostepniać wyniki ankiety.")
-    return HttpResponseRedirect(
-        reverse('grade-poll-poll-results', args=[mode, poll_id]))
+    return HttpResponseRedirect(reverse('grade-poll-poll-results', args=[mode, poll_id]))
 
 
 @login_required()
@@ -1425,5 +1326,4 @@ def change_semester(request):
     if not semester:
         raise Http404
 
-    return redirect('grade-poll-poll-results-semester', semester=int(semester),
-                    mode='S')
+    return redirect('grade-poll-poll-results-semester', semester=int(semester), mode='S')

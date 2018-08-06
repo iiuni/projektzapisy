@@ -1,25 +1,38 @@
-import csv
 import re
-from functools import reduce, cmp_to_key
+import io
+import csv
 
 import unidecode
-from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
-from apps.enrollment.courses.models.course import Course, CourseEntity
-from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
-from apps.enrollment.courses.models.semester import Semester
-from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
-    NoSectionException
 from apps.grade.poll.models import Poll, Section, SectionOrdering, \
-    Template, \
+    OpenQuestion, SingleChoiceQuestion, \
+    OpenQuestionOrdering, Option, \
+    SingleChoiceQuestionOrdering, \
+    MultipleChoiceQuestion, \
+    MultipleChoiceQuestionOrdering, \
+    SavedTicket, \
+    SingleChoiceQuestionAnswer, \
+    MultipleChoiceQuestionAnswer, \
+    OpenQuestionAnswer, Option, Template, \
     TemplateSections, Origin
 from apps.grade.ticket_create.utils import (
     poll_cmp, flatten,
 )
+from apps.enrollment.records.models import Group
+from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
+    NoSectionException
+
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
+from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.users.models import Program
+
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.utils.safestring import SafeText, mark_safe
 from django.db.models import Q
+from functools import reduce, cmp_to_key
 
 
 def poll_and_ticket_cmp(pollTuple1, pollTuple2):
@@ -115,17 +128,14 @@ def prepare_data(request, slug):
                                                 for id_t_st in x_s_l[1]] for x_s_l in polls])
         for poll in Poll.objects.filter(
                 pk__in=polls_id).select_related(
-            'group',
-            'group__course',
-            'group__teacher',
-            'group__teacher__user'):
+                'group',
+                'group__course',
+                'group__teacher',
+                'group__teacher__user'):
             dict[poll.pk] = poll
 
         data['polls'] = [((x_s_l7[0][0], x_s_l7[0][1]), slug == x_s_l7[0][1], [(id_t_st2[0], id_t_st2[1],
-                                                                                id_t_st2[2],
-                                                                                dict[id_t_st2[0]].to_url_title(True))
-                                                                               for id_t_st2 in x_s_l7[1]]) for x_s_l7 in
-                         polls]
+                                                                                id_t_st2[2], dict[id_t_st2[0]].to_url_title(True)) for id_t_st2 in x_s_l7[1]]) for x_s_l7 in polls]
     else:
         data['polls'] = []
     finished = request.session.get("finished", default=[])
@@ -134,24 +144,20 @@ def prepare_data(request, slug):
                                                    for id_t_st1 in x_s_l4[1]] for x_s_l4 in finished])
         for poll in Poll.objects.filter(
                 pk__in=finished_id).select_related(
-            'group',
-            'group__course',
-            'group__teacher',
-            'group__teacher__user'):
+                'group',
+                'group__course',
+                'group__teacher',
+                'group__teacher__user'):
             dict[poll.pk] = poll
 
         data['finished'] = [((x_s_l8[0][0], x_s_l8[0][1]), slug == x_s_l8[0][1], [(id_t_st3[0], id_t_st3[1],
-                                                                                   id_t_st3[2],
-                                                                                   dict[id_t_st3[0]].to_url_title(True))
-                                                                                  for id_t_st3 in x_s_l8[1]]) for x_s_l8
-                            in finished]
+                                                                                   id_t_st3[2], dict[id_t_st3[0]].to_url_title(True)) for id_t_st3 in x_s_l8[1]]) for x_s_l8 in finished]
     else:
         data['finished'] = []
 
     data['finished_polls'] = len(request.session.get("finished", default=[]))
     data['all_polls'] = reduce(lambda x, y: x + y, [len(p_l[1])
-                                                    for p_l in request.session.get("polls", default=[])],
-                               data['finished_polls'])
+                                                    for p_l in request.session.get("polls", default=[])], data['finished_polls'])
     return data
 
 
@@ -190,7 +196,7 @@ def get_ticket_and_signed_ticket_from_session(session, slug, poll_id):
     polls = flatten([n_s_lt[1]
                      for n_s_lt in [name_s_lt for name_s_lt in polls if name_s_lt[0][1] == slug]])
     finished = flatten([n_s_lt9[1] for n_s_lt9 in [
-        name_s_lt5 for name_s_lt5 in finished if name_s_lt5[0][1] == slug]])
+                       name_s_lt5 for name_s_lt5 in finished if name_s_lt5[0][1] == slug]])
 
     data = polls + finished
     data = [(id_t_st10[1], id_t_st10[2])
@@ -203,6 +209,7 @@ def get_ticket_and_signed_ticket_from_session(session, slug, poll_id):
 
 
 def getGroups(request, template):
+
     if template['course'] == -1:
         return {}
 
@@ -321,7 +328,6 @@ def declination_template(num):
         return 'szablony'
     return 'szablonów'
 
-
 # CSV file preparation
 
 
@@ -360,7 +366,6 @@ def csv_prepare(handle, poll_sections, poll_data):
     writer.writerow(csv_prepare_header(poll_sections))
     writer.writerows(poll_data)
     return handle
-
 
 # POST DATA MANIPULATION
 
@@ -443,6 +448,7 @@ def groups_list(groups):
 # TEMPLATES
 
 def make_template_from_db(request, template):
+
     return dict(
         type=None if template.group_type == '--' else template.group_type,
         sections=template.sections.all(),
@@ -683,12 +689,12 @@ def pop_template_from_session(request):
         'studies_type': request.session.get(
             'studies_type', None), 'semester': request.session.get(
             'semester', None), 'group': request.session.get(
-            'group', None), 'type': str(
-            request.session.get(
-                'type', 0)), 'course': request.session.get(
-            'course', None), 'groups_without': request.session.get(
-            'groups_without', None), 'polls_len': request.session.get(
-            'polls_len', None)}
+                'group', None), 'type': str(
+                    request.session.get(
+                        'type', 0)), 'course': request.session.get(
+                            'course', None), 'groups_without': request.session.get(
+                                'groups_without', None), 'polls_len': request.session.get(
+                                    'polls_len', None)}
     # clear session for future
     if 'studies_type' in request.session:
         del request.session['studies_type']
@@ -775,10 +781,10 @@ def get_courses_for_user(request, semester):
     if request.user.is_staff:
         return Course.objects.filter(semester=semester).order_by('entity__name')
     else:
-        courses = Group.objects.filter(course__semester=semester, teacher=request.user.employee) \
+        courses = Group.objects.filter(course__semester=semester, teacher=request.user.employee)\
             .values_list('course__pk', flat=True)
         return Course.objects.filter(Q(semester=semester), Q(
-            teachers=request.user.employee) | Q(pk__in=courses)).order_by('name')
+            teachers=request.user.employee) | Q(pk__in=courses)) .order_by('name')
 
 
 def get_groups_for_user(request, type, course):

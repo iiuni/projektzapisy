@@ -3,6 +3,9 @@ from Crypto.PublicKey import RSA
 
 
 class PrivateKey(models.Model):
+    """
+    Private RSA key for poll in PEM format.
+    """
     poll = models.ForeignKey('poll.Poll', verbose_name='ankieta', on_delete=models.CASCADE)
     private_key = models.TextField(verbose_name='klucz prywatny')
 

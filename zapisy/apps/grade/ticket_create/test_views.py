@@ -7,11 +7,13 @@ from apps.enrollment.courses.tests.factories import GroupFactory, SemesterFactor
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import PrivateKey, PublicKey
 from apps.users.tests.factories import StudentFactory, EmployeeFactory, UserFactory
-
-KEY_LENGTH = 1024
+from apps.grade.ticket_create.utils import KEY_LENGTH
 
 
 class ViewTestCase(TestCase):
+    """
+
+    """
     def setUp(self):
         today = datetime.now()
         self.student_user = UserFactory()
