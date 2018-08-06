@@ -265,13 +265,12 @@ class NewSemesterTests(SeleniumTestCase):
                 "//div[@aria-label='cookieconsent']//a"
             ).click()
         )
+        print(self.driver.find_element_by_id('id_login').is_displayed())
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click()
         )
-        print(self.driver.find_elements_by_id('login-dropdown'))
-        print(self.driver.find_element_by_id('id_login'))
-        print(self.driver.find_element_by_id('id_password'))
+        print(self.driver.find_element_by_id('id_login').is_displayed())
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
