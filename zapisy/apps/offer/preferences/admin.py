@@ -29,12 +29,13 @@ class PreferenceAdmin(admin.ModelAdmin):
         """
         qs = super(PreferenceAdmin, self).get_queryset(request)
         return qs.filter(
-            Q(
-                lecture__isnull=False) | Q(
-                review_lecture__isnull=False) | Q(
-                tutorial__isnull=False) | Q(
-                    lab__isnull=False) | Q(
-                        tutorial_lab__isnull=False) | Q(
-                            seminar__isnull=False))
+            Q(lecture__isnull=False) |
+            Q(review_lecture__isnull=False) |
+            Q(tutorial__isnull=False) |
+            Q(lab__isnull=False) |
+            Q(tutorial_lab__isnull=False) |
+            Q(seminar__isnull=False)
+        )
+
 
 admin.site.register(Preference, PreferenceAdmin)

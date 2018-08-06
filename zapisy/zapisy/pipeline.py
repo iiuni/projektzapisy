@@ -464,7 +464,6 @@ PIPELINE_JS = {
 
     },
 
-
     'preferences': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -475,9 +474,6 @@ PIPELINE_JS = {
             'js/common/bootstrap-dropdown.js',
             'js/components/messageBox.js',
             'js/components/topBarFilter.js',
-            #'js/common/listFilter.js',
-            #'js/common/listFilter-courseType.js',
-            #'js/offer/proposal/proposals-list.js'
         ),
         'output_filename': 'js/preferenes.min.js',
 

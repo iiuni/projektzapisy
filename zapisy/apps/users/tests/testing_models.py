@@ -2,10 +2,8 @@
 
 
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.urls import reverse
 
-from apps.users.models import Employee, Student
 from django.contrib.auth.models import Permission
 from django.db import connection
 
@@ -14,6 +12,7 @@ from apps.enrollment.courses.models.semester import Semester
 from datetime import datetime, timedelta
 
 from apps.users.tests.factories import StudentFactory, EmployeeFactory
+
 
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod
@@ -83,7 +82,7 @@ class MyProfileSemesterInfoTestCase(TestCase):
             cursor.execute(sql_call)
 
         s = StudentFactory()
-        s.matricula=str(randint(100000, 200000))
+        s.matricula = str(randint(100000, 200000))
         cls.student_user = s.user
 
         Semester.objects.all().delete()

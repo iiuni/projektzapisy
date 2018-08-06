@@ -149,11 +149,10 @@ class Employee(BaseUser):
                 select_related().order_by('user__last_name', 'user__first_name')
         else:
             end = next_char(begin)
-            employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0).\
+            employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0). \
                 select_related().order_by('user__last_name', 'user__first_name')
 
         return employees
-
 
     class Meta:
         verbose_name = 'pracownik'
@@ -258,12 +257,13 @@ class Student(BaseUser):
             minutes=minutes + grade + 120) + datetime.timedelta(days=3)
         return self._counted_t0
 
-    def get_points(self, semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
+    def get_points(self, semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
+        from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
-            semester = Semester.objects.get_next()
+            semester = Semester_.objects.get_next()
 
         records = Record.objects.filter(
             student=self,
@@ -274,12 +274,13 @@ class Student(BaseUser):
 
         return StudentPointsView.get_points_for_entities(self, records)
 
-    def get_points_with_course(self, course: 'Course', semester: 'Semester'=None) -> int:
-        from apps.enrollment.courses.models.semester import Semester
+    def get_points_with_course(self, course: 'Course', semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
+        from apps.enrollment.courses.models.semester import Semester as Semester_
         from apps.enrollment.courses.models.points import StudentPointsView
         from apps.enrollment.records.models import Record
         if not semester:
-            semester = Semester.objects.get_next()
+            semester = Semester_.objects.get_next()
 
         records = Record.objects.filter(
             student=self,

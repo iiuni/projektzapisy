@@ -510,8 +510,7 @@ class Group(models.Model):
             'course': self.course_id,
 
             'url': reverse('records-group', args=[self.pk]),
-            'teacher_name': self.teacher and self.teacher.user.get_full_name()
-            or 'nieznany prowadzący',
+            'teacher_name': self.teacher and self.teacher.user.get_full_name() or 'nieznany prowadzący',
             'teacher_url': self.teacher and reverse('employee-profile', args=[self.teacher.user.id]) or '',
 
             'is_teacher': False if (employee is None or self.teacher is None)
@@ -568,8 +567,7 @@ def log_add_group(sender, instance, created, **kwargs):
                               '9': 'w', '10': 'p'}
         kod_grupy = group.id
         kod_przed_sem = group.course.id
-        teacher_name_array = (group.teacher and group.teacher.user.get_full_name()
-                              or "Nieznany prowadzący").split(" ")
+        teacher_name_array = (group.teacher and group.teacher.user.get_full_name() or "Nieznany prowadzący").split(" ")
         kod_uz = teacher_name_array[0]
         if teacher_name_array[0] != teacher_name_array[-1]:
             kod_uz += " " + teacher_name_array[-1]

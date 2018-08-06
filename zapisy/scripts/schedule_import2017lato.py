@@ -1,4 +1,17 @@
+import logging
+import re
+from datetime import time
+
 from django.core.exceptions import ObjectDoesNotExist
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term
+from apps.users.models import Employee
+
+logger = logging.getLogger()
 
 
 class bcolors:
@@ -267,233 +280,6 @@ TECH = {
     "NN": 119
 }
 
-# TECH = {
-# "TIETO " : 441,
-# "-00" : 177,
-# "-01" : 183,
-# "-05" : 193,
-# "-06" : 442,
-# "GRAŻYNA ANTCZAK" : 470,
-# "MAREK ARENDARCZYK" : 85,
-# "KRYSTIAN BACŁAWSKI" : 96,
-# "SEBASTIAN BALA" : 10,
-# "URSZULA BANASZCZAK-SOROKA" : 478,
-# "ANDRZEJ BARANOWSKI" : 121,
-# "SŁAWOMIR BARĆ" : 93,
-# "ANNA BARTKOWIAK" : 117,
-# "BOGDAN BARWIŃSKI" : 123,
-# "DIGVIJAY BHARAT" : 101,
-# "MARCIN BIEŃKOWSKI" : 11,
-# "MAŁGORZATA BIERNACKA" : 73,
-# "DARIUSZ BIERNACKI" : 70,
-# "SZYMON BONIECKI" : 196,
-# "WOJCIECH BOŻEJKO" : 67,
-# "MARCIN BRODZIAK" : 9,
-# "JACEK BRONA" : 493,
-# "DARIUSZ BURACZEWSKI" : 488,
-# "JAROSŁAW BYRKA" : 102,
-# "WITOLD CHARATONIK" : 54,
-# "BŁAŻEJ CHĘCIŃSKI" : 131,
-# "DOROTA CHMIELEWSKA-ŁUCZAK" : 447,
-# "JAN CHOROWSKI" : 456,
-# "TOMASZ CICHOCKI" : 76,
-# "KRZYSZTOF CZARNECKI" : 83,
-# "ANDRZEJ DĄBROWSKI" : 490,
-# "MONIKA DEMICHOWICZ" : 2,
-# "HANS DENIVELLE" : 66,
-# "KRZYSZTOF DĘBICKI" : 69,
-# "MAGDALENA DĘBSKA" : 180,
-# "DANIEL DOBRIJAŁOWSKI" : 445,
-# "ARKADIUSZ DOMAGAŁA" : 118,
-# "INSTYTUT FIZYKI DOŚWIADCZALNEJ" : 178,
-# "ANDRZEJ DYBCZYŃSKI" : 97,
-# "AGNIESZKA FALEŃSKA" : 464,
-# "PATRYK FILIPIAK" : 107,
-# "JULIAN FURTAK" : 473,
-# "PAWEŁ GARNCAREK" : 485,
-# "PAWEŁ GAWRYCHOWSKI" : 71,
-# "PRATIK GHOSAL" : 486,
-# "JAKUB GISMATULLIN" : 125,
-# "PRZEMYSŁAW GODOWSKI" : 181,
-# "TOMASZ GOGACZ" : 191,
-# "PIOTR GOGOL" : 59,
-# "FRANCISZEK GOŁEK" : 124,
-# "ZBIGNIEW GOŁĘBIEWSKI" : 12,
-# "PRZEMYSŁAW GOSPODARCZYK" : 449,
-# "LESZEK GROCHOLSKI" : 13,
-# "MIŁOSZ GRODZICKI" : 482,
-# "ANDRZEJ GRZESZCZAK" : 448,
-# "EWA GURBIEL" : 14,
-# "ALEKSANDER IWANOW" : 60,
-# "DARIUSZ JACKOWSKI" : 57,
-# "ELŻBIETA JAKUBCZAK" : 453,
-# "WOJCIECH JEDYNAK" : 467,
-# "JAKUB JERNAJCZYK" : 61,
-# "JULIAN JEZIORO" : 94,
-# "ARTUR JEŻ" : 15,
-# "ŁUKASZ JEŻ" : 68,
-# "MICHAŁ JURCZYSZYN" : 501,
-# "TOMASZ JURDZIŃSKI" : 16,
-# "PIOTR JUREK" : 498,
-# "ADAM KACZMAREK" : 458,
-# "MICHALIS KAMBURELIS" : 17,
-# "PRZEMYSŁAWA KANAREK" : 18,
-# "WITOLD KARCZEWSKI" : 19,
-# "MICHAŁ KARPIŃSKI" : 463,
-# "MAGDALENA KASZUBA-ROGÓRZ" : 20,
-# "PAWEŁ KELLER" : 21,
-# "EMANUEL KIEROŃSKI" : 22,
-# "ANDRZEJ KISIELEWICZ" : 62,
-# "KORNEL KISIELEWICZ" : 81,
-# "WOJCIECH KLESZOWSKI" : 116,
-# "EWA KOŁCZYK" : 23,
-# "ANTONI KOŚCIELSKI" : 24,
-# "MACIEJ KOTOWICZ" : 446,
-# "JAKUB KOWALSKI" : 109,
-# "ANDRZEJ KRAWCZYK" : 195,
-# "ILONA KRÓLAK" : 28,
-# "HELENA KRUPICKA" : 25,
-# "KRZYSZTOF KRUPIŃSKI" : 63,
-# "JURIJ KRYAKIN" : 26,
-# "ANNA KRYSTEK" : 27,
-# "ANDRZEJ KRZYWDA" : 120,
-# "MACIEJ KUCHOWICZ" : 496,
-# "ADAM KUNYSZ" : 483,
-# "WITOLD KWAŚNICKI" : 506,
-# "PAWEŁ LASKOŚ-GRABOWSKI" : 481,
-# "MATEUSZ LEWANDOWSKI" : 499,
-# "STANISŁAW LEWANOWICZ" : 29,
-# "RAFAŁ LIPNIEWICZ" : 504,
-# "ALEKSANDRA LIS" : 468,
-# "KRZYSZTOF LORYŚ" : 30,
-# "ADRIAN ŁAŃCUCKI" : 462,
-# "JAKUB ŁOPUSZAŃSKI" : 72,
-# "ANDRZEJ ŁUKASZEWSKI" : 8,
-# "MATEUSZ MACHAJ" : 475,
-# "MARTA MAKUCH-PASZKIEWICZ" : 84,
-# "JERZY MARCINKOWSKI" : 31,
-# "LESZEK MARKOWSKI" : 450,
-# "MAREK MATERZOK" : 92,
-# "ALEKSANDER MĄDRY" : 33,
-# "FRANCHO MELENDEZ" : 494,
-# "JAKUB MICHALISZYN" : 58,
-# "JAN MIODEK" : 64,
-# "MARCIN MŁOTKOWSKI" : 34,
-# "WOJCIECH MŁOTKOWSKI" : 110,
-# "IRENEUSZ MORAWSKI" : 497,
-# "MICHAŁ MOSKAL" : 32,
-# "MACIEJ NAWROCKI" : 104,
-# "NN" : 112,
-# "NN?" : 444,
-# "NN2" : 115,
-# "NOKIA" : 184,
-# "RAFAŁ NOWAK" : 35,
-# "WIOLETTA NOWAK" : 507,
-# "KRZYSZTOF NOWICKI" : 500,
-# "MAREK NOWICKI" : 491,
-# "MICHAŁ OLECH" : 77,
-# "GRZEGORZ OLENDER" : 477,
-# "KAROLINA OLSZEWSKA" : 480,
-# "TOMASZ OSSOWSKI" : 469,
-# "JAN OTOP" : 55,
-# "LESZEK PACHOLSKI" : 36,
-# "MACIEJ PACUT" : 465,
-# "KATARZYNA PALUCH" : 37,
-# "MACIEJ PALUSZYŃSKI" : 65,
-# "WITOLD PALUSZYŃSKI" : 38,
-# "OLGIERD PANKIEWICZ" : 105,
-# "JAKUB PETRYKOWSKI" : 95,
-# "KRZYSZTOF PIECUCH" : 460,
-# "BARBARA PIECZYRAK" : 489,
-# "ZBIGNIEW PIETRZAK" : 106,
-# "MAREK PIOTRÓW" : 39,
-# "RAFAŁ PISZ" : 98,
-# "ŁUKASZ PIWOWAR" : 40,
-# "ZDZISŁAW PŁOSKI" : 41,
-# "PIOTR POLESIUK" : 474,
-# "IAN PRATT HARTMANN" : 103,
-# "NIEZNANY PROWADZĄCY" : 119,
-# "GABRIELA PRZESŁAWSKA" : 479,
-# "STANISŁAW PRZYTOCKI" : 455,
-# "PAWEŁ RAJBA" : 53,
-# "MICHAŁ RÓŻAŃSKI" : 457,
-# "EDYTA RUTKOWSKA-TOMASZEWSKA" : 505,
-# "BARTOSZ RYBICKI" : 439,
-# "PAWEŁ RYCHLIKOWSKI" : 42,
-# "PAWEŁ RZECHONEK" : 43,
-# "KATARZYNA SERAFIŃSKA" : 461,
-# "PRZEMYSŁAW SKIBIŃSKI" : 100,
-# "MARCIN SKÓRZEWSKI" : 75,
-# "ANNA SMOLIŃSKA" : 452,
-# "MACIEJ SOBCZAK" : 130,
-# "PAWEŁ SOŁTYSIAK" : 91,
-# "KRZYSZTOF SORNAT" : 459,
-# "ZDZISŁAW SPŁAWSKI" : 3,
-# "GRZEGORZ STACHOWIAK" : 44,
-# "ŁUKASZ STAFINIAK" : 45,
-# "PIOTR STANIOROWSKI" : 182,
-# "ROBERT STAŃCZY" : 78,
-# "DAMIAN STRASZAK" : 466,
-# "MACIEJ SYSŁO" : 46,
-# "MACIEJ M. SYSŁO" : 114,
-# "ADMINISTRATOR SYSTEMU" : 451,
-# "ANDRZEJ SZCZEPKOWICZ" : 502,
-# "ZBIGNIEW SZCZUDŁO" : 179,
-# "RAFAŁ SZUKIEWICZ" : 471,
-# "RAFAŁ SZUKIEWICZ" : 492,
-# "ADAM SZUSTALEWICZ" : 82,
-# "MAREK SZYKUŁA" : 90,
-# "KRZYSZTOF TABISZ" : 86,
-# "KAMIL TABIŚ" : 56,
-# "JAKUB TARNAWSKI" : 476,
-# "BARTOSZ TROJAN" : 87,
-# "TOMASZ TRUDERUNG" : 108,
-# "ROMAN URBAN" : 4,
-# "VACAT" : 192,
-# "WIOLETTA WALDOWSKA" : 47,
-# "RADOSŁAW WASIELEWSKI" : 122,
-# "ROMAN WENCEL" : 88,
-# "MONIKA WICHŁACZ" : 79,
-# "PIOTR WIECZOREK" : 48,
-# "TOMASZ WIERZBICKI" : 49,
-# "PIOTR WIÓREK" : 454,
-# "PIOTR WITKOWSKI" : 5,
-# "MARCIN WŁODARCZAK" : 1,
-# "PIOTR WNUK-LIPIŃSKI" : 176,
-# "PIOTR WNUK-LIPIŃSKI" : 50,
-# "MIECZYSŁAW WODECKI" : 51,
-# "KATARZYNA WODZYŃSKA" : 128,
-# "PAWEŁ WOŹNY" : 52,
-# "MICHAŁ WRONA" : 80,
-# "PAWEŁ ZALEWSKI" : 6,
-# "JAN ZATOPIAŃSKI" : 126,
-# "PAWEŁ ZAWIŚLAK" : 89,
-# "ARTUR ZGODA" : 127,
-# "KLARA ZIELIŃSKA" : 484,
-# "TOMASZ ZIELIŃSKI" : 99,
-# "GRAŻYNA ZWOŹNIAK" : 74,
-# "WIKTOR ZYCHLA" : 7
-# }
-
-
-####  #####
-
-from datetime import time
-
-
-from apps.enrollment.courses.models.course import Course
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.group import Group
-from apps.users.models import Employee
-
-from apps.enrollment.courses.models.classroom import Classroom
-
-import re
-import logging
-logger = logging.getLogger()
-
-
 regex = re.compile(
     '\s+(?P<day>pn|wt|śr|czw|pi|so|ni)\s+(?P<start_time>\d{1,2})-(?P<end_time>\d{1,2})\s+\((?P<type>wykład|repetytorium|ćwiczenia|pracownia|ćwicz\+pracownia|seminarium)\)\s+(?P<teacher>[^,]*),\s+(?P<rooms>.*)')
 
@@ -515,7 +301,6 @@ def find_teacher(t):
     else:
         print("Not found: " + str(t))
         raise Exception("Teacher not found")
-        return None
 
 
 def get_classroom(rooms):
@@ -629,8 +414,6 @@ def get_semester():
 def get_course(name):
     return Course.objects.get(id=przedmioty[name])
 
-# for running scheduleimport.py from tests
-
 
 def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):
     global SCHEDULE_FILE, przedmioty, TECH, SEMESTERID
@@ -655,8 +438,6 @@ def get_employers_ids():
 
 def run():
     semester = get_semester()
-    # get_courses_ids(semester)
-    # get_employers_ids()
     print('Przenosimy na semestr <%s>' % semester)
     file = open(SCHEDULE_FILE)
     import_schedule(file, semester)

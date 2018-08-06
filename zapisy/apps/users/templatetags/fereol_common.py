@@ -10,7 +10,7 @@ logger = logging.getLogger()
 
 
 @register.filter
-def bbcode(str):
+def bbcode(string):
     markup = postmarkup.PostMarkup()
 
     markup.add_tag(postmarkup.SimpleTag, 'b', 'strong')
@@ -18,12 +18,12 @@ def bbcode(str):
     markup.add_tag(postmarkup.SimpleTag, 'u', 'u')
     markup.add_tag(postmarkup.SimpleTag, 's', 's')
 
-    return markup.render_to_html(str)
+    return markup.render_to_html(string)
 
 
 @register.filter
-def nl2br(str):
-    return str.replace("\n", "<br />")
+def nl2br(string):
+    return string.replace("\n", "<br/>")
 
 # filter checks url validity, and:
 # - if it's ok (modulo "http://" prefix) - returns it
@@ -49,8 +49,7 @@ def validate_url(str):
             trace = trace.getvalue().split('\n')
             trace = [str for str in trace if str.find('html') >= 0]
             trace = string.join(trace, '\n')
-            logger.warning('Invalid URL couldn\'t be displayed in template: '
-                           + str + '\n' + trace)
+            logger.warning(f'Invalid URL couldn\'t be displayed in template: {str}\n{trace}')
             return '/'
     return str
 

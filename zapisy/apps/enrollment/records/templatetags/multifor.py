@@ -1,20 +1,9 @@
 from itertools import zip_longest
 
-from django.template import Library
+from django.template import Library, Node, NodeList, TemplateSyntaxError, VariableDoesNotExist
 from django.conf import settings
 
 register = Library()
-
-"""
-for x in x_list
-for x,y in xy_list
-for x, y in xy_list
-for x, y in xy_list reversed
-for x in x_list reversed; y in y_list
-for x in x_list; y in y_list reversed
-"""
-from django.template import Node, NodeList, Template, Context, Variable
-from django.template import TemplateSyntaxError, VariableDoesNotExist
 
 
 class ForNode(Node):
@@ -117,9 +106,8 @@ class ForNode(Node):
 class ForLongestNode(ForNode):
     def zip(self, *args):
         return zip_longest(fillvalue=settings.TEMPLATE_STRING_IF_INVALID, *args)
-    get_overall_len = max
 
-#@register.tag(name="for")
+    get_overall_len = max
 
 
 def do_for(parser, token, ForNode=ForNode):

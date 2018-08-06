@@ -5,6 +5,7 @@ jobs:
       - image: circleci/python:3.6.5-stretch-node-browsers
     steps:
       - checkout
+      - run: sudo apt-get update
       - run: sudo apt-get install -y postgresql postgresql-contrib
       - run: sudo bash env/postgre_setup.sh
       # CircleCI automatically caches node_modules which is just stupid
@@ -18,6 +19,7 @@ jobs:
       - run: sudo pip install --upgrade pip
       - run: sudo pip install --upgrade setuptools
       - run: sudo pip install -r zapisy/requirements.test.txt
+      - run: flake8 --statistics --ignore=E265,E501,F401,F821,F841 --exclude=node_modules,*migrations --max-line-length 120 .
       - run: pip --version
       - run: pip freeze
       - run: sudo npm install -g npm # Update to the latest version
