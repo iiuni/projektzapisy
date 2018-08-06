@@ -206,10 +206,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=
-            self.current_semester.semester_ending + relativedelta(days=1),
-            semester_ending=
-            self.current_semester.semester_ending + relativedelta(
+            semester_beginning=self.current_semester.semester_ending + relativedelta(days=1),
+            semester_ending=self.current_semester.semester_ending + relativedelta(
                 days=1,
                 months=3),
             records_ects_limit_abolition=self.current_semester
@@ -221,10 +219,8 @@ class NewSemesterTests(SeleniumTestCase):
         self.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=
-            self.next_winter_semester.semester_ending + relativedelta(days=1),
-            semester_ending=
-            self.next_winter_semester.semester_ending + relativedelta(
+            semester_beginning=self.next_winter_semester.semester_ending + relativedelta(days=1),
+            semester_ending=self.next_winter_semester.semester_ending + relativedelta(
                 days=1,
                 months=3),
             records_ects_limit_abolition=self.next_winter_semester
