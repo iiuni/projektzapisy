@@ -142,7 +142,7 @@
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>Zaloguj się</b><span class="caret"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right">
+                        <div id="login-menu" class="dropdown-menu dropdown-menu-right">
                             <div class="social-buttons login-dp">
                                 <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
                                     <img src="{% static 'images/usos-login-logo.png' %}"
@@ -151,7 +151,7 @@
                                     Zaloguj się przez USOS
                                 </a>
                             </div>
-                            <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                            <form id="login-form" action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
                                 {% csrf_token %}
                                 {% if request.path == '/' %}
                                     <input type="hidden" name="next"
