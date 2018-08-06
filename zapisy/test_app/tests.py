@@ -269,6 +269,9 @@ class NewSemesterTests(SeleniumTestCase):
             lambda: self.driver.find_element_by_id(
                 'login-dropdown').click()
         )
+        print(self.driver.find_elements_by_id('login-dropdown'))
+        print(self.driver.find_element_by_id('id_login'))
+        print(self.driver.find_element_by_id('id_password'))
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id(
                 'id_login').send_keys(
@@ -391,7 +394,7 @@ class NewSemesterTests(SeleniumTestCase):
         self.system_state.save()
 
     def vote(self, student, points):
-        assert(hasattr(student.user, "student") and student.user.student)
+        assert (hasattr(student.user, "student") and student.user.student)
         self.driver.get('{}{}'.format(self.live_server_url, '/users/logout/'))
         self.driver.get(self.live_server_url)
         self.wait_for_pass(
