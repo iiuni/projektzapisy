@@ -33,7 +33,7 @@
                             {% trans "(nieznany prowadzący)" %}
                         {% endif %}
                         {% if group.extra %}
-                            <br/><span class="small">{{ group.extra }}</span>
+                            <br/><span class="small">{{ group.get_extra_display }}</span>
                         {% endif %}
                     </td>
                     <td class="term">

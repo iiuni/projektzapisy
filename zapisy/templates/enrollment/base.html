@@ -13,7 +13,7 @@
     <li{% block enrollment_menu_prototype %}{% endblock %}><a
             href="{% url 'my-prototype' %}">{% trans "Prototyp planu" %}</a></li>
     <li{% block enrollment_menu_employees %}{% endblock %}><a href="{% url 'employees-list' %}">{% trans "Pracownicy" %}</a>
-    </li>{% if user.student or user.employee or user.is_staff %}
+    </li>{% if is_employee and not is_external_contractor or is_student or user.is_staff %}
     <li{% block enrollment_menu_students %}{% endblock %}><a href="{% url 'students-list' %}">{% trans "Studenci" %}</a>
     </li>{% endif %}
 

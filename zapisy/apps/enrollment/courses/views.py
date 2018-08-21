@@ -1,5 +1,6 @@
 import csv
 import json
+from typing import Tuple, Optional, Dict
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, JsonResponse
@@ -40,7 +41,7 @@ def get_course_list_info_for_semester(semester):
 def prepare_courses_list_to_render(request, semester=None):
     ''' generates template data for filtering and list of courses '''
     if not semester:
-        semester = Semester.objects.get_next()
+        semester = Semester.get_default_semester()
     semesters = Semester.objects.filter(visible=True)
     courses_list_json = json.dumps(get_course_list_info_for_semester(semester))
     return {
@@ -72,12 +73,10 @@ def semester_info(request, semester_id):
     return JsonResponse(courses_list)
 
 
-def course_view(request, slug):
-    """Presents a single course to the viewer.
-
-    The view will show all the groups associated with this course. If the viewer
-    is a student authorized to participate in enrollment into these groups, the
-    view is just for that..
+def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
+    """Retrieves course and relevant data for the request.
+    
+    If course does not exist it returns two None objects.
     """
     course: Course = None
     try:
@@ -86,7 +85,7 @@ def course_view(request, slug):
             .prefetch_related('groups', 'entity__tags', 'entity__effects').get()
         )
     except Course.DoesNotExist:
-        return Http404
+        return None, None
 
     student: Student = None
     if request.user.is_authenticated and BaseUser.is_student(request.user):
@@ -113,6 +112,7 @@ def course_view(request, slug):
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
 
+
     teachers = {g.teacher for g in groups}
 
     data = {
@@ -121,17 +121,42 @@ def course_view(request, slug):
         'points': course.get_points(student),
         'groups': groups,
     }
+    return course, data
 
-    if request.is_ajax():
-        rendered_html = render_to_string('courses/course_info.html', data, request)
-        return JsonResponse({
-            'courseHtml': rendered_html,
-            'courseName': course.name,
-            'courseEditLink': reverse('admin:courses_course_change', args=[course.pk])
-        })
+
+def course_ajax(request, slug):
+    """Produces solely the inner frame of the course page.
+
+    The inner frame and some additional data is wrapped into the JSON response
+    to be put in place by JS. This allows to only load a part of the page.
+    """
+    course, data = course_view_data(request, slug)
+    if course is None:
+        raise Http404
+    rendered_html = render_to_string('courses/course_info.html', data, request)
+    return JsonResponse({
+        'courseHtml': rendered_html,
+        'courseName': course.name,
+        'courseEditLink': reverse('admin:courses_course_change', args=[course.pk])
+    })
+
+
+def course_page(request, slug):
+    course, data = course_view_data(request, slug)
+    if course is None:
+        raise Http404
     data.update(prepare_courses_list_to_render(request, course.semester))
     return render(request, 'courses/course.html', data)
 
+def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
+    """Tell whether the user is authorized to see students' names
+    and surnames in the given group.
+    """
+    is_user_proper_employee = (
+        BaseUser.is_employee(user) and not BaseUser.is_external_contractor(user)
+    )
+    is_user_group_teacher = user == group.teacher.user
+    return is_user_proper_employee or is_user_group_teacher
 
 @login_required
 def group_view(request, group_id):
@@ -139,9 +164,9 @@ def group_view(request, group_id):
     """
     group: Group = None
     try:
-        group = Group.objects.select_related('course', 'course__semester').prefetch_related(
-            'term', 'term__classroom'
-        ).get(id=group_id)
+        group = Group.objects.select_related(
+            'course', 'course__semester', 'teacher', 'teacher__user'
+        ).prefetch_related('term', 'term__classroom').get(id=group_id)
     except Group.DoesNotExist:
         raise Http404
 
@@ -161,6 +186,8 @@ def group_view(request, group_id):
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
         'group': group,
+        'can_user_see_all_students_here': can_user_view_students_list_for_group(
+            request.user, group),
         'mailto_group': mailto(request.user, students_in_group, bcc=False),
         'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
         'mailto_group_bcc': mailto(request.user, students_in_group, bcc=True),

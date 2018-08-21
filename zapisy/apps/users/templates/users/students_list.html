@@ -81,6 +81,7 @@
 			{% for s in students %}
                 <li>
                     <a href="{% url 'student-profile' s.user_id %}" class="student-profile-link">{{s.get_full_name}}</a>
+                    <input type="hidden" name="student-user-id" value="{{ s.user.student.id }}" />
                     <input type="hidden" name="student-email" value="{{ s.user.email }}" />
                     <input type="hidden" name="student-album" value="{{ s.matricula }}" />
                 </li>
