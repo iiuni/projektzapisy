@@ -1,6 +1,8 @@
 import logging
+from functools import reduce
 import json
 import datetime
+import operator
 import unidecode
 import re
 from typing import Any, Optional
@@ -26,10 +28,10 @@ from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.decorators import external_contractor_forbidden
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, OpeningTimesView, PersonalDataConsent
+from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.records.models import Record
+from apps.enrollment.records.models import Record, GroupOpeningTimes
 from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
@@ -238,8 +240,7 @@ def my_profile(request: HttpRequest) -> HttpResponse:
     semester = Semester.objects.get_next()
 
     notifications = NotificationFormset(
-        queryset=NotificationPreferences.objects.create_and_get(
-            request.user))
+        queryset=NotificationPreferences.objects.create_and_get(request.user))
 
     if BaseUser.is_employee(request.user):
         consultations = request.user.employee.consultations
@@ -260,21 +261,30 @@ def my_profile(request: HttpRequest) -> HttpResponse:
     if semester and BaseUser.is_student(request.user):
         try:
             student = request.user.student
-            courses = OpeningTimesView.objects.get_courses(student, semester)
+            groups_opening_times = GroupOpeningTimes.objects.filter(
+                student_id=student.pk, group__course__semester_id=semester.pk).select_related(
+                    'group', 'group__course', 'group__course__entity',
+                    'group__teacher', 'group__teacher__user').prefetch_related(
+                        'group__term', 'group__term__classrooms')
+            groups_times = []
+            for got in groups_opening_times:
+                group = got.group
+                group.opening_time = got.time
+                groups_times.append(group)
             gradeInfo = StudentGraded.objects\
                 .filter(student=student)\
                 .select_related('semester')\
                 .order_by('-semester__records_opening')
             grade = [x.semester for x in gradeInfo]
-            current_semester_ects = student.get_points()
+            current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
 
         except (KeyError, Student.DoesNotExist):
             grade = {}
-            courses = None
+            groups_times = []
 
     else:
         grade = None
-        courses = None
+        groups_times = []
 
     return TemplateResponse(request, 'users/my_profile.html', locals())
 

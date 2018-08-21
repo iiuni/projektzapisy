@@ -144,9 +144,9 @@ $('.checkall').live('click', function(){
             <th>Koniec zapisów</th>
             <td>{{ semester.records_closing|date:dateFormatStr }}</td>
         </tr>
-    
-        {% if courses %}
-            {% regroup courses by opening_time as times %}
+
+        {% if groups_times %}
+            {% regroup groups_times|dictsort:"opening_time" by opening_time as times %}
             {% for time in times %}
             <tr>
                 <th>Czas:</th>
@@ -155,15 +155,25 @@ $('.checkall').live('click', function(){
                 <tr>
                 <td></td>
                 <td>
+                    {% with groups_at_time=time.list %}
                     {% if time.list %}
+                    {% regroup groups_at_time|dictsort:"course_id" by course as courses %}
                         <ul class="voted-courses">
-
-                        {% for item in time.list %}
-                            <li><a href="{{ item.course.get_absolute_url }}">{{item.course.name}}</a></li>
+                        {% for course in courses %}
+                            <li><a href="{{ course.grouper.get_absolute_url }}">{{ course.grouper.name }}</a>
+                                <ul>
+                                    {% for group in course.list|dictsort:"type" %}
+                                        <li>
+                                            <a href="{% url 'group-view' group.pk %}">{{ group.human_readable_type }} {{ group.term.all|join:";" }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
                         {% endfor %}
                         </ul>
                     {% endif %}
-                </td>                    
+                    {% endwith %}
+                </td>
             </tr>
             {% endfor %}
         {% endif %}
