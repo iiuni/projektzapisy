@@ -114,4 +114,3 @@ class SemesterTestCase(TestCase):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
         sundays_added = winter_semester.get_all_added_days_of_week(common.SUNDAY)
         self.assertTrue(sundays_added)
-
