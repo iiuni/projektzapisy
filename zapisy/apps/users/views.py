@@ -1,6 +1,9 @@
 import logging
-import datetime
+from functools import reduce
 import json
+import datetime
+import operator
+import unidecode
 import re
 from typing import Any, Optional
 
@@ -9,30 +12,30 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import require_POST
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render, redirect, Http404
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-
+from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
 
 from vobject import iCalendar
-import unidecode
 
-from apps.enrollment.courses.models import Group, Semester, StudentPointsView
-from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
-from apps.enrollment.timetable.views import build_group_list
-from apps.enrollment.utils import mailto
-from apps.users.decorators import external_contractor_forbidden
+from apps.enrollment.records.utils import prepare_schedule_courses, prepare_schedule_data
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.notifications.forms import NotificationFormset
-from apps.notifications.models import NotificationPreferences
+from apps.offer.vote.models.single_vote import SingleVote
+from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.records.models import Record, GroupOpeningTimes
+from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
+from apps.notifications.forms import NotificationFormset
+from apps.notifications.models import NotificationPreferences
 from libs.ajax_messages import AjaxSuccessMessage
 from mailer.models import Message
 
@@ -46,81 +49,109 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 
 
 @login_required
-@external_contractor_forbidden
 def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """student profile"""
     try:
-        student = Student.objects.select_related('user').get(user_id=user_id)
+        student = Student.objects.select_related('user').get(user=user_id)
+        if not BaseUser.is_employee(request.user) and not student.consent_granted:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        courses_with_terms = prepare_schedule_courses(
+            request, for_student=student)
+        votes = SingleVote.get_votes(student)
+        data = prepare_schedule_data(request, courses_with_terms)
+        courses_for_template = []
+        for course, terms in courses_with_terms:
+            d = {}
+            d["id"] = course.id
+            d["terms"] = [json.dumps(term.serialize_for_json())
+                          for term in terms]
+            courses_for_template.append(d)
+        data.update({
+            'courses': courses_for_template,
+            'student': student,
+            'votes': votes
+        })
+
+        if request.is_ajax():
+            return render(request, 'users/student_profile_contents.html', data)
+        else:
+            students = Student.get_list('All', not BaseUser.is_employee(request.user))
+            enrolled_students = Record.recorded_students(students)
+            data['students'] = enrolled_students
+            data['char'] = "All"
+            return render(request, 'users/student_profile.html', data)
+
     except Student.DoesNotExist:
-        raise Http404
-
-    # We will not show the student profile if he decides to hide it.
-    if not BaseUser.is_employee(request.user) and not student.consent_granted:
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-    semester = Semester.objects.get_next()
-
-    records = Record.objects.filter(
-        student=student,
-        group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
-            'group__teacher', 'group__teacher__user', 'group__course',
-            'group__course__entity').prefetch_related('group__term', 'group__term__classrooms')
-    groups = [r.group for r in records]
-    group_dicts = build_group_list(groups)
-
-    data = {
-        'student': student,
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
-    }
-
-    if request.is_ajax():
-        return render(request, 'users/student_profile_contents.html', data)
-
-    active_students = Student.objects.filter(status=0).select_related('user')
-    data.update({
-        'students': active_students,
-        'char': "All",
-    })
-    return render(request, 'users/student_profile.html', data)
+        logger.error(
+            'Function student_profile(id = {}) throws NonStudentException while acessing to non existing student.'
+            .format(str(user_id))
+        )
+        messages.error(request, "Nie ma takiego studenta.")
+        return render(request, 'common/error.html')
+    except User.DoesNotExist:
+        logger.error(
+            'Function student_profile(id = {}) throws User.DoesNotExist while acessing to non existing user.'
+            .format(str(user_id))
+        )
+        messages.error(request, "Nie ma takiego użytkownika.")
+        return render(request, 'common/error.html')
 
 
 def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """employee profile"""
     try:
-        employee = Employee.objects.select_related('user').get(user_id=user_id)
+        user = User.objects.select_related('employee').get(id=user_id)
+        employee = user.employee
+
+        if not employee:
+            raise Employee.DoesNotExist
+
     except Employee.DoesNotExist:
-        raise Http404
+        logger.error(
+            'Function employee_profile(user_id = %s) throws NonEmployeeException while acessing to non existing employee.' %
+            str(user_id))
+        messages.error(request, "Nie ma takiego pracownika.")
+        return render(request, 'common/error.html')
+    except User.DoesNotExist:
+        logger.error(
+            'Function employee_profile(id = %s) throws User.DoesNotExist while acessing to non existing user.' %
+            str(user_id))
+        messages.error(request, "Nie ma takiego użytkownika.")
+        return render(request, 'common/error.html')
 
-    semester = Semester.objects.get_next()
-    groups = Group.objects.filter(
-        course__semester_id=semester.pk, teacher=employee).select_related(
-            'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
-                'term', 'term__classrooms')
+    try:
+        courses = prepare_schedule_courses(request, for_employee=employee)
+        data = prepare_schedule_data(request, courses)
+        data.update({
+            'courses': courses,
+            'employee': employee
+        })
 
-    group_dicts = build_group_list(groups)
+        if request.is_ajax():
+            return render(request, 'users/employee_profile_contents.html', data)
+        else:
+            semester = Semester.get_current_semester()
+            employees = Employee.get_list()
+            active_employees = Group.teacher_in_present(employees, semester)
 
-    data = {
-        'employee': employee,
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
-    }
+            for e in active_employees:
+                e.short_new = e.user.first_name[:1] + \
+                    e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
+                e.short_old = e.user.first_name[:2] + \
+                    e.user.last_name[:2] if e.user.first_name and e.user.last_name else None
 
-    if request.is_ajax():
-        return render(request, 'users/employee_profile_contents.html', data)
+            data['employees'] = active_employees
+            data['char'] = 'All'
 
-    current_groups = Group.objects.filter(course__semester_id=semester.pk).select_related(
-        'teacher', 'teacher__user').distinct('teacher')
-    active_teachers = map(lambda g: g.teacher, current_groups)
-    for e in active_teachers:
-        e.short_new = (e.user.first_name[:1] +
-                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
-        e.short_old = (e.user.first_name[:2] +
-                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
+            return render(request, 'users/employee_profile.html', data)
 
-    data.update({
-        'employees': active_teachers,
-        'char': "All",
-    })
-    return render(request, 'users/employee_profile.html', data)
+    except MoreThanOneCurrentSemesterException:
+        data = {'employee': employee}
+        logger.error('Function employee_profile throws MoreThanOneCurrentSemesterException.')
+        messages.error(
+            request,
+            "Przepraszamy, system jest obecnie nieaktywny z powodu niewłaściwej konfiguracji semestrów. Prosimy spróbować później.")
+        return render(request, 'users/employee_profile.html', data)
 
 
 @login_required
@@ -202,63 +233,58 @@ def password_change_done(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def my_profile(request):
-    """User profile page.
-
-    The profile page displays user settings (e-mail address, notifications). If
-    he is a student, his opening times will be displayed. If the user is an
-    employee, the page allows him to modify his public information (office,
-    consultations).
-    """
+def my_profile(request: HttpRequest) -> HttpResponse:
+    """profile site"""
     semester = Semester.objects.get_next()
-    notifications = NotificationFormset(
-        queryset=NotificationPreferences.objects.create_and_get(request.user)
-    )
 
-    data = {
-        'semester': semester,
-        'notifications': notifications,
-    }
+    notifications = NotificationFormset(
+        queryset=NotificationPreferences.objects.create_and_get(request.user))
 
     if BaseUser.is_employee(request.user):
-        data.update({
-            'consultations': request.user.employee.consultations,
-            'room': request.user.employee.room,
-            'homepage': request.user.employee.homepage,
-            'title': request.user.employee.title,
-        })
+        consultations = request.user.employee.consultations
+        room = request.user.employee.room
+        homepage = request.user.employee.homepage
+        title = request.user.employee.title
+        room = room and room or ''
+        homepage = homepage and homepage or ''
+        title = title and title or ''
+    else:
+        consultations = ''
+        homepage = ''
+        room = ''
+        title = ''
+
+    grade = {}
 
     if semester and BaseUser.is_student(request.user):
-        student: Student = request.user.student
-        groups_opening_times = GroupOpeningTimes.objects.filter(
-            student_id=student.pk, group__course__semester_id=semester.pk
-        ).select_related(
-            'group', 'group__course', 'group__course__entity', 'group__teacher',
-            'group__teacher__user'
-        ).prefetch_related('group__term', 'group__term__classrooms')
-        groups_times = []
-        got: GroupOpeningTimes
-        for got in groups_opening_times:
-            group: Group = got.group
-            group.opening_time = got.time
-            groups_times.append(group)
-        t0_time_obj = T0Times.objects.filter(student_id=student.pk, semester_id=semester.pk)
         try:
-            t0_time = t0_time_obj.get().time
-        except T0Times.DoesNotExist:
-            t0_time = None
-        grade_info = StudentGraded.objects.filter(
-            student=student).select_related('semester').order_by('-semester__records_opening')
-        semesters_participated_in_grade = [x.semester for x in grade_info]
-        current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
-        data.update({
-            't0_time': t0_time,
-            'groups_times': groups_times,
-            'semesters_participated_in_grade': semesters_participated_in_grade,
-            'current_semester_ects': current_semester_ects,
-        })
+            student = request.user.student
+            groups_opening_times = GroupOpeningTimes.objects.filter(
+                student_id=student.pk, group__course__semester_id=semester.pk).select_related(
+                    'group', 'group__course', 'group__course__entity',
+                    'group__teacher', 'group__teacher__user').prefetch_related(
+                        'group__term', 'group__term__classrooms')
+            groups_times = []
+            for got in groups_opening_times:
+                group = got.group
+                group.opening_time = got.time
+                groups_times.append(group)
+            gradeInfo = StudentGraded.objects\
+                .filter(student=student)\
+                .select_related('semester')\
+                .order_by('-semester__records_opening')
+            grade = [x.semester for x in gradeInfo]
+            current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
 
-    return render(request, 'users/my_profile.html', data)
+        except (KeyError, Student.DoesNotExist):
+            grade = {}
+            groups_times = []
+
+    else:
+        grade = None
+        groups_times = []
+
+    return TemplateResponse(request, 'users/my_profile.html', locals())
 
 
 def employees_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
@@ -296,7 +322,6 @@ def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
 
 
 @login_required
-@external_contractor_forbidden
 def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
     students = Student.get_list(begin, not BaseUser.is_employee(request.user))
 
@@ -364,11 +389,7 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
     cal.add('method').value = 'PUBLISH'
 
     if BaseUser.is_student(user):
-        student = user.student
-        records = Record.objects.filter(
-            student_id=student.pk, group__course__semester_id=semester.pk
-        ).select_related('group', 'group__course', 'group__course__entity')
-        groups = [r.group for r in records]
+        groups = [g for g in Record.get_groups_for_student(user) if g.course.semester == semester]
     elif BaseUser.is_employee(user):
         groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
     else:
