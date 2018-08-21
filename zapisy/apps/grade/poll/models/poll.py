@@ -84,12 +84,11 @@ class Poll(models.Model):
     def is_student_entitled_to_poll(self, student: Student):
         """Checks if the student should be able to participate in the poll."""
         if self.group:
-            return records_models.Record.is_enrolled(student.id, self.group_id)
-
+            if not records_models.Record.is_enrolled(student.id, self.group_id):
+                return False
         if self.studies_type:
             if self.studies_type != student.program:
                 return False
-
         return True
 
     def is_user_entitled_to_view_result(self, user):
