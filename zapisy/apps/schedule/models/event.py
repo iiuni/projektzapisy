@@ -66,7 +66,7 @@ class Event(models.Model):
         from django.urls import reverse
 
         if self.group:
-            return reverse('records-group', args=[str(self.group_id)])
+            return reverse('group-view', args=[str(self.group_id)])
         return reverse('events:show', args=[str(self.pk)])
 
     class Meta:

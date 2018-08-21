@@ -19,7 +19,7 @@
                 {% for group in course.groups_items|dictsort:'type' %}
                     {% if group.swaps %}
                     <tr>
-                        <td><a href="{% url 'records-group' group.id %}">{{ group.teacher.user.get_full_name }}</a></td>
+                        <td><a href="{% url 'group-view' group.id %}">{{ group.teacher.user.get_full_name }}</a></td>
                         <td>{{ group.get_type_display }}</td>
                         <td>
                             <table>
@@ -32,7 +32,7 @@
                                             <tr>
                                                 <td>{{ swap.student_in_queue }}</td>
                                                 <td>{{ swap.student_in_group }}</td>
-                                                <td><a href="{% url 'records-group' swap.to.id %}">{{ swap.to }}</a></td>
+                                                <td><a href="{% url 'group-view' swap.to.id %}">{{ swap.to }}</a></td>
                                             </tr>
                                 {% endfor %}
                             </table>
