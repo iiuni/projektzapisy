@@ -282,18 +282,8 @@ class CourseEntity(models.Model):
         ordering = ['name_pl']
 
     def get_points(self, student=None):
-        from apps.enrollment.courses.models.points import StudentPointsView, PointsOfCourseEntities
-
-        if student:
-            try:
-                points = StudentPointsView.objects.get(student=student, entity=self)
-                return points
-            except ObjectDoesNotExist:
-                pass
-        try:
-            return PointsOfCourseEntities.objects.filter(entity=self, program__isnull=True)[0]
-        except (ObjectDoesNotExist, IndexError) as e:
-            return None
+        from apps.enrollment.courses.models.points import StudentPointsView
+        return StudentPointsView.course_value_for_student(student, self.pk)
 
     def get_short_name(self):
         """
@@ -666,13 +656,6 @@ class Course(models.Model):
     def get_absolute_url(self):
         return reverse('course-page', args=[str(self.slug)])
 
-    def student_is_in_ects_limit(self, student):
-        # TODO: test me!
-        from apps.enrollment.courses.models.semester import Semester
-
-        semester = Semester.get_current_semester()
-
-        return semester.get_current_limit() < student.get_ects_with_course(semester, self)
 
     def get_all_enrolled_emails(self):
         from apps.enrollment.records.models import Record
@@ -686,6 +669,8 @@ class Course(models.Model):
         return SingleVote.objects .filter(Q(course=self), Q(
             state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)) .count()
 
+
+
     def get_semester_name(self):
         """ returns name of semester course is linked to """
         if self.semester is None:
@@ -694,13 +679,10 @@ class Course(models.Model):
         else:
             return self.semester.get_name()
 
-    def get_points(self, student=None):
+    def get_points(self, student=None) -> int:
         """
             @param student: (optional) :model:'users.Student'
-
-            @return :model:'courses.Points' or :model:'courses.PointsOfCourseEntities' both have the same interface
         """
-
         return self.entity.get_points(student)
 
     def get_effects_list(self):
@@ -768,18 +750,6 @@ class Course(models.Model):
     @staticmethod
     def get_courses_with_exam(semester):
         return Course.objects.filter(semester=semester, entity__exam=True)
-
-    @staticmethod
-    def get_student_courses_in_semester(student, semester):
-        from apps.enrollment.records.models import Record
-
-        return Record.objects.select_related('group', 'group__teacher', 'group__course',
-                                             'group__course__entity').prefetch_related('group__term',
-                                                                                       'group__term__classrooms').filter(
-            status='1', student=student, group__course__semester=semester). \
-            extra(select={'points': f'SELECT value FROM courses_studentpointsview WHERE student_id={student.id} '
-                                    f'AND entity_id=courses_course.entity_id'}).order_by(
-            'group__course__entity__name')
 
     class Meta:
         verbose_name = 'przedmiot'

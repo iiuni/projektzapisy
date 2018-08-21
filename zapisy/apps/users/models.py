@@ -241,42 +241,6 @@ class Student(BaseUser):
         from apps.grade.ticket_create.models.student_graded import StudentGraded
         return StudentGraded.objects.filter(student=self, semester__in=[45, 239]).count()
 
-    def get_points(self, semester: 'Semester' = None) -> int:
-        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
-        from apps.enrollment.courses.models.semester import Semester as Semester_
-        from apps.enrollment.courses.models.points import StudentPointsView
-        from apps.enrollment.records.models import Record
-        if not semester:
-            semester = Semester_.objects.get_next()
-
-        records = Record.objects.filter(
-            student=self,
-            group__course__semester=semester,
-            status=1).values_list(
-            'group__course__entity_id',
-            flat=True).distinct()
-
-        return StudentPointsView.get_points_for_entities(self, records)
-
-    def get_points_with_course(self, course: 'Course', semester: 'Semester' = None) -> int:
-        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
-        from apps.enrollment.courses.models.semester import Semester as Semester_
-        from apps.enrollment.courses.models.points import StudentPointsView
-        from apps.enrollment.records.models import Record
-        if not semester:
-            semester = Semester_.objects.get_next()
-
-        records = Record.objects.filter(
-            student=self,
-            group__course__semester=semester,
-            status=1).values_list(
-            'group__course__entity_id',
-            flat=True).distinct()
-        if course.entity_id not in records:
-            records = list(records) + [course.entity_id]
-
-        return StudentPointsView.get_points_for_entities(self, records)
-
     @classmethod
     def get_active_students(cls) -> QuerySet:
         return cls.objects.filter(status=0)
