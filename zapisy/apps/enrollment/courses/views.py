@@ -112,7 +112,6 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
 
-
     teachers = {g.teacher for g in groups}
 
     data = {

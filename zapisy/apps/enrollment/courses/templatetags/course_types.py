@@ -3,6 +3,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(is_safe=True)
 def decode_class_type_plural(value: str):
     """Translates a class type enum into plural form of a Polish word."""
@@ -19,6 +20,7 @@ def decode_class_type_plural(value: str):
         '10': "Projekty",
     }
     return types_dict.get(value, "")
+
 
 @register.filter(is_safe=True)
 def decode_class_type_singular(value: str):
