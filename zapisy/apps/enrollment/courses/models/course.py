@@ -665,9 +665,9 @@ class Course(models.Model):
         return reverse('course-page', args=[str(self.slug)])
 
     def get_all_enrolled_emails(self):
-        from apps.enrollment.records.models import Record
+        from apps.enrollment.records.models import Record, RecordStatus
         return Record.objects.filter(
-            group__course=self, status=Record.STATUS_ENROLLED
+            group__course=self, status=RecordStatus.ENROLLED
         ).values_list(
             'student__user__email', flat=True
         ).distinct()
