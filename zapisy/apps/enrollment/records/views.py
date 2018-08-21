@@ -25,8 +25,7 @@ def enqueue(request):
         messages.success(
             request, (
                 "Jesteś w kolejce. Jak tylko w grupie będzie wolne miejsce "
-                "(być może natychmiast), zostaniesz do niej wciągnięty przez "
-                "asynchroniczny proces."
+                "(być może natychmiast), zostaniesz do niej wciągnięty."
             )
         )
     else:
@@ -50,22 +49,4 @@ def dequeue(request):
         messages.success(request, "Usunięto rekord z grupy/kolejki.")
     else:
         messages.warning(request, "Nie udało się usunąć z grupy/kolejki.")
-    return redirect('course-page', slug=group.course.slug)
-
-
-@student_required
-@require_POST
-def queue_set_priority(request):
-    """Sets the queue priority."""
-    student: Student = request.user.student
-    try:
-        group_id = request.POST['group_id']
-        group = Group.objects.select_related('course').get(pk=group_id)
-    except (KeyError, Group.DoesNotExist):
-        raise Http404
-    priority = int(request.POST['priority'])
-    if Record.set_queue_priority(student, group, priority):
-        messages.success(request, "Zmieniono priorytet kolejki.")
-    else:
-        messages.warning(request, "Priorytet kolejki nie zmieniony.")
     return redirect('course-page', slug=group.course.slug)

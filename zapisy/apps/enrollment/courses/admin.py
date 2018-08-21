@@ -18,6 +18,7 @@ from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDa
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
+from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 
 
 class GroupInline(admin.TabularInline):
@@ -196,24 +197,12 @@ class TermInline(admin.TabularInline):
     model = Term
     extra = 0
 
-
 class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
     readonly_fields = ('id', 'student', 'status')
-    can_delete = True
-
-    def has_add_permission(self, request):
-        """Never allow to modify records.
-
-        We disable the possibility to modify records, because it is not obvious,
-        what the procedure should be. Should the student be automatically
-        removed from parallel groups? Should his ECTS limit be checked? If we
-        remove him from exercise, should he be automatically removed from the
-        accompanying lecture group?
-        """
-        return False
-
+    can_delete = False
+    has_add_permission = lambda request, obj: False
 
 class GroupAdmin(admin.ModelAdmin):
     readonly_fields = ('limit', 'id')
@@ -242,6 +231,12 @@ class GroupAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         obj = self.after_saving_model_and_related_inlines(obj)
         return super(GroupAdmin, self).response_change(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        """Triggers pulling from queue, since the limit could have been increased."""
+        if obj.pk:
+            GROUP_CHANGE_SIGNAL.send(None, group_id=obj.pk)
+        super().save_model(request, obj, form, change)
 
     def after_saving_model_and_related_inlines(self, obj):
         from apps.enrollment.courses.models.term import Term as T

@@ -1,8 +1,6 @@
 from django.contrib.auth.decorators import permission_required
-from django.db import models
 from django.template.response import TemplateResponse
-
-from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import Student
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
@@ -21,33 +19,23 @@ def main(request):
 
 @permission_required('courses.view_stats')
 def students(request):
-    semester = Semester.objects.get_next()
-    t0_time_agg = models.Min('t0times__time', filter=models.Q(t0times__semester=semester))
-    group_opening_agg = models.Min(
-        'groupopeningtimes__time',
-        filter=models.Q(groupopeningtimes__group__course__semester=semester))
-    students = Student.get_active_students().select_related('user').annotate(
-        min_t0=t0_time_agg).annotate(
-            min_opening_time=group_opening_agg).order_by('min_opening_time')
-    return TemplateResponse(request, 'statistics/students_list.html', {
-        'students': students,
-    })
+    students = Student.objects.get_list_full_info().\
+        extra(select={'semester_points': "SELECT SUM(value) FROM (SELECT \
+   courses_studentpointsview.value as value \
+FROM courses_course LEFT JOIN courses_group ON (courses_group.course_id = courses_course.id) \
+INNER JOIN records_record ON(records_record.group_id = courses_group.id) \
+LEFT JOIN courses_studentpointsview ON (courses_studentpointsview.entity_id = courses_course.entity_id) \
+WHERE courses_course.semester_id=333 AND courses_studentpointsview.student_id = users_student.id AND records_record.student_id = courses_studentpointsview.student_id AND records_record.status = '1' \
+GROUP BY courses_course.id, courses_studentpointsview.value) as foo"}).\
+        order_by('t0_min')
+    return TemplateResponse(request, 'statistics/students_list.html', locals())
 
 
 @permission_required('courses.view_stats')
 def groups(request):
     semester = Semester.objects.get_next()
-    enrolled_agg = models.Count(
-        'record', filter=models.Q(record__status=RecordStatus.ENROLLED), distinct=True)
-    queued_agg = models.Count(
-        'record', filter=models.Q(record__status=RecordStatus.QUEUED), distinct=True)
-    pinned_agg = models.Count('pin', distinct=True)
-    groups = Group.objects.filter(course__semester=semester).select_related(
-        'course', 'teacher', 'teacher__user', 'course__entity').order_by('course').annotate(
-            enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(pinned=pinned_agg)
-    return TemplateResponse(request, 'statistics/groups_list.html', {
-        'groups': groups,
-    })
+    groups = Group.statistics.in_semester(semester)
+    return TemplateResponse(request, 'statistics/groups_list.html', locals())
 
 
 @permission_required('courses.view_stats')
@@ -86,7 +74,7 @@ def swap(request):
                         lists[g.id].append(r.student)
                         students[r.student_id] = g
                     elif r.status == RecordStatus.QUEUED:
-                        queues[g.id].append(r.student)
+                        queues[g.id].append(q.student)
 
             for group in groups:
                 group.swaps = []

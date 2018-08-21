@@ -77,6 +77,7 @@ def refresh_T0():
     semester = Semester.objects.filter(records_closing__gt=datetime.datetime.now())[0]
     T0Times.populate_t0(semester)
     GroupOpeningTimes.populate_opening_times(semester)
+    return HttpResponseRedirect('/fereol_admin/courses')
 
 
 def run():

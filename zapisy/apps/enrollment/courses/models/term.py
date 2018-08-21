@@ -195,17 +195,14 @@ class Term(models.Model):
         }
 
     def __str__(self):
-        """Represents the term as a string.
-
-        Normally calling this function makes a separate query to the Term's
-        classrooms. To avoid it use `prefetch_related` when getting the Term
-        object.
+        """
+        N query problem with self.classrooms.all(). If you want to optimize, use Term.get_groups_terms.
         """
         classrooms = self.numbers()
-        return "%s %s-%s (s. %s)" % (
-            self.get_dayOfWeek_display_short(), self.start_time.strftime("%H:%M"),
-            self.end_time.strftime("%H:%M"), classrooms
-        )
+        return "%s %s-%s (s. %s)" % (self.get_dayOfWeek_display_short(),
+                               self.start_time.strftime("%H:%M"),
+                               self.end_time.strftime("%H:%M"),
+                               classrooms)
 
 
 def recache(sender, **kwargs):
