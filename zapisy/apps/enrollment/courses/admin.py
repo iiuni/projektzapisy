@@ -197,12 +197,24 @@ class TermInline(admin.TabularInline):
     model = Term
     extra = 0
 
+
 class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
     readonly_fields = ('id', 'student', 'status')
     can_delete = False
-    has_add_permission = lambda request, obj: False
+
+    def has_add_permission(self, request):
+        """Never allow to modify records.
+
+        We disable the possibility to modify records, because it is not obvious,
+        what the procedure should be. Should the student be automatically
+        removed from parallel groups? Should his ECTS limit be checked? If we
+        remove him from exercise, should he be automatically removed from the
+        accompanying lecture group?
+        """
+        return False
+
 
 class GroupAdmin(admin.ModelAdmin):
     readonly_fields = ('limit', 'id')
