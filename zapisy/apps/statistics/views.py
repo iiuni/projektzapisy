@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import permission_required
 from django.template.response import TemplateResponse
-from apps.enrollment.records.models import Queue, Record
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import Student
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
@@ -68,15 +68,13 @@ def swap(request):
             for g in groups:
                 lists[g.id] = []
                 queues[g.id] = []
-                for r in Record.objects.filter(
-                        group=g, status=1).select_related(
-                        'student', 'student__user'):
-                    lists[g.id].append(r.student)
-                    students[r.student_id] = g
-                for q in Queue.objects.filter(
-                        group=g, deleted=False).select_related(
-                        'student', 'student__user'):
-                    queues[g.id].append(q.student)
+                for r in Record.objects.filter(group=g).exclude(
+                        status=RecordStatus.REMOVED).select_related('student', 'student__user'):
+                    if r.status == RecordStatus.ENROLLED:
+                        lists[g.id].append(r.student)
+                        students[r.student_id] = g
+                    elif r.status == RecordStatus.QUEUED:
+                        queues[g.id].append(q.student)
 
             for group in groups:
                 group.swaps = []

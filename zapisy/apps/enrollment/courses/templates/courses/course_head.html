@@ -9,12 +9,12 @@
 Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
 </div>
 {% endif %}
-<div class="details course-details{% if details_hidden %} hidden{% endif %}">
+<div class="details course-details">
     <table class="table-info">
         {% if points %}
             <tr>
                 <th>{% trans "Punkty ECTS" %}</th>
-                <td>{{ points.value }}</td>
+                <td>{{ points }}</td>
             </tr>
         {% endif %}
         {% if course.lectures or course.exercises or course.laboratories or course.repetitions %}
@@ -33,7 +33,7 @@ Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
                     {% if course.laboratories %}{{ course.laboratories }} (prac){% endif %}</td>
             </tr>
         {% endif %}
-        
+
         {% if course.english %}
             <tr>
                 <th>{% trans "Przedmiot prowadzony w j.angielskim" %}</th>
@@ -62,18 +62,10 @@ Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
                 <td> {{ course.votes_count }} <a href="{% url 'course-votes' course.slug %}">{% trans "lista" %}</a></td>
             </tr>
         {% endif %}
-        {% if t0 %}
-            <tr>
-                <th>{% trans "Możesz zapisać się od" context "czas zapisów" %}</th>
-                <td>
-                {{ t0.opening_time }}
-                </td>
-            </tr>
-        {% endif %}
     </table>
 
     <div class="description">
-        
+
         <h5>{% trans "Opis przedmiotu" %}:</h5>
         {% if course.description %}
         <p>{{ course.description|safe }}</p>

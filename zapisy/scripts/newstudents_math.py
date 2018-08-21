@@ -1,6 +1,7 @@
 from mailer.models import Message
 from django.core.exceptions import ObjectDoesNotExist
 from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.records.models import T0Times, GroupOpeningTimes
 from zapisy.apps.users.models import Student, Program
 from django.contrib.auth.models import User
 from django.db import connection
@@ -74,8 +75,9 @@ def refresh_student_ECTS(student):
 
 def refresh_T0():
     semester = Semester.objects.filter(records_closing__gt=datetime.datetime.now())[0]
-    cursor = connection.cursor()
-    cursor.execute("SELECT users_openingtimesview_refresh_for_semester(%s);" % str(semester.id))
+    T0Times.populate_t0(semester)
+    GroupOpeningTimes.populate_opening_times(semester)
+    return HttpResponseRedirect('/fereol_admin/courses')
 
 
 def run():

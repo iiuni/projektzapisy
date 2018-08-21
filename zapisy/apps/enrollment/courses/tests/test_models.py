@@ -115,13 +115,3 @@ class SemesterTestCase(TestCase):
         sundays_added = winter_semester.get_all_added_days_of_week(common.SUNDAY)
         self.assertTrue(sundays_added)
 
-
-class GroupTestCase(TestCase):
-    def test_rearanged_short_circuits_if_records_are_closed(self):
-        student = StudentFactory()
-        group = GroupFactory(
-            course__semester__records_opening=datetime.now() + timedelta(days=-15),
-            course__semester__records_closing=datetime.now() + timedelta(days=-1)
-        )
-        group._add_student_to_queue(student)
-        self.assertIsNone(group.rearanged())

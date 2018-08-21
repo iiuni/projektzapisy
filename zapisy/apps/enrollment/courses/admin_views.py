@@ -19,115 +19,13 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import Record
-from apps.enrollment.records.utils import run_rearanged
+from apps.enrollment.records.models import T0Times, GroupOpeningTimes
 from apps.users.models import Employee, Student
-from .importschedule import import_semester_schedule
 from apps.enrollment.courses.forms import Parser
 import os
 
 FEREOL_PATH = os.getcwd()
 path.append(FEREOL_PATH + '/dbimport/schedule')
-
-
-@staff_member_required
-@transaction.atomic
-def add_student(request):
-    try:
-        group_id = int(request.POST.get('group_id', -1))
-        student_id = int(request.POST.get('student', -1))
-    except (UnicodeEncodeError, ValueError):
-        raise Http404
-
-    if group_id < 0 or student_id < 0:
-        raise Http404
-
-    try:
-        course = Course.objects.select_for_update().filter(groups=group_id)
-        group = Group.objects.get(id=group_id)
-        student = Student.objects.get(id=student_id)
-    except ObjectDoesNotExist:
-        raise Http404
-
-    result, __ = group.add_student(student)
-    if result:
-        run_rearanged(result, group)
-
-    url = reverse(
-        'admin:{}_{}_change'.format(
-            group._meta.app_label,
-            group._meta.model_name),
-        args=[
-            group.id])
-    return HttpResponseRedirect(url)
-
-
-@staff_member_required
-@transaction.atomic
-def remove_student(request):
-    try:
-        group_id = int(request.POST.get('group_id', -1))
-        record_id = int(request.POST.get('recordid', -1))
-    except (UnicodeEncodeError, ValueError):
-        raise Http404
-
-    if group_id < 0 or record_id < 0:
-        raise Http404
-
-    try:
-        course = Course.objects.select_for_update().filter(groups=group_id)
-        group = Group.objects.get(id=group_id)
-        student = Record.objects.get(id=record_id).student
-    except ObjectDoesNotExist:
-        raise Http404
-
-    result, messages_list = group.remove_student(student, is_admin=True)
-    if result:
-        run_rearanged(result, group)
-
-    url = reverse(
-        'admin:{}_{}_change'.format(
-            group._meta.app_label,
-            group._meta.model_name),
-        args=[
-            group.id])
-    return HttpResponseRedirect(url)
-
-
-@staff_member_required
-@transaction.atomic
-def change_group_limit(request):
-    try:
-        group_id = int(request.POST.get('group_id', -1))
-        limit = int(request.POST.get('limit', -1))
-    except (UnicodeEncodeError, ValueError):
-        raise Http404
-
-    if group_id < 0 or limit < 0:
-        raise Http404
-
-    try:
-        course = Course.objects.select_for_update().filter(groups=group_id)
-        group = Group.objects.get(id=group_id)
-    except ObjectDoesNotExist:
-        raise Http404
-
-    if limit < group.limit:
-        group.limit = limit
-        group.save()
-    else:
-        while group.limit < limit:
-            group.limit += 1
-            group.save()
-            run_rearanged(None, group)
-
-    url = reverse(
-        'admin:{}_{}_change'.format(
-            group._meta.app_label,
-            group._meta.model_name),
-        args=[
-            group.id])
-    return HttpResponseRedirect(url)
 
 
 class SemesterImportForm(forms.Form):
@@ -208,10 +106,10 @@ def import_schedule(request):
 
 @staff_member_required
 def refresh_semester(request):
+    """Computes Opening times for all students."""
     semester = Semester.objects.get_next()
-    cursor = connection.cursor()
-    cursor.execute("SELECT users_openingtimesview_refresh_for_semester(%s);" % str(semester.id))
-    connection.commit()
+    T0Times.populate_t0(semester)
+    GroupOpeningTimes.populate_opening_times(semester)
     return HttpResponseRedirect('/fereol_admin/courses')
 
 

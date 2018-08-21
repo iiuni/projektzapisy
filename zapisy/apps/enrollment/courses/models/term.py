@@ -142,7 +142,7 @@ class Term(models.Model):
             return self.classrooms_as_string
         classrooms = self.classrooms.all()
         if len(classrooms) > 0:
-            classrooms = '(s. {})'.format(', '.join((x.number for x in classrooms)))
+            classrooms = ', '.join((x.number for x in classrooms))
         else:
             classrooms = ''
 
@@ -199,7 +199,7 @@ class Term(models.Model):
         N query problem with self.classrooms.all(). If you want to optimize, use Term.get_groups_terms.
         """
         classrooms = self.numbers()
-        return "%s %s-%s%s" % (self.get_dayOfWeek_display_short(),
+        return "%s %s-%s (s. %s)" % (self.get_dayOfWeek_display_short(),
                                self.start_time.strftime("%H:%M"),
                                self.end_time.strftime("%H:%M"),
                                classrooms)

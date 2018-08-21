@@ -1,4 +1,4 @@
-{% extends "enrollment/courses/base.html" %}
+{% extends "courses/base.html" %}
 {% load i18n %}
 {% load compressed %}
 
@@ -16,13 +16,7 @@
         class="hidden" id="enr-course-arrow">&raquo;</span>&nbsp;<span
             class="hidden" id="enr-course-name">{{ course.name }}</span>
             {% if user.is_staff %}
-            <a
-                id="enr-course-edit-link"
-                href=""
-                class="hidden"
-            >
-            {% trans "Edytuj przedmiot" %}
-            </a>
+                <a id="enr-course-edit-link" href="" class="hidden">{% trans "Edytuj przedmiot" %}</a>
             {% endif %}
 {% endblock %}
 

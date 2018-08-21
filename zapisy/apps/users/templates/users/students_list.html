@@ -13,7 +13,7 @@
 
 {% block bread %}
 	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
-	<a href="{% url 'enrollment-main' %}">Zapisy</a> &raquo;
+	<a href="{% url 'course-list' %}">Zapisy</a> &raquo;
 	Studenci
 {% endblock %}
 
@@ -80,7 +80,7 @@
 		<ul class="students">
 			{% for s in students %}
                 <li>
-                    <a href="{% url 'student-profile' s.user.id %}" class="student-profile-link">{{s.get_full_name}}</a>
+                    <a href="{% url 'student-profile' s.user_id %}" class="student-profile-link">{{s.get_full_name}}</a>
                     <input type="hidden" name="student-user-id" value="{{ s.user.student.id }}" />
                     <input type="hidden" name="student-email" value="{{ s.user.email }}" />
                     <input type="hidden" name="student-album" value="{{ s.matricula }}" />

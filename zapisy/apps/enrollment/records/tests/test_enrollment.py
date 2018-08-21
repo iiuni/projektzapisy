@@ -1,454 +1,194 @@
-from django.test import TransactionTestCase
+"""Tests for enrolling and enqueuing students."""
+from datetime import datetime
+from unittest.mock import patch
 
-from django.contrib.auth.models import User
-from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models.course import Course, CourseEntity
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.points import StudentPointsView
-from apps.enrollment.records.utils import run_rearanged
-from apps.users.models import Student, Employee
-from django.db import connection
-from apps.enrollment.courses.tests.factories import GroupFactory, \
-    CourseFactory, SemesterFactory
-from apps.users.tests.factories import StudentFactory
-from apps.users.models import OpeningTimesView
-from apps.enrollment.records.models import Record, Queue
+from django.test import TestCase, override_settings
+
+from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
+from apps.enrollment.courses.models import Semester, Group, StudentPointsView
+from apps.users.models import Student
 
 
-from datetime import datetime, timedelta
+def mock_datetime(year, month, day, hour=0, minute=0):
+    """Mock datetime used to model performing operations at a particular time.
+
+    This is a meta-function. It will return a class inheriting from datetime and
+    overriding its `now` function.
+    """
+    timestamp = datetime(year, month, day, hour, minute)
+
+    class MockDateTime(datetime):
+        """Override of datetime."""
+
+        @classmethod
+        def now(cls, _=None):
+            return timestamp
+
+    return MockDateTime
 
 
-def open_course_for_student(student, course, opening_time=datetime.now()):
-    # OpeningTimesView has student as pk
-    # so we cannot have more than one course opened at the moment
-    otvs = OpeningTimesView.objects.filter(student=student)
-    for otv in otvs:
-        otv.delete()
-    OpeningTimesView.objects.create(
-        student=student,
-        course=course,
-        semester=course.semester,
-        opening_time=opening_time)
+# We will patch datetime for records module. This is fairly counterintuitive See
+# https://docs.python.org/3/library/unittest.mock.html#where-to-patch for
+# explanation.
+RECORDS_DATETIME = 'apps.enrollment.records.models.records.datetime'
 
 
-def add_points_for_course(student, course):
-    StudentPointsView.objects.create(student=student,
-                                     value=course.entity.ects,
-                                     entity=course.entity)
+@override_settings(RUN_ASYNC=False)
+class EnrollmentTest(TestCase):
+    """Verify correctness of our enrollment logic implementation.
+
+    The tests are missing one important issue — the asynchronous task queue. To
+    make testing easier, the test will run all tasks synchronously (eagerly).
+    """
+    fixtures = ['new_semester.yaml']
+
+    @classmethod
+    def setUpTestData(cls):
+        """Computes GroupOpeningTimes for all tests."""
+        cls.semester = Semester.objects.get(pk=1)
+        cls.bolek = Student.objects.get(pk=1)
+        cls.lolek = Student.objects.get(pk=2)
+        GroupOpeningTimes.populate_opening_times(cls.semester)
+
+    def test_simple_enrollment(self):
+        """Bolek will just enqueue into the group."""
+        knitting_lecture_group = Group.objects.get(pk=11)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, knitting_lecture_group)
+
+        assert Record.objects.filter(
+            student=self.bolek, group=knitting_lecture_group,
+            status=RecordStatus.ENROLLED).exists()
+
+    def test_lecture_group_also_enrolled(self):
+        """Bolek will just enqueue into the exercises group. He should also be
+        enrolled into the lecture."""
+        cooking_lecture_group = Group.objects.get(pk=31)
+        cooking_exercise_group = Group.objects.get(pk=32)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_exercise_group)
+
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_exercise_group,
+            status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+
+    def test_exercise_group_also_removed(self):
+        """Like above bolek will enqueue into exercise group. Then he'll leave.
+
+        He first should be automatically pulled into the lecture group. Then he
+        will unenroll from the lecture group and he should be removed from the
+        exercise group as well.
+        """
+        cooking_lecture_group = Group.objects.get(pk=31)
+        cooking_exercise_group = Group.objects.get(pk=32)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_exercise_group)
+
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_exercise_group,
+            status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 2, 12)):
+            assert Record.remove_from_group(self.bolek, cooking_lecture_group)
+
+        assert not Record.objects.filter(
+            student=self.bolek, group=cooking_exercise_group,
+            status=RecordStatus.ENROLLED).exists()
+        assert not Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
 
 
-class DummyTest(TransactionTestCase):
-    reset_sequences = True
 
-    def setUp(self):
-        sql_calls = [
-            """
-                CREATE TABLE courses_studentpointsview (
-                    value smallint,
-                    student_id integer,
-                    entity_id integer
-                );
-            """
-        ]
+    def test_bolek_comes_before_lolek(self):
+        """Bolek will be first to enroll into the groups. Lolek will remain in
+        the queue of the exercise group, yet he will fit in the lecture
+        group."""
+        cooking_lecture_group = Group.objects.get(pk=31)
+        cooking_exercise_group = Group.objects.get(pk=32)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_exercise_group)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 1)):
+            assert Record.enqueue_student(self.lolek, cooking_exercise_group)
 
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
-            connection.commit()
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_exercise_group,
+            status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+        assert not Record.objects.filter(
+            student=self.lolek, group=cooking_exercise_group,
+            status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.lolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.lolek, group=cooking_exercise_group, status=RecordStatus.QUEUED).exists()
+        assert not Record.objects.filter(
+            student=self.lolek, group=cooking_lecture_group, status=RecordStatus.QUEUED).exists()
 
-    def tearDown(self):
-        sql_calls = [
-            "DROP TABLE courses_studentpointsview;",
-        ]
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
-            connection.commit()
+    def test_student_autoremoved_from_group(self):
+        """Bolek switches seminar group for "Mycie Naczyń".
 
-    def testAddStudentToGroup(self):
-        today = datetime.now()
-        group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        student = StudentFactory()
-        open_course_for_student(student, group.course)
-        result, messages_list = group.enroll_student(student)
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
+        In the meantime, Lolek tries to join the first group. He waits in queue,
+        but is pulled in when Bolek leaves a vacancy.
+        """
+        washing_up_seminar_1 = Group.objects.get(pk=21)
+        washing_up_seminar_2 = Group.objects.get(pk=22)
 
-    def testAddingStudentToExercisesShouldAddItToLecture(self):
-        today = datetime.now()
-        course = CourseFactory()
-        exercises_group = GroupFactory(
-            course=course,
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        lecture_group = GroupFactory(
-            course=course,
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6),
-            type=1
-        )
-        student = StudentFactory()
-        open_course_for_student(student, course)
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list,
-                         ['Student dopisany do grupy',
-                          'Nastąpiło automatyczne dopisanie do grupy wykładowej'])
-        self.assertTrue(Record.objects.filter(group_id=lecture_group.id, student_id=student.id,
-                                              status=Record.STATUS_ENROLLED).exists())
-        self.assertTrue(Record.objects.filter(group_id=exercises_group.id, student_id=student.id,
-                                              status=Record.STATUS_ENROLLED).exists())
+        # Bolek joins group 1.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12)):
+            assert Record.enqueue_student(self.bolek, washing_up_seminar_1)
+        assert Record.objects.filter(
+            student=self.bolek, group=washing_up_seminar_1, status=RecordStatus.ENROLLED).exists()
 
-    def testAddingStudentToSameGroupAgainFails(self):
-        today = datetime.now()
-        exercises_group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        student = StudentFactory()
-        open_course_for_student(student, exercises_group.course)
+        # Lolek tries to join group 1 and is enqueued.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12)):
+            assert Record.enqueue_student(self.lolek, washing_up_seminar_1)
+        assert not Record.objects.filter(
+            student=self.lolek, group=washing_up_seminar_1, status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.lolek, group=washing_up_seminar_1, status=RecordStatus.QUEUED).exists()
 
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
+        # Bolek switches the group.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12, 5)):
+            assert Record.enqueue_student(self.bolek, washing_up_seminar_2)
+        assert Record.objects.filter(
+            student=self.bolek, group=washing_up_seminar_2, status=RecordStatus.ENROLLED).exists()
+        assert not Record.objects.filter(
+            student=self.bolek, group=washing_up_seminar_1, status=RecordStatus.ENROLLED).exists()
 
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
+        # Lolek should be pulled in.
+        assert Record.objects.filter(
+            student=self.lolek, group=washing_up_seminar_1, status=RecordStatus.ENROLLED).exists()
+        assert not Record.objects.filter(
+            student=self.lolek, group=washing_up_seminar_1, status=RecordStatus.QUEUED).exists()
 
-        self.assertFalse(result)
-        self.assertEqual(messages_list, ['Jesteś już w tej grupie'])
+    def test_student_exceeds_the_35_limit(self):
+        """Bolek will try to sign up to "Gotowanie" and "Szydełkowanie" before
+        35 points limit abolition. He should be successful with "Gotowanie",
+        which costs exactly 35 ECTS, but not with the second enrollment.
+        """
+        knitting_lecture_group = Group.objects.get(pk=11)
+        cooking_lecture_group = Group.objects.get(pk=31)
 
-    def testAddingStudentToDifferentGroupsSameCourseSucceeds(self):
-        today = datetime.now()
-        course = CourseFactory()
-        exercises_group1 = GroupFactory(
-            course=course,
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        exercises_group2 = GroupFactory(
-            course=course,
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        student = StudentFactory()
-        open_course_for_student(student, course)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_lecture_group)
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+        assert StudentPointsView.student_points_in_semester(self.bolek, self.semester) == 35
 
-        result, messages_list = exercises_group1.enroll_student(student)
-        run_rearanged(result)
-
-        result, messages_list = exercises_group2.enroll_student(student)
-        run_rearanged(result)
-
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        record_for_group1 = Record.objects.filter(
-            student_id=student.id, group_id=exercises_group1.id)[0]
-        record_for_group2 = Record.objects.filter(
-            student_id=student.id, group_id=exercises_group2.id)[0]
-        self.assertEqual(record_for_group1.status, Record.STATUS_REMOVED)
-        self.assertEqual(record_for_group2.status, Record.STATUS_ENROLLED)
-
-    def testEnrollmentFailsIfEnrollmentNotYetStarted(self):
-        today = datetime.now()
-        exercises_group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6)
-        )
-        student = StudentFactory()
-        open_course_for_student(
-            student,
-            exercises_group.course,
-            opening_time=today +
-            timedelta(
-                days=1))
-
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
-
-        self.assertFalse(result)
-        self.assertEqual(messages_list, ['Zapisy na ten przedmiot są dla Ciebie zamknięte'])
-
-    def testEnrollmentFailsIfEnrollmentHasEnded(self):
-        today = datetime.now()
-        exercises_group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-3),
-            course__semester__records_closing=today + timedelta(days=-2)
-        )
-        student = StudentFactory()
-        open_course_for_student(student, exercises_group.course)
-
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
-
-        self.assertFalse(result)
-        self.assertEqual(
-            messages_list,
-            ['Zapisy na ten semestr zostały zakończone. Nie możesz dokonywać zmian.'])
-
-    def testCannotLeaveGroupAfterRecordsEnded(self):
-        today = datetime.now()
-        exercises_group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-3),
-            course__semester__records_closing=today + timedelta(days=6),
-            course__semester__records_ending=today + timedelta(-2)
-        )
-        student = StudentFactory()
-        open_course_for_student(student, exercises_group.course)
-
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
-
-        self.assertTrue(result)
-
-        result, messages_list = exercises_group.remove_student(student)
-        run_rearanged(result)
-
-        self.assertFalse(result)
-        self.assertEqual(
-            messages_list,
-            ['Wypisy w tym semestrze zostały zakończone. Nie możesz wypisać się z grupy.'])
-
-    def testCanLeaveQueueAfterRecordsEnded(self):
-        today = datetime.now()
-        exercises_group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-3),
-            course__semester__records_closing=today + timedelta(days=6),
-            course__semester__records_ending=today + timedelta(-2)
-        )
-
-        students = StudentFactory.create_batch(10)
-        for student in students:
-            open_course_for_student(student, exercises_group.course)
-            result, messages_list = exercises_group.enroll_student(student)
-            run_rearanged(result)
-            self.assertTrue(result)
-            self.assertEqual(messages_list, ['Student dopisany do grupy'])
-
-        student = StudentFactory()
-        open_course_for_student(student, exercises_group.course)
-
-        result, messages_list = exercises_group.enroll_student(student)
-        run_rearanged(result)
-
-        self.assertTrue(result)
-
-        result, messages_list = exercises_group.remove_student(student)
-        run_rearanged(result)
-
-        self.assertTrue(result)
-
-    def testAddStudentToQueue(self):
-        today = datetime.now()
-        group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6),
-        )
-        students = StudentFactory.create_batch(15)
-        for student in students:
-            open_course_for_student(student, group.course)
-        for student in students[:10]:
-            result, messages_list = group.enroll_student(student)
-            run_rearanged(result)
-            self.assertTrue(result)
-            self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        for student in students[10:]:
-            result, messages_list = group.enroll_student(student)
-            run_rearanged(result)
-            self.assertTrue(result)
-            self.assertEqual(messages_list, [
-                'Brak wolnych miejsc w grupie',
-                'Student został dopisany do kolejki'])
-        self.assertEqual(group.enrolled, 10)
-        self.assertEqual(group.queued, 5)
-
-    def testIsQueueWorking(self):
-        today = datetime.now()
-        group = GroupFactory(
-            course__semester__records_opening=today + timedelta(days=-1),
-            course__semester__records_closing=today + timedelta(days=6),
-        )
-        students = StudentFactory.create_batch(15)
-        for student in students:
-            open_course_for_student(student, group.course)
-        for student in students[:10]:
-            result, messages_list = group.enroll_student(student)
-            run_rearanged(result, group)
-            self.assertTrue(result)
-            self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        for student in students[10:]:
-            result, messages_list = group.enroll_student(student)
-            run_rearanged(result)
-            self.assertTrue(result)
-            self.assertEqual(messages_list, [
-                'Brak wolnych miejsc w grupie',
-                'Student został dopisany do kolejki'])
-        self.assertEqual(group.enrolled, 10)
-        self.assertEqual(group.queued, 5)
-        result, messages_list = group.remove_student(students[8])
-        run_rearanged(result, group)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student wypisany z grupy'])
-        enrolled = [x.student for x in Record.objects.filter(
-            group=group,
-            status=Record.STATUS_ENROLLED)]
-        removed = [x.student for x in Record.objects.filter(
-            group=group,
-            status=Record.STATUS_REMOVED)]
-        queued = [x.student for x in
-                  Queue.objects.filter(group=group, deleted=False)]
-        should_be_enrolled = students[0:8] + students[9:11]
-        should_be_queued = students[11:]
-        should_be_removed = [students[8]]
-        self.assertEqual(set(enrolled), set(should_be_enrolled))
-        self.assertEqual(set(queued), set(should_be_queued))
-        self.assertEqual(set(removed), set(should_be_removed))
-        self.assertFalse(students[8] in enrolled)
-        self.assertTrue(students[8] in removed)
-        self.assertEqual(group.enrolled, 10)
-        self.assertEqual(group.queued, 4)
-        self.assertFalse(students[8] in queued)
-
-    def testECTSLimit(self):
-        today = datetime.now()
-        semester = SemesterFactory(
-            records_opening=today + timedelta(days=-1),
-            records_closing=today + timedelta(days=6),
-            records_ects_limit_abolition=today + timedelta(days=3),
-        )
-        groups = GroupFactory.create_batch(
-            2,
-            course__entity__ects=30,
-            course__semester=semester)
-        student = StudentFactory()
-        for group in groups:
-            add_points_for_course(student, group.course)
-        open_course_for_student(student, groups[0].course)
-        result, messages_list = groups[0].enroll_student(student)
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        open_course_for_student(student, groups[1].course)
-        result, messages_list = groups[1].enroll_student(student)
-        run_rearanged(result)
-        self.assertFalse(result)
-        self.assertEqual(messages_list,
-                         ['Przekroczono limit 35 punktów. Zapis niemożliwy.'])
-
-    def testECTSLimitAfterAbolition(self):
-        today = datetime.now()
-        semester = SemesterFactory(
-            records_opening=today + timedelta(days=-3),
-            records_closing=today + timedelta(days=6),
-            records_ects_limit_abolition=today + timedelta(days=-1),
-        )
-        largeGroups = GroupFactory.create_batch(
-            2,
-            course__entity__ects=30,
-            course__semester=semester)
-        littleGroup = GroupFactory(
-            course__entity__ects=15,
-            course__semester=semester
-        )
-        student = StudentFactory()
-        for group in largeGroups + [littleGroup]:
-            add_points_for_course(student, group.course)
-        open_course_for_student(student, largeGroups[0].course)
-        result, messages_list = largeGroups[0].enroll_student(student)
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        open_course_for_student(student, largeGroups[1].course)
-        result, messages_list = largeGroups[1].enroll_student(student)
-        run_rearanged(result)
-        self.assertFalse(result)
-        self.assertEqual(messages_list,
-                         ['Przekroczono limit 45 punktów. Zapis niemożliwy.'])
-        open_course_for_student(student, littleGroup.course)
-        result, messages_list = littleGroup.enroll_student(student)
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-
-    def testQueuesWithECTSLimit(self):
-        today = datetime.now()
-        semester = SemesterFactory(
-            records_opening=today + timedelta(days=-3),
-            records_closing=today + timedelta(days=6),
-            records_ects_limit_abolition=today + timedelta(days=1),
-        )
-        groups = GroupFactory.create_batch(
-            3,
-            course__entity__ects=15,
-            course__semester=semester,
-            limit=5)
-        students = StudentFactory.create_batch(7)
-        for student in students:
-            for group in groups:
-                add_points_for_course(student, group.course)
-        for student in students[2:]:
-            for group in groups[:2]:
-                open_course_for_student(student, group.course)
-                result, messages_list = group.enroll_student(student)
-                run_rearanged(result)
-                self.assertTrue(result)
-                self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        open_course_for_student(students[0], groups[2].course)
-        result, messages_list = groups[2].enroll_student(students[0])
-        run_rearanged(result)
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student dopisany do grupy'])
-        for group in groups[:2]:
-            for student in students[:2]:
-                open_course_for_student(student, group.course)
-                result, messages_list = group.enroll_student(student)
-                run_rearanged(result)
-                self.assertTrue(result)
-                self.assertEqual(messages_list, [
-                    'Brak wolnych miejsc w grupie',
-                    'Student został dopisany do kolejki'])
-        result, messages_list = groups[0].remove_student(students[2])
-        run_rearanged(result, groups[0])
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student wypisany z grupy'])
-        self.assertEqual(groups[0].enrolled, 5)
-        self.assertEqual(groups[0].queued, 1)
-        enrolled = [x.student for x in Record.objects.filter(
-            group=groups[0],
-            status=Record.STATUS_ENROLLED)]
-        removed = [x.student for x in Record.objects.filter(
-            group=groups[0],
-            status=Record.STATUS_REMOVED)]
-        queued = [x.student for x in
-                  Queue.objects.filter(group=groups[0], deleted=False)]
-        should_be_enrolled = [students[0]] + students[3:]
-        should_be_queued = [students[1]]
-        should_be_removed = [students[2]]
-        self.assertEqual(set(enrolled), set(should_be_enrolled))
-        self.assertEqual(set(queued), set(should_be_queued))
-        self.assertEqual(set(removed), set(should_be_removed))
-        result, messages_list = groups[1].remove_student(students[2])
-        run_rearanged(result, groups[1])
-        self.assertTrue(result)
-        self.assertEqual(messages_list, ['Student wypisany z grupy'])
-        self.assertEqual(groups[1].enrolled, 5)
-        self.assertEqual(groups[1].queued, 0)
-        enrolled = [x.student for x in Record.objects.filter(
-            group=groups[1],
-            status=Record.STATUS_ENROLLED)]
-        removed = [x.student for x in Record.objects.filter(
-            group=groups[1],
-            status=Record.STATUS_REMOVED)]
-        queued = [x.student for x in
-                  Queue.objects.filter(group=groups[1], deleted=False)]
-        should_be_enrolled = [students[1]] + students[3:]
-        should_be_queued = []
-        should_be_removed = [students[2]]
-        self.assertEqual(set(enrolled), set(should_be_enrolled))
-        self.assertEqual(set(queued), set(should_be_queued))
-        self.assertEqual(set(removed), set(should_be_removed))
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 5)):
+            # He should be able to join the queue.
+            assert Record.enqueue_student(self.bolek, knitting_lecture_group)
+        # His enrollment with "Gotowanie" should still exist.
+        assert Record.objects.filter(
+            student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
+        # His record with "Szydełkowanie" should be removed.
+        assert not Record.objects.filter(
+            student=self.bolek, group=knitting_lecture_group, status=RecordStatus.ENROLLED).exists()
+        assert Record.objects.filter(
+            student=self.bolek, group=knitting_lecture_group, status=RecordStatus.REMOVED).exists()
+        assert StudentPointsView.student_points_in_semester(self.bolek, self.semester) == 35

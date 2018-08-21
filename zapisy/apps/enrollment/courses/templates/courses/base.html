@@ -15,29 +15,29 @@
 {% endblock %}
 
 {% block sidebar %}
-	{% cache 3600 courses_list request.user %}
+	{% cache 3600 courses_list %}
 	<div id="main-sidebar">
 		<div id="course-list">
             <p class="main-side-message hidden" id="fetchingListMessage">
                 Pobieranie listy przedmiotów...
                 <img src="{% static "images/loading.gif" %}">
             </p>
-		
+
 			<div class="semester" id="mainCoursesContainer">
 				{# Translators: Tytuł nad sidebarem  #}
 				<h3>{% trans "Semestr" %}
-					<span id="current_semester_year">{{ default_semester.year }}</span>&nbsp;<span 
+					<span id="current_semester_year">{{ default_semester.year }}</span>&nbsp;<span
 						id="current_semester_type">{{ default_semester.get_type_display }}</span>
 				</h3>
 				<input type="hidden" id="semester_id" value="{{ default_semester.id }}" />
 				<!-- The course list the server sends to us when we first load the page,
 				then if the user changes the semester, we download the JSON using AJAX. -->
 				<script type="application/json" id="courses_list_json">{{ courses_list_json|safe }}</script>
-				
+
 				<p class="main-side-message hidden" id="noResultsMessage">
                     Do podanego filtra nie pasuje żaden przedmiot.
                 </p>
-				
+
 				<ul id="courses-list">
 				</ul>
             </div>

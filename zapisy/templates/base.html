@@ -117,7 +117,7 @@
 
                 <ul class="topBarLinkContainer">
                     <li{% block enrollment_active %}{% endblock %}>
-                        <a href="{% url 'enrollment-main' %}">System Zapisów</a>
+                        <a href="{% url 'course-list' %}">System Zapisów</a>
                     </li>
                     <li{% block grade_active %}{% endblock %}>
                         <a href="{% url 'grade-main' %}">Ocena Zajęć</a>
@@ -178,7 +178,7 @@
                                       <form action="{% url 'user-login' %}" method="POST">
                                           {% csrf_token %}
                                           {% if request.path == '/' %}
-                                              <input type="hidden" name="next" value="{% url 'schedule-own' %}"/>
+                                              <input type="hidden" name="next" value="{% url 'course-list' %}"/>
                                           {% else %}
                                               <input type="hidden" name="next" value="{{request.path}}"/>
                                           {% endif %}

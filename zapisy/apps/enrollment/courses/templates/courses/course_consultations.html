@@ -2,7 +2,7 @@
 <h3>{% trans "Konsultacje prowadzących" %}:</h3>
 <br>
 
-{% if employees %}
+{% if teachers %}
     <table class="consultations">
         <thead>
         <tr>
@@ -12,12 +12,12 @@
         </tr>
         </thead>
         <tbody>
-        {% for employee in employees %}
+        {% for teacher in teachers %}
             <tr>
                 <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
-                    {{ employee.user.get_full_name }}</a></td>
-                <td>{{ employee.room|default:"" }}</td>
-                <td>{{ employee.consultations }}</td>
+                    {{ teacher.user.get_full_name }}</a></td>
+                <td>{{ teacher.room|default:"" }}</td>
+                <td>{{ teacher.consultations }}</td>
             </tr>
         {% endfor %}
         </tbody>

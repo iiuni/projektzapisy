@@ -1,4 +1,4 @@
-{% extends "enrollment/courses/courses_list.html" %}
+{% extends "courses/courses_list.html" %}
 
 {% load fereol_common %}
 {% load i18n %}
@@ -10,7 +10,7 @@
 {% block bread %}
     <a href="{% url "main-page" %}">{% trans "Strona główna" %}</a>&nbsp;&raquo;&nbsp;<a
         href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>&nbsp;<span
-            id="enr-course-arrow">&raquo;</span>&nbsp;<span 
+            id="enr-course-arrow">&raquo;</span>&nbsp;<span
                 id="enr-course-name">{{ course.name }}</span>
                 {% if user.is_staff %}
                 <a
@@ -25,6 +25,6 @@
 
 {% block content %}
 <div id="enr-course-view">
-    {% include "enrollment/courses/course_info.html" %}
+    {% include "courses/course_info.html" %}
 </div>
 {% endblock %}
