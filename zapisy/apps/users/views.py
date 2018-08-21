@@ -19,9 +19,12 @@ from django.conf import settings
 from vobject import iCalendar
 
 from apps.enrollment.courses.models import Group, Semester, StudentPointsView
-from apps.enrollment.records.models import Record, GroupOpeningTimes
+from apps.enrollment.records.models import Record, GroupOpeningTimes, T0Times
 from apps.enrollment.utils import mailto
 from apps.users.decorators import external_contractor_forbidden
+from apps.grade.ticket_create.models.student_graded import StudentGraded
+from apps.notifications.forms import NotificationFormset
+from apps.notifications.models import NotificationPreferences
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
@@ -129,9 +132,63 @@ def password_change_done(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def my_profile(request: HttpRequest) -> HttpResponse:
-    """profile site"""
-    pass
+def my_profile(request):
+    """User profile page.
+
+    The profile page displays user settings (e-mail address, notifications). If
+    he is a student, his opening times will be displayed. If the user is an
+    employee, the page allows him to modify his public information (office,
+    consultations).
+    """
+    semester = Semester.objects.get_next()
+    notifications = NotificationFormset(
+        queryset=NotificationPreferences.objects.create_and_get(request.user)
+    )
+
+    data = {
+        'semester': semester,
+        'notifications': notifications,
+    }
+
+    if BaseUser.is_employee(request.user):
+        data.update({
+            'consultations': request.user.employee.consultations,
+            'room': request.user.employee.room,
+            'homepage': request.user.employee.homepage,
+            'title': request.user.employee.title,
+        })
+
+    if semester and BaseUser.is_student(request.user):
+        student: Student = request.user.student
+        groups_opening_times = GroupOpeningTimes.objects.filter(
+            student_id=student.pk, group__course__semester_id=semester.pk
+        ).select_related(
+            'group', 'group__course', 'group__course__entity', 'group__teacher',
+            'group__teacher__user'
+        ).prefetch_related('group__term', 'group__term__classrooms')
+        groups_times = []
+        got: GroupOpeningTimes
+        for got in groups_opening_times:
+            group: Group = got.group
+            group.opening_time = got.time
+            groups_times.append(group)
+        t0_time_obj = T0Times.objects.filter(student_id=student.pk, semester_id=semester.pk)
+        try:
+            t0_time = t0_time_obj.get().time
+        except T0Times.DoesNotExist:
+            t0_time = None
+        gradeInfo = StudentGraded.objects.filter(
+            student=student).select_related('semester').order_by('-semester__records_opening')
+        semesters_participated_in_grade = [x.semester for x in gradeInfo]
+        current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
+        data.update({
+            't0_time': t0_time,
+            'groups_times': groups_times,
+            'semesters_participated_in_grade': semesters_participated_in_grade,
+            'current_semester_ects': current_semester_ects,
+        })
+
+    return render(request, 'users/my_profile.html', data)
 
 
 def employees_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
@@ -226,7 +283,6 @@ def get_ical_filename(user: User, semester: Semester) -> str:
 @login_required
 def create_ical_file(request: HttpRequest) -> HttpResponse:
     user = request.user
-    student = user.student
     semester = Semester.get_default_semester()
 
     cal = iCalendar()
@@ -238,6 +294,7 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
     cal.add('method').value = 'PUBLISH'
 
     if BaseUser.is_student(user):
+        student = user.student
         records = Record.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk
         ).select_related('group', 'group__course', 'group__course__entity')
