@@ -67,7 +67,6 @@ class Group(models.Model):
         verbose_name='Nr grupy w usos',
         help_text='UWAGA! Nie edytuj tego pola sam!')
 
-
     def get_teacher_full_name(self):
         """return teacher's full name of current group"""
         if self.teacher is None:
