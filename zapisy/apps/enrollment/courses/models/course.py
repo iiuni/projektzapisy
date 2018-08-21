@@ -320,7 +320,7 @@ class CourseEntity(models.Model):
         """
         return list(TagCourseEntity.objects.filter(courseentity=self))
 
-    @cache_result_for(60*60)
+    @cache_result_for(60 * 60)
     def serialize_for_json(self):
         """
         Serialize this object to a dictionary
@@ -664,20 +664,20 @@ class Course(models.Model):
     def get_absolute_url(self):
         return reverse('course-page', args=[str(self.slug)])
 
-
     def get_all_enrolled_emails(self):
         from apps.enrollment.records.models import Record
-
-        return Record.objects.filter(group__course=self, status=Record.STATUS_ENROLLED)\
-            .values_list('student__user__email', flat=True).distinct()
+        return Record.objects.filter(
+            group__course=self, status=Record.STATUS_ENROLLED
+        ).values_list(
+            'student__user__email', flat=True
+        ).distinct()
 
     def votes_count(self, semester=None):
         from apps.offer.vote.models import SingleVote
-
-        return SingleVote.objects .filter(Q(course=self), Q(
-            state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)) .count()
-
-
+        return SingleVote.objects.filter(
+            Q(course=self),
+            Q(state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)
+        ).count()
 
     def get_semester_name(self):
         """ returns name of semester course is linked to """
