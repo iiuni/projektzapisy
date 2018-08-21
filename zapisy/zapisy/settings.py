@@ -43,9 +43,8 @@ DATABASES = {
     }
 }
 
-# django-rq is a task queue. It can be used to run asynchronous tasks. The tasks
-# should be implemented so, that setting RUN_ASYNC to False would run them
-# eagerly.
+# django-rq is a task queue. Setting RUN_ASYNC to False will disable the
+# asynchronous tasks and run them eagerly (they need to be implemented that way).
 RUN_ASYNC = env.bool('RUN_ASYNC', True)
 RQ_QUEUES = {
     'default': {
@@ -129,7 +128,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = env.str('SECRET_KEY', default='N3MUBVRQXkhuqzsZ8QMepRaZwHDXwhp4rTcVQF5bmckB2c293V')
+SECRET_KEY = '6$u2ggeh-!^hxep3s4h$3z&2-+3c@sy7-sy8349+l-1m)9r0fn'
 
 TEMPLATE_LOADERS_TO_USE = [
     'django.template.loaders.filesystem.Loader',
@@ -148,7 +147,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
-                'apps.users.context_processors.roles',
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE
             if DEBUG else
@@ -200,7 +198,6 @@ INSTALLED_APPS = (
     'pipeline',
     'apps.enrollment.courses',
     'apps.enrollment.records',
-    'apps.enrollment.timetable',
     'apps.statistics',
     'apps.news',
     'apps.offer.preferences',
@@ -245,18 +242,14 @@ LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-# Settings for enrollment.
-# Bonus minutes per one ECTS credit. This setting affects T0 times computation.
+# settings for enrollment
+# ECTS_BONUS * ECTS = abs(t0-t1); set to 7, if changed, change also get_t0_interval()
 ECTS_BONUS = 5
-# Limits concerning the amount of ECTS points a student can sign up to in a
-# semester. For the first part of enrollment cycle, the INITIAL_LIMIT holds.
-# Then, after abolition time, students can enroll into some additional courses.
-ECTS_INITIAL_LIMIT = 35
+ECTS_LIMIT = 35
 ECTS_FINAL_LIMIT = 45
 
 VOTE_LIMIT = 60
 
-# MSc Computer Science Program will have id=1 in database table users_program.
 M_PROGRAM = 1
 LETURE_TYPE = '1'
 QUEUE_PRIORITY_LIMIT = 5
