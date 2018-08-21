@@ -25,7 +25,8 @@ def enqueue(request):
         messages.success(
             request, (
                 "Jesteś w kolejce. Jak tylko w grupie będzie wolne miejsce "
-                "(być może natychmiast), zostaniesz do niej wciągnięty."
+                "(być może natychmiast), zostaniesz do niej wciągnięty przez "
+                "asynchroniczny proces."
             )
         )
     else:

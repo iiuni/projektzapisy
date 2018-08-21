@@ -101,6 +101,8 @@ class EnrollmentTest(TestCase):
         assert not Record.objects.filter(
             student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
 
+
+
     def test_bolek_comes_before_lolek(self):
         """Bolek will be first to enroll into the groups. Lolek will remain in
         the queue of the exercise group, yet he will fit in the lecture
@@ -186,8 +188,7 @@ class EnrollmentTest(TestCase):
             student=self.bolek, group=cooking_lecture_group, status=RecordStatus.ENROLLED).exists()
         # His record with "Szydełkowanie" should be removed.
         assert not Record.objects.filter(
-            student=self.bolek, group=knitting_lecture_group,
-            status=RecordStatus.ENROLLED).exists()
+            student=self.bolek, group=knitting_lecture_group, status=RecordStatus.ENROLLED).exists()
         assert Record.objects.filter(
             student=self.bolek, group=knitting_lecture_group, status=RecordStatus.REMOVED).exists()
         assert StudentPointsView.student_points_in_semester(self.bolek, self.semester) == 35

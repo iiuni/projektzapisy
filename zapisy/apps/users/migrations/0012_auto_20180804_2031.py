@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0011_create_external_contractors_group'),
+        ('users', '0010_auto_20180712_1227'),
     ]
 
     operations = [
