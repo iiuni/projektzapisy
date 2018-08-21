@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
-from apps.cache_utils import cache_result
+from apps.cache_utils import cache_result, cache_result_for
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.student_options import StudentOptions
 
@@ -313,6 +313,7 @@ class CourseEntity(models.Model):
         """
         return list(TagCourseEntity.objects.filter(courseentity=self))
 
+    @cache_result_for(60*60)
     def serialize_for_json(self):
         """
         Serialize this object to a dictionary

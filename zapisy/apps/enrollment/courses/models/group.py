@@ -3,9 +3,7 @@
 A group may have multiple terms - that is, students may meet with the teacher
 more than one time a week.
 """
-from typing import Iterable
-
-from django.db import models, transaction
+from django.db import models
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course import Course
@@ -33,11 +31,7 @@ GROUP_EXTRA_CHOICES = [('', ''),
                        ('grupa 5', 'grupa 5'),
                        ('pracownia linuksowa', 'pracownia linuksowa'),
                        ('grupa anglojęzyczna', 'grupa anglojęzyczna'),
-                       ('I rok', 'I rok'), ('II rok', 'II rok'), ('ISIM', 'ISIM'),
-                       ('tura1', 'grupa wirtualna dla pierwszej 1/3 pierwszaków'),
-                       ('tura2', 'grupa wirtualna dla drugiej 1/3 pierwszaków'),
-                       ('tura3', 'grupa wirtualna dla trzeciej 1/3 pierwszaków'),
-                       ('hidden', 'grupa ukryta'),
+                       ('I rok', 'I rok'), ('II rok', 'II rok'), ('ISIM', 'ISIM')
                        ]
 
 
@@ -72,6 +66,7 @@ class Group(models.Model):
         blank=True,
         verbose_name='Nr grupy w usos',
         help_text='UWAGA! Nie edytuj tego pola sam!')
+
 
     def get_teacher_full_name(self):
         """return teacher's full name of current group"""
@@ -139,44 +134,14 @@ class Group(models.Model):
         return reverse('group-view', args=[self.pk])
 
     @classmethod
-    @transaction.atomic
-    def copy(cls, group: 'Group') -> 'Group':
-        """Creates a copy of the group.
-
-        All the fields in the copy are left the same. The terms and their
-        classrooms are copied.
-
-        This function is operating inside a transaction. If it fails, no changes
-        are made to the DB.
-        """
-        from apps.enrollment.courses.models.term import Term
-        from apps.schedulersync.models import TermSyncData
-
-        def copy_term(t: Term) -> Term:
-            classrooms = list(t.classrooms.all())
-            term_sync_data: TermSyncData = list(t.termsyncdata_set.all())
-            t.pk = None
-            t.save()
-            t.classrooms.set(classrooms)
-            for tsd in term_sync_data:
-                tsd.pk = None
-                tsd.term = t
-                tsd.save()
-            return t
-
-        copied_terms = [copy_term(t) for t in group.term.all()]
-        copy = cls.objects.get(pk=group.pk)
-        copy.pk = None
-        copy.save()
-        copy.term.set(copied_terms)
-        return copy
-
-    @classmethod
-    def get_lecture_groups(cls, course_id: int) -> Iterable['Group']:
+    def get_lecture_group(cls, course_id: int) -> 'Group':
         """Given a course_id returns a lecture group for this course, if one exists.
 
         The Group.MultipleObjectsReturned exception will be raised when many
         lecture groups exist for course.
         """
         group_query = cls.objects.filter(course_id=course_id, type=Group.GROUP_TYPE_LECTURE)
-        return list(group_query)
+        try:
+            return group_query.get()
+        except cls.DoesNotExist:
+            return None

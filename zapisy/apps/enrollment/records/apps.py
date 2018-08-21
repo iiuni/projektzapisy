@@ -5,7 +5,6 @@
 
 from django.apps import AppConfig
 
-
 class RecordsAppConfig(AppConfig):
     name = 'apps.enrollment.records'
 

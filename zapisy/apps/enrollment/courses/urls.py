@@ -13,7 +13,6 @@ from apps.enrollment.courses import views
 urlpatterns = [
     path('', views.courses_list, name='course-list'),
     path('<slug:slug>', views.course_view, name='course-page'),
-    path('<slug:slug>.json', views.course_ajax, name='course-page-json'),
     path('group/<int:group_id>', views.group_view, name='group-view'),
     path('group/<int:group_id>/group/csv', views.group_enrolled_csv, name='group-csv'),
     path('group/<int:group_id>/queue/csv', views.group_queue_csv, name='queue-csv'),
