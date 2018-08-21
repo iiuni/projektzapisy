@@ -31,6 +31,10 @@ class Related(models.Manager):
         return super(Related, self).get_queryset().select_related('user')
 
 
+def is_user_in_group(user: User, group_name: str) -> bool:
+    return user.groups.filter(name=group_name).exists() if user else False
+
+
 class BaseUser(models.Model):
     """
     User abstract class. For every app user there is entry in django.auth.
@@ -79,15 +83,15 @@ class BaseUser(models.Model):
 
     @staticmethod
     def is_student(user: User) -> bool:
-        if user:
-            return user.groups.filter(name='students').exists()
-        return False
+        return is_user_in_group(user, 'students')
 
     @staticmethod
     def is_employee(user: User) -> bool:
-        if user:
-            return user.groups.filter(name='employees').exists()
-        return False
+        return is_user_in_group(user, 'employees')
+
+    @staticmethod
+    def is_external_contractor(user: User) -> bool:
+        return is_user_in_group(user, 'external_contractors')
 
     def __str__(self) -> str:
         return self.get_full_name()
@@ -240,6 +244,42 @@ class Student(BaseUser):
     def participated_in_last_grades(self) -> int:
         from apps.grade.ticket_create.models.student_graded import StudentGraded
         return StudentGraded.objects.filter(student=self, semester__in=[45, 239]).count()
+
+    def get_points(self, semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
+        from apps.enrollment.courses.models.semester import Semester as Semester_
+        from apps.enrollment.courses.models.points import StudentPointsView
+        from apps.enrollment.records.models import Record
+        if not semester:
+            semester = Semester_.objects.get_next()
+
+        records = Record.objects.filter(
+            student=self,
+            group__course__semester=semester,
+            status=1).values_list(
+            'group__course__entity_id',
+            flat=True).distinct()
+
+        return StudentPointsView.get_points_for_entities(self, records)
+
+    def get_points_with_course(self, course: 'Course', semester: 'Semester' = None) -> int:
+        # Trailing underscore is here to avoid flake8 error while inner imports are a workaround for circular imports
+        from apps.enrollment.courses.models.semester import Semester as Semester_
+        from apps.enrollment.courses.models.points import StudentPointsView
+        from apps.enrollment.records.models import Record
+        if not semester:
+            semester = Semester_.objects.get_next()
+
+        records = Record.objects.filter(
+            student=self,
+            group__course__semester=semester,
+            status=1).values_list(
+            'group__course__entity_id',
+            flat=True).distinct()
+        if course.entity_id not in records:
+            records = list(records) + [course.entity_id]
+
+        return StudentPointsView.get_points_for_entities(self, records)
 
     @classmethod
     def get_active_students(cls) -> QuerySet:
