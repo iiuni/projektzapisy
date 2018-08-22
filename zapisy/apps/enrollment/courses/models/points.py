@@ -145,7 +145,6 @@ class StudentPointsView:
         If the student is None, the function will return the default number of
         credits for the course.
         """
-
         def value_with_program(program_id, points_of_courseentities_list):
             """For a given program_id will find either the number of points
             associated with this program_id, or with None, if one does not
@@ -169,6 +168,7 @@ class StudentPointsView:
         for entity in entities:
             if student is None:
                 sum_points += value_with_program(None, entity.pointsofcourseentities_set.all())
+                continue
             program_id = student.program_id
             if entity.numeryczna_l and student.numeryczna_l:
                 program_id = 1
