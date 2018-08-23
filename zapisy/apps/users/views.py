@@ -1,5 +1,8 @@
 import logging
+from functools import reduce
+import json
 import datetime
+import operator
 import unidecode
 import re
 from typing import Any, Optional
@@ -9,25 +12,31 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import require_POST
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, Http404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
+
+from django.template.response import TemplateResponse
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
 
 from vobject import iCalendar
 
-from apps.enrollment.courses.models import Group, Semester, StudentPointsView
-from apps.enrollment.records.models import Record, GroupOpeningTimes
-from apps.enrollment.utils import mailto
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.notifications.forms import NotificationFormset
-from apps.notifications.models import NotificationPreferences
+from apps.offer.vote.models.single_vote import SingleVote
+from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
+from apps.enrollment.courses.models import Semester, Group, StudentPointsView
+from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
+from apps.enrollment.timetable.views import build_group_list
+from apps.enrollment.utils import mailto
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
+from apps.notifications.forms import NotificationFormset
+from apps.notifications.models import NotificationPreferences
 from libs.ajax_messages import AjaxSuccessMessage
 from mailer.models import Message
 
@@ -43,12 +52,78 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 @login_required
 def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """student profile"""
-    pass
+    try:
+        student = Student.objects.select_related('user').get(user_id=user_id)
+    except Student.DoesNotExist:
+        raise Http404
+
+    # We will not show the student profile if he decides to hide it.
+    if not BaseUser.is_employee(request.user) and not student.consent_granted:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+    semester = Semester.objects.get_next()
+
+    records = Record.objects.filter(
+        student=student,
+        group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
+            'group__teacher', 'group__teacher__user', 'group__course',
+            'group__course__entity').prefetch_related('group__term', 'group__term__classrooms')
+    groups = [r.group for r in records]
+    group_dicts = build_group_list(groups)
+
+    data = {
+        'student': student,
+        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+    }
+
+    if request.is_ajax():
+        return render(request, 'users/student_profile_contents.html', data)
+
+    active_students = Student.objects.filter(status=0).select_related('user')
+    data.update({
+        'students': active_students,
+        'char': "All",
+    })
+    return render(request, 'users/student_profile.html', data)
 
 
 def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """employee profile"""
-    pass
+    try:
+        employee = Employee.objects.select_related('user').get(user_id=user_id)
+    except Employee.DoesNotExist:
+        raise Http404
+
+    semester = Semester.objects.get_next()
+    groups = Group.objects.filter(
+        course__semester_id=semester.pk, teacher=employee).select_related(
+            'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
+                'term', 'term__classrooms')
+
+    group_dicts = build_group_list(groups)
+
+    data = {
+        'employee': employee,
+        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+    }
+
+    if request.is_ajax():
+        return render(request, 'users/employee_profile_contents.html', data)
+
+    current_groups = Group.objects.filter(course__semester_id=semester.pk).select_related(
+        'teacher', 'teacher__user').distinct('teacher')
+    active_teachers = map(lambda g: g.teacher, current_groups)
+    for e in active_teachers:
+        e.short_new = (e.user.first_name[:1] +
+                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
+        e.short_old = (e.user.first_name[:2] +
+                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
+
+    data.update({
+        'employees': active_teachers,
+        'char': "All",
+    })
+    return render(request, 'users/employee_profile.html', data)
 
 
 @login_required
@@ -170,10 +245,10 @@ def my_profile(request):
             group: Group = got.group
             group.opening_time = got.time
             groups_times.append(group)
-        gradeInfo = StudentGraded.objects.filter(
+        grade_info = StudentGraded.objects.filter(
             student=student
         ).select_related('semester').order_by('-semester__records_opening')
-        semesters_participated_in_grade = [x.semester for x in gradeInfo]
+        semesters_participated_in_grade = [x.semester for x in grade_info]
         current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
         data.update({
             'groups_times': groups_times,
@@ -295,7 +370,6 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
         groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
     else:
         raise InvalidUserException()
-    group: Group
     for group in groups:
         course_name = group.course.name
         group_type = group.human_readable_type().lower()

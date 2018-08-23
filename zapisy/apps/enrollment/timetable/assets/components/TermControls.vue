@@ -22,10 +22,7 @@ const TermControlsProps = Vue.extend({
 export default class TermControlsComponent extends TermControlsProps {
   controlsVisible: boolean = false;
 
-  get group(): Group {
-    return  this.term.group;
-  }
-  
+  group: Group = this.term.group;
   // Determines if a new enrollment record can be created into the group.
   get canEnqueue(): boolean {
     if (this.term.group.isEnrolled) return false;
@@ -50,25 +47,11 @@ export default class TermControlsComponent extends TermControlsProps {
   }
 
   enqueue() {
-    const confirmMessage = [
-      "Czy na pewno chcesz stanąć w kolejce do tej grupy?\n\n",
-      "Gdy tylko w grupie będzie wolne miejsce (być może natychmiast), ",
-      "zostanie dokonana próba wciągnięcia do niej studentów z kolejki. Jeśli ",
-      "w momencie wciągania do grupy student nie spełnia warunków zapisu ",
-      "(np. przekracza limit ECTS, nie jest zapisany na wykład do ",
-      "przedmiotu), jego rekord zostaje usunięty."
-    ].join("");
-
-    if (confirm(confirmMessage)) {
-      this.$store.dispatch("groups/enqueue", this.term.group);
-    }
+    this.$store.dispatch("groups/enqueue", this.term.group);
   }
 
   dequeue() {
-    const confirmMessage = "Czy na pewno chcesz opuścić tę grupę/kolejkę?";
-    if (confirm(confirmMessage)) {
-      this.$store.dispatch("groups/dequeue", this.term.group);
-    }
+    this.$store.dispatch("groups/dequeue", this.term.group);
   }
 }
 </script>
