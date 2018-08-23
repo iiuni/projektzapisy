@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
+from django.urls import path
 from django_cas_ng import views
 
 import apps.news.views
@@ -18,6 +19,7 @@ urlpatterns = [
     url(r'^help/', include('apps.help.urls')),
     url(r'^courses/', include('apps.enrollment.courses.urls')),
     url(r'^records/', include('apps.enrollment.records.urls')),
+    path('timetable/', include('apps.enrollment.timetable.urls')),
     url(r'^statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 

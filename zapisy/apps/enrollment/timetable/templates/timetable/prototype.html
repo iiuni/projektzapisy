@@ -1,0 +1,25 @@
+{% extends "enrollment/base.html" %}
+{% load compressed %}
+{% load cache %}
+{% load i18n %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block main-subtitle %}{# Translators: podtytuł #}{% trans "Prototyp planu" %}{% endblock %}
+
+{% block enrollment_menu_prototype %} class="active"{% endblock %}
+
+{% block bread %}
+	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
+	<a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+{% endblock %}
+
+
+
+{% block center %}
+    <div id="timetable"></div>
+    <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
+    <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
+    {% render_bundle 'timetable-prototype-component' %}
+{% endblock %}
+
