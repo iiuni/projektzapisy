@@ -64,8 +64,8 @@ def list_courses_in_semester(semester: Semester):
 
     This list will be used in prototype.
     """
-    courses = Course.objects.filter(semester=semester
-                                   ).select_related('entity').values('id', 'entity__name')
+    courses = Course.objects.filter(semester=semester).select_related('entity').values(
+        'id', 'entity__name')
     for course in courses:
         course.update({
             'url': reverse('prototype-get-course', args=(course['id'], )),
