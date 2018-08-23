@@ -133,6 +133,7 @@ export default class TermComponent extends TermProps {
   border-radius: 4px;
   color: black;
   line-height: 120%;
+  min-width: 50px;
 }
 
 .term-info {

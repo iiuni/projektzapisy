@@ -2,22 +2,20 @@
 import json
 from typing import List
 
-from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from apps.enrollment.courses.models import Course, Group, Semester, StudentPointsView
+from apps.cache_utils import cache_result_for
+from apps.enrollment.courses.models import Course, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.enrollment.timetable.models import Pin, HiddenGroups
+from apps.enrollment.timetable.models import Pin
 from apps.users.decorators import student_required
-from apps.users.models import BaseUser, Employee, Student
 
 
 def build_group_list(groups: List[Group]):
@@ -26,7 +24,8 @@ def build_group_list(groups: List[Group]):
     The information must be sufficient to display information in the timetable
     and perform actions (enqueuing/dequeuing).
     """
-    stats = Record.groups_stats(groups)
+    group_ids = [g.pk for g in groups]
+    stats = Record.groups_stats(group_ids)
     group_dicts = []
     group: Group
     for group in groups:
@@ -56,7 +55,6 @@ def build_group_list(groups: List[Group]):
             'can_enqueue': getattr(group, 'can_enqueue', None),
             'can_dequeue': getattr(group, 'can_dequeue', None),
             'action_url': reverse('prototype-action', args=(group.pk, )),
-            'is_hidden': getattr(group, 'is_hidden', None),
         })
         group_dicts.append(group_dict)
     return group_dicts
@@ -67,8 +65,8 @@ def list_courses_in_semester(semester: Semester):
 
     This list will be used in prototype.
     """
-    courses = Course.objects.filter(semester=semester).select_related('entity').values(
-        'id', 'entity__name')
+    courses = Course.objects.filter(semester=semester
+                                   ).select_related('entity').values('id', 'entity__name')
     for course in courses:
         course.update({
             'url': reverse('prototype-get-course', args=(course['id'], )),
@@ -76,8 +74,10 @@ def list_courses_in_semester(semester: Semester):
     return json.dumps(list(courses))
 
 
-def student_timetable_data(student: Student):
-    """Collects the timetable data for a student."""
+@student_required
+def my_timetable(request):
+    """Shows the student his own timetable page."""
+    student = request.user.student
     semester = Semester.objects.get_next()
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
@@ -88,41 +88,9 @@ def student_timetable_data(student: Student):
     groups = [r.group for r in records]
     group_dicts = build_group_list(groups)
 
-    points_for_courseentities = StudentPointsView.points_for_entities(
-        student, [g.course.entity_id for g in groups])
-
-    for group in groups:
-        group.course.points = points_for_courseentities[group.course.entity_id]
-
-    data = {
-        'groups': groups,
-        'sum_points': sum(points_for_courseentities.values()),
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
-    }
-    return data
-
-
-def employee_timetable_data(employee: Employee):
-    """Collects the timetable data for an employee."""
-    semester = Semester.objects.get_next()
-    groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
-        'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
-            'term', 'term__classrooms')
-    group_dicts = build_group_list(groups)
     data = {
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
-    return data
-
-
-@login_required
-def my_timetable(request):
-    """Shows the student/employee his own timetable page."""
-    if BaseUser.is_student(request.user):
-        data = student_timetable_data(request.user.student)
-    elif BaseUser.is_employee(request.user):
-        data = employee_timetable_data(request.user.employee)
-
     return render(request, 'timetable/timetable.html', data)
 
 
@@ -155,11 +123,6 @@ def my_prototype(request):
     for pin in pinned:
         group = all_groups_by_id.get(pin.pk)
         group.is_pinned = True
-
-    hidden_groups = HiddenGroups.hidden_groups_for_student(student, all_groups_by_id.keys())
-    for group_id in hidden_groups:
-        group = all_groups_by_id.get(group_id)
-        group.is_hidden = True
 
     all_groups = all_groups_by_id.values()
     for group in all_groups:
@@ -232,48 +195,13 @@ def prototype_get_course(request, course_id):
     """Retrieves the annotated groups of a single course."""
     student = request.user.student
     course = Course.objects.get(pk=course_id)
-    groups = course.groups.exclude(extra='hidden').select_related(
+    groups = course.groups.all().select_related(
         'course', 'course__entity', 'teacher', 'course__semester', 'teacher__user'
     ).prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)
     can_dequeue_dict = Record.can_dequeue_groups(student, groups)
-    hidden_groups = HiddenGroups.hidden_groups_for_student(student, groups)
-    hidden_groups_set = set(hidden_groups)
     for group in groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
-        group.is_hidden = group.pk in hidden_groups_set
-    group_dicts = build_group_list(groups)
-    return JsonResponse(group_dicts, safe=False)
-
-
-@student_required
-@require_POST
-def prototype_update_groups(request):
-    """Retrieves the updated group annotations.
-
-    The list of groups ids to update will be sent in JSON body of the request.
-    """
-    student = request.user.student
-    # Axios sends POST data in json rather than _Form-Encoded_.
-    ids: List[int] = json.loads(request.body.decode('utf-8'))
-    num_enrolled = Count('record', filter=Q(record__status=RecordStatus.ENROLLED))
-    is_enrolled = Count(
-        'record',
-        filter=(Q(record__status=RecordStatus.ENROLLED) & Q(record__student_id=student.pk)))
-    is_enqueued = Count(
-        'record',
-        filter=(Q(record__status=RecordStatus.QUEUED) & Q(record__student_id=student.pk)))
-    groups = Group.objects.filter(pk__in=ids).annotate(num_enrolled=num_enrolled).annotate(
-        is_enrolled=is_enrolled).annotate(is_enqueued=is_enqueued).select_related(
-            'course', 'course__entity', 'teacher', 'course__semester',
-            'teacher__user').prefetch_related('term', 'term__classrooms')
-    can_enqueue_dict = Record.can_enqueue_groups(student, groups)
-    can_dequeue_dict = Record.can_dequeue_groups(student, groups)
-    for group in groups:
-        group.can_enqueue = can_enqueue_dict.get(group.pk)
-        group.can_dequeue = can_dequeue_dict.get(group.pk)
-        group.is_enqueued = bool(group.is_enqueued)
-        group.is_enrolled = bool(group.is_enrolled)
     group_dicts = build_group_list(groups)
     return JsonResponse(group_dicts, safe=False)

@@ -199,6 +199,7 @@ INSTALLED_APPS = (
     'pipeline',
     'apps.enrollment.courses',
     'apps.enrollment.records',
+    'apps.enrollment.timetable',
     'apps.statistics',
     'apps.news',
     'apps.offer.preferences',

@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --progress --colors --config webpack_resources/webpack.config.ts",
     "devw": "NODE_ENV=development TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --progress --colors --watch --config webpack_resources/webpack.config.ts",
-    "build": "NODE_ENV=production TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --config webpack_resources/webpack.config.ts"
+    "build": "NODE_ENV=production TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --progress --colors --config webpack_resources/webpack.config.ts"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,7 @@
     "babel-runtime": "^6.26.0",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
-    "vue": "^2.5.21",
-    "vue-timers": "^1.10.0",
+    "vue": "^2.5.17",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -53,14 +52,14 @@
     "less-loader": "^4.1.0",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
+    "speed-measure-webpack-plugin": "^1.2.2",
     "style-loader": "^0.21.0",
-    "terser-webpack-plugin": "^1.1.0",
     "ts-loader": "^4.4.1",
     "ts-node": "^3.3.0",
     "tsconfig-paths": "^3.4.0",
     "tslint": "^5.8.0",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^3.2.2",
+    "typescript": "^2.9.2",
     "url-loader": "^1.0.1",
     "vue-class-component": "^6.2.0",
     "vue-loader": "^15.3.0",
