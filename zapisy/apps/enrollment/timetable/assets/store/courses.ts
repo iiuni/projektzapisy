@@ -3,7 +3,7 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON } from "../models";
+import { Group, GroupJSON } from "../models";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -47,7 +47,7 @@ const actions = {
         // This puts a lock on all the courses that will be fetched. That way we
         // avoid fetching the same course in parallel when the student is
         // clicking too fast.
-        idsToFetch.forEach(c => commit("setGroupIDs", { c, ids: [] }));
+        idsToFetch.forEach(c => commit("setGroupIds", { c, ids: [] }));
         const requests = idsToFetch.map(id => axios.get(state.courses[id].url));
         axios.all(requests).then(axios.spread((...responses) => {
             responses.forEach((response, pos) => {
