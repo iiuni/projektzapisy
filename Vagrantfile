@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "env/tools_install.sh"
   config.vm.provision :shell, path: "env/firefox_and_geckodriver_setup.sh"
   config.vm.provision :shell, path: "env/nodejs_setup.sh"
-  config.vm.provision :shell, path: "env/py3_build.sh"
+  config.vm.provision :shell, path: "env/py3.sh"
   config.vm.provision :shell, path: "env/webpack_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/redis.sh"
