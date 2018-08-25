@@ -6,17 +6,23 @@
 // of GroupJSON objects as defined in `models.ts`.
 
 import Vue from "vue";
-import SimpleTimetable from "./components/SimpleTimetable";
+import SimpleTimetable from "./components/SimpleTimetable.vue";
 import { Group } from "./models";
 
 Vue.config.productionTip = false
 
 let timetable_app = new Vue({
     el: "#timetable",
-    template: "<SimpleTimetable v-bind:groups=\"groups\" />",
     components: { SimpleTimetable },
     data: {
         groups: [],
+    },
+    render: function (h) {
+        return h(SimpleTimetable, {
+            props: {
+                groups: this.groups,
+            }
+        });
     },
     created: function () {
         this.update_groups();
