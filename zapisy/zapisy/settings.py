@@ -43,8 +43,9 @@ DATABASES = {
     }
 }
 
-# django-rq is a task queue. Setting RUN_ASYNC to False will disable the
-# asynchronous tasks and run them eagerly (they need to be implemented that way).
+# django-rq is a task queue. It can be used to run asynchronous tasks. The tasks
+# should be implemented so, that setting RUN_ASYNC to False would run them
+# eagerly.
 RUN_ASYNC = env.bool('RUN_ASYNC', True)
 RQ_QUEUES = {
     'default': {
