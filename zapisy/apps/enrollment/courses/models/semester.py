@@ -93,19 +93,19 @@ class Semester(models.Model):
                 code='invalid'
             )
 
-    def can_remove_record(self, time: Optional[datetime] = None):
+    def can_remove_record(self, time: Optional[datetime] = None) -> bool:
         """Checks if the given timestamp is before semester's unenrolling deadline."""
         if time is None:
             time = datetime.now()
         return self.records_ending is None or time <= self.records_ending
 
-    def is_closed(self, time: Optional[datetime] = None):
+    def is_closed(self, time: Optional[datetime] = None) -> bool:
         """Checks if the enrollment is finished in the semester."""
         if time is None:
             time = datetime.now()
         return self.records_closing is not None and self.records_closing <= time
 
-    def get_current_limit(self, timestamp: Optional[datetime] = None):
+    def get_current_limit(self, timestamp: Optional[datetime] = None) -> int:
         """Returns the enrollment ECTS limit at the timestamp."""
         if timestamp is None:
             timestamp = datetime.now()
