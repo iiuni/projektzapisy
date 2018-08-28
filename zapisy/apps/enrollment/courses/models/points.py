@@ -6,7 +6,7 @@ students, depending on the program they are pursuing (BSc, MSc) and their
 previous achievements.
 """
 
-from typing import List
+from typing import List, Optional
 
 from django.db import models
 
@@ -116,19 +116,19 @@ class StudentPointsView:
         records = Record.objects.filter(
             student=student, group__course__semester=semester,
             status=RecordStatus.ENROLLED).values_list(
-            'group__course__entity_id', flat=True).distinct()
+                'group__course__entity_id', flat=True).distinct()
         all_courses = list(set(list(records) + [c.entity_id for c in additional_courses]))
         return cls.points_for_entities(student, all_courses)
 
     @classmethod
-    def course_value_for_student(cls, student: Student, entity_id: int) -> int:
+    def course_value_for_student(cls, student: Optional[Student], entity_id: int) -> int:
         """Computes the value (number of ECTS credits) of a given course for a
         student.
         """
         return cls.points_for_entities(student, [entity_id])
 
     @classmethod
-    def points_for_entities(cls, student: Student, entity_ids: List[int]) -> int:
+    def points_for_entities(cls, student: Optional[Student], entity_ids: List[int]) -> int:
         """Computes sum of points of entities from a student's perspective.
 
         This function may give wrong historic result for a student who has
@@ -145,11 +145,12 @@ class StudentPointsView:
         If the student is None, the function will return the default number of
         credits for the course.
         """
+
         def value_with_program(program_id, points_of_courseentities_list):
             """For a given program_id will find either the number of points
             associated with this program_id, or with None, if one does not
             exist.
-        """
+            """
             poc: PointsOfCourseEntities
             if program_id is not None:
                 for poc in points_of_courseentities_list:
