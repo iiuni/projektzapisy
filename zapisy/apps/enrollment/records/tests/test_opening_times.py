@@ -44,12 +44,13 @@ class OpeningTimesTest(TestCase):
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
         bolek_votes_for_knitting = SingleVote.objects.get(
             student=self.bolek, course=knitting_lecture_group.course).correction
+        bolek_knitting_group_opening = bolek_t0 - timedelta(days=bolek_votes_for_knitting)
         assert not GroupOpeningTimes.is_group_open_for_student(
             self.bolek,
             knitting_lecture_group,
-            bolek_t0 - timedelta(days=bolek_votes_for_knitting) - timedelta(seconds=5))
+            bolek_knitting_group_opening - timedelta(seconds=5))
         assert GroupOpeningTimes.is_group_open_for_student(
-            self.bolek, knitting_lecture_group, bolek_t0 - timedelta(days=bolek_votes_for_knitting))
+            self.bolek, knitting_lecture_group, bolek_knitting_group_opening)
 
     def test_records_end(self):
         """Tests, that student will not be able to enroll after records are
@@ -96,13 +97,14 @@ class OpeningTimesTest(TestCase):
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
         bolek_votes_for_knitting = SingleVote.objects.get(
             student=self.bolek, course=knitting_lecture_group.course).correction
+
+        bolek_knitting_group_opening = bolek_t0 - timedelta(days=bolek_votes_for_knitting)
         assert not GroupOpeningTimes.are_groups_open_for_student(
             self.bolek, [knitting_lecture_group],
-            bolek_t0 - timedelta(days=bolek_votes_for_knitting) -
-            timedelta(seconds=5))[knitting_lecture_group.id]
+            bolek_knitting_group_opening - timedelta(seconds=5))[knitting_lecture_group.id]
         assert GroupOpeningTimes.are_groups_open_for_student(
             self.bolek, [knitting_lecture_group],
-            bolek_t0 - timedelta(days=bolek_votes_for_knitting))[knitting_lecture_group.id]
+            bolek_knitting_group_opening)[knitting_lecture_group.id]
         assert not GroupOpeningTimes.are_groups_open_for_student(
             self.bolek, [washing_up_seminar_group],
             washing_up_seminar_group.course.records_start -
