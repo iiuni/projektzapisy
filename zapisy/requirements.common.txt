@@ -1,4 +1,4 @@
-Django==2.0
+Django == 2.0.8
 django-cas-ng==3.5.9
 django-el-pagination==3.2.4
 django-environ==0.4.4
