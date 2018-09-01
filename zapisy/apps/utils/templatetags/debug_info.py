@@ -20,7 +20,9 @@ def get_line_from_process(process):
 def get_debug_info():
     """Queries environment for git commit, python and Django versions.
 
-    The operation is time-consuming, so the result is being cached.
+    The operation is time-consuming, so the result is being cached. As the
+    lru_cache decorator cannot be used together with django tag registration,
+    this needs to be a separate function.
     """
     log_output = get_line_from_process([
         "git", "log", "-n", "1", "--pretty=format:%h %s --- %an %ad"
