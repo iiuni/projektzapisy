@@ -378,6 +378,7 @@ def poll_create(request):
 
     return HttpResponseRedirect(reverse('grade-poll-list'))
 
+
 # Poll management
 
 @employee_required
