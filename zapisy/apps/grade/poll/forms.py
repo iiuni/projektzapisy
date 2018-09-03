@@ -31,10 +31,20 @@ class MaxAnswersValidator(MaxLengthValidator):
 class PollForm(forms.Form):
     # - wydzielic do forma Section
     def as_edit(self):
+        """
+        Function returns PollForm as html form populated with context.
+        Used in poll management page, in section edit page
+        :return: form with html as string
+        """
         return loader.render_to_string('grade/poll/section_as_edit.html',
                                        {"sections": self.sections})
 
     def as_divs(self, errors=None):
+        """
+        Function returns PollForm
+        :param errors:
+        :return:
+        """
         return loader.render_to_string('grade/poll/poll_show.html',
                                        {"errors": errors,
                                         "sections": self.sections})
