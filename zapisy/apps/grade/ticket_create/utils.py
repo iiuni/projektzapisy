@@ -179,15 +179,21 @@ def is_poll_visible(user, poll):
     """
     Checks, whether user is a student entitled to the poll.
     """
-    return poll.is_student_entitled_to_poll(user.student)
+    if hasattr(user, "student") and user.student:
+        return poll.is_student_entitled_to_poll(user.student)
+    else:
+        return False
 
 
 def is_ticket_signed(user, poll):
     """
     Checks, if the user is a student with a yet unused ticket for the poll.
     """
-    u = UsedTicketStamp.objects.filter(student=user.student, poll=poll)
-    return True if u else False
+    if hasattr(user, "student") and user.student:
+        u = UsedTicketStamp.objects.filter(student=user.student, poll=poll)
+        return True if u else False
+    else:
+        return False
 
 
 def mark_poll_used(user, poll):
@@ -196,8 +202,7 @@ def mark_poll_used(user, poll):
     :raises:
         Student.DoesNotExist: If the user in question is not a student.
     """
-    u = UsedTicketStamp(student=user.student,
-                        poll=poll)
+    u = UsedTicketStamp(student=user.student, poll=poll)
     u.save()
 
 
