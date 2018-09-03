@@ -38,6 +38,7 @@ jobs:
       - run: cd zapisy && sudo coverage run manage.py test apps.enrollment.courses --nomigrations
       - run: cd zapisy && sudo coverage run manage.py test apps.enrollment.records.tests --nomigrations
       - run: cd zapisy && sudo coverage run manage.py test apps.grade.poll --nomigrations
+      - run: cd zapisy && sudo coverage run manage.py test apps.grade.ticket_create --nomigrations
       - run: cd zapisy && sudo coverage run manage.py test apps.users --nomigrations
       - run: cd zapisy && sudo coverage run manage.py test test_app --nomigrations
       - run: cd zapisy && sudo coverage html
