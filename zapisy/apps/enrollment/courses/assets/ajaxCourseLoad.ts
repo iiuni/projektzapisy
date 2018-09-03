@@ -8,7 +8,6 @@
 // The received HTML response is then simply dumped into the DOM
 // (main-content); we also update the page title and links
 
-
 import * as $ from "jquery";
 import { scrollUpToElementIfWindowBelow } from "common/utils";
 
@@ -135,7 +134,7 @@ function pushHistoryEntry(url: string, thisCourseInfo: CourseInfo) {
 	window.history.pushState(thisCourseInfo, "", url);
 }
 
-function onPopState(event : PopStateEvent) {
+function onPopState(event: PopStateEvent) {
 	if (event.state) {
 		populateCoursePageFromCourseInfo(event.state);
 	} else {

@@ -25,7 +25,8 @@ class TicketsForm(forms.Form):
 
 
 class MaxAnswersValidator(MaxLengthValidator):
-    def compare(self, a, b): return (b != 0) and (a > b)
+    def compare(self, a, b):
+        return (b != 0) and (a > b)
 
 
 class PollForm(forms.Form):
@@ -218,8 +219,7 @@ class PollForm(forms.Form):
                         required=False,
                         widget=forms.widgets.CheckboxSelectMultiple(),
                         initial=answer,
-                        validators=[
-                            MaxAnswersValidator(question.choice_limit)],
+                        validators=[MaxAnswersValidator(question.choice_limit)],
                         error_messages={
                             "max_length": f"Można wybrać maksymalnie {question.choice_limit} odpowiedzi "
                                           f"(wybrano {choosed})"}

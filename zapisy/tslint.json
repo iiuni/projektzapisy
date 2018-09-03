@@ -5,7 +5,12 @@
     "quotemark": [true, "double"],
     "space-before-function-paren": false,
     "indent": [true, "tabs", 4],
-    "ter-indent": [true, "tab"],
+    "ter-indent": [
+      true, "tab",
+      {
+        "SwitchCase": 1
+      }
+    ],
     "new-parens": false,
     "trailing-comma": false
   }

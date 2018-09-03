@@ -28,8 +28,8 @@ from apps.offer.proposal.exceptions import NotOwnerException
 import json
 import logging
 from apps.offer.proposal.utils import proposal_for_offer, employee_proposal, send_notification_to_3d
-from apps.users.decorators import employee_required
 from apps.users.models import Employee
+from apps.users.decorators import employee_required
 
 logger = logging.getLogger("")
 

@@ -47,8 +47,8 @@ def isAlphanum(c):
     """return true if the character is a letter, digit, underscore,
            dollar sign, or non-ASCII character.
     """
-    return ((c >= 'a' and c <= 'z') or (c >= '0' and c <= '9') or (c >= 'A' and c <= 'Z')
-            or c == '_' or c == '$' or c == '\\' or (c is not None and ord(c) > 126))
+    return (('a' <= c <= 'z') or ('0' <= c <= '9') or ('A' <= c <= 'Z') or
+            c == '_' or c == '$' or c == '\\' or (c is not None and ord(c) > 126))
 
 
 class UnterminatedComment(Exception):

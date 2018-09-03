@@ -1,5 +1,18 @@
-from django.core.exceptions import ObjectDoesNotExist
+import logging
+import re
 import sys
+from datetime import time
+
+from django.core.exceptions import ObjectDoesNotExist
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term
+from apps.users.models import Employee
+
+logger = logging.getLogger()
 
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
@@ -95,7 +108,6 @@ przedmioty = {"ALGEBRA": 3457,
               "SYSTEMY KOMPUTEROWE": 3508
               }
 
-
 TECH = {"KRYSTIAN BAClAWSKI": 96,
         "MAlGORZATA BIERNACKA": 73,
         "DARIUSZ BIERNACKI": 70,
@@ -181,25 +193,6 @@ TECH = {"KRYSTIAN BAClAWSKI": 96,
         "JAN OTOP": 55,
         "KLARA ZIELInSKA": 48
         }
-
-
-####  #####
-
-from datetime import time
-
-
-from apps.enrollment.courses.models.course import Course
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.group import Group
-from apps.users.models import Employee
-
-from apps.enrollment.courses.models.classroom import Classroom
-
-import re
-import logging
-logger = logging.getLogger()
-
 
 regex = re.compile(
     '\s+(?P<day>pn|wt|sr|czw|pi|so|ni)\s+(?P<start_time>\d{1,2})-(?P<end_time>\d{1,2})\s+\((?P<type>wyklad|repetytorium|cwiczenia|pracownia|cwicz\+pracownia|seminarium)\)\s+(?P<teacher>[^,]*),\s+(?P<rooms>.*)')
@@ -333,8 +326,6 @@ def get_semester():
 
 def get_course(name):
     return Course.objects.get(id=przedmioty[name])
-
-# for running scheduleimport.py from tests
 
 
 def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):

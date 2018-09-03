@@ -71,14 +71,6 @@ class Group(models.Model):
         on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=GROUP_TYPE_CHOICES, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
-    limit_zamawiane = models.PositiveSmallIntegerField(
-        default=0,
-        verbose_name='miejsca dla zamawianych 2009',
-        help_text='miejsca gwarantowane dla studentów zamawianych 2009')
-    limit_zamawiane2012 = models.PositiveSmallIntegerField(
-        default=0,
-        verbose_name='miejsca dla zamawianych 2012',
-        help_text='miejsca gwarantowane dla studentów zamawianych 2012')
     limit_isim = models.PositiveSmallIntegerField(
         default=0,
         verbose_name='miejsca dla ISIM',
@@ -93,15 +85,10 @@ class Group(models.Model):
 
     # we are not using these
     #cache_enrolled     = models.PositiveIntegerField(null=True, blank=True, editable=False, verbose_name='Cache: ilość zapisanych studentów')
-    #cache_enrolled_zam = models.PositiveIntegerField(null=True, blank=True, editable=False, verbose_name='Cache: ilość zapisanych studentów zamawianych')
     #cache_queued       = models.PositiveIntegerField(null=True, blank=True, editable=False, verbose_name='Cache: ilość studentów w kolejce')
 
     enrolled = models.PositiveIntegerField(
         default=0, editable=False, verbose_name='liczba zapisanych studentów')
-    enrolled_zam = models.PositiveIntegerField(
-        default=0, editable=False, verbose_name='liczba zapisanych studentów zamawianych')
-    enrolled_zam2012 = models.PositiveIntegerField(
-        default=0, editable=False, verbose_name='liczba zapisanych studentów zamawianych')
     enrolled_isim = models.PositiveIntegerField(
         default=0, editable=False, verbose_name='liczba zapisanych studentów ISIM')
     queued = models.PositiveIntegerField(
@@ -177,11 +164,7 @@ class Group(models.Model):
         # decrease enrolled couter, after remove student from group
 
         self.enrolled -= 1
-        if student.is_zamawiany():
-            self.enrolled_zam -= 1
-        if student.is_zamawiany2012():
-            self.enrolled_zam2012 -= 1
-        if student.isim:
+        if student.is_isim():
             self.enrolled_isim -= 1
 
         self.save()
@@ -192,11 +175,7 @@ class Group(models.Model):
         # increase enrolled counter, after adding student to group
 
         self.enrolled += 1
-        if student.is_zamawiany():
-            self.enrolled_zam += 1
-        if student.is_zamawiany2012():
-            self.enrolled_zam2012 += 1
-        if student.isim:
+        if student.is_isim():
             self.enrolled_isim += 1
         self.save()
 
@@ -458,41 +437,17 @@ class Group(models.Model):
     def should_be_rearranged(self):
         return self.queued > 0
 
-    def get_limit_for_normal_student(self):
-        return self.limit - self.limit_zamawiane - self.limit_zamawiane2012
-
-    def get_limit_for_zamawiane2009(self):
-        return self.limit - self.limit_zamawiane2012
-
-    def get_limit_for_zamawiane2012(self):
-        return self.limit - self.limit_zamawiane
-
-    def get_normal_enrolled(self):
-        return self.enrolled - self.enrolled_zam - self.enrolled_zam2012
-
-    def limit_non_zamawiane(self):
-        return self.limit - self.limit_zamawiane - self.limit_zamawiane2012
-
     def limit_non_isim(self):
         return self.limit - self.limit_isim
 
     def is_full_for_student(self, student):
         if self.limit_isim > 0:
-            if student.isim:
+            if student.is_isim():
                 return self.limit <= self.enrolled
             else:
-                return self.limit - self.limit_isim <= self.enrolled - \
-                    min(self.enrolled_isim, self.limit_isim)
+                return self.limit_non_isim() <= self.enrolled - min(self.enrolled_isim, self.limit_isim)
 
-        if student.is_zamawiany():
-
-            return self.get_limit_for_zamawiane2009() <= self.enrolled - \
-                min(self.limit_zamawiane2012, self.enrolled_zam2012)
-        elif student.is_zamawiany2012():
-            return self.get_limit_for_zamawiane2012() <= self.enrolled - min(self.enrolled_zam, self.limit_zamawiane)
-        else:
-            return self.get_limit_for_normal_student() <= self.enrolled - min(self.enrolled_zam2012,
-                                                                              self.limit_zamawiane2012) - min(self.enrolled_zam, self.limit_zamawiane)
+        return self.limit <= self.enrolled
 
     @staticmethod
     def do_rearanged(group):
@@ -521,22 +476,6 @@ class Group(models.Model):
     def get_count_of_enrolled(self, dont_use_cache=False):
         return self.enrolled
 
-    def get_count_of_enrolled_zamawiane(self, dont_use_cache=False):
-        return self.enrolled_zam
-
-    def get_count_of_enrolled_zamawiane2012(self, dont_use_cache=False):
-        return self.enrolled_zam2012
-
-    def get_count_of_enrolled_non_zamawiane(self, dont_use_cache=False):
-        result = self.enrolled
-        if self.limit_zamawiane and self.limit_zamawiane > 0:
-            result -= self.enrolled_zam
-        if self.limit_zamawiane2012 and self.limit_zamawiane2012 > 0:
-            result -= self.enrolled_zam2012
-        if self.limit_isim and self.limit_isim > 0:
-            result -= self.enrolled_isim
-        return result
-
     def get_count_of_enrolled_non_isim(self, dont_use_cache=False):
         return self.enrolled - self.enrolled_isim
 
@@ -564,7 +503,6 @@ class Group(models.Model):
     def serialize_for_json(self, enrolled, queued, pinned, queue_priorities,
                            student=None, employee=None):
         """ Dumps this group state to form readable by JavaScript """
-        zamawiany = student and student.is_zamawiany()
 
         data = {
             'id': self.pk,
@@ -572,8 +510,7 @@ class Group(models.Model):
             'course': self.course_id,
 
             'url': reverse('records-group', args=[self.pk]),
-            'teacher_name': self.teacher and self.teacher.user.get_full_name()
-            or 'nieznany prowadzący',
+            'teacher_name': self.teacher and self.teacher.user.get_full_name() or 'nieznany prowadzący',
             'teacher_url': self.teacher and reverse('employee-profile', args=[self.teacher.user.id]) or '',
 
             'is_teacher': False if (employee is None or self.teacher is None)
@@ -583,11 +520,7 @@ class Group(models.Model):
             'is_pinned': self.id in pinned,
 
             'limit': self.limit,
-            'unavailable_limit': 0 if zamawiany else self.limit_zamawiane,
             'enrolled_count': self.get_count_of_enrolled(),
-            'unavailable_enrolled_count': 0 if zamawiany else
-            min(self.get_count_of_enrolled_zamawiane(),
-                self.limit_zamawiane),
             'queued_count': self.get_count_of_queued(),
             'queue_priority': queue_priorities.get(self.pk, -1)
         }
@@ -634,17 +567,15 @@ def log_add_group(sender, instance, created, **kwargs):
                               '9': 'w', '10': 'p'}
         kod_grupy = group.id
         kod_przed_sem = group.course.id
-        teacher_name_array = (group.teacher and group.teacher.user.get_full_name()
-                              or "Nieznany prowadzący").split(" ")
+        teacher_name_array = (group.teacher and group.teacher.user.get_full_name() or "Nieznany prowadzący").split(" ")
         kod_uz = teacher_name_array[0]
         if teacher_name_array[0] != teacher_name_array[-1]:
             kod_uz += " " + teacher_name_array[-1]
         max_osoby = group.limit
         rodzaj_zajec = GROUP_TYPE_MAPPING[group.type]
-        zamawiane_bonus = group.limit_zamawiane
-        message = '[06] group has been created {}{}{}{}{}{}'.format(
+        message = '[06] group has been created {}{}{}{}{}'.format(
             kod_grupy, kod_przed_sem, kod_uz,
-            max_osoby, rodzaj_zajec, zamawiane_bonus,
+            max_osoby, rodzaj_zajec,
         )
         backup_logger.info(message)
 
@@ -660,10 +591,6 @@ def log_limits_change(sender, instance, **kwargs):
             backup_logger.info(
                 '[04] limit of group <%s> has changed from <%s> to <%s>' %
                 (group.id, old_group.limit, group.limit))
-        if group.limit_zamawiane != old_group.limit_zamawiane:
-            backup_logger.info(
-                '[05] limit-zamawiane of group <%s> has changed from <%s> to <%s>' %
-                (group.id, old_group.limit_zamawiane, group.limit_zamawiane))
     except Group.DoesNotExist:
         pass
 

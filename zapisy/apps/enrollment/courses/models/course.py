@@ -860,8 +860,8 @@ class Course(models.Model):
                                              'group__course__entity').prefetch_related('group__term',
                                                                                        'group__term__classrooms').filter(
             status='1', student=student, group__course__semester=semester). \
-            extra(select={'points': 'SELECT value FROM courses_studentpointsview WHERE student_id='
-                                    + str(student.id) + ' AND entity_id=courses_course.entity_id'}).order_by(
+            extra(select={'points': f'SELECT value FROM courses_studentpointsview WHERE student_id={student.id} '
+                                    f'AND entity_id=courses_course.entity_id'}).order_by(
             'group__course__entity__name')
 
     class Meta:

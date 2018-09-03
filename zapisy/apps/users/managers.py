@@ -1,14 +1,20 @@
 from django.db import models
 from django.db.models.aggregates import Min
+from django.db.models import QuerySet
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from apps.users.models import Student
+    from apps.enrollment.courses.models import Semester
 
 
 class GettersManager(models.Manager):
 
-    def filter_with_t0(self, *args, **kwargs):
+    def filter_with_t0(self, *args: Any, **kwargs: Any) -> QuerySet:
         return self.get_queryset().filter(*args, **kwargs).only('user__first_name', 'user__last_name',
                                                                 'matricula', 'ects').annotate(t0_min=Min('opening_times__opening_time'))
 
-    def get_list_full_info(self, begin='All'):
+    def get_list_full_info(self, begin: str='All') -> QuerySet:
         def next_char(begin):
             try:
                 return chr(ord(begin) + 1)
@@ -26,14 +32,10 @@ class GettersManager(models.Manager):
             return self.filter_with_t0(status=0, user__last_name__range=(begin, end)).\
                 select_related('user').order_by('user__last_name', 'user__first_name')
 
-    def get_statistics(self, semester):
-
-        return self.get_list_full_info().extra(select={})
-
 
 class T0Manager(models.Manager):
 
-    def get_courses(self, student, semester):
+    def get_courses(self, student: 'Student', semester: 'Semester') -> QuerySet:
         return self.filter(
             student=student,
             semester=semester).select_related(

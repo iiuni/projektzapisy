@@ -1,4 +1,17 @@
+import logging
+import re
+from datetime import time
+
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term
+from apps.users.models import Employee
+
+logger = logging.getLogger()
 
 
 class bcolors:
@@ -205,25 +218,6 @@ TECH = {
     "NN": 119
 }
 
-####  #####
-
-from datetime import time
-
-
-
-from apps.enrollment.courses.models.course import Course, CourseEntity
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.group import Group
-from apps.users.models import Employee
-
-from apps.enrollment.courses.models.classroom import Classroom
-
-import re
-import logging
-logger = logging.getLogger()
-
-
 regex = re.compile(
     '\s+(?P<day>pn|wt|śr|czw|pi|so|ni)\s+(?P<start_time>\d{1,2})-(?P<end_time>\d{1,2})\s+\((?P<type>wykład|repetytorium|ćwiczenia|pracownia|ćwicz\+pracownia|seminarium)\)\s+(?P<teacher>[^,]*),\s+(?P<rooms>.*)')
 
@@ -245,7 +239,6 @@ def find_teacher(t):
     else:
         print("Not found: " + str(t))
         raise Exception("Teacher not found")
-        return None
 
 
 def get_classroom(rooms):
@@ -374,8 +367,6 @@ def get_course(name):
 
     return Course.objects.get(entity=ce.id, semester=SEMESTERID)
 
-# for running scheduleimport.py from tests
-
 
 def run_test(TEST_SCHEDULE_FILE, test_przedmioty, TEST_TECH, TEST_SEMESTERID):
     global SCHEDULE_FILE, przedmioty, TECH, SEMESTERID
@@ -400,8 +391,6 @@ def get_employers_ids():
 
 def run():
     semester = get_semester()
-    # get_courses_ids(semester)
-    # get_employers_ids()
     print('Przenosimy na semestr <%s>' % semester)
     file = open(SCHEDULE_FILE)
     import_schedule(file, semester)

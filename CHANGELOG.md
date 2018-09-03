@@ -20,6 +20,11 @@
 * Fixed negative counts in grade summary
 * Added confirmation pop-up before direct disenrollment
 
+* Removed redundant informations about isim students
+* Removed anything related to program "studia zamawiane"
+* Removed UserProfile and ExtendedUser
+* Changed authentication backend to django's default
+
 # Version 18.02.25
 
 * Added webpack

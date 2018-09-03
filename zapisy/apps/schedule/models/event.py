@@ -90,8 +90,8 @@ class Event(models.Model):
         if not self.pk:
 
             # if author is an employee, accept any exam and test events
-            if (self.author.profile.is_employee and self.type in [
-                    Event.TYPE_EXAM, Event.TYPE_TEST]) or self.author.has_perm('schedule.manage_events'):
+            if ((BaseUser.is_employee(self.author) and self.type in (Event.TYPE_EXAM, Event.TYPE_TEST)) or
+                    self.author.has_perm('schedule.manage_events')):
                 self.status = self.STATUS_ACCEPTED
 
             # all exams and tests should be public
@@ -101,7 +101,7 @@ class Event(models.Model):
 
             # students can only add generic events that have to be accepted first
 
-            if self.author.profile.is_student and not self.author.has_perm(
+            if BaseUser.is_student(self.author) and not self.author.has_perm(
                     'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(

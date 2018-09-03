@@ -1,25 +1,28 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
     "sourceMap": true,
     "target": "es6",
     "alwaysStrict": true,
+    "strictNullChecks": true,
     "strict": true,
-    "module": "commonjs",
-    "baseUrl": "/",
-    "paths": {
-      "*": [
-        "/vagrant/zapisy/assets/*",
-        "/webpack_modules/node_modules/*",
-        "./webpack_resources/typings/*"
-      ]
-    },
+    "jsx": "react",
+    "module": "esnext",
+    "baseUrl": "./assets",
+    "noUnusedParameters": true,
     "typeRoots": [
-      "/webpack_modules/node_modules/@types",
+      "./node_modules/@types",
       "./webpack_resources/typings"
     ],
-    "traceResolution": true
+    "types":[
+      "jquery",
+      "lodash",
+    ]
   },
-  "include": [
-    "assets/tsfix/index.ts"
+  "exclude": [
+    "./node_modules",
+    // Config files are compiled separately, see tsconfig.webpack-config
+    "./webpack_resources/webpack-utils.ts",
+    "./webpack_resources/webpack.config.ts",
   ]
 }

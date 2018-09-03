@@ -80,8 +80,7 @@
             "limit": 25, 
             "type": "2", 
             "teacher": 2, 
-            "course": 1,
-            "limit_zamawiane": 2
+            "course": 1
         }
     }, 
     {

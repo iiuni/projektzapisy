@@ -1,18 +1,14 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-
+from django.db.models import QuerySet
 import csv
 
 from apps.users.models import (
     Employee,
     Student,
-    Program,
-    StudiaZamawiane,
-    StudiaZamawianeMaileOpiekunow,
-    UserProfile,
-    StudiaZamawiane2012)
+    Program)
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
 
@@ -22,16 +18,16 @@ class ExtendedUserAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ('username', 'password')}),
         ('Dane osobowe', {'fields': ('first_name', 'last_name', 'email')}),
-        ('Dodatkowe dane', {'fields': ('is_student', 'is_employee', 'is_zamawiany')}),
+        ('Dodatkowe dane', {'fields': ('is_student', 'is_employee')}),
         ('Uprawnienia', {'fields': ('is_staff', 'is_active', 'is_superuser', 'user_permissions')}),
         ('Ważne daty', {'fields': ('last_login', 'date_joined')}),
         ('Grupy', {'fields': ('groups',)})
     ]
-    list_filter = ('is_staff', 'is_superuser', 'is_student', 'is_employee', 'is_zamawiany')
+    list_filter = ('is_staff', 'is_superuser', 'is_student', 'is_employee')
     search_fields = ('username', 'first_name', 'last_name', 'email')
 
 
-def export_as_csv(modeladmin, request, queryset):
+def export_as_csv(modeladmin: admin.ModelAdmin, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
     semester = Semester.get_current_semester()
 
     records = Record.objects.filter(
@@ -66,26 +62,26 @@ class StudentAdmin(admin.ModelAdmin):
     list_display = ('matricula', 'get_full_name', 'ects', 'get_type_of_studies')
     fieldsets = [
         (None, {'fields': ['user', 'matricula', 'status']}),
-        ('Studia', {'fields': ['numeryczna_l', 'dyskretna_l', 'program', 'semestr', 'ects', 'isim']}),
+        ('Studia', {'fields': ['numeryczna_l', 'dyskretna_l', 'program', 'semestr', 'ects']}),
         ('Zapisy', {'fields': ['records_opening_bonus_minutes', 'block']}),
         ('Inne', {'fields': ['receive_mass_mail_enrollment', 'receive_mass_mail_offer', 'receive_mass_mail_grade', 'last_news_view'], 'classes': ['collapse']}),
     ]
     search_fields = ('user__first_name', 'user__last_name', 'matricula')
-    list_filter = ('program', 'status', 'semestr', 'isim')
+    list_filter = ('program', 'status', 'semestr')
     ordering = ['user__last_name', 'user__first_name']
     list_display_links = ('get_full_name',)
     list_max_show_all = 9999
 
     actions = [export_as_csv]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super(StudentAdmin, self).get_queryset(request)
         return qs.select_related('program', 'program__type_of_points', 'user')
 
 
 class ProgramAdmin(admin.ModelAdmin):
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super(ProgramAdmin, self).get_queryset(request)
         return qs.select_related('type_of_points')
 
@@ -103,7 +99,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     ordering = ['user__last_name', 'user__first_name']
     list_display_links = ('get_full_name',)
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super(EmployeeAdmin, self).get_queryset(request)
         return qs.select_related('user')
 
@@ -120,43 +116,10 @@ class EmployeeInline(admin.StackedInline):
     max_num = 1
 
 
-class ProfileInline(admin.StackedInline):
-    model = UserProfile
-
-
-class StudiaZamawianeAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'points', 'comments')
-    search_fields = (
-        'student__user__first_name',
-        'student__user__last_name',
-        'student__matricula',
-        'bank_account')
-    ordering = ['student__user__last_name', 'student__user__first_name']
-
-    def get_queryset(self, request):
-        qs = super(StudiaZamawianeAdmin, self).get_queryset(request)
-        return qs.select_related('student', 'student__user')
-
-
-class StudiaZamawianeAdmin2012(admin.ModelAdmin):
-    list_display = ('__str__', 'points', 'comments')
-    search_fields = (
-        'student__user__first_name',
-        'student__user__last_name',
-        'student__matricula',
-        'bank_account')
-    ordering = ['student__user__last_name', 'student__user__first_name']
-
-    def get_queryset(self, request):
-        qs = super(StudiaZamawianeAdmin2012, self).get_queryset(request)
-        return qs.select_related('student', 'student__user')
-
-
 class UserAdmin(DjangoUserAdmin):
-    inlines = [StudentInline, ProfileInline, EmployeeInline]
+    inlines = [StudentInline, EmployeeInline]
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff')
-    list_filter = ('is_active', 'is_staff', 'profile__is_student',
-                   'profile__is_employee', 'profile__is_zamawiany')
+    list_filter = ('is_active', 'is_staff')
 
 
 admin.site.unregister(User)
@@ -166,6 +129,3 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Program, ProgramAdmin)
-admin.site.register(StudiaZamawiane, StudiaZamawianeAdmin)
-admin.site.register(StudiaZamawiane2012, StudiaZamawianeAdmin2012)
-admin.site.register(StudiaZamawianeMaileOpiekunow)

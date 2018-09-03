@@ -12,7 +12,6 @@ register = template.Library()
 
 @register.simple_tag
 def should_display_debug():
-    return (
-        getattr(settings, "DEBUG", False) or     # local debug mode
-        os.path.exists("/etc/ii_zapisy_staging") # staging server
-    )
+    return (getattr(settings, "DEBUG", False) or  # local debug mode
+            os.path.exists("/etc/ii_zapisy_staging")  # staging server
+            )

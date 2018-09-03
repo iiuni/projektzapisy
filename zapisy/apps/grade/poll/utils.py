@@ -1,5 +1,4 @@
 import re
-import io
 import csv
 
 import unidecode
@@ -8,7 +7,7 @@ from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from apps.grade.poll.models import Poll, Section, SectionOrdering, \
     OpenQuestion, SingleChoiceQuestion, \
-    OpenQuestionOrdering, Option, \
+    OpenQuestionOrdering, \
     SingleChoiceQuestionOrdering, \
     MultipleChoiceQuestion, \
     MultipleChoiceQuestionOrdering, \
@@ -20,7 +19,6 @@ from apps.grade.poll.models import Poll, Section, SectionOrdering, \
 from apps.grade.ticket_create.utils import (
     poll_cmp, flatten,
 )
-from apps.enrollment.records.models import Group
 from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
     NoSectionException
 
@@ -30,7 +28,6 @@ from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.users.models import Program
 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.utils.safestring import SafeText, mark_safe
 from django.db.models import Q
 from functools import reduce, cmp_to_key
 

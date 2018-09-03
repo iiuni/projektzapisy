@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "esModuleInterop": true
+  },
+  "include": [
+	"./webpack_resources"
+  ],
+  "types": [
+    "node",
+    "webpack",
+    "glob"
+  ]
+}

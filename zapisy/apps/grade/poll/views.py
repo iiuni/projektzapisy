@@ -1,4 +1,4 @@
-﻿﻿import json
+﻿import json
 from functools import cmp_to_key
 
 from django.contrib import auth, messages
@@ -12,7 +12,6 @@ from django.utils.safestring import SafeText, mark_safe
 from django.views.decorators.http import require_POST
 
 from apps.grade.poll.models.last_visit import LastVisit
-from apps.users.decorators import employee_required
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.semester import Semester
@@ -30,9 +29,11 @@ from apps.grade.poll.utils import check_signature, prepare_data, group_polls_and
     prepare_template, prepare_sections_for_template, prepare_data_for_create_poll, make_polls_for_groups, \
     make_message_from_polls, save_template_in_session, make_polls_for_all, get_templates, \
     make_template_from_db, get_groups_for_user, make_pages, edit_poll, prepare_data_for_create_template
+
 from apps.users.models import Employee, Program
-from .form_utils import get_section_form_data, validate_section_form, section_save
+from apps.grade.poll.form_utils import get_section_form_data, validate_section_form, section_save
 from apps.grade.poll.exceptions import NoTitleException, NoSectionException, NoPollException
+from apps.users.decorators import employee_required
 
 
 def main(request):
@@ -135,8 +136,8 @@ def create_poll_from_template(request, templates):
             origin = Origin()
             origin.save()
             for group in groups:
-                if template['groups_without'] == 'on' \
-                        and Poll.get_all_polls_for_group(group, template.semeter).count() > 0:
+                if template['groups_without'] == 'on' and Poll.get_all_polls_for_group(
+                        group, template.semeter).count() > 0:
                     continue
 
             polls = make_polls_for_groups(request, groups, template)
@@ -167,7 +168,6 @@ def show_template(request, template_id):
 
 # save poll as template
 # @author mjablonski
-
 
 @employee_required
 def create_template(request):
@@ -207,7 +207,9 @@ def enable_grade(request):
                 semester.save()
                 messages.success(request, "Ocena zajęć otwarta")
 
-    data = dict(semesters=Semester.objects.all())
+    data = dict(
+        semesters=Semester.objects.all()
+    )
 
     return render(request, 'grade/enable.html', data)
 
@@ -233,7 +235,7 @@ def disable_grade(request):
     return HttpResponseRedirect(reverse('grade-main'))
 
 
-# Poll creation
+"""Poll creation"""
 
 
 @employee_required
@@ -376,9 +378,7 @@ def poll_create(request):
 
     return HttpResponseRedirect(reverse('grade-poll-list'))
 
-
 # Poll management
-
 
 @employee_required
 def sections_list(request):
@@ -576,7 +576,7 @@ def poll_manage(request):
     return render(request, 'grade/poll/manage.html', {'semesters': Semester.objects.all(), 'grade': grade})
 
 
-@employee_required()
+@employee_required
 def get_section_form(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
 
@@ -588,7 +588,9 @@ def questionset_create(request):
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
 
     if grade:
-        messages.error(request, "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona")
+        messages.error(
+            request,
+            "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona")
         return HttpResponseRedirect(reverse('grade-main'))
 
     if request.method == "POST":
@@ -622,7 +624,9 @@ def questionset_create(request):
     return HttpResponseRedirect('/grade/poll/managment/sections_list')
 
 
-# Poll answering
+"""Poll answering"""
+
+
 @login_required
 def grade_logout(request):
     auth.logout(request)
@@ -847,8 +851,8 @@ def poll_answer(request, slug, pid):
                             option = Option.objects.get(pk=ansx)
                             ans.option = option
                             ans.save()
-                            if option in question.singlechoicequestionordering_set. \
-                                    filter(sections=section)[0].hide_on.all():
+                            if option in question.singlechoicequestionordering_set.filter(
+                                    sections=section)[0].hide_on.all():
                                 delete = True
                         else:
                             ans.delete()
@@ -1013,7 +1017,9 @@ def poll_end_grading(request):
     return HttpResponseRedirect(reverse('grade-main'))
 
 
-# Poll results
+"""Poll results"""
+
+
 @login_required
 def poll_results(request, mode='S', poll_id=None, semester=None):
     data = {}

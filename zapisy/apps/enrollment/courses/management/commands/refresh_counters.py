@@ -60,30 +60,6 @@ class Command(BaseCommand):
                 print("(runned rearanged ", old_enrolled_cnt - enrolled_cnt, " times)")
             error_cnt += 1
 
-        enrolled_zam_cnt = len([x for x in records if x.student.is_zamawiany()])
-        if group.enrolled_zam != enrolled_zam_cnt:
-            old_enrolled_zam_cnt = group.enrolled_zam
-            if not test:
-                group.enrolled_zam = enrolled_zam_cnt
-                group.save()
-            print("enrolled_zam counter error for group", group)
-            print("previous value: ", old_enrolled_zam_cnt, ", new value: ", enrolled_zam_cnt)
-            error_cnt += 1
-
-        enrolled_zam2012_cnt = len([x for x in records if x.student.is_zamawiany2012()])
-        if group.enrolled_zam2012 != enrolled_zam2012_cnt:
-            old_enrolled_zam2012_cnt = group.enrolled_zam2012
-            if not test:
-                group.enrolled_zam2012 = enrolled_zam2012_cnt
-                group.save()
-            print("enrolled_zam2012 counter error for group", group)
-            print(
-                "previous value: ",
-                old_enrolled_zam2012_cnt,
-                ", new value: ",
-                enrolled_zam2012_cnt)
-            error_cnt += 1
-
         enrolled_isim_cnt = len([x for x in records if x.student.isim])
         if group.enrolled_isim != enrolled_isim_cnt:
             old_enrolled_isim_cnt = group.enrolled_isim

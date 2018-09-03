@@ -54,8 +54,8 @@ def get_tickets(request):
                     messages.error(request, SafeText(message))
 
                 if tickets_to_serve:
-                    StudentGraded.objects.get_or_create(
-                        student=request.user.student, semester=semester)
+                    StudentGraded.objects.get_or_create(student=request.user.student,
+                                                        semester=semester)
 
             return render(request, 'grade/ticket_create/tickets_save.html',
                           {'tickets': to_plaintext(tickets_to_serve),

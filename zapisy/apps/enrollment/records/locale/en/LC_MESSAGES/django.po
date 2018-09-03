@@ -17,17 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/records/group_pdf.html:29 templates/records/records_list.html:5
-msgid "Zapisanych w ramach limitu studiów zamawianych"
-msgstr ""
-"Enrolled according to limits related to &ldquo;Studia Zamawiane&rdquo; "
-"programme"
-
-#. Translators: limit dodatkowy to ten poza limitem dla zamawianych
-#: templates/records/group_pdf.html:33 templates/records/records_list.html:10
-msgid "Zapisanych w ramach limitu dodatkowego"
-msgstr "Enrolled according to an additional limit"
-
 #: templates/records/group_pdf.html:38 templates/records/records_list.html:25
 msgid "Liczba zapisanych osób"
 msgstr "Number of students enrolled"

@@ -5,9 +5,10 @@ from apps.enrollment.courses.models.group import Group
 def run():
     group_id_first_year = 13700
     group_id_rest = 13701
+    isim_id = 14
     g1 = Group.objects.get(id=group_id_first_year)
     g2 = Group.objects.get(id=group_id_rest)
-    sisim = Student.objects.filter(isim=1)
+    sisim = Student.objects.filter(program_id=isim_id)
     c1 = 0
     c2 = 0
     for s in sisim:
