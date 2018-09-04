@@ -62,6 +62,17 @@ def poll_cmp(poll1, poll2):
                     return cmp(poll1.title, poll2.title)
 
 
+def cmp(a, b):
+    """
+    Since there is no cmp in python 3 documentation suggests this expression to
+    emulate the feature
+    :param a:
+    :param b:
+    :return:
+    """
+    return (a > b) - (b < a)
+
+
 def generate_rsa_key():
     """
         Generates RSA key - that is, a pair (public key, private key)
