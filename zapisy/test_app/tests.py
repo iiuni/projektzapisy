@@ -776,9 +776,9 @@ class EmailChangeTest(SeleniumTestCase):
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('login-dropdown').click()
         )
-        self.wait_for_pass(
-            lambda: self.driver.find_element_by_id('btn-no-usos').click()
-        )
+        # self.wait_for_pass(
+        #     lambda: self.driver.find_element_by_id('btn-no-usos').click()
+        # )
         self.wait_for_pass(
             lambda: self.driver.find_element_by_id('id_login').send_keys(self.user.username)
         )
