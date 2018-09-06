@@ -6,6 +6,7 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure(2) do |config|
+  config.ssh.shell = "bash"
   config.vm.box = "ubuntu/bionic64"
   config.vm.box_url = "https://app.vagrantup.com/ubuntu/boxes/bionic64"
   config.vm.provision :shell, path: "env/apt.sh"
@@ -34,6 +35,7 @@ Vagrant.configure(2) do |config|
       chown vagrant:vagrant /vagrant_node_modules
     SHELL
     config.vm.provision "shell", run: "always", inline: <<-SHELL
+      mkdir -p /vagrant/zapisy/node_modules
       mount --bind /vagrant_node_modules /vagrant/zapisy/node_modules
     SHELL
   end
