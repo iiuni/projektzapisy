@@ -14,7 +14,7 @@ from typing import Dict, List
 from choicesenum import ChoicesEnum
 from django.db import DatabaseError, models, transaction
 
-from apps.enrollment.courses.models import Course, Group, StudentPointsView, Semester
+from apps.enrollment.courses.models import Group, StudentPointsView, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
@@ -300,6 +300,17 @@ class Record(models.Model):
         that group.
         """
         group = Group.objects.get(id=group_id)
+        # If there is a corresponding lecture group, we should first pull
+        # records into that group in order to avoid dropping the record, when a
+        # student enqueues into the groups at the same time, and this group is
+        # being worked before the lecture group.
+        if group.type != Group.GROUP_TYPE_LECTURE:
+            lecture_group = Group.get_lecture_group(group.course_id)
+            if lecture_group is not None:
+                while cls.pull_record_into_group(lecture_group.id):
+                    pass
+
+        # Groups that will need to be pulled into afterwards.
         trigger_groups = []
         try:
             with transaction.atomic():
