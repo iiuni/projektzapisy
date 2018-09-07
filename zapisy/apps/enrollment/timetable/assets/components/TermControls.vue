@@ -47,11 +47,25 @@ export default class TermControlsComponent extends TermControlsProps {
   }
 
   enqueue() {
-    this.$store.dispatch("groups/enqueue", this.term.group);
+    const confirmMessage = [
+      "Czy na pewno chcesz stanąć w kolejce do tej grupy?\n\n",
+      "Gdy tylko w grupie będzie wolne miejsce (być może natychmiast), ",
+      "zostanie dokonana próba wciągnięcia do niej studentów z kolejki. Jeśli ",
+      "w momencie wciągania do grupy student nie spełnia warunków zapisu ",
+      "(np. przekracza limit ECTS, nie jest zapisany na wykład do ",
+      "przedmiotu), jego rekord zostaje usunięty."
+    ].join("");
+
+    if (confirm(confirmMessage)) {
+      this.$store.dispatch("groups/enqueue", this.term.group);
+    }
   }
 
   dequeue() {
-    this.$store.dispatch("groups/dequeue", this.term.group);
+    const confirmMessage = "Czy na pewno chcesz opuścić tę grupę/kolejkę?";
+    if (confirm(confirmMessage)) {
+      this.$store.dispatch("groups/dequeue", this.term.group);
+    }
   }
 }
 </script>
