@@ -40,7 +40,7 @@ def get_course_list_info_for_semester(semester):
 def prepare_courses_list_to_render(request, semester=None):
     ''' generates template data for filtering and list of courses '''
     if not semester:
-        semester = Semester.get_default_semester()
+        semester = Semester.objects.get_next()
     semesters = Semester.objects.filter(visible=True)
     courses_list_json = json.dumps(get_course_list_info_for_semester(semester))
     return {
