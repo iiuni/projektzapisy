@@ -25,7 +25,7 @@ from xhtml2pdf import pisa
 import io
 from functools import reduce
 
-
+@login_required
 def classrooms(request):
 
     # Avoids lookup of non existing variable during template rendering
@@ -33,7 +33,7 @@ def classrooms(request):
     rooms = Classroom.get_in_institute(reservation=True)
     return TemplateResponse(request, 'schedule/classrooms.html', locals())
 
-
+@login_required
 def classroom(request, slug):
 
     rooms = Classroom.get_in_institute(reservation=True)
@@ -93,7 +93,7 @@ def edit_event(request, event_id=None):
 
     return TemplateResponse(request, 'schedule/reservation.html', locals())
 
-
+@login_required
 def session(request, semester=None):
     from apps.enrollment.courses.models.semester import Semester
 
@@ -144,7 +144,7 @@ def history(request):
     title = 'Moje rezerwacje'
     return TemplateResponse(request, 'schedule/history.html', locals())
 
-
+@login_required
 @require_POST
 def decision(request, event_id):
     from .models.message import EventModerationMessage
@@ -170,7 +170,7 @@ def decision(request, event_id):
 
     return redirect(reverse('events:show', args=[str(event.id)]))
 
-
+@login_required
 def events(request):
     return TemplateResponse(request, 'schedule/events.html', locals())
 
