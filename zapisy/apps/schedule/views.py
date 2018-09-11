@@ -25,6 +25,7 @@ from xhtml2pdf import pisa
 import io
 from functools import reduce
 
+
 @login_required
 def classrooms(request):
 
@@ -32,6 +33,7 @@ def classrooms(request):
     room = None
     rooms = Classroom.get_in_institute(reservation=True)
     return TemplateResponse(request, 'schedule/classrooms.html', locals())
+
 
 @login_required
 def classroom(request, slug):
@@ -93,6 +95,7 @@ def edit_event(request, event_id=None):
 
     return TemplateResponse(request, 'schedule/reservation.html', locals())
 
+
 @login_required
 def session(request, semester=None):
     from apps.enrollment.courses.models.semester import Semester
@@ -144,6 +147,7 @@ def history(request):
     title = 'Moje rezerwacje'
     return TemplateResponse(request, 'schedule/history.html', locals())
 
+
 @login_required
 @require_POST
 def decision(request, event_id):
@@ -169,6 +173,7 @@ def decision(request, event_id):
             messages.success(request, 'Status wydarzenia został zmieniony')
 
     return redirect(reverse('events:show', args=[str(event.id)]))
+
 
 @login_required
 def events(request):
