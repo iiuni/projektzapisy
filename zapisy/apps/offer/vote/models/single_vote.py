@@ -209,5 +209,5 @@ class SingleVote (models.Model):
         return self.correction
 
     def save(self, **kwargs):
-        if self.votes != 0:
+        if self.value != 0:
             super(SingleVote, self).save(**kwargs)
