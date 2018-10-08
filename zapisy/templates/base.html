@@ -129,11 +129,13 @@
                             <a href="{% url 'statistics:main' %}">Statystyki</a>
                         </li>
                     {% endif %}
-                    {% if user.is_authenticated %}
-                        <li{% block events_active %}{% endblock %}>
+                    <li{% block events_active %}{% endblock %}>
+                        {% if user.is_authenticated %}
                             <a href="{% url 'events:classrooms' %}">Sale</a>
-                        </li>
-                    {% endif %}
+                        {% else %}
+                            <a href="{% url 'events:event_show' %}">Sale</a>
+                        {% endif %}
+                    </li>
 
                 </ul>
                 {% if user.is_authenticated %}

@@ -6,9 +6,10 @@
 {% block main-subtitle %}Rezerwacja Sal{% endblock %}
 
 {% block system_menu %}
-    <li{% block schedule_list %}{% endblock %}><a
-            href="{% url 'events:classrooms' %}">Sale</a></li>
-
+    {% if user.is_authenticated %}
+        <li{% block schedule_list %}{% endblock %}><a
+                href="{% url 'events:classrooms' %}">Sale</a></li>
+    {% endif %}
     <li{% block scedule_events %}{% endblock %}><a
             href="{% url 'events:event_show' %}">Wydarzenia</a></li>
 

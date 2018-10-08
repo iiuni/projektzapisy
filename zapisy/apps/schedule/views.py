@@ -96,7 +96,6 @@ def edit_event(request, event_id=None):
     return TemplateResponse(request, 'schedule/reservation.html', locals())
 
 
-@login_required
 def session(request, semester=None):
     from apps.enrollment.courses.models.semester import Semester
 
@@ -175,12 +174,10 @@ def decision(request, event_id):
     return redirect(reverse('events:show', args=[str(event.id)]))
 
 
-@login_required
 def events(request):
     return TemplateResponse(request, 'schedule/events.html', locals())
 
 
-@login_required
 def event(request, event_id):
     from apps.schedule.models.message import EventModerationMessage, EventMessage
 
