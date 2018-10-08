@@ -2,8 +2,8 @@
 UPDATE users_studiazamawiane SET bank_account='';
 
 -- Anonymize first/last names
-UPDATE auth_user SET first_name=CONCAT('user_',id);
-UPDATE auth_user SET last_name=CONCAT('user_',id);
+UPDATE auth_user SET first_name=CONCAT(SUBSTRING(first_name, 1, 1), '_', id);
+UPDATE auth_user SET last_name=CONCAT(SUBSTRING(last_name, 1, 1), '_', id);
 
 -- Anonymize/remove email addresses
 UPDATE auth_user SET email='email@example.org';
