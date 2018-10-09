@@ -5,13 +5,15 @@ from rest_framework.authentication import (BasicAuthentication,
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
+from apps.offer.vote.models import SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee
 from apps.users.utils import StaffPermission
 
 from .serializers import (ClassroomSerializer, DesiderataOtherSerializer,
                           DesiderataSerializer, EmployeeSerializer,
-                          SemesterSerializer, SpecialReservationSerializer)
+                          SemesterSerializer, SpecialReservationSerializer,
+                          SystemStateSerializer)
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
@@ -53,4 +55,10 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     queryset = SpecialReservation.objects.all()
     serializer_class = SpecialReservationSerializer
+    filter_fields = '__all__'
+
+class SystemStateViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    queryset = SystemState.objects.all()
+    serializer_class = SystemStateSerializer
     filter_fields = '__all__'

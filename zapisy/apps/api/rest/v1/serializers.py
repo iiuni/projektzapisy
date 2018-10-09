@@ -4,6 +4,7 @@ from rest_framework import serializers
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
+from apps.offer.vote.models import SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee
 
@@ -55,4 +56,9 @@ class DesiderataOtherSerializer(serializers.ModelSerializer):
 class SpecialReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecialReservation
+        fields = '__all__'
+
+class SystemStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemState
         fields = '__all__'
