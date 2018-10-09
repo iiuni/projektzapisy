@@ -5,7 +5,7 @@ from rest_framework.authentication import (BasicAuthentication,
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
-from apps.offer.vote.models import SystemState
+from apps.offer.vote.models import SystemState, SingleVote
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee
 from apps.users.utils import StaffPermission
@@ -13,7 +13,7 @@ from apps.users.utils import StaffPermission
 from .serializers import (ClassroomSerializer, DesiderataOtherSerializer,
                           DesiderataSerializer, EmployeeSerializer,
                           SemesterSerializer, SpecialReservationSerializer,
-                          SystemStateSerializer)
+                          SingleVoteSerializer, SystemStateSerializer)
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
@@ -56,6 +56,21 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     queryset = SpecialReservation.objects.all()
     serializer_class = SpecialReservationSerializer
     filter_fields = '__all__'
+
+
+class SingleVoteViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    serializer_class = SingleVoteSerializer
+    filter_fields = '__all__'
+
+    def get_queryset(self):
+        queryset = SingleVote.objects.all()
+        system_state_id = self.request.GET.get('state')
+        if system_state_id:
+            queryset = queryset.filter(state_id=system_state_id).exclude(value=0, correction=0)
+
+        return queryset
+
 
 class SystemStateViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
