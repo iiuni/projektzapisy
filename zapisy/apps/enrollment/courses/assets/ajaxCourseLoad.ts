@@ -44,6 +44,7 @@ function onCourseLinkClicked(event: Event): void {
 // page URL; the received response will be loaded
 // into the DOM
 function fetchCourseInfoAsync(courseUrl: string): void {
+
 	isLoadingCourse = true;
 	const container = document.getElementById("main-content");
 	if (!container) {
@@ -52,9 +53,10 @@ function fetchCourseInfoAsync(courseUrl: string): void {
 	setElementLoadingUi(container);
 	scrollUpToElementIfWindowBelow("#main-menu-list");
 	$.ajax({
+		cache: false,
 		type: "GET",
 		dataType: "html",
-		url: courseUrl,
+		url: courseUrl+".json",
 		success: function(resp: string) {
 			onCourseResponseReceived(resp, courseUrl);
 		},
