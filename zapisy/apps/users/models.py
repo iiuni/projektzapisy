@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import List, TYPE_CHECKING, Optional
+from typing import Callable, List, TYPE_CHECKING, Optional
 
 from django.db import models
 from django.conf import settings
@@ -29,6 +29,10 @@ ISIM_PROGRAM_NAME = 'ISIM, dzienne I stopnia'
 class Related(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super(Related, self).get_queryset().select_related('user')
+
+
+def is_user_in_group(group_name: str) -> Callable[[User], bool]:
+    return lambda user: user.groups.filter(name=group_name).exists() if user else False
 
 
 class BaseUser(models.Model):
@@ -79,15 +83,15 @@ class BaseUser(models.Model):
 
     @staticmethod
     def is_student(user: User) -> bool:
-        if user:
-            return user.groups.filter(name='students').exists()
-        return False
+        return is_user_in_group('students')(user)
 
     @staticmethod
     def is_employee(user: User) -> bool:
-        if user:
-            return user.groups.filter(name='employees').exists()
-        return False
+        return is_user_in_group('employees')(user)
+
+    @staticmethod
+    def is_external_contractor(user: User) -> bool:
+        return is_user_in_group('external_contractors')(user)
 
     def __str__(self) -> str:
         return self.get_full_name()
