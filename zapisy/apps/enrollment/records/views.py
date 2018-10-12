@@ -29,7 +29,12 @@ from apps.enrollment.courses.utils import prepare_group_data
 from apps.enrollment.records.exceptions import NonGroupException, AlreadyPinnedException, AlreadyNotPinnedException, \
     NonStudentException
 from apps.enrollment.records.models import Record, Queue, logger
-from apps.enrollment.records.utils import run_rearanged, prepare_courses_with_terms, prepare_groups_json
+from apps.enrollment.records.utils import (
+    can_user_view_students_list_for_group,
+    prepare_courses_with_terms,
+    prepare_groups_json,
+    run_rearanged,
+)
 
 from apps.cache_utils import cache_result
 from apps.enrollment.courses.views import prepare_courses_list_to_render
@@ -245,11 +250,14 @@ def records(request, group_id):
         students_in_group = Record.get_students_in_group(group_id)
         students_in_queue = Queue.get_students_in_queue(group_id)
         all_students = Student.objects.all()
+        can_user_see_all_students_here = can_user_view_students_list_for_group(
+            request.user, group)
         data = prepare_courses_list_to_render(request)
         data.update({
             'all_students': all_students,
             'students_in_group': students_in_group,
             'students_in_queue': students_in_queue,
+            'can_user_see_all_students_here': can_user_see_all_students_here,
             'group': group,
             'mailto_group': mailto(request.user, students_in_group),
             'mailto_queue': mailto(request.user, students_in_queue),

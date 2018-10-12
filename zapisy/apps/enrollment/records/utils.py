@@ -150,3 +150,15 @@ def prepare_schedule_data(request, courses, semester=None):
         'terms_by_days': terms_by_days,
         'priority_limit': settings.QUEUE_PRIORITY_LIMIT,
     }
+
+
+def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
+    """
+    Tell whether the user is authorized to see students' names
+    and surnames in the given group.
+    """
+
+    is_user_proper_employee = not BaseUser.is_external_contractor(user)
+    is_user_group_teacher = user == group.teacher.user
+
+    return BaseUser.is_employee(user) and is_user_proper_employee or is_user_group_teacher

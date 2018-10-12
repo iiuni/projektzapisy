@@ -67,13 +67,8 @@ def create_course(semester):
     entity = CourseEntity(name="Algorytmy i Struktury Danych")
     entity.save()
     course = Course(
-        lectures=30,
-        exercises=30,
-        laboratories=30,
         entity=entity,
-        semester=semester,
-        type=1,
-        name="Algorytmy i Struktury Danych")
+        semester=semester)
     course.save()
     return course
 
