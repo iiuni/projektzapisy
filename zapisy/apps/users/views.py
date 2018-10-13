@@ -24,6 +24,7 @@ from apps.enrollment.records.utils import prepare_schedule_courses, prepare_sche
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException
+from apps.users.decorators import proper_employee_required
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, OpeningTimesView, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
@@ -47,6 +48,7 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 
 
 @login_required
+@proper_employee_required
 def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """student profile"""
     try:
@@ -312,6 +314,7 @@ def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
 
 
 @login_required
+@proper_employee_required
 def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
     students = Student.get_list(begin, not BaseUser.is_employee(request.user))
 

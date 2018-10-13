@@ -29,3 +29,18 @@ def employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, l
     if view_func:
         return actual_decorator(view_func)
     return actual_decorator
+
+
+def proper_employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+    """
+    Decorator for views that checks that the user is an actual employee,
+    redirecting to the login page if necessary.
+    """
+    actual_decorator = user_passes_test(
+        lambda u: not BaseUser.is_external_contractor(u),
+        login_url=login_url,
+        redirect_field_name=redirect_field_name
+    )
+    if view_func:
+        return actual_decorator(employee_required(view_func))
+    return actual_decorator(employee_required)
