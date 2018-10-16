@@ -60,12 +60,18 @@ class SpecialReservationSerializer(serializers.ModelSerializer):
 
 
 class SingleVoteSerializer(serializers.ModelSerializer):
+    vote_points = serializers.SerializerMethodField()
+    course_name = serializers.CharField(source='entity.name')
+
+    def get_vote_points(self, vote_model):
+        return max(vote_model.value, vote_model.correction)
+
     class Meta:
         model = SingleVote
-        fields =  ('value', 'correction', 'student', 'entity', 'course')
+        fields =  ('student', 'entity', 'course', 'course_name', 'vote_points')
         
 
 class SystemStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemState
-        fields = '__all__'
+        fields = ('id', 'year')
