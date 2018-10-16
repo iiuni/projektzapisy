@@ -68,8 +68,8 @@ class SingleVoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SingleVote
-        fields =  ('student', 'course_name', 'vote_points')
-        
+        fields = ('student', 'course_name', 'vote_points')
+
 
 class SystemStateSerializer(serializers.ModelSerializer):
     class Meta:
