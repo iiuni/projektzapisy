@@ -56,7 +56,7 @@ function fetchCourseInfoAsync(courseUrl: string): void {
 		cache: false,
 		type: "GET",
 		dataType: "html",
-		url: courseUrl+".json",
+		url: courseUrl + ".json",
 		success: function(resp: string) {
 			onCourseResponseReceived(resp, courseUrl);
 		},
