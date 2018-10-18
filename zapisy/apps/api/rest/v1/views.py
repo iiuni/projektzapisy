@@ -64,7 +64,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
     filter_fields = '__all__'
 
     def get_queryset(self):
-        queryset = SingleVote.objects.all()
+        queryset = SingleVote.objects.select_related('entity').all()
         system_state_id = self.request.GET.get('state')
         if system_state_id:
             queryset = queryset.filter(state_id=system_state_id).exclude(value=0, correction=0)
