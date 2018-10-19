@@ -72,6 +72,11 @@ class SingleVoteSerializer(serializers.ModelSerializer):
 
 
 class SystemStateSerializer(serializers.ModelSerializer):
+    state_name = serializers.SerializerMethodField()
+    
+    def get_state_name(self, systemstate_model):
+        return str(systemstate_model)
+        
     class Meta:
         model = SystemState
-        fields = ('id', 'year')
+        fields = ('id', 'name')
