@@ -79,4 +79,4 @@ class SystemStateSerializer(serializers.ModelSerializer):
         
     class Meta:
         model = SystemState
-        fields = ('id', 'name')
+        fields = ('id', 'state_name')
