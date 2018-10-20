@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import Callable, List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING, Optional
 
 from django.db import models
 from django.conf import settings
@@ -31,8 +31,8 @@ class Related(models.Manager):
         return super(Related, self).get_queryset().select_related('user')
 
 
-def is_user_in_group(group_name: str) -> Callable[[User], bool]:
-    return lambda user: user.groups.filter(name=group_name).exists() if user else False
+def is_user_in_group(user: User, group_name: str) -> bool:
+    return user.groups.filter(name=group_name).exists() if user else False
 
 
 class BaseUser(models.Model):
@@ -83,15 +83,15 @@ class BaseUser(models.Model):
 
     @staticmethod
     def is_student(user: User) -> bool:
-        return is_user_in_group('students')(user)
+        return is_user_in_group(user, 'students')
 
     @staticmethod
     def is_employee(user: User) -> bool:
-        return is_user_in_group('employees')(user)
+        return is_user_in_group(user, 'employees')
 
     @staticmethod
     def is_external_contractor(user: User) -> bool:
-        return is_user_in_group('external_contractors')(user)
+        return is_user_in_group(user, 'external_contractors')
 
     def __str__(self) -> str:
         return self.get_full_name()
