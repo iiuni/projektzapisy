@@ -291,3 +291,17 @@
 {
     font-weight:bold;
 }
+
+
+/*******************************************************************************
+ * Konsultacje prowadzących - łamanie długich linków 
+ ******************************************************************************/
+
+/* Strona kursu */
+table.consultations tbody td:nth-child(3) {
+	word-break: break-all;
+}
+/* Strona prowadzącego*/
+ p.consultations {
+	word-break: break-all;
+}
