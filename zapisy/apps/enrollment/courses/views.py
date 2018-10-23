@@ -338,7 +338,6 @@ def courseAjax(request, slug):
             'current_ects': currentEcts
         })
 
-    
         rendered_html = render_to_string(
             'enrollment/courses/course_info.html',
             data, request)
@@ -347,7 +346,6 @@ def courseAjax(request, slug):
             'courseName': course.name,
             'courseEditLink': reverse('admin:courses_course_change', args=[course.pk])
         })
-        
 
     except (Course.DoesNotExist, NonCourseException):
         raise Http404
@@ -568,8 +566,7 @@ def courseNotAjax(request, slug):
             'current_ects': currentEcts
         })
 
-    
         return render(request, 'enrollment/courses/course.html', data)
 
     except (Course.DoesNotExist, NonCourseException):
-        raise Http404 
+        raise Http404
