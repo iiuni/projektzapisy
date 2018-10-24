@@ -5,6 +5,7 @@
 from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import QuerySet
 from django.db.models.aggregates import Sum
 from apps.enrollment.courses.models.course import CourseEntity, Course
 from apps.offer.vote.models.system_state import SystemState
@@ -152,7 +153,7 @@ class SingleVote (models.Model):
             SingleVote.objects.bulk_create(new_votes)
 
     @staticmethod
-    def get_votes_for_proposal(voter, proposals, year=None):
+    def get_votes_for_proposal(voter, proposals, year=None) -> QuerySet:
         #        """
         #            Gets user votes in specified year for proposal set
         #        """
@@ -207,7 +208,3 @@ class SingleVote (models.Model):
 
     def get_vote(self):
         return self.correction
-
-    def save(self, **kwargs):
-        if self.value != 0:
-            super(SingleVote, self).save(**kwargs)
