@@ -3,7 +3,7 @@ from django.test import TransactionTestCase
 
 from apps.enrollment.records.utils import can_user_view_students_list_for_group
 
-from apps.enrollment.records.tests.factories import (
+from apps.enrollment.records.tests.common import (
     create_course,
     create_exercise_group,
     create_semester,
