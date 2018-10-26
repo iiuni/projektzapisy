@@ -194,65 +194,69 @@
         </div>
     </div>
 </div>
-<div class="container p-0">
-    <div class="row">
-        <div class="col">
-            <ul class="nav nav-tabs" role="tablist">
-                {% block system_menu %}
-                {% endblock %}
-            </ul>
-        </div>
-    </div>
-    {% if request.path != '/' %}
+
+<div class="wrapper">
+    <div class="container p-0">
         <div class="row">
             <div class="col">
-                <nav aria-label="breadcrumb" role="navigation">
-                    <ol class="breadcrumb">
-                        {% block bread %}
-                        {% endblock %}
-                    </ol>
-                </nav>
+                <ul class="nav nav-tabs" role="tablist">
+                    {% block system_menu %}
+                    {% endblock %}
+                </ul>
             </div>
         </div>
-    {% endif %}
-    <div class="row">
-        <div class="col">
-            {% block messages %}
-                {% for message in messages %}
-                    <div class="alert alert-info {{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+        {% if request.path != '/' %}
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            {% block bread %}
+                            {% endblock %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col">
+                {% block messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="row">
+            {% block topContent %}{% endblock %}
+        </div>
+        <div class="row">
+            {% block content %}
             {% endblock %}
         </div>
-    </div>
-    <div class="row">
-        {% block topContent %}{% endblock %}
-    </div>
-    <div class="row">
-        {% block content %}
-        {% endblock %}
-    </div>
-    <div class="row">
-        <div class="col">
-            <footer>
-                <p>
-                    &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-                    {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                        <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-                    {% endif %}
-                    | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
-                    Wygenerowano: {% now "H:i:s" %}
-                    {% should_display_debug as display_debug %}
-                    {% if display_debug is True %}
-                        {% autoescape off %}
-                            {% debug_info %}
-                        {% endautoescape %}
-                    {% endif %}
-                </p>
-            </footer>
+        <div class="row">
+            <div class="col">
+                <footer>
+                    <p>
+                        &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                        {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                            <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                        {% endif %}
+                        | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                        Wygenerowano: {% now "H:i:s" %}
+                        {% should_display_debug as display_debug %}
+                        {% if display_debug is True %}
+                            {% autoescape off %}
+                                {% debug_info %}
+                            {% endautoescape %}
+                        {% endif %}
+                    </p>
+                </footer>
+            </div>
         </div>
     </div>
 </div>
+
 </body>
 </html>
