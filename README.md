@@ -3,12 +3,10 @@
 ### Rozpoczynanie pracy
 
 Aby rozpocząć pracę w projekcie przejdź przez instrukcję:
-https://github.com/lewymati/projektzapisy/wiki/Developer's-environment-setup
+https://github.com/iiuni/projektzapisy/wiki/Developer's-environment-setup
 
-Będziesz potrzebował dump-a bazy:
-https://www.dropbox.com/s/c0xz8i7l3z37o0n/a_dump2018_02_27__00_35_26.sql.gz?dl=0
-
-_O nowszego dumpa można poprosić na Slacku._
+Jeżeli zamierzasz zajmować się rzeczami związanymi z _frontendem_, warto zapoznać się też z systemem plików statycznych:
+https://github.com/iiuni/projektzapisy/wiki/Pliki-statyczne-w-Systemie-Zapis%C3%B3w
 
 ### Narzędzia
 
