@@ -76,7 +76,7 @@ class SingleVoteSerializer(serializers.ModelSerializer):
 
 class SystemStateSerializer(serializers.ModelSerializer):
     """Serialize vote system state, get id and friendly name"""
-    
+
     state_name = serializers.SerializerMethodField()
 
     def get_state_name(self, systemstate_model):

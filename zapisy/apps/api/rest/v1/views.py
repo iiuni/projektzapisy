@@ -61,7 +61,7 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
 class SingleVoteViewSet(viewsets.ModelViewSet):
     """Return votes by selected state (or all votes otherwise)
     Skip votes with no value for clarity"""
-    
+
     http_method_names = ['get']
     serializer_class = SingleVoteSerializer
     filter_fields = '__all__'
@@ -73,7 +73,6 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(state_id=system_state_id).exclude(value=0, correction=0)
 
         return queryset
-
 
 
 class SystemStateViewSet(viewsets.ModelViewSet):
