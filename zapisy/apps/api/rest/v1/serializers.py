@@ -59,6 +59,8 @@ class SpecialReservationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+"""Serialize single student vote
+Get proper vote value, course name and student id"""
 class SingleVoteSerializer(serializers.ModelSerializer):
     vote_points = serializers.SerializerMethodField()
     course_name = serializers.CharField(source='entity.name')
@@ -71,6 +73,7 @@ class SingleVoteSerializer(serializers.ModelSerializer):
         fields = ('student', 'course_name', 'vote_points')
 
 
+"""Serialize vote system state, get id and friendly name"""
 class SystemStateSerializer(serializers.ModelSerializer):
     state_name = serializers.SerializerMethodField()
 
