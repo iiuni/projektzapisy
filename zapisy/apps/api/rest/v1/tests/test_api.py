@@ -15,6 +15,10 @@ class VoteSystemTests(TestCase):
     """Get system states (there was none, so we get only states from setUp)
     Check if content is JSON and contains expected data"""
     def test_system_states_endpoint(self):
+        """Tests system state api.
+        
+        Queries the api with two SystemState instances using HTTP client.
+        """
         client = APIClient()
         response = client.get('/api/v1/systemstate/')
         self.assertEqual(response.status_code, 200)
