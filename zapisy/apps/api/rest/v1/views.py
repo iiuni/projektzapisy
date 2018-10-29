@@ -60,9 +60,10 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
 
 class SingleVoteViewSet(viewsets.ModelViewSet):
     """Return votes by selected state (or all votes otherwise)
-    
+
     State is passed by GET parameter (e.g. url?state=n) 
-    Skip votes with no value for clarity"""
+    Skip votes with no value for clarity
+    """
 
     http_method_names = ['get']
     serializer_class = SingleVoteSerializer
