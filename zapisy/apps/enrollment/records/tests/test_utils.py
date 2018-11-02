@@ -1,27 +1,27 @@
-from django.contrib.auth.models import Group
-from django.test import TransactionTestCase
+from django.contrib.auth.models import Group as DjangoUserGroup
+from django.contrib.auth.models import User
+from django.test import TestCase
 
+from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.utils import can_user_view_students_list_for_group
-
-from apps.enrollment.records.tests.common import (
-    create_course,
-    create_exercise_group,
-    create_semester,
-    create_student_user,
-    create_teacher
-)
+from apps.users.models import Employee
 
 
-class StudentsInfoVisibilityForExternalContractorsTestCase(TransactionTestCase):
+class StudentsInfoVisibilityForExternalContractorsTestCase(TestCase):
+
+    fixtures = ['users', 'courses']  # order matters!
 
     @classmethod
-    def setUpClass(cls):
-        cls.student = create_student_user()
-        cls.teacher_user, cls.teacher_employee = create_teacher()
-        cls.semester = create_semester()
-        cls.course = create_course(cls.semester)
-        cls.exercise_group = create_exercise_group(cls.course, cls.teacher_employee)
-        ext_contractors_group, _ = Group.objects.get_or_create(name='external_contractors')
+    def setUpTestData(cls):
+        cls.student = User.objects.get(pk=1)
+        cls.teacher_user = User.objects.get(pk=2)
+        cls.teacher_employee = Employee.objects.get(pk=2)
+        cls.semester = Semester.objects.get(pk=1)
+        cls.course = Course.objects.get(pk=1)
+        cls.exercise_group = Group.objects.get(pk=1)
+        ext_contractors_group, _ = DjangoUserGroup.objects.get_or_create(name='external_contractors')
         cls.teacher_user.groups.add(ext_contractors_group)
 
     def test_external_contractor_can_see_their_group(self):
@@ -39,10 +39,7 @@ class StudentsInfoVisibilityForExternalContractorsTestCase(TransactionTestCase):
         they should only see the students which a regular student would see.
         """
 
-        another_teacher_user, another_teacher_employee = create_teacher()
-        another_semester = create_semester()
-        another_course = create_course(another_semester)
-        another_group = create_exercise_group(another_course, another_teacher_employee)
+        another_group = Group.objects.get(pk=2)
 
         self.assertFalse(
             can_user_view_students_list_for_group(self.teacher_user, another_group))

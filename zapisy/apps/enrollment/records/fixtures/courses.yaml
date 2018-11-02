@@ -1,0 +1,39 @@
+- model: courses.semester
+  pk: 1
+  fields:
+    visible: true
+    type: z  # Semester.TYPE_WINTER
+    year: 2018/19
+    records_opening: 2018-10-01 00:00:00
+    records_closing: 2090-12-21 23:59:59
+    semester_beginning: 2018-10-3
+    semester_ending: 2090-12-31
+
+- model: courses.courseentity
+  pk: 1
+  fields:
+    name: Algorytmy i Struktury Danych
+    created: 1970-01-01
+    edited: 1970-01-01
+
+- model: courses.course
+  pk: 1
+  fields:
+    entity: 1
+    semester: 1
+
+- model: courses.group
+  pk: 1
+  fields:
+    limit: 20
+    type: 2  # 'cwiczenia'
+    teacher: 2
+    course: 1
+
+- model: courses.group
+  pk: 2
+  fields:
+    limit: 20
+    type: 2  # 'cwiczenia'
+    teacher: 3
+    course: 1

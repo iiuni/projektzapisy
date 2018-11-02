@@ -1,0 +1,38 @@
+# An example student
+- model: auth.user
+  pk: 1
+  fields:
+    username: jdz
+    first_name: Jan
+    last_name: Dzban
+    is_active: true
+
+- model: users.student
+  pk: 1
+  fields:
+    matricula: 221135
+    user: 1
+
+# An example employee
+- model: auth.user
+  pk: 2
+  fields:
+    username: pr4c0wn1k
+    is_active: true
+
+- model: users.employee
+  pk: 2
+  fields:
+    user: 2
+
+# Another example employee
+- model: auth.user
+  pk: 3
+  fields:
+    username: pr4c0wn1kNum3rDwa
+    is_active: true
+
+- model: users.employee
+  pk: 3
+  fields:
+    user: 3
