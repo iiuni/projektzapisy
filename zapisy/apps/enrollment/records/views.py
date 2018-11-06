@@ -257,7 +257,7 @@ def records(request, group_id):
             'mailto_queue_bcc': mailto(request.user, students_in_queue, True),
         })
         return render(request, 'enrollment/records/records_list.html', data)
-        
+
     except (NonGroupException, ObjectDoesNotExist):
         messages.info(request, "Podana grupa nie istnieje.")
         return render(request, 'common/error.html')
