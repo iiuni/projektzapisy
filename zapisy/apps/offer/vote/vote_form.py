@@ -34,6 +34,11 @@ class VoteFormset(object):
                     str(semester_id) +
                     ') > 0'])
 
+        # if not votes.ordered:
+        #     votes = votes.oreder_by('pk')
+        # len(votes)
+        # SingleVote.objects.filter(student=student, value=0, correction=0).delete()
+
         fields = ('correction',) if self.correction else ('value',)
 
         SingleVoteFormset = modelformset_factory(SingleVote,
