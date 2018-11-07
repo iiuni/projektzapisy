@@ -1,0 +1,81 @@
+{% load i18n %}
+{% load course_types %}
+
+{% include "courses/course_head.html" %}
+<hr>
+{% regroup groups|dictsort:"type" by type as groups_by_type %}
+
+{% for tutorial in groups_by_type %}
+
+    <div class="tutorial">
+        <h2>{{ tutorial.grouper|decode_class_type_plural  }}</h2>
+        <table class="zebra-striped">
+            <thead>
+            <tr>
+                {# Translators: nagłówek tabeli #}
+                <th>{% trans "Prowadzący" %}</th>
+                <th class="term">{% trans "Termin zajęć" %}</th>
+                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="number">{% trans "Limit" %}</th>
+                <th title="Liczba aktualnie zapisanych osób" class="number termEnrolledHeader">{% trans "Zapisani" %}</th>
+                <th title="Liczba osób oczekujących na zapis" class="number termQueuedHeader">{% trans "Kolejka" %}</th>
+                <th class="controls"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for group in tutorial.list %}
+                <tr {% if group.is_enrolled %} class="signed" {% endif %} >
+                    <td>
+                        {% if group.teacher %}
+                            <a href="{% url 'employee-profile' group.teacher.user.id %}" class="person">
+                                {{ group.teacher.user.get_full_name }}
+                            </a>
+                        {% else %}
+                            {% trans "(nieznany prowadzący)" %}
+                        {% endif %}
+                        {% if group.extra %}
+                            <br/><span class="small">{{ group.extra }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="term">
+                        {% for term in group.term.all %}
+                            <span>{{ term }}</span>
+                        {% endfor %}
+                    </td>
+                    <td class="number termLimit">{{ group.limit }}</td>
+                    <td class="number termEnrolledCount">{{ group.num_enrolled }}</td>
+                    <td class="number termQueuedCount">{{ group.num_enqueued }}</td>
+                    <td class="controls">
+                        {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
+                            <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                    <button type="submit" class="btn small success setEnrolledButton"
+                                        onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
+                                        Zapisz
+                                    </button>
+                                </div>
+                            </form>
+                        {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
+                            <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                    <button type="submit" class="btn small danger setEnrolledButton"
+                                        onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
+                                        Wypisz
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                        {% if user.student or user.employee or user.is_staff %}
+                            <a href="{% url 'group-view' group.pk %}">{% trans "lista" %}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}
+
+<hr>
+{% include "courses/course_consultations.html" %}

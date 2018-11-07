@@ -17,8 +17,8 @@ from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointT
 from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import Record, Queue
-from apps.enrollment.records.utils import run_rearanged
+from apps.enrollment.records.models import Record
+from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 
 
 class GroupInline(admin.TabularInline):
@@ -198,81 +198,22 @@ class TermInline(admin.TabularInline):
     extra = 0
 
 
-class RecordInlineForm(forms.ModelForm):
-    class Meta:
-        model = Record
-        fields = '__all__'
-
-    # def save(self, commit=True):
-    #
-    #     record = super(RecordInlineForm, self).save(commit=False)
-    #
-    #     if record.id:
-    #         old = Record.objects.get(id=record.id)
-    #         if old.status <> record.status:
-    #             if record.status == STATUS_REMOVED:
-    #                 record.group.remove_from_enrolled_counter(record.student)
-    #                 Group.do_rearanged(record.group)
-    #             elif  record.status == STATUS_ENROLLED:
-    #                 record.group.add_to_enrolled_counter(record.student)
-    #                 Queue.objects.filter(group=record.group, student=record.student, deleted=False).update(deleted=True)
-    #                 record.group.queued = Queue.objects.filter(group=record.group, deleted=False).count()
-    #                 record.group.save()
-    #
-    #     else:
-    #         if record.status == STATUS_REMOVED:
-    #             pass
-    #         elif  record.status == STATUS_ENROLLED:
-    #             record.group.add_to_enrolled_counter(record.student)
-    #             Queue.objects.filter(group=record.group, student=record.student, deleted=False).update(deleted=True)
-    #             record.group.queued = Queue.objects.filter(group=record.group, deleted=False).count()
-    #             record.group.save()
-    #
-    #     if commit:
-    #         record.save()
-    #
-    #     return record
-
-
 class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
     readonly_fields = ('id', 'student', 'status')
     can_delete = False
 
+    def has_add_permission(self, request):
+        """Never allow to modify records.
 
-class QueuedInlineForm(forms.ModelForm):
-    class Meta:
-        model = Queue
-        fields = '__all__'
-
-    # def save(self, commit=True):
-    #     queue = super(QueuedInlineForm, self).save(commit=False)
-    #
-    #
-    #     if queue.id:
-    #         old = Queue.objects.get(id=queue.id)
-    #         if not old.deleted and queue.deleted:
-    #             queue.group.remove_from_queued_counter(queue.student)
-    #         elif old.deleted and not queue.deleted:
-    #             queue.group.add_to_queued_counter(queue.student)
-    #     else:
-    #         if not queue.deleted:
-    #             queue.group.add_to_queued_counter(queue.student)
-    #
-    #     if commit:
-    #         queue.save()
-    #
-    #     return queue
-
-
-class QueuedInline(admin.TabularInline):
-    model = Queue
-    extra = 0
-    raw_id_fields = ("student",)
-
-    can_delete = False
-    form = QueuedInlineForm
+        We disable the possibility to modify records, because it is not obvious,
+        what the procedure should be. Should the student be automatically
+        removed from parallel groups? Should his ECTS limit be checked? If we
+        remove him from exercise, should he be automatically removed from the
+        accompanying lecture group?
+        """
+        return False
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -283,7 +224,6 @@ class GroupAdmin(admin.ModelAdmin):
         'teacher',
         'type',
         'limit',
-        'limit_isim',
         'get_terms_as_string')
     list_filter = ('type', 'course__semester', 'teacher')
     search_fields = (
@@ -291,7 +231,7 @@ class GroupAdmin(admin.ModelAdmin):
         'teacher__user__last_name',
         'course__entity__name')
     inlines = [
-        TermInline, RecordInline, QueuedInline
+        TermInline, RecordInline
     ]
 
     raw_id_fields = ('course', 'teacher')
@@ -305,16 +245,10 @@ class GroupAdmin(admin.ModelAdmin):
         return super(GroupAdmin, self).response_change(request, obj)
 
     def save_model(self, request, obj, form, change):
-
+        """Triggers pulling from queue, since the limit could have been increased."""
         if obj.pk:
-            rearrange = obj.queued > 0 and obj.enrolled < obj.limit
-            old = Group.objects.get(pk=obj.pk)
-            rearrange = rearrange and (obj.limit_isim != old.limit_isim or obj.limit != old.limit)
-            if rearrange:
-                for _ in range(obj.limit - obj.enrolled):
-                    run_rearanged(None, obj)
-
-        obj.save()
+            GROUP_CHANGE_SIGNAL.send(None, group_id=obj.pk)
+        super().save_model(request, obj, form, change)
 
     def after_saving_model_and_related_inlines(self, obj):
         from apps.enrollment.courses.models.term import Term as T
@@ -399,14 +333,8 @@ class GroupAdmin(admin.ModelAdmin):
         display those for the currently signed in user.
         """
         qs = super(GroupAdmin, self).get_queryset(request)
-        return qs.select_related('teacher', 'teacher__user', 'course',
-                                 'course__semester').prefetch_related('term')
-
-    class Media:
-        css = {
-            "all": ("css/admin/group.css",)
-        }
-        js = ("js/admin/group.js",)
+        return qs.select_related('teacher', 'teacher__user', 'course', 'course__entity',
+                                 'course__semester').prefetch_related('term', 'record_set')
 
 
 class TypeAdmin(admin.ModelAdmin):

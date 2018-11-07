@@ -83,7 +83,7 @@
         <div class="container collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li{% block enrollment_active %}{% endblock %} class="nav-item">
-                    <a href="{% url 'enrollment-main' %}" class="nav-link">System Zapisów</a>
+                    <a href="{% url 'my-prototype' %}" class="nav-link">System Zapisów</a>
                 </li>
                 <li{% block grade_active %}{% endblock %} class="nav-item">
                     <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
@@ -145,7 +145,7 @@
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="social-buttons login-dp">
                                 <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
-                                    <img src="{% static 'images/usos-login-logo.png' %}"
+                                    <img src="{% static '/images/usos-login-logo.png' %}"
                                          alt="Uniwersytet Wrocławski">
                                     <div class="clearfix"></div>
                                     Zaloguj się przez USOS
@@ -155,7 +155,7 @@
                                 {% csrf_token %}
                                 {% if request.path == '/' %}
                                     <input type="hidden" name="next"
-                                           value="{% url 'schedule-own' %}"/>
+                                           value="{% url 'my-timetable' %}"/>
                                 {% else %}
                                     <input type="hidden" name="next" value="{{ request.path }}"/>
                                 {% endif %}

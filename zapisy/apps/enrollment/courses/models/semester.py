@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models
 
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException, \
@@ -19,7 +21,7 @@ class GetterManager(models.Manager):
         try:
             return self.get(visible=True, records_closing__gte=datetime.now())
         except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return self.filter(visible=True).order_by('-records_closing')[0]
+            return self.filter(visible=True).order_by('records_closing').last()
 
 
 class Semester(models.Model):
@@ -91,17 +93,26 @@ class Semester(models.Model):
                 code='invalid'
             )
 
-    def can_remove_record(self):
-        return self.records_ending is None or datetime.now() <= self.records_ending
+    def can_remove_record(self, time: Optional[datetime] = None) -> bool:
+        """Checks if the given timestamp is before semester's unenrolling deadline."""
+        if time is None:
+            time = datetime.now()
+        return self.records_ending is None or time <= self.records_ending
 
-    def is_closed(self):
-        return self.records_closing is not None and self.records_closing <= datetime.now()
+    def is_closed(self, time: Optional[datetime] = None) -> bool:
+        """Checks if the enrollment is finished in the semester."""
+        if time is None:
+            time = datetime.now()
+        return self.records_closing is not None and self.records_closing <= time
 
-    def get_current_limit(self):
-        if datetime.now() < self.records_ects_limit_abolition:
-            return settings.ECTS_LIMIT
-        else:
-            return settings.ECTS_FINAL_LIMIT
+    def get_current_limit(self, timestamp: Optional[datetime] = None) -> int:
+        """Returns the enrollment ECTS limit at the timestamp."""
+        if timestamp is None:
+            timestamp = datetime.now()
+        if self.records_ects_limit_abolition is not None:
+            if timestamp < self.records_ects_limit_abolition:
+                return settings.ECTS_LIMIT
+        return settings.ECTS_FINAL_LIMIT
 
     def get_courses(self):
         """ gets all courses linked to semester """

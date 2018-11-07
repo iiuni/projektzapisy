@@ -6,14 +6,13 @@ from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
-from apps.cache_utils import cache_result
+from apps.cache_utils import cache_result, cache_result_for
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.student_options import StudentOptions
 
 from apps.enrollment.courses.models.tag import Tag
 
 from apps.offer.proposal.exceptions import NotOwnerException
-from apps.users.models import OpeningTimesView
 import logging
 
 logger = logging.getLogger()
@@ -283,18 +282,8 @@ class CourseEntity(models.Model):
         ordering = ['name_pl']
 
     def get_points(self, student=None):
-        from apps.enrollment.courses.models.points import StudentPointsView, PointsOfCourseEntities
-
-        if student:
-            try:
-                points = StudentPointsView.objects.get(student=student, entity=self)
-                return points
-            except ObjectDoesNotExist:
-                pass
-        try:
-            return PointsOfCourseEntities.objects.filter(entity=self, program__isnull=True)[0]
-        except (ObjectDoesNotExist, IndexError) as e:
-            return None
+        from apps.enrollment.courses.models.points import StudentPointsView
+        return StudentPointsView.course_value_for_student(student, self.pk)
 
     def get_short_name(self):
         """
@@ -324,6 +313,7 @@ class CourseEntity(models.Model):
         """
         return list(TagCourseEntity.objects.filter(courseentity=self))
 
+    @cache_result_for(60 * 60)
     def serialize_for_json(self):
         """
         Serialize this object to a dictionary
@@ -554,30 +544,6 @@ class Course(models.Model):
     """
     getters
     """
-
-    def enrollments_are_open(self):
-        if self.records_end and self.records_start and self.records_start <= datetime.datetime.now() <= self.records_end:
-            return True
-
-        if datetime.datetime.now() <= self.semester.records_closing:
-            return True
-
-        return False
-
-    def get_opening_time(self, student):
-        """
-        Gets the opening time of the current course for the given
-        student, that is, the earliest point in time such that
-        the student is allowed to sign up for the course.
-        @param student: The student for whom the course opening
-        time is to be determined.
-        """
-        try:
-            o = OpeningTimesView.objects.get(student=student, course=self)
-            return o.opening_time
-        except ObjectDoesNotExist:
-            return None
-
     @property
     def exam(self):
         return self.entity.exam
@@ -691,83 +657,20 @@ class Course(models.Model):
     def get_absolute_url(self):
         return reverse('course-page', args=[str(self.slug)])
 
-    def student_is_in_ects_limit(self, student):
-        # TODO: test me!
-        from apps.enrollment.courses.models.semester import Semester
-
-        semester = Semester.get_current_semester()
-
-        return semester.get_current_limit() < student.get_ects_with_course(semester, self)
-
     def get_all_enrolled_emails(self):
-        from apps.enrollment.records.models import Record
-
-        return Record.objects.filter(group__course=self, status=Record.STATUS_ENROLLED)\
-            .values_list('student__user__email', flat=True).distinct()
+        from apps.enrollment.records.models import Record, RecordStatus
+        return Record.objects.filter(
+            group__course=self, status=RecordStatus.ENROLLED
+        ).values_list(
+            'student__user__email', flat=True
+        ).distinct()
 
     def votes_count(self, semester=None):
         from apps.offer.vote.models import SingleVote
-
-        return SingleVote.objects .filter(Q(course=self), Q(
-            state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)) .count()
-
-    def is_opened_for_student(self, student):
-        """
-        Determines whether the student is allowed
-        to sign up for this course at the current time.
-        Note: as the return value depends on the current time,
-        the function is not pure.
-        """
-        if student.status == 1:
-            return False
-        opening_time = self.get_opening_time(student)
-        if opening_time is None:
-            return False
-        return opening_time < datetime.datetime.now()
-
-    def is_recording_open_for_student(self, student):
-        """
-        Determines whether the course is "open"
-        for the given student, i.e. whether they're
-        allowed to sign up or leave a course group.
-        """
-        records_opening = self.semester.records_opening
-        records_closing = self.semester.records_closing
-
-        now = datetime.datetime.now()
-
-        if self.records_start and self.records_end and self.records_start <= now <= self.records_end:
-            return True
-
-        if records_opening and self.is_opened_for_student(student) and now < records_closing:
-            return True
-
-        if self.records_start and self.records_end and self.records_start <= now < self.records_end:
-            return True
-
-        return False
-
-    def get_enrollment_opening_time(self, student):
-        """ returns course opening time as datetime object or None if course is opened / was opened """
-        records_opening = self.semester.records_opening
-        from apps.offer.vote.models.single_vote import SingleVote
-
-        try:
-            vote = SingleVote.objects.get(Q(course=self), Q(student=student),
-                                          Q(state__semester_winter=self.semester) | Q(
-                                              state__semester_summer=self.semester))
-            interval = datetime.timedelta(minutes=(-1440) * vote.correction + 4320)
-        except ObjectDoesNotExist:
-            interval = datetime.timedelta(minutes=4320)
-
-        if records_opening is None:
-            return False
-        else:
-            student_opening = records_opening - student.get_t0_interval()
-            if student_opening + interval < datetime.datetime.now():
-                return None
-            else:
-                return student_opening + interval
+        return SingleVote.objects.filter(
+            Q(course=self),
+            Q(state__semester_summer=self.semester) | Q(state__semester_winter=self.semester)
+        ).count()
 
     def get_semester_name(self):
         """ returns name of semester course is linked to """
@@ -777,13 +680,10 @@ class Course(models.Model):
         else:
             return self.semester.get_name()
 
-    def get_points(self, student=None):
+    def get_points(self, student=None) -> int:
         """
             @param student: (optional) :model:'users.Student'
-
-            @return :model:'courses.Points' or :model:'courses.PointsOfCourseEntities' both have the same interface
         """
-
         return self.entity.get_points(student)
 
     def get_effects_list(self):
@@ -851,18 +751,6 @@ class Course(models.Model):
     @staticmethod
     def get_courses_with_exam(semester):
         return Course.objects.filter(semester=semester, entity__exam=True)
-
-    @staticmethod
-    def get_student_courses_in_semester(student, semester):
-        from apps.enrollment.records.models import Record
-
-        return Record.objects.select_related('group', 'group__teacher', 'group__course',
-                                             'group__course__entity').prefetch_related('group__term',
-                                                                                       'group__term__classrooms').filter(
-            status='1', student=student, group__course__semester=semester). \
-            extra(select={'points': f'SELECT value FROM courses_studentpointsview WHERE student_id={student.id} '
-                                    f'AND entity_id=courses_course.entity_id'}).order_by(
-            'group__course__entity__name')
 
     class Meta:
         verbose_name = 'przedmiot'

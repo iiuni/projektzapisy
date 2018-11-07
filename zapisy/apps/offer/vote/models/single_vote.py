@@ -4,9 +4,10 @@
 
 from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, DatabaseError, transaction
 from django.db.models.aggregates import Sum
 from apps.enrollment.courses.models.course import CourseEntity, Course
+from apps.enrollment.courses.models.semester import Semester
 from apps.offer.vote.models.system_state import SystemState
 
 
@@ -207,3 +208,23 @@ class SingleVote (models.Model):
 
     def get_vote(self):
         return self.correction
+
+    @classmethod
+    def populate_scheduled_courses(cls, semester: Semester):
+        """Populates course filed in all singlevotes for a given semester/year.
+
+        When the schedule for semester is known, Course instances are created in
+        the database for CourseEntities. These course instances can be then
+        referred to in SingleVote object course field. This will make data more
+        consistent and opening times easier to compute.
+        """
+        with transaction.atomic():
+            cls.objects.filter(value=0, correction=0).delete()
+            course: Course
+            for course in Course.objects.filter(semester=semester):
+                cls.objects.filter(
+                    models.Q(state__semester_winter_id=semester.id) |
+                    models.Q(state__semester_summer_id=semester.id),
+                    entity_id=course.entity_id,
+                    course__isnull=True
+                ).update(course=course)

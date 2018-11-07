@@ -4,14 +4,19 @@
     "semicolon": [true, "always"],
     "quotemark": [true, "double"],
     "space-before-function-paren": false,
-    "indent": [true, "tabs", 4],
+    "indent": [true, "spaces", 4],
     "ter-indent": [
-      true, "tab",
+      true, 4,
       {
         "SwitchCase": 1
       }
     ],
     "new-parens": false,
-    "trailing-comma": false
+    "max-line-length": [true, 80],
+    "trailing-comma": false,
+    "variable-name": [
+      true,
+      "check-format"
+    ]
   }
 }

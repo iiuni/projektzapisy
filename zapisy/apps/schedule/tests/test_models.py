@@ -18,8 +18,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule import feeds
 import apps.enrollment.courses.tests.factories as enrollment_factories
-from apps.enrollment.records.tests.factories import RecordFactory
-from apps.enrollment.records.models import Record
+from apps.enrollment.records.models import Record, RecordStatus
 
 from . import factories
 from zapisy import common
@@ -402,7 +401,7 @@ class EventTestCase(TestCase):
 
     def test_get_absolute_url__group(self):
         event = factories.EventCourseFactory.create()
-        self.assertEqual(event.get_absolute_url(), '/records/%s/records' % event.group_id)
+        self.assertEqual(event.get_absolute_url(), '/courses/group/%s' % event.group_id)
 
     def test_clean__overlapping_term(self):
         event = Event.objects.all()[0]
@@ -606,7 +605,7 @@ class EventTestCase(TestCase):
         students = StudentFactory.create_batch(random.randint(10, 20))
         group = enrollment_factories.GroupFactory()
         for student in students:
-            RecordFactory(student=student, group=group, status=Record.STATUS_ENROLLED)
+            Record.objects.create(student=student, group=group, status=RecordStatus.ENROLLED)
         users = [student.user for student in students]
         event = factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
                                        interested=users, course=group.course)

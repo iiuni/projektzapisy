@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('time', models.DateTimeField(auto_now_add=True, verbose_name=b'Czas do\xc5\x82\xc4\x85czenia do kolejki')),
                 ('edited', models.DateTimeField(auto_now=True, verbose_name=b'Czas ostatniej zmiany')),
-                ('priority', models.PositiveSmallIntegerField(default=1, verbose_name=b'priorytet', validators=[apps.enrollment.records.models.queue_priority])),
+                ('priority', models.PositiveSmallIntegerField(default=1, verbose_name=b'priorytet')),
                 ('deleted', models.BooleanField(default=False)),
             ],
             options={

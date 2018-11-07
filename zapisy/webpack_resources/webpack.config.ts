@@ -13,7 +13,9 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const WebpackShellPlugin = require("webpack-shell-plugin");
+
 
 // Leave one cpu free for the ts type checker
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length - 1 });
@@ -181,16 +183,6 @@ const webpackConfig: webpack.Configuration = {
 				},
 			}),
 		],
-		splitChunks: {
-			cacheGroups: {
-			  	commons: {
-					name: "commons",
-					filename: "common_chunks.js",
-					chunks: "initial",
-					minChunks: 2
-			  	}
-			},
-		},
 	},
 	module: {
 		rules: [
@@ -301,7 +293,8 @@ const webpackConfig: webpack.Configuration = {
 		],
 		extensions: [".ts", ".js", ".vue", ".tsx", ".png", ".jpg", ".gif"],
 		alias: {
-			"vue$": "vue/dist/vue.runtime.esm.js",
+			vue$: "vue/dist/vue.runtime.esm.js",
+			vuex$: "vuex/dist/vuex.esm.js",
 		},
 	},
 	resolveLoader: {
@@ -346,6 +339,7 @@ const webpackConfig: webpack.Configuration = {
 				{ loader: "babel-loader" },
 			],
 		}),
+		new VueLoaderPlugin(),
 		new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true }),
 	],
 };

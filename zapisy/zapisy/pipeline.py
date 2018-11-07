@@ -332,47 +332,6 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/courses.min.js',
     },
-    'schedule': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            # 'js/components/schedule.js',
-            # 'js/enrollment/records/course.js',
-            # 'js/enrollment/records/course-group.js',
-            # 'js/enrollment/records/schedule-course-term.js',
-            # 'js/enrollment/views/schedule.js',
-        ),
-
-        'output_filename': 'js/schedule.min.js',
-    },
-    'prototype': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/components/sidebar.js',
-            'js/components/topBarFilter.js',
-            'js/components/schedule.js',
-            'js/components/messageBox.js',
-            'js/common/listFilter.js',
-            'js/common/listFilter-courseType.js',
-            'js/common/FilteredCoursesList.js',
-            'js/common/courses-list-filters-ui.js',
-            'js/enrollment/records/PrototypeCoursesList.js',
-            'js/enrollment/records/course.js',
-            'js/enrollment/records/course-group.js',
-            'js/enrollment/records/schedule-course-term.js',
-        ),
-        'output_filename': 'js/prototype.min.js',
-    },
-
     'employeelist': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -383,13 +342,7 @@ PIPELINE_JS = {
             'js/common/bootstrap-dropdown.js',
             'js/jquery/jquery-tmpl/jquery.tmpl.min.js',
             'js/components/sidebar.js',
-            'js/components/schedule.js',
             'js/common/listFilter.js',
-            'js/enrollment/records/course.js',
-            'js/enrollment/records/course-group.js',
-            'js/enrollment/records/schedule-course-term.js',
-            'js/enrollment/views/user-schedule.js',
-            'js/enrollment/users/templates/employee.js',
             'js/enrollment/users/employees-list.js',
         ),
         'output_filename': 'js/employeelist.min.js',
@@ -404,13 +357,7 @@ PIPELINE_JS = {
             'js/common/bootstrap-dropdown.js',
             'js/jquery/jquery-tmpl/jquery.tmpl.min.js',
             'js/components/sidebar.js',
-            'js/components/schedule.js',
             'js/common/listFilter.js',
-            'js/enrollment/records/course.js',
-            'js/enrollment/records/course-group.js',
-            'js/enrollment/records/schedule-course-term.js',
-            'js/enrollment/views/user-schedule.js',
-            'js/enrollment/users/templates/student.js',
             'js/enrollment/users/students-list.js',
         ),
         'output_filename': 'js/studentlist.min.js',
@@ -464,6 +411,7 @@ PIPELINE_JS = {
 
     },
 
+
     'preferences': {
         'source_filenames': (
             'js/jquery/jquery-1.5.2.js',
@@ -474,6 +422,9 @@ PIPELINE_JS = {
             'js/common/bootstrap-dropdown.js',
             'js/components/messageBox.js',
             'js/components/topBarFilter.js',
+            #'js/common/listFilter.js',
+            #'js/common/listFilter-courseType.js',
+            #'js/offer/proposal/proposals-list.js'
         ),
         'output_filename': 'js/preferenes.min.js',
 

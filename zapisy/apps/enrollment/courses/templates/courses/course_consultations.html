@@ -1,0 +1,28 @@
+{% load i18n %}
+<h3>{% trans "Konsultacje prowadzących" %}:</h3>
+<br>
+
+{% if teachers %}
+    <table>
+        <thead>
+        <tr>
+            <td>{% trans "Imię i nazwisko" %}</td>
+            <td>{% trans "Pokój" %}</td>
+            <td>{% trans "Konsultacje" %}</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for teacher in teachers %}
+            <tr>
+                <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
+                    {{ teacher.user.get_full_name }}</a></td>
+                <td>{{ teacher.room|default:"" }}</td>
+                <td>{{ teacher.consultations }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% else %}
+    {% trans "Brak informacji" %}.
+{% endif %}

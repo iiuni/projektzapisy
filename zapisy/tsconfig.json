@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
+    "experimentalDecorators": true,
     "sourceMap": true,
     "target": "es6",
     "alwaysStrict": true,

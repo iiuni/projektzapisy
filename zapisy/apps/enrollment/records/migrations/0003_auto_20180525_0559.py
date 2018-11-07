@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='queue',
             name='priority',
-            field=models.PositiveSmallIntegerField(default=1, validators=[apps.enrollment.records.models.queue_priority], verbose_name='priorytet'),
+            field=models.PositiveSmallIntegerField(default=1, verbose_name='priorytet'),
         ),
         migrations.AlterField(
             model_name='queue',

@@ -8,9 +8,8 @@ from apps.enrollment.courses.models.group import Group, \
     GROUP_TYPE_CHOICES
 
 from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.course import Course
 
-from apps.enrollment.records.models import Record
+from apps.enrollment.records import models as records_models
 from .section import SectionOrdering
 from .saved_ticket import SavedTicket
 from .origin import Origin
@@ -82,20 +81,14 @@ class Poll(models.Model):
 
         return SafeText(res)
 
-    def is_student_entitled_to_poll(self, student):
+    def is_student_entitled_to_poll(self, student: Student):
+        """Checks if the student should be able to participate in the poll."""
         if self.group:
-            rec = Record.objects.filter(student=student,
-                                        group=self.group,
-                                        status=Record.STATUS_ENROLLED)
-            try:
-                rec[0]
-            except BaseException:
+            if not records_models.Record.is_enrolled(student.id, self.group_id):
                 return False
-
         if self.studies_type:
             if self.studies_type != student.program:
                 return False
-
         return True
 
     def is_user_entitled_to_view_result(self, user):
@@ -184,7 +177,7 @@ class Poll(models.Model):
         return [g for g in groups if g.pk not in polls]
 
     @staticmethod
-    def get_current_polls(student=None):
+    def get_current_polls(student: Student):
         semester = Semester.objects.get(is_grade_active=True)
         where = [
             '((SELECT COUNT(*) FROM ticket_create_publickey WHERE poll_id = poll_poll.id GROUP BY poll_id) > 0)']
@@ -253,9 +246,9 @@ class Poll(models.Model):
 
     @staticmethod
     def get_all_polls_for_student(student):
-        groups = Record.objects.filter(student=student,
-                                       status=Record.STATUS_ENROLLED).select_related('group')\
-            .values_list('group__id', flat=True)
+        groups = records_models.Record.objects.filter(
+            student=student, status=records_models.RecordStatus.ENROLLED).select_related('group').values_list(
+                'group__id', flat=True)
 
         return [x for x in Poll.get_current_polls(
             student=student) if not x.group or x.group.id in groups]
