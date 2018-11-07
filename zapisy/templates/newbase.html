@@ -11,11 +11,11 @@
 
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="utf-8">
     <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
-    <meta name="description"
-          content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+    <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
 
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
@@ -35,19 +35,19 @@
         gtag('config', 'UA-109984921-1');
     </script>
 
-    <script type="text/javascript" src="{% static "vendor.js" %}"></script>
+    <script type="text/javascript" src="{% static " vendor.js" %}"></script>
     {% render_bundle "main" %}
     {% block rendered_bundles %}
     {% endblock %}
     {% block styles %}
     {% endblock %}
     <script type="text/javascript">
-        const user_is_student = {% if request.user.student %}true{% else %}false{%endif %};
+        const user_is_student = {% if request.user.student %}true{% else %} false{% endif %};
     </script>
     {% block js %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
     <script src="{% static 'js/cookieconsent.min.js' %}"></script>
     <script>
         window.addEventListener("load", function () {
@@ -70,44 +70,46 @@
             })
         });
     </script>
-    <script src="{% static "js/common/utils.js" %}"></script>
-    <script src="{% static "js/common/base.js" %}"></script>
+    <script src="{% static " js/common/utils.js" %}"></script>
+    <script src="{% static " js/common/base.js" %}"></script>
 </head>
+
 <body>
-<div class="container-fluid p-0">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    <div class="container-fluid p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="container collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li{% block enrollment_active %}{% endblock %} class="nav-item">
-                    <a href="{% url 'my-prototype' %}" class="nav-link">System Zapisów</a>
-                </li>
-                <li{% block grade_active %}{% endblock %} class="nav-item">
-                    <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
-                </li>
-                <li{% block offer_active %}{% endblock %} class="nav-item">
-                    <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
-                </li>
-                {% if perms.courses.view_stats %}
-                    <li{% block statistics_active %}{% endblock %} class="nav-item">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li {% block enrollment_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'my-prototype' %}" class="nav-link">System Zapisów</a>
+                    </li>
+                    <li {% block grade_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
+                    </li>
+                    <li {% block offer_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
+                    </li>
+                    {% if perms.courses.view_stats %}
+                    <li {% block statistics_active %}{% endblock %} class="nav-item">
                         <a href="{% url 'statistics:main' %}" class="nav-link">Statystyki</a>
                     </li>
-                {% endif %}
-                <li{% block events_active %}{% endblock %}>
-                    <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
-                </li>
-            </ul>
-            {% if user.is_authenticated %}
+                    {% endif %}
+                    <li {% block events_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                    </li>
+                </ul>
+                {% if user.is_authenticated %}
                 <div class="navbar-nav ml-auto">
                 <span class="navbar-text">
                     <strong>
                         {{ user.get_full_name }}
                     </strong>
                 </span>
-                    <ul class="navbar-nav ml-auto">
+                    <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
                         </li>
@@ -160,6 +162,7 @@
                                     <input type="hidden" name="next" value="{{ request.path }}"/>
                                 {% endif %}
                                 <div class="form-group">
+                                    <label>Login</label>
                                     <input type="text" class="form-control" id="id_login" name="username"
                                            placeholder="Użytkownik">
                                 </div>
@@ -175,37 +178,37 @@
                                         Pamiętaj mnie
                                     </label>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Zaloguj</button>
+                                <button type="submit" class="btn btn-primary" id="btn-no-usos">Zaloguj</button>
                             </form>
                         </div>
                         {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}
                     </li>
                 </ul>
             {% endif %}
-        </div>
-    </nav>
-    <div class="top">
-        <div class="logo header">
-            <div class="container">
-                <a href="/">
-                    <img src="{% static 'images/logo_UWr.svg' %}" alt="Uniwersytet Wrocławski">
-                </a>
+            </div>
+        </nav>
+        <div class="top">
+            <div class="logo header">
+                <div class="container">
+                    <a href="/">
+                        <img src="{% static 'images/logo_UWr.svg' %}" alt="Uniwersytet Wrocławski">
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="wrapper">
-    <div class="container p-0">
-        <div class="row">
-            <div class="col">
-                <ul class="nav nav-tabs" role="tablist">
-                    {% block system_menu %}
-                    {% endblock %}
-                </ul>
+    <div class="wrapper">
+        <div class="container p-0">
+            <div class="row">
+                <div class="col">
+                    <ul class="nav nav-tabs" role="tablist">
+                        {% block system_menu %}
+                        {% endblock %}
+                    </ul>
+                </div>
             </div>
-        </div>
-        {% if request.path != '/' %}
+            {% if request.path != '/' %}
             <div class="row">
                 <div class="col">
                     <nav aria-label="breadcrumb" role="navigation">
@@ -216,47 +219,48 @@
                     </nav>
                 </div>
             </div>
-        {% endif %}
-        <div class="row">
-            <div class="col">
-                {% block messages %}
+            {% endif %}
+            <div class="row">
+                <div class="col">
+                    {% block messages %}
                     {% for message in messages %}
-                        <div class="alert alert-info {{ message.tags }}">
-                            {{ message }}
-                        </div>
+                    <div class="alert alert-info {{ message.tags }}">
+                        {{ message }}
+                    </div>
                     {% endfor %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="row">
+                {% block topContent %}{% endblock %}
+            </div>
+            <div class="row">
+                {% block content %}
                 {% endblock %}
             </div>
-        </div>
-        <div class="row">
-            {% block topContent %}{% endblock %}
-        </div>
-        <div class="row">
-            {% block content %}
-            {% endblock %}
-        </div>
-        <div class="row">
-            <div class="col">
-                <footer>
-                    <p>
-                        &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-                        {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+            <div class="row">
+                <div class="col">
+                    <footer>
+                        <p>
+                            &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
                             <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-                        {% endif %}
-                        | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
-                        Wygenerowano: {% now "H:i:s" %}
-                        {% should_display_debug as display_debug %}
-                        {% if display_debug is True %}
+                            {% endif %}
+                            | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                            Wygenerowano: {% now "H:i:s" %}
+                            {% should_display_debug as display_debug %}
+                            {% if display_debug is True %}
                             {% autoescape off %}
-                                {% debug_info %}
+                            {% debug_info %}
                             {% endautoescape %}
-                        {% endif %}
-                    </p>
-                </footer>
+                            {% endif %}
+                        </p>
+                    </footer>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

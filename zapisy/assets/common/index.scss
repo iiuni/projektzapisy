@@ -13,8 +13,162 @@ html {
   overflow-x: hidden; 
 }
 
-
-.logo {
-  background: #00709e;
+a {
+  cursor: pointer;
 }
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+div.header {
+  background: #00709e;
+ /* Old browsers */
+  height: 96px;
+}
+
+div.top .topbar {
+  position: relative;
+  height: auto!important;
+}
+
+div.top .topbar .fill {
+  position: relative;
+}
+
+div.top .topbar ul a {
+  color: #FFFFFF;
+  font-size: 15px;
+}
+
+div.top .systemtopbar .fill {
+  background-color: #00709e;
+  background-image: none;
+  box-shadow: none;
+}
+
+div.top .systemtopbar ul a {
+  padding: 8px 10px 8px 10px;
+  color: #FFFFFF;
+  font-size: 15px;
+}
+
+div.top .systemtopbar ul li {
+  margin-right: 5px;
+  background-color: #005f92;
+  font-size: 15px;
+  -webkit-border-radius: 5px  5px 0 0;
+  -moz-border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
+}
+
+div.top .systemtopbar ul li.active {
+  background-color: #FFFFFF;
+  color: #005f92;
+  background-image: none;
+  font-size: 15px;
+}
+
+div.top .systemtopbar ul li.active a {
+  font-weight: normal;
+  text-shadow: none;
+  background-color: transparent;
+  color: #005f92;
+  background-image: none;
+  font-size: 15px;
+}
+
+#login-dp {
+    min-width: 250px;
+    padding: 14px 14px 0;
+    overflow:hidden;
+    z-index: 10000;
+}
+
+.dropdown-menu {
+  padding: 10px
+}
+
+#btn-usos {
+  padding: 10px 0;
+  // margin-bottom:10px auto;
+  margin: 0 auto;
+  display: block;
+  background-color: #00709e;
+  text-align: center;
+  background-image: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+}
+
+#btn-no-usos {
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  background-color: #00709e;
+  background-image: none;
+  margin-top: 10px
+}
+
+#btn-no-usos:hover, #btn-usos:hover {
+  background-color: #2696C4;
+}
+
+#login-dp .row {
+  margin-left: 0px;
+}
+
+#login-dp .form-group {
+  margin-bottom: 10px;
+}
+
+#login-dp .form-group label {
+  float: none;
+  color: #808080;
+}
+
+div.top .topbar .inline-inputs label {
+  float: none;
+  color: #FFFFFF;
+}
+
+div.news_list {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+div.news_list p {
+  font-size: 14px;
+}
+
+.hero-unit {
+  padding-top: 30px;
+  padding-bottom: 45px;
+  margin-top: 10px;
+}
+
+.hero-unit p {
+  font-size: 14px;
+}
+
+div.loginbox {
+  background-color: #f5f5f5;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+}
+
+div.space {
+  margin-top: 25px;
+}
+
+div.space2 {
+  margin-top: 50px;
+}
+
 
