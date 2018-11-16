@@ -65,17 +65,11 @@ def server(ip, port, no_package_install):
 
 @click.command()
 @click.argument("app", default="")
-@click.option(
-    "--frontend", default=False, help='run selenium tests', is_flag=True)
 def tests(app, frontend):
     """
     Run tests
     """
-    if frontend:
-        local('xvfb-run python manage.py test test_app --nomigrations')
-    else:
-        run_locally_with_manage_py(
-            'test {app} --nomigrations'.format(app=app))
+    run_locally_with_manage_py('test {app} --nomigrations'.format(app=app))
 
 
 @click.group()

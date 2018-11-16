@@ -219,8 +219,6 @@ INSTALLED_APPS = (
     'el_pagination',
     'apps.notifications',
     'django_cas_ng',
-
-    'test_app',
     'django_rq',
     'webpack_loader',
 )
