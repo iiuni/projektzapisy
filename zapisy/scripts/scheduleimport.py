@@ -298,7 +298,7 @@ def import_schedule(file, semester):
                                            end_time=end_time,
                                            classroom=classroom,
                                            group=group)
-                term.classrooms = classrooms
+                term.classrooms.set(classrooms)
                 term.save()
 
             except AttributeError:

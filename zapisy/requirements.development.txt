@@ -1,5 +1,5 @@
 -r requirements.common.txt
 -r requirements.test.txt
 
-django-debug-toolbar==1.5
+django-debug-toolbar==1.9
 click==6.7

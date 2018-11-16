@@ -19,7 +19,7 @@ class GetterManager(models.Manager):
         try:
             return self.get(visible=True, records_closing__gte=datetime.now())
         except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return self.filter(visible=True).order_by('-records_closing')[0]
+            return self.filter(visible=True).order_by('records_closing').last()
 
 
 class Semester(models.Model):

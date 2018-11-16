@@ -55,9 +55,11 @@ def server(ip, port, no_package_install):
         "python", "manage.py", "runserver", "{ip}:{port}".format(
             ip=ip, port=port)])
     p2 = subprocess.Popen(["yarn", "devw"])
+    p3 = subprocess.Popen(["python", "manage.py", "rqworker", "default"])
 
     p1.wait()
     p2.wait()
+    p3.wait()
     sys.exit(0)
 
 
