@@ -15,8 +15,11 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const WebpackShellPlugin = require("webpack-shell-plugin");
 
-// Leave one cpu free for the ts type checker
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length - 1 });
+// Leave one cpu free for the ts type checker...
+const happyThreadPool = HappyPack.ThreadPool({
+	// ...but make sure we spawn at least one thread
+	size: Math.max(os.cpus().length - 1, 1)
+});
 
 const smp = new SpeedMeasurePlugin();
 
