@@ -115,6 +115,10 @@ div.top .systemtopbar ul li.active a {
   margin-top: 10px
 }
 
+.top {
+  background-color: #00709e;
+}
+
 #btn-no-usos:hover, #btn-usos:hover {
   background-color: #2696C4;
 }
@@ -171,4 +175,6 @@ div.space2 {
   margin-top: 50px;
 }
 
-
+#sidebar {
+  max-width: 380px;
+}
