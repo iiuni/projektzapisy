@@ -343,41 +343,6 @@ a.main-sidebar-toggle-button:hover
 	margin-top: 7px;
 }
 
-.main-filter-input .text
-{
-	border: 1px solid #999999;
-	height: 20px;
-	float: left;
-	background: white url('/static/images/search-ico.png') no-repeat 3px 4px;
-	padding: 1px 4px 1px 20px;
-
-	-moz-border-radius: 4px 0 0 4px;
-	-webkit-border-radius: 4px 0 0 4px;
-	border-radius: 4px 0 0 4px;
-}
-
-
-.main-filter-input .reset
-{
-	border: 1px solid #999999;
-	border-left: 1px dotted #999999;
-	height: 24px;
-	background-color: white;
-	font-weight: bold;
-
-	position: relative;
-	left: -5px;
-
-	-moz-border-radius: 0 4px 4px 0;
-	-webkit-border-radius: 0 4px 4px 0;
-	border-radius: 0 4px 4px 0;
-}
-
-.main-filter-input .reset:hover
-{
-	background-color: #cccccc;
-	cursor: pointer;
-}
 
 /*** PANEL FILTROWANIA - KOMPONENTY - koniec ***/
 

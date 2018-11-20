@@ -233,17 +233,11 @@ table th:nth-child(5) {
 }
 
 table.table-info th {
-  width: 100px;
-  background-color: #F9F9F9;
-  border-top-width: 1px;
-  border-bottom-width: 1px;
+  width: 120px;
 }
 
 table.table-info-big th {
   width: 200px;
-  background-color: #F9F9F9;
-  border-top-width: 1px;
-  border-bottom-width: 1px;
 }
 
 .controls form {

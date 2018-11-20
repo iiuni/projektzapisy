@@ -3,19 +3,19 @@
 <br>
 
 {% if teachers %}
-    <table>
+    <table class="table table-striped">
         <thead>
-        <tr>
-            <td>{% trans "Imię i nazwisko" %}</td>
-            <td>{% trans "Pokój" %}</td>
-            <td>{% trans "Konsultacje" %}</td>
-        </tr>
+            <tr>
+                <td scope="col">{% trans "Imię i nazwisko" %}</td>
+                <td scope="col">{% trans "Pokój" %}</td>
+                <td scope="col">{% trans "Konsultacje" %}</td>
+            </tr>
         </thead>
         <tbody>
         {% for teacher in teachers %}
             <tr>
-                <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
-                    {{ teacher.user.get_full_name }}</a></td>
+                <th scope="row"><a href="{% url 'employee-profile' employee.user.id %}" class="person">
+                    {{ teacher.user.get_full_name }}</a></th>
                 <td>{{ teacher.room|default:"" }}</td>
                 <td>{{ teacher.consultations }}</td>
             </tr>

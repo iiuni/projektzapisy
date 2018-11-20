@@ -9,16 +9,16 @@
 
     <div class="tutorial">
         <h2>{{ tutorial.grouper|decode_class_type_plural  }}</h2>
-        <table class="zebra-striped">
+        <table class="table table-striped">
             <thead>
             <tr>
                 {# Translators: nagłówek tabeli #}
-                <th>{% trans "Prowadzący" %}</th>
-                <th class="term">{% trans "Termin zajęć" %}</th>
-                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="number">{% trans "Limit" %}</th>
-                <th title="Liczba aktualnie zapisanych osób" class="number termEnrolledHeader">{% trans "Zapisani" %}</th>
-                <th title="Liczba osób oczekujących na zapis" class="number termQueuedHeader">{% trans "Kolejka" %}</th>
-                <th class="controls"></th>
+                <th scope="col">{% trans "Prowadzący" %}</th>
+                <th scope="col">{% trans "Termin zajęć" %}</th>
+                <th scope="col" title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="number">{% trans "Limit" %}</th>
+                <th scope="col" title="Liczba aktualnie zapisanych osób" class="number termEnrolledHeader">{% trans "Zapisani" %}</th>
+                <th scope="col" title="Liczba osób oczekujących na zapis" class="number termQueuedHeader">{% trans "Kolejka" %}</th>
+                <th ></th>
             </tr>
             </thead>
             <tbody>
@@ -49,7 +49,7 @@
                             <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
                                 <div>
                                     <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                    <button type="submit" class="btn small success setEnrolledButton"
+                                    <button type="submit" class="btn btn-success setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
                                         Zapisz
                                     </button>
@@ -59,7 +59,7 @@
                             <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
                                 <div>
                                     <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                    <button type="submit" class="btn small danger setEnrolledButton"
+                                    <button type="submit" class="btn btn-danger setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
                                         Wypisz
                                     </button>
