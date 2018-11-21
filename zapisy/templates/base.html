@@ -115,21 +115,21 @@
             <div class="container">
 
                 <ul class="topBarLinkContainer">
-                    <li{% block enrollment_active %}{% endblock %}>
+                    <li {% block enrollment_active %}{% endblock %}>
                         <a href="{% url 'course-list' %}">System Zapisów</a>
                     </li>
-                    <li{% block grade_active %}{% endblock %}>
+                    <li {% block grade_active %}{% endblock %}>
                         <a href="{% url 'grade-main' %}">Ocena Zajęć</a>
                     </li>
-                    <li{% block offer_active %}{% endblock %}>
+                    <li {% block offer_active %}{% endblock %}>
                         <a href="{% url 'offer-main' %}">Oferta</a>
                     </li>
                     {% if perms.courses.view_stats %}
-                        <li{% block statistics_active %}{% endblock %}>
+                        <li {% block statistics_active %}{% endblock %}>
                             <a href="{% url 'statistics:main' %}">Statystyki</a>
                         </li>
                     {% endif %}
-                    <li{% block events_active %}{% endblock %}>
+                    <li {% block events_active %}{% endblock %}>
                         <a href="{% url 'events:classrooms' %}">Sale</a>
                     </li>
 
