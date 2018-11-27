@@ -10,7 +10,6 @@
   // Create the defaults once
   var pluginName = 'bootstrapDualListbox',
     defaults = {
-      bootstrap2Compatible: false,
       filterTextClear: 'show all',
       filterPlaceHolder: 'Filter',
       moveSelectedLabel: 'Move selected',
