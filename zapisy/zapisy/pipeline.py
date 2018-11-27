@@ -168,7 +168,6 @@ PIPELINE_CSS = {
 
     'proposal': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/offer/proposal.css'

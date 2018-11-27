@@ -1,12 +1,12 @@
 {% extends "offer/manage/base.html" %}
-{% block proposals_active %}active{% endblock %}
+{% block proposals_active %} class = "active" {% endblock %}
 
 {% block content %}
 <script type="text/javascript" src="/static/js/common/bootstrap-modal.js" charset="utf-8"></script>
 
-<h1>Zarządzaj propozycjami</h1>
+<h1 class="text-dark font-weight-bold">Zarządzaj propozycjami</h1>
 
-<table>
+<table class="table text-muted">
   <thead>
     <tr>
       <th>Nazwa</th>

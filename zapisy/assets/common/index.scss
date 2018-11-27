@@ -174,3 +174,13 @@ div.space2 {
 #sidebar {
   max-width: 380px;
 }
+
+.nav-tabs>li>a{
+  background-color: #005f92;
+  color: #FFFFFF;
+}
+
+.nav-tabs>li.active>a{
+  background-color: #FFFFFF;
+  color: #005f92;
+}
