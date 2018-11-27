@@ -3,11 +3,7 @@
  */
 
 #id_requirements { width: 280px; height: 300px;}
-div
-{
-	background-color: blue !important;
-	height: 250px;
-}
+
 #main-container
 {
 	width: 1000px;
