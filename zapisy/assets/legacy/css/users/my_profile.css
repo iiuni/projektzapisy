@@ -1,0 +1,38 @@
+.info-table-header
+{
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 17px;
+    font-weight: bold;
+    color: black;
+}
+colgroup col.table-info-type 
+{
+	background-color: #F9F9F9;
+}
+.info-table-header:not(:first-child)
+{
+    margin-top: 40px;
+}
+.btn.btn-link 
+{
+    background-color: #E6E6E6;
+}
+.btn.btn-link:hover
+{
+    background-color: #D5D5D5;
+}
+a.btn.btn-link 
+{
+    /* color: #474747; */
+    color: black;
+}
+span
+{
+    color: #474747;
+    font-weight: bold;
+}
+.notification-type
+{
+    background-color: #F9F9F9;
+}

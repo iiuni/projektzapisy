@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "newbase.html" %}
 {% load compressed %}
 {% load static %}
 {% load i18n %}
@@ -37,17 +37,21 @@ $('.checkall').live('click', function(){
 {% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
-	Moje konto
+	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
+	{% trans "Moje konto" %}
 {% endblock %}
 
+<!-- ????? -->
 {% block main-subtitle %}Moje konto{% endblock %}
 
 {% block content %}
 
-
 <p class="info-table-header">Moje dane</p>
-    <table class="table-info">
+    <table class="table table-condensed">
+        <colgroup>
+            <col class="table-info-type"></col>
+            <col></col>
+        </colgroup>
         <tr>
             <th>login</th>
             <td>{{ request.user.username }}</td>
@@ -72,12 +76,12 @@ $('.checkall').live('click', function(){
     {%endif%}
     </table>
 
-    <a class="change_profile" href="{% url 'password_change' %}">zmień hasło</a>
+<a class="btn btn-link" href="{% url 'password_change' %}" role="button">Zmień hasło</a>
 &nbsp;
-<a href="{% url 'email_change' %}">zmień adres email</a>
+<a class="btn btn-link" href="{% url 'email_change' %}" role="button">Zmień adres email</a>
 {% if user.employee %}
 &nbsp;
-<a href="{% url 'consultations-change' %}">zmień inne dane</a>
+<a class="btn btn-link" href="{% url 'consultations-change' %}" role="button">Zmień inne dane</a>
 {% endif %}
 
 {% if user.employee %}
@@ -91,7 +95,11 @@ $('.checkall').live('click', function(){
 
 {% if user.student %}
 <p class="info-table-header">Moje studia</p>
-    <table class="table-info">
+    <table class="table table-condensed">
+        <colgroup>
+            <col class="table-info-type"></col>
+            <col></col>
+        </colgroup>
         <tr>
             <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
             <td>{{ user.student.ects }}</td>
@@ -112,7 +120,11 @@ $('.checkall').live('click', function(){
 {% endif %}
 
 <p class="info-table-header">Terminy</p>
-<table class="table-info-big">
+    <table class="table table-condensed">
+        <colgroup>
+            <col class="table-info-type"></col>
+            <col></col>
+        </colgroup>
     {% with dateFormatStr="l j E G:i" %}
         <tr>
             <th>Zniesienie limitu 35 ECTS</th>
@@ -166,7 +178,11 @@ $('.checkall').live('click', function(){
 
 {% if grade %}
     <p class="info-table-header">Udział w Ocenie zajęć</p>
-    <table class="table-info-big">
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
         {% for semester in grade %}
             <tr>
                 <td>{{ semester }}</td>
@@ -175,31 +191,27 @@ $('.checkall').live('click', function(){
     </table>
 {% endif %}
 
+
 {% if user.is_staff %}
 <p class="info-table-header">{%  trans "Ustawienie preferencji językowych" %}</p>
-{% get_available_languages as LANGUAGES %}
-<form method="post" action="{% url 'setlang' %}">
-    {% csrf_token %}
-    <table class="table-striped">
-        <tr>
-            <th>{%  trans "Select language" %}</th>
-            <th></th>
-        </tr>
-        <tr>
-            <td>
-                <select name="language">
-                    {% for lang in LANGUAGES %}
-                    <option value="{{ lang.0 }}"{% if request.session.django_language == lang.0 %}selected="selected"{% endif %}>{{ lang.1 }}</option>
-                    {% endfor %}
-                </select>
-            </td>
-            <td>
-                <button class="btn primary" type="submit">Ustaw</button>
-            </td>
-        </tr>
-    </table>
-</form>
+    <div>
+        {% get_available_languages as LANGUAGES %}
+        <form method="post" action="{% url 'setlang' %}">
+            <span>{%  trans "Wybierz język:" %}</span>
+            &nbsp;
+            {% csrf_token %}
+            <select class="btn btn-mini"  name="language">
+                {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}"{% if request.session.django_language == lang.0 %}selected="selected"{% endif %}>{{ lang.1 }}</option>
+                {% endfor %}
+            </select>
+            &nbsp;
+            <button class="btn primary" type="submit">Ustaw</button>
+        </form>
+    </div>
 {% endif %}
+
+
 <p class="info-table-header">Ustawienia powiadomień</p>
 
 <form method="POST" action="{% url 'notifications:save' %}">
@@ -208,35 +220,39 @@ $('.checkall').live('click', function(){
 
     {% regroup notifications|dictsort:"category" by category as categories_list %}
 
-
-
-    <table class="notifications">
-    {% for group in categories_list %}
-        <tr class="catgroup{{ forloop.counter }}">
-            <th>
-                {{ group.grouper }}
-            </th>
-            <th><input type="checkbox" class="checkall"></th>
-        </tr>
-        {% for form in group.list %}
-        <tr class="catgroup{{ forloop.parentloop.counter }}">
-            <td>{{ form.instance.get_type_display }}</td>
-            <td>{{ form.value }}
-                {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-                {% endfor %}</td>
-        </tr>
+    <table class="table table-condensed">
+        {% for group in categories_list %}
+            <tr class="catgroup{{ forloop.counter }} notification-type">
+                <th>
+                    {{ group.grouper }}
+                </th>
+                <th><input type="checkbox" class="checkall"></th>
+            </tr>
+            {% for form in group.list %}
+            <tr class="catgroup{{ forloop.parentloop.counter }}">
+                <td>{{ form.instance.get_type_display }}</td>
+                <td>{{ form.value }}
+                    {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}</td>
+            </tr>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
     </table>
-    <p>
-        <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
-    </p>
+</form>
+<p>
+    <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
+</p>
+<div class="d-flex flex-row-reverse">
     <button type="submit" class="btn success right">
         Zapisz
     </button>
-</form>
+</div>
+
 {% if perms.users.mailto_all_students %}
-    <a href="{% url 'email-students' %}">Wyślij wiadomość do studentów</a>
+<p class="info-table-header">Kontakt</p>
+<div class="mb-4">
+    <a class="btn btn-link" href="{% url 'email-students' %}" role="button">Wyślij wiadomość do studentów</a>
+</div>
 {% endif %}
 {% endblock %}
