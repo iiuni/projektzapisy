@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from apps.enrollment.records.exceptions import AlreadyNotAssignedException, NonGroupException, NonStudentException
+from apps.notifications2.notifier import notify_that_user_was_pulled_from_queue
 from apps.notifications.models import Notification
 
 import logging
@@ -303,7 +304,6 @@ class Group(models.Model):
             student=student, group=self, status=Record.STATUS_ENROLLED)
         if created:
             self.add_to_enrolled_counter(student)
-
         if commit:
             self.save()
 
@@ -394,6 +394,10 @@ class Group(models.Model):
                 current_limit = semester.get_current_limit()
                 if q.student.get_points_with_course(self.course) <= current_limit:
                     result, messages = self.add_student(q.student, return_group=True)
+
+                    if 'Student dopisany do grupy' in messages:
+                        notify_that_user_was_pulled_from_queue(q.student.user, self)
+
                     total_queues = 0
                     for old in Queue.objects.filter(
                             deleted=False,
