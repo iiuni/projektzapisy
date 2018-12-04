@@ -2,7 +2,10 @@
  * Aktualności
  */
 
-#news-content { margin-top: 15px; }
+#news-content 
+{ 
+  margin-top: 15px; 
+}
 
 .od-news-item
 {
@@ -24,7 +27,7 @@
   height: 1.5em;
   padding-right: 15px;
   vertical-align: sub;
-    font-style: italic;
+  font-style: italic;
 }
 
 .od-news-body
@@ -33,57 +36,17 @@
   padding-top: 10px;
 }
 
-#od-news-search-form {
-  float:left;
-  margin-bottom: 0px;
-}
-
-.od-news-navigator
-{
-  display: inline-block;
-  margin-right: 30px;
-}
-
-.od-news-navigator ul#news-nav-groups
-{
-  display: inline;
-  padding: 0 15px;
-}
-
-.od-news-navigator #news-nav-groups li
-{
-  display: inline;
-}
-
-.od-news-navigator #news-nav-groups li:before
-{
-  content: '| ';
-  padding: 10px;
-  font-size: 16px;
-  color: #cccccc;
-}
-
-.od-news-navigator #news-nav-groups li:first-child:before
-{
-  content: '';
-  padding: 0;
-}
-
-.od-news-footer
-{
-  margin-top: 1em;
-  text-align: left;
+ #od-news-search-reset {
+ border: 0;
+ background: none;
+ box-shadow: none;
+ border-radius: 0px;
 }
 
 #od-news-top-bar
 {
   padding: 15px;
-  text-align: right;
-}
-
-#od-news-rss-icon img
-{
-  vertical-align: bottom;
+  text-align: center;
 }
 
 #od-news-form

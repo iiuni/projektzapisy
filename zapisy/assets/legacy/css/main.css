@@ -199,18 +199,20 @@
 a.main-sidebar-toggle-button
 {
 	border: 1px solid #cccccc;
-
 	display: block;
 	width: 16px;
 	height: 16px;
 	padding: 2px;
 
-	background: white;
 	text-decoration: none;
-	color: black;
+	background: white;
 	overflow: hidden;
 	text-align: center;
 	font-weight: bold;
+	color: black;
+	border: 0;
+	box-shadow: none;
+	border-radius: 0px;
 }
 
 #main-content-container.sidebar-visible.sidebar-right a.main-sidebar-toggle-button.hide,
