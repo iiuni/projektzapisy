@@ -49,3 +49,12 @@ fieldset
 {
     padding-bottom: 30px;
 }
+label
+{
+    min-width: 80px;
+    padding-right: 10px;
+}
+.btn.success
+{
+    margin-bottom: 15px;
+}
