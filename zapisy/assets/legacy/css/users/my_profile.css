@@ -1,8 +1,12 @@
+/* .container
+{
+    font-size:10px;
+} */
 .info-table-header
 {
     margin-top: 20px;
     margin-bottom: 15px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: bold;
     color: black;
 }
@@ -17,6 +21,7 @@ colgroup col.table-info-type
 .btn.btn-link 
 {
     background-color: #E6E6E6;
+    margin: 3px;
 }
 .btn.btn-link:hover
 {
@@ -29,10 +34,18 @@ a.btn.btn-link
 }
 span
 {
-    color: #474747;
+    color: #212529;
     font-weight: bold;
 }
 .notification-type
 {
     background-color: #F9F9F9;
+}
+.input
+{
+    padding-left: 15px;
+}
+fieldset
+{
+    padding-bottom: 30px;
 }
