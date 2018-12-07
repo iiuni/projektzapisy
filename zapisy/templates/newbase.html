@@ -165,13 +165,18 @@
                                 <div class="form-group">
                                     <label>Login</label>
                                     <input type="text" class="form-control" id="id_login" name="username"
-                                           placeholder="Użytkownik">
+                                           placeholder="Użytkownik" required
+                                           oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
+                                           oninput="this.setCustomValidity('')">
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleDropdownFormPassword1">Password</label>
+                                    <label>Hasło</label>
                                     <input type="password" class="form-control" id="id_password"
-                                            {# name="password" placeholder="Hasło">
+                                            {# name="password" placeholder="Hasło" required
+                                            oninvalid="this.setCustomValidity('Hasło jest wymagane')"
+                                            oninput="this.setCustomValidity('')">
                                 </div>
+
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" value="true"
                                            id="remember" name="remember_me">
@@ -180,6 +185,7 @@
                                     </label>
                                 </div>
                                 <button type="submit" class="btn btn-primary" id="btn-no-usos">Zaloguj</button>
+                                <a class="btn btn-primary" id="btn-no-usos" href="{% url 'password_reset' %}">Resetuj hasło</a> 
                             </form>
                         </div>
                         {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}

@@ -78,20 +78,14 @@ div.top .systemtopbar ul li.active a {
   font-size: 15px;
 }
 
-#login-dp {
-    min-width: 250px;
-    padding: 14px 14px 0;
-    overflow:hidden;
-    z-index: 10000;
-}
-
 .dropdown-menu {
-  padding: 10px
+  padding: 12px;
+  background: rgba(255, 251, 251, 0.7); 
 }
 
 #btn-usos {
   padding: 10px 0;
-  // margin-bottom:10px auto;
+  //margin-bottom:10px auto;
   margin: 0 auto;
   display: block;
   background-color: #00709e;
@@ -108,7 +102,7 @@ div.top .systemtopbar ul li.active a {
   font-weight: bold;
   background-color: #00709e;
   background-image: none;
-  margin-top: 10px
+  margin-top: 10px;
 }
 
 .top {
@@ -117,6 +111,13 @@ div.top .systemtopbar ul li.active a {
 
 #btn-no-usos:hover, #btn-usos:hover {
   background-color: #2696C4;
+}
+
+#login-dp {
+  min-width: 250px;
+  padding: 14px 14px 0;
+  overflow:hidden;
+  z-index: 10000;
 }
 
 #login-dp .row {
