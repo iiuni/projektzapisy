@@ -279,6 +279,16 @@ SECURE_BROWSER_XSS_FILTER = True
 # JavaScript code in a text/plain file.
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# How long should our site be remembered to be HTTPS-only
+# by browsers.
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+
+# Manifest the will to be included in so-called browser preload list,
+# physically distributed with browsers (Chrome for instance) to
+# basically do what HSTS would do, but even when a specific site
+# has never been seen before.
+SECURE_HSTS_PRELOAD = True
+
 DEBUG_TOOLBAR_ALLOWED_USERS = env.list('DEBUG_TOOLBAR_ALLOWED_USERS', default=[])
 DEBUG_TOOLBAR_PANELS = env.list('DEBUG_TOOLBAR_PANELS', default=[])
 
