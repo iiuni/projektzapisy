@@ -75,7 +75,7 @@ def semester_info(request, semester_id):
 
 def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
     """Retrieves course and relevant data for the request.
-    
+
     If course does not exist it returns two None objects.
     """
     course: Course = None
@@ -140,7 +140,7 @@ def course_ajax(request, slug):
     })
 
 
-def course_page(request, slug):
+def course_view(request, slug):
     course, data = course_view_data(request, slug)
     if course is None:
         raise Http404
