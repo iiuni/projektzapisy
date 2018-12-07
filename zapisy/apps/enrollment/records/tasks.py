@@ -16,8 +16,7 @@ from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 @job
 def pull_from_queue(group_id: int):
     """This function will pull students from the queue as long as possible."""
-    while Record.pull_record_into_group(group_id):
-        pass
+    Record.fill_group(group_id)
 
 
 @receiver(GROUP_CHANGE_SIGNAL)
