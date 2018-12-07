@@ -74,7 +74,7 @@ def swap(request):
                         lists[g.id].append(r.student)
                         students[r.student_id] = g
                     elif r.status == RecordStatus.QUEUED:
-                        queues[g.id].append(q.student)
+                        queues[g.id].append(r.student)
 
             for group in groups:
                 group.swaps = []
