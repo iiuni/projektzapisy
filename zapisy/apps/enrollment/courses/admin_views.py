@@ -34,44 +34,7 @@ class SemesterImportForm(forms.Form):
 
 @staff_member_required
 def import_semester(request):
-    if request.method == 'POST':
-        form = SemesterImportForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            xmlfile = NamedTemporaryFile()
-
-            for chunk in request.FILES['file'].chunks():
-                xmlfile.write(chunk)
-
-            xmlfile.seek(0)
-
-            try:
-                import_semester_schedule(xmlfile)
-            except Exception:
-                errormsg = str(exc_info()[0]) + ' ' + str(exc_info()[1]) + '\n\n'
-                errormsg += 'Traceback:\n'
-                errormsg += ''.join([str for str in format_tb(exc_info()[2])])
-                messages.error(request, "Błąd!")
-            else:
-                errormsg = None
-                messages.success(request, "Plik został zaimportowany.")
-            finally:
-                xmlfile.close()
-
-            return render(
-                request, 'enrollment/courses/admin/import_semester.html',
-                {
-                    'form': form,
-                    'errormsg': errormsg,
-                }
-            )
-    else:
-        form = SemesterImportForm()
-
-    return render(
-        request, 'enrollment/courses/admin/import_semester.html',
-        {'form': form}
-    )
+    return HttpResponse('Not implemented', status=501)
 
 
 class ScheduleImportForm(forms.Form):
