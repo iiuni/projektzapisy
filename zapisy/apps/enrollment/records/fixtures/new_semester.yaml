@@ -19,7 +19,7 @@
   fields:
     name: ECTS
 
-# We will have two students.
+# We will have three students.
 - model: auth.User
   pk: 1
   fields:
@@ -40,7 +40,18 @@
     user_id: 2
     matricula: 100002
 
-# Bolek's T0 will be 25 hours after Lolek's.
+- model: auth.User
+  pk: 3
+  fields:
+    username: tola
+- model: users.Student
+  pk: 3
+  fields:
+    user_id: 3
+    matricula: 100003
+
+
+# Bolek's T0 will be 25 hours after Lolek's. Tola's T0 is two days after.
 - model: records.T0Times
   pk: 1
   fields:
@@ -53,6 +64,12 @@
     student_id: 2  # Lolek
     semester_id: 1
     time: 2011-09-24T11:00:00+02:00
+- model: records.T0Times
+  pk: 3
+  fields:
+    student_id: 3  # Tola
+    semester_id: 1
+    time: 2011-09-26T13:00:00+02:00
 
 # There will be three courses.
 - model: courses.CourseEntity
@@ -133,9 +150,15 @@
   fields:
     course_id: 3
     type: '1'  # Lecture
-    limit: 2
+    limit: 3
 - model: courses.Group
   pk: 32
+  fields:
+    course_id: 3
+    type: '2'  # Exercises
+    limit: 1
+- model: courses.Group
+  pk: 33
   fields:
     course_id: 3
     type: '2'  # Exercises

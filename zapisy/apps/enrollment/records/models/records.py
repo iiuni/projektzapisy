@@ -13,6 +13,7 @@ from typing import Dict, List, Optional
 
 from choicesenum import ChoicesEnum
 from django.db import DatabaseError, models, transaction
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import Group, StudentPointsView, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
@@ -39,6 +40,10 @@ class Record(models.Model):
     group = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     status = models.CharField(max_length=1, choices=RecordStatus.choices())
+    priority = models.IntegerField(
+        verbose_name='priorytet',
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(10)])
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -179,6 +184,7 @@ class Record(models.Model):
         for record in records:
             if record.status == RecordStatus.QUEUED:
                 ret_dict[record.group_id]['enqueued'] = True
+                ret_dict[record.group_id]['priority'] = record.priority
             elif record.status == RecordStatus.ENROLLED:
                 ret_dict[record.group_id]['enrolled'] = True
         return ret_dict
@@ -285,6 +291,16 @@ class Record(models.Model):
         return removed_groups
 
     @classmethod
+    def set_queue_priority(cls, student: Student, group: Group, priority: int) -> bool:
+        """If the student is in a queue for the group, sets the queue priority.
+
+        Returns true if the priority is changed.
+        """
+        num = cls.objects.filter(
+            student=student, group=group, status=RecordStatus.QUEUED).update(priority=priority)
+        return num == 1
+
+    @classmethod
     def pull_record_into_group(cls, group_id: int) -> bool:
         """Checks if there are vacancies in the group and pulls the first
         student from the queue if possible.
@@ -376,17 +392,25 @@ class Record(models.Model):
                         self.status = RecordStatus.REMOVED
                         self.save()
                         return []
+
             # Check if he can be enrolled at all.
             if not self.can_enroll(self.student, group):
                 self.status = RecordStatus.REMOVED
                 self.save()
                 return []
-            # Remove him from all other groups (and their queues) of the same
-            # type. These groups need to be afterwards pulled into (triggered).
+            # Remove him from all parallel groups (and queues of lower
+            # priority). These groups need to be afterwards pulled into
+            # (triggered).
             other_groups_query = records.filter(
-                group__course__id=group.course_id, group__type=group.type).exclude(id=self.pk)
-            # The list must be computed now, after the update it would be empty.
-            other_groups_query_list = list(other_groups_query.values_list('group_id', flat=True))
+                group__course__id=group.course_id,
+                group__type=group.type).exclude(id=self.pk).filter(
+                    models.Q(priority__lt=self.priority) | models.Q(status=RecordStatus.ENROLLED))
+            # The list of groups to trigger must be computed now, after the
+            # update it would be empty. Note that this list should have at most
+            # one element.
+            other_groups_query_list = list(
+                other_groups_query.filter(status=RecordStatus.ENROLLED).values_list(
+                    'group_id', flat=True))
             other_groups_query.update(status=RecordStatus.REMOVED)
             self.status = RecordStatus.ENROLLED
             self.save()
