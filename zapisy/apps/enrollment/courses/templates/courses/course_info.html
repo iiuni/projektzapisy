@@ -18,7 +18,13 @@
                 <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="number">{% trans "Limit" %}</th>
                 <th title="Liczba aktualnie zapisanych osób" class="number termEnrolledHeader">{% trans "Zapisani" %}</th>
                 <th title="Liczba osób oczekujących na zapis" class="number termQueuedHeader">{% trans "Kolejka" %}</th>
+                {% if course.is_enrollment_on %}
                 <th class="controls"></th>
+                <th class="priority">{% trans "Priorytet" %}</th>
+                {% endif %}
+                {% if user.student or user.employee or user.is_staff %}
+                    <th></th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -44,36 +50,58 @@
                     <td class="number termLimit">{{ group.limit }}</td>
                     <td class="number termEnrolledCount">{{ group.num_enrolled }}</td>
                     <td class="number termQueuedCount">{{ group.num_enqueued }}</td>
-                    <td class="controls">
-                        {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
+                    {% if course.is_enrollment_on %}
+                        <td class="controls">
+                            {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
                             <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
-                                <div>
-                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                    <button type="submit" class="btn small success setEnrolledButton"
+                                    <div>
+                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                        <button type="submit" class="btn small success setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
                                         Zapisz
                                     </button>
-                                </div>
-                            </form>
-                        {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
-                            <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
-                                <div>
-                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                    <button type="submit" class="btn small danger setEnrolledButton"
+                                    </div>
+                                </form>
+                                {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
+                                <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                    <div>
+                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                        <button type="submit" class="btn small danger setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
                                         Wypisz
                                     </button>
                                 </div>
                             </form>
-                        {% endif %}
-                        {% if user.student or user.employee or user.is_staff %}
+                            {% endif %}
+                        </td>
+                        <td class="priority">
+                            {% if group.can_enqueue and group.is_enqueued %}
+                            <form action="{% url 'records-set-priority' %}" method="post">{% csrf_token %}
+                                <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                <select name="priority" onchange="this.form.submit()">
+                                    {% for s in "0123456789" %}
+                                        <option {% if forloop.counter == group.priority %} selected {% endif %}
+                                                value="{{ forloop.counter }}">
+                                            {{ forloop.counter }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    {% if user.student or user.employee or user.is_staff %}
+                        <td>
                             <a href="{% url 'group-view' group.pk %}">{% trans "lista" %}</a>
-                        {% endif %}
-                    </td>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+        <p><strong>UWAGA!</strong>
+            Wyższa liczba oznacza wyższy priorytet, po zapisaniu do grupy zostajemy usunięci z kolejek o niższym priorytecie.
+        </p>
     </div>
 {% endfor %}
 

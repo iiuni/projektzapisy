@@ -48,6 +48,7 @@ class EnrollmentTest(TestCase):
         cls.semester = Semester.objects.get(pk=1)
         cls.bolek = Student.objects.get(pk=1)
         cls.lolek = Student.objects.get(pk=2)
+        cls.tola = Student.objects.get(pk=3)
         GroupOpeningTimes.populate_opening_times(cls.semester)
 
     def test_simple_enrollment(self):
@@ -191,3 +192,67 @@ class EnrollmentTest(TestCase):
         assert Record.objects.filter(
             student=self.bolek, group=knitting_lecture_group, status=RecordStatus.REMOVED).exists()
         assert StudentPointsView.student_points_in_semester(self.bolek, self.semester) == 35
+
+    def test_higher_priority_1(self):
+        """Both exercise groups are occupied by Bolek and Lolek. Tola will
+        enqueue to both with different priorities. She will end up in the group
+        of higher priority regardless of the order in which Bolek and Lolek free
+        up the places.
+        """
+        cooking_exercise_1 = Group.objects.get(pk=32)
+        cooking_exercise_2 = Group.objects.get(pk=33)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_exercise_1)
+            assert Record.enqueue_student(self.lolek, cooking_exercise_2)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
+            assert Record.enqueue_student(self.tola, cooking_exercise_1)
+            assert Record.set_queue_priority(self.tola, cooking_exercise_1, 7)
+            assert Record.enqueue_student(self.tola, cooking_exercise_2)
+            assert Record.set_queue_priority(self.tola, cooking_exercise_2, 8)
+
+        assert Record.is_recorded(self.tola.pk, cooking_exercise_1.pk)
+        assert Record.is_recorded(self.tola.pk, cooking_exercise_2.pk)
+        assert not Record.is_enrolled(self.tola.pk, cooking_exercise_1.pk)
+        assert not Record.is_enrolled(self.tola.pk, cooking_exercise_2.pk)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
+            assert Record.remove_from_group(self.bolek,
+                                            cooking_exercise_1) == [cooking_exercise_1.pk]
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
+            assert Record.remove_from_group(self.lolek,
+                                            cooking_exercise_2) == [cooking_exercise_2.pk]
+
+        assert not Record.is_recorded(self.tola.pk, cooking_exercise_1.pk)
+        assert Record.is_enrolled(self.tola.pk, cooking_exercise_2.pk)
+
+    def test_higher_priority_2(self):
+        """The only difference between this test and the one above is the order
+        in which Bolek and Lolek leave their groups.
+        """
+        cooking_exercise_1 = Group.objects.get(pk=32)
+        cooking_exercise_2 = Group.objects.get(pk=33)
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            assert Record.enqueue_student(self.bolek, cooking_exercise_1)
+            assert Record.enqueue_student(self.lolek, cooking_exercise_2)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
+            assert Record.enqueue_student(self.tola, cooking_exercise_1)
+            assert Record.set_queue_priority(self.tola, cooking_exercise_1, 7)
+            assert Record.enqueue_student(self.tola, cooking_exercise_2)
+            assert Record.set_queue_priority(self.tola, cooking_exercise_2, 8)
+
+        assert Record.is_recorded(self.tola.pk, cooking_exercise_1.pk)
+        assert Record.is_recorded(self.tola.pk, cooking_exercise_2.pk)
+        assert not Record.is_enrolled(self.tola.pk, cooking_exercise_1.pk)
+        assert not Record.is_enrolled(self.tola.pk, cooking_exercise_2.pk)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
+            assert Record.remove_from_group(self.lolek,
+                                            cooking_exercise_2) == [cooking_exercise_2.pk]
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
+            assert Record.remove_from_group(self.bolek,
+                                            cooking_exercise_1) == [cooking_exercise_1.pk]
+
+        assert not Record.is_recorded(self.tola.pk, cooking_exercise_1.pk)
+        assert Record.is_enrolled(self.tola.pk, cooking_exercise_2.pk)

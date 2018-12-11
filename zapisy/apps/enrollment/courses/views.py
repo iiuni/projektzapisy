@@ -109,10 +109,13 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
         group.is_enrolled = student_status_groups.get(group.pk).get('enrolled')
         group.is_enqueued = student_status_groups.get(group.pk).get('enqueued')
+        group.priority = student_status_groups.get(group.pk).get('priority')
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
 
     teachers = {g.teacher for g in groups}
+
+    course.is_enrollment_on = any(g.can_enqueue for g in groups)
 
     data = {
         'course': course,
