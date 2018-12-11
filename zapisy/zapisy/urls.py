@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
 from django.views.generic import TemplateView
 from django_cas_ng import views
 
@@ -44,4 +45,8 @@ urlpatterns = [
     url(r'^accounts/login$', views.login, name='cas_ng_login'),
     url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
+]
+
+urlpatterns += [
+    path('django-rq/', include('django_rq.urls')),
 ]
