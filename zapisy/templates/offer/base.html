@@ -46,7 +46,7 @@
 			<div class="semester">
 				<h3>Przedmioty w ofercie</h3>
                 {%  if request.user.employee %}
-                    <a class="nav-link" href="{% url 'proposal-form' %}" class="btn btn-success">Dodaj nową</a>
+                    <a href="{% url 'proposal-form' %}" class="btn btn-success">Dodaj nową</a>
                 {% endif %}
 				<input type="hidden" name="semester-id" value="{{ semester.id }}" />
 				<script type="application/json" id="courses_list_json">{{ proposals_json|safe }}</script>

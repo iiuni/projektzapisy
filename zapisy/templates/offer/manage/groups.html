@@ -1,4 +1,6 @@
 {% extends "offer/manage/base.html" %}
+{% load course_types %}
+
 {% block groups_active %} class = "active" {% endblock %}
 
 {% block js %}
@@ -53,7 +55,7 @@
         <span>{{ d }}</span>
       {% endfor %}
     </td>
-    <td>{{group.get_count_of_enrolled}}</td>
+    <td>{{ students_in_group|length }}</td>
     <td>{{group.limit}}</td>
   </tr>
   {% endfor %}

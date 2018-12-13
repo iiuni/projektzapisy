@@ -1,4 +1,4 @@
-    <table class="table table-striped" id="table-info">
+    <table class="table table-striped text-muted" id="table-info">
         {% if course.ects %}
         <tr>
             <th scope="row">ECTS</th>
@@ -69,9 +69,9 @@
 
     </table>
 
-    <div class="description">
+    <div class="description text-muted">
 
-        <h5>Opis przedmiotu:</h5>
+        <h5 class="text-dark font-weight-bold">Opis przedmiotu:</h5>
         {% if course.description %}
         <p>{{ course.description|safe }}</p>
         {% else %}
