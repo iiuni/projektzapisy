@@ -18,7 +18,6 @@ from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDa
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
-from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 
 
 class GroupInline(admin.TabularInline):
@@ -202,7 +201,7 @@ class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
     readonly_fields = ('id', 'student', 'status')
-    can_delete = False
+    can_delete = True
 
     def has_add_permission(self, request):
         """Never allow to modify records.
@@ -243,12 +242,6 @@ class GroupAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         obj = self.after_saving_model_and_related_inlines(obj)
         return super(GroupAdmin, self).response_change(request, obj)
-
-    def save_model(self, request, obj, form, change):
-        """Triggers pulling from queue, since the limit could have been increased."""
-        if obj.pk:
-            GROUP_CHANGE_SIGNAL.send(None, group_id=obj.pk)
-        super().save_model(request, obj, form, change)
 
     def after_saving_model_and_related_inlines(self, obj):
         from apps.enrollment.courses.models.term import Term as T
