@@ -6,13 +6,12 @@ will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from django.conf import settings
 from django.db import models, transaction
 
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models import Course, Group, Semester
 from apps.users.models import Program, Student
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
@@ -189,6 +188,17 @@ class GroupOpeningTimes(models.Model):
                 continue
             ret[k] = True
         return ret
+
+    @classmethod
+    def is_enrollment_open(cls, course: Course, time: datetime):
+        """Decides if enrollment is open for this course in general.
+
+        Usually enrollment is for all courses at the beginning of the semester,
+        but some courses may have a different enrollment period.
+        """
+        if course.records_start is not None and course.records_end is not None:
+            return course.records_start <= time <= course.records_end
+        return not course.semester.is_closed(time)
 
     @classmethod
     def populate_opening_times(cls, semester: Semester):
