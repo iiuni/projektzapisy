@@ -312,10 +312,13 @@ class Record(models.Model):
         that the group limit is not going to change while it is executing.
 
         The function will return False if the group is already full, or the
-        queue is empty. True value will mean, that it should be run again on
-        that group. The function may throw DatabaseError if transaction fails.
+        queue is empty or the enrollment is closed for the semester. True value
+        will mean, that it should be run again on that group. The function may
+        throw DatabaseError if transaction fails.
         """
-        group = Group.objects.get(id=group_id)
+        group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
+        if not GroupOpeningTimes.is_enrollment_open(group.course, datetime.now()):
+            return False
         # If there is a corresponding lecture group, we should first pull
         # records into that group in order to avoid dropping the record, when a
         # student enqueues into the groups at the same time, and this group is
