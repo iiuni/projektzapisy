@@ -10,7 +10,7 @@ export default {
 	],
 	bundles: {
 		"main": [
-			"common/libs.ts",
+			"common/expose_libs.ts",
 		],
 	},
 };

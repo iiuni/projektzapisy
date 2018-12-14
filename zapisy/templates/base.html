@@ -14,7 +14,7 @@
     <meta name="description"
           content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
     <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
-    <script src="{% static "common_chunks.js" %}"></script>
+    {% render_bundle "vendors" %}
     {% render_bundle "main" %}
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">

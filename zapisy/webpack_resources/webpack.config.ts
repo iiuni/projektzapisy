@@ -186,12 +186,13 @@ const webpackConfig: webpack.Configuration = {
 		],
 		splitChunks: {
 			cacheGroups: {
-			  	commons: {
-					name: "commons",
-					filename: "common_chunks.js",
+				vendors: {
+					test: /node_modules/,
 					chunks: "initial",
-					minChunks: 2
-			  	}
+					name: "vendors",
+					priority: 10,
+					enforce: true
+				}
 			},
 		},
 	},
