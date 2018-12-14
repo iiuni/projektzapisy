@@ -1,6 +1,5 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.urls import path
 from django.views.generic import TemplateView
 from django.urls import path
 from django_cas_ng import views
