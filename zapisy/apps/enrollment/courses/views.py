@@ -150,6 +150,7 @@ def course_view(request, slug):
     data.update(prepare_courses_list_to_render(request, course.semester))
     return render(request, 'courses/course.html', data)
 
+
 def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
     """Tell whether the user is authorized to see students' names
     and surnames in the given group.
@@ -159,6 +160,7 @@ def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
     )
     is_user_group_teacher = user == group.teacher.user
     return is_user_proper_employee or is_user_group_teacher
+
 
 @login_required
 def group_view(request, group_id):
