@@ -31,16 +31,19 @@ def employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, l
     return actual_decorator
 
 
-def proper_employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+def external_contractor_forbidden(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
     """
-    Decorator for views that checks that the user is an actual employee,
-    redirecting to the login page if necessary.
+    Check whether the logged user is either a student or an actual employee
+    (i.e. not external contractor).
+    Redirect to the login page if that's not the case.
     """
-    actual_decorator = user_passes_test(
+
+    decorator = user_passes_test(
         lambda u: not BaseUser.is_external_contractor(u),
         login_url=login_url,
-        redirect_field_name=redirect_field_name
-    )
+        redirect_field_name=redirect_field_name)
+
     if view_func:
-        return actual_decorator(employee_required(view_func))
-    return actual_decorator(employee_required)
+        return decorator(view_func)
+
+    return decorator

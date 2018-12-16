@@ -148,6 +148,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
+                'apps.users.context_processors.roles',
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE
             if DEBUG else
