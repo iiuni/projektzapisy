@@ -58,3 +58,11 @@ label
 {
     margin-bottom: 15px;
 }
+.classes-list
+{
+    list-style: disc;
+}
+.blank-field
+{
+    background-color: white;
+}
