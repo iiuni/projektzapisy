@@ -1,21 +1,36 @@
-{% extends "email_change/base.html" %}
-z
-{% block content %}
+{% extends "newbase.html" %}
+<!-- {% load compressed %}
+{% load static %} -->
 
-<form action='' method="post" autocomplete="off">{% csrf_token %}
-	<fieldset>
-        <legend><h2>Zmień adres email</h2></legend>
-		<div class="clearfix">
-            <label for="id_email">Email</label>
-            <div class="input">
-              <input type="text" size="30" name="email" id="id_email" class="xlarge" value="{{ form.email.value }}">
-            </div>
-          </div>
-        <div class="actions">
-            <input type="submit" class="btn success" value="resetuj">
-          </div>
-	</fieldset>
-</form>
-        
+{% block styles %}
+  {% compressed_css 'my_profile' %}
+  <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
 {% endblock %}
 
+{% block bread %}
+  <a href="/">Strona główna</a> &raquo;
+  <a href="{% url 'my-profile' %}">Moje konto</a> &raquo;
+Zmień e-mail
+{% endblock %}
+
+{% block main-subtitle %}Zmień e-mail{% endblock %}
+
+{% block content %}
+<div class="container">
+  <form action='' method="post" autocomplete="off">{% csrf_token %}
+    <fieldset>
+        <p class="info-table-header">Zmień adres e-mail</p>
+        <div class="form-group row">
+          <label for="id_email" class="col-sm-1 col-form-label">Email</label>
+          <div class="input">
+            <input type="text" size="30" name="email" id="id_email" class="form-control" value="{{ form.email.value }}">
+          </div>
+        </div>
+        <div class="actions">
+          <input type="submit" class="btn success" value="Resetuj">
+        </div>
+    </fieldset>
+  </form>
+</div>
+
+{% endblock %}
