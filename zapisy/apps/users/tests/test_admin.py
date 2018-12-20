@@ -83,5 +83,5 @@ class AdminTestCase(TestCase):
                          follow=True)
         # For some unknown for me reasons, logging in at set up won't be enough, and we have to log in for each test
         response = self.client.get(link_text, follow=True)
-        assert('user-tools' in str(response.content))
+        self.assertNotEqual(len(re.findall('user-tools', str(response.content))), 0)
         self.client.get("/fereol_admin/logout/", follow=True)
