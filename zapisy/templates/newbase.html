@@ -188,7 +188,6 @@
                                 <a class="btn btn-primary" id="btn-no-usos" href="{% url 'password_reset' %}">Resetuj hasło</a> 
                             </form>
                         </div>
-                        {# FIXME: https://getbootstrap.com/docs/4.0/components/dropdowns/#menu-forms #}
                     </li>
                 </ul>
             {% endif %}
@@ -214,10 +213,9 @@
             </div>
         </div>
     </div>
-
     <div>
-        <div class="container">
 
+        <div class="container">
             {% if request.path != '/' %}
             <div class="row">
                 <div class="col">

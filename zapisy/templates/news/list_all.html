@@ -24,31 +24,26 @@ u
 Aktualności
 {% endblock %}
 
+
 {% block topContent %}
 <div class="container">
-    <div id="od-news-top-bar" class="main-top-bar">
         <div class="main-filter-input">
-            <form class="od-news-search-form input-group mb-3" method="get">
-                <input class="form-control text" type="search" name="q" id="od-news-search-q" value="{{ query|default_if_none:''|lower }}"
-                    placeholder="Szukaj w tytułach i treści..." />
-                <button class="btn btn-secondary" type="reset">x</button>
-            </form>
+            <form class="input-group" method="get">
+                <input class="form-control text" type="search" name="q" value="{{ query|default_if_none:''|lower }}"
+                    placeholder="Szukaj w tytułach i treści..." />    
+                <button  class="btn btn-default" type="reset">x</button>
+                <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
+                    <img src="{% static "images/rss.png" %}" alt="RSS" />
+                </a>
+            </form>     
         </div>
 
         {% if query %}<p> Wyniki wyszukiwania dla "{{ query|lower }}" | <a class="btn btn-default" href="/news">usuń filtr</a></p>{% endif %}
-
-    </div>
 </div>
-
 {% endblock %}
 
 {% block content %}
 <h2>Aktualności</h2>
-<div class="od-news-navigator">
-    <a href="/feeds/news/" title="Aktualności RSS" id="od-news-rss-icon">
-        <img src="{% static "images/rss.png" %}" alt="RSS" />
-    </a>
-</div>
 <div id="news-content">
     {% if items %}
     <div class="od-news-list">
