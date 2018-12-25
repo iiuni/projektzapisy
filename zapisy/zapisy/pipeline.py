@@ -65,7 +65,6 @@ PIPELINE_CSS = {
     },
     'help': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/help.css',
@@ -77,7 +76,6 @@ PIPELINE_CSS = {
     },
     'news': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/news.css',

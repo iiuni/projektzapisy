@@ -18,73 +18,101 @@
 {% block js %}
 {% compressed_js 'news' %}
 {% endblock %}
-u
+
 {% block bread %}
-<a href="/">Strona główna</a> &raquo;
-Aktualności
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item active" aria-current="page">Aktualności</li>
 {% endblock %}
 
-
 {% block topContent %}
-<div class="container">
-        <div class="main-filter-input">
-            <form class="input-group" method="get">
-                <input class="form-control text" type="search" name="q" value="{{ query|default_if_none:''|lower }}"
-                    placeholder="Szukaj w tytułach i treści..." />    
-                <button  class="btn btn-default" type="reset">x</button>
-                <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
-                    <img src="{% static "images/rss.png" %}" alt="RSS" />
-                </a>
-            </form>     
+<div class="col">
+    <div class="row m-0">
+        <div class="col-12 col-md-10 col-lg-6">
+            <form class="card card-sm">
+                <div class="card-text row no-gutters align-items-center">
+                    <div class="col">
+                        <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
+                            value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
+                    </div>
+                    <span>
+                        <div class="col-auto p-0">
+                            <button class="btn btn-default" type="reset">x</button>
+                        </div>
+                    </span>
+                    <div class="col-auto p-1">
+                        <button class="btn btn-success" type="submit">Wyszukaj</button>
+                    </div>
+                </div>
+            </form>
         </div>
+        {% if not query %}
+        <div class="col p-0 offset-lg-5">
+            <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
+                <img src="{% static "images/rss.png" %}" alt="RSS" />
+            </a>
+        </div>
+        {% endif %}
 
-        {% if query %}<p> Wyniki wyszukiwania dla "{{ query|lower }}" | <a class="btn btn-default" href="/news">usuń filtr</a></p>{% endif %}
+        {% if query %}
+        <p class="mx-auto m-1"> Wyniki wyszukiwania dla <mark><b>{{ query|lower }}</b></mark>
+            <a class="btn btn-danger ml-3" href="/news">usuń filtr</a></p>
+        {% endif %}
+    </div>
+    <br>
 </div>
 {% endblock %}
 
 {% block content %}
-<h2>Aktualności</h2>
-<div id="news-content">
-    {% if items %}
-    <div class="od-news-list">
-        {% for news in items %}
-        <div id="od-news-{{news.id}}" class="od-news-item">
-            <div class="od-news-header">
-                <h3>{{ news.title }}</h3>
-                <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>
-            </div>
-            <div class="od-news-body">
-                {{ news.body|safe }}
-            </div>
-            <div class="od-news-footer">
-                {{ news.author.first_name }} {{ news.author.last_name }}
+<div class="col">
+    <div class="row">
+        <div class="col">
+            <h1>Aktualności</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="news-content">
+                {% if items %}
+                <div class="od-news-list">
+                    {% for news in items %}
+                    <div id="od-news-{{news.id}}" class="od-news-item">
+                        <div class="od-news-header">
+                            <h3>{{ news.title }}</h3>
+                            <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>
+                        </div>
+                        <div class="od-news-body">
+                            {{ news.body|safe }}
+                        </div>
+                        <div class="od-news-footer">
+                            {{ news.author.first_name }} {{ news.author.last_name }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Nie ma ogłoszeń pasujących do zapytania.</p>
+                {% endif %}
             </div>
         </div>
-        {% endfor %}
     </div>
 
-    {% else %}
-    <p>Nie ma ogłoszeń pasujących do zapytania.</p>
-    {% endif %}
+    <div class="row">
+        <div class="col">
+            <div class="pagination justify-content-center">
+                <ul class="pagination">
+                    <li class="page-item prev{% if not items.has_previous %} disabled{% endif %}"><a class="page-link"
+                            {% if items.has_previous %}href="?page={{ items.previous_page_number }}" {% endif %}>Poprzednia</a></li>
+                    {% for index in page_range %}
+                    {% if index <= items.number|add:5 and index >= items.number|add:-5 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{forloop.counter }}</a></li>
+                        {% endif %}
+                        {% endfor %}
 
+                        <li class="page-item next{% if not items.has_next %} disabled{% endif %}"><a class="page-link"
+                                {% if items.has_next %}href="?page={{ items.next_page_number }}" {% endif %}>Następna</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="pagination justify-content-center">
-    <ul>
-        <li class="prev{% if not items.has_previous %} disabled{% endif %}"><a {% if items.has_previous %}href="?page={{ items.previous_page_number }}"
-                {% endif %}>Poprzednia</a></li>
-        {% for index in page_range %}
-            {% if index <= items.number|add:5 and index >= items.number|add:-5 %}
-                <li><a href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
-            {% endif %}
-        {% endfor %}
-
-            <li class="next{% if not items.has_next %} disabled{% endif %}"><a {% if items.has_next %}href="?page={{ items.next_page_number }}"
-            {% endif %}>Następna</a></li>
-    </ul>
-</div>
-
-
-
-
 {% endblock %}

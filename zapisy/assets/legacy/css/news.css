@@ -4,7 +4,7 @@
 
 #news-content 
 { 
-  margin-top: 15px; 
+  padding-top: 15px;
 }
 
 .od-news-item
@@ -30,69 +30,33 @@
   font-style: italic;
 }
 
-.od-news-body
-{
-  clear: both;
-  padding-top: 10px;
-}
-
- #od-news-search-reset {
- border: 0;
- background: none;
- box-shadow: none;
- border-radius: 0px;
-}
-
-#od-news-top-bar
-{
-  padding: 15px;
-  text-align: center;
-}
-
-#od-news-form
-{
-  width: 650px;
-  margin: auto;
-}
-
-#od-news-form .submit
-{
-  padding-top: 10px;
-  padding-right: 25px;
-  text-align: right;
-}
-
-#od-news-form label
-{
-  display: block;
-  width: 80px;
-  float: left;
-  padding-top: 11px;
-  margin-bottom: 5px;
-}
-
-#od-news-form select
-{
-  width: 130px;
-  font-size: 20px;
-}
-
-#od-news-form #id_title
-{
-  font-size: 20px;
-  width: 490px;
-}
-
-#od-news-form #id_body_tbl
-{
-  width: 583px !important; /* todo: powinno się dać inaczej */
-}
-
-#od-news-form p {
-  display: block;   
-  margin-bottom: 20px;
-}
-
 #news_title_category {
   font-size: 10px;
+}
+
+.form-control-borderless {
+  border: none;
+}
+
+.form-control-borderless:hover, .form-control-borderless:active, .form-control-borderless:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* Remove input placeholders on mobile */
+@media screen and (max-width: 540px) {
+  .form-control::-webkit-input-placeholder { /* WebKit browsers */
+      color: transparent;
+  }
+  .form-control:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+     color: transparent;
+  }
+  .form-control::-moz-placeholder { /* Mozilla Firefox 19+ */
+     color: transparent;
+  }
+ .form-control :-ms-input-placeholder { /* Internet Explorer 10+ */
+     color: transparent;
+  }
 }
