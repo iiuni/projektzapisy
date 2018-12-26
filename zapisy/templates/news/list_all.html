@@ -46,18 +46,19 @@
             </form>
         </div>
         {% if not query %}
-        <div class="col p-0 offset-lg-5">
+        <div class="col offset-lg-5">
             <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
                 <img src="{% static "images/rss.png" %}" alt="RSS" />
             </a>
         </div>
         {% endif %}
 
-        {% if query %}
-        <p class="mx-auto m-1"> Wyniki wyszukiwania dla <mark><b>{{ query|lower }}</b></mark>
-            <a class="btn btn-danger ml-3" href="/news">usuń filtr</a></p>
-        {% endif %}
+        
     </div>
+    {% if query %}
+        <p class="mx-auto m-2 p-3"> Wyniki wyszukiwania dla <mark><b>{{ query|lower }}</b></mark>
+            <a class="btn btn-danger ml-2" href="/news">usuń filtr</a></p>
+        {% endif %}
     <br>
 </div>
 {% endblock %}
@@ -75,7 +76,7 @@
                 {% if items %}
                 <div class="od-news-list">
                     {% for news in items %}
-                    <div id="od-news-{{news.id}}" class="od-news-item">
+                    <div id="od-news-{{news.id}}" class="od-news-item p-4">
                         <div class="od-news-header">
                             <h3>{{ news.title }}</h3>
                             <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>

@@ -145,8 +145,8 @@
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>Zaloguj się</b><span class="caret"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="social-buttons login-dp">
+                        <div class="dropdown-menu dropdown-menu-right m-2">
+                            <div class="social-buttons login-dp m-3">
                                 <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
                                     <img src="{% static '/images/usos-login-logo.png' %}"
                                          alt="Uniwersytet Wrocławski">
@@ -201,9 +201,9 @@
                     </a>
                 </div>
             </div>
-            <div class="container p-0">
+            <div class="container">
                 <div class="row">
-                    <div class="col" id="system_menu"> 
+                    <div id="system_menu"> 
                         <ul class="nav nav-tabs" id="main-menu-list" role="tablist">
                             {% block system_menu %}
                             {% endblock %}
@@ -214,7 +214,6 @@
         </div>
     </div>
     <div>
-
         <div class="container">
             {% if request.path != '/' %}
             <div class="row">
@@ -239,10 +238,10 @@
                     {% endblock %}
                 </div>
             </div>
-
             <div id="main-content-container" class="sidebar-right">
                 <div class="row">
-                    {% block topContent %}{% endblock %}
+                    {% block topContent %}
+                    {% endblock %}
                     {% block center %}
                 </div>
                 <div class="row">
@@ -283,7 +282,6 @@
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

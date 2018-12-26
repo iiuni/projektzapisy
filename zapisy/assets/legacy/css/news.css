@@ -7,14 +7,25 @@
   padding-top: 15px;
 }
 
+.od-news-body 
+{
+  background-color: #e9ecef;
+  border-radius: 0.3rem;
+  margin-bottom: 2rem;
+}
+
 .od-news-item
 {
   margin-bottom: 50px;
+  background-color: #e9ecef;
+  border-radius: 0.3rem;
 }
 
 .od-news-header
 {
   width: 100%;
+  background-color: #e9ecef;
+  border-radius: 0.3rem;
 }
 
 .od-news-header h2

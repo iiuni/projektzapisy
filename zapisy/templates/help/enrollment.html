@@ -1,6 +1,13 @@
 {% extends "help/base.html" %}
 {% load static %}
 
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/help">Pomoc</a></li>
+<li class="breadcrumb-item active" aria-current="page">System zapisów</li>
+{% endblock %}
+
+
 {% block content %}
 <h2>System zapisów</h2>
 <div class="container">
