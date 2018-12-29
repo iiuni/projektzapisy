@@ -1,7 +1,10 @@
 from django.http import HttpResponse, HttpRequest
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.contrib.auth.models import User, Group
+from django import forms
+from django.contrib.auth.admin import (
+    UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
+)
 from django.db.models import QuerySet
 import csv
 
@@ -126,8 +129,12 @@ class EmployeeInline(admin.StackedInline):
 
 
 class UserAdmin(DjangoUserAdmin):
+    def user_groups(self, user):
+        return ', '.join(group.name for group in user.groups.all())
+    user_groups.short_description = 'Grupy'
+
     inlines = [StudentInline, EmployeeInline]
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'user_groups')
     list_filter = ('is_active', 'is_staff')
 
 
@@ -138,3 +145,41 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Program, ProgramAdmin)
+
+
+class GroupAdminForm(forms.ModelForm):
+    """
+    ModelForm that adds an additional multiple select field for managing
+    the users in the group.
+    """
+    users = forms.ModelMultipleChoiceField(
+        User.objects.all(),
+        widget=admin.widgets.FilteredSelectMultiple('Users', False),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(GroupAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            initial_users = self.instance.user_set.values_list('pk', flat=True)
+            self.initial['users'] = initial_users
+
+    def save(self, *args, **kwargs):
+        kwargs['commit'] = True
+        return super(GroupAdminForm, self).save(*args, **kwargs)
+
+    def save_m2m(self):
+        self.instance.user_set.clear()
+        self.instance.user_set.add(*self.cleaned_data['users'])
+
+
+class GroupAdmin(DjangoGroupAdmin):
+    """
+    Customized GroupAdmin class that uses the customized form to allow
+    management of users within a group.
+    """
+    form = GroupAdminForm
+
+
+admin.site.unregister(Group)
+admin.site.register(Group, GroupAdmin)
