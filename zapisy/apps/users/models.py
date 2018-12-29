@@ -167,8 +167,9 @@ class Employee(BaseUser):
             ("mailto_all_students", "Może wysyłać maile do wszystkich studentów"),
         )
 
-    def __str__(self) -> str:
-        return self.user.get_full_name()
+    def get_full_name(self) -> str:
+        base_name = super(Employee, self).get_full_name()
+        return f'{self.title} {base_name}' if self.title else base_name
 
 
 class Student(BaseUser):

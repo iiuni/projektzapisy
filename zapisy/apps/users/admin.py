@@ -91,11 +91,20 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     search_fields = ('user__first_name', 'user__last_name', 'user__username')
     fieldsets = [
-        (None, {
-            'fields': [
-                'user', 'status', 'homepage', 'room', 'consultations']}), ('Ogłoszenia mailowe', {
-                    'fields': [
-                        'receive_mass_mail_enrollment', 'receive_mass_mail_offer'], 'classes': ['collapse']}), ]
+        (
+            None,
+            {
+                'fields': ['user', 'status', 'homepage', 'room', 'consultations', 'title']
+            }
+        ),
+        (
+            'Ogłoszenia mailowe',
+            {
+                'fields': ['receive_mass_mail_enrollment', 'receive_mass_mail_offer'],
+                'classes': ['collapse']
+            }
+        ),
+    ]
     ordering = ['user__last_name', 'user__first_name']
     list_display_links = ('get_full_name',)
 
