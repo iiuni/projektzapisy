@@ -3,14 +3,14 @@ import json
 from typing import List
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from apps.cache_utils import cache_result_for
-from apps.enrollment.courses.models import Course, Group, Semester
+from apps.enrollment.courses.models import Course, Group, Semester, StudentPointsView
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
@@ -87,7 +87,15 @@ def my_timetable(request):
     groups = [r.group for r in records]
     group_dicts = build_group_list(groups)
 
+    points_for_courseentities = StudentPointsView.points_for_entities(
+        student, [g.course.entity_id for g in groups])
+
+    for group in groups:
+        group.course.points = points_for_courseentities[group.course.entity_id]
+
     data = {
+        'groups': groups,
+        'sum_points': sum(points_for_courseentities.values()),
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
     return render(request, 'timetable/timetable.html', data)
