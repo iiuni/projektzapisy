@@ -20,5 +20,70 @@
     <div id="timetable"></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     {% render_bundle 'timetable-timetable-component' %}
+
+    {% if user.student %}
+    <h3>{% trans "Zajęcia, na które jesteś zapisany" %}</h3>
+	<table id="enr-schedule-listByCourse" class="zebra-striped">
+		<thead>
+			<tr>
+                {# Translators: Tytuł kolumny w tabelce #}
+				<th>{% trans "Przedmiot" %}</th>
+				{% if user.student %}
+                    {# Translators: Tytuł kolumny w tabelce #}
+                    <th class="ects">{% trans "ECTS" %}</th>
+                {% else %}
+                    {# Translators: Tytuł kolumny w tabelce #}
+                    <th class="ects">{% trans "Godziny" %}</th>
+                {% endif %}
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+                <td><strong>Suma punktów ECTS:</strong></td>
+                <td class="ects">{{ sum_points }}</td>
+			</tr>
+		</tfoot>
+		<tbody>
+            {% regroup groups|dictsort:"course_id" by course as courses %}
+            {% for course in courses %}
+            <tr class="courseHeader">
+                <td class="name">
+                    <a href="{% url 'course-page' course.grouper.slug %}">
+                        {{ course.grouper.name }}
+                    </a>
+
+                </td>
+                <td rowspan="2" class="ects">
+                    {{ course.grouper.points }}
+                </td>
+            </tr>
+            <tr class="courseDetails">
+                <td>
+                    <ul>
+                        {% for item in course.list %}
+                        {% with item as group %}
+                        <li>
+                            <span class="type">{{ group.get_type_display }}:</span>
+                            {% for term in group.term.all %}
+                            <span class="term">
+                                {{ term.get_dayOfWeek_display }}
+                                {{ term.start_time|time:'G:i' }}-{{ term.end_time|time:'G:i' }}
+                            </span>
+                            <span class="classroom">sala:
+                                  {% for classroom in term.classrooms.all %}
+                                    {{ classroom.number }}
+                                  {% endfor %}
+                            </span>
+                            {% endfor %}
+                        </li>
+                        {% endwith %}
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+		</tbody>
+	</table>
+    {% endif %}
 {% endblock %}
 
