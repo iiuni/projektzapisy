@@ -6,7 +6,7 @@ students, depending on the program they are pursuing (BSc, MSc) and their
 previous achievements.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from django.db import models
 
@@ -99,7 +99,7 @@ class StudentPointsView:
             status=RecordStatus.ENROLLED).values_list(
                 'group__course__entity_id', flat=True).distinct()
 
-        return cls.points_for_entities(student, records)
+        return cls.points_for_entities_total(student, records)
 
     @classmethod
     def student_points_in_semester_with_added_courses(cls, student: Student, semester: Semester,
@@ -118,18 +118,27 @@ class StudentPointsView:
             status=RecordStatus.ENROLLED).values_list(
                 'group__course__entity_id', flat=True).distinct()
         all_courses = list(set(list(records) + [c.entity_id for c in additional_courses]))
-        return cls.points_for_entities(student, all_courses)
+        return cls.points_for_entities_total(student, all_courses)
 
     @classmethod
     def course_value_for_student(cls, student: Optional[Student], entity_id: int) -> int:
         """Computes the value (number of ECTS credits) of a given course for a
         student.
         """
-        return cls.points_for_entities(student, [entity_id])
+        return cls.points_for_entities_total(student, [entity_id])
 
     @classmethod
-    def points_for_entities(cls, student: Optional[Student], entity_ids: List[int]) -> int:
+    def points_for_entities_total(cls, student: Optional[Student], entity_ids: List[int]) -> int:
         """Computes sum of points of entities from a student's perspective.
+
+        This function may give wrong historic result for a student who has
+        passed a certain course (like 'dyskretna_l') in the meantime.
+        """
+        return sum(cls.points_for_entities(student, entity_ids).values())
+
+    @classmethod
+    def points_for_entities(cls, student: Optional[Student], entity_ids: List[int]) -> Dict[int, int]:
+        """Computes points of entities from a student's perspective.
 
         This function may give wrong historic result for a student who has
         passed a certain course (like 'dyskretna_l') in the meantime.
@@ -144,6 +153,8 @@ class StudentPointsView:
 
         If the student is None, the function will return the default number of
         credits for the course.
+
+        The returned Dict will be keyed by CourseEntity identifier.
         """
 
         def value_with_program(program_id, points_of_courseentities_list):
@@ -165,6 +176,7 @@ class StudentPointsView:
         sum_points = 0
         entities = CourseEntity.objects.filter(
             pk__in=entity_ids).prefetch_related('pointsofcourseentities_set')
+        points_per_entity: Dict[int, int] = dict()
         entity: CourseEntity
         for entity in entities:
             if student is None:
@@ -179,5 +191,5 @@ class StudentPointsView:
                 program_id = 1
             elif entity.programowanie_l and student.programowanie_l:
                 program_id = 1
-            sum_points += value_with_program(program_id, entity.pointsofcourseentities_set.all())
-        return sum_points
+            points_per_entity[entity.id] = value_with_program(program_id, entity.pointsofcourseentities_set.all())
+        return points_per_entity
