@@ -2,7 +2,7 @@
 // groups should be presented on the timetable. It will maintain a store of
 // groups data at hand and will download new data if necessary.
 import axios from "axios";
-import { values, xor, find, isNil } from "lodash";
+import { keys, values, isEmpty, xor, find, isNil } from "lodash";
 import Vue from "vue";
 import { ActionContext } from "vuex";
 
@@ -111,6 +111,8 @@ const actions = {
             action: "pin",
         }).then(_ => {
             commit("setPinned", { g: group.id });
+        }).catch(reason => {
+            console.log("Pinning failed: ", reason);
         });
     },
     unpin({ commit }: ActionContext<State, any>, group: Group) {
@@ -118,6 +120,8 @@ const actions = {
             action: "unpin",
         }).then(_ => {
             commit("unsetPinned", { g: group.id });
+        }).catch(reason => {
+            console.log("Unpinning failed: ", reason);
         });
     },
     // When enqueue request is successful, the server will give back the list of
@@ -129,6 +133,8 @@ const actions = {
             const groupsJSON = response.data as GroupJSON[];
             groupsJSON.forEach(groupJSON =>
                 commit("updateGroup", { groupJSON }));
+        }).catch(reason => {
+            console.log("Enqueuing failed: ", reason);
         });
     },
     // When dequeue request is successful, the server will give back the list of
@@ -142,7 +148,9 @@ const actions = {
                 commit("unsetEnrolled", { g });
                 commit("unsetEnqueued", { g });
             });
-        }).catch(response => console.log(response));
+        }).catch(reason => {
+            console.log("Dequeuing failed: ", reason);
+        });
     },
 
     // initFromJSONTag will be called at the beginning to set up the groups from
@@ -153,6 +161,24 @@ const actions = {
         ) as GroupJSON[];
         groupsDump.forEach(groupJSON => {
             commit("updateGroup", { groupJSON });
+        });
+    },
+
+    queryUpdatedGroupsStatus({ state, commit }: ActionContext<State, any>) {
+        if (isEmpty(state.store)) {
+            return;
+        }
+        const groupsToUpdate = keys(state.store);
+        const updateURL: string = (
+            document.getElementById("prototype-update-url") as HTMLInputElement
+        ).value;
+        axios.post(updateURL, groupsToUpdate).then(response => {
+            const updatedGroups = response.data as GroupJSON[];
+            updatedGroups.forEach((g: GroupJSON) => {
+                commit("updateGroup", { groupJSON: g });
+            });
+        }).catch(reason => {
+            console.log("Group info update failed: ", reason);
         });
     }
 };
