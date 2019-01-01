@@ -183,13 +183,14 @@ class StudentPointsView:
                 sum_points += value_with_program(None, entity.pointsofcourseentities_set.all())
                 continue
             program_id = student.program_id
-            if entity.numeryczna_l and student.numeryczna_l:
-                program_id = 1
-            elif entity.dyskretna_l and student.dyskretna_l:
-                program_id = 1
-            elif entity.algorytmy_l and student.algorytmy_l:
-                program_id = 1
-            elif entity.programowanie_l and student.programowanie_l:
-                program_id = 1
-            points_per_entity[entity.id] = value_with_program(program_id, entity.pointsofcourseentities_set.all())
+            # If the student had passed one of the BSc-level obligatory courses,
+            # the corresponding MSc-level course is worth as much for him as it
+            # would be for an MSc student.
+            bsc_courses = ["numeryczna_l", "dyskretna_l", "algorytmy_l", "programowanie_l"]
+            for bsc_course in bsc_courses:
+                if getattr(entity, bsc_course) and getattr(student, bsc_course):
+                    program_id = 1
+                    break
+            points_per_entity[entity.id] = value_with_program(
+                program_id, entity.pointsofcourseentities_set.all())
         return points_per_entity
