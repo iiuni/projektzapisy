@@ -6,5 +6,8 @@ export default {
         "prototype-component": [
             "prototype-index.js",
         ],
+        "prototype-legend-stylesheet": [
+            "prototype-legend.scss",
+        ],
     },
 };
