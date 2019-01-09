@@ -10,21 +10,21 @@
   <thead>
     <tr>
       <th>Nazwa</th>
-      <th>Zgłaszający</th>
-      <th># Efektów</th>
-      <th>Egzamin</th>
+      <th class="text-center">Zgłaszający</th>
+      <th class="text-center"># Efektów</th>
+      <th class="text-center">Egzamin</th>
     </tr>
   </thead>
   <tbody>
     {% for proposal in proposals %}
       <tr>
         <td><a href="#" data-toggle="modal" data-target="#modal{{forloop.counter}}" data-backdrop="true">{{ proposal.name}}</a></td>
-        <td>{{proposal.owner}}</td>
-        <td>{{proposal.effects_count}}</td>
+        <td class="text-center">{{proposal.owner}}</td>
+        <td class="text-center">{{proposal.effects_count}}</td>
         {% if proposal.exam %}
-          <td>TAK</td>
+          <td class="text-center">TAK</td>
         {% else %}
-          <td>NIE</td>
+          <td class="text-center">NIE</td>
         {% endif %}
       </tr>
     {% endfor %}
