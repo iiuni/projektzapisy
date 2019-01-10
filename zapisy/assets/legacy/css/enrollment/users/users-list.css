@@ -40,3 +40,19 @@ span.consultations {
     margin-left: 10px;
     padding-top: 5px;
 }
+
+colgroup col.table-info-type 
+{
+	background-color: #F9F9F9;
+}
+
+h3.subheader
+{
+    padding-bottom: 5px;
+    margin-top: 10px;
+}
+
+h3.subheader:not(:first-child)
+{
+    margin-top: 35px;
+}
