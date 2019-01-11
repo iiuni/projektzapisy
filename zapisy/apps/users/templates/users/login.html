@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "newbase.html" %}
 {% load compressed %}
 
 
@@ -8,6 +8,11 @@
 
 {% block styles %}
 	{% compressed_css "login" %}
+{% endblock %}
+
+{% block bread %}
+	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
+	Logowanie
 {% endblock %}
 
 {% block main-subtitle %}Logowanie{% endblock %}
@@ -22,56 +27,57 @@
 
 
     <div class="container">
-      <a href="/">Strona główna</a> &raquo; <h2>Logowanie</h2>
-      <!-- Main hero unit for a primary marketing message or call to action -->
-<div class="container space">
-<div class="row show-grid">
-    <div class="span5 columns loginbox">
-<form class="form-stacked" action="{% url 'user-login' %}" method="POST">
-        {% csrf_token %}
-        <fieldset>
-          <div class="clearfix">
-            <label for="id_username">{{ form.username.label_tag }}</label>
-            <div class="input">
-              {{ form.username }}
-            </div>
-          </div><!-- /clearfix -->
-          <div class="clearfix">
-            <label for="is_password">{{ form.password.label_tag }}
-                    </label>
-            <div class="input">
-                {{ form.password }}
-            </div>
-          </div>
-          <div class="clearfix">
-            <label for="xlInput3">Zapamiętaj mnie:</label>
-            <div class="input">
-              <input type="checkbox" name="remember_me"  id="xlInput3"  value="true"/>
-                <input type="hidden" name="next" value="{{ next }}" />
-            </div>
-          </div><!-- /clearfix -->
-        </fieldset>
-        <div>
-          <button class="btn primary" type="submit">Logowanie</button>
+        <p class="info-header additional-margin">Logowanie</p>
+        <!-- Main hero unit for a primary marketing message or call to action -->
+        <div class="container">
+            <div class="row show-grid">
+                <div class="col-md-3 col-xs-12 loginbox inner-conatiner">
+                    <form class="form-stacked additional-margin" action="{% url 'user-login' %}" method="POST">
+                        {% csrf_token %}
+                        <fieldset>
+                        <div class="clearfix">
+                            <label for="id_username" class="col-form-label">Username:</label>
+                            <div class="input">
+                                <input type="text" name="username" autofocus="" maxlength="254" required="" id="id_username"  class="form-control">
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <label for="is_password" class="col-form-label">Hasło:</label>
+                            <div class="input">
+                                <input type="password" name="password" required="" id="id_password" class="form-control">
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="input row">
+                                <label for="xlInput3" class="checkbox-label">Zapamiętaj mnie:</label>
+                                <input type="checkbox" name="remember_me"  id="xlInput3"  value="true"/>
+                                    <input type="hidden" name="next" value="{{ next }}" />
+                            </div>
+                        </div>
+                        </fieldset>
+                <div>
+                <button class="btn primary" type="submit">Logowanie</button>
+                </div>
+                    <script type="text/javascript">
+                    /* <![CDATA[ */
+                        $('#id_username').focus();
+                    /* ]]> */
+                </script>
+            </form>
         </div>
-            <script type="text/javascript">
-            /* <![CDATA[ */
-                $('#id_username').focus();
-            /* ]]> */
-        </script>
-      </form>
-</div>
-    <div class="span11 columns">
-<p><h3>Jak zdobyć hasło?</h3>
-Każdy student Uniwersytetu Wrocławskiego może zalogować się poprzez USOS. Dozwolone jest również alternatywne uwierzytelnianie za pomocą loginu i hasła. Jeśli takiego nie masz, <a href="mailto:zapisy@cs.uni.wroc.pl">napisz do administratora</a>
-</p>
-<p><h3>Nie pamiętasz hasła?</h3>
-Skorzystaj z naszego <a href="{% url 'password_reset' %}">formularza</a>. Jeżeli to nie pomoże skontaktuj się z
-dziekanatem.
-</p>
-</div>
-</div>
-</div>
+        <div class="col-md-6 col-xs-12 ml-md-3">
+            <p>
+                <p class="info-header">Jak zdobyć hasło?</p>
+                Każdy student Uniwersytetu Wrocławskiego może zalogować się poprzez USOS. Dozwolone jest również alternatywne uwierzytelnianie za pomocą loginu i hasła. Jeśli takiego nie masz, <a href="mailto:zapisy@cs.uni.wroc.pl">napisz do administratora</a>
+            </p>
+            <p>
+                <p class="info-header">Nie pamiętasz hasła?</p>
+                Skorzystaj z naszego <a href="{% url 'password_reset' %}">formularza</a>. Jeżeli to nie pomoże skontaktuj się z
+                dziekanatem.
+            </p>
+        </div>
+        </div>
+        </div>
 </div>
 
     {% endif %}

@@ -35,3 +35,47 @@
     padding: 5px 25px;
     font-size: 16px;
 }
+
+.info-header
+{
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #212529;
+}
+
+p.info-header.additional-margin
+{
+    margin-left: 20px;
+}
+
+div.clearfix
+{
+    margin-bottom: 10px;
+}
+
+label.checkbox-label
+{
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+form.additional-margin
+{
+    margin: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+div.input.additional-margin
+{
+    margin-left: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+div.input.additional-margin
+{
+    padding-left: 20px;
+}
