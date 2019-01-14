@@ -14,7 +14,7 @@ from apps.enrollment.courses.models import Course, Group, Semester, StudentPoint
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.enrollment.timetable.models import Pin
+from apps.enrollment.timetable.models import Pin, HiddenGroups
 from apps.users.decorators import student_required
 
 
@@ -54,6 +54,7 @@ def build_group_list(groups: List[Group]):
             'can_enqueue': getattr(group, 'can_enqueue', None),
             'can_dequeue': getattr(group, 'can_dequeue', None),
             'action_url': reverse('prototype-action', args=(group.pk, )),
+            'is_hidden': getattr(group, 'is_hidden', None),
         })
         group_dicts.append(group_dict)
     return group_dicts
@@ -131,6 +132,11 @@ def my_prototype(request):
         group = all_groups_by_id.get(pin.pk)
         group.is_pinned = True
 
+    hidden_groups = HiddenGroups.hidden_groups_for_student(student, all_groups_by_id.keys())
+    for group_id in hidden_groups:
+        group = all_groups_by_id.get(group_id)
+        group.is_hidden = True
+
     all_groups = all_groups_by_id.values()
     for group in all_groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
@@ -207,9 +213,12 @@ def prototype_get_course(request, course_id):
     ).prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)
     can_dequeue_dict = Record.can_dequeue_groups(student, groups)
+    hidden_groups = HiddenGroups.hidden_groups_for_student(student, groups)
+    hidden_groups_set = set(hidden_groups)
     for group in groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
+        group.is_hidden = group.pk in hidden_groups_set
     group_dicts = build_group_list(groups)
     return JsonResponse(group_dicts, safe=False)
 

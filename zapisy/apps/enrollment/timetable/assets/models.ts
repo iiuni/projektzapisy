@@ -120,6 +120,7 @@ export interface GroupJSON {
     can_enqueue?: boolean;
     can_dequeue?: boolean;
     action_url?: string;
+    is_hidden?: boolean;
 }
 
 // Group is defined in apps/enrollment/courses/models/group.py.
@@ -140,6 +141,7 @@ export class Group {
     public isSelected = false;
     public canEnqueue = false;
     public canDequeue = false;
+    public isHidden = false;
 
     // The URL for performing actions involving the group.
     public actionURL: string;
@@ -164,5 +166,21 @@ export class Group {
         this.canEnqueue = json.can_enqueue || false;
         this.canDequeue = json.can_dequeue || false;
         this.actionURL = json.action_url || "";
+        this.isHidden = json.is_hidden || false;
+    }
+
+    // shouldBeHidden decides if the group should be hidden in the prototype.
+    // isHidden is a strong indication that the group should be hidden, but if
+    // it is available for the student, or he already is in that group, he
+    // should be able to see it.
+    public shouldBeHidden(): boolean {
+        if (!this.isHidden) {
+            return false;
+        }
+        if (this.canEnqueue || this.isEnqueued || this.isEnrolled 
+            || this.isPinned) {
+            return false;
+        }
+        return true;
     }
 }
