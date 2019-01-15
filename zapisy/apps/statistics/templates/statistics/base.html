@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "newbase.html" %}
 
 
 {% block statistics_active %} class="active"{% endblock %}
@@ -7,11 +7,19 @@
 
 
 {% block system_menu %}
-    <li{% block students_active %}{% endblock %}><a
-            href="{% url 'statistics:students' %}">Studenci</a></li>
-    <li{% block groups_active %}{% endblock %}><a href="{% url 'statistics:groups' %}">Grupy</a></li>
-    <li{% block swaps_active %}{% endblock %}><a
-            href="{% url 'statistics:swap' %}">Swapy</a></li>
-    <li{% block vote_active %}{% endblock %}><a
-            href="{% url 'statistics:vote' %}">Głosowanie</a></li>
+    <li {% block students_active %}{% endblock %} class="nav-item">
+        <a class="nav-link" href="{% url 'statistics:students' %}">Studenci</a>
+    </li>
+
+    <li {% block groups_active %}{% endblock %} class="nav-item">
+        <a class="nav-link" href="{% url 'statistics:groups' %}">Grupy</a>
+    </li>
+
+    <li {% block swaps_active %}{% endblock %} class="nav-item">
+        <a class="nav-link" href="{% url 'statistics:swap' %}">Swapy</a>
+    </li>
+
+    <li {% block vote_active %}{% endblock %} class="nav-item">
+        <a class="nav-link" href="{% url 'statistics:vote' %}">Głosowanie</a>
+    </li>
 {% endblock %}
