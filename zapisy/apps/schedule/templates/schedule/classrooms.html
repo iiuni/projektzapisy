@@ -28,13 +28,13 @@
                 <div class="col-12">
                     {% block classroomview %}
                         <div class="row">
-                        <div class="col-12">
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            Wybierz salę, by zobaczyć jakie odbywają się w niej zajęcia i wydarzenia.
-                                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                              </div>
-                        </div>
+                            <div class="col-12">
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    Wybierz salę, by zobaczyć jakie odbywają się w niej zajęcia i wydarzenia.
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                </div>
+                            </div>
                         </div>
                     {% endblock %}
                 </div>
@@ -44,14 +44,17 @@
         <div class="col-4">
             {% regroup rooms by get_floor_display as floor_list %}
                 {% for floor in floor_list %}
-                    <h5 class="">{{ floor.grouper }}</h5>
+                    <h4 class="">{{ floor.grouper }}</h4>
 
                     <ul style="list-style:none;">
                         {% for r in floor.list %}
-                        <li><a href="{{ r.get_absolute_url }}"><button  class="btn col-6
-                            {% if r == room %}btn-primary
-                            {% else %} btn-secondary
-                            {% endif %}  btn-block m-1" type="button">{{ r.number }} </button></a></li>
+
+                            <a  href="{{ r.get_absolute_url }}"><button class="btn-lg col-6
+                            {% if r == room %} btn-primary
+                            {% else %} btn-outline-dark
+                            {% endif %} btn-block m-1"
+                            type="button">{{ r.number }} </button></a>
+
                         {% endfor %}
                     </ul>
                 {% endfor %}

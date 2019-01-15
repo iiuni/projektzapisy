@@ -434,7 +434,7 @@
 
             if ($('#termstable tbody').find('tr:not(.removed)').length == 0) {
                 if (window.confirm("Czy na pewno chcesz usunąć to wydarzenie?"))
-                  $('#testmainform').click();                          
+                  $('#testmainform').click();
             } else {
                 this.setCustomValidity('');
                 $('#testmainform').click();
@@ -874,27 +874,29 @@
                             <label for="id_type">Rodzaj</label>
                             <div class="input clearfix">
                                 {{ form.type }}
-
                             </div>
-                            </div>
+                    </div>
 
                     <div class="span6" style="font-size:12px">
-                        <span><strong>Egzaminy</strong> i <strong>kolokwia</strong>
-                                                        - prowadzący moze zarezerwować salę, rezerwacja nie wymaga potwierdzenia</span>
+                        <span>
+                            <strong>Egzaminy</strong> i <strong>kolokwia</strong> - prowadzący moze zarezerwować salę, rezerwacja nie wymaga potwierdzenia
+                        </span>
                         <br/>
                         <br/>
-                        <span><strong>Wydarzenia</strong> - każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</span>
+                        <span>
+                            <strong>Wydarzenia</strong> - każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.
+                        </span>
                     </div>
-                          </div>
+                </div>
 
                 <div id="form_course" class="row clearfix" style='display:none;'>
                     <div class="span10">
-                    <label for="id_course">Przedmiot</label>
-                    <div class="input">
-                        {{ form.course }}
-                    </div>
+                        <label for="id_course">Przedmiot</label>
+                        <div class="input">
+                            {{ form.course }}
+                        </div>
                   </div>
-                  </div>
+                </div>
 
 
 
@@ -902,16 +904,15 @@
 
             <div id="form_title" class="row clearfix">
                 <div class="span10">
-                <label for="id_title">Tytuł</label>
-                        <div class="input">
-                            {{ form.title }}
-                        </div>
-                      </div>
+                    <label for="id_title">Tytuł</label>
+                    <div class="input">
+                        {{ form.title }}
+                    </div>
+                </div>
                 <div class="span6">
-
                     <span style="font-size:12px">Tytuł pod jakim widoczne będzie wydarzenie</span>
                 </div>
-                      </div>
+            </div>
 
 
             <div id="form_visible" class="row clearfix">
@@ -924,23 +925,23 @@
                                 <span>Wydarzenie widoczne dla wszystkich użytkowników systemu</span>
                             </label>
                         </li>
-
-                  </ul>
+                    </ul>
                           <span style="font-size:12px;">
                             <strong>Uwagi:</strong> Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
                           </span>
-                        </div>
+                </div>
           </div>
 
             <div class="clearfix row">
                 <div class="span10">
-                        <label for="id_description">Opis</label>
+                    <label for="id_description">Opis</label>
 
-                        <div class="input">
-                            <div style="margin-right:10px">{{ form.description }}</div>
-                            {{ form.description.errors }}&nbsp;
-                        </div>
-                      </div>
+                    <div class="input">
+                        <div style="margin-right:10px">{{ form.description }}</div>
+                        {{ form.description.errors }}&nbsp;
+                    </div>
+                </div>
+
                 <div class="span6">
                     <span style="font-size:12px">
                         Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.
@@ -954,13 +955,13 @@
         {{ formset.management_form }}
         <table id="termstable" class="span16">
             <thead>
-            <tr>
-                <th class="termtbl1">Dzień</th>
-                <th class="termtbl2">Od</th>
-                <th class="termtbl2">Do</th>
-                <th class="termtbl4">Lokalizacja</th>
-                <th class="termtbl3" colspan="2">Akcje</th>
-            </tr>
+                <tr>
+                    <th class="termtbl1">Dzień</th>
+                    <th class="termtbl2">Od</th>
+                    <th class="termtbl2">Do</th>
+                    <th class="termtbl4">Lokalizacja</th>
+                    <th class="termtbl3" colspan="2">Akcje</th>
+                </tr>
             </thead>
             <tbody>
             {% for form in formset %}

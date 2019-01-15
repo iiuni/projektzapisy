@@ -11,16 +11,16 @@
     </li>
 
     <li {% block schedule_events %}{% endblock %} class="nav-item">
-        <a class="nav-link" href="{% url 'events:classrooms' %}">Wydarzenia</a>
+        <a class="nav-link" href="{% url 'events:event_show' %}">Wydarzenia</a>
     </li>
 
     <li {% block schedule_session %}{% endblock %} class="nav-item">
-        <a class="nav-link" href="{% url 'events:classrooms' %}">Egzaminy</a>
+        <a class="nav-link" href="{% url 'events:session' %}">Egzaminy</a>
     </li>
 
     {% if user.is_authenticated %}
     <li {% block schedule_reservation %}{% endblock %} class="nav-item">
-        <a class="nav-link" href="{% url 'events:classrooms' %}">Rezerwuj</a>
+        <a class="nav-link" href="{% url 'events:reservation' %}">Rezerwuj</a>
     </li>
     {% endif %}
 
@@ -30,13 +30,13 @@
         </li>
 
         <li {% block conflicts_manage %}{% endblock %} class="nav-item">
-            <a class="nav-link" href="{% url 'events:conflicts' %}">Zarządzaj</a>
+            <a class="nav-link" href="{% url 'events:conflicts' %}">Konflikty</a>
         </li>
     {% endif %}
 
     {% if user.is_authenticated %}
         <li {% block schedule_history %}{% endblock %} class="nav-item">
-            <a class="nav-link" href="{% url 'events:classrooms' %}">Historia</a>
+            <a class="nav-link" href="{% url 'events:history' %}">Historia</a>
         </li>
     {% endif %}
 

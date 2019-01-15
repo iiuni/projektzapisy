@@ -21,6 +21,7 @@
 
 {% block content %}
     <div class="span12" style="margin-left: 0;">
+
         <div class="row">
             <div class="span11"><h2>Egzaminy</h2></div>
 
@@ -32,12 +33,12 @@
 
 
         <div class="row">
-
             <div class="span12">
-            <div class="alert-message info">
-                    <a class="close" href="#">×</a>
-                    <p>Kolokwia i egzaminy w wybranym semestrze (Uwaga: wybierz semestr z prawej strony!)</p>
-                  </div>
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    Kolokwia i egzaminy w wybranym semestrze (Uwaga: wybierz semestr z prawej strony!)
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                </div>
             </div>
         </div>
 
@@ -48,7 +49,7 @@
                 {% regroup exams by day as terms_list %}
 
                 {% for exam in terms_list %}
-                    <li>
+                    <li class="list-group-item">
                         <span><h4>{{ exam.grouper|date:"l, j E Y" }}</h4></span>
                         {% regroup exam.list|dictsort:"event.course.entity.name" by event.course as list %}
                         {% for ll in list %}
@@ -69,22 +70,23 @@
             </ul>
         </div>
     </div>
-        <div class="span4">
-            <form method="GET" class="form-stacked">
-                <fieldset>
-                    <legend>Filtr</legend>
-                    {% for field in exams.form %}
-                        <div class="clearfix">
-                            {{ field.label_tag }}
-                            <div class="input">
-                                {{ field }}
-                            </div>
-                        </div><!-- /clearfix -->
-                    {% endfor %}
 
-                </fieldset>
-                <input type="submit" value="Filtruj" class="btn success">
-            </form>
+    <div class="span4">
+        <form method="GET" class="form-stacked">
+            <fieldset>
+                <legend>Filtr</legend>
+                {% for field in exams.form %}
+                    <div class="clearfix">
+                        {{ field.label_tag }}
+                        <div class="input">
+                            {{ field }}
+                        </div>
+                    </div><!-- /clearfix -->
+                {% endfor %}
 
-        </div>
+            </fieldset>
+            <input type="submit" value="Filtruj" class="btn success">
+        </form>
+
+    </div>
 {% endblock %}
