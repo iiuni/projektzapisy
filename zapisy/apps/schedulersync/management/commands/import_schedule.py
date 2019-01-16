@@ -171,10 +171,11 @@ class Command(BaseCommand):
         return None
 
     def create_or_update_group(self, course, data, create_terms=True):
-        try:
-            sync_data_object = TermSyncData.objects.get(scheduler_id=data['id'],
-                                                        term__group__course__semester=self.semester)
-        except TermSyncData.DoesNotExist:
+        sync_data_objects = TermSyncData.objects.filter(
+            scheduler_id=data['id'], term__group__course__semester=self.semester).select_related(
+                'term', 'term__group').prefetch_related('term__classrooms')
+        sync_data_objects = list(sync_data_objects)
+        if sync_data_objects is None:
             if create_terms:
                 # Create the group in the enrollment system
                 if data['group_type'] == '1':
@@ -206,40 +207,43 @@ class Command(BaseCommand):
                                                  .format(data['classrooms'])))
             self.created_terms += 1
         else:
-            term = sync_data_object.term
-            diff_track_fields = ['dayOfWeek', 'start_time', 'end_time']
-            diffs = [(k, (getattr(term, k), data[k])) for k in diff_track_fields
-                     if getattr(term, k) != data[k]]
-            if term.group.type != data['group_type']:
-                diffs.append(('type', (term.group.type, data['group_type'])))
-            if term.group.teacher != data['teacher']:
-                diffs.append(('teacher', (term.group.teacher, data['teacher'])))
-            term.dayOfWeek = data['dayOfWeek']
-            term.start_time = data['start_time']
-            term.end_time = data['end_time']
-            term.group.type = data['group_type']
-            term.group.teacher = data['teacher']
-            if set(term.classrooms.all()) != set(data['classrooms']):
-                diffs.append(('classroom', (set(term.classrooms.all()), set(data['classrooms']))))
-                if create_terms:
-                    term.classrooms = data['classrooms']  # this already saves the relation!
-            if diffs:
-                if create_terms:
-                    term.save()
-                    term.group.save()
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        'Group {} {} updated. Difference:'.format(term.group, term)
+            for sync_data_object in sync_data_objects:
+                term = sync_data_object.term
+                diff_track_fields = ['dayOfWeek', 'start_time', 'end_time']
+                diffs = [(k, (getattr(term, k), data[k]))
+                         for k in diff_track_fields
+                         if getattr(term, k) != data[k]]
+                if term.group.type != data['group_type']:
+                    diffs.append(('type', (term.group.type, data['group_type'])))
+                if term.group.teacher != data['teacher']:
+                    diffs.append(('teacher', (term.group.teacher, data['teacher'])))
+                term.dayOfWeek = data['dayOfWeek']
+                term.start_time = data['start_time']
+                term.end_time = data['end_time']
+                term.group.type = data['group_type']
+                term.group.teacher = data['teacher']
+                if set(term.classrooms.all()) != set(data['classrooms']):
+                    diffs.append(('classroom', (set(term.classrooms.all()),
+                                                set(data['classrooms']))))
+                    if create_terms:
+                        term.classrooms = data['classrooms']  # this already saves the relation!
+                if diffs:
+                    if create_terms:
+                        term.save()
+                        term.group.save()
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            'Group {} {} updated. Difference:'.format(term.group, term)
+                        )
                     )
-                )
-                for diff in diffs:
-                    self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
-                    self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
-                    self.stdout.write(self.style.WARNING(' -> '), ending='')
-                    self.stdout.write(self.style.SUCCESS(diff[1][1]))
-                self.stdout.write('\n')
-                self.all_updates.append((term, diffs))
-                self.updated_terms += 1
+                    for diff in diffs:
+                        self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
+                        self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
+                        self.stdout.write(self.style.WARNING(' -> '), ending='')
+                        self.stdout.write(self.style.SUCCESS(diff[1][1]))
+                    self.stdout.write('\n')
+                    self.all_updates.append((term, diffs))
+                    self.updated_terms += 1
 
     def prepare_group(self, g, results, terms):
         """Convert information about group from scheduler format."""
