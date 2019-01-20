@@ -854,7 +854,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="span16">
+        <div class="col col-12">
             <h2>{% if is_edit %}Zmień rezerwacje{% else %}Nowa rezerwacja{% endif %}</h2>
         </div>
     </div>
@@ -870,14 +870,14 @@
             {% if user.employee %}
 
                 <div class="clearfix row">
-                    <div class="span10">
-                            <label for="id_type">Rodzaj</label>
-                            <div class="input clearfix">
+                    <div class="form-group row col-8">
+                            <label for="id_type" class="col-sm-2 col-form-label"> Rodzaj</label>
+                            <div class="col-sm-10">
                                 {{ form.type }}
                             </div>
                     </div>
 
-                    <div class="span6" style="font-size:12px">
+                    <div class="col-12" style="font-size:12px">
                         <span>
                             <strong>Egzaminy</strong> i <strong>kolokwia</strong> - prowadzący moze zarezerwować salę, rezerwacja nie wymaga potwierdzenia
                         </span>
@@ -890,50 +890,44 @@
                 </div>
 
                 <div id="form_course" class="row clearfix" style='display:none;'>
-                    <div class="span10">
-                        <label for="id_course">Przedmiot</label>
-                        <div class="input">
+                    <div class="form-group row col-8">
+                        <label for="id_course" class="col-sm-2 col-form-label"> Przedmiot </label>
+                        <div class="col-sm-10">
                             {{ form.course }}
                         </div>
-                  </div>
+                    </div>
                 </div>
 
 
 
             {% endif %}
 
-            <div id="form_title" class="row clearfix">
-                <div class="span10">
-                    <label for="id_title">Tytuł</label>
-                    <div class="input">
+            <div id="form_title" class="row clearfix mt-4">
+                <div class="form-group row col-4">
+                    <label for="id_title" class="col-sm-3 col-form-label" >Tytuł</label>
+                    <div class="col-4">
                         {{ form.title }}
                     </div>
                 </div>
-                <div class="span6">
+                <div class="col-8">
                     <span style="font-size:12px">Tytuł pod jakim widoczne będzie wydarzenie</span>
                 </div>
             </div>
 
 
-            <div id="form_visible" class="row clearfix">
-                <label id="optionsCheckboxes">Opcje</label>
-                <div class="input">
-                    <ul class="inputs-list">
-                        <li>
-                            <label>
-                              {{ form.visible }}
-                                <span>Wydarzenie widoczne dla wszystkich użytkowników systemu</span>
-                            </label>
-                        </li>
-                    </ul>
-                          <span style="font-size:12px;">
-                            <strong>Uwagi:</strong> Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
-                          </span>
+            <div id="form_visible" class="row clearfix mt-3">
+                <label id="optionsCheckboxes" class="col-1">Opcje</label>
+                <div class="col-11">
+                        {{ form.visible }}
+                        Wydarzenie widoczne dla wszystkich użytkowników systemu
+                </div>
+                <div class="col-12">
+                         <strong>Uwagi:</strong> Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
                 </div>
           </div>
 
-            <div class="clearfix row">
-                <div class="span10">
+            <div class="clearfix row mt-4">
+                <div class="col-12">
                     <label for="id_description">Opis</label>
 
                     <div class="input">
@@ -942,7 +936,7 @@
                     </div>
                 </div>
 
-                <div class="span6">
+                <div class="col-12">
                     <span style="font-size:12px">
                         Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.
                     </span>
@@ -951,48 +945,54 @@
 
         </fieldset>
 
-        <h3>Terminy</h3>
-        {{ formset.management_form }}
-        <table id="termstable" class="span16">
-            <thead>
-                <tr>
-                    <th class="termtbl1">Dzień</th>
-                    <th class="termtbl2">Od</th>
-                    <th class="termtbl2">Do</th>
-                    <th class="termtbl4">Lokalizacja</th>
-                    <th class="termtbl3" colspan="2">Akcje</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for form in formset %}
-                <tr>
-                    <td class="termtbl1"><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
-                    <td class="termtbl2"><span>{{ form.instance.start|time }}</span>{{ form.start }}</td>
-                    <td class="termtbl2"><span>{{ form.instance.end|time }}</span>{{ form.end }}{{ form.id }}</td>
-                    <td class="termtbl4"><span>{% if form.instance.room %}Sala
-                        {{ form.instance.room.number }}{% else %}
-                        {{ form.instance.place }}{% endif %}{{ form.room }}{{ form.place }}</span>
-                        <span>{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}</span>
-                    </td>
+        <div class="mt-4">
+            <h3>Terminy</h3>
+            {{ formset.management_form }}
+            <table id="termstable" class="col-16">
+                <thead>
+                    <tr>
+                        <th class="termtbl1">Dzień</th>
+                        <th class="termtbl2">Od</th>
+                        <th class="termtbl2">Do</th>
+                        <th class="termtbl4">Lokalizacja</th>
+                        <th class="termtbl3" colspan="2">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for form in formset %}
+                    <tr>
+                        <td class="termtbl1"><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
+                        <td class="termtbl2"><span>{{ form.instance.start|time }}</span>{{ form.start }}</td>
+                        <td class="termtbl2"><span>{{ form.instance.end|time }}</span>{{ form.end }}{{ form.id }}</td>
+                        <td class="termtbl4"><span>{% if form.instance.room %}Sala
+                            {{ form.instance.room.number }}{% else %}
+                            {{ form.instance.place }}{% endif %}{{ form.room }}{{ form.place }}</span>
+                            <span>{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}</span>
+                        </td>
 
-                    <td>
-                        <div class="hidden">{{ form.DELETE }}</div>
-                        <div class="hidden ignore_conflicts">{{ form.ignore_conflicts }}</div>
-                        <button style="display:none" class="btn success unremoveterm" formnovalidate>Cofnij
-                            usunięcie
-                        </button>
-                        <button class="btn danger removeterm" formnovalidate>Usuń</button>
-                    </td>
-                    <td>
-                        <button class="btn editterm" formnovalidate>Edytuj</button>
-                    </td>
-                </tr>
-            {% endfor %}
+                        <td>
+                            <div class="hidden">{{ form.DELETE }}</div>
+                            <div class="hidden ignore_conflicts">{{ form.ignore_conflicts }}</div>
+                            <button style="display:none" class="btn success unremoveterm" formnovalidate>Cofnij
+                                usunięcie
+                            </button>
+                            <button class="btn danger removeterm" formnovalidate>Usuń</button>
+                        </td>
+                        <td>
+                            <button class="btn editterm" formnovalidate>Edytuj</button>
+                        </td>
+                    </tr>
+                {% endfor %}
 
-            </tbody>
-        </table>
-        <input type="submit" style="display:none" name="sendthisform" value="test" id="testmainform">
+                </tbody>
+            </table>
+        </div>
+
+    <input type="submit" style="display:none" name="sendthisform" value="test" id="testmainform">
     </form>
+
+
+
     <form id="addtermform" class="span16">
         <table>
             <tbody>
@@ -1103,21 +1103,26 @@
                 <div class="span4 help-block">Musisz samemu zatroszczyć się o rezerwację!</div>
             </div>
         </div>
+
         <div id="canvasplacediv" class="row" style="display: none;">
             <canvas id="can" width="900">
                 Niestety Twoja przeglądarka nie wspiera HTML5.
             </canvas>
         </div>
+
     </form>
-    <div class="row">
+
+
+
+    <div class="row mt-3">
         <form id="testroomlistform">
           {% if errors and perms.schedule.manage_events %}
-            <div class="span16 left">
+            <div class="col-12">
               <input type="checkbox" id="ignore_all_conflicts"> Zignoruj konflikty</input>
             </div>
             {% endif %}
-            <div class="span16 right" style="text-align:right">
-                <input type="submit" id="save_event" class="btn" name="zapisz" value="Zapisz">
+            <div class="col-12" style="text-align:right">
+                <input type="submit" id="save_event" class="btn-success" name="zapisz" value="Zapisz">
             </div>
         </form>
     </div>

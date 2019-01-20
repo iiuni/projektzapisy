@@ -83,14 +83,14 @@
 
     {% with events.qs as qs %}
     <div class="row">
-        <div class="span16">
+        <div class="col-12">
             <h2>{{ title }}</h2>
         </div>
     </div>
 
 
     <div class="row">
-    <div class="span10">
+    <div class="col-8">
 
             {% paginate qs %}
 
@@ -102,29 +102,30 @@
             Brak wyników dla zapytania
         {% endfor %}
     </div>
-    <div class="span6">
 
+    <div class="col-4">
 
         <form action="" class="form-stacked">
                 <fieldset>
                   <legend>Filtr</legend>
-                  {% for field in events.form %}
+                {% for field in events.form %}
                     <div class="clearfix">
                         {{ field.label_tag }}
                     <div class="input">
                         {{ field }}
                     </div>
                   </div><!-- /clearfix -->
-                    {% endfor %}
+                {% endfor %}
 
                 </fieldset>
-                <input type="submit" value="Filtruj" class="btn success">
-              </form>
+                <input type="submit" value="Filtruj" class="btn-success">
+        </form>
 
     </div>
+
     </div>
     <div class="row">
-        <div class="span16">
+        <div class="col-12">
 
             {% show_pages %}
         </div>

@@ -20,12 +20,14 @@
 {% block content-width %}16{% endblock %}
 
 {% block content %}
-    <div class="span12" style="margin-left: 0;">
+
+    <div class="row">
+        <div class="col-8" style="margin-left: 0;">
 
         <div class="row">
-            <div class="span11"><h2>Egzaminy</h2></div>
+            <div class="col-1"><h2>Egzaminy</h2></div>
 
-            <div class="span1" style="text-align: right;">
+            <div class="col-1" style="text-align: right;">
                 <a href="{% url 'events:session_feed' %}"><img src="{% static "feed-icon.png" %}" alt="RSS"></a>
             </div>
 
@@ -71,7 +73,7 @@
         </div>
     </div>
 
-    <div class="span4">
+    <div class="col-4">
         <form method="GET" class="form-stacked">
             <fieldset>
                 <legend>Filtr</legend>
@@ -85,8 +87,9 @@
                 {% endfor %}
 
             </fieldset>
-            <input type="submit" value="Filtruj" class="btn success">
+            <input type="submit" value="Filtruj" class="btn-success">
         </form>
-
     </div>
+    </div>
+
 {% endblock %}

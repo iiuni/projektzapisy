@@ -1,6 +1,6 @@
 {% extends 'schedule/base.html' %}
 
-{% block schedule_list %} class="active"{% endblock %}
+{% block schedule_list %} class="active" {% endblock %}
 
 {% block css %}
     {{ block.super }}
@@ -12,6 +12,8 @@
 {% block bread %}
     <a href="/">Strona główna</a> &raquo;
 {% endblock %}
+
+{% block enrollment_menu_prototype %} class="active" {% endblock %}
 
 {% block content-width %}16{% endblock %}
 
@@ -41,7 +43,7 @@
             </div>
         </div>
 
-        <div class="col-4">
+        <div class="col-sm" >
             {% regroup rooms by get_floor_display as floor_list %}
                 {% for floor in floor_list %}
                     <h4 class="">{{ floor.grouper }}</h4>
