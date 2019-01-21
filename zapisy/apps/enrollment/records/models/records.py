@@ -235,11 +235,11 @@ class Record(models.Model):
             return []
         enqueued_groups = []
         if group.type != Group.GROUP_TYPE_LECTURE:
-            lecture_group = Group.get_lecture_group(group.course_id)
-            if lecture_group is not None:
-                enqueued_groups = cls.enqueue_student(student, lecture_group)
-                if not enqueued_groups:
-                    return []
+            lecture_groups = Group.get_lecture_groups(group.course_id)
+            for lecture_group in lecture_groups:
+                enqueued_groups.extend(cls.enqueue_student(student, lecture_group))
+            if lecture_groups and not enqueued_groups:
+                return []
         Record.objects.create(
             group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
         LOGGER.info('User %s is enqueued into group %s', student, group)
@@ -324,8 +324,8 @@ class Record(models.Model):
         # student enqueues into the groups at the same time, and this group is
         # being worked before the lecture group.
         if group.type != Group.GROUP_TYPE_LECTURE:
-            lecture_group = Group.get_lecture_group(group.course_id)
-            if lecture_group is not None:
+            lecture_groups = Group.get_lecture_groups(group.course_id)
+            for lecture_group in lecture_groups:
                 cls.fill_group(lecture_group.pk)
 
         # Groups that will need to be pulled into afterwards.
@@ -389,11 +389,17 @@ class Record(models.Model):
 
             # Check if he is enrolled into the lecture group.
             if group.type != Group.GROUP_TYPE_LECTURE:
-                lecture_group = Group.get_lecture_group(group.course_id)
-                if lecture_group is not None:
-                    if not self.is_enrolled(self.student_id, lecture_group.id):
+                lecture_groups = Group.get_lecture_groups(group.course_id)
+                if lecture_groups:
+                    lecture_groups_is_recorded = self.is_recorded_in_groups(
+                        self.student, [g.pk for g in lecture_groups])
+                    is_enrolled_into_any_lecture_group = any(
+                        [r['enrolled'] for r in lecture_groups_is_recorded.values()])
+                    if not is_enrolled_into_any_lecture_group:
                         self.status = RecordStatus.REMOVED
                         self.save()
+                        LOGGER.info(("Student %s not enrolled into group %s because "
+                                     "he is not in any lecture group"), self.student, group)
                         return []
 
             # Check if he can be enrolled at all.
