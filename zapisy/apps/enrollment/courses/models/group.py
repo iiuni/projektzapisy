@@ -3,6 +3,8 @@
 A group may have multiple terms - that is, students may meet with the teacher
 more than one time a week.
 """
+from typing import Iterable
+
 from django.db import models
 from django.urls import reverse
 
@@ -133,14 +135,11 @@ class Group(models.Model):
         return reverse('group-view', args=[self.pk])
 
     @classmethod
-    def get_lecture_group(cls, course_id: int) -> 'Group':
+    def get_lecture_groups(cls, course_id: int) -> Iterable['Group']:
         """Given a course_id returns a lecture group for this course, if one exists.
 
         The Group.MultipleObjectsReturned exception will be raised when many
         lecture groups exist for course.
         """
         group_query = cls.objects.filter(course_id=course_id, type=Group.GROUP_TYPE_LECTURE)
-        try:
-            return group_query.get()
-        except cls.DoesNotExist:
-            return None
+        return list(group_query)
