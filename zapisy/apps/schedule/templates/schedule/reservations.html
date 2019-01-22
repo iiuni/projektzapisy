@@ -90,43 +90,45 @@
 
 
     <div class="row">
-    <div class="col-8">
+        <div class="col-8">
 
-            {% paginate qs %}
+                {% paginate qs %}
 
-        {% for event in qs %}
-                <div>
-                    {% include "schedule/includes/reservation_view.html" with event=event title=title %}
-                </div>
-        {% empty %}
-            Brak wyników dla zapytania
-        {% endfor %}
-    </div>
-
-    <div class="col-4">
-
-        <form action="" class="form-stacked">
-                <fieldset>
-                  <legend>Filtr</legend>
-                {% for field in events.form %}
-                    <div class="clearfix">
-                        {{ field.label_tag }}
-                    <div class="input">
-                        {{ field }}
+            {% for event in qs %}
+                    <div class="col-10">
+                        {% include "schedule/includes/reservation_view.html" with event=event title=title %}
                     </div>
-                  </div><!-- /clearfix -->
-                {% endfor %}
+            {% empty %}
+                Brak wyników dla zapytania
+            {% endfor %}
+        </div>
 
-                </fieldset>
-                <input type="submit" value="Filtruj" class="btn-success">
-        </form>
+        <div class="col-4">
+
+            <form action="" class="form-stacked">
+                    <fieldset>
+                      <legend>Filtr</legend>
+                    {% for field in events.form %}
+                        <div class="clearfix">
+                            {{ field.label_tag }}
+                        <div class="input">
+                            {{ field }}
+                        </div>
+                      </div><!-- /clearfix -->
+                    {% endfor %}
+
+                    </fieldset>
+                    <br>
+                    <input type="submit" value="Filtruj" class="btn-success">
+            </form>
+
+        </div>
 
     </div>
 
-    </div>
+
     <div class="row">
         <div class="col-12">
-
             {% show_pages %}
         </div>
     </div>

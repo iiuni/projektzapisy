@@ -28,7 +28,7 @@
         <td colspan="3" class="tbl1">
                 <p class="short">{{ event.description|truncatewords:15 }}</p>
                 <p class="long hidden">{{ event.description }}</p>
-                <a class="more right">więcej</a>
+                <a class="more right ">więcej</a>
 
         </td>
     </tr>{% endif %}
@@ -52,7 +52,7 @@
     <tr>
         <td class="tbl2"><strong>Akcje</strong></td>
         <td colspan="3" class="tbl1">
-            <div class="right"><span><a href="{% url 'events:show' event.id %}"><button class="btn info">Zobacz</button></a></span>
+            <div class="right"><span><a href="{% url 'events:show' event.id %}"><button class="btn-info">Zobacz</button></a></span>
             </div>
         </td>
 

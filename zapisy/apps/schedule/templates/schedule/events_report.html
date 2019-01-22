@@ -42,12 +42,12 @@
 
 {% block content %}
     <div class="row">
-        <div class="span15">
+        <div class="col-12">
             <h2>Raport</h2>
         </div>
     </div>
     <div class="row">
-        <div class="span16">
+        <div class="col-12">
           <form action="{% url 'events:events_report' %}" method="post">
 
           <table>
@@ -74,7 +74,7 @@
             <td>{{ form.beg_date.errors }}</td>
           </tr>
         </table>
-          <input class="btn" type="submit" value="Generuj raport" />
+          <input class="btn-success" type="submit" value="Generuj raport" />
           </form>
         </div>
     </div>

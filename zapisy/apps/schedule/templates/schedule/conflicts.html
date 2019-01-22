@@ -43,9 +43,10 @@
 
 {% block content %}
 <div class="row">
-  <div class="span16">
+  <div class="col-12">
     <h2>{{ title }}</h2>
   </div>
+
   <form action="{% url 'events:conflicts' %}" method="GET" class="form-stacked">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -54,8 +55,9 @@
     {% endfor %}
     Od: {{ form.beg_date }}
     Do: {{ form.end_date }}
-    <input type="submit" value="Szukaj" class="btn success">
+    <input type="submit" value="Szukaj" class="btn-success">
   </form>
+
   <ul id="days-list">
     {% for day, rooms_data in terms.items %}
       <li>
