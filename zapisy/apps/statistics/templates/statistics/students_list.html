@@ -8,11 +8,11 @@
             <tr>
                 <th>Imię</th>
                 <th>Nazwisko</th>
-                <th>Ostatnio</th>
+                <th>Ostatnie logowanie</th>
                 <th>Index</th>
                 <th>ECTS</th>
-                <th>Punkty w semestrze</th>
                 <th>T0</th>
+                <th>Najwcześniejsza możliwość zapisu</th>
             </tr>
         </thead>
         <tbody>
@@ -23,8 +23,8 @@
                     <td>{{ student.user.last_login }}</td>
                     <td>{{ student.matricula }}</td>
                     <td>{{ student.ects }}</td>
-                    <td>{{ student.semester_points }}</td>
-                    <td>{{ student.t0_min|date:"d E Y, G:i" }}</td>
+                    <td>{{ student.min_t0|date:"d E Y, G:i" }}</td>
+                    <td>{{ student.min_opening_time|date:"d E Y, G:i" }}</td>
                 </tr>
             {% endfor %}
         </tbody>
