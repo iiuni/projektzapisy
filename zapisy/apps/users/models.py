@@ -9,7 +9,6 @@ from django.contrib.sites.models import Site
 from django.db.models import QuerySet
 
 from apps.users.exceptions import NonUserException
-from apps.users.managers import GettersManager
 
 # The TYPE_CHECKING constant is always False at runtime, so the import won't be evaluated,
 # but mypy (and other type-checking tools) will evaluate the contents of that block.
@@ -205,8 +204,6 @@ class Student(BaseUser):
     numeryczna_l = models.BooleanField(default=False)
     algorytmy_l = models.BooleanField(default=False)
     programowanie_l = models.BooleanField(default=False)
-
-    objects: GettersManager = GettersManager()
 
     def is_active(self) -> bool:
         return self.status == 0
