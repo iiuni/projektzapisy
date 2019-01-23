@@ -2,6 +2,7 @@
 import json
 from typing import List
 
+from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
@@ -16,6 +17,7 @@ from apps.enrollment.courses.templatetags.course_types import \
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.timetable.models import Pin, HiddenGroups
 from apps.users.decorators import student_required
+from apps.users.models import BaseUser, Employee, Student
 
 
 def build_group_list(groups: List[Group]):
@@ -74,10 +76,8 @@ def list_courses_in_semester(semester: Semester):
     return json.dumps(list(courses))
 
 
-@student_required
-def my_timetable(request):
-    """Shows the student his own timetable page."""
-    student = request.user.student
+def student_timetable_data(student: Student):
+    """Collects the timetable data for a student."""
     semester = Semester.objects.get_next()
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
@@ -99,6 +99,30 @@ def my_timetable(request):
         'sum_points': sum(points_for_courseentities.values()),
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
+    return data
+
+
+def employee_timetable_data(employee: Employee):
+    """Collects the timetable data for an employee."""
+    semester = Semester.objects.get_next()
+    groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
+        'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
+            'term', 'term__classrooms')
+    group_dicts = build_group_list(groups)
+    data = {
+        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+    }
+    return data
+
+
+@login_required
+def my_timetable(request):
+    """Shows the student/employee his own timetable page."""
+    if BaseUser.is_student(request.user):
+        data = student_timetable_data(request.user.student)
+    elif BaseUser.is_employee(request.user):
+        data = employee_timetable_data(request.user.employee)
+
     return render(request, 'timetable/timetable.html', data)
 
 
