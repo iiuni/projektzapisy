@@ -60,13 +60,15 @@ class SpecialReservationSerializer(serializers.ModelSerializer):
 
 
 class SingleVoteSerializer(serializers.ModelSerializer):
-    """Serialize single student vote
-    Get proper vote value, course name and student id"""
+    """Serializes single student vote.
 
+    Gets correct vote value, course name and student id.
+    """
     vote_points = serializers.SerializerMethodField()
     course_name = serializers.CharField(source='entity.name')
 
     def get_vote_points(self, vote_model):
+        """Getter function for vote_points field."""
         return max(vote_model.value, vote_model.correction)
 
     class Meta:
@@ -75,11 +77,11 @@ class SingleVoteSerializer(serializers.ModelSerializer):
 
 
 class SystemStateSerializer(serializers.ModelSerializer):
-    """Serialize vote system state, get id and friendly name"""
-
+    """Serializes vote system state, get id and friendly name"""
     state_name = serializers.SerializerMethodField()
 
     def get_state_name(self, systemstate_model):
+        """Getter function for system state_name field."""
         return str(systemstate_model)
 
     class Meta:

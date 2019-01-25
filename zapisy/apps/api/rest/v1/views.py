@@ -59,21 +59,20 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
 
 
 class SingleVoteViewSet(viewsets.ModelViewSet):
-    """Return votes by selected state (or all votes otherwise)
+    """Returns votes by selected state (or all votes otherwise).
 
-    State is passed by GET parameter (e.g. url?state=n) 
-    Skip votes with no value for clarity
+    State is passed by GET parameter (e.g. url?state=n). Skips votes with no
+    value for clarity.
     """
-
     http_method_names = ['get']
     serializer_class = SingleVoteSerializer
     filter_fields = '__all__'
 
     def get_queryset(self):
-        queryset = SingleVote.objects.select_related('entity').all()
+        queryset = SingleVote.objects.select_related('entity').exclude(value=0, correction=0)
         system_state_id = self.request.GET.get('state')
         if system_state_id:
-            queryset = queryset.filter(state_id=system_state_id).exclude(value=0, correction=0)
+            queryset = queryset.filter(state_id=system_state_id)
 
         return queryset
 
