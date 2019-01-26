@@ -855,116 +855,118 @@
 {% block content %}
     <div class="row">
         <div class="col col-12">
-            <h2>{% if is_edit %}Zmień rezerwacje{% else %}Nowa rezerwacja{% endif %}</h2>
+            <h1>{% if is_edit %}Zmień rezerwacje{% else %}Nowa rezerwacja{% endif %}</h1>
         </div>
     </div>
 
-    <form method="POST" id="mainform">
         {% csrf_token %}
         {% for hidden in form.hidden_fields %}
             {{ hidden }}
         {% endfor %}
         {{ form.non_field_errors }}
-        <fieldset>
 
-            {% if user.employee %}
 
-                <div class="clearfix row">
-                    <div class="form-group row col-8">
-                            <label for="id_type" class="col-sm-2 col-form-label"> Rodzaj</label>
-                            <div class="col-sm-10">
-                                {{ form.type }}
-                            </div>
-                    </div>
+        {% if user.employee %}
 
-                    <div class="col-12" style="font-size:12px">
-                        <span>
-                            <strong>Egzaminy</strong> i <strong>kolokwia</strong> - prowadzący moze zarezerwować salę, rezerwacja nie wymaga potwierdzenia
-                        </span>
-                        <br/>
-                        <br/>
-                        <span>
-                            <strong>Wydarzenia</strong> - każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.
-                        </span>
-                    </div>
+
+     <div class="clearfix">
+
+         <form>
+            <div class="form-group row">
+                <label for="id_type" class="col-sm-1 col-form-label"> <h5>Rodzaj</h5></label>
+                <div class="col-sm-11">
+                    {{ form.type }}
                 </div>
+            </div>
+        </form>
 
-                <div id="form_course" class="row clearfix" style='display:none;'>
-                    <div class="form-group row col-8">
-                        <label for="id_course" class="col-sm-2 col-form-label"> Przedmiot </label>
-                        <div class="col-sm-10">
-                            {{ form.course }}
-                        </div>
-                    </div>
+        <div class="row col-12" style="font-size:12px">
+            <span>
+                <strong>Egzaminy</strong> i <strong>kolokwia</strong> - prowadzący moze zarezerwować salę, rezerwacja nie wymaga potwierdzenia
+            </span>
+            <br/>
+            <br/>
+            <span>
+                <strong>Wydarzenia</strong> - każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.
+            </span>
+        </div>
+
+
+        <div id="form_course" class="row clearfix" style='display:none;'>
+            <div class="form-group row col-8">
+                <label for="id_course" class="col-sm-2 col-form-label"> Przedmiot </label>
+                <div class="col-sm-10">
+                    {{ form.course }}
                 </div>
+            </div>
+        </div>
 
 
 
-            {% endif %}
+        {% endif %}
 
-            <div id="form_title" class="row clearfix mt-4">
-                <div class="form-group row col-4">
-                    <label for="id_title" class="col-sm-3 col-form-label" >Tytuł</label>
-                    <div class="col-4">
-                        {{ form.title }}
-                    </div>
+        <form class="mt-4">
+            <div class="form-group row">
+                <label for="id_title" class="col-sm-1 col-form-label" ><h5>Tytuł</h5></label>
+                <div class="col-sm-8">
+                    {{ form.title }}
                 </div>
-                <div class="col-8">
-                    <span style="font-size:12px">Tytuł pod jakim widoczne będzie wydarzenie</span>
+                <span class="col-3" style="font-size:12px">Tytuł pod jakim widoczne będzie wydarzenie</span>
+            </div>
+        </form>
+
+
+        <div id="form_visible" class="row clearfix mt-3">
+            <label id="optionsCheckboxes" class="col-1">Opcje</label>
+            <div class="col-11">
+                    {{ form.visible }}
+                    Wydarzenie widoczne dla wszystkich użytkowników systemu
+            </div>
+            <div class="col-12">
+                     <strong>Uwagi:</strong> Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
+            </div>
+      </div>
+
+        <div class="clearfix row mt-4">
+            <div class="col-12">
+                <label for="id_description">Opis</label>
+
+                <div class="input">
+                    <div style="margin-right:10px">{{ form.description }}</div>
+                    {{ form.description.errors }}&nbsp;
                 </div>
             </div>
 
-
-            <div id="form_visible" class="row clearfix mt-3">
-                <label id="optionsCheckboxes" class="col-1">Opcje</label>
-                <div class="col-11">
-                        {{ form.visible }}
-                        Wydarzenie widoczne dla wszystkich użytkowników systemu
-                </div>
-                <div class="col-12">
-                         <strong>Uwagi:</strong> Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
-                </div>
-          </div>
-
-            <div class="clearfix row mt-4">
-                <div class="col-12">
-                    <label for="id_description">Opis</label>
-
-                    <div class="input">
-                        <div style="margin-right:10px">{{ form.description }}</div>
-                        {{ form.description.errors }}&nbsp;
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <span style="font-size:12px">
-                        Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.
-                    </span>
-                </div>
+            <div class="col-12">
+                <span style="font-size:12px">
+                    Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.
+                </span>
             </div>
+        </div>
 
-        </fieldset>
+
 
         <div class="mt-4">
             <h3>Terminy</h3>
             {{ formset.management_form }}
-            <table id="termstable" class="col-16">
+            <table id="termstable" class="table table-bordered">
                 <thead>
                     <tr>
-                        <th class="termtbl1">Dzień</th>
-                        <th class="termtbl2">Od</th>
-                        <th class="termtbl2">Do</th>
-                        <th class="termtbl4">Lokalizacja</th>
-                        <th class="termtbl3" colspan="2">Akcje</th>
+                        <th scope="col">Dzień</th>
+                        <th scope="col">Od</th>
+                        <th scope="col">Do</th>
+                        <th scope="col">Lokalizacja</th>
+                        <th scope="col">Akcje</th>
                     </tr>
                 </thead>
+
                 <tbody>
                 {% for form in formset %}
                     <tr>
-                        <td class="termtbl1"><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
-                        <td class="termtbl2"><span>{{ form.instance.start|time }}</span>{{ form.start }}</td>
-                        <td class="termtbl2"><span>{{ form.instance.end|time }}</span>{{ form.end }}{{ form.id }}</td>
-                        <td class="termtbl4"><span>{% if form.instance.room %}Sala
+                        <td scope="row"><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
+                        <td scope="row"><span>{{ form.instance.start|time }}</span>{{ form.start }}</td>
+                        <td scope="row"><span>{{ form.instance.end|time }}</span>{{ form.end }}{{ form.id }}</td>
+                        <td scope="row"><span>{% if form.instance.room %}Sala
                             {{ form.instance.room.number }}{% else %}
                             {{ form.instance.place }}{% endif %}{{ form.room }}{{ form.place }}</span>
                             <span>{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}</span>
@@ -973,13 +975,14 @@
                         <td>
                             <div class="hidden">{{ form.DELETE }}</div>
                             <div class="hidden ignore_conflicts">{{ form.ignore_conflicts }}</div>
-                            <button style="display:none" class="btn success unremoveterm" formnovalidate>Cofnij
+                            <button style="display:none" class="btn-success unremoveterm" formnovalidate>Cofnij
                                 usunięcie
                             </button>
-                            <button class="btn danger removeterm" formnovalidate>Usuń</button>
+                            <button class="btn-danger removeterm" formnovalidate>Usuń</button>
                         </td>
+
                         <td>
-                            <button class="btn editterm" formnovalidate>Edytuj</button>
+                            <button class="btn-editterm" formnovalidate>Edytuj</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -987,29 +990,32 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
     <input type="submit" style="display:none" name="sendthisform" value="test" id="testmainform">
-    </form>
 
 
 
-    <form id="addtermform" class="span16">
-        <table>
+
+    <form id="addtermform" class="form-group">
+        <table class="table table-bordered">
             <tbody>
             <tr>
                 <td class="termtbl1" style="border-bottom: 0">
                     <input id="term" type="date" class="term small" placeholder="{% now "Y-m-d" %}"
                            min="{% now "Y-m-d" %}" required>
                 </td>
+
                 <td class="termtbl2" style="border-bottom: 0">
                     <input id="begin" type="time" class="begin mini timepicker readonly" placeholder="np. 8:00" required
                            pattern="^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$">
-
                 </td>
+
                 <td class="termtbl2" style="border-bottom: 0">
                     <input id="end" type="time" class="end mini timepicker readonly" placeholder="np. 10:00" required
                            pattern="^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$">
                 </td>
+
                 <td class="termtbl1" style="border-bottom: 0">
                     <input type="hidden" id="hiddenroom" value="">
                     <input type="hidden" id="hiddenid" value="">
@@ -1017,12 +1023,13 @@
                     <input class="xlarge readonly" id="location" autocomplete="off" name="location"
                            placeholder="Miejsce" disabled="true"
                            type="text" required>
-
                 </td>
+
                 <td colspan="2" class="termtbl3" style="border-bottom: 0">
                     <button id="addterm" class="btn success">Dodaj termin</button>
                 </td>
             </tr>
+
             <tr>
                 <td class="termtbl1">
                     <small style="font-size: 12px">Wybierz termin, by zobaczyć sale wolne w tym czasie</small>
@@ -1034,8 +1041,8 @@
                 <td class="termtbl1">
                     <small style="font-size: 12px">Naciśnij, aby wybrać</small>
                 </td>
-                <td colspan="2" class="termtbl3">
-                </td>
+
+                <td colspan="2" class="termtbl3"> </td>
             </tr>
             </tbody>
         </table>
@@ -1118,7 +1125,7 @@
         <form id="testroomlistform">
           {% if errors and perms.schedule.manage_events %}
             <div class="col-12">
-              <input type="checkbox" id="ignore_all_conflicts"> Zignoruj konflikty</input>
+              <input type="checkbox" id="ignore_all_conflicts"> Zignoruj konflikty </input>
             </div>
             {% endif %}
             <div class="col-12" style="text-align:right">

@@ -79,10 +79,10 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
-        self.fields['title'].widget.attrs.update({'class': 'span7'})
-        self.fields['type'].widget.attrs.update({'class': 'span7'})
-        self.fields['course'].widget.attrs.update({'class': 'span7'})
-        self.fields['description'].widget.attrs.update({'class': 'span7'})
+        self.fields['title'].widget.attrs.update({'class': 'form-control'})
+        self.fields['type'].widget.attrs.update({'class': 'form-control'})
+        self.fields['course'].widget.attrs.update({'class': 'form-control'})
+        self.fields['description'].widget.attrs.update({'class': 'form-control'})
         self.fields['visible'].widget.attrs.update({'checked': ''})
 
 
