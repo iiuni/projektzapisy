@@ -99,7 +99,7 @@ def enrollment_limit(request):
     from django.conf import settings
     try:
         Notification.send_notifications('enrollment-limit',
-                                        {'ECTS_LIMIT': settings.ECTS_LIMIT,
+                                        {'ECTS_INITIAL_LIMIT': settings.ECTS_INITIAL_LIMIT,
                                          'ECTS_FINAL_LIMIT': settings.ECTS_FINAL_LIMIT})
 
         messages.success(request, 'Wysłano powiadomienia o zwiększeniu limitu punktów ECTS')
