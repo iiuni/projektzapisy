@@ -111,7 +111,7 @@ class Semester(models.Model):
             timestamp = datetime.now()
         if self.records_ects_limit_abolition is not None:
             if timestamp < self.records_ects_limit_abolition:
-                return settings.ECTS_LIMIT
+                return settings.ECTS_INITIAL_LIMIT
         return settings.ECTS_FINAL_LIMIT
 
     def get_courses(self):

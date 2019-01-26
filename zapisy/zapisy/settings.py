@@ -242,10 +242,13 @@ LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-# settings for enrollment
-# ECTS_BONUS * ECTS = abs(t0-t1); set to 7, if changed, change also get_t0_interval()
+# Settings for enrollment.
+# Bonus minutes per one ECTS credit. This setting affects T0 times computation.
 ECTS_BONUS = 5
-ECTS_LIMIT = 35
+# Limits concerning the amount of ECTS points a student can sign up to in a
+# semester. For the first part of enrollment cycle, the INITIAL_LIMIT holds.
+# Then, after abolition time, students can enroll into some additional courses.
+ECTS_INITIAL_LIMIT = 35
 ECTS_FINAL_LIMIT = 45
 
 VOTE_LIMIT = 60
