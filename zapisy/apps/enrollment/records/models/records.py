@@ -101,7 +101,7 @@ class Record(models.Model):
         # Check if enrolling would not make the student exceed the current ECTS
         # limit.
         semester: Semester = group.course.semester
-        points = StudentPointsView.student_points_in_semester_with_added_courses(
+        points = StudentPointsView.student_points_in_semester(
             student, semester, [group.course])
         if points > semester.get_current_limit(time):
             return False
