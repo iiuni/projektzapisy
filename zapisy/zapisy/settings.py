@@ -255,6 +255,7 @@ ECTS_FINAL_LIMIT = 45
 
 VOTE_LIMIT = 60
 
+# MSc Computer Science Program will have id=1 in database table users_program.
 M_PROGRAM = 1
 LETURE_TYPE = '1'
 QUEUE_PRIORITY_LIMIT = 5
