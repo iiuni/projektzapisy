@@ -1,18 +1,21 @@
 from datetime import date
 import datetime
+from typing import Optional
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.core.cache import cache as mcache
+
 from apps.cache_utils import cache_result
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.student_options import StudentOptions
-
 from apps.enrollment.courses.models.tag import Tag
-
 from apps.offer.proposal.exceptions import NotOwnerException
+from apps.users.models import Student
+
 import logging
 
 logger = logging.getLogger()
@@ -281,7 +284,11 @@ class CourseEntity(models.Model):
         # As it is, we need this so lists in the offer app are sorted properly
         ordering = ['name_pl']
 
-    def get_points(self, student=None):
+    def get_points(self, student: Optional[Student] = None) -> int:
+        """Returns credits value of the course for the given student.
+
+        If student is not provided, the function will return the default value.
+        """
         from apps.enrollment.courses.models.points import StudentPointsView
         return StudentPointsView.course_value_for_student(student, self.pk)
 
@@ -679,9 +686,10 @@ class Course(models.Model):
         else:
             return self.semester.get_name()
 
-    def get_points(self, student=None) -> int:
-        """
-            @param student: (optional) :model:'users.Student'
+    def get_points(self, student: Optional[Student] = None) -> int:
+        """Returns credits value of the course for the given student.
+
+        If student is not provided, the function will return the default value.
         """
         return self.entity.get_points(student)
 
