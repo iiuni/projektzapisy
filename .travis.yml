@@ -2,6 +2,9 @@ language: python
 python:
   - "3.6"
 
+env:
+  - BUILD_YARN=false
+
 addons:
   apt:
     sources:
@@ -11,6 +14,20 @@ addons:
       - yarn
 services:
   - postgresql
+
+install:
+  - pip install -r zapisy/requirements.test.txt
+  - |
+    if ["$BUILD_YARN" = true]; then
+      # Installs Yarn/NPM dependencies.
+      cd zapisy && yarn && cd ..
+      # Builds assets.
+      cd zapisy && yarn build && cd ..
+      # Don't store the build cache; it changes after each build, Travis then
+      # picks that change up and repacks the cache archive which takes forever
+      rm -rf zapisy/node_modules/.cache-loader-*
+    fi
+
 
 before_script:
   - psql -c 'CREATE DATABASE fereol_test;' -U postgres
@@ -23,27 +40,11 @@ script: skip
 jobs:
   include:
     - stage: lint
-      install:
-        - pip install -r zapisy/requirements.test.txt
-      cache:
-        - pip
-        - directories:
-          # Cache the virtualenv packages folder so virtualenv doesn't waste
-          # time installing locally cached packages
-          - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
-    
-    - script: flake8 --statistics --ignore=E265,E501,F401,F841 --exclude=node_modules,*migrations --max-line-length 120 .
+      script: flake8 --statistics --ignore=E265,E501,F401,F841 --exclude=node_modules,*migrations --max-line-length 120 .
 
     - stage: test
-      install:
-        - pip install -r zapisy/requirements.test.txt
-        # Installs Yarn/NPM dependencies.
-        - cd zapisy && yarn && cd ..
-        # Builds assets.
-        - cd zapisy && yarn build && cd ..
-        # Don't store the build cache; it changes after each build, Travis then
-        # picks that change up and repacks the cache archive which takes forever
-        - rm -rf zapisy/node_modules/.cache-loader-*
+      env:
+        - BUILD_YARN=true
       cache:
         - pip
         # This caches yarn/.cache, which mostly means we don't need to redownload packages
@@ -56,13 +57,20 @@ jobs:
           - zapisy/node_modules
           # Cache the virtualenv packages folder so virtualenv doesn't waste
           # time installing locally cached packages
-          - "/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages"
-    - script: cd zapisy && python manage.py test apps.news.tests --nomigrations
-    - script: cd zapisy && python manage.py test apps.schedule --nomigrations
-    - script: cd zapisy && python manage.py test apps.enrollment.courses --nomigrations
-    - script: cd zapisy && python manage.py test apps.enrollment.records.tests --nomigrations
-    - script: cd zapisy && python manage.py test apps.grade.poll --nomigrations
-    - script: cd zapisy && python manage.py test apps.users --nomigrations
+          - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
+      script: cd zapisy && python manage.py test apps.news.tests --nomigrations
+      script: cd zapisy && python manage.py test apps.schedule --nomigrations
+      script: cd zapisy && python manage.py test apps.enrollment.courses --nomigrations
+      script: cd zapisy && python manage.py test apps.enrollment.records.tests --nomigrations
+      script: cd zapisy && python manage.py test apps.grade.poll --nomigrations
+      script: cd zapisy && python manage.py test apps.users --nomigrations
+
+cache:
+  - pip
+  - directories:
+    # Cache the virtualenv packages folder so virtualenv doesn't waste
+    # time installing locally cached packages
+    - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
 
 notifications:
   email: false
