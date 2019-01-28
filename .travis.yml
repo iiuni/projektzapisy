@@ -2,9 +2,6 @@ language: python
 python:
   - "3.6"
 
-env:
-  - BUILD_YARN=false
-
 addons:
   apt:
     sources:
@@ -18,7 +15,7 @@ services:
 install:
   - pip install -r zapisy/requirements.test.txt
   - |
-    if ["$BUILD_YARN" = true]; then
+    if ["$TRAVIS_BUILD_STAGE_NAME" = Test]; then
       # Installs Yarn/NPM dependencies.
       cd zapisy && yarn && cd ..
       # Builds assets.
@@ -43,8 +40,6 @@ jobs:
       script: flake8 --statistics --ignore=E265,E501,F401,F841 --exclude=node_modules,*migrations --max-line-length 120 .
 
     - stage: test
-      env:
-        - BUILD_YARN=true
       cache:
         - pip
         # This caches yarn/.cache, which mostly means we don't need to redownload packages
@@ -58,12 +53,7 @@ jobs:
           # Cache the virtualenv packages folder so virtualenv doesn't waste
           # time installing locally cached packages
           - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
-      script: cd zapisy && python manage.py test apps.news.tests --nomigrations
-      script: cd zapisy && python manage.py test apps.schedule --nomigrations
-      script: cd zapisy && python manage.py test apps.enrollment.courses --nomigrations
-      script: cd zapisy && python manage.py test apps.enrollment.records.tests --nomigrations
-      script: cd zapisy && python manage.py test apps.grade.poll --nomigrations
-      script: cd zapisy && python manage.py test apps.users --nomigrations
+      script: cd zapisy && python manage.py test apps --failfast --parallel
 
 cache:
   - pip
