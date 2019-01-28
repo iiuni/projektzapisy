@@ -38,6 +38,19 @@ jobs:
       # Don't store the build cache; it changes after each build, Travis then
       # picks that change up and repacks the cache archive which takes forever
       - rm -rf zapisy/node_modules/.cache-loader-*
+    - cache:
+      - pip
+      # This caches yarn/.cache, which mostly means we don't need to redownload packages
+      - yarn
+      - directories:
+        # And this caches the packages themselves, so we don't spend time installing
+        # them unnecesarily. This mostly supersedes the option above, except for cases
+        # where the branch is switched and packages need to be added; then the cache
+        # above can be used
+        - zapisy/node_modules
+        # Cache the virtualenv packages folder so virtualenv doesn't waste
+        # time installing locally cached packages
+        - "/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages"
     - script: cd zapisy && python manage.py test apps.news.tests --nomigrations
     - script: cd zapisy && python manage.py test apps.schedule --nomigrations
     - script: cd zapisy && python manage.py test apps.enrollment.courses --nomigrations
@@ -47,17 +60,10 @@ jobs:
 
 cache:
   - pip
-  # This caches yarn/.cache, which mostly means we don't need to redownload packages
-  - yarn
   - directories:
-    # And this caches the packages themselves, so we don't spend time installing
-    # them unnecesarily. This mostly supersedes the option above, except for cases
-    # where the branch is switched and packages need to be added; then the cache
-    # above can be used
-    - zapisy/node_modules
     # Cache the virtualenv packages folder so virtualenv doesn't waste
     # time installing locally cached packages
-    - "/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages"
+    - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
 
 notifications:
   email: false
