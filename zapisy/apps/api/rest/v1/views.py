@@ -65,6 +65,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
     value for clarity.
     """
     http_method_names = ['get']
+    permission_classes = (StaffPermission,)
     serializer_class = SingleVoteSerializer
     filter_fields = '__all__'
 
@@ -81,6 +82,7 @@ class SystemStateViewSet(viewsets.ModelViewSet):
     """Get all vote system states"""
 
     http_method_names = ['get']
+    permission_classes = (StaffPermission,)
     queryset = SystemState.objects.all()
     serializer_class = SystemStateSerializer
     filter_fields = '__all__'

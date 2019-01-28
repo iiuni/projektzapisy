@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from apps.api.rest.v1.views import SingleVoteViewSet, SystemStateViewSet
 from apps.enrollment.courses.tests.factories import CourseEntityFactory
 from apps.offer.vote.models import SystemState, SingleVote
-from apps.users.tests.factories import StudentFactory
+from apps.users.tests.factories import StudentFactory, UserFactory
 
 
 class VoteSystemTests(TestCase):
@@ -31,6 +31,7 @@ class VoteSystemTests(TestCase):
         self.state1 = state1
         self.state2 = state2
         self.students = students
+        self.staff_member = UserFactory(is_staff=True)
 
     def test_system_states_endpoint(self):
         """Tests system state api.
@@ -40,6 +41,7 @@ class VoteSystemTests(TestCase):
         There were no states in db, so we get only states created in setUp
         """
         client = APIClient()
+        client.force_authenticate(user=self.staff_member)
         response = client.get('/api/v1/systemstate/')
         self.assertEqual(response.status_code, 200)
         resp_json = json.loads(json.dumps(response.data))
@@ -54,6 +56,7 @@ class VoteSystemTests(TestCase):
         returned and their values are computed correctly.
         """
         client = APIClient()
+        client.force_authenticate(user=self.staff_member)
         response = client.get('/api/v1/votes/', {'state': self.state2.pk}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
