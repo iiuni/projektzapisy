@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^records/', include('apps.enrollment.records.urls')),
     url(r'^statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
- 
+
     url(r'^news/', include('apps.news.urls')),
     url(r'^jstests/', TemplateView.as_view(template_name="jstests/tests.html")),
     url(r'^users/', include('apps.users.urls')),
