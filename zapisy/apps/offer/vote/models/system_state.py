@@ -8,7 +8,7 @@ from django.db import models
 from datetime import date
 from apps.enrollment.courses.models.semester import Semester
 
-DEFAULT_YEAR = date.today().year - 2
+DEFAULT_YEAR = date.today().year if date.today().month < 6 else date.today().year + 1
 DEFAULT_MAX_POINTS = 50
 DEFAULT_MAX_VOTE = 3
 DEFAULT_DAY_BEG = 1          #
@@ -37,9 +37,9 @@ class SystemState(models.Model):
                                         related_name='summer_votes',
                                         null=True, blank=True)
 
-    year = models.IntegerField(
-        verbose_name='Rok akademicki',
-        default=date.today().year)
+    year = models.CharField(max_length=7,
+                            default='0',
+                            verbose_name='rok akademicki')
 
     max_points = models.IntegerField(
         verbose_name='Maksimum punktów na przedmioty',
