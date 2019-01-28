@@ -37,7 +37,7 @@ script: skip
 jobs:
   include:
     - stage: lint
-      script: flake8 --statistics --ignore=E265,E501,F401,F841 --exclude=node_modules,*migrations --max-line-length 120 .
+      script: python -m flake8 --statistics --ignore=E265,E501,F401,F841 --exclude=node_modules,*migrations --max-line-length 120 .
 
     - stage: test
       cache:
