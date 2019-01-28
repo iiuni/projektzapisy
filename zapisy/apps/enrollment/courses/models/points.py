@@ -6,8 +6,9 @@ students, depending on the program they are pursuing (BSc, MSc) and their
 previous achievements.
 """
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Iterable
 
+from django.conf import settings
 from django.db import models
 
 from apps.enrollment.courses.models.course import Course, CourseEntity
@@ -87,23 +88,8 @@ class StudentPointsView:
     """
 
     @classmethod
-    def student_points_in_semester(cls, student: Student, semester: Semester) -> int:
-        """Computes sum of points in a semester from student's perspective.
-
-        This function may give wrong historic result for a student who has
-        passed a certain course (like 'dyskretna_l') in the meantime.
-        """
-        from apps.enrollment.records.models import Record, RecordStatus
-        records = Record.objects.filter(
-            student=student, group__course__semester=semester,
-            status=RecordStatus.ENROLLED).values_list(
-                'group__course__entity_id', flat=True).distinct()
-
-        return cls.points_for_entities_total(student, records)
-
-    @classmethod
-    def student_points_in_semester_with_added_courses(cls, student: Student, semester: Semester,
-                                                      additional_courses: List[Course]) -> int:
+    def student_points_in_semester(cls, student: Student, semester: Semester,
+                                   additional_courses: List[Course] = []) -> int:
         """Computes sum of points in a semester from student's perspective.
 
         Apart from the courses, the student is already enrolled into, it counts
@@ -157,7 +143,9 @@ class StudentPointsView:
         The returned Dict will be keyed by CourseEntity identifier.
         """
 
-        def value_with_program(program_id, points_of_courseentities_list):
+        def value_with_program(
+                program_id: Optional[int],
+                points_of_courseentities_list: Iterable[PointsOfCourseEntities]) -> int:
             """For a given program_id will find either the number of points
             associated with this program_id, or with None, if one does not
             exist.
@@ -173,23 +161,25 @@ class StudentPointsView:
                     return poc.value
             return 0
 
-        sum_points = 0
+        if student is None:
+            student_program_id = None
+        else:
+            student_program_id = student.program_id
         entities = CourseEntity.objects.filter(
             pk__in=entity_ids).prefetch_related('pointsofcourseentities_set')
         points_per_entity: Dict[int, int] = dict()
         entity: CourseEntity
         for entity in entities:
-            if student is None:
-                sum_points += value_with_program(None, entity.pointsofcourseentities_set.all())
-                continue
-            program_id = student.program_id
             # If the student had passed one of the BSc-level obligatory courses,
             # the corresponding MSc-level course is worth as much for him as it
             # would be for an MSc student.
             bsc_courses = ["numeryczna_l", "dyskretna_l", "algorytmy_l", "programowanie_l"]
+            program_id = student_program_id
             for bsc_course in bsc_courses:
-                if getattr(entity, bsc_course) and getattr(student, bsc_course):
-                    program_id = 1
+                # If student is None, getattr(student, 'attr', None) will also
+                # be None.
+                if getattr(entity, bsc_course) and getattr(student, bsc_course, None):
+                    program_id = settings.M_PROGRAM
                     break
             points_per_entity[entity.id] = value_with_program(
                 program_id, entity.pointsofcourseentities_set.all())
