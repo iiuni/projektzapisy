@@ -15,7 +15,7 @@ services:
 install:
   - pip install -r zapisy/requirements.test.txt
   - |
-    if ["$TRAVIS_BUILD_STAGE_NAME" = Test]; then
+    if ["$TRAVIS_BUILD_STAGE_NAME" == "Test"]; then
       # Installs Yarn/NPM dependencies.
       cd zapisy && yarn && cd ..
       # Builds assets.
