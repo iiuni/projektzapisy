@@ -1,16 +1,4 @@
-import os
-import re
-from datetime import datetime, date, time
-from dateutil.relativedelta import relativedelta
-from collections import defaultdict
-
 from django.contrib.auth.models import User, Group as UserGroup
-from django.db import connection
-from django.conf import settings
-from django.test import Client, TestCase
-from scripts.scheduleimport import run_test as scheduleimport_run_test
-from scripts.ectsimport import run_test as ectsimport_run_test
-
 from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
@@ -19,6 +7,20 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
+
+
+import os, re
+from datetime import datetime, date, time
+from dateutil.relativedelta import relativedelta
+from collections import defaultdict
+from django.db import connection
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+
+from scripts.scheduleimport import run_test as scheduleimport_run_test
+from scripts.ectsimport import run_test as ectsimport_run_test
 
 
 class NewSemestrTestCase(TestCase):
@@ -53,7 +55,7 @@ class NewSemestrTestCase(TestCase):
         cls.employees = []
         for i in range(1, 5):
             user = User.objects.create_user(
-                username=(f'employee{i}'), password=cls.password)
+                username=('employee{}'.format(i)), password=cls.password)
             user.first_name = 'Employee'
             user.last_name = str(i)
             user.save()
@@ -96,9 +98,9 @@ class NewSemestrTestCase(TestCase):
         cls.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(
-                name=f'Course {i}',
-                name_pl=f'Course {i}',
-                name_en=f'Course {i}',
+                name='Course {}'.format(i),
+                name_pl='Course {}'.format(i),
+                name_en='Course {}'.format(i),
                 semester='z',
                 type=cls.course_type,
                 status=1,  # w ofercie
@@ -106,9 +108,9 @@ class NewSemestrTestCase(TestCase):
             )
         for i in range(6, 11):
             CourseEntity.objects.create(
-                name=f'Course {i}',
-                name_pl=f'Course {i}',
-                name_en=f'Course {i}',
+                name='Course {}'.format(i),
+                name_pl='Course {}'.format(i),
+                name_en='Course {}'.format(i),
                 semester='l',
                 type=cls.course_type,
                 status=1,  # w ofercie
@@ -156,18 +158,24 @@ class NewSemestrTestCase(TestCase):
         cls.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=cls.current_semester.semester_ending + relativedelta(days=1),
-            semester_ending=cls.current_semester.semester_ending + relativedelta(days=1, months=3),
-            records_ects_limit_abolition=cls.current_semester.semester_ending + relativedelta(days=11),
+            semester_beginning=cls.current_semester.semester_ending +
+            relativedelta(days=1),
+            semester_ending=cls.current_semester.semester_ending +
+            relativedelta(days=1, months=3),
+            records_ects_limit_abolition=cls.current_semester.semester_ending +
+            relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
         cls.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=cls.next_winter_semester.semester_ending + relativedelta(days=1),
-            semester_ending=cls.next_winter_semester.semester_ending + relativedelta(days=1, months=3),
-            records_ects_limit_abolition=cls.next_winter_semester. semester_ending + relativedelta(days=11),
+            semester_beginning=cls.next_winter_semester.semester_ending +
+            relativedelta(days=1),
+            semester_ending=cls.next_winter_semester.semester_ending +
+            relativedelta(days=1, months=3),
+            records_ects_limit_abolition=cls.next_winter_semester.
+            semester_ending + relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
@@ -201,52 +209,52 @@ class NewSemestrTestCase(TestCase):
         cls.open_records()
 
     def prepare_course_entities_for_voting(cls):
-        # login as admin
+        #login as admin
         cls.client.post(
-            '/fereol_admin/login/', {
-                'username': cls.admin.username,
-                'password': cls.password
+            "/fereol_admin/login/", {
+                "username": cls.admin.username,
+                "password": cls.password
             },
             follow=True)
 
         response = cls.client.get(
-            '/offer/manage/select_for_voting', follow=True)
+            "/offer/manage/select_for_voting", follow=True)
 
-        # find all courses
-        number_of_all_options = len(
-            re.findall('(<option.*?/option>)', str(response.content)))
-        # find courses selected for voting
-        number_of_selected_options = len(
-            re.findall('(<option.*?selected="selected".*?/option>)',
+        #find all courses
+        all_options = len(
+            re.findall('(<option.*?\/option>)', str(response.content)))
+        #find courses selected for voting
+        selected_options = len(
+            re.findall('(<option.*?selected="selected".*?\/option>)',
                        str(response.content)))
-
-        # calculate nonselected courses
-        number_of_nonselected_options = number_of_all_options - number_of_selected_options
+        
+        #calculate nonselected courses
+        nonselected_options = all_options - selected_options
 
         cls.assertEqual(
-            CourseEntity.objects.filter(status=1).count(), number_of_nonselected_options)
+            CourseEntity.objects.filter(status=1).count(), nonselected_options)
         cls.assertEqual(
-            CourseEntity.objects.filter(status=2).count(), number_of_selected_options)
+            CourseEntity.objects.filter(status=2).count(), selected_options)
         response = cls.client.post(
-            '/offer/manage/select_for_voting',
+            "/offer/manage/select_for_voting",
             {'for_voting': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
             follow=True)
 
         # find all courses
-        number_of_all_options = len(
-            re.findall('(<option.*?/option>)', str(response.content)))
+        all_options = len(
+            re.findall('(<option.*?\/option>)', str(response.content)))
 
         # find courses selected for voting
-        number_of_selected_options = len(
-            re.findall('(<option.*?selected="selected".*?/option>)',
+        selected_options = len(
+            re.findall('(<option.*?selected="selected".*?\/option>)',
                        str(response.content)))
         # calculate nonselected courses
-        number_of_nonselected_options = number_of_all_options - number_of_selected_options
+        nonselected_options = all_options - selected_options
 
         cls.assertEqual(
-            CourseEntity.objects.filter(status=1).count(), number_of_nonselected_options)
+            CourseEntity.objects.filter(status=1).count(), nonselected_options)
         cls.assertEqual(
-            CourseEntity.objects.filter(status=2).count(), number_of_selected_options)
+            CourseEntity.objects.filter(status=2).count(), selected_options)
 
     def perform_voting(cls):
         # voting starts
@@ -311,22 +319,22 @@ class NewSemestrTestCase(TestCase):
             })
 
         # Got to vote summary page
-        response = cls.client.get('/vote/summary', follow=True)
+        response = cls.client.get("/vote/summary", follow=True)
 
         # Find table with courses body
-        table_body = re.findall('<tbody>(.*?)</tbody>', str(response.content))
-        table_body = ''.join(table_body)
+        table_body = re.findall("<tbody>(.*?)<\/tbody>", str(response.content))
+        table_body = "".join(table_body)
 
         # Find course rows in table
-        rows = re.findall('<tr>(.*?)</tr>', str(table_body))
+        rows = re.findall("<tr>(.*?)<\/tr>", str(table_body))
 
         # For each row in table
         for row in rows:
             # Extract course name
-            name = re.findall('<a.*?>(.*?)</a>', str(row))[0]
+            name = re.findall("<a.*?>(.*?)<\/a>", str(row))[0]
 
             # Extract points and vote number for course
-            points, votes = re.findall('<td class="number">(.*?)</td>',
+            points, votes = re.findall("<td class=\"number\">(.*?)</td>",
                                        str(row))
 
             cls.assertEqual(cls.results_points[name], int(points))
@@ -340,55 +348,55 @@ class NewSemestrTestCase(TestCase):
     def vote(cls, student, points):
 
         # Logout user
-        cls.client.get('/accounts/logout')
+        cls.client.get("/accounts/logout")
 
         # Login as student
         response = cls.client.post(
-            '/users/login/', {
-                'username': student.user.username,
-                'password': cls.password
+            "/users/login/", {
+                "username": student.user.username,
+                "password": cls.password
             },
             follow=True)
 
         # Go to voting page
-        response = cls.client.get('/vote/vote', follow=True)
+        response = cls.client.get("/vote/vote", follow=True)
 
         # Find vote form body
-        form_body = re.findall('(<div class="od-vote-semester".*</div>)',
+        form_body = re.findall('(<div class="od-vote-semester".*<\/div>)',
                                str(response.content))[0]
         # Find all courses for voting
-        vote_object = re.findall('(<input.*?</option></select></li>)',
+        vote_object = re.findall('(<input.*?<\/option><\/select><\/li>)',
                                  str(form_body))
 
         courses_for_vote = {}
 
         for course in vote_object:
-            course_name = re.findall('<a.*?>(.*?)</a>', course)[0]
+            course_name = re.findall('<a.*?>(.*?)<\/a>', course)[0]
             form_course_name = re.findall('<input.*?name="(.*?)-id"',
                                           course)[0]
-            course_id = re.findall('<input.*?value="(.*?)"', course)[0]
-            courses_for_vote[course_name] = {'name': form_course_name, 'id': course_id}
+            id = re.findall('<input.*?value="(.*?)"', course)[0]
+            courses_for_vote[course_name] = {"name": form_course_name, "id": id}
 
         request = {
-            'winter-TOTAL_FORMS': '5',
-            'winter-INITIAL_FORMS': '5',
-            'winter-MIN_NUM_FORMS': '0',
-            'winter-MAX_NUM_FORMS': '1000',
-            'summer-TOTAL_FORMS': '5',
-            'summer-INITIAL_FORMS': '5',
-            'summer-MIN_NUM_FORMS': '0',
-            'summer-MAX_NUM_FORM': '1000',
-            'unknown-TOTAL_FORMS': '0',
-            'unknown-INITIAL_FORMS': '0',
-            'unknown-MIN_NUM_FORMS': '0',
-            'unknown-MAX_NUM_FORMS': '1000'
+            "winter-TOTAL_FORMS": "5",
+            "winter-INITIAL_FORMS": "5",
+            "winter-MIN_NUM_FORMS": "0",
+            "winter-MAX_NUM_FORMS": "1000",
+            "summer-TOTAL_FORMS": "5",
+            "summer-INITIAL_FORMS": "5",
+            "summer-MIN_NUM_FORMS": "0",
+            "summer-MAX_NUM_FORM": "1000",
+            "unknown-TOTAL_FORMS": "0",
+            "unknown-INITIAL_FORMS": "0",
+            "unknown-MIN_NUM_FORMS": "0",
+            "unknown-MAX_NUM_FORMS": "1000"
         }
 
         # Create vote request
         for course_name in courses_for_vote:
             course = courses_for_vote[course_name]
-            request[f'{course["name"]}-id'] = course['id']
-            request[f'{course["name"]}-value'] = points.get(
+            request["{}-id".format(course["name"])] = course["id"]
+            request["{}-value".format(course["name"])] = points.get(
                 course_name, 0)
 
         sum_points = sum(points.values())
@@ -398,11 +406,11 @@ class NewSemestrTestCase(TestCase):
                 cls.results_points[course_name] += value
                 cls.results_votes[course_name] += 1
 
-        response = cls.client.post('/vote/vote', request, follow=True)
+        response = cls.client.post("/vote/vote", request, follow=True)
 
         # Check vote succes
-        succes_text = re.findall('alert-message succes', str(response.content))
-        fail_text = re.findall('alert-message error', str(response.content))
+        succes_text = re.findall("alert-message succes", str(response.content))
+        fail_text = re.findall("alert-message error", str(response.content))
 
         # alert-message error
         if sum_points <= cls.system_state.max_points:
@@ -451,53 +459,57 @@ class NewSemestrTestCase(TestCase):
     def correction(cls, student, points):
 
         # Logout user
-        cls.client.get('/accounts/logout')
+        cls.client.get("/accounts/logout")
 
         # Login
         response = cls.client.post(
-            '/users/login/', {
-                'username': student.user.username,
-                'password': cls.password
+            "/users/login/", {
+                "username": student.user.username,
+                "password": cls.password
             },
             follow=True)
 
         # Go to voting page
-        response = cls.client.get('/vote/vote', follow=True)
+        response = cls.client.get("/vote/vote", follow=True)
 
-        form_body = re.findall('(<div class="od-vote-semester".*</div>)',
+        form_body = re.findall('(<div class="od-vote-semester".*<\/div>)',
                                str(response.content))[0]
-        vote_object = re.findall('(<input.*?</option></select></li>)',
+        vote_object = re.findall('(<input.*?<\/option><\/select><\/li>)',
                                  str(form_body))
 
         courses_for_vote = {}
 
         for course in vote_object:
-            course_name = re.findall('<a.*?>(.*?)</a>', course)[0]
+            course_name = re.findall('<a.*?>(.*?)<\/a>', course)[0]
             form_course_name = re.findall('<input.*?name="(.*?)-id"',
                                           course)[0]
-            course_id = re.findall('<input.*?value="(.*?)"', course)[0]
-            old_value = re.findall('<option.*?selected>(.*?)</option>', course)[0]
-            courses_for_vote[course_name] = {'name': form_course_name, 'id': course_id, 'old_value': old_value}
+            id = re.findall('<input.*?value="(.*?)"', course)[0]
+            old_value = re.findall("<option.*?selected>(.*?)<\/option>", course)[0]
+            courses_for_vote[course_name] = {"name": form_course_name, "id": id, "old_value": old_value}
 
         request = {
-            'winter-TOTAL_FORMS': '3',
-            'winter-INITIAL_FORMS': '3',
-            'winter-MIN_NUM_FORMS': '0',
-            'winter-MAX_NUM_FORMS': '1000',
+            "winter-TOTAL_FORMS": "3",
+            "winter-INITIAL_FORMS": "3",
+            "winter-MIN_NUM_FORMS": "0",
+            "winter-MAX_NUM_FORMS": "1000",
         }
         for course_name in courses_for_vote:
             course = courses_for_vote[course_name]
-            request[f'{course["name"]}-id'] = course['id']
-            request[f'{course["name"]}-value'] = points.get(
-                course_name, course['old_value'])
+            request["{}-id".format(course["name"])] = course["id"]
+            request["{}-value".format(course["name"])] = points.get(
+                course_name, course["old_value"])
 
-        response = cls.client.post('/vote/vote', request, follow=True)
+        response = cls.client.post("/vote/vote", request, follow=True)
 
     def import_winter_schedule(self):
-        courses = {course.entity.name: course.id for course in
-                   Course.objects.filter(semester=self.next_winter_semester)}
+        courses = {}
+        for course in Course.objects.filter(semester=self.next_winter_semester):
+            courses[course.entity.name] = course.id
 
-        employees = {f'{empl.user.first_name} {empl.user.last_name}': empl.id for empl in self.employees}
+        employees = {
+            '{} {}'.format(
+                empl.user.first_name,
+                empl.user.last_name): empl.id for empl in self.employees}
 
         Classroom.objects.create(number='5', type='1')
         Classroom.objects.create(number='7', type='3')
@@ -566,14 +578,19 @@ class NewSemestrTestCase(TestCase):
             1)
 
     def start_winter_semester(self):
-        self.current_semester.semester_beginning = date.today() - relativedelta(days=3)
-        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(days=2)
-        self.current_semester.semester_ending = date.today() - relativedelta(days=1)
+        self.current_semester.semester_beginning = date.today() - relativedelta(
+            days=3)
+        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(
+            days=2)
+        self.current_semester.semester_ending = date.today() - relativedelta(
+            days=1)
         self.current_semester.save()
 
         self.next_winter_semester.semester_beginning = date.today()
-        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(days=11)
-        self.next_winter_semester.semester_ending = date.today() + relativedelta(months=3)
+        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(
+            days=11)
+        self.next_winter_semester.semester_ending = date.today() + relativedelta(
+            months=3)
         self.next_winter_semester.save()
 
     def add_new_students(self):
@@ -582,7 +599,7 @@ class NewSemestrTestCase(TestCase):
         students, _ = UserGroup.objects.get_or_create(name='students')
         for i in range(1, 6):
             user = User.objects.create_user(
-                username=f'student{i + number_of_students}', password=self.password)
+                username='student{}'.format(i + number_of_students), password=self.password)
             students.user_set.add(user)
             student = Student.objects.create(
                 user=user,
@@ -601,7 +618,7 @@ class NewSemestrTestCase(TestCase):
         test_ectsimport = ''
         for student, points in students_ects.items():
             for deg, ects in points.items():
-                test_ectsimport += f'{student.matricula} {ects} T {deg} stopnia\n'
+                test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
         with open(test_ectsimport_path, 'w') as file:
@@ -619,5 +636,6 @@ class NewSemestrTestCase(TestCase):
     def open_records(self):
         self.next_winter_semester.records_opening = datetime.today().replace(
             hour=00, minute=00)
-        self.next_winter_semester.records_closing = self.next_winter_semester.records_opening + relativedelta(days=10)
+        self.next_winter_semester.records_closing = self.next_winter_semester.records_opening + \
+                                                    relativedelta(days=10)
         self.next_winter_semester.save()

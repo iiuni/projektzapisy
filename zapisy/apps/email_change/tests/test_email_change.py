@@ -22,7 +22,7 @@ class EmailChangeTest(TestCase):
 
     def test_email_change(self):
         response = self.client.get("/accounts/email/change/")
-        assert('id_email' in str(response.content))
+        self.assertNotEqual(len(re.findall('id_email', str(response.content))), 0)
         current_len = len(mail.outbox)
         self.client.post("/accounts/email/change/", {"email": 'lorem@ipsum.com'},
                          follow=True)
