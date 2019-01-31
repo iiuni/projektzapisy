@@ -1,3 +1,4 @@
+from typing import Tuple, List
 from string import whitespace
 from subprocess import getstatusoutput
 
@@ -138,7 +139,7 @@ def poll_cmp(poll1, poll2):
                     return cmp(poll1.title, poll2.title)
 
 
-def generate_rsa_key():
+def generate_rsa_key() -> Tuple[str, str]:
     """
         Generates RSA key - that is, a pair (public key, private key)
         both exported in PEM format
@@ -165,7 +166,10 @@ def generate_rsa_key():
     return (publicKey, privateKey)
 
 
-def save_public_keys(polls_public_keys):
+PollKeys = List[Tuple[Poll, str]]
+
+
+def save_public_keys(polls_public_keys: PollKeys):
     for (poll, key) in polls_public_keys:
         print(poll)
         pkey = PublicKey(poll=poll,
@@ -173,7 +177,7 @@ def save_public_keys(polls_public_keys):
         pkey.save()
 
 
-def save_private_keys(polls_private_keys):
+def save_private_keys(polls_private_keys: PollKeys):
     for (poll, key) in polls_private_keys:
         pkey = PrivateKey(poll=poll,
                           private_key=key)
