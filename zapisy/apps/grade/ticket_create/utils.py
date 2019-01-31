@@ -154,8 +154,13 @@ def generate_rsa_key():
     RSAkey = RSA.importKey(open('test_rsa').read())
     getstatusoutput('rm test_rsa*')
 
-    privateKey = RSAkey.exportKey()
-    publicKey = RSAkey.publickey().exportKey()
+    key_to_str = lambda b: b.decode(encoding='utf-8', errors='strict')
+
+    # Converting the resulting keys to strings should be a safe operation
+    # as we explicitly specify the PEM format, which is a textual encoding
+    # see https://www.dlitz.net/software/pycrypto/api/current/Crypto.PublicKey.RSA._RSAobj-class.html#exportKey
+    privateKey = key_to_str(RSAkey.exportKey('PEM'))
+    publicKey = key_to_str(RSAkey.publickey().exportKey('PEM'))
     return (publicKey, privateKey)
 
 
