@@ -154,7 +154,8 @@ def generate_rsa_key():
     RSAkey = RSA.importKey(open('test_rsa').read())
     getstatusoutput('rm test_rsa*')
 
-    key_to_str = lambda b: b.decode(encoding='utf-8', errors='strict')
+    def key_to_str(bin_key):
+        return bin_key.decode(encoding='ascii', errors='strict')
 
     # Converting the resulting keys to strings should be a safe operation
     # as we explicitly specify the PEM format, which is a textual encoding
