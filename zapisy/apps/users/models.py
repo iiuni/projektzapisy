@@ -107,7 +107,7 @@ class Employee(BaseUser):
         verbose_name="Użytkownik",
         related_name='employee',
         on_delete=models.CASCADE)
-    consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True)
+    consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, max_length=4200)
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
     status = models.PositiveIntegerField(
