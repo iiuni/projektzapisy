@@ -8,7 +8,7 @@ from django.db import models
 from datetime import date
 from apps.enrollment.courses.models.semester import Semester
 
-DEFAULT_YEAR = date.today().year if date.today().month < 6 else date.today().year + 1
+DEFAULT_YEAR = date.today().year - 1 if date.today().month < 6 else date.today().year
 DEFAULT_MAX_POINTS = 50
 DEFAULT_MAX_VOTE = 3
 DEFAULT_DAY_BEG = 1          #
@@ -37,8 +37,11 @@ class SystemState(models.Model):
                                         related_name='summer_votes',
                                         null=True, blank=True)
 
+    def get_default_year():
+        return "{}/{}".format(DEFAULT_YEAR, DEFAULT_YEAR % 100 + 1)
+
     year = models.CharField(max_length=7,
-                            default='0',
+                            default=get_default_year,
                             verbose_name='rok akademicki')
 
     max_points = models.IntegerField(
@@ -49,29 +52,41 @@ class SystemState(models.Model):
         verbose_name='Maksymalna wartość głosu',
         default=DEFAULT_MAX_VOTE)
 
+    def get_default_vote_beg():
+        return DEFAULT_VOTE_BEG
+
     vote_beg = models.DateField(
         verbose_name='Początek głosowania',
-        default=DEFAULT_VOTE_BEG)
+        default=get_default_vote_beg)
+
+    def get_default_vote_end():
+        return DEFAULT_VOTE_END
 
     vote_end = models.DateField(
         verbose_name='Koniec głosowania',
-        default=DEFAULT_VOTE_END)
+        default=get_default_vote_end)
+
+    def get_default_correction_beg():
+        return DEFAULT_CORRECTION_BEG
 
     winter_correction_beg = models.DateField(
         verbose_name='Początek korekty zimowej',
-        default=DEFAULT_CORRECTION_BEG)
+        default=get_default_correction_beg)
+
+    def get_default_correction_end():
+        return DEFAULT_CORRECTION_END
 
     winter_correction_end = models.DateField(
         verbose_name='Koniec korekty zimowej',
-        default=DEFAULT_CORRECTION_END)
+        default=get_default_correction_end)
 
     summer_correction_beg = models.DateField(
         verbose_name='Początek korekty letniej',
-        default=DEFAULT_CORRECTION_BEG)
+        default=get_default_correction_beg)
 
     summer_correction_end = models.DateField(
         verbose_name='Koniec korekty letniej',
-        default=DEFAULT_CORRECTION_END)
+        default=get_default_correction_end)
 
     class Meta:
         verbose_name = 'ustawienia głosowania'
