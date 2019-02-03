@@ -95,12 +95,11 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
         'teacher',
         'teacher__user',
     ).prefetch_related('term', 'term__classrooms')
-    group_ids = {g.id for g in groups}
 
     # Collect the general groups statistics.
-    groups_stats = Record.groups_stats(group_ids)
+    groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
-    student_status_groups = Record.is_recorded_in_groups(student, group_ids)
+    student_status_groups = Record.is_recorded_in_groups(student, groups)
     student_can_enqueue = Record.can_enqueue_groups(student, course.groups.all())
     student_can_dequeue = Record.can_dequeue_groups(student, course.groups.all())
 

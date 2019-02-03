@@ -1,15 +1,50 @@
 """Module records is the heart of enrollment logic.
 
-The entry point to signing up for a course group is the function
-enqueue_student. It creates the record with status QUEUED. Then the record might
-transfer into ENROLLED, if all the conditions for enrolling are satisfied.
-Ultimately the record can be removed, either on student leaving the group or an
-unsuccessful enrollment.
+Record Lifetime:
+
+  The record's status transitions in one direction: QUEUED -> ENROLLED ->
+  REMOVED. The ENROLLED phase may be skipped if the student removes his record
+  while he is in the queue, or if the enrollment is unsuccessful. The REMOVED
+  phase may not occur if the student ends up being enrolled into the group.
+
+  enqueue_student(student, group): The life of a record begins with this
+    function, which puts the student into the queue of the group. It may create
+    multiple records for the student, if the provided group is an exercise/lab
+    group and the student should also be put into the corresponding lecture
+    group. The record will not be created if the function `can_enqueue` does not
+    pass.
+
+    Immediately after records are created, an asynchronous task is placed (in
+    the task queue), to pull as many records in these groups as possible from
+    their respective queues. The tasks are placed using a signal
+    (GROUP_CHANGE_SIGNAL) defined in `apps/enrollment/records/signals.py`. They
+    are picked up by the function `pull_from_queue_signal_receiver` in
+    `apps/enrollment/records/tasks.py`.
+
+  fill_group(group_id): The asynchronous task runs this function. It is a loop
+    calling `pull_record_into_group` as long as it returns True, which means
+    that there still place in the group and students in the queue.
+
+  pull_record_into_group(group_id): Picks the first student in the group's queue
+    and tries to enroll him in the group using `enroll_or_remove`.
+
+  enroll_or_remove(record): Takes the record and tries to change its status from
+    QUEUED to ENROLLED. This operation will be unsuccessful if the function
+    `can_enroll` does not pass, in which case the record's status will be
+    changed to REMOVED. This function additionally removes the student from all
+    the parallel groups upon enrolling him into this one, and removes him from
+    all the queues of lower priority.
+
+  remove_from_group(student, group): Removes student from the group or its
+    queue, thus changing the record's status to REMOVED. If the group is a
+    lecture group, the student is also removed from the corresponding
+    exercise/lab groups. All the groups that are vacated by the student must be
+    filled by an asynchronous process, so the GROUP_CHANGE_SIGNAL is sent.
 """
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from choicesenum import ChoicesEnum
 from django.db import DatabaseError, models, transaction
@@ -54,13 +89,7 @@ class Record(models.Model):
         Will return False if student is None. The function will not check if the
         student already belongs to the queue.
         """
-        if time is None:
-            time = datetime.now()
-        if student is None:
-            return False
-        if not GroupOpeningTimes.is_group_open_for_student(student, group, time):
-            return False
-        return True
+        return Record.can_enqueue_groups(student, [group], time)[group.pk]
 
     @staticmethod
     def can_enqueue_groups(student: Optional[Student], groups: List[Group],
@@ -114,16 +143,7 @@ class Record(models.Model):
         This function will return False if student is None. It will not check
         for student's presence in the group. The function's role is to verify
         legal constraints."""
-        if time is None:
-            time = datetime.now()
-        if student is None:
-            return False
-        semester = group.course.semester
-        if semester.is_closed(time):
-            return False
-        if not semester.can_remove_record(time):
-            return False
-        return True
+        return Record.can_enqueue_groups(student, [group], time)[group.pk]
 
     @staticmethod
     def can_dequeue_groups(student: Optional[Student], groups: List[Group],
@@ -160,26 +180,26 @@ class Record(models.Model):
         return records.exists()
 
     @classmethod
-    def is_recorded(cls, student_id: int, group_id: int) -> bool:
+    def is_recorded(cls, student: Student, group: Group) -> bool:
         """Checks if the student is already enrolled or enqueued into the group."""
-        records = cls.objects.filter(
-            student_id=student_id, group_id=group_id).exclude(status=RecordStatus.REMOVED)
-        return records.exists()
+        entry = cls.is_recorded_in_groups(student, [group])[group.pk]
+        return entry['enqueued'] or entry['enrolled']
 
     @classmethod
     def is_recorded_in_groups(cls, student: Optional[Student],
-                              groups: List[int]) -> Dict[int, Dict[str, bool]]:
+                              groups: Iterable[Group]) -> Dict[int, Dict[str, bool]]:
         """Checks, in which groups the student is already enrolled or enqueued.
 
         The returned object will be a dict indexed by group id. Every entry will
-        be a dict with boolean fields 'enrolled' and 'enqueued'. If the student
-        is None, every field will be False.
+        be a dict with boolean fields 'enrolled', 'enqueued' and 'priority' for
+        convenience. If the student is None, both 'enrolled' and 'enqueued'
+        fields for each group will be False.
         """
-        ret_dict = {g: {'enrolled': False, 'enqueued': False} for g in groups}
+        ret_dict = {g.pk: {'enrolled': False, 'enqueued': False, 'priority': None} for g in groups}
         if student is None:
             return ret_dict
         records = cls.objects.filter(
-            student_id=student.id, group_id__in=groups).exclude(status=RecordStatus.REMOVED)
+            student=student, group_id__in=groups).exclude(status=RecordStatus.REMOVED)
         record: cls
         for record in records:
             if record.status == RecordStatus.QUEUED:
@@ -190,7 +210,7 @@ class Record(models.Model):
         return ret_dict
 
     @classmethod
-    def groups_stats(cls, groups: List[int]) -> Dict[int, Dict[str, int]]:
+    def groups_stats(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
         """For a list of groups returns number of enqueued and enrolled students.
 
         The data will be returned in the form of a dict indexed by group id.
@@ -199,12 +219,12 @@ class Record(models.Model):
         """
         enrolled_agg = models.Count('id', filter=models.Q(status=RecordStatus.ENROLLED))
         enqueued_agg = models.Count('id', filter=models.Q(status=RecordStatus.QUEUED))
-        records = cls.objects.filter(group_id__in=groups).exclude(
+        records = cls.objects.filter(group__in=groups).exclude(
             status=RecordStatus.REMOVED).values('group_id').annotate(
                 num_enrolled=enrolled_agg, num_enqueued=enqueued_agg).values(
                     'group_id', 'num_enrolled', 'num_enqueued')
         ret_dict: Dict[int, Dict[str, int]] = {
-            g: {
+            g.pk: {
                 'num_enrolled': 0,
                 'num_enqueued': 0
             }
@@ -229,7 +249,7 @@ class Record(models.Model):
         list of these group's ids will be returned.
         """
         cur_time = datetime.now()
-        if cls.is_recorded(student.id, group.id):
+        if cls.is_recorded(student, group):
             return [group.id]
         if not cls.can_enqueue(student, group, cur_time):
             return []
@@ -276,8 +296,8 @@ class Record(models.Model):
         # If this is a lecture, remove him from all other groups as well.
         if record.group.type == Group.GROUP_TYPE_LECTURE:
             other_groups_query = Record.objects.filter(
-                student=student,
-                group__course__id=record.group.course_id).exclude(status=RecordStatus.REMOVED)
+                student=student, group__course__id=record.group.course_id).exclude(
+                    status=RecordStatus.REMOVED).exclude(pk=record.pk)
             removed_groups = list(other_groups_query.values_list('group_id', flat=True))
             other_groups_query.update(status=RecordStatus.REMOVED)
             for g_id in removed_groups:
@@ -392,7 +412,7 @@ class Record(models.Model):
                 lecture_groups = Group.get_lecture_groups(group.course_id)
                 if lecture_groups:
                     lecture_groups_is_recorded = self.is_recorded_in_groups(
-                        self.student, [g.pk for g in lecture_groups])
+                        self.student, lecture_groups)
                     is_enrolled_into_any_lecture_group = any(
                         [r['enrolled'] for r in lecture_groups_is_recorded.values()])
                     if not is_enrolled_into_any_lecture_group:
