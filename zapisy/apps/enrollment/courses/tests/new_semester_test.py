@@ -157,24 +157,18 @@ class NewSemestrTestCase(TestCase):
         cls.next_winter_semester = Semester.objects.create(
             type=Semester.TYPE_WINTER,
             year='2',
-            semester_beginning=cls.current_semester.semester_ending +
-                               relativedelta(days=1),
-            semester_ending=cls.current_semester.semester_ending +
-                            relativedelta(days=1, months=3),
-            records_ects_limit_abolition=cls.current_semester.semester_ending +
-                                         relativedelta(days=11),
+            semester_beginning=cls.current_semester.semester_ending + relativedelta(days=1),
+            semester_ending=cls.current_semester.semester_ending + relativedelta(days=1, months=3),
+            records_ects_limit_abolition=cls.current_semester.semester_ending + relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
         cls.next_summer_semester = Semester.objects.create(
             type=Semester.TYPE_SUMMER,
             year='3',
-            semester_beginning=cls.next_winter_semester.semester_ending +
-                               relativedelta(days=1),
-            semester_ending=cls.next_winter_semester.semester_ending +
-                            relativedelta(days=1, months=3),
-            records_ects_limit_abolition=cls.next_winter_semester.
-                                             semester_ending + relativedelta(days=11),
+            semester_beginning=cls.next_winter_semester.semester_ending + relativedelta(days=1),
+            semester_ending=cls.next_winter_semester.semester_ending + relativedelta(days=1, months=3),
+            records_ects_limit_abolition=cls.next_winter_semester. semester_ending + relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
