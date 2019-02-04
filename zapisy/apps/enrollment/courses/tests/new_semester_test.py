@@ -8,15 +8,14 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
 
-
-import os, re
+import os
+import re
 from datetime import datetime, date, time
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from django.db import connection
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
 from scripts.scheduleimport import run_test as scheduleimport_run_test
@@ -159,11 +158,11 @@ class NewSemestrTestCase(TestCase):
             type=Semester.TYPE_WINTER,
             year='2',
             semester_beginning=cls.current_semester.semester_ending +
-            relativedelta(days=1),
+                               relativedelta(days=1),
             semester_ending=cls.current_semester.semester_ending +
-            relativedelta(days=1, months=3),
+                            relativedelta(days=1, months=3),
             records_ects_limit_abolition=cls.current_semester.semester_ending +
-            relativedelta(days=11),
+                                         relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
@@ -171,11 +170,11 @@ class NewSemestrTestCase(TestCase):
             type=Semester.TYPE_SUMMER,
             year='3',
             semester_beginning=cls.next_winter_semester.semester_ending +
-            relativedelta(days=1),
+                               relativedelta(days=1),
             semester_ending=cls.next_winter_semester.semester_ending +
-            relativedelta(days=1, months=3),
+                            relativedelta(days=1, months=3),
             records_ects_limit_abolition=cls.next_winter_semester.
-            semester_ending + relativedelta(days=11),
+                                             semester_ending + relativedelta(days=11),
             visible=True,
             is_grade_active=False)
 
@@ -209,7 +208,7 @@ class NewSemestrTestCase(TestCase):
         cls.open_records()
 
     def prepare_course_entities_for_voting(cls):
-        #login as admin
+        # login as admin
         cls.client.post(
             "/fereol_admin/login/", {
                 "username": cls.admin.username,
@@ -220,15 +219,15 @@ class NewSemestrTestCase(TestCase):
         response = cls.client.get(
             "/offer/manage/select_for_voting", follow=True)
 
-        #find all courses
+        # find all courses
         all_options = len(
             re.findall('(<option.*?\/option>)', str(response.content)))
-        #find courses selected for voting
+        # find courses selected for voting
         selected_options = len(
             re.findall('(<option.*?selected="selected".*?\/option>)',
                        str(response.content)))
-        
-        #calculate nonselected courses
+
+        # calculate nonselected courses
         nonselected_options = all_options - selected_options
 
         cls.assertEqual(
@@ -636,6 +635,5 @@ class NewSemestrTestCase(TestCase):
     def open_records(self):
         self.next_winter_semester.records_opening = datetime.today().replace(
             hour=00, minute=00)
-        self.next_winter_semester.records_closing = self.next_winter_semester.records_opening + \
-                                                    relativedelta(days=10)
+        self.next_winter_semester.records_closing = self.next_winter_semester.records_opening + relativedelta(days=10)
         self.next_winter_semester.save()
