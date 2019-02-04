@@ -13,8 +13,6 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "env/apache_setup.sh"
   config.vm.provision :shell, path: "env/postgre_setup.sh"
   config.vm.provision :shell, path: "env/tools_install.sh"
-  config.vm.provision :shell, path: "env/nodejs_setup.sh"
-  config.vm.provision :shell, path: "env/py3.sh"
   config.vm.provision :shell, path: "env/webpack_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
   config.vm.provision :shell, path: "env/redis.sh"
@@ -30,7 +28,7 @@ Vagrant.configure(2) do |config|
     # in /vagrant/zapisy to avoid the issue with symlinks on Windows.
     config.vm.provision "shell", inline: <<-SHELL
       echo "Preparing local node_modules folder…"
-      mkdir /vagrant_node_modules
+      mkdir -p /vagrant_node_modules
       chown vagrant:vagrant /vagrant_node_modules
     SHELL
     config.vm.provision "shell", run: "always", inline: <<-SHELL
