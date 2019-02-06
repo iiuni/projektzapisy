@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db.models import QuerySet
+from django.core.validators import MaxLengthValidator
 
 from apps.users.exceptions import NonUserException
 from apps.users.managers import GettersManager, T0Manager
@@ -107,7 +108,7 @@ class Employee(BaseUser):
         verbose_name="Użytkownik",
         related_name='employee',
         on_delete=models.CASCADE)
-    consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True)
+    consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, validators=[MaxLengthValidator(4200)])
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
     status = models.PositiveIntegerField(
