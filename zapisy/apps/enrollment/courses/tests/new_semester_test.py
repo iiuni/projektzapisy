@@ -327,7 +327,7 @@ class NewSemestrTestCase(TestCase):
             name = re.findall("<a.*?>(.*?)<\/a>", str(row))[0]
 
             # Extract points and vote number for course
-            points, votes = re.findall("<td class=\"number\">(.*?)</td>",
+            points, votes = re.findall('<td class="number">(.*?)</td>',
                                        str(row))
 
             cls.assertEqual(cls.results_points[name], int(points))
@@ -367,8 +367,8 @@ class NewSemestrTestCase(TestCase):
             course_name = re.findall('<a.*?>(.*?)<\/a>', course)[0]
             form_course_name = re.findall('<input.*?name="(.*?)-id"',
                                           course)[0]
-            id = re.findall('<input.*?value="(.*?)"', course)[0]
-            courses_for_vote[course_name] = {"name": form_course_name, "id": id}
+            course_id = re.findall('<input.*?value="(.*?)"', course)[0]
+            courses_for_vote[course_name] = {"name": form_course_name, "id": course_id}
 
         request = {
             "winter-TOTAL_FORMS": "5",
@@ -495,14 +495,10 @@ class NewSemestrTestCase(TestCase):
         response = cls.client.post("/vote/vote", request, follow=True)
 
     def import_winter_schedule(self):
-        courses = {}
-        for course in Course.objects.filter(semester=self.next_winter_semester):
-            courses[course.entity.name] = course.id
+        courses = {course.entity.name: course.id for course in
+                   Course.objects.filter(semester=self.next_winter_semester)}
 
-        employees = {
-            '{} {}'.format(
-                empl.user.first_name,
-                empl.user.last_name): empl.id for empl in self.employees}
+        employees = {f'{empl.user.first_name} {empl.user.last_name}': empl.id for empl in self.employees}
 
         Classroom.objects.create(number='5', type='1')
         Classroom.objects.create(number='7', type='3')
@@ -571,19 +567,14 @@ class NewSemestrTestCase(TestCase):
             1)
 
     def start_winter_semester(self):
-        self.current_semester.semester_beginning = date.today() - relativedelta(
-            days=3)
-        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(
-            days=2)
-        self.current_semester.semester_ending = date.today() - relativedelta(
-            days=1)
+        self.current_semester.semester_beginning = date.today() - relativedelta(days=3)
+        self.current_semester.records_ects_limit_abolition = date.today() - relativedelta(days=2)
+        self.current_semester.semester_ending = date.today() - relativedelta(days=1)
         self.current_semester.save()
 
         self.next_winter_semester.semester_beginning = date.today()
-        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(
-            days=11)
-        self.next_winter_semester.semester_ending = date.today() + relativedelta(
-            months=3)
+        self.next_winter_semester.records_ects_limit_abolition = date.today() + relativedelta(days=11)
+        self.next_winter_semester.semester_ending = date.today() + relativedelta(months=3)
         self.next_winter_semester.save()
 
     def add_new_students(self):

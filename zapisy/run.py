@@ -15,7 +15,7 @@ def cli():
 
 
 def run_locally_with_manage_py(cmd):
-    local('python manage.py {cmd}'.format(cmd=cmd))
+    local(f'python manage.py {cmd}')
 
 
 @click.command()
@@ -47,13 +47,10 @@ def server(ip, port, no_package_install):
         npm_result = os.system("yarn")
         npm_exit_code = os.WEXITSTATUS(npm_result)
         if npm_exit_code != 0:
-            click.echo(click.style("Package installation failed with exit code {}".format(
-                npm_exit_code), fg='red'))
+            click.echo(click.style(f"Package installation failed with exit code {npm_exit_code}", fg='red'))
             sys.exit(1)
 
-    p1 = subprocess.Popen([
-        "python", "manage.py", "runserver", "{ip}:{port}".format(
-            ip=ip, port=port)])
+    p1 = subprocess.Popen(["python", "manage.py", "runserver", f"{ip}:{port}"])
     p2 = subprocess.Popen(["yarn", "devw"])
     p3 = subprocess.Popen(["python", "manage.py", "rqworker", "default"])
 
@@ -69,7 +66,7 @@ def tests(app, frontend):
     """
     Run tests
     """
-    run_locally_with_manage_py('test {app} --nomigrations'.format(app=app))
+    run_locally_with_manage_py(f'test {app} --nomigrations')
 
 
 @click.group()
@@ -95,8 +92,7 @@ def load(path, user):
           'ENDSUDO\n')
 
     # new db
-    local('PGPASSWORD="fereolpass" psql -U fereol -h localhost -f {db_path} {db_user}'.format(
-          db_path=path, db_user=user))
+    local(f'PGPASSWORD="fereolpass" psql -U fereol -h localhost -f {db_path} {db_user}')
 
 
 db.add_command(load)
