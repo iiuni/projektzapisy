@@ -1,4 +1,16 @@
+import os
+import re
+from datetime import datetime, date, time
+from dateutil.relativedelta import relativedelta
+from collections import defaultdict
+
 from django.contrib.auth.models import User, Group as UserGroup
+from django.db import connection
+from django.conf import settings
+from django.test import Client, TestCase
+from scripts.scheduleimport import run_test as scheduleimport_run_test
+from scripts.ectsimport import run_test as ectsimport_run_test
+
 from apps.users.models import Employee, Student, PersonalDataConsent
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.course import CourseEntity, Course
@@ -8,18 +20,7 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
 
-import os
-import re
-from datetime import datetime, date, time
-from dateutil.relativedelta import relativedelta
-from collections import defaultdict
-from django.db import connection
 
-from django.conf import settings
-from django.test import Client, TestCase
-
-from scripts.scheduleimport import run_test as scheduleimport_run_test
-from scripts.ectsimport import run_test as ectsimport_run_test
 
 
 class NewSemestrTestCase(TestCase):
