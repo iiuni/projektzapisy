@@ -21,8 +21,6 @@ from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
 
 
-
-
 class NewSemestrTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
@@ -98,9 +96,9 @@ class NewSemestrTestCase(TestCase):
         cls.course_type = Type.objects.create(name='Informatyczny')
         for i in range(1, 6):
             CourseEntity.objects.create(
-                name='Course {}'.format(i),
-                name_pl='Course {}'.format(i),
-                name_en='Course {}'.format(i),
+                name=f'Course {i}',
+                name_pl=f'Course {i}',
+                name_en=f'Course {i}',
                 semester='z',
                 type=cls.course_type,
                 status=1,  # w ofercie
@@ -108,9 +106,9 @@ class NewSemestrTestCase(TestCase):
             )
         for i in range(6, 11):
             CourseEntity.objects.create(
-                name='Course {}'.format(i),
-                name_pl='Course {}'.format(i),
-                name_en='Course {}'.format(i),
+                name=f'Course {i}',
+                name_pl=f'Course {i}',
+                name_en=f'Course {i}',
                 semester='l',
                 type=cls.course_type,
                 status=1,  # w ofercie
@@ -215,40 +213,40 @@ class NewSemestrTestCase(TestCase):
             "/offer/manage/select_for_voting", follow=True)
 
         # find all courses
-        all_options = len(
+        number_of_all_options = len(
             re.findall('(<option.*?\/option>)', str(response.content)))
         # find courses selected for voting
-        selected_options = len(
+        number_of_selected_options = len(
             re.findall('(<option.*?selected="selected".*?\/option>)',
                        str(response.content)))
 
         # calculate nonselected courses
-        nonselected_options = all_options - selected_options
+        number_of_nonselected_options = number_of_all_options - number_of_selected_options
 
         cls.assertEqual(
-            CourseEntity.objects.filter(status=1).count(), nonselected_options)
+            CourseEntity.objects.filter(status=1).count(), number_of_nonselected_options)
         cls.assertEqual(
-            CourseEntity.objects.filter(status=2).count(), selected_options)
+            CourseEntity.objects.filter(status=2).count(), number_of_selected_options)
         response = cls.client.post(
-            "/offer/manage/select_for_voting",
+            '/offer/manage/select_for_voting',
             {'for_voting': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
             follow=True)
 
         # find all courses
-        all_options = len(
+        number_of_all_options = len(
             re.findall('(<option.*?\/option>)', str(response.content)))
 
         # find courses selected for voting
-        selected_options = len(
+        number_of_selected_options = len(
             re.findall('(<option.*?selected="selected".*?\/option>)',
                        str(response.content)))
         # calculate nonselected courses
-        nonselected_options = all_options - selected_options
+        number_of_nonselected_options = number_of_all_options - number_of_selected_options
 
         cls.assertEqual(
-            CourseEntity.objects.filter(status=1).count(), nonselected_options)
+            CourseEntity.objects.filter(status=1).count(), number_of_nonselected_options)
         cls.assertEqual(
-            CourseEntity.objects.filter(status=2).count(), selected_options)
+            CourseEntity.objects.filter(status=2).count(), number_of_selected_options)
 
     def perform_voting(cls):
         # voting starts
