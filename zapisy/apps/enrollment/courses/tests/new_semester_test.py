@@ -53,7 +53,7 @@ class NewSemestrTestCase(TestCase):
         cls.employees = []
         for i in range(1, 5):
             user = User.objects.create_user(
-                username=('employee{}'.format(i)), password=cls.password)
+                username=(f'employee{i}'), password=cls.password)
             user.first_name = 'Employee'
             user.last_name = str(i)
             user.save()
@@ -203,21 +203,21 @@ class NewSemestrTestCase(TestCase):
     def prepare_course_entities_for_voting(cls):
         # login as admin
         cls.client.post(
-            "/fereol_admin/login/", {
-                "username": cls.admin.username,
-                "password": cls.password
+            '/fereol_admin/login/', {
+                'username': cls.admin.username,
+                'password': cls.password
             },
             follow=True)
 
         response = cls.client.get(
-            "/offer/manage/select_for_voting", follow=True)
+            '/offer/manage/select_for_voting', follow=True)
 
         # find all courses
         number_of_all_options = len(
-            re.findall('(<option.*?\/option>)', str(response.content)))
+            re.findall('(<option.*?/option>)', str(response.content)))
         # find courses selected for voting
         number_of_selected_options = len(
-            re.findall('(<option.*?selected="selected".*?\/option>)',
+            re.findall('(<option.*?selected="selected".*?/option>)',
                        str(response.content)))
 
         # calculate nonselected courses
@@ -234,11 +234,11 @@ class NewSemestrTestCase(TestCase):
 
         # find all courses
         number_of_all_options = len(
-            re.findall('(<option.*?\/option>)', str(response.content)))
+            re.findall('(<option.*?/option>)', str(response.content)))
 
         # find courses selected for voting
         number_of_selected_options = len(
-            re.findall('(<option.*?selected="selected".*?\/option>)',
+            re.findall('(<option.*?selected="selected".*?/option>)',
                        str(response.content)))
         # calculate nonselected courses
         number_of_nonselected_options = number_of_all_options - number_of_selected_options
@@ -311,19 +311,19 @@ class NewSemestrTestCase(TestCase):
             })
 
         # Got to vote summary page
-        response = cls.client.get("/vote/summary", follow=True)
+        response = cls.client.get('/vote/summary', follow=True)
 
         # Find table with courses body
-        table_body = re.findall("<tbody>(.*?)<\/tbody>", str(response.content))
-        table_body = "".join(table_body)
+        table_body = re.findall('<tbody>(.*?)</tbody>', str(response.content))
+        table_body = ''.join(table_body)
 
         # Find course rows in table
-        rows = re.findall("<tr>(.*?)<\/tr>", str(table_body))
+        rows = re.findall('<tr>(.*?)</tr>', str(table_body))
 
         # For each row in table
         for row in rows:
             # Extract course name
-            name = re.findall("<a.*?>(.*?)<\/a>", str(row))[0]
+            name = re.findall('<a.*?>(.*?)</a>', str(row))[0]
 
             # Extract points and vote number for course
             points, votes = re.findall('<td class="number">(.*?)</td>',
@@ -340,55 +340,55 @@ class NewSemestrTestCase(TestCase):
     def vote(cls, student, points):
 
         # Logout user
-        cls.client.get("/accounts/logout")
+        cls.client.get('/accounts/logout')
 
         # Login as student
         response = cls.client.post(
-            "/users/login/", {
-                "username": student.user.username,
-                "password": cls.password
+            '/users/login/', {
+                'username': student.user.username,
+                'password': cls.password
             },
             follow=True)
 
         # Go to voting page
-        response = cls.client.get("/vote/vote", follow=True)
+        response = cls.client.get('/vote/vote', follow=True)
 
         # Find vote form body
-        form_body = re.findall('(<div class="od-vote-semester".*<\/div>)',
+        form_body = re.findall('(<div class="od-vote-semester".*</div>)',
                                str(response.content))[0]
         # Find all courses for voting
-        vote_object = re.findall('(<input.*?<\/option><\/select><\/li>)',
+        vote_object = re.findall('(<input.*?</option></select></li>)',
                                  str(form_body))
 
         courses_for_vote = {}
 
         for course in vote_object:
-            course_name = re.findall('<a.*?>(.*?)<\/a>', course)[0]
+            course_name = re.findall('<a.*?>(.*?)</a>', course)[0]
             form_course_name = re.findall('<input.*?name="(.*?)-id"',
                                           course)[0]
             course_id = re.findall('<input.*?value="(.*?)"', course)[0]
-            courses_for_vote[course_name] = {"name": form_course_name, "id": course_id}
+            courses_for_vote[course_name] = {'name': form_course_name, 'id': course_id}
 
         request = {
-            "winter-TOTAL_FORMS": "5",
-            "winter-INITIAL_FORMS": "5",
-            "winter-MIN_NUM_FORMS": "0",
-            "winter-MAX_NUM_FORMS": "1000",
-            "summer-TOTAL_FORMS": "5",
-            "summer-INITIAL_FORMS": "5",
-            "summer-MIN_NUM_FORMS": "0",
-            "summer-MAX_NUM_FORM": "1000",
-            "unknown-TOTAL_FORMS": "0",
-            "unknown-INITIAL_FORMS": "0",
-            "unknown-MIN_NUM_FORMS": "0",
-            "unknown-MAX_NUM_FORMS": "1000"
+            'winter-TOTAL_FORMS': '5',
+            'winter-INITIAL_FORMS': '5',
+            'winter-MIN_NUM_FORMS': '0',
+            'winter-MAX_NUM_FORMS': '1000',
+            'summer-TOTAL_FORMS': '5',
+            'summer-INITIAL_FORMS': '5',
+            'summer-MIN_NUM_FORMS': '0',
+            'summer-MAX_NUM_FORM': '1000',
+            'unknown-TOTAL_FORMS': '0',
+            'unknown-INITIAL_FORMS': '0',
+            'unknown-MIN_NUM_FORMS': '0',
+            'unknown-MAX_NUM_FORMS': '1000'
         }
 
         # Create vote request
         for course_name in courses_for_vote:
             course = courses_for_vote[course_name]
-            request["{}-id".format(course["name"])] = course["id"]
-            request["{}-value".format(course["name"])] = points.get(
+            request[f'{course["name"]}-id'] = course['id']
+            request[f'{course["name"]}-value'] = points.get(
                 course_name, 0)
 
         sum_points = sum(points.values())
@@ -398,11 +398,11 @@ class NewSemestrTestCase(TestCase):
                 cls.results_points[course_name] += value
                 cls.results_votes[course_name] += 1
 
-        response = cls.client.post("/vote/vote", request, follow=True)
+        response = cls.client.post('/vote/vote', request, follow=True)
 
         # Check vote succes
-        succes_text = re.findall("alert-message succes", str(response.content))
-        fail_text = re.findall("alert-message error", str(response.content))
+        succes_text = re.findall('alert-message succes', str(response.content))
+        fail_text = re.findall('alert-message error', str(response.content))
 
         # alert-message error
         if sum_points <= cls.system_state.max_points:
@@ -451,47 +451,47 @@ class NewSemestrTestCase(TestCase):
     def correction(cls, student, points):
 
         # Logout user
-        cls.client.get("/accounts/logout")
+        cls.client.get('/accounts/logout')
 
         # Login
         response = cls.client.post(
-            "/users/login/", {
-                "username": student.user.username,
-                "password": cls.password
+            '/users/login/', {
+                'username': student.user.username,
+                'password': cls.password
             },
             follow=True)
 
         # Go to voting page
-        response = cls.client.get("/vote/vote", follow=True)
+        response = cls.client.get('/vote/vote', follow=True)
 
-        form_body = re.findall('(<div class="od-vote-semester".*<\/div>)',
+        form_body = re.findall('(<div class="od-vote-semester".*</div>)',
                                str(response.content))[0]
-        vote_object = re.findall('(<input.*?<\/option><\/select><\/li>)',
+        vote_object = re.findall('(<input.*?</option></select></li>)',
                                  str(form_body))
 
         courses_for_vote = {}
 
         for course in vote_object:
-            course_name = re.findall('<a.*?>(.*?)<\/a>', course)[0]
+            course_name = re.findall('<a.*?>(.*?)</a>', course)[0]
             form_course_name = re.findall('<input.*?name="(.*?)-id"',
                                           course)[0]
-            id = re.findall('<input.*?value="(.*?)"', course)[0]
-            old_value = re.findall("<option.*?selected>(.*?)<\/option>", course)[0]
-            courses_for_vote[course_name] = {"name": form_course_name, "id": id, "old_value": old_value}
+            course_id = re.findall('<input.*?value="(.*?)"', course)[0]
+            old_value = re.findall('<option.*?selected>(.*?)</option>', course)[0]
+            courses_for_vote[course_name] = {'name': form_course_name, 'id': course_id, 'old_value': old_value}
 
         request = {
-            "winter-TOTAL_FORMS": "3",
-            "winter-INITIAL_FORMS": "3",
-            "winter-MIN_NUM_FORMS": "0",
-            "winter-MAX_NUM_FORMS": "1000",
+            'winter-TOTAL_FORMS': '3',
+            'winter-INITIAL_FORMS': '3',
+            'winter-MIN_NUM_FORMS': '0',
+            'winter-MAX_NUM_FORMS': '1000',
         }
         for course_name in courses_for_vote:
             course = courses_for_vote[course_name]
-            request["{}-id".format(course["name"])] = course["id"]
-            request["{}-value".format(course["name"])] = points.get(
-                course_name, course["old_value"])
+            request[f'{course["name"]}-id'] = course['id']
+            request[f'{course["name"]}-value'] = points.get(
+                course_name, course['old_value'])
 
-        response = cls.client.post("/vote/vote", request, follow=True)
+        response = cls.client.post('/vote/vote', request, follow=True)
 
     def import_winter_schedule(self):
         courses = {course.entity.name: course.id for course in
@@ -582,7 +582,7 @@ class NewSemestrTestCase(TestCase):
         students, _ = UserGroup.objects.get_or_create(name='students')
         for i in range(1, 6):
             user = User.objects.create_user(
-                username='student{}'.format(i + number_of_students), password=self.password)
+                username=f'student{i + number_of_students}', password=self.password)
             students.user_set.add(user)
             student = Student.objects.create(
                 user=user,
@@ -601,7 +601,7 @@ class NewSemestrTestCase(TestCase):
         test_ectsimport = ''
         for student, points in students_ects.items():
             for deg, ects in points.items():
-                test_ectsimport += '{} {} T {} stopnia\n'.format(student.matricula, ects, deg)
+                test_ectsimport += f'{student.matricula} {ects} T {deg} stopnia\n'
 
         test_ectsimport_path = settings.BASE_DIR + '/test_ectsimport.txt'
         with open(test_ectsimport_path, 'w') as file:
