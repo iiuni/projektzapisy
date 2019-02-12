@@ -110,7 +110,11 @@ class Record(models.Model):
             time = datetime.now()
         if student is None:
             return {k.id: False for k in groups}
-        return GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
+        ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
+        for group in groups:
+            if group.extra == 'hidden':
+                ret[group.pk] = False
+        return ret
 
     @classmethod
     def can_enroll(cls, student: Optional[Student], group: Group, time: datetime = None) -> bool:

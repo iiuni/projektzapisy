@@ -91,7 +91,7 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
     if request.user.is_authenticated and BaseUser.is_student(request.user):
         student = request.user.student
 
-    groups = course.groups.all().select_related(
+    groups = course.groups.exclude(extra='hidden').select_related(
         'teacher',
         'teacher__user',
     ).prefetch_related('term', 'term__classrooms')

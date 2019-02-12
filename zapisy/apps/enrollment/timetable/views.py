@@ -232,7 +232,7 @@ def prototype_get_course(request, course_id):
     """Retrieves the annotated groups of a single course."""
     student = request.user.student
     course = Course.objects.get(pk=course_id)
-    groups = course.groups.all().select_related(
+    groups = course.groups.exclude(extra='hidden').select_related(
         'course', 'course__entity', 'teacher', 'course__semester', 'teacher__user'
     ).prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)
