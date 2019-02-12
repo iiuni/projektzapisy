@@ -43,7 +43,7 @@ class T0Times(models.Model):
         """
         if not student.is_active():
             return False
-        if time > semester.records_closing:
+        if semester.records_closing is not None and time > semester.records_closing:
             return False
         t0_record = None
         try:
