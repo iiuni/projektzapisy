@@ -64,6 +64,7 @@ COURSES_DONT_IMPORT = [
     'TEORIA PRAWDOPODOBIEŃSTWA 1',
     'TOPOLOGIA']
 
+
 class Command(BaseCommand):
     help = 'Imports the timetable for the next semester from the external scheduler.'
 
@@ -157,7 +158,7 @@ class Command(BaseCommand):
             if name == 'NN':
                 emps = Employee.objects.filter(user__first_name='Nieznany')
             elif Employee.objects.filter(user__username__iexact=name).exists():
-                 emps = Employee.objects.filter(user__username__iexact=name)
+                emps = Employee.objects.filter(user__username__iexact=name)
             elif len(name) == 3:
                 emps = Employee.objects.filter(user__first_name__istartswith=name[0],
                                                user__last_name__istartswith=name[1:3],
@@ -409,7 +410,7 @@ class Command(BaseCommand):
     def get_secrets_env(self):
         env = environ.Env()
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
-                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+                                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
         self.stdout.write(BASE_DIR)
         self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
