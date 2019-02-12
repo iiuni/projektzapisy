@@ -207,7 +207,7 @@ class Command(BaseCommand):
                                            start_time=data['start_time'],
                                            end_time=data['end_time'],
                                            group=group)
-                term.classrooms = data['classrooms']
+                term.classrooms.set(data['classrooms'])
                 term.save()
                 self.all_creations.append(term)
                 TermSyncData.objects.create(term=term, scheduler_id=data['id'])
@@ -240,7 +240,7 @@ class Command(BaseCommand):
                     diffs.append(('classroom', (set(term.classrooms.all()),
                                                 set(data['classrooms']))))
                     if create_terms:
-                        term.classrooms = data['classrooms']  # this already saves the relation!
+                        term.classrooms.set(data['classrooms'])  # this already saves the relation!
                 if diffs:
                     if create_terms:
                         term.save()
