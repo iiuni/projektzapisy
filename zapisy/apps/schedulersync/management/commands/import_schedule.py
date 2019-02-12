@@ -139,6 +139,18 @@ class Command(BaseCommand):
         return classrooms
 
     def get_employee(self, name):
+        """ Tries to match employee name in scheduler to the employee user in the enrollment system.
+
+        First, it replaces name using handy mapping to fix eventual typos
+        The order of checks is the following:
+        1) the name is integer -> then this corresponds to employee_id in the enrollment system
+        2) the name is equal to the login
+        3) the name is a 3 letter shortcut of first and last name
+        4) the name is a first letter of a first name and a last name
+
+        If more employees are matched or the employee does not exists,
+        the function will fail with an error
+        """
         name = name.upper()
         if name in EMPLOYEE_MAP:
             name = EMPLOYEE_MAP[name]
@@ -148,6 +160,8 @@ class Command(BaseCommand):
         except ValueError:
             if name == 'NN':
                 emps = Employee.objects.filter(user__first_name='Nieznany')
+            elif Employee.objects.filter(user__username__iexact=name).exists():
+                 emps = Employee.objects.filter(user__username__iexact=name)
             elif len(name) == 3:
                 emps = Employee.objects.filter(user__first_name__istartswith=name[0],
                                                user__last_name__istartswith=name[1:3],
