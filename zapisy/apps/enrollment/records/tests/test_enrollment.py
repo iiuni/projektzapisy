@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group, StudentPointsView
+from apps.enrollment.courses.models import Semester, Group, StudentPointsView, Course
 from apps.users.models import Student
 
 
@@ -312,3 +312,30 @@ class EnrollmentTest(TestCase):
 
         self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
+
+    def test_waiting_students_number(self):
+        """Check whether we get correct number of waiting students of given type.
+
+        Our exercise groups have limit for 1 person.
+        Bolek is in cooking_exercise_group_1 and Lolek is in cooking_exercise_group_2.
+        Tola is in queues of all above groups.
+        Bolek changed his mind and want to be in cooking_exercise_group_2.
+        Lolek also want to join other group(cooking_exercise_group_1).
+        We have 2 enrolled Records and 4 enqueued.
+        Only Lola isn't enrolled in any group.
+        That's why we should return 1.
+        """
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
+            self.cooking_exercise_group_1.limit = 1
+            self.cooking_exercise_group_2.limit = 1
+            Record.enqueue_student(self.bolek, self.cooking_exercise_group_1)
+            Record.enqueue_student(self.lolek, self.cooking_exercise_group_2)
+            Record.enqueue_student(self.tola, self.cooking_exercise_group_1)
+            Record.enqueue_student(self.tola, self.cooking_exercise_group_2)
+            Record.enqueue_student(self.bolek, self.cooking_exercise_group_2)
+            Record.enqueue_student(self.lolek, self.cooking_exercise_group_1)
+
+            self.assertEqual(Record.get_number_of_waiting_students([
+                self.cooking_exercise_group_1,
+                self.cooking_exercise_group_2
+            ], group_type=2), 1)

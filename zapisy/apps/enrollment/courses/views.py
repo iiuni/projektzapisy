@@ -1,6 +1,6 @@
 import csv
 import json
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, List
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, JsonResponse
@@ -121,6 +121,7 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
         'teachers': teachers,
         'points': course.get_points(student),
         'groups': groups,
+        'grouped_waiting_students': get_grouped_waiting_students(course, request)
     }
     return course, data
 
@@ -237,3 +238,22 @@ def group_queue_csv(request, group_id):
     except Group.DoesNotExist:
         raise Http404
     return recorded_students_csv(group_id, RecordStatus.QUEUED)
+
+
+def get_grouped_waiting_students(course, request) -> List:
+    """Return numbers of waiting students grouped by course group type."""
+    if not request.user.is_superuser:
+        return []
+
+    group_types: List = [
+        {'id': '2', 'name': 'cwiczenia'},
+        {'id': '3', 'name': 'pracownie'},
+        {'id': '5', 'name': 'ćwiczenio-pracownie'}
+    ]
+
+    course_groups = Group.objects.filter(course=course)
+
+    return [{
+        'students_amount': Record.get_number_of_waiting_students(course_groups, group_type['id']),
+        'type_name': group_type['name']
+    } for group_type in group_types]

@@ -176,6 +176,18 @@ class Record(models.Model):
             return {k.id: False for k in groups}
         return {k.id: True for k in groups}
 
+    @staticmethod
+    def get_number_of_waiting_students(course_groups: List, group_type: str) -> int:
+        """Returns number of students waiting to be enrolled.
+
+        Returned students aren't enrolled in any other group of given type within given course.
+        """
+        return Record.objects.filter(
+            status=RecordStatus.QUEUED, group__in=course_groups, group__type=group_type).only('student').exclude(
+            student__in=Record.objects.filter(
+                status=RecordStatus.ENROLLED, group__in=course_groups, group__type=group_type).only('student')
+                .values_list('student')).distinct('student').count()
+
     @classmethod
     def is_enrolled(cls, student_id: int, group_id: int) -> bool:
         """Checks if the student is already enrolled into the group."""
