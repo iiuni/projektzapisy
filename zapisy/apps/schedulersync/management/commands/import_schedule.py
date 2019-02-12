@@ -237,8 +237,8 @@ class Command(BaseCommand):
                 term.group.type = data['group_type']
                 term.group.teacher = data['teacher']
                 if set(term.classrooms.all()) != set(data['classrooms']):
-                    diffs.append(('classroom', (set(term.classrooms.all()),
-                                                set(data['classrooms']))))
+                    diffs.append(('classroom', (list(term.classrooms.all()),
+                                                list(data['classrooms']))))
                     if create_terms:
                         term.classrooms.set(data['classrooms'])  # this already saves the relation!
                 if diffs:
@@ -252,9 +252,9 @@ class Command(BaseCommand):
                     )
                     for diff in diffs:
                         self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
-                        self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
+                        self.stdout.write(self.style.NOTICE(str(diff[1][0])), ending='')
                         self.stdout.write(self.style.WARNING(' -> '), ending='')
-                        self.stdout.write(self.style.SUCCESS(diff[1][1]))
+                        self.stdout.write(self.style.SUCCESS(str(diff[1][1])))
                     self.stdout.write('\n')
                     self.all_updates.append((term, diffs))
                     self.updated_terms += 1
