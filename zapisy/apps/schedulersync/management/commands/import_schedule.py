@@ -32,42 +32,36 @@ GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
 LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
 
 EMPLOYEE_MAP = {
-    'PWL': 'PWN',
-    'MBI': 'MBIEŃKOWSKI',
-    'KBACLAWSKI': 'KBACŁAWSKI',
-    'MABI': 'MBIERNACKA',
-    'PWI': '48',
-    'IFD': 'IDO',
-    'JMA': '31',
-    'ANL': 'AŁU',
-    'PAWIECZOREK': '526',
-    'LPI': 'ŁPI',
-    'DABI': 'DBIERNACKI',
-    'MPIROG': 'MPIRÓG',
-    'WKWASNICKI': 'WKWAŚNICKI',
-    'ASIERON': 'ASIEROŃ',
-    'ZPLOSKI': 'ZPŁOSKI',
-    'ZSPLAWSKI': 'ZSPŁAWSKI',
-    'PACHOLSKI LESZEK': 'LPA',
-    'MML': 'MMŁ',
-    'LJE': 'ŁJE',
-    'MPI': 'MPIOTRÓW',
-    'SZDUDYCZ': 'SDUDYCZ'
+    'PLISOWSKI': '258497',
+    'TELSNER': 'NN',
+    'AMORAWIEC': 'NN',
+    'AMALINOWSKI': 'NN',
+    'RSZWARC': 'NN',
+    'EDAMEK': 'NN',
+    'GPLEBANEK': 'NN',
+    'ARACZYNSKI': 'NN',
+    'GKARCH': 'NN',
+    'SCYGAN': 'NN',
+    'JDZIUBANSKI': 'NN'
 }
 
 COURSES_MAP = {
-    'ALGORYTMY I STRUKTURY DANYCH M': 'ALGORYTMY I STRUKTURY DANYCH (M)',
-    'KURS PHP': 'Kurs: Projektowanie i implementacja zaawansowanych aplikacji PHP',
-    'PROJEKT DYPLOMOWY (LATO)': 'PROJEKT DYPLOMOWY',
-    'PROJEKT: SYSTEM ZAPISÓW (LATO)': 'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW',
-    'PROJEKT ZESPOŁOWY: SILNIK UNITY3D I WIRTUALNA RZECZYWISTOŚĆ 2':
-        'Projekt zespołowy: silnik Unity3D i wirtualna rzeczywistość LATO',
-    'SEMINARIUM: ALGORYTMY  WYSZUKIWANIA ŚCIEŻEK': 'SEMINARIUM: ALGORYTMY WYSZUKIWANIA ŚCIEŻEK',
-    'TUTORING (LATO)': 'Kształtowanie ścieżki akademicko-zawodowej'
+    'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',
+    'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'PRAKTYKA ZAWODOWA - CZTERY TYGODNIE',
+    'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'PRAKTYKA ZAWODOWA - PIĘĆ TYGODNI',
+    'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI'
 }
 
-COURSES_DONT_IMPORT = ['XIV LO LATO', 'ZASADY KRYTYCZNEGO MYŚLENIA']
-
+COURSES_DONT_IMPORT = [
+    'ALGEBRA I',
+    'ALGEBRA LINIOWA 2',
+    'ALGEBRA LINIOWA 2R',
+    'ANALIZA MATEMATYCZNA II',
+    'FUNKCJE ANALITYCZNE 1',
+    'RÓWNANIA RÓŻNICZKOWE 1',
+    'RÓWNANIA RÓŻNICZKOWE 1R',
+    'TEORIA PRAWDOPODOBIEŃSTWA 1',
+    'TOPOLOGIA']
 
 class Command(BaseCommand):
     help = 'Imports the timetable for the next semester from the external scheduler.'
