@@ -1,6 +1,7 @@
 import re
 from datetime import time
 import json
+import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -405,10 +406,13 @@ class Command(BaseCommand):
                 % (response.status_code, response.text)
             )
 
-    def get_secrets_env():
+    def get_secrets_env(self):
         env = environ.Env()
-        secrets_file_path = os.path.join(get_script_dir(), os.pardir, 'env', '.env')
-        environ.Env.read_env(secrets_file_path)
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+        self.stdout.write(BASE_DIR)
+        self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         return env
 
     def handle(self, *args, **options):
