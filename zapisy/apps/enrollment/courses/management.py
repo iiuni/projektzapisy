@@ -107,6 +107,13 @@ def split_out_isim(group: Group, limit_isim=0) -> Group:
         ProgramGroupRestrictions(group=isim_group, program=prog_eng1),
         ProgramGroupRestrictions(group=isim_group, program=prog_eng2),
     ])
+    isim_role = AuthGroup.objects.get(name='stud_isim')
+    notisim_role = AuthGroup.objects.get(name='stud_notisim')
+    # Hide groups from students to tidy their prototypes.
+    HiddenGroups.objects.bulk_create([
+        HiddenGroups(group=group, role=isim_role),
+        HiddenGroups(group=isim_group, role=notisim_role),
+    ])
 
 
 @transaction.atomic
@@ -186,7 +193,7 @@ def adjust_split_in_three_opening_times():
     for label in 'tura1', 'tura2', 'tura3':
         groups = Group.objects.filter(course__semester=semester, extra=label)
         role = AuthGroup.objects.get(name=label)
-        students = Student.objects.filter(user__groups=role)
+        students = Student.objects.filter(status=0, user__groups=role)
         t0times = T0Times.objects.filter(semester=semester, student__user__groups=role)
         t0times = {t0.student_id: t0.time for t0 in t0times}
 
