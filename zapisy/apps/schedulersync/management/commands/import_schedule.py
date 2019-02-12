@@ -186,7 +186,7 @@ class Command(BaseCommand):
             scheduler_id=data['id'], term__group__course__semester=self.semester).select_related(
                 'term', 'term__group').prefetch_related('term__classrooms')
         sync_data_objects = list(sync_data_objects)
-        if sync_data_objects is None:
+        if not sync_data_objects:
             if create_terms:
                 # Create the group in the enrollment system
                 if data['group_type'] == '1':
