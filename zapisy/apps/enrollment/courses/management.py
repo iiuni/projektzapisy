@@ -96,17 +96,12 @@ def split_out_isim(group: Group, limit_isim=0) -> Group:
     isim_group.save()
     group.save()
     prog_isim = Program.objects.get(name="ISIM, dzienne I stopnia")
-    prog_bsc = Program.objects.get(name="Informatyka, dzienne I stopnia")
-    prog_msc = Program.objects.get(name="Informatyka, dzienne II stopnia")
-    prog_eng1 = Program.objects.get(name="Informatyka, dzienne I stopnia inżynierskie")
-    prog_eng2 = Program.objects.get(name="Informatyka, dzienne II stopnia inżynierskie")
-    ProgramGroupRestrictions.objects.bulk_create([
-        ProgramGroupRestrictions(group=group, program=prog_isim),
-        ProgramGroupRestrictions(group=isim_group, program=prog_bsc),
-        ProgramGroupRestrictions(group=isim_group, program=prog_msc),
-        ProgramGroupRestrictions(group=isim_group, program=prog_eng1),
-        ProgramGroupRestrictions(group=isim_group, program=prog_eng2),
-    ])
+    progs_others = Program.objects.all().exclude(id=prog_isim.id)
+    program_restrictions = [ProgramGroupRestrictions(group=group, program=prog_isim)]
+    for p in progs_others:
+        program_restrictions.append(ProgramGroupRestrictions(group=isim_group, program=p))
+
+    ProgramGroupRestrictions.objects.bulk_create(program_restrictions)
     isim_role = AuthGroup.objects.get(name='stud_isim')
     notisim_role = AuthGroup.objects.get(name='stud_notisim')
     # Hide groups from students to tidy their prototypes.
