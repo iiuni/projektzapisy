@@ -5,6 +5,7 @@ import json
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+import environ
 import requests
 
 from apps.users.models import Employee
@@ -294,8 +295,11 @@ class Command(BaseCommand):
         client = requests.session()
         client.get(URL_LOGIN)
         csrftoken = client.cookies['csrftoken']
-        login_data = {'username': 'test', 'password': 'test', 'csrfmiddlewaretoken': csrftoken,
-                      'next': self.url_assignments}
+        secrets_env = self.get_secrets_env()
+        scheduler_username = secrets_env.str('SCHEDULER_USERNAME')
+        scheduler_password = secrets_env.str('SCHEDULER_PASSWORD')
+        login_data = {'username': scheduler_username, 'password': scheduler_password,
+                      'csrfmiddlewaretoken': csrftoken, 'next': self.url_assignments}
         r = client.post(URL_LOGIN, data=login_data)
         r2 = client.get(self.url_schedule)
         results = r2.json()['timetable']['results']
@@ -406,6 +410,12 @@ class Command(BaseCommand):
                 'Request to slack returned an error %s, the response is:\n%s'
                 % (response.status_code, response.text)
             )
+
+    def get_secrets_env():
+        env = environ.Env()
+        secrets_file_path = os.path.join(get_script_dir(), os.pardir, 'env', '.env')
+        environ.Env.read_env(secrets_file_path)
+        return env
 
     def handle(self, *args, **options):
         self.semester = (Semester.objects.get_next() if options['semester'] == 0
