@@ -50,7 +50,7 @@ from choicesenum import ChoicesEnum
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from apps.enrollment.courses.models import Group, StudentPointsView, Semester
+from apps.enrollment.courses.models import Course, Group, StudentPointsView, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
@@ -177,16 +177,18 @@ class Record(models.Model):
         return {k.id: True for k in groups}
 
     @staticmethod
-    def get_number_of_waiting_students(course_groups: List, group_type: str) -> int:
+    def get_number_of_waiting_students(course: Course, group_type: str) -> int:
         """Returns number of students waiting to be enrolled.
 
-        Returned students aren't enrolled in any other group of given type within given course.
+        Returned students aren't enrolled in any group of given type within
+        given course, but they are enqueued into at least one.
         """
         return Record.objects.filter(
-            status=RecordStatus.QUEUED, group__in=course_groups, group__type=group_type).only('student').exclude(
-            student__in=Record.objects.filter(
-                status=RecordStatus.ENROLLED, group__in=course_groups, group__type=group_type).only('student')
-                .values_list('student')).distinct('student').count()
+            status=RecordStatus.QUEUED, group__course=course,
+            group__type=group_type).only('student').exclude(
+                student__in=Record.objects.filter(
+                    status=RecordStatus.ENROLLED, group__course=course, group__type=group_type).
+                only('student').values_list('student')).distinct('student').count()
 
     @classmethod
     def is_enrolled(cls, student_id: int, group_id: int) -> bool:

@@ -251,9 +251,7 @@ def get_grouped_waiting_students(course, request) -> List:
         {'id': '5', 'name': 'ćwiczenio-pracownie'}
     ]
 
-    course_groups = Group.objects.filter(course=course)
-
     return [{
-        'students_amount': Record.get_number_of_waiting_students(course_groups, group_type['id']),
+        'students_amount': Record.get_number_of_waiting_students(course, group_type['id']),
         'type_name': group_type['name']
     } for group_type in group_types]
