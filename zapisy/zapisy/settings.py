@@ -129,7 +129,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '6$u2ggeh-!^hxep3s4h$3z&2-+3c@sy7-sy8349+l-1m)9r0fn'
+SECRET_KEY = env.str('SECRET_KEY', default='N3MUBVRQXkhuqzsZ8QMepRaZwHDXwhp4rTcVQF5bmckB2c293V')
 
 TEMPLATE_LOADERS_TO_USE = [
     'django.template.loaders.filesystem.Loader',
@@ -148,6 +148,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
+                'apps.users.context_processors.roles',
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE
             if DEBUG else
@@ -219,6 +220,8 @@ INSTALLED_APPS = (
     'el_pagination',
     'apps.notifications',
     'django_cas_ng',
+
+    'test_app',
     'django_rq',
     'webpack_loader',
 )
