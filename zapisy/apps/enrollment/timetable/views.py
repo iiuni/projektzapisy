@@ -26,8 +26,7 @@ def build_group_list(groups: List[Group]):
     The information must be sufficient to display information in the timetable
     and perform actions (enqueuing/dequeuing).
     """
-    group_ids = [g.pk for g in groups]
-    stats = Record.groups_stats(group_ids)
+    stats = Record.groups_stats(groups)
     group_dicts = []
     group: Group
     for group in groups:
@@ -233,7 +232,7 @@ def prototype_get_course(request, course_id):
     """Retrieves the annotated groups of a single course."""
     student = request.user.student
     course = Course.objects.get(pk=course_id)
-    groups = course.groups.all().select_related(
+    groups = course.groups.exclude(extra='hidden').select_related(
         'course', 'course__entity', 'teacher', 'course__semester', 'teacher__user'
     ).prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)

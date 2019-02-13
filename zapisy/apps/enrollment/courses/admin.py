@@ -17,7 +17,8 @@ from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointT
 from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import Record
+from apps.enrollment.records.models import Record, RecordStatus
+from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 
 
 class GroupInline(admin.TabularInline):
@@ -200,19 +201,18 @@ class TermInline(admin.TabularInline):
 class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
-    readonly_fields = ('id', 'student', 'status')
+    readonly_fields = ('id',)
+    raw_id_fields = ('student',)
     can_delete = True
 
-    def has_add_permission(self, request):
-        """Never allow to modify records.
+    def get_queryset(self, request):
+        """Only shows enrolled and queued students.
 
-        We disable the possibility to modify records, because it is not obvious,
-        what the procedure should be. Should the student be automatically
-        removed from parallel groups? Should his ECTS limit be checked? If we
-        remove him from exercise, should he be automatically removed from the
-        accompanying lecture group?
+        They will be showed enrolled first, then queued ones, ordered by the
+        enqueuing time.
         """
-        return False
+        qs = super().get_queryset(request)
+        return qs.exclude(status=RecordStatus.REMOVED).order_by('-status', 'created')
 
 
 class GroupAdmin(admin.ModelAdmin):

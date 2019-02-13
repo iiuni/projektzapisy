@@ -1,10 +1,12 @@
 import re
 from datetime import time
 import json
+import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+import environ
 import requests
 
 from apps.users.models import Employee
@@ -31,41 +33,36 @@ GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
 LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
 
 EMPLOYEE_MAP = {
-    'PWL': 'PWN',
-    'MBI': 'MBIEŃKOWSKI',
-    'KBACLAWSKI': 'KBACŁAWSKI',
-    'MABI': 'MBIERNACKA',
-    'PWI': '48',
-    'IFD': 'IDO',
-    'JMA': '31',
-    'ANL': 'AŁU',
-    'PAWIECZOREK': '526',
-    'LPI': 'ŁPI',
-    'DABI': 'DBIERNACKI',
-    'MPIROG': 'MPIRÓG',
-    'WKWASNICKI': 'WKWAŚNICKI',
-    'ASIERON': 'ASIEROŃ',
-    'ZPLOSKI': 'ZPŁOSKI',
-    'ZSPLAWSKI': 'ZSPŁAWSKI',
-    'PACHOLSKI LESZEK': 'LPA',
-    'MML': 'MMŁ',
-    'LJE': 'ŁJE',
-    'MPI': 'MPIOTRÓW',
-    'SZDUDYCZ': 'SDUDYCZ'
+    'PLISOWSKI': '258497',
+    'TELSNER': 'NN',
+    'AMORAWIEC': 'NN',
+    'AMALINOWSKI': 'NN',
+    'RSZWARC': 'NN',
+    'EDAMEK': 'NN',
+    'GPLEBANEK': 'NN',
+    'ARACZYNSKI': 'NN',
+    'GKARCH': 'NN',
+    'SCYGAN': 'NN',
+    'JDZIUBANSKI': 'NN'
 }
 
 COURSES_MAP = {
-    'ALGORYTMY I STRUKTURY DANYCH M': 'ALGORYTMY I STRUKTURY DANYCH (M)',
-    'KURS PHP': 'Kurs: Projektowanie i implementacja zaawansowanych aplikacji PHP',
-    'PROJEKT DYPLOMOWY (LATO)': 'PROJEKT DYPLOMOWY',
-    'PROJEKT: SYSTEM ZAPISÓW (LATO)': 'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW',
-    'PROJEKT ZESPOŁOWY: SILNIK UNITY3D I WIRTUALNA RZECZYWISTOŚĆ 2':
-        'Projekt zespołowy: silnik Unity3D i wirtualna rzeczywistość LATO',
-    'SEMINARIUM: ALGORYTMY  WYSZUKIWANIA ŚCIEŻEK': 'SEMINARIUM: ALGORYTMY WYSZUKIWANIA ŚCIEŻEK',
-    'TUTORING (LATO)': 'Kształtowanie ścieżki akademicko-zawodowej'
+    'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',
+    'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'PRAKTYKA ZAWODOWA - CZTERY TYGODNIE',
+    'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'PRAKTYKA ZAWODOWA - PIĘĆ TYGODNI',
+    'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI'
 }
 
-COURSES_DONT_IMPORT = ['XIV LO LATO', 'ZASADY KRYTYCZNEGO MYŚLENIA']
+COURSES_DONT_IMPORT = [
+    'ALGEBRA I',
+    'ALGEBRA LINIOWA 2',
+    'ALGEBRA LINIOWA 2R',
+    'ANALIZA MATEMATYCZNA II',
+    'FUNKCJE ANALITYCZNE 1',
+    'RÓWNANIA RÓŻNICZKOWE 1',
+    'RÓWNANIA RÓŻNICZKOWE 1R',
+    'TEORIA PRAWDOPODOBIEŃSTWA 1',
+    'TOPOLOGIA']
 
 
 class Command(BaseCommand):
@@ -139,6 +136,18 @@ class Command(BaseCommand):
         return classrooms
 
     def get_employee(self, name):
+        """ Tries to match employee name in scheduler to the employee user in the enrollment system.
+
+        First, it replaces name using handy mapping to fix eventual typos
+        The order of checks is the following:
+        1) the name is integer -> then this corresponds to employee_id in the enrollment system
+        2) the name is equal to the login
+        3) the name is a 3 letter shortcut of first and last name
+        4) the name is a first letter of a first name and a last name
+
+        If more employees are matched or the employee does not exists,
+        the function will fail with an error
+        """
         name = name.upper()
         if name in EMPLOYEE_MAP:
             name = EMPLOYEE_MAP[name]
@@ -148,6 +157,8 @@ class Command(BaseCommand):
         except ValueError:
             if name == 'NN':
                 emps = Employee.objects.filter(user__first_name='Nieznany')
+            elif Employee.objects.filter(user__username__iexact=name).exists():
+                emps = Employee.objects.filter(user__username__iexact=name)
             elif len(name) == 3:
                 emps = Employee.objects.filter(user__first_name__istartswith=name[0],
                                                user__last_name__istartswith=name[1:3],
@@ -175,7 +186,7 @@ class Command(BaseCommand):
             scheduler_id=data['id'], term__group__course__semester=self.semester).select_related(
                 'term', 'term__group').prefetch_related('term__classrooms')
         sync_data_objects = list(sync_data_objects)
-        if sync_data_objects is None:
+        if not sync_data_objects:
             if create_terms:
                 # Create the group in the enrollment system
                 if data['group_type'] == '1':
@@ -193,7 +204,7 @@ class Command(BaseCommand):
                                            start_time=data['start_time'],
                                            end_time=data['end_time'],
                                            group=group)
-                term.classrooms = data['classrooms']
+                term.classrooms.set(data['classrooms'])
                 term.save()
                 self.all_creations.append(term)
                 TermSyncData.objects.create(term=term, scheduler_id=data['id'])
@@ -223,10 +234,10 @@ class Command(BaseCommand):
                 term.group.type = data['group_type']
                 term.group.teacher = data['teacher']
                 if set(term.classrooms.all()) != set(data['classrooms']):
-                    diffs.append(('classroom', (set(term.classrooms.all()),
-                                                set(data['classrooms']))))
+                    diffs.append(('classroom', (list(term.classrooms.all()),
+                                                list(data['classrooms']))))
                     if create_terms:
-                        term.classrooms = data['classrooms']  # this already saves the relation!
+                        term.classrooms.set(data['classrooms'])  # this already saves the relation!
                 if diffs:
                     if create_terms:
                         term.save()
@@ -238,9 +249,9 @@ class Command(BaseCommand):
                     )
                     for diff in diffs:
                         self.stdout.write(self.style.WARNING('  {}: '.format(diff[0])), ending='')
-                        self.stdout.write(self.style.NOTICE(diff[1][0]), ending='')
+                        self.stdout.write(self.style.NOTICE(str(diff[1][0])), ending='')
                         self.stdout.write(self.style.WARNING(' -> '), ending='')
-                        self.stdout.write(self.style.SUCCESS(diff[1][1]))
+                        self.stdout.write(self.style.SUCCESS(str(diff[1][1])))
                     self.stdout.write('\n')
                     self.all_updates.append((term, diffs))
                     self.updated_terms += 1
@@ -280,8 +291,11 @@ class Command(BaseCommand):
         client = requests.session()
         client.get(URL_LOGIN)
         csrftoken = client.cookies['csrftoken']
-        login_data = {'username': 'test', 'password': 'test', 'csrfmiddlewaretoken': csrftoken,
-                      'next': self.url_assignments}
+        secrets_env = self.get_secrets_env()
+        scheduler_username = secrets_env.str('SCHEDULER_USERNAME')
+        scheduler_password = secrets_env.str('SCHEDULER_PASSWORD')
+        login_data = {'username': scheduler_username, 'password': scheduler_password,
+                      'csrfmiddlewaretoken': csrftoken, 'next': self.url_assignments}
         r = client.post(URL_LOGIN, data=login_data)
         r2 = client.get(self.url_schedule)
         results = r2.json()['timetable']['results']
@@ -392,6 +406,15 @@ class Command(BaseCommand):
                 'Request to slack returned an error %s, the response is:\n%s'
                 % (response.status_code, response.text)
             )
+
+    def get_secrets_env(self):
+        env = environ.Env()
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+                                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+        self.stdout.write(BASE_DIR)
+        self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        return env
 
     def handle(self, *args, **options):
         self.semester = (Semester.objects.get_next() if options['semester'] == 0

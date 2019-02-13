@@ -29,7 +29,7 @@ from typing import List
 from django.contrib.auth.models import Group as AuthGroup
 from django.db import transaction
 
-from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.courses.models import Course, Group, Semester
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus, T0Times, GroupOpeningTimes
 from apps.enrollment.records.models.opening_times import ProgramGroupRestrictions
@@ -96,16 +96,18 @@ def split_out_isim(group: Group, limit_isim=0) -> Group:
     isim_group.save()
     group.save()
     prog_isim = Program.objects.get(name="ISIM, dzienne I stopnia")
-    prog_bsc = Program.objects.get(name="Informatyka, dzienne I stopnia")
-    prog_msc = Program.objects.get(name="Informatyka, dzienne II stopnia")
-    prog_eng1 = Program.objects.get(name="Informatyka, dzienne I stopnia inżynierskie")
-    prog_eng2 = Program.objects.get(name="Informatyka, dzienne II stopnia inżynierskie")
-    ProgramGroupRestrictions.objects.bulk_create([
-        ProgramGroupRestrictions(group=group, program=prog_isim),
-        ProgramGroupRestrictions(group=isim_group, program=prog_bsc),
-        ProgramGroupRestrictions(group=isim_group, program=prog_msc),
-        ProgramGroupRestrictions(group=isim_group, program=prog_eng1),
-        ProgramGroupRestrictions(group=isim_group, program=prog_eng2),
+    progs_others = Program.objects.all().exclude(id=prog_isim.id)
+    program_restrictions = [ProgramGroupRestrictions(group=group, program=prog_isim)]
+    for p in progs_others:
+        program_restrictions.append(ProgramGroupRestrictions(group=isim_group, program=p))
+
+    ProgramGroupRestrictions.objects.bulk_create(program_restrictions)
+    isim_role = AuthGroup.objects.get(name='stud_isim')
+    notisim_role = AuthGroup.objects.get(name='stud_notisim')
+    # Hide groups from students to tidy their prototypes.
+    HiddenGroups.objects.bulk_create([
+        HiddenGroups(group=group, role=isim_role),
+        HiddenGroups(group=isim_group, role=notisim_role),
     ])
 
 
@@ -185,13 +187,24 @@ def adjust_split_in_three_opening_times():
     opening_times: List[GroupOpeningTimes] = []
     for label in 'tura1', 'tura2', 'tura3':
         groups = Group.objects.filter(course__semester=semester, extra=label)
+
+        # Find all corresponding lecture groups.
+        courses = Course.objects.filter(groups__in=groups).distinct()
+        lecture_groups = []
+        for c in courses:
+            lecture_groups.extend(Group.get_lecture_groups(c))
+
         role = AuthGroup.objects.get(name=label)
-        students = Student.objects.filter(user__groups=role)
+        students = Student.objects.filter(status=0, user__groups=role)
         t0times = T0Times.objects.filter(semester=semester, student__user__groups=role)
         t0times = {t0.student_id: t0.time for t0 in t0times}
 
         for student in students:
             for group in groups:
+                opening_times.append(
+                    GroupOpeningTimes(
+                        student=student, group=group, time=t0times[student.pk] - bonus(label)))
+            for group in lecture_groups:
                 opening_times.append(
                     GroupOpeningTimes(
                         student=student, group=group, time=t0times[student.pk] - bonus(label)))

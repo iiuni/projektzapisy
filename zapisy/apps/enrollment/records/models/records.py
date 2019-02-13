@@ -50,7 +50,7 @@ from choicesenum import ChoicesEnum
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from apps.enrollment.courses.models import Group, StudentPointsView, Semester
+from apps.enrollment.courses.models import Course, Group, StudentPointsView, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
@@ -110,7 +110,11 @@ class Record(models.Model):
             time = datetime.now()
         if student is None:
             return {k.id: False for k in groups}
-        return GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
+        ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
+        for group in groups:
+            if group.extra == 'hidden':
+                ret[group.pk] = False
+        return ret
 
     @classmethod
     def can_enroll(cls, student: Optional[Student], group: Group, time: datetime = None) -> bool:
@@ -171,6 +175,20 @@ class Record(models.Model):
         if not semester.can_remove_record(time):
             return {k.id: False for k in groups}
         return {k.id: True for k in groups}
+
+    @staticmethod
+    def get_number_of_waiting_students(course: Course, group_type: str) -> int:
+        """Returns number of students waiting to be enrolled.
+
+        Returned students aren't enrolled in any group of given type within
+        given course, but they are enqueued into at least one.
+        """
+        return Record.objects.filter(
+            status=RecordStatus.QUEUED, group__course=course,
+            group__type=group_type).only('student').exclude(
+                student__in=Record.objects.filter(
+                    status=RecordStatus.ENROLLED, group__course=course, group__type=group_type).
+                only('student').values_list('student')).distinct('student').count()
 
     @classmethod
     def is_enrolled(cls, student_id: int, group_id: int) -> bool:
@@ -325,16 +343,20 @@ class Record(models.Model):
         """Checks if there are vacancies in the group and pulls the first
         student from the queue if possible.
 
-        This function might be run concurrently. A data race could potentially
-        lead to number of students enrolled exceeding the limit. It therefore
-        needs to be atomic. A lock is obtained on all the records in the same
-        group (so the member limit is not exceeded). It optimistically assumes
-        that the group limit is not going to change while it is executing.
-
         The function will return False if the group is already full, or the
         queue is empty or the enrollment is closed for the semester. True value
         will mean, that it should be run again on that group. The function may
         throw DatabaseError if transaction fails.
+
+        Concurrency:
+          This function may be run concurrently. A data race could potentially
+          lead to number of students enrolled exceeding the limit. It therefore
+          needs to be atomic. A lock is hence obtained on all the records in the
+          same group. This way only one instance of this function can operate on
+          the same group at the same time (the second instance will have to wait
+          for the lock to be released). We optimistically assume that the group
+          limit is not going to change while the function is executing and do
+          not obtain a lock on the group in the database.
         """
         group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
         if not GroupOpeningTimes.is_enrollment_open(group.course, datetime.now()):
@@ -393,15 +415,21 @@ class Record(models.Model):
         """This function takes a single QUEUED record and tries to change its
         status into ENROLLED.
 
-        The function will be run concurrently. A data race might potentially
-        lead to a student breaching ECTS limit. To prevent that a lock is
-        obtained on all records of this student.
-
         The operation might fail under certain circumstances (the student is not
         enrolled in the lecture group, enrolling would exceed his ECTS limit).
 
         The return value is a list of group ids that need to be triggered
-        (pulled from). The function may raise a DatabaseError.
+        (pulled from). The function may raise a DatabaseError if transaction
+        fails (it might happen in a deadlock situation or when any exception is
+        raised in running of this function).
+
+        Concurrency:
+          The function may be run concurrently. A data race might potentially
+          lead to a student breaching ECTS limit. To prevent that a lock is
+          obtained on all records of this student. This way, no other instance
+          of this function will try to pull him into another group at the same
+          time.
+
         """
         with transaction.atomic():
             records = Record.objects.filter(student_id=self.student_id).exclude(
