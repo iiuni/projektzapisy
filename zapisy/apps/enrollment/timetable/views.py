@@ -270,10 +270,13 @@ def prototype_update_groups(request):
             'teacher__user').prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)
     can_dequeue_dict = Record.can_dequeue_groups(student, groups)
+    hidden_groups = HiddenGroups.hidden_groups_for_student(student, groups)
+    hidden_groups_set = set(hidden_groups)
     for group in groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
         group.is_enqueued = bool(group.is_enqueued)
         group.is_enrolled = bool(group.is_enrolled)
+        group.is_hidden = group.pk in hidden_groups_set
     group_dicts = build_group_list(groups)
     return JsonResponse(group_dicts, safe=False)
