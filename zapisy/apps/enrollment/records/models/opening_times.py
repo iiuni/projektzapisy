@@ -194,11 +194,13 @@ class GroupOpeningTimes(models.Model):
         """Decides if enrollment is open for this course in general.
 
         Usually enrollment is for all courses at the beginning of the semester,
-        but some courses may have a different enrollment period.
+        but some courses may have a different, additional enrollment period.
         """
+        is_course_open = False
         if course.records_start is not None and course.records_end is not None:
-            return course.records_start <= time <= course.records_end
-        return not course.semester.is_closed(time)
+            is_course_open = course.records_start <= time <= course.records_end
+        is_semester_open = not course.semester.is_closed(time)
+        return is_course_open or is_semester_open
 
     @classmethod
     def populate_opening_times(cls, semester: Semester):
