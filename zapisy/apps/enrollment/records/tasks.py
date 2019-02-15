@@ -48,6 +48,9 @@ def group_save_signal_receiver(sender, instance, created, raw, using, **kwargs):
     """
     group_id = instance.pk
     if created:
+        # If course has no semester, there is no point generating anything.
+        if instance.course.semester is None:
+            return
         # Check if opening times have been generated in the semester.
         if not GroupOpeningTimes.objects.filter(
                 group__course__semester=instance.course.semester).exists():
