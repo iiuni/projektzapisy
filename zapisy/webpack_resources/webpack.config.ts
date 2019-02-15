@@ -3,6 +3,8 @@ import * as fs from "fs";
 import * as glob from "glob";
 import * as os from "os";
 
+import "core-js/fn/array/flat-map";
+
 import { getVueCssLoaders, parseBool } from "./webpack-utils";
 import * as webpack from "webpack";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
@@ -139,8 +141,11 @@ function getAllAssetDefs() {
 }
 
 function buildCopyCommandsForRawfiles(rawfiles: RawfileDef[]): string[] {
-	return (rawfiles || []).map(r => {
-		return `cp -r ${r.from} ${r.to}`;
+	return (rawfiles || []).flatMap(r => {
+		return [
+			`mkdir -p ${path.dirname(r.to)}`,
+			`cp -r ${r.from} ${r.to}`,
+		];
 	});
 }
 

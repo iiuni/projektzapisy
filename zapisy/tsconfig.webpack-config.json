@@ -2,10 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "esnext",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["esnext"]
   },
   "include": [
-	"./webpack_resources"
+	  "./webpack_resources"
   ],
   "types": [
     "node",
