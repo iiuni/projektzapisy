@@ -1,7 +1,5 @@
 export default {
-	bundles: {
-		"course-list": [
-			"ajaxCourseLoad.ts",
-		],
-	},
+    bundles: {
+        "course-list": "ajaxCourseLoad.ts",
+    },
 };
