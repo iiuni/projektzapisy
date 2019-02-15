@@ -108,7 +108,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None:
+        if student is None or not student.is_active():
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
@@ -146,8 +146,9 @@ class Record(models.Model):
 
         This function will return False if student is None. It will not check
         for student's presence in the group. The function's role is to verify
-        legal constraints."""
-        return Record.can_enqueue_groups(student, [group], time)[group.pk]
+        legal constraints.
+        """
+        return Record.can_dequeue_groups(student, [group], time)[group.pk]
 
     @staticmethod
     def can_dequeue_groups(student: Optional[Student], groups: List[Group],
@@ -165,7 +166,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None:
+        if student is None or not student.is_active():
             return {k.id: False for k in groups}
         if not groups:
             return {}
