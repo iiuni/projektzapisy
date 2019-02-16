@@ -4,7 +4,7 @@ import * as glob from "glob";
 import * as os from "os";
 import { without } from "lodash";
 
-import "core-js/fn/array/flat-map";
+import "core-js";
 
 import { getVueCssLoaders, parseBool } from "./webpack-utils";
 import * as webpack from "webpack";
