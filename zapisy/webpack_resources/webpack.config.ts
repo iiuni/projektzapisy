@@ -156,11 +156,11 @@ function processDefs(defs: AssetDefs, packageName: string, packageDir: string): 
 }
 
 function readAsssetDefsFromFile(filepath: string): AssetDefs {
-    const dirPath = path.dirname(filepath);
-    const dirName = path.basename(dirPath);
-    const defs: AssetDefs = require(path.resolve(filepath)).default;
-    const packageName = dirName !== "." ? dirName : "";
     try {
+        const dirPath = path.dirname(filepath);
+        const dirName = path.basename(dirPath);
+        const packageName = dirName !== "." ? dirName : "";
+        const defs: AssetDefs = require(path.resolve(filepath)).default;
         return processDefs(defs, packageName, dirPath);
     } catch (err) {
         fatalError(
