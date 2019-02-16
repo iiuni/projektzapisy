@@ -9,6 +9,6 @@ export default {
         { from: "legacy/feed-icon.png", to: "feed-icon.png" },
     ],
     bundles: {
-        "main": "common/expose_libs.ts",
+        "main": ["common/expose_libs.ts"],
     },
 };

@@ -117,15 +117,13 @@ function processDefs(defs: AssetDefs, packageName: string, packageDir: string): 
     for (const bundle in defs.bundles || {}) {
         const fullName = packageName.length ? `${packageName}-${bundle}` : bundle;
         let bundleFiles = defs.bundles![bundle];
-        if (typeof bundleFiles === "string") {
-            bundleFiles = [bundleFiles];
-        } else if (!Array.isArray(bundleFiles)) {
-            throw new Error(`bad file defs for bundle ${bundle} - should be string or array of strings`);
+        if (!Array.isArray(bundleFiles)) {
+            throw new Error(`bad file defs for bundle ${bundle} - should be an array of filenames`);
         }
         result.bundles![fullName] = bundleFiles.map(filepath => {
             if (typeof filepath !== "string") {
                 throw new Error(
-                    `in defs for bundle ${bundle}: found "${filepath}", but expected a string (filepath)`
+                    `in defs for bundle ${bundle}: found "${filepath}", but expected a filepath (string)`
                 );
             }
             return getFileInputPath(packageDir, filepath);
@@ -140,7 +138,7 @@ function processDefs(defs: AssetDefs, packageName: string, packageDir: string): 
         } else if (typeof rawfileDef === "object") {
             const keys = Object.keys(rawfileDef);
             if (keys.length !== 2 || !("from" in rawfileDef) || !("to" in rawfileDef)) {
-                const str = JSON.stringify(rawfileDef);
+                const str = JSON.stringify(rawfileDef, undefined, "    ");
                 throw new Error(
                     `invalid rawfile def ${str} - should only contain "to" and "from" keys`
                 );
