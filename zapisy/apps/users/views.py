@@ -66,8 +66,21 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
             'group__teacher', 'group__teacher__user', 'group__course',
             'group__course__entity').prefetch_related('group__term', 'group__term__classrooms')
     groups = [r.group for r in records]
-    group_dicts = build_group_list(groups)
 
+    # Highlight groups shared with the viewer in green.
+    viewer_groups = set()
+    if BaseUser.is_student(request.user):
+        viewer_records = Record.objects.filter(
+            group__in=groups, student=request.user.student, status=RecordStatus.ENROLLED)
+        viewer_groups = {r.group_id for r in viewer_records}
+    if BaseUser.is_employee(request.user):
+        viewer_groups = set(
+            Group.objects.filter(pk__in=[g.pk for g in groups],
+                                 teacher=request.user.employee).values_list('pk', flat=True))
+    for g in groups:
+        g.is_enrolled = g.pk in viewer_groups
+
+    group_dicts = build_group_list(groups)
     data = {
         'student': student,
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
@@ -97,6 +110,16 @@ def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
         course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
                 'term', 'term__classrooms')
+    groups = list(groups)
+
+    # Highlight groups shared with the viewer in green.
+    viewer_groups = set()
+    if request.user.is_authenticated and BaseUser.is_student(request.user):
+        viewer_records = Record.objects.filter(
+            group__in=groups, student=request.user.student, status=RecordStatus.ENROLLED)
+        viewer_groups = {r.group_id for r in viewer_records}
+    for g in groups:
+        g.is_enrolled = g.pk in viewer_groups
 
     group_dicts = build_group_list(groups)
 
