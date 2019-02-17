@@ -24,22 +24,8 @@ from apps.offer.vote.models import SystemState
 class NewSemestrTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        sql_calls = [
-            """
-                CREATE TABLE courses_studentpointsview (
-                    value smallint,
-                    student_id integer,
-                    entity_id integer
-                );
-            """
-        ]
-
         students, _ = UserGroup.objects.get_or_create(name='students')
         employees, _ = UserGroup.objects.get_or_create(name='employees')
-
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
 
         cls.password = '11111'
         cls.admin = User.objects.create_superuser(
