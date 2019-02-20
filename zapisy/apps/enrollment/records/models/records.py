@@ -44,16 +44,17 @@ Record Lifetime:
 
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Set
 
 from choicesenum import ChoicesEnum
+from django.contrib.auth.models import User
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import Course, Group, StudentPointsView, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import Student
+from apps.users.models import BaseUser, Student
 
 LOGGER = logging.getLogger(__name__)
 
@@ -253,6 +254,25 @@ class Record(models.Model):
             ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
             ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
         return ret_dict
+
+    @classmethod
+    def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
+        """Returns ids of those of groups that user is involved in.
+
+        User may be an employee — we then return groups he is teaching. If user
+        is a student, we return those of the groups, he is enrolled into. If
+        user is neither a student nor an employee, an empty set is returned.
+        """
+        common_groups = set()
+        if BaseUser.is_student(user):
+            student_records = Record.objects.filter(
+                group__in=groups, student=user.student, status=RecordStatus.ENROLLED)
+            common_groups = {r.group_id for r in student_records}
+        if BaseUser.is_employee(user):
+            common_groups = set(
+                Group.objects.filter(pk__in=[g.pk for g in groups],
+                                     teacher=user.employee).values_list('pk', flat=True))
+        return common_groups
 
     @classmethod
     def enqueue_student(cls, student: Student, group: Group) -> List[int]:
