@@ -85,6 +85,15 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
         },
+        'rq_console': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'timestampthread',
+            'filename': 'logs/rqworker.log',
+            'encoding': 'UTF-8',
+            'maxBytes': 50 * 1024 * 1024,  # 50 MB
+            'backupCount': 5,  # keep this many extra historical files
+        },
     },
     'loggers': {
         'django': {  # configure all of Django's loggers
@@ -93,6 +102,10 @@ LOGGING = {
         },
         'apps': {
             'handlers': ['logfile'],
+            'level': 'DEBUG',
+        },
+        'rq.worker': {
+            'handlers': ['rq_console'],
             'level': 'DEBUG',
         },
     },
