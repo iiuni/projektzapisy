@@ -85,7 +85,7 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
         },
-        'rq_console': {
+        'rq_logfile': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'timestampthread',
@@ -105,7 +105,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'rq.worker': {
-            'handlers': ['rq_console'],
+            'handlers': ['rq_logfile'],
             'level': 'DEBUG',
         },
     },
