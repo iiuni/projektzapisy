@@ -74,12 +74,11 @@ LOGGING = {
     },
     'handlers': {
         'logfile': {
-            # optionally raise to INFO to not fill the log file too quickly
-            'level': 'DEBUG',  # DEBUG or higher goes to the log file
+            'level': 'INFO',  # INFO or higher goes to the log file. DEBUG polluted the logs way too much.
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'logs/djangoproject.log',
-            'maxBytes': 50 * 10 ** 6,  # will 50 MB do?
-            'backupCount': 3,  # keep this many extra historical files
+            'maxBytes': 50 * 1024 * 1024,  # will 50 MB do?
+            'backupCount': 5,  # keep this many extra historical files
             'formatter': 'timestampthread'
         },
         'console': {
