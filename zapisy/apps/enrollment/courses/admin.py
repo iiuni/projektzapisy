@@ -22,8 +22,10 @@ from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 
 
 class GroupInline(admin.TabularInline):
+    fields = ('id', 'teacher', 'get_terms_as_string', 'type', 'limit', 'extra', 'export_usos', 'usos_nr',)
     model = Group
     extra = 0
+    readonly_fields = ('id', 'get_terms_as_string', 'usos_nr',)
     raw_id_fields = ("teacher",)
 
 
@@ -105,7 +107,8 @@ class CourseAdmin(admin.ModelAdmin):
         display those for the currently signed in user.
         """
         qs = super(CourseAdmin, self).get_queryset(request)
-        return qs.select_related('semester')
+        return qs.select_related('semester').prefetch_related('groups', 'groups__term',
+                                                              'groups__term__classrooms')
 
 
 class ClassroomAdmin(admin.ModelAdmin):
@@ -216,7 +219,7 @@ class RecordInline(admin.TabularInline):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    readonly_fields = ('limit', 'id')
+    readonly_fields = ('id',)
     list_display = (
         'id',
         'course',
