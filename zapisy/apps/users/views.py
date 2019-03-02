@@ -378,7 +378,8 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
     if BaseUser.is_student(user):
         student = user.student
         records = Record.objects.filter(
-            student_id=student.pk, group__course__semester_id=semester.pk
+            student_id=student.pk, group__course__semester_id=semester.pk,
+            status=RecordStatus.ENROLLED
         ).select_related('group', 'group__course', 'group__course__entity')
         groups = [r.group for r in records]
     elif BaseUser.is_employee(user):

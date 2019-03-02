@@ -17,6 +17,8 @@
 
 
 {% block center %}
+    <div style="float:right;margin-bottom: 20px;"><a href="{% url 'ical' %}">{% trans "Eksportuj plan zajęć do pliku .ical" %}</a>
+    </div>
     <div id="timetable"></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     {% render_bundle 'timetable-timetable-component' %}
