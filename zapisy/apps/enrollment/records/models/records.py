@@ -171,11 +171,14 @@ class Record(models.Model):
             return {k.id: False for k in groups}
         if not groups:
             return {}
-        semester = groups[0].course.semester
+        semester: Semester = groups[0].course.semester
         if semester.is_closed(time):
             return {k.id: False for k in groups}
         if not semester.can_remove_record(time):
-            return {k.id: False for k in groups}
+            # When disenrolment is closed, QUEUED record can still be removed,
+            # ENROLLED may not.
+            is_recorded_dict = Record.is_recorded_in_groups(student, groups)
+            return {k.id: is_recorded_dict[k.id]['enqueued'] for k in groups}
         return {k.id: True for k in groups}
 
     @staticmethod
