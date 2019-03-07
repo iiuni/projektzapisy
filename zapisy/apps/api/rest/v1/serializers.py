@@ -34,11 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Employee
-        fields = ('id', 'user', 'consultations', 'homepage', 'room')
+        fields = ('id', 'user', 'consultations', 'homepage', 'room', 'title', 'usos_id')
+        read_only_fields = ('id', 'user', 'consultations', 'homepage', 'room')
 
 
 class DesiderataSerializer(serializers.ModelSerializer):

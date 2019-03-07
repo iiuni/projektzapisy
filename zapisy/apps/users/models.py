@@ -114,6 +114,7 @@ class Employee(BaseUser):
         choices=EMPLOYEE_STATUS_CHOICES,
         verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
+    usos_id = models.PositiveIntegerField(verbose_name="ID w USOSie", null=True, blank=True)
 
     def has_privileges_for_group(self, group_id: int) -> bool:
         """
