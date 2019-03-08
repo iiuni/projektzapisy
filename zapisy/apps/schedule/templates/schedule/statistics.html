@@ -30,8 +30,14 @@
                     <tbody>
                     {% for exam in exams %}
                         <tr>
-                            <td><a href="{{ exam.get_absolute_url }}">{{ exam.name }}</a></td>
-                            <td>{% for teacher in exam.teachers.all %}<a href="">{{ teacher }}</a>, {% endfor %}</td>
+                            <td><a href="{{ exam.get_absolute_url }}">{{ exam.name }}
+                            </a></td>
+                            <td>{% if exam.owner %}
+                            <a href="{% url 'employee-profile' exam.owner.user.id  %}">
+                            {{ exam.owner.user.get_full_name }}</a>
+                            {% else %}Brak prowadzącego
+                            {% endif %}
+                            </td>
                             <td><span {% if exam.has_exam_reservation %}style="color:green;">Tak{% else %}style="color:red;">Nie{% endif %}</span></td>
                         </tr>
                     {% endfor %}
