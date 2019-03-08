@@ -255,7 +255,7 @@ def statistics(request):
     semester_id = request.GET.get('semester_id', None)
     semester = Semester.get_by_id_or_default(semester_id)
 
-    exams = Course.get_courses_with_exam(semester).select_related('entity','entity__owner')
+    exams = Course.get_courses_with_exam(semester).select_related('entity', 'entity__owner')
 
     return TemplateResponse(request, 'schedule/statistics.html', locals())
 
