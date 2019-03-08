@@ -76,6 +76,13 @@ class Semester(models.Model):
         related_name='sgrade',
         on_delete=models.CASCADE)
 
+    usos_kod = models.CharField(
+        blank=True,
+        null=True,
+        unique=True,
+        max_length=20,
+        verbose_name='Kod semestru w systemie USOS')
+
     objects = GetterManager()
 
     def clean(self):

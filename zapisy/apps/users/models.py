@@ -206,6 +206,9 @@ class Student(BaseUser):
     algorytmy_l = models.BooleanField(default=False)
     programowanie_l = models.BooleanField(default=False)
 
+    usos_id = models.PositiveIntegerField(
+        null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
+
     def is_active(self) -> bool:
         return self.status == 0
 

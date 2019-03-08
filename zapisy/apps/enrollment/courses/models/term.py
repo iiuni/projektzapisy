@@ -37,6 +37,9 @@ class Term(models.Model):
         verbose_name='sale',
         blank=True)
 
+    usos_id = models.PositiveIntegerField(
+        null=True, blank=True, unique=True, verbose_name='Kod terminu w systemie USOS')
+
     class Meta:
         # TO DO /pkacprzak/ add advanced constraint - example: start_time <
         # end_time, any pair of terms can't overlap
