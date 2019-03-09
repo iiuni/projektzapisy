@@ -125,7 +125,7 @@ class Employee(BaseUser):
 
         try:
             group = Group.objects.get(pk=group_id)
-            return group.teacher == self or self in group.course.teachers.all() or self.user.is_staff
+            return group.teacher == self or group.course.owner == self or self.user.is_staff
         except Group.DoesNotExist:
             logger.error(
                 'Function Employee.has_privileges_for_group(group_id = %d) throws Group.DoesNotExist exception.' %
