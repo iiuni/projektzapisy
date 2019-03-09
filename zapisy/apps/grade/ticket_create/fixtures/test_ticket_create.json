@@ -20,7 +20,7 @@
 {"pk": 5, "model": "records.record", "fields": {"status": "1", "group": 4, "student": 1}}, 
 {"pk": 1, "model": "courses.type", "fields": {"name": "testowy"}},
 {"pk": 1, "model": "courses.courseentity", "fields": {"name": "Brak"}},
-{"pk": 1, "model": "courses.course", "fields": {"lectures": 15, "name": "Testowy", "entity": 1, "semester": 1, "teachers": [1], "exercises": 0, "laboratories": 0, "type": 1, "slug": "testowy", "description": "testow"}},
+{"pk": 1, "model": "courses.course", "fields": {"lectures": 15, "name": "Testowy", "entity": 1, "semester": 1, "exercises": 0, "laboratories": 0, "type": 1, "slug": "testowy", "description": "testow"}},
 {"pk": 1, "model": "courses.group", "fields": {"limit": 100, "type": "1", "teacher": 1, "course": 1}},
 {"pk": 3, "model": "courses.group", "fields": {"limit": 10, "type": "2", "teacher": 1, "course": 1}},
 {"pk": 4, "model": "courses.group", "fields": {"limit": 0, "type": "3", "teacher": 1, "course": 1}},

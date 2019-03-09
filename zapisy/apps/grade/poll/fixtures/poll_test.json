@@ -15,7 +15,7 @@
 {"pk": 1, "model": "courses.type", "fields": {"meta_type": false, "group": null, "name": "testowy"}},
 {"pk": 1, "model": "courses.courseentity", "fields": {"lectures": 15, "name": "Testowy", "suggested_for_first_year": true, "suggested_for_first_year": true, "created":"2011-01-09 00:40:19", "edited":"2011-01-09 00:40:19"}},
 {"pk": 1, "model": "courses.semester", "fields": {"records_opening": null, "semester_ending": "2012-01-09", "records_closing": null, "visible": true, "year": 2011, "type": "z", "semester_beginning": "2011-01-08", "is_grade_active": true}},
-{"pk": 1, "model": "courses.course", "fields": {"entity": 1, "semester": 1, "teachers": [1], "slug": "testowy"}},
+{"pk": 1, "model": "courses.course", "fields": {"entity": 1, "semester": 1, "slug": "testowy"}},
 {"pk": 1, "model": "courses.group", "fields": {"limit": 100, "type": "1", "teacher": 1, "course": 1}},
 {"pk": 2, "model": "courses.group", "fields": {"limit": 100, "type": "2", "teacher": 2, "course": 1}},
 {"pk": 3, "model": "courses.group", "fields": {"limit": 0, "type": "2", "teacher": 3, "course": 1}},
