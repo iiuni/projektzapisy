@@ -245,8 +245,8 @@ CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 # Force django_cas_ng to use protocol version 3 instead of 2.
 CAS_VERSION = '3'
 
-# URL where user will be redirected to after logging out if there is 
-# no referrer and no next page set. 
+# URL where user will be redirected to after logging out if there is
+# no referrer and no next page set.
 LOGOUT_REDIRECT_URL = reverse_lazy('main-page')
 CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
