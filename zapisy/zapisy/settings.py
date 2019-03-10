@@ -2,6 +2,8 @@ import os
 import logging
 import environ
 
+from django.urls import reverse_lazy
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env()
@@ -239,6 +241,14 @@ DATETIME_FORMAT = "j N Y, H:i"
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
 CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
+
+# Force django_cas_ng to use protocol version 3 instead of 2.
+CAS_VERSION = '3'
+
+# URL where user will be redirected to after logging out if there is 
+# no referrer and no next page set. 
+LOGOUT_REDIRECT_URL = reverse_lazy('main-page')
+CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
