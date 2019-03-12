@@ -36,6 +36,8 @@ class CourseEntitySerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'name', 'type_short_name')
 
     def get_type_short_name(self, obj):
+        if obj.type is None:
+            return None
         return obj.type.short_name
 
 
@@ -45,12 +47,12 @@ class CourseSerializer(serializers.ModelSerializer):
     When serializing multiple objects, it is important to use
     `select_related('entity', 'entity__type')`.
     """
-    entity = CourseEntitySerializer()
+    entity = CourseEntitySerializer(read_only=True)
 
     class Meta:
         model = Course
-        fields = ('id', 'entity', 'semester', 'usos_kod')
-        read_only_fields = ('id', 'semester')
+        fields = ('id', 'entity', 'semester')
+        read_only_fields = ('id', 'entity', 'semester')
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
@@ -149,6 +151,13 @@ class GroupSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'type', 'course', 'teacher', 'limit')
 
 
+class ShallowGroupSerializer(serializers.ModelSerializer):
+    """Serializes a Group instance by only showing its fields, not relations."""
+    class Meta:
+        model = Group
+        fields = '__all__'
+
+
 class TermSerializer(serializers.ModelSerializer):
     """Serializes a Term instance.
 
@@ -156,7 +165,7 @@ class TermSerializer(serializers.ModelSerializer):
     'group__course', 'group__course__entity', 'group__teacher',
     'group__teacher__user').prefetch_related('classrooms')`.
     """
-    group = GroupSerializer(read_only=True)
+    group = ShallowGroupSerializer(read_only=True)
     classrooms = ClassroomSerializer(read_only=True, many=True)
 
     class Meta:

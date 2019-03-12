@@ -35,6 +35,7 @@ class VoteSystemTests(TestCase):
         self.employee = EmployeeFactory()
 
         self.semester = SemesterFactory()
+        self.course_instance = CourseFactory(entity=courses[1], semester=self.semester)
 
         self.staff_member = UserFactory(is_staff=True)
 
@@ -121,6 +122,28 @@ class VoteSystemTests(TestCase):
         })
         self.semester.refresh_from_db()
         self.assertEqual(self.semester.usos_kod, 'Nowy Kod USOS')
+
+    def test_can_set_courseentity_usos_kod(self):
+        """Tests course endpoint.
+
+        Checks that the user is able to set/modify the `usos_kod` field of a
+        CourseEntity object.
+        """
+        client = APIClient()
+        client.force_authenticate(user=self.staff_member)
+
+        response = client.get(f'/api/v1/courses/?semester={self.semester.pk}')
+        self.assertEqual(response.data['count'], 1)
+        entity_dict = response.data['results'][0]['entity']
+        self.assertEqual(entity_dict['name'], "Zmywanie")
+        self.assertEqual(entity_dict['usos_kod'], '')
+
+        response = client.patch(f'/api/v1/courseentities/{self.course_instance.entity_id}/', {
+            'usos_kod': '12-SM-ZMYWANIE',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.course_instance.entity.refresh_from_db()
+        self.assertEqual(self.course_instance.entity.usos_kod, '12-SM-ZMYWANIE')
 
     def test_set_employee_consultations_permissions(self):
         """Tests employee endpoint permissions.
