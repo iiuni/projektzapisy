@@ -544,13 +544,6 @@ class Course(models.Model):
     records_start = models.DateTimeField(verbose_name='Początek zapisów', null=True, blank=True)
     records_end = models.DateTimeField(verbose_name='Koniec zapisów', null=True, blank=True)
 
-    usos_kod = models.CharField(
-        null=True,
-        blank=True,
-        unique=True,
-        max_length=20,
-        verbose_name='Kod instancji przedmiotu w systemie USOS')
-
     objects = DefaultCourseManager()
     simple = models.Manager()
     visible = VisibleManager()
