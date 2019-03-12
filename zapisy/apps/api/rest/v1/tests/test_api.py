@@ -105,12 +105,11 @@ class VoteSystemTests(TestCase):
         client = APIClient()
         client.force_authenticate(user=self.staff_member)
         semester_list_response = client.get('/api/v1/semesters/')
-        self.assertEqual(len(semester_list_response.data), 1)
-        self.assertDictEqual(semester_list_response.data[0], {
+        self.assertEqual(semester_list_response.data, [{
             'id': self.semester.pk,
             'display_name': self.semester.get_name(),
             'usos_kod': None,
-        })
+        }])
 
         semester_change_response = client.patch(f'/api/v1/semesters/{self.semester.pk}/',
                                                 {'usos_kod': 'Nowy Kod USOS'})
