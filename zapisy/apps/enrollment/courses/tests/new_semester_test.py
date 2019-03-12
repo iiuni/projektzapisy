@@ -1,24 +1,25 @@
 import os
 import re
-from datetime import datetime, date, time
-from dateutil.relativedelta import relativedelta
 from collections import defaultdict
+from datetime import date, datetime, time
 
-from django.contrib.auth.models import User, Group as UserGroup
-from django.db import connection
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.contrib.auth.models import Group as UserGroup
+from django.contrib.auth.models import User
+from django.db import connection
 from django.test import Client, TestCase
-from scripts.scheduleimport import run_test as scheduleimport_run_test
-from scripts.ectsimport import run_test as ectsimport_run_test
 
-from apps.users.models import Employee, Student, PersonalDataConsent
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.course import CourseEntity, Course
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.course import Course, CourseEntity
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.classroom import Classroom
 from apps.offer.vote.models import SystemState
+from apps.users.models import Employee, PersonalDataConsent, Student
+from scripts.ectsimport import run_test as ectsimport_run_test
+from scripts.scheduleimport import run_test as scheduleimport_run_test
 
 
 class NewSemestrTestCase(TestCase):
