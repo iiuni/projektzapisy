@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAdminUser
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import Course, CourseEntity, Group, Semester
 from apps.enrollment.courses.models.term import Term
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.schedule.models.specialreservation import SpecialReservation
@@ -36,7 +37,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     """Lists all courses.
 
     To only show courses in a given semester, query:
-        /v1/
+        /api/v1/?semester={semester_id}
     """
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
@@ -57,7 +58,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get']
+    http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = Classroom.objects.all()
     serializer_class = serializers.ClassroomSerializer
@@ -70,6 +71,16 @@ class TermViewSet(viewsets.ModelViewSet):
                                            'group__course__semester').prefetch_related('classrooms')
     filter_fields = ['group__course__semester']
     serializer_class = serializers.TermSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class RecordViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    permission_classes = (IsAdminUser,)
+    queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
+        'group', 'group__course', 'group__course__semester', 'student', 'student__user')
+    filter_fields = ['group__course__semester']
+    serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
 
 

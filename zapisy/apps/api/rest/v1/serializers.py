@@ -4,6 +4,7 @@ from rest_framework import serializers
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseEntity, Course, Group, Semester
 from apps.enrollment.courses.models.term import Term
+from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
@@ -172,3 +173,12 @@ class TermSerializer(serializers.ModelSerializer):
         model = Term
         fields = ('id', 'dayOfWeek', 'start_time', 'end_time', 'group', 'classrooms', 'usos_id')
         read_only_fields = ('id', 'dayOfWeek', 'start_time', 'end_time', 'group', 'classrooms')
+
+
+class RecordSerializer(serializers.ModelSerializer):
+    group = ShallowGroupSerializer(read_only=True)
+    student = StudentSerializer(read_only=True)
+
+    class Meta:
+        model = Record
+        fields = ('id', 'group', 'student')
