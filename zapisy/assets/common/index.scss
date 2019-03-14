@@ -82,43 +82,45 @@ div.top .systemtopbar ul li.active a {
   font-size: 15px;
 }
 
-.dropdown-menu {
-  padding: 12px;
-  background: rgba(255, 251, 251, 0.75); 
+#login-dropdown {
+  .dropdown-menu {
+    padding: 12px;
+    background: rgba($light, 0.75);
+
+    .btn {
+      padding: 10px 5px;
+      margin: 10px auto;
+      display: block;
+      text-align: center;
+      background-image: none;
+      border: none;
+      font-weight: bolder;
+      width: 100%;
+    }
+
+    #btn-usos {
+      padding: 5px;
+    }
+
+    .btn-primary {
+      background-color: #00709e;
+      border-color: #00709e;
+      color: white;
+
+      &:hover {
+        background-color: #2696C4;
+      }
+    }
+  }
 }
+
 
 #main-content, #sidebar {
   margin: 2em 0;
 }
 
-#btn-usos {
-  padding: 10px 0;
-  //margin-bottom:10px auto;
-  margin: 0 auto;
-  display: block;
-  background-color: #00709e;
-  text-align: center;
-  background-image: none;
-  border: none;
-  color: white;
-  font-weight: bold;
-}
-
-#btn-no-usos {
-  text-align: center;
-  width: 100%;
-  font-weight: bold;
-  background-color: #00709e;
-  background-image: none;
-  margin-top: 10px;
-}
-
 .top {
   background-color: #00709e;
-}
-
-#btn-no-usos:hover, #btn-usos:hover {
-  background-color: #2696C4;
 }
 
 #login-dp {

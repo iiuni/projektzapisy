@@ -1,5 +1,4 @@
 {% load fereol_common %}
-{% load compressed %}
 {% load staticfiles %}
 {% load should_display_debug %}
 {% load debug_info %}
@@ -141,47 +140,56 @@
                             <b>Zaloguj się</b><span class="caret"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right m-2">
-                            <div class="social-buttons login-dp m-3">
-                                <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
-                                    <img src="{% static '/images/usos-login-logo.png' %}"
+                            <div class="social-buttons m-3">
+                                <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
+                                    <img src="{% static 'images/logo_UWr.svg' %}"
                                          alt="Uniwersytet Wrocławski">
                                     <div class="clearfix"></div>
                                     Zaloguj się przez USOS
                                 </a>
                             </div>
-                            <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
-                                {% csrf_token %}
-                                {% if request.path == '/' %}
-                                    <input type="hidden" name="next"
-                                           value="{% url 'my-timetable' %}"/>
-                                {% else %}
-                                    <input type="hidden" name="next" value="{{ request.path }}"/>
-                                {% endif %}
-                                <div class="form-group">
-                                    <label>Login</label>
-                                    <input type="text" class="form-control" id="id_login" name="username"
-                                           placeholder="Użytkownik" required
-                                           oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
-                                           oninput="this.setCustomValidity('')">
-                                </div>
-                                <div class="form-group">
-                                    <label>Hasło</label>
-                                    <input type="password" class="form-control" id="id_password"
-                                            {# name="password" placeholder="Hasło" required
-                                            oninvalid="this.setCustomValidity('Hasło jest wymagane')"
-                                            oninput="this.setCustomValidity('')">
-                                </div>
-
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" value="true"
-                                           id="remember" name="remember_me">
-                                    <label class="form-check-label" for="remember">
-                                        Pamiętaj mnie
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="btn-no-usos">Zaloguj</button>
-                                <a class="btn btn-primary" id="btn-no-usos" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                            <form class="m-3">
+                                <a class="btn btn-primary" data-toggle="collapse" 
+                                        href="#login-without-usos" role="button" 
+                                        aria-expanded="false" aria-controls="login-without-usos">
+                                    lub użyj konta Systemu Zapisów
+                                </a>
                             </form>
+                            <div class="collapse" id="login-without-usos">
+                                <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                        {% csrf_token %}
+                                        {% if request.path == '/' %}
+                                            <input type="hidden" name="next"
+                                                    value="{% url 'my-timetable' %}"/>
+                                        {% else %}
+                                            <input type="hidden" name="next" value="{{ request.path }}"/>
+                                        {% endif %}
+                                        <div class="form-group">
+                                            <label>Login</label>
+                                            <input type="text" class="form-control" id="id_login" name="username"
+                                                    placeholder="Użytkownik" required
+                                                    oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
+                                                    oninput="this.setCustomValidity('')">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Hasło</label>
+                                            <input type="password" class="form-control" id="id_password"
+                                                    {# name="password" placeholder="Hasło" required
+                                                    oninvalid="this.setCustomValidity('Hasło jest wymagane')"
+                                                    oninput="this.setCustomValidity('')">
+                                        </div>
+        
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" value="true"
+                                                    id="remember" name="remember_me">
+                                            <label class="form-check-label" for="remember">
+                                                Pamiętaj mnie
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Zaloguj</button>
+                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                                    </form>
+                            </div>
                         </div>
                     </li>
                 </ul>
