@@ -20,5 +20,8 @@ export default {
         "filtered-select-multiple-converter": [
             "common/filtered-select-multiple-converter.js"
         ],
+        "consent-dialog": [
+            "common/consent-dialog.ts"
+        ]
     },
 };

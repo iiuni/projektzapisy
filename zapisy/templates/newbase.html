@@ -217,8 +217,10 @@
         </div>
     </div>
     <div>
+        {% if user.student and not user.student.consent_answered %}
+            {% include "consent-dialog.html" %}
+        {% endif %}
         <div class="container content-container">
-            {% if request.path != '/' %}
             <div class="row d-print-none">
                 <div class="col">
                     <nav aria-label="breadcrumb" role="navigation">
@@ -229,18 +231,17 @@
                     </nav>
                 </div>
             </div>
-            {% endif %}
-            <div class="row">
-                <div class="col">
-                    {% block messages %}
+            {% if messages %}
+                <div class="row">
+                    <div class="col">
                         {% for message in messages %}
                             <div class="alert alert-{{ message.tags }}">
                                 {{ message }}
                             </div>
                         {% endfor %}
-                    {% endblock %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="container sidebar-right" id="main-content-container">
                 {# Use this block if you don't want a layout with right-hand sidebar #}
                 {% block all-content %}
