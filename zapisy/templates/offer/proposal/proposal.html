@@ -1,5 +1,4 @@
 {% extends "offer/base.html" %}
-{% block sidebar %}{% endblock %}
 {% load compressed %}
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
@@ -28,7 +27,7 @@
     {% compressed_css 'proposal' %}
 {% endblock %}
 
-{% block content %}
+{% block all-content %}
     {% include 'offer/proposal.html' with course=proposal %}
 {% endblock %}
 
