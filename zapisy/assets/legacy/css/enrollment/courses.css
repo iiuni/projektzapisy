@@ -17,13 +17,11 @@
 	font-size: 29px;
 	padding-bottom: 10px;
 }
-
-
 /*******************************************************************************
  * Widok przedmiotu - szczegóły
  ******************************************************************************/
 
-.details th { width: 100px;}
+.details th { width: 120px;}
 
 #enr-course-view, #enr-group-view
 {
@@ -124,171 +122,23 @@
 	float: right;
 }
 
+.course-details th
+{
+	width: 120px;
+}
+
 /*******************************************************************************
  * Widok przedmiotu - listy terminów
  ******************************************************************************/
 
-#enr-course-view .tutorial form,
-#enr-course-view .tutorial form div
-{
-	display: inline;
-}
-
-#enr-course-view
-{
-	padding-bottom: 20px;
-}
-
-#enr-course-view .tutorial
-{
-	padding-bottom: 10px;
-}
-
-#enr-course-view .tutorial h2
-{
-	font-size: 18px;
-	font-weight: normal;
-	padding-bottom: 5px;
-}
-
-#enr-course-view .tutorial table
-{
-	width: 100%;
-
-	background: #f8f8f8;
-	border: 1px solid #cccccc;
-
-	border-spacing: 0;
-
-	-moz-border-radius: 4px 4px 2px 2px;
-	-webkit-border-radius: 4px 4px 2px 2px;
-	border-radius: 4px 4px 2px 2px;
-}
-
-#enr-course-view .tutorial table tbody tr
-{
-	height: 30px;
-}
-
-.sidebar-visible #enr-course-view .tutorial table tbody tr
-{
-	height: 40px;
-}
-
-#enr-course-view .tutorial table tr.signed
-{
-	background: #e9e9e9;
-}
-
-#enr-course-view .small
-{
-    font-size: smaller;
-}
-
-#enr-course-view .tutorial table th.term
-{
-	width: 180px;
-}
-
-
-#enr-course-view .tutorial table td.term span
-{
-	display: block;
-}
-
-#enr-course-view .tutorial table td.controls
-{
-	width: 100px;
-	white-space: nowrap;
-	text-align: right;
-}
-
-#enr-course-view .tutorial table td.controls a
-{
-	padding: 0 3px;
-}
-
-#enr-course-view .tutorial td.controls .setEnrolledButton
-{
-	width: 100px;
-	vertical-align: middle;
-	white-space: normal;
-}
-
-.sidebar-visible #enr-course-view .tutorial td.controls .setEnrolledButton
-{
-	width: 80px;
-}
-
-#enr-course-view .tutorial table th.number
-{
-	white-space: nowrap;
-	width: 35px;
-	padding: 0 5px;
-}
-
-#enr-course-view .tutorial table .number,
-#enr-course-view .tutorial table td.priority
-{
-	text-align: center;
-}
-
-#enr-course-view .tutorial table td.priority select
-{
-	width: 45px;
-}
-
-#enr-course-view .tutorial table td.priority
-{
-	white-space: nowrap;
-	width: 70px;
-}
 
 /*******************************************************************************
  * Widok przedmiotu - listy terminów - padding tabeli i obramowania
  ******************************************************************************/
 
-#enr-course-view .tutorial table thead th
+.setEnrolledButton
 {
-	padding-top: 3px;
-	padding-bottom: 3px;
-}
-
-#enr-course-view .tutorial table thead th:first-child,
-#enr-course-view .tutorial table tbody td:first-child
-{
-	padding-left: 5px;
-}
-
-#enr-course-view .tutorial table thead th:last-child,
-#enr-course-view .tutorial table tbody td:last-child
-{
-	padding-right: 5px;
-}
-
-#enr-course-view .tutorial table thead th,
-#enr-course-view .tutorial table thead td
-{
-	border-bottom: 1px solid #cccccc;
-}
-
-#enr-course-view .tutorial table tbody td
-{
-	border-bottom: 1px dotted #cccccc;
-}
-
-#enr-course-view .tutorial table tbody tr:first-child td
-{
-	padding-top: 3px;
-}
-
-#enr-course-view .tutorial table tbody tr:last-child td
-{
-	border-bottom: 0;
-	padding-bottom: 3px;
-}
-.bold
-{
+	margin-right: 10px;
     font-weight:bold;
 }
 

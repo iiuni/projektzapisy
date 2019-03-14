@@ -2,34 +2,33 @@
 
 {% block main-subtitle %}Wprowadzanie kluczy{% endblock %}
 
-
+{% block fill_grade_form %}active{% endblock %}
 
 {% block bread %}
-	<a href="/">Strona główna</a>  &raquo;
-	<a href="{% url 'grade-main' %}">Ocena zajęć</a>  &raquo;
-	Weryfikacja biletów
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Weryfikacja biletów</li>
 {% endblock %}
-{% block content %}
+
+{% block all-content %}
 	{% if user.is_authenticated %}
-        <div class="alert-message">
-            <strong>Uwaga!</strong> Aby ankieta pozostała anonimowa należy się <a href="{% url 'grade-logout' %}">wylogować</a>.
-        </div>
+      <div class="alert-message">
+          <strong>Uwaga!</strong> Aby ankieta pozostała anonimowa należy się <a href="{% url 'grade-logout' %}">wylogować</a>.
+      </div>
 	{% else %}
 		<div id='grade-tickets-enter'>
-		<form action="{% url 'grade-poll-tickets-enter' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-                      <h2>Wprowadzanie kluczy</h2>
-                        <label for="id_ticketsfield" class="span4">Podaj wygenerowane klucze</label>
+		  <form action="{% url 'grade-poll-tickets-enter' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h2>Wprowadzanie kluczy</h2>
+                <div class="form-group">
+                    <label for="id_ticketsfield" >Podaj wygenerowane klucze</label>
+                    <textarea name="ticketsfield" rows="20" id="id_ticketsfield" class="form-control"></textarea>
+                </div>
+                <p class="text-center text-info">Jeżeli nie posiadasz jeszcze kluczy, zaloguj się i je wygeneruj.</p>
 
-                            <textarea name="ticketsfield" cols="80" rows="20" id="id_ticketsfield"></textarea>
-                         <div style="text-align: center"> <p class="help-block">Jeżeli nie posiadasz jeszcze kluczy, zaloguj się i je wygeneruj.</p>
-
-{#            <label for="id_ticketsfile" class="span4">lub wybierz plik z biletami:</label>#}
-{#            <input type="file" id="id_ticketsfile" name="ticketsfile">#}
-                      <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Rozpocznij ocenę</button>
-                      </div></div>
-		</form>
-		</div>
+                <div class=""></div>
+                <button class="mx-auto d-block btn btn-primary" type="submit">Rozpocznij ocenę</button>
+            </form>
+        </div>
 	{% endif %}
 {% endblock %}

@@ -1,52 +1,68 @@
 {% extends "help/base.html" %}
 {% load static %}
 
-{% block content %} 
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/help">Pomoc</a></li>
+<li class="breadcrumb-item active" aria-current="page">System zapisów</li>
+{% endblock %}
+
+
+{% block content %}
 <h2>System zapisów</h2>
-<br/>
-    <h4>Wejście do Systemu zapisów:</h4><br/>
-        <img src="{% static "help/enrollment/enrollment1.png" %}" id="enrollment1" title="Zapisy"/><br/><br/>
+<div class="container">
+    <br />
+    <h4>Wejście do Systemu zapisów:</h4><br />
+    <img src="{% static "help/enrollment/enrollment1.png" %}" id="enrollment1" title="Zapisy" /><br /><br />
     <h4>Zapisywanie się na zajęcia:</h4>
-            <p>Wybieramy "Przedmioty".</p>
-                <img src="{% static "help/enrollment/enrollment2.png" %}" id="enrollment2" title="Zapisy"/><br/><br/>
-            <p>Wybieramy interesujący nas przedmiot (w tym miejscu warto użyć filtrów znajdujących się w górnej części ekranu).</p>
-                <img src="{% static "help/enrollment/enrollment3.png" %}" id="enrollment3" title="Zapisy"/><br/><br/>
-            <p>Wybieramy przycisk "Zapisz" przy interesującej nas grupie(po zapisaniu się na zajęcia pomocnicze - np. ćwiczenia czy pracownię, zostaniemy automatycznie zapisani na wykład).</p>
-                <img src="{% static "help/enrollment/enrollment4.png" %}" id="enrollment4" title="Zapisy"/><br/><br/>
-            <p>Z zajęć można wypisać się wybierając przycisk "Wypisz".</p>
-                <img src="{% static "help/enrollment/enrollment5.png" %}" id="enrollment5" title="Zapisy"/><br/><br/>
-            <br/>
+    <p>Wybieramy "Przedmioty".</p>
+    <img src="{% static "help/enrollment/enrollment2.png" %}" id="enrollment2" title="Zapisy" /><br /><br />
+    <p>Wybieramy interesujący nas przedmiot (w tym miejscu warto użyć filtrów znajdujących się w górnej części ekranu).</p>
+    <img src="{% static "help/enrollment/enrollment3.png" %}" id="enrollment3" title="Zapisy" /><br /><br />
+    <p>Wybieramy przycisk "Zapisz" przy interesującej nas grupie(po zapisaniu się na zajęcia pomocnicze - np. ćwiczenia
+        czy pracownię, zostaniemy automatycznie zapisani na wykład).</p>
+    <img src="{% static "help/enrollment/enrollment4.png" %}" id="enrollment4" title="Zapisy" /><br /><br />
+    <p>Z zajęć można wypisać się wybierając przycisk "Wypisz".</p>
+    <img src="{% static "help/enrollment/enrollment5.png" %}" id="enrollment5" title="Zapisy" /><br /><br />
+    <br />
     <h4>Wyświetlanie swojego planu zajęć:</h4>
-            <p>Wybieramy "Plan zajęć"</p>
-                <img src="{% static "help/enrollment/enrollment6.png" %}" id="enrollment6" title="Zapisy"/><br/><br/>
-            <p>Tak powinien wyglądać plan:</p>
-                <img src="{% static "help/enrollment/enrollment7.png" %}" id="enrollment7" title="Zapisy"/><br/><br/>
-            <p>Plan zajęć można pobrać w formacie ical (<a href="{% url 'help-export' %}">Eksport planu zajęć</a>).</p><br/><br/>
-                <img src="{% static "help/enrollment/enrollment8.png" %}" id="enrollment8" title="Zapisy"/><br/><br/>
+    <p>Wybieramy "Plan zajęć"</p>
+    <img src="{% static "help/enrollment/enrollment6.png" %}" id="enrollment6" title="Zapisy" /><br /><br />
+    <p>Tak powinien wyglądać plan:</p>
+    <img src="{% static "help/enrollment/enrollment7.png" %}" id="enrollment7" title="Zapisy" /><br /><br />
+    <p>Plan zajęć można pobrać w formacie ical (<a href="{% url 'help-export' %}">Eksport planu zajęć</a>).</p><br /><br />
+    <img src="{% static "help/enrollment/enrollment8.png" %}" id="enrollment8" title="Zapisy" /><br /><br />
     <h4>Prototyp planu:</h4>
-        <p>Prototyp planu służy do wygodnego planowania swoich zajęć. Korzystając z dostępnych filtrów można wyświetlać wybrane grupy przedmiotów lub konkretne przedmioty.</p>
-            <p>Wybieramy "Prototyp planu":</p>
-                <img src="{% static "help/enrollment/enrollment9.png" %}" id="enrollment9" title="Zapisy"/><br/><br/>
-            <p>Możemy w nim wybrać pewne przedmioty:</p>
-                <img src="{% static "help/enrollment/enrollment10.png" %}" id="enrollment10" title="Zapisy"/><br/><br/>
-            <p>Które wyświetlą się w prototypie. Możemy teraz je przypiąć - jest to jedynie informacja dla użytkownika o tym, że ten przedmiot uważa za interesujący, NIE JEST równoważna z zapisaniem się na zajęcia. Przedmioty można przypinać przed otwarciem zapisów.</p>
-                <img src="{% static "help/enrollment/enrollment11.png" %}" id="enrollment11" title="Zapisy"/><br/><br/>
-            <p>Można się też zapisywać na przedmioty(po otwarciu zapisów), używając ikonki długopisu:</p>
-                <img src="{% static "help/enrollment/enrollment12.png" %}" id="enrollment12" title="Zapisy"/><br/><br/>
-            <p>Zablokowanie planu - nie można po nim dokonywać zmian w planie(zabezpieczenie przed przypadkowym wypisywaniem się z zajęć). Blokujemy jedynie interfejs użytkownika, jeżeli jest on zapisany do kolejki, to system przepisze go do grupy gdy zwolni się w niej miejsce. Plan można też samemu odblokować.</p>
-                <img src="{% static "help/enrollment/enrollment13.png" %}" id="enrollment13" title="Zapisy"/><br/><br/>
+    <p>Prototyp planu służy do wygodnego planowania swoich zajęć. Korzystając z dostępnych filtrów można wyświetlać
+        wybrane grupy przedmiotów lub konkretne przedmioty.</p>
+    <p>Wybieramy "Prototyp planu":</p>
+    <img src="{% static "help/enrollment/enrollment9.png" %}" id="enrollment9" title="Zapisy" /><br /><br />
+    <p>Możemy w nim wybrać pewne przedmioty:</p>
+    <img src="{% static "help/enrollment/enrollment10.png" %}" id="enrollment10" title="Zapisy" /><br /><br />
+    <p>Które wyświetlą się w prototypie. Możemy teraz je przypiąć - jest to jedynie informacja dla użytkownika o tym,
+        że ten przedmiot uważa za interesujący, NIE JEST równoważna z zapisaniem się na zajęcia. Przedmioty można
+        przypinać przed otwarciem zapisów.</p>
+    <img src="{% static "help/enrollment/enrollment11.png" %}" id="enrollment11" title="Zapisy" /><br /><br />
+    <p>Można się też zapisywać na przedmioty(po otwarciu zapisów), używając ikonki długopisu:</p>
+    <img src="{% static "help/enrollment/enrollment12.png" %}" id="enrollment12" title="Zapisy" /><br /><br />
+    <p>Zablokowanie planu - nie można po nim dokonywać zmian w planie(zabezpieczenie przed przypadkowym wypisywaniem
+        się z zajęć). Blokujemy jedynie interfejs użytkownika, jeżeli jest on zapisany do kolejki, to system przepisze
+        go do grupy gdy zwolni się w niej miejsce. Plan można też samemu odblokować.</p>
+    <img src="{% static "help/enrollment/enrollment13.png" %}" id="enrollment13" title="Zapisy" /><br /><br />
     <h4>Wyświetlanie planu pracownika:</h4>
-            <p>Wybieramy "Pracownicy":</p>
-                <img src="{% static "help/enrollment/enrollment14.png" %}" id="enrollment14" title="Zapisy"/><br/><br/>
-            <p>Wybieramy interesującego nas pracownika:</p>
-                <img src="{% static "help/enrollment/enrollment15.png" %}" id="enrollment15" title="Zapisy"/><br/><br/>
-            <p>Oglądamy jego plan:</p>
-                <img src="{% static "help/enrollment/enrollment16.png" %}" id="enrollment16" title="Zapisy"/><br/><br/>
+    <p>Wybieramy "Pracownicy":</p>
+    <img src="{% static "help/enrollment/enrollment14.png" %}" id="enrollment14" title="Zapisy" /><br /><br />
+    <p>Wybieramy interesującego nas pracownika:</p>
+    <img src="{% static "help/enrollment/enrollment15.png" %}" id="enrollment15" title="Zapisy" /><br /><br />
+    <p>Oglądamy jego plan:</p>
+    <img src="{% static "help/enrollment/enrollment16.png" %}" id="enrollment16" title="Zapisy" /><br /><br />
     <h4>Wyświetlanie planu studenta:</h4>
-            <p>Wybieramy "Studenci":</p>
-                <img src="{% static "help/enrollment/enrollment17.png" %}" id="enrollment17" title="Zapisy"/><br/><br/>
-            <p>Wybieramy interesującego nas studenta:</p>
-                <img src="{% static "help/enrollment/enrollment18.png" %}" id="enrollment18" title="Zapisy"/><br/><br/>
-            <p>Oglądamy jego plan:</p>
-                <img src="{% static "help/enrollment/enrollment19.png" %}" id="enrollment19" title="Zapisy"/><br/><br/>
+    <p>Wybieramy "Studenci":</p>
+    <img src="{% static "help/enrollment/enrollment17.png" %}" id="enrollment17" title="Zapisy" /><br /><br />
+    <p>Wybieramy interesującego nas studenta:</p>
+    <img src="{% static "help/enrollment/enrollment18.png" %}" id="enrollment18" title="Zapisy" /><br /><br />
+    <p>Oglądamy jego plan:</p>
+    <img src="{% static "help/enrollment/enrollment19.png" %}" id="enrollment19" title="Zapisy" /><br /><br />
+</div>
+
 {% endblock %}

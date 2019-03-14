@@ -1,7 +1,6 @@
 PIPELINE_CSS = {
     'main': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/cookieconsent.min.css'
@@ -13,7 +12,6 @@ PIPELINE_CSS = {
     },
     'ticketssave': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/grade/tickets_save.css'
@@ -25,7 +23,6 @@ PIPELINE_CSS = {
     },
     'connectionchoice': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/grade/connections_choice.css',
@@ -38,7 +35,6 @@ PIPELINE_CSS = {
     },
     'gradebase': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/common/mainPage.css',
@@ -54,7 +50,6 @@ PIPELINE_CSS = {
     },
     'gradepollshow': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/grade/declaration.css'
@@ -66,7 +61,6 @@ PIPELINE_CSS = {
     },
     'help': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/help.css',
@@ -76,21 +70,8 @@ PIPELINE_CSS = {
             'media': 'screen,projection',
         },
     },
-    'news': {
-        'source_filenames': (
-            'css/bootstrap-1.2.0.css',
-            'css/main.css',
-            'css/fereol.css',
-            'css/news.css',
-        ),
-        'output_filename': 'css/news.min.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
     'login': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/common/login.css'
@@ -100,37 +81,8 @@ PIPELINE_CSS = {
             'media': 'screen,projection',
         },
     },
-    'schedule': {
-        'source_filenames': (
-            'css/bootstrap-1.2.0.css',
-            'css/main.css',
-            'css/fereol.css',
-            'css/common/schedule.css',
-            'css/common/schedule-courses.css',
-            'css/enrollment/schedule.css'
-        ),
-        'output_filename': 'css/schedule.min.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
-    'prototype': {
-        'source_filenames': (
-            'css/bootstrap-1.2.0.css',
-            'css/main.css',
-            'css/fereol.css',
-            'css/common/schedule.css',
-            'css/common/schedule-courses.css',
-            'css/enrollment/schedule-prototype.css'
-        ),
-        'output_filename': 'css/prototype.min.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
     'mainpage': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/common/mainPage.css',
@@ -142,7 +94,6 @@ PIPELINE_CSS = {
     },
     'courseview': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/enrollment/courses.css'
@@ -154,7 +105,6 @@ PIPELINE_CSS = {
     },
     'userslist': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/enrollment/courses.css',
@@ -170,7 +120,6 @@ PIPELINE_CSS = {
 
     'proposal': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/offer/proposal.css'
@@ -182,12 +131,20 @@ PIPELINE_CSS = {
     },
     'vote': {
         'source_filenames': (
-            'css/bootstrap-1.2.0.css',
             'css/main.css',
             'css/fereol.css',
             'css/offer/vote.css'
         ),
         'output_filename': 'css/vote.min.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+    },
+    'old': {
+        'source_filenames': (
+            'css/bootstrap-1.2.0.css',
+        ),
+        'output_filename': 'css/old.min.css',
         'extra_context': {
             'media': 'screen,projection',
         },
@@ -275,44 +232,6 @@ PIPELINE_JS = {
             'js/grade/poll/poll_results.js',
         ),
         'output_filename': 'js/pollresult.min.js',
-    },
-    'pollbase': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/grade/grade.js',
-        ),
-        'output_filename': 'js/pollbase.min.js',
-    },
-    'gradeuserpoll': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/grade/poll/poll_answer.js'
-        ),
-        'output_filename': 'js/gradeuserpoll.min.js',
-    },
-    'news': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/components/messageBox.js',
-            'js/news.js',
-            'js/components/topBarFilter.js'
-        ),
-        'output_filename': 'js/news.min.js',
     },
     'courses': {
         'source_filenames': (

@@ -8,17 +8,17 @@
     {% compressed_js 'connectionchoice' %}
 {% endblock %}
 
-{% block connection-choice %} class="active"{% endblock %}
+{% block connection-choice %}active{% endblock %}
 
 {% block main-subtitle %}Pobieranie kluczy{% endblock %}
 
 {% block bread %}
-	<a href="/">Strona główna</a> &raquo;
-	<a href="{% url 'grade-main' %}">Ocena zajęć</a> &raquo;
-	Pobieranie kluczy
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
+<li class="breadcrumb-item active" aria-current="page">Zasady</li>
 {% endblock %}
 
-{% block content %}
+{% block all-content %}
     {% if success %}
     <div class="main-success">{{ success }}</div>
     {% endif %}

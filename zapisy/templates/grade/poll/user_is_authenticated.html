@@ -2,14 +2,18 @@
 
 {% block main-subtitle %}Udział w ocenie{% endblock %}
 
+{% block fill_grade_form %}active{% endblock %}
+
 {% block bread %}
-	<a href="/">Strona główna</a>  &raquo;
-	<a href="{% url 'grade-main' %}">Ocena zajęć</a>  &raquo;
-	Udział w ocenie
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/grade">Ocena zajęć</a></li>
+<li class="breadcrumb-item active" aria-current="page">Oceń zajęcia</li>
 {% endblock %}
 
-{% block content %}
-        <div class="alert-message">
-            <strong>Uwaga!</strong> Aby ankieta pozostała anonimowa należy się <a href="{% url 'grade-logout' %}">wylogować</a>.
-        </div>
+{% block all-content %}
+<div class="alert alert-danger" role="alert">
+    <strong>Uwaga!</strong>
+        Aby ankieta pozostała anonimowa należy się <a class="alert-link" href="{% url 'grade-logout' %}">
+        wylogować</a>.
+</div>
 {% endblock %}

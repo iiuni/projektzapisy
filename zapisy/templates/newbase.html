@@ -1,0 +1,283 @@
+{% load fereol_common %}
+{% load compressed %}
+{% load staticfiles %}
+{% load should_display_debug %}
+{% load debug_info %}
+{% load i18n %}
+{% load render_bundle from webpack_loader %}
+
+{# Bazowy template, który umożliwia korzystanie z biblioteki boostrap4 #}
+{# Powinien być rozszerzany (extend), przy przepisywaniu widoków do nowej wersji boostrapa #}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
+    <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-109984921-1');
+    </script>
+
+    {% render_bundle "main" %}
+    {% render_bundle "polyfill" %}
+    {% render_bundle "vendors" %}
+    {% block rendered_bundles %}
+    {% endblock %}
+    {% block styles %}
+    {% endblock %}
+    {% block js %}{% endblock %}
+    {% block rss %}{% endblock %}
+    {% block head_extra %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
+    <link rel="stylesheet" href="{% static "css/main.css" %}" type="text/css"
+    <script src="{% static 'js/cookieconsent.min.js' %}"></script>
+    <script>
+        window.addEventListener("load", function () {
+            window.cookieconsent.initialise({
+                "palette": {
+                    "popup": {
+                        "background": "#222222"
+                    },
+                    "button": {
+                        "background": "#00709e"
+                    }
+                },
+                "showLink": false,
+                "theme": "classic",
+                "position": "bottom",
+                "content": {
+                    "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
+                    "dismiss": "OK"
+                }
+            })
+        });
+    </script>
+    <script src="{% static "js/common/utils.js" %}"></script>
+    
+</head>
+
+<body>
+    <div class="container-fluid p-0 d-print-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li {% block enrollment_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'course-list' %}" class="nav-link">System Zapisów</a>
+                    </li>
+                    <li {% block grade_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
+                    </li>
+                    <li {% block offer_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
+                    </li>
+                    {% if perms.courses.view_stats %}
+                    <li {% block statistics_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'statistics:main' %}" class="nav-link">Statystyki</a>
+                    </li>
+                    {% endif %}
+                    <li {% block events_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                    </li>
+                </ul>
+            {% if user.is_authenticated %}
+                <div class="navbar-nav ml-auto">
+                    <span class="navbar-text">
+                        <strong>
+                            {{ user.get_full_name }}
+                        </strong>
+                    </span>
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
+                        </li>
+                        {% if user.is_staff %}
+                            <li class="nav-item">
+                                <a href="/fereol_admin/" class="nav-link">Admin</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread nav-link">Aktualności ({{ user.student.get_number_of_news }})</a>
+                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread nav-link">Aktualności ({{ user.employee.get_number_of_news }})</a>
+                            {% else %}
+                                <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'help' %}" class="nav-link">Pomoc</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown" id="login-dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b>Zaloguj się</b><span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right m-2">
+                            <div class="social-buttons login-dp m-3">
+                                <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos">
+                                    <img src="{% static '/images/usos-login-logo.png' %}"
+                                         alt="Uniwersytet Wrocławski">
+                                    <div class="clearfix"></div>
+                                    Zaloguj się przez USOS
+                                </a>
+                            </div>
+                            <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                {% csrf_token %}
+                                {% if request.path == '/' %}
+                                    <input type="hidden" name="next"
+                                           value="{% url 'my-timetable' %}"/>
+                                {% else %}
+                                    <input type="hidden" name="next" value="{{ request.path }}"/>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label>Login</label>
+                                    <input type="text" class="form-control" id="id_login" name="username"
+                                           placeholder="Użytkownik" required
+                                           oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
+                                           oninput="this.setCustomValidity('')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hasło</label>
+                                    <input type="password" class="form-control" id="id_password"
+                                            {# name="password" placeholder="Hasło" required
+                                            oninvalid="this.setCustomValidity('Hasło jest wymagane')"
+                                            oninput="this.setCustomValidity('')">
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" value="true"
+                                           id="remember" name="remember_me">
+                                    <label class="form-check-label" for="remember">
+                                        Pamiętaj mnie
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="btn-no-usos">Zaloguj</button>
+                                <a class="btn btn-primary" id="btn-no-usos" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+            </div>
+        </nav>
+        <div class="top">
+            <div class="logo header">
+                <div class="container">
+                    <a href="/">
+                        <img src="{% static 'images/logo_UWr.svg' %}" alt="Uniwersytet Wrocławski">
+                    </a>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div id="system_menu"> 
+                        <ul class="nav nav-tabs" id="main-menu-list" role="tablist">
+                            {% block system_menu %}
+                            {% endblock %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="container content-container">
+            {% if request.path != '/' %}
+            <div class="row d-print-none">
+                <div class="col">
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            {% block bread %}
+                            {% endblock %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col">
+                    {% block messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="container sidebar-right" id="main-content-container">
+                {# Use this block if you don't want a layout with right-hand sidebar #}
+                {% block all-content %}
+                <div class="row d-print-none">
+                    {% block topContent %}
+                    {% endblock %}
+                </div>
+                <div class="row">
+                    <div class="col col-lg-9 col-12">
+                        {# WARNING ajaxCourseLoad.ts depends on this #}
+                        <div id="main-content">
+                            {% block content %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                    <nav class="col col-lg-3 col-12 d-print-none" id="sidebar">
+                        {% block sidebar %}
+                        {% endblock %}
+                    </nav>
+                </div>
+                {% endblock %}
+            </div>
+
+            <div class="row d-print-none">
+                <div class="col">
+                    <footer class="sticky-footer">
+                        <p>
+                            &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                            <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                            {% endif %}
+                            | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                            Wygenerowano: {% now "H:i:s" %}
+                            {% should_display_debug as display_debug %}
+                            {% if display_debug is True %}
+                            {% autoescape off %}
+                            {% debug_info %}
+                            {% endautoescape %}
+                            {% endif %}
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

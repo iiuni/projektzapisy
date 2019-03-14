@@ -25,22 +25,22 @@
 {% endblock %}
 
 {% block main-navigation %}
-	<li><a href="/">Strona główna</a></li>
-	<li><a href="{% url 'offer-main' %}">Oferta</a></li>
+	<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta</a></li>
 	{% if proposal and proposal.pk %}
-		<li><a href="{% url 'proposal-list' %}">Propozycje</a></li>
+		<li class="breadcrumb-item"><a href="{% url 'proposal-list' %}">Propozycje</a></li>
 		{% if editMode %}
-			<li><a href="{% url 'proposal-page' slug=proposal.slug %}">{{proposal.name}}</a></li>
-			<li>Edycja</li>
+			<li class="breadcrumb-item"><a href="{% url 'proposal-page' slug=proposal.slug %}">{{proposal.name}}</a></li>
+			<li class="breadcrumb-item">Edycja</li>
 		{% else %}
-			<li>{{proposal.name}}</li>
+			<li class="breadcrumb-item">{{proposal.name}}</li>
 		{% endif %}
 	{% else %}
 		{% if editForm %}
-			<li><a href="{% url 'proposal-list' %}">Propozycje</a></li>
-			<li>Dodaj nową</li>
+			<li class="breadcrumb-item"><a href="{% url 'proposal-list' %}">Propozycje</a></li>
+			<li class="breadcrumb-item">Dodaj nową</li>
 		{% else %}
-			<li>Propozycje</li>
+			<li class="breadcrumb-item">Propozycje</li>
 		{% endif %}
 	{% endif %}
 {% endblock %}

@@ -45,7 +45,7 @@ export default class SimpleTimetable extends SimpleTimetableProps {
 </script>
 
 <template>
-  <div class="week">
+  <div class="col week">
     <Day v-for="dd of daysData" :key="dd.key" :d="dd.d" :terms="dd.terms"/>
   </div>
 </template>

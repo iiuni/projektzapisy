@@ -13,11 +13,6 @@ from apps.enrollment.courses.models.course import CourseEntity, Course
 def main(request):
     return TemplateResponse(request, 'statistics/base.html')
 
-#@permission_required('courses.view_stats')
-# def students(request):
-#    students = Student.objects.get_list_full_info().order_by('t0_min')
-#    return TemplateResponse(request, 'statistics/students_list.html', locals())
-
 
 @permission_required('courses.view_stats')
 def students(request):
@@ -62,8 +57,8 @@ def swap(request):
     courses = Course.objects.filter(semester=semester).select_related('entity')
 
     types = [('2', 'ćwiczenia'), ('3', 'pracownia'),
-             ('5', 'ćwiczenio-pracownia'),
-             ('6', 'seminarium'), ('10', 'projekt')]
+             ('5', 'ćwiczenio-pracownia'), ('6', 'seminarium'),
+             ('10', 'projekt')]
 
     for course in courses:
         course.groups_items = []
@@ -71,7 +66,7 @@ def swap(request):
         for type in types:
             groups = Group.objects.filter(
                 course=course, type=type[0]).select_related(
-                'course', 'course__entity', 'teacher')
+                    'course', 'course__entity', 'teacher')
             queues = {}
             students = {}
             lists = {}
@@ -94,7 +89,10 @@ def swap(request):
                 for s in queue:
                     if s.id in students:
                         for sp in lists[group.id]:
-                            if students[sp.id] == group and sp.id not in used and sp in queues[students[s.id].id]:
+                            if students[
+                                    sp.
+                                    id] == group and sp.id not in used and sp in queues[
+                                        students[s.id].id]:
                                 used.append(sp.id)
                                 group.swaps.append({
                                     'student_in_queue': s,

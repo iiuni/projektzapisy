@@ -1,35 +1,40 @@
 {% extends "statistics/base.html" %}
 
+{% block vote_active %}active{% endblock %}
 
-{% block vote_active %} class="active"{% endblock %}
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/statistics">Statystyki</a></li>
+<li class="breadcrumb-item active" aria-current="page">Głosowanie</li>
+{% endblock %}
 
-{% block content %}
-
-    <table>
-        <thead>
+{% block all-content %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="text-muted">
             <tr>
-                <th><h4>Tytuł</h4></th>
-                <th><h4>Proponujący</h4></th>
-                <th><h4>Typ</h4></th>
-                <th><h4>Ang.</h4></th>
-                <th><h4>Semestr</h4></th>
-                <th><h4>Głosów</h4></th>
-                <th><h4>(za 3)</h4></th>
-
+                <th scope="col">Tytuł</th>
+                <th scope="col">Proponujący</th>
+                <th scope="col">Typ</th>
+                <th scope="col">Ang.</th>
+                <th scope="col">Semestr</th>
+                <th scope="col">Głosów</th>
+                <th scope="col">(za 3)</th>
             </tr>
         </thead>
         <tbody>
             {% for course in proposals %}
-                    <tr>
-                        <td>{{ course.name }}</td>
-                        <td>{{ course.owner.user.get_full_name }}</td>
-                        <td>{{ course.type }}</td>
-                        <td>{{ course.english }}</td>
-                        <td>{{ course.get_semester_display }}</td>
-                        <td>{{ course.voters }}</td>
-                        <td>{{ course.maxpoints_voters }}</td>
-                    </tr>
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.owner.user.get_full_name }}</td>
+                <td>{{ course.type }}</td>
+                <td>{{ course.english }}</td>
+                <td>{{ course.get_semester_display }}</td>
+                <td>{{ course.voters }}</td>
+                <td>{{ course.maxpoints_voters }}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

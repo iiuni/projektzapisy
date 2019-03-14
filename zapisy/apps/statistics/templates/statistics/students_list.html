@@ -1,18 +1,19 @@
 {% extends "statistics/base.html" %}
 
-{% block students_active %} class="active"{% endblock %}
+{% block students_active %}active{% endblock %}
 
-{% block content %}
-    <table>
-        <thead>
+{% block all-content %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="text-muted">
             <tr>
-                <th>Imię</th>
-                <th>Nazwisko</th>
-                <th>Ostatnie logowanie</th>
-                <th>Index</th>
-                <th>ECTS</th>
-                <th>T0</th>
-                <th>Najwcześniejsza możliwość zapisu</th>
+                <th scope="col">Imię</th>
+                <th scope="col">Nazwisko</th>
+                <th scope="col">Ostatnie logowanie</th>
+                <th scope="col">Index</th>
+                <th scope="col">ECTS</th>
+                <th scope="col">T0</th>
+                <th scope="col">Najwcześniejsza możliwość zapisu</th>
             </tr>
         </thead>
         <tbody>
@@ -29,4 +30,5 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

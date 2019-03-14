@@ -16,17 +16,30 @@
 
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
-	<a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a> &raquo;
-	<a href="{% url 'course-list' %}">{% trans "Przedmioty" %}</a> &raquo;
+    <li class="breadcrumb-item">
+        <a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a>
+    </li>
 
-	<a href="{% url 'course-page' group.course.slug %}"
-			>{{group.course.name}}</a> &raquo;
+    <li class="breadcrumb-item">
+        <a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+    </li>
 
-	{{group.get_type_display}}: {{group.get_teacher_full_name}}
+    <li class="breadcrumb-item">
+	    <a href="{% url 'course-list' %}">{% trans "Przedmioty" %}</a>
+    </li>
+
+    <li class="breadcrumb-item">
+	    <a href="{% url 'course-page' group.course.slug %}">
+            {{group.course.name}}
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        {{group.get_type_display}}: {{group.get_teacher_full_name}}
+    </li>
+    
 	{% if user.is_staff %}
     {# Translators: chodzi o zmianę, nie o odsłonę #}
-    <a href="{% url 'admin:courses_group_change' group.pk %}">{% trans "Edycja" %}</a>
+        <a class="text-info mx-2" href="{% url 'admin:courses_group_change' group.pk %}">({% trans "edytuj grupę" %})</a>
     {% endif %}
 {% endblock %}
 
@@ -44,52 +57,56 @@
         <hr>
 
         {% load i18n %}
+        <div class="table-responsive-sm">
+            <h3>{% trans "Lista osób zapisanych na przedmiot" %}:</h3>
+            <p>
+                {% trans "Liczba zapisanych osób" %}: {{students_in_group|length}} / {{group.limit}}
+            </p>
 
-        <h3>{% trans "Lista osób zapisanych na przedmiot" %}:</h3>
-        <p>
-            {% trans "Liczba zapisanych osób" %}: {{students_in_group|length}} / {{group.limit}}
-        </p>
+            {% if students_in_group %}
+                {% include "courses/students_list.html" with students=students_in_group|dictsort:"user.last_name" %}
+                {# Translators: tekst przy linku mailto #}
+                {% if request.user.is_staff or request.user.employee %}
+                <div class="d-print-none">
+                    <p><strong>{% trans "Wyślij wiadomość do grupy" %}</strong>:
+                        <ul>
+                            <li><a href="mailto:{{ mailto_group }}">{% trans "udostępniając adresy mailowe studentów" %}</a></li>
+                            <li><a href="mailto:{{ mailto_group_bcc }}">{% trans "ukrywając adresy mailowe studentów" %}</a></li>
+                        </ul>
+                    </p>
 
-		{% if students_in_group %}
-			{% include "courses/students_list.html" with students=students_in_group|dictsort:"user.last_name" %}
-			{# Translators: tekst przy linku mailto #}
-			{% if request.user.is_staff or request.user.employee %}
-			    <p><strong>{% trans "Wyślij wiadomość do grupy" %}</strong>:
-                    <ul>
-                        <li><a href="mailto:{{ mailto_group }}">{% trans "udostępniając adresy mailowe studentów" %}</a></li>
-                        <li><a href="mailto:{{ mailto_group_bcc }}">{% trans "ukrywając adresy mailowe studentów" %}</a></li>
-                    </ul>
-			    </p>
-
-			    <p><strong>{% trans "Ściągnij listę studentów z grupy jako" %}</strong>:
-                    <ul>
-                        <li><a href="{% url 'group-csv' group.id %}">csv</a></li>
-                    </ul>
-			    </p>
-			{% endif %}
-		{% endif %}
-
-		<br/>
-		{%if students_in_queue %}
-			<h3>{% trans "Lista osób oczekujących na zapis" %}:</h3>
-			<p>{% trans "Liczba osób oczekujących na zapis" %}: {{students_in_queue|length}}</p>
-
-            {% include "courses/students_list.html" with students=students_in_queue %}
-            {# Translators: tekst przy linku mailto #}
-			{% if request.user.is_staff or request.user.employee %}
-                <p><strong>{% trans "Wyślij wiadomość do kolejki" %}</strong>:
-                    <ul>
-                        <li><a href="mailto:{{ mailto_queue }}">{% trans "udostępniając adresy mailowe studentów" %}</a></li>
-                        <li><a href="mailto:{{ mailto_queue_bcc }}">{% trans "ukrywając adresy mailowe studentów" %}</a></li>
-                    </ul>
-                </p>
-
-                <p><strong>{% trans "Ściągnij listę studentów z kolejki jako" %}</strong>:
-                    <ul>
-                        <li><a href="{% url 'queue-csv' group.id %}">csv</a></li>
-                    </ul>
-				</p>
+                    <p><strong>{% trans "Ściągnij listę studentów z grupy jako" %}</strong>:
+                        <ul>
+                            <li><a href="{% url 'group-csv' group.id %}">csv</a></li>
+                        </ul>
+                    </p>
+                </div>
+                {% endif %}
             {% endif %}
-		{% endif %}
+        </div>
+
+		<div class="table-responsive-sm d-print-none">
+            {%if students_in_queue %}
+                <h3>{% trans "Lista osób oczekujących na zapis" %}:</h3>
+                <p>{% trans "Liczba osób oczekujących na zapis" %}: {{students_in_queue|length}}</p>
+
+                {% include "courses/students_list.html" with students=students_in_queue %}
+                {# Translators: tekst przy linku mailto #}
+                {% if request.user.is_staff or request.user.employee %}
+                    <p><strong>{% trans "Wyślij wiadomość do kolejki" %}</strong>:
+                        <ul>
+                            <li><a href="mailto:{{ mailto_queue }}">{% trans "udostępniając adresy mailowe studentów" %}</a></li>
+                            <li><a href="mailto:{{ mailto_queue_bcc }}">{% trans "ukrywając adresy mailowe studentów" %}</a></li>
+                        </ul>
+                    </p>
+
+                    <p><strong>{% trans "Ściągnij listę studentów z kolejki jako" %}</strong>:
+                        <ul>
+                            <li><a href="{% url 'queue-csv' group.id %}">csv</a></li>
+                        </ul>
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

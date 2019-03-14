@@ -229,7 +229,8 @@ INSTALLED_APPS = (
     'apps.schedulersync',
     'django_extensions',
     'django_filters',
-    'el_pagination',
+    'bootstrap_pagination',
+    'crispy_forms',
     'apps.notifications',
     'django_cas_ng',
     'django_rq',
@@ -324,6 +325,8 @@ PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
 COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
 COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
 COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'

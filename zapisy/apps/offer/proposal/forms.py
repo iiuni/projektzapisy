@@ -85,3 +85,7 @@ class SyllabusForm(ModelForm):
         widgets = {
             'learning_methods': FilteredSelectMultiple("Metody kształcenia", is_stacked=False)
         }
+
+
+class SelectVotingForm(forms.Form):
+    courses = forms.MultipleChoiceField(widget=FilteredSelectMultiple("courses", is_stacked=False))

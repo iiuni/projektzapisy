@@ -54,5 +54,5 @@ def all_news_focus_one(request, news_id):
 def main_page(request):
     all_news_except_hidden = News.objects.exclude(category='-') \
         .order_by("-date").select_related('author')
-    news = all_news_except_hidden[0] if all_news_except_hidden else None
-    return render(request, 'common/index.html', {'news': news})
+    recent_news = all_news_except_hidden[:2] if all_news_except_hidden else None
+    return render(request, 'common/index.html', {'recent_news': recent_news})

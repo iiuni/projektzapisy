@@ -1,90 +1,44 @@
 {% extends "schedule/base.html" %}
+{% load crispy_forms_tags %}
 {% load static %}
 
 {% block schedule_session %} class="active"{% endblock %}
 
-{% block css %}
-    {{ block.super }}
-    <style>
-        .hidden {
-            dislay: none !important;
-        }
-    </style>
-{% endblock %}
-
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Egzaminy</li>
 {% endblock %}
 
-{% block content-width %}16{% endblock %}
-
-{% block content %}
-    <div class="span12" style="margin-left: 0;">
-        <div class="row">
-            <div class="span11"><h2>Egzaminy</h2></div>
-
-            <div class="span1" style="text-align: right;">
-                <a href="{% url 'events:session_feed' %}"><img src="{% static "feed-icon.png" %}" alt="RSS"></a>
-            </div>
-
+{% block all-content %}
+    <div class="d-flex">
+        <div class="mr-auto p-0">
+            <h2>Egzaminy</h2>
         </div>
-
-
-        <div class="row">
-
-            <div class="span12">
-            <div class="alert-message info">
-                    <a class="close" href="#">×</a>
-                    <p>Kolokwia i egzaminy w wybranym semestrze (Uwaga: wybierz semestr z prawej strony!)</p>
-                  </div>
-            </div>
-        </div>
-
-        <div class="row">
-
-            <ul style="list-style: none;">
-
-                {% regroup exams by day as terms_list %}
-
-                {% for exam in terms_list %}
-                    <li>
-                        <span><h4>{{ exam.grouper|date:"l, j E Y" }}</h4></span>
-                        {% regroup exam.list|dictsort:"event.course.entity.name" by event.course as list %}
-                        {% for ll in list %}
-                        <div>
-                            <h6><a href="{{ ll.grouper.get_absolute_url }}">{{ ll.grouper.name }}</a></h6>
-                            <ul>
-                                {% for term in ll.list %}
-                                    <li><p>{{ term.start|time }} - {{ term.end|time }}, {% if term.room %}sala <a href="{{ term.room.get_absolute_url }}">{{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</p>
-                                        </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endfor %}
-                    </li>
-                {% empty %}
-                    <li>Brak wyników dla zapytania</li>
-                {% endfor %}
-            </ul>
+        <div class="p-0">
+            <a href="{% url 'events:session_feed' %}"><img src="{% static "feed-icon.png" %}" alt="RSS"></a>
         </div>
     </div>
-        <div class="span4">
-            <form method="GET" class="form-stacked">
-                <fieldset>
-                    <legend>Filtr</legend>
-                    {% for field in exams.form %}
-                        <div class="clearfix">
-                            {{ field.label_tag }}
-                            <div class="input">
-                                {{ field }}
-                            </div>
-                        </div><!-- /clearfix -->
-                    {% endfor %}
 
-                </fieldset>
-                <input type="submit" value="Filtruj" class="btn success">
-            </form>
-
-        </div>
+    <dl>
+        {% regroup exams by day as terms_list %}
+        {% for exam in terms_list %}
+            <dt><h4>{{ exam.grouper|date:"l, j E Y" }}</h4></dt>
+            {% regroup exam.list|dictsort:"event.course.entity.name" by event.course as list %}
+            {% for ll in list %}
+                <dd>
+                    <h6><a href="{{ ll.grouper.get_absolute_url }}">{{ ll.grouper.name }}</a></h6>
+                    <ul>
+                        {% for term in ll.list %}
+                            <li>
+                                <p>{{ term.start|time }} - {{ term.end|time }}, {% if term.room %}sala <a href="{{ term.room.get_absolute_url }}">{{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+        {% endfor %}
+        {% empty %}
+            <dt>Brak wyników dla zapytania</dt>
+        {% endfor %}
+    </dl>
 {% endblock %}

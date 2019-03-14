@@ -17,30 +17,34 @@
 
 {% block poll-managment %}
 <form method="POST" action="{% url 'grade-poll-template-action' %}">{% csrf_token %}
-<div class="actions">
-	<label>Akcja:
-		<select name="action">
-		<option selected="selected" value="">---------</option>
+<div class="form-inline actions">
+	<label class="my-1 mr-2" for="action">Akcja </label>
+
+		<select name="action" class="custom-select my-1 mr-sm-2">
+		<option selected="selected" value="">Wybierz...</option>
 		<option value="delete_selected">Usuń wybrane szablony</option>
 		<option value="use_selected">Zastosuj wybrane szablony</option>
-		</select>
-	</label>
-    <label>Semester:
-        <select name="semester">
+        </select>
+        
+    <label class="my-1 mr-2" for="action">Semestr </label>
+        <select name="semestr" class="custom-select my-1 mr-sm-2">
             {% for semester in semesters %}
             <option value="{{ semester.id }}">{{ semester }}</option>
             {% endfor %}
         </select>
-
     </label>
-   	<button value="0" name="index" title="Wykonaj wybraną akcję" class="button" type="submit">Wykonaj</button>
-        <span class="action-counter" style="display: inline;"><span id="object_count">0</span> z {{templates.object_list.count}} wybranych</span>
-    <button id="new-template" value="0" name="create" title="Utwórz nowy" class="button" type="submit" style="position:absolute;right:80px">Utwórz nowy</button>
+
+    <div class="btn-group ml-lg-2 my-sm-2" role="group">
+        <button value="0" name="index" class="btn btn-success" type="submit">Wybierz</button>
+        <button id="new-template" value="0" name="create" class="btn btn-primary" type="submit">Utwórz nowy</button>
+    </div>
 </div>
-<table id="poll-managment-table">
+
+
+<table class="table table-striped" id="poll-managment-table">
 	<thead>
 	<tr>
-		<th class="action-checkbox-column"><input type="checkbox" id="action-toggle" style="display: inline;"></th>
+		<th class="action-checkbox-column"><input type="checkbox" id="action-toggle"></th>
 		<th>Szablony</th>
 	</tr>
 	</thead>

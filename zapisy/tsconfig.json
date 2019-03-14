@@ -18,6 +18,8 @@
     "types":[
       "jquery",
       "lodash",
+      "bootstrap",
+      "popper.js"
     ]
   },
   "exclude": [

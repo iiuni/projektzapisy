@@ -1,133 +1,47 @@
 {% extends "schedule/base.html" %}
-{% load el_pagination_tags %}
+{% load bootstrap_pagination %}
+{% load crispy_forms_tags %}
+
 {% block schedule_manage %} class="active"{% endblock %}
-{% block css %}
+
+{% block styles %}
     {{ block.super }}
-    <style>
-        .hidden {dislay:none!important;}
-    </style>
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-    <script type="text/javascript">
-
-    var ReservationsView = function(){
-        $('.showdecisionform').click(function(e){
-            e.preventDefault();
-            $(this).parents('li').find('.decisionform').show();
-            $(this).parent().hide();
-        });
-
-        $('#id_type').change(function(e){
-            if( $(this).val() == '0' ||  $(this).val() == '1' ){
-                $('#id_visible').val('2').attr('disabled', true);
-                $('#id_status').val('1').attr('disabled', true);
-            } else {
-
-                $('#id_visible').attr('disabled', false);
-                $('#id_status').attr('disabled', false);
-            }
-
-        }).trigger('change');
-
-    };
-    $(function(){ReservationsView();});
-    </script>    <style>
-
-
-            .tbl-border {
-            	border: 1px solid #d9deeb;
-            }
-
-            .tbl {
-            	font-size: 11px;
-            	color: #333;
-            	background-color: #fff;
-            	padding: 6px;
-            }
-
-            .tbl1 {
-            	font-size: 11px;
-            	color: #333;
-            	background-color: #fff;
-            	padding: 6px;
-            }
-
-            .tbl1 a, .tbl2 a {
-            	font-size: 12px;
-            }
-
-            .tbl1 a.profile-link, .tbl2 a.profile-link {
-            	font-size: 11px;
-            }
-
-            .tbl2 {
-            	font-size: 11px;
-            	color: #333;
-            	background-color: #ECEFF5;
-            	padding: 6px;
-            }
-
-        </style>
+<style>
+    .description a.txt-more:after  {
+        content: 'Mniej';
+    }
+    .description a:not(.txt-more):after {
+        content: 'Więcej';
+    }
+</style>
 {% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Zarządzaj</li>
 {% endblock %}
 
-{% block content-width %}16{% endblock %}
-
 {% block content %}
+    <h2>{{ title }}</h2>
 
-    {% with events.qs as qs %}
-    <div class="row">
-        <div class="span16">
-            <h2>{{ title }}</h2>
+    {% for event in qs %}
+        {% include "schedule/includes/reservation_view.html" with event=event title=title %}
+    {% empty %}
+        Brak wyników dla zapytania
+    {% endfor %}
+
+    <div class="d-flex justify-content-center">
+        {% bootstrap_paginate qs range=10 show_first_last="true" %}
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <form>
+        <legend>Filtr</legend>
+        {{ events.form|crispy }}
+        <div class="d-flex justify-content-center">
+            <input type="submit" value="Filtruj" class="btn btn-success">
         </div>
-    </div>
-
-
-    <div class="row">
-    <div class="span10">
-
-            {% paginate qs %}
-
-        {% for event in qs %}
-                <div>
-                    {% include "schedule/includes/reservation_view.html" with event=event title=title %}
-                </div>
-        {% empty %}
-            Brak wyników dla zapytania
-        {% endfor %}
-    </div>
-    <div class="span6">
-
-
-        <form action="" class="form-stacked">
-                <fieldset>
-                  <legend>Filtr</legend>
-                  {% for field in events.form %}
-                    <div class="clearfix">
-                        {{ field.label_tag }}
-                    <div class="input">
-                        {{ field }}
-                    </div>
-                  </div><!-- /clearfix -->
-                    {% endfor %}
-
-                </fieldset>
-                <input type="submit" value="Filtruj" class="btn success">
-              </form>
-
-    </div>
-    </div>
-    <div class="row">
-        <div class="span16">
-
-            {% show_pages %}
-        </div>
-    </div>
-        {% endwith %}
+    </form>
 {% endblock %}

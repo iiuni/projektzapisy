@@ -1,0 +1,66 @@
+.info-table-header
+{
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
+
+.info-table-header:not(:first-child)
+{
+    margin-top: 40px;
+}
+.btn.btn-link 
+{
+    background-color: #E6E6E6;
+    margin: 3px;
+}
+.btn.btn-link:hover
+{
+    background-color: #D5D5D5;
+}
+a.btn.btn-link 
+{
+    /* color: #474747; */
+    color: black;
+}
+span
+{
+    color: #212529;
+    font-weight: bold;
+}
+.notification-type
+{
+    background-color: #F9F9F9;
+}
+.input
+{
+    padding-left: 15px;
+}
+fieldset
+{
+    padding-bottom: 30px;
+}
+label
+{
+    min-width: 80px;
+    padding-right: 10px;
+}
+.btn.success
+{
+    margin-bottom: 15px;
+}
+.classes-list
+{
+    list-style: disc;
+}
+.blank-field
+{
+    background-color: white;
+}
+p.message
+{
+    font-size: 15px;
+    margin-bottom: 20px;
+}
