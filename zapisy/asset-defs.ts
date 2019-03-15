@@ -13,6 +13,7 @@ export default {
             "common/expose_libs.ts",
             "common/_variables.scss",
             "common/index.scss",
+            "common/cookieconsent/display-cookieconsent.ts",
         ],
         "fullcalendar": [
             "common/fullcalendar.ts"

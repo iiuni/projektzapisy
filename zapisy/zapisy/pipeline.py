@@ -3,7 +3,6 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/main.css',
             'css/fereol.css',
-            'css/cookieconsent.min.css'
         ),
         'output_filename': 'css/main.min.css',
         'extra_context': {
@@ -160,7 +159,6 @@ PIPELINE_JS = {
             'js/jquery/baseExtensions.js',
             'js/main.js',
             'js/common/bootstrap-dropdown.js',
-            'js/cookieconsent.min.js',
         ),
         'output_filename': 'js/main.min.js',
     },

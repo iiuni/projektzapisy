@@ -41,30 +41,7 @@
     {% block js %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
     <link rel="stylesheet" href="{% static "css/main.css" %}" type="text/css"
-    <script src="{% static 'js/cookieconsent.min.js' %}"></script>
-    <script>
-        window.addEventListener("load", function () {
-            window.cookieconsent.initialise({
-                "palette": {
-                    "popup": {
-                        "background": "#222222"
-                    },
-                    "button": {
-                        "background": "#00709e"
-                    }
-                },
-                "showLink": false,
-                "theme": "classic",
-                "position": "bottom",
-                "content": {
-                    "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
-                    "dismiss": "OK"
-                }
-            })
-        });
-    </script>
     <script src="{% static "js/common/utils.js" %}"></script>
     
 </head>
