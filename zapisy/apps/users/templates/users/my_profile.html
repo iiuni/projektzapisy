@@ -73,7 +73,7 @@ $('.checkall').on('click', function(){
             </tr>
             <tr>
                 <th>strona domowa</th>
-                <td><a href="{{ homepage }}">{{ request.user.employee.homepage }}</a></td>
+                <td><a href="{{ homepage }}">{{ request.user.employee.homepage|default:"" }}</a></td>
             </tr>
             <tr>
                 <th>tytuł naukowy</th>
