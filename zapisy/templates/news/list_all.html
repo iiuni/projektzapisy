@@ -18,21 +18,25 @@
 
 {% block all-content %}
 
-<h1 class="display-4 p-2">Aktualności</h1>
+<h1 class="display-1 p-2">Aktualności</h1>
 
 <div class="row p-2 m-2">
     <div class="col-10 col-md-10 col-lg-8">
-        <form class="card card-sm">
-            <div class="card-text row no-gutters align-items-center">
-                <div class="col">
-                    <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
-                        value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
-                </div>
-                <div class="col-auto p-1">
-                    <button class="btn btn-success" type="submit">Wyszukaj</button>
-                </div>
+        <form class="input-group">
+            <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
+                    value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
+            <div class="input-group-append">
+                <button class="btn btn-success" type="submit">Wyszukaj</button>
             </div>
         </form>
+        {% if query %}
+            <p class="mx-auto font-weight-bolder m-2">Wyniki wyszukiwania dla 
+                <mark class="px-2 text-monospace">{{ query|lower }}</mark>
+                <a class="btn btn-sm btn-danger ml-2" href="{% url 'news-all' %}">wyczyść filtr</a>
+            </p>
+        
+        {% endif %}
+        
     </div>
     {% if not query %}
     <div class="col-2 offset-lg-3 col-lg-1">
@@ -42,13 +46,6 @@
     </div>
     {% endif %}
 
-    {% if query %}
-    <div class="col-12">
-            <p class="mx-auto m-2"> Wyniki wyszukiwania dla <mark><b>{{ query|lower }}</b></mark>
-                <a class="btn btn-danger ml-2" href="/news">wyczyść filtr</a></p>
-    </div>
-    {% endif %}
-    
 </div>
 
 
@@ -67,7 +64,9 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p>Nie ma ogłoszeń pasujących do zapytania.</p>
+            <div class="alert alert-warning">
+                Nie ma ogłoszeń pasujących do zapytania.
+            </div>
         {% endif %}
     </div>
 </div>
