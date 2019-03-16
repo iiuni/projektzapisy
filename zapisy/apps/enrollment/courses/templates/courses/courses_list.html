@@ -30,15 +30,14 @@
     {% endif %}
 {% endblock %}
 
-{% block topContent %}
+{% block top-content %}
 {% include "common/course_list_filters.html" with custom_filters="enrollment/semesterChooser.html" %}
 {% endblock %}
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
 
 {% block content %}
-    <div id="select-course-notification" class="alert alert-primary" role="alert">
-        <a href="#" class="close">×</a>
-        <h5>{% trans "Wybierz przedmiot z listy" %}</h5>
-    </div>
+<div class="alert alert-primary" role="alert">
+    {% trans "Wybierz przedmiot z listy" %}
+</div>
 {% endblock %}

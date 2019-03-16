@@ -30,7 +30,6 @@
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     {% render_bundle 'timetable-timetable-component' %}
     
-    <div class="container">
     {% if user.student %}
     <h3>{% trans "Zajęcia, na które jesteś zapisany" %}</h3>
     <div class="table-responsive">
@@ -97,6 +96,5 @@
     </table>
     </div>  
     {% endif %}
-    </div>
 {% endblock %}
 

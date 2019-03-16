@@ -13,6 +13,18 @@ html {
   -ms-text-size-adjust: 100%;
 }
 
+footer {
+  margin-top: auto;
+  padding-top: 5rem;
+  .container-fluid {
+    background-color: var(--light);
+    padding: 1rem 0;
+    p {
+      margin: .5rem 0;
+    }
+  }
+}
+
 a {
   cursor: pointer;
 }
@@ -112,11 +124,6 @@ div.top .systemtopbar ul li.active a {
       }
     }
   }
-}
-
-
-#main-content, #sidebar {
-  margin: 2em 0;
 }
 
 .top {

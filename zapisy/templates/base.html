@@ -8,7 +8,7 @@
 {% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="h-100">
 
 <head>
     <meta charset="utf-8">
@@ -43,7 +43,7 @@
     
 </head>
 
-<body>
+<body class="d-flex flex-column h-100">
     <div class="container-fluid p-0 d-print-none">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -190,77 +190,62 @@
             </div>
         </div>
     </div>
-    <div>
-        {% if user.student and not user.student.consent_answered %}
-            {% include "consent-dialog.html" %}
-        {% endif %}
-        <div class="container content-container">
+    {% if user.student and not user.student.consent_answered %}
+        {% include "consent-dialog.html" %}
+    {% endif %}
+    <div class="container sidebar-right" id="main-content-container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% block bread %}
+                {% endblock %}
+            </ol>
+        </nav>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+            {# Use this block if you don't want a layout with right-hand sidebar #}
+            {% block all-content %}
             <div class="row d-print-none">
                 <div class="col">
-                    <nav aria-label="breadcrumb" role="navigation">
-                        <ol class="breadcrumb">
-                            {% block bread %}
-                            {% endblock %}
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-            {% if messages %}
-                <div class="row">
-                    <div class="col">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-            <div class="container sidebar-right" id="main-content-container">
-                {# Use this block if you don't want a layout with right-hand sidebar #}
-                {% block all-content %}
-                <div class="row d-print-none">
-                    {% block topContent %}
+                    {% block top-content %}
                     {% endblock %}
                 </div>
-                <div class="row">
-                    <div class="col col-lg-9 col-12">
-                        {# WARNING ajaxCourseLoad.ts depends on this #}
-                        <div id="main-content">
-                            {% block content %}
-                            {% endblock %}
-                        </div>
-                    </div>
-                    <nav class="col col-lg-3 col-12 d-print-none" id="sidebar">
-                        {% block sidebar %}
-                        {% endblock %}
-                    </nav>
-                </div>
-                {% endblock %}
             </div>
-
-            <div class="row d-print-none">
-                <div class="col">
-                    <footer class="sticky-footer">
-                        <p>
-                            &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-                            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                            <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-                            {% endif %}
-                            | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
-                            Wygenerowano: {% now "H:i:s" %}
-                            {% should_display_debug as display_debug %}
-                            {% if display_debug is True %}
-                            {% autoescape off %}
-                            {% debug_info %}
-                            {% endautoescape %}
-                            {% endif %}
-                        </p>
-                    </footer>
+            <div class="row my-4">
+                <div class="col-lg-9 col-12" id="main-content">
+                    {# WARNING ajaxCourseLoad.ts depends on this #}
+                        {% block content %}
+                        {% endblock %}
                 </div>
+                <nav class="col-lg-3 col-12 d-print-none" id="sidebar">
+                    {% block sidebar %}
+                    {% endblock %}
+                </nav>
+            </div>
+            {% endblock %}
+    </div>
+    <footer class="mt-auto d-print-none">
+        <div class="container-fluid">
+            <div class="container">
+                <p>
+                    &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                    {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                    <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                    {% endif %}
+                    | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                    Wygenerowano: {% now "H:i:s" %}
+                    {% should_display_debug as display_debug %}
+                    {% if display_debug is True %}
+                    {% autoescape off %}
+                    {% debug_info %}
+                    {% endautoescape %}
+                    {% endif %}
+                </p>
             </div>
         </div>
-    </div>
+    </footer>
 </body>
 
 </html>
