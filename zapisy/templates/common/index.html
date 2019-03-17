@@ -11,7 +11,7 @@
 {% block all-content %}
 
     <div class="jumbotron jumbotron-fluid shadow-sm p-4">
-        <div class="container container-fluid">
+        <div class="container">
             <h2 class="display-2">Aktualności</h2>
             <div class="container">
                 {% for news in recent_news %}
@@ -19,7 +19,7 @@
                     <h3>{{ news.title }}</h3>
                     <span>{{ news.date|date:"l, d.m.Y - G:i" }}
                         &mdash; {{ news.author.get_full_name }}</span>
-                    <p>{{ news.body|safe }}</p>
+                    <div class="my-3">{{ news.body|safe }}</div>
                 </div>
                 {% endfor %}
                 <div class="row justify-content-end">

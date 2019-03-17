@@ -2,11 +2,6 @@
 {% load compressed %}
 {% load static %}
 
-{% block styles %}
-  {% compressed_css 'my_profile' %}
-  <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
-{% endblock %}
-
 {% block bread %}
 <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
 <li class="breadcrumb-item active" aria-current="page">Zmień e-mail</li>
@@ -14,21 +9,15 @@
 
 {% block main-subtitle %}Zmień email{% endblock %}
 
-{% block content %}
-<div class="container">
-	<form action="" method="post" autocomplete="off">{% csrf_token %}
-		<fieldset>
-			<p class="info-table-header">Zmień adres email</p>
-			<div class="form-group row clearfix">
-				<label for="id_email" class="col-sm-1 col-form-label">Email</label>
-				<div class="input">
-					<input type="email" name="email" value="email@example.org" class="xlarge form-control" maxlength="254" id="id_email" size="30">
-				</div>
-			</div>
-			<div class="actions">
-				<input type="submit" class="btn btn-light" value="Zmień">
-			</div>
-		</fieldset>
-	</form>
-</div>
+{% block all-content %}
+<h4>Zmień adres email</h4>
+<form action="" method="post" autocomplete="off">{% csrf_token %}
+	<fieldset>
+		<div class="form-group">
+			<label for="id_email" class="col-sm-1 col-form-label">Email</label>
+			<input type="email" name="email" value="email@example.org" class="xlarge form-control" maxlength="254" id="id_email" size="30">
+		</div>
+		<input type="submit" class="btn btn-light" value="Zmień">
+	</fieldset>
+</form>
 {% endblock %}

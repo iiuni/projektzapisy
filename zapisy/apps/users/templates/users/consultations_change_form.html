@@ -17,38 +17,35 @@ Zmień konsultacje
 {% block main-subtitle %}Zmień konsultacje{% endblock %}
 
 {% block content %}
-<div class="container">
 	<form action='' method="post" autocomplete="off">{% csrf_token %}
 		<fieldset>
 			<p class="info-table-header">Zmień konsultacje</p>
-			<div class="form-group row">
+			<div class="form-group">
 				<label for={{form.title.label}} class="col-sm-2 col-form-label">{{form.title.label}}</label>
 				<div class="input">
 					{{ form.title }}
 				</div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group">
 				<label for={{form.room.label}} class="col-sm-2 col-form-label">{{form.room.label}}</label>
 				<div class="input">
 					{{ form.room }}
 				</div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group">
 				<label for={{form.homepage.label}} class="col-sm-2 col-form-label">{{form.homepage.label}}</label>
 				<div class="input">
 					{{ form.homepage}}
 				</div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group">
 				<label for={{form.consultations.label}} class="col-sm-2 col-form-label">{{form.consultations.label}}</label>
 				<div class="input">
 					{{ form.consultations}}
 				</div>
 			</div>
-			<div class="actions">
-				<input type="submit" class="btn btn-light" value="Zmień">
-			</div>
+			<input type="submit" class="btn btn-light" value="Zmień">
+			
 		</fieldset>
 	</form>
-</div>
 {% endblock %}

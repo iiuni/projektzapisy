@@ -4,10 +4,7 @@
 {% load static %}
 {% load filters %}
 
-{% block styles %}
-  {% compressed_css 'my_profile' %}
-  <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
-{% endblock %}
+{% load crispy_forms_tags %}
 
 {% block bread %}
     <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
@@ -17,39 +14,18 @@
 
 {% block main-subtitle %}Wyślij wiadomość{% endblock %}
 
-{% block content %}
-<div class="container">
+{% block all-content %}
     <form action='' method="post">{% csrf_token %}
-        <p class="info-table-header">Wyślij wiadomość do studentów</p>
-        <div class="form-group">
-            <label for={{form.sender.label}} class="col-form-label">{{form.sender.label}}</label>
-            <div>
-                {{ form.sender|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="form-group">
-            <label for={{form.subject.label}} class="col-form-label">{{form.subject.label}}</label>
-            <div>
-                {{ form.subject|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="form-group">
-            <label for={{form.message.label}} class="col-form-label">{{form.message.label}}</label>
-            <div>
-                {{ form.message|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="form-group">
-            <label for={{form.cc_myself.label}} class="col-form-label">{{form.cc_myself.label}}</label>
-                {{ form.cc_myself }}
-        </div>
-        <input type="submit" class="btn btn-light" value="Wyślij"/>
-        <p>Uwaga: wiadomości zostaną dostarczone w przeciągu kilku minut (nie natychmiastowo).</p>
+        {{ form|crispy }}
+        <p class="form-text text-muted">
+            <strong>Uwaga:</strong> wiadomości zostaną dostarczone w przeciągu
+            kilku minut (nie natychmiastowo).
+        </p>
+        <button class="btn btn-primary" type="submit">Wyślij</button>
     </form>
     <hr>
     <p id="mailto_all_students"><strong>{% trans "Lista adresów wszystkich aktywnych studentów" %}</strong></p>
     <div class="form-group">
         <textarea class="form-control" readonly cols=80 rows=20>{{students_mails}}</textarea>
     </div>
-</div>
 {% endblock %}
