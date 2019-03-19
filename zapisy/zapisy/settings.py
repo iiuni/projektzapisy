@@ -1,6 +1,9 @@
 import os
 import logging
 import environ
+import sys
+
+TESTING = 'test' in sys.argv
 
 from django.contrib.messages import constants as messages
 
@@ -56,8 +59,17 @@ RQ_QUEUES = {
         'DB': 0,
         'PASSWORD': '',
         'DEFAULT_TIMEOUT': 360,
+        'ASYNC': RUN_ASYNC,
+    },
+    'dispatch-notifications': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
     },
 }
+
+if TESTING:
+    RQ_QUEUES['dispatch-notifications']['ASYNC'] = False
 
 # mass-mail account
 # You can test sending with:
@@ -162,6 +174,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
+                'apps.notifications.context_processors.notification_ico',
                 'apps.users.context_processors.roles',
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE

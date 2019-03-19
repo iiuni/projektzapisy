@@ -102,7 +102,7 @@ class Group(models.Model):
             '8': 'Zajęcia sportowe',
             '10': 'Projekt',
         }
-        return types[self.type]
+        return types[str(self.type)]
 
     def get_terms_as_string(self):
         return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(),

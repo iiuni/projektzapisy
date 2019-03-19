@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from datetime import datetime, timedelta
-from apps.notifications.models import Notification
 
 
 class NewsManager(models.Manager):
@@ -81,23 +80,6 @@ class News(models.Model):
                                 default='-')
 
     objects = NewsManager()
-
-    def save(self, *args, **kwargs):
-        try:
-            old = News.objects.get(pk=self.pk)
-        except News.DoesNotExist:
-            old = None
-
-        super(News, self).save(*args, **kwargs)
-        if self.is_published() and (old and not old.is_published() or not old):
-            Notification.send_notifications(
-                'send-news', {
-                    'news_id': self.pk,
-                    'include_direct_link': True,
-                    'subject': self.title,
-                    'body': self.body,
-                    'author': self.author
-                })
 
     def is_published(self):
         return self.category != '-'

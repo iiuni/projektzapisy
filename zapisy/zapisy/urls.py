@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
 from django.views.generic import TemplateView
 from django.urls import path
 from django_cas_ng import views as cas_views
@@ -22,6 +23,8 @@ urlpatterns = [
     url(r'^statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 
+    path('django-rq/', include('django_rq.urls')),
+
     url(r'^news/', include('apps.news.urls')),
     url(r'^users/', include('apps.users.urls')),
 
@@ -37,7 +40,7 @@ urlpatterns = [
     url(r'^prefs/', include('apps.offer.preferences.urls')),
     url(r'^desiderata/', include('apps.offer.desiderata.urls')),
     url(r'^', include(('apps.schedule.urls', 'events'), namespace='events')),
-    url(r'^', include(('apps.notifications.urls', 'notifications'), namespace='notifications')),
+    url(r'^notifications/', include('apps.notifications.urls')),
     url(r'^vote/', include('apps.offer.vote.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),

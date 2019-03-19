@@ -13,7 +13,6 @@ class Migration(migrations.Migration):
         ('schedule', '0006_auto_20180525_0559'),
         ('news', '0002_auto_20180525_0559'),
         ('poll', '0005_auto_20180525_0559'),
-        ('notifications', '0002_auto_20180525_0559'),
         ('email_change', '0001_initial'),
         ('users', '0009_auto_20180420_2334'),
     ]
