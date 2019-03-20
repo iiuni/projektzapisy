@@ -2,339 +2,263 @@
 
 {% block scedule_events %} class="active"{% endblock %}
 
-
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
-    <a href="{% url 'events:event_show' %}">Wydarzenia</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:event_show' %}">Wydarzenia</a></li>
 {% endblock %}
-
-{% block styles %}
-    {{ block.super }}
-    <style>
-
-
-        .tbl-border {
-            border: 1px solid #d9deeb;
-        }
-
-
-        .tbl1 {
-            font-size: 11px;
-            color: #333;
-            background-color: #fff;
-            padding: 6px;
-        }
-
-        .tbl1 a, .tbl2 a {
-            font-size: 12px;
-        }
-
-        .tbl2 {
-            font-size: 11px;
-            color: #333;
-            background-color: #ECEFF5;
-            padding: 6px;
-        }
-
-    </style>
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(function () {
-            $('#moderationbutton').click(function () {
-                $('#moderation_messages').toggleClass('hidden');
-            });
-
-            $('#intrestedlistbutton').click(function () {
-                $('#intrestedlist').toggleClass('hidden');
-            });
-
-            $('#decisionbutton').click(function(){
-               $('#decision').toggleClass('hidden');
-            });
-        });
-    </script>
-{% endblock %}
-
-{% block content-width %}16{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="span16">
-            <h2>
-                {% if event.type == '2' %}
-                    {{ event.title }}
-                {% elif event.type == '3' %}
-                    {{ event.group }}
-                {% else %}
-                    {{ event.course }} - {{ event.get_type_display }}
-                {% endif %}
-            </h2>
-        </div>
-
-    </div>
-    <div class="row">
-        <div class="span16">
-            <table cellpadding="0" cellspacing="1" class="tbl-border"
-                   style="border: 1px solid #D9DEEB;border-bottom: 0px;">
-                <tbody>
-                <tr>
-                    <td class="tbl2" width="12%"><strong>Typ</strong></td>
-                    <td class="tbl1" width="*">{{ event.get_type_display }}</td>
-                    <td class="tbl2" width="12%"><strong>Status</strong></td>
-                    <td class="tbl1" width="20%">{{ event.get_status_display }}</td>
-                </tr>
-                <tr>
-                    <td class="tbl2"><strong>Zgłasza</strong></td>
-                    <td colspan="3" class="tbl1">
-                        <a href="">{{ event.author.get_full_name }}</a>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tbl2"><strong>Opis</strong></td>
-                    <td colspan="3" class="tbl1">
-                        <p class="long">{{ event.description }}</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tbl2"><strong>Lokalizacja</strong></td>
-                    <td colspan="3" class="tbl1">
-                        <table style="font-size:xx-small;">
-                            {% for term in event.term_set.all %}
-                            <tr>
-                                <td style="width:20px">{{ term.start|time }}</td>
-                                <td style="width:5px">-</td>
-                                <td style="width:30px">{{ term.end|time }}</td>
-                                <td style="width:100px; text-align: center">{{ term.day|date:"j E Y" }}</td>
-                                <td>{% if term.room %}<a style="font-size: xx-small" href="{{ term.room.get_absolute_url }}">Sala {{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</td>
-                                {% if  perms.schedule.manage_events %}<td>Konflikt: {% for e in term.get_conflicted %}<a href="{{ e.event.get_absolute_url }}">[link]</a> {% empty %}Brak{% endfor %}</td>{% endif %}
-                            </tr>
+    <h2>
+        {% if event.type == '2' %}
+            {{ event.title }}
+        {% elif event.type == '3' %}
+            {{ event.group }}
+        {% else %}
+            {{ event.course }} - {{ event.get_type_display }}
+        {% endif %}
+    </h2>
+    <table class="table border">
+        <tbody>
+        <tr>
+            <th width="12%" class="text-light bg-info">Typ</th>
+            <td width="*">{{ event.get_type_display }}</td>
+            <th width="12%" class="text-light bg-info">Status</th>
+            <td width="20%">{{ event.get_status_display }}</td>
+        </tr>
+        <tr>
+            <th class="text-light bg-info"">Zgłasza</th>
+            <td colspan="3">
+                <a href="">{{ event.author.get_full_name }}</a>
+            </td>
+        </tr>
+        <tr>
+            <th class="text-light bg-info">Opis</th>
+            <td colspan="3">
+                <p class="long">{{ event.description }}</p>
+            </td>
+        </tr>
+        <tr>
+            <th class="text-light bg-info">Lokalizacja</th>
+            <td colspan="3">
+                <table class="table">
+                    {% for term in event.term_set.all %}
+                    <tr class="text-center">
+                        <td>{{ term.start|time }} - {{ term.end|time }}</td>
+                        <td>{{ term.day|date:"j E Y" }}</td>
+                        <td>
+                        {% if term.room %}
+                            <a href="{{ term.room.get_absolute_url }}">
+                                Sala {{ term.room.number }}
+                            </a>
+                        {% else %}
+                            {{ term.place }}
+                        {% endif %}
+                        </td>
+                        {% if  perms.schedule.manage_events %}
+                        <td>
+                            Konflikt: 
+                            {% for e in term.get_conflicted %}
+                                <a href="{{ e.event.get_absolute_url }}">[link]</a>
+                            {% empty %}
+                                Brak
                             {% endfor %}
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
     <form action="{% url 'events:interested' event.id %}" method="POST">
-        <div class="row" style="
-    border: 1px solid #D9DEEB;
-    padding-left: 0;
-    margin-left: 0;
-    ">
-            <div class="span4" style="
-    background-color: #ECEFF5;
-    text-align: center;
-    min-height: 70px;
-    line-height: 70px;
-    margin-left: 0;
-        ">
+        <div class="alert alert-info d-flex" style="padding: 0px;" role="alert">
+            <div class="p-2"><span class="d-inline-block align-middle h-100"></span>
+                <span class="d-inline-block align-middle">
+                Obserwowane wydarzenia pojawią się w Twoim planie. Będziesz otrzymywać również powiadomienia
+                o nowych wiadomościach w wydarzeniu.
+            </span></div>
+            <div class="ml-auto p-2">
                 {% csrf_token %}
                 {% if user in event.interested.all %}
-                    <input type="submit" name="intrestoff" value="Przestań obserwować" class="btn danger span3">
+                    <input type="submit" name="intrestoff" value="Przestań obserwować" class="btn btn-danger">
                 {% else %}
-                    <input type="submit" name="intreston" value="Obserwuj" class="btn success span3">
+                    <input type="submit" name="intreston" value="Obserwuj" class="btn btn-success">
                 {% endif %}
             </div>
-            <div class="span11">
-                <p style="padding-top: 15px;">Obserwowane wydarzenia pojawią się w Twoim planie. Będziesz otrzymywać
-                    również powiadomienia
-                    o nowych wiadomościach w wydarzeniu.</p>
-            </div>
         </div>
     </form>
-    {% if event.author == user or perms.schedule.manage_events %}
-    <div class="row">
-        <div class="span4">
-            <button id="moderationbutton" type="button" class="btn span4">Wiadomości moderatorskie
-                ({{ moderation_messages.count }})
-            </button>
-        </div>
-        <div class="span4">
-            <button id="intrestedlistbutton" type="button" class="btn span4">Pokaż zainteresowanych
-                ({{ event.interested.count }})
-            </button>
-        </div>
-        <div class="span4">
+
+    <hr>
+
+{% if event.author == user or perms.schedule.manage_events %}
+    <nav>
+        <div class="nav nav-tabs"ole="tablist">
+            <a class="nav-item nav-link active" id="nav-moderation-messages-tab" data-toggle="tab" href="#nav-moderation-messages"
+                role="tab" aria-controls="nav-moderation-messages" aria-selected="true">
+                Wiadomości moderatorskie ({{ moderation_messages.count }})
+            </a>
+            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-intrestedlist"
+                role="tab" aria-controls="nav-intrestedlist" aria-selected="false">
+                Pokaż zainteresowanych ({{ event.interested.count }})
+            </a>
             {% if perms.schedule.manage_events  %}
-            <button id="decisionbutton" type="button" class="btn span4">Decyzja</button>
+            <a class="nav-item nav-link" id="nav-decision-tab" data-toggle="tab" href="#nav-decision"
+                role="tab" aria-controls="nav-decision" aria-selected="false">
+                Decyzja
+            </a>
             {% endif %}
+            <a class="nav-item nav-link" href="{% url 'events:edit' event.id %}">
+                Edytuj
+            </a>
         </div>
-        <div class="span4">
+    </nav>
 
-            <form action="{% url 'events:edit' event.id %}" method="GET">
-                <input type="submit" value="Edytuj" class="btn success span4">
-            </form>
-        </div>
-    </div>
-    {% endif %}
+    <div class="tab-content mt-2">
 
-    {% if event.author == user or perms.schedule.manage_events %}
-    <div id="moderation_messages" class="hidden">
-        <div class="row" style="padding-left: 20px;">
-            <h4>Wiadomości moderatorskie</h4>
+        <div class="tab-pane fade show active" id="nav-moderation-messages"
+            role="tabpanel" aria-labelledby="nav-moderation-messages-tab">
+            <div class="container">
 
-            <div class="span16">
-                {% for message in moderation_messages %}
+            {% for message in moderation_messages %}
+                <div class="jumbotron p-2 bg-light border">
                     <div class="row">
-                        <div class="span12">
-                            <span><a
-                                    href="">{{ message.author.get_full_name }}</a>, {{ message.created|date:"d-m-Y, H:i" }} napisał(a):</span>
-
-                            <p>{{ message.message }}</p>
+                        <div class="col">
+                        <h5 class="display-5">
+                            <a href="">{{ message.author.get_full_name }}</a>
+                        </h5>
+                        </div>
+                        <div class="col text-right">
+                            {{ message.created|date:"d-m-Y, H:i" }}
                         </div>
                     </div>
-                {% empty %}
-                    <div class="alert-message warning">
-                        <a class="close" href="#">×</a>
-
-                        <p><strong>Uwaga!</strong> Brak wiadomości.</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="span16">
-                <form action="{% url 'events:moderation' event.id %}" method="POST">
-                    {% csrf_token %}
-
-                    <div class="row">
-                        <div class="span10">
-                            <div class="row">
-                                <div class="span2">
-                                    <label for="id_mod_message">Wiadomość</label>
-                                </div>
-                                <div class="input span8">
-                                    <textarea rows="10" name="message" id="id_mod_message" required="required"
-                                              class="span7" cols="40"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="span6 help-block">Wiadomość zostanie również wysłana e-mailem</div>
-                    </div>
-                    <div class="actions">
-                        <input type="submit" class="btn success" value="Wyślij">
-                    </div>
-
-                </form>
-                <hr>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    {% if event.author == user or perms.schedule.manage_events %}
-    <div id="intrestedlist" class="row hidden">
-        <div class="span6">
-            <h3>Zainteresowani</h3>
-            {% if event.interested.all %}
-                <ul>
-                    {% for user in event.interested.all %}
-                        <li><a href="">{{ user.get_full_name }}</a></li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-
-                <div class="alert-message warning">
-                    <a class="close" href="#">×</a>
-
-                    <p>Brak osób obserwujących wydarzenie.</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-    {% if perms.schedule.manage_events %}
-    <div id="decision" class="row hidden">
-        <form action="{% url 'events:decision' event.id %}" method="POST">
-            {% csrf_token %}
-
-            <div class="row">
-                <div class="span10">
-                    <div class="row">
-                        <div class="span2">
-                            <label>Decyzja</label>
-                        </div>
-                        <div class="span8">
-                        <div class="input">
-                          <ul class="inputs-list">
-                            <li>
-                              <label>
-                                <input type="radio" name="status" value="1">
-                                <span>Zaakceptowano</span>
-                              </label>
-                            </li>
-                            <li>
-                              <label>
-                                <input type="radio" name="status" value="2">
-                                <span>Odrzucono</span>
-                              </label>
-                            </li>
-                          </ul>
-                        </div></div>
-                    </div>
-                </div>
-                <div class="span6 help-block">Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
-                </div>
-            </div>
-            <div class="actions">
-                <input type="submit" class="btn success" value="Wyślij">
-            </div>
-        </form>
-    </div>
-    {% endif %}
-
-    <div class="row" style="padding-left: 20px;">
-        <h4>Wiadomości</h4>
-
-        <div class="span16">
-            {% for message in event_messages %}
-                <div class="row">
-                    <div class="span12">
-                        <span><a href="">{{ message.author.get_full_name }}</a>, {{ message.created|date:"d-m-Y, H:i" }} napisał(a):</span>
-
-                        <p>{{ message.message }}</p>
-                    </div>
+                    <hr class="m-1 mb-2">
+                    <p>{{ message.message }}</p>
                 </div>
             {% empty %}
-                <div class="alert-message warning">
-                    <a class="close" href="#">×</a>
-
-                    <p><strong>Uwaga!</strong> Brak wiadomości.</p>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Uwaga!</strong> Brak wiadomości.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
             {% endfor %}
-        </div>
-    </div>
-    {% if event.author == user %}
-    <form action="{% url 'events:message' event.id %}" method="POST">
-        {% csrf_token %}
 
-        <div class="row">
-            <div class="span10">
-                <div class="row">
-                    <div class="span2">
-                        <label for="id_message">Wiadomość</label>
+                <form action="{% url 'events:moderation' event.id %}" method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <h3><label for="id_mod_message">Wiadomość</label></h3>
+                        <small class="text-muted">
+                            Wiadomość zostanie również wysłana e-mailem.
+                        </small>
+                        <textarea rows="10" name="message" id="id_mod_message" required="required"
+                            class="form-control" cols="40"></textarea>
+
                     </div>
-                    <div class="input span8">
-                        <textarea rows="10" name="message" id="id_message" required="required" class="span7"
-                                  cols="40"></textarea>
+                    <button type="submit" class="btn btn-success">Wyślij</button>
+                </form>
+
+            </div>
+        </div>
+
+
+        <div class="tab-pane fade" id="nav-intrestedlist"
+            role="tabpanel" aria-labelledby="nav-intrestedlist-tab">
+            {% if event.interested.all %}
+                <ul>
+                {% for user in event.interested.all %}
+                    <li><a href="">{{ user.get_full_name }}</a></li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    Brak osób obserwujących wydarzenie.
+                </div>
+            {% endif %}
+        </div>
+
+
+    {% if perms.schedule.manage_events %}
+        <div class="tab-pane fade" id="nav-decision"
+            role="tabpanel" aria-labelledby="nav-decision-tab">
+            <form action="{% url 'events:decision' event.id %}" method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <div class="row">
+                        <legend class="col-form-label col-sm-2 pt-0">Decyzja</legend>
+                        <div class="col-sm-10">
+                            <div class="custom-radio">
+                                <input class="custom-control-input" type="radio" name="status" id="status1" value="1" checked>
+                                <label class="custom-control-label" for="status1">
+                                    Zaakceptowano
+                                </label>
+                            </div>
+                            <div class="custom-radio">
+                                <input class="custom-control-input" type="radio" name="status" id="status2" value="2">
+                                <label class="custom-control-label" for="status2">
+                                    Odrzucono
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <small class="form-text text-muted">
+                    Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
+                </small>
+                <button type="submit" class="btn btn-success">Wyślij</button>
+            </form>
+        </div>
+    {% endif %}
+
+    </div>
+    <hr>
+{% endif %}
+
+
+    <h4>Wiadomości</h4>
+    {% for message in event_messages %}
+        <div class="jumbotron p-2 bg-light border">
+            <div class="row">
+                    <div class="col">
+                    <h5 class="display-5">
+                        <a href="">{{ message.author.get_full_name }}</a>
+                    </h5>
+                    </div>
+                    <div class="col text-right">
+                        {{ message.created|date:"d-m-Y, H:i" }}
                     </div>
                 </div>
-            </div>
-            <div class="span6 help-block">Wiadomość zostanie również wysłana e-mailem do osób obserwujących. W przypadku
-                egzaminu i kolokwium otrzymają ją również osoby zapisane na dany przedmiot.
-            </div>
+            <hr class="m-1 mb-2">
+            <p>{{ message.message }}</p>
         </div>
-        <div class="actions">
-            <input type="submit" class="btn success" value="Wyślij">
+    {% empty %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>Uwaga!</strong> Brak wiadomości.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+    {% endfor %}
 
+
+{% if not event.author == user %}
+    <form class="mb-3" action="{% url 'events:message' event.id %}" method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <h3><label for="id_message">Wiadomość</label></h3>
+            <small class="text-muted">
+                Wiadomość zostanie również wysłana e-mailem do osób obserwujących. W przypadku
+                egzaminu i kolokwium otrzymają ją również osoby zapisane na dany przedmiot.
+            </small>
+            <textarea rows="10" name="message" id="id_message" required="required"
+                class="form-control" cols="40"></textarea>
+
+        </div>
+        <button type="submit" class="btn btn-success">Wyślij</button>
     </form>
-    {% endif %}
+{% endif %}
 {% endblock %}

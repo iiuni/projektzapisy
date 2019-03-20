@@ -13,7 +13,6 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "env/apache_setup.sh"
   config.vm.provision :shell, path: "env/postgre_setup.sh"
   config.vm.provision :shell, path: "env/tools_install.sh"
-  config.vm.provision :shell, path: "env/firefox_and_geckodriver_setup.sh"
   config.vm.provision :shell, path: "env/nodejs_setup.sh"
   config.vm.provision :shell, path: "env/py3.sh"
   config.vm.provision :shell, path: "env/webpack_setup.sh", privileged: false

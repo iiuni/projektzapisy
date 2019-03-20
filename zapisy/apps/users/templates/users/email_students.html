@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load compressed %}
+{% load static %}
+{% load filters %}
+
+{% load crispy_forms_tags %}
+
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-<a href="{% url 'my-profile' %}">Moje konto</a> &raquo;
-Wyślij wiadomość do studentów
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="/users">Moje konto</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Wyślij wiadomość do studentów</li>
 {% endblock %}
 
-{% block content %}
+{% block main-subtitle %}Wyślij wiadomość{% endblock %}
 
-<form action='' method="POST">{% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" class="btn success" value="Wyślij"/>
-    Uwaga: wiadomości zostaną dostarczone w przeciągu kilku minut (nie natychmiastowo).
-</form>
-<hr>
-<p id="mailto_all_students"><strong>{% trans "Lista adresów wszystkich aktywnych studentów" %}</strong></p>:
-<textarea readonly cols=80 rows=20>{{students_mails}}</textarea>
-
+{% block all-content %}
+    <form action='' method="post">{% csrf_token %}
+        {{ form|crispy }}
+        <p class="form-text text-muted">
+            <strong>Uwaga:</strong> wiadomości zostaną dostarczone w przeciągu
+            kilku minut (nie natychmiastowo).
+        </p>
+        <button class="btn btn-primary" type="submit">Wyślij</button>
+    </form>
+    <hr>
+    <p id="mailto_all_students"><strong>{% trans "Lista adresów wszystkich aktywnych studentów" %}</strong></p>
+    <div class="form-group">
+        <textarea class="form-control" readonly cols=80 rows=20>{{students_mails}}</textarea>
+    </div>
 {% endblock %}
-

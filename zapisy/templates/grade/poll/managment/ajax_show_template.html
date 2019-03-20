@@ -1,4 +1,4 @@
-﻿<table>
+﻿<table class="table table-striped">
     <tr><td>Typ studiów:</td><td>{% if template.studies_type %}{{ template.studies_type }}{% else %}Wszystkie{% endif %}</td></tr>
     <tr><td>Przedmiot:</td><td>{% if template.course %}{{ template.course.entity }}{% else %}{% if template.no_course %}Wszystkie{% else %}Brak{% endif %}{% endif %}</td></tr>
     <tr><td>Typ grupy:</td><td>{% if template.group_type %}{{ template.get_group_type_display }}{% else %}Wszystkie{% endif %}</td></tr>

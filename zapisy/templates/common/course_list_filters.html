@@ -1,103 +1,100 @@
 {% load i18n %}
 
-	<div id="enr-coursesList-top-bar" class="main-top-bar">
-	<table id="filterTable">
-	<tr>
-	<td>
-		<fieldset>
-			<legend><span>{% trans "Filtrowanie" %}</span></legend>
-			<div class="main-filter-input">
-				<input class="text filter-phrase" type="text" />
-				<input class="reset filter-phrase-reset" type="button" value="X" style="display: inline-block;">
-			</div>
-			
-			<div id="tagsEffectsFilters" style="display: none">
-                <hr class="filterListDivider">
+<div id="enr-coursesList-top-bar" class="col main-top-bar">
+    <div class="row" id="filterTable">
+
+        <div class="col-md-4">
+            <label for="filter-phrase">{% trans "Filtrowanie" %}</label>
+            <div class="form-group input-group main-filter-input">
+            <input class="form-control text filter-phrase" id="filter-phrase" type="text" aria-describedby="button-addon1"/>
+            <div class="input-group-append">
+                <button class="btn reset filter-phrase-reset btn-outline-secondary" type="button" id="button-addon1">x</button>
+            </div>
+            </div>
+
+            <div id="tagsEffectsFilters" style="display: none">
                 <br>
                 <legend><span>{% trans "Efekty kształcenia" %}</span></legend>
-                <div>
+                <div class="form-group">
                     <label style="font-size: 11px"><input id="effectsSearchEnabled" type="checkbox" onclick="onEffectsFilterToggled();">&nbsp;Włącz filtrowanie po efektach kształcenia</label>
-                    <select disabled="disabled" id="enr-courseFilter-effects" class="courseListMultipleSelect" multiple>
+                    <select disabled="disabled" id="enr-courseFilter-effects" class="form-control courseListMultipleSelect" multiple>
                         {% for effect in effects %}
                             <option value="{{ effect.id }}">{{ effect.group_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 
-                <hr class="filterListDivider">
                 <br>
                 <legend><span>{% trans "Tagi" %}</span></legend>
-                <div>
+                <div class="form-group">
                     <label style="font-size: 11px"><input id="tagsSearchEnabled" type="checkbox" onclick="onTagsFilterToggled();">&nbsp;Włącz filtrowanie po tagach</label>
-                    <select disabled="disabled" id="enr-courseFilter-tags" class="courseListMultipleSelect" multiple>
+                    <select disabled="disabled" id="enr-courseFilter-tags" class="form-control courseListMultipleSelect" multiple>
                         {% for tag in tags %}
                             <option value="{{ tag.id }}">{{ tag.full_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <hr class="filterListDivider">
                 <p class="tagsEffectsFilterHint">
                     {% trans "Możesz zaznaczyć wiele tagów/efektów naraz. Wyświetlone zostaną wówczas wszystkie przedmioty, które zaliczają co najmniej jeden z wybranych tagów/efektów (alternatywa logiczna)." %}
                 </p>
             </div>
             <div class="showMoreFiltersContainer">
-                <a id="tagsEffectsFiltersToggle" href="javascript: void(0)" onclick="effectsTagsFiltersToggled();">
-                    pokaż filtry efektów/tagów
-                </a>
+                    <a id="tagsEffectsFiltersToggle" href="javascript: void(0)" onclick="effectsTagsFiltersToggled();">
+                        pokaż filtry efektów/tagów
+                    </a>
             </div>
-		</fieldset>
-		</td>
-		<td>
-		<fieldset class="course-type-filter">
-			<legend><span>{% trans "Rodzaj przedmiotu" %}</span></legend>
-			
-			<ol class="filterList" id="typeFilterList">
-			{% for type in types_list %}
-				<li class="checkbox" {% if not type.meta_type %} style="display: none;" {% endif %}>
-					<input type="checkbox" checked="checked" id="filter-course-type-{{ type.id }}"
-					class="{% if type.meta_type %}filter-course-type-meta {% endif %} courseTypeClickable" value="{{ type.id }}"/>
-					<input type="hidden" class="group-id" value="{{ type.group.id }}" />
-					<label for="filter-course-type-{{ type.id }}" class="courseTypeClickable">&nbsp;{{ type.name }}</label>
-				</li>
-			{% endfor %}
-			
-			<li class="checkbox" style=""><input checked="checked" class="filter-course-type-meta" id="filter-course-type-0" value="0" type="checkbox">
-			<input class="group-id" value="" type="hidden"><label for="filter-course-type-0" style="-moz-user-select: none;">&nbsp;Inne</label></li>
-			</ol>
-			
-			<div class="showMoreFiltersContainer">
-                <a id="extraCourseTypeFiltersToggle" href="javascript: void(0)">
-                    pokaż więcej filtrów
-                </a>
+        </div>
+
+        <div class="col-md-4 ">
+            <div class=" form-group course-type-filter">
+                <label for="filterList">{% trans "Rodzaj przedmiotu" %}</label>
+                <ol class="filterList" id="typeFilterList">
+                    {% for type in types_list %}
+                        <li class="checkbox" {% if not type.meta_type %} style="display: none;" {% endif %}>
+                            <input type="checkbox" checked="checked" id="filter-course-type-{{ type.id }}"
+                            class="{% if type.meta_type %}filter-course-type-meta {% endif %} courseTypeClickable" value="{{ type.id }}"/>
+                            <input type="hidden" class="group-id" value="{{ type.group.id }}" />
+                            <label for="filter-course-type-{{ type.id }}" class="courseTypeClickable">&nbsp;{{ type.name }}</label>
+                        </li>
+                    {% endfor %}
+                    
+                    <li class="checkbox" style=""><input checked="checked" class="filter-course-type-meta" id="filter-course-type-0" value="0" type="checkbox">
+                    <input class="group-id" value="" type="hidden"><label for="filter-course-type-0" style="-moz-user-select: none;">&nbsp;Inne</label></li>
+                    </ol>
+                    
+                    <div class="showMoreFiltersContainer">
+                        <a id="extraCourseTypeFiltersToggle" href="javascript: void(0)">
+                            pokaż więcej filtrów
+                        </a>
+                    </div>
             </div>
-		</fieldset>
-		</td>
-		<td>
-		<fieldset id="enr-coursesList-other">
-			<legend><span>{% trans "Inne" %}</span></legend>
-			{% if custom_filters != None %}
-                {% include custom_filters %}
-            {% endif %}
-			<ol class="filterList">
-                {% comment %}
-                {% if user.student %}
-                    <li class="checkbox">
-                    <input type="checkbox" id="enr-hidesigned" /><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label>
-                    </li>
-                {% else %}
-                    <li class="checkbox" style="display: none;">
-                    <input type="checkbox" id="enr-hidesigned"/><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label>
-                    </li>
+        </div>
+
+        <div class="col-md-4">
+            <div id="enr-coursesList-other">
+                <label for="filterList">{% trans "Inne" %}</label>
+                {% if custom_filters != None %}
+                    {% include custom_filters %}
                 {% endif %}
-                {% endcomment %}
-                
-                <li class="checkbox"><input type="checkbox" id="enr-courseFilter-english" checked="checked"/><label for="enr-courseFilter-english">{% trans "Pokaż przedmioty prowadzone w j. angielskim" %}</label></li>
-                <li class="checkbox"><input type="checkbox" id="enr-courseFilter-exam" checked="checked"/><label for="enr-courseFilter-exam">{% trans "Pokaż przedmioty kończące się egzaminem" %}</label></li>
-                <li class="checkbox"><input type="checkbox" id="enr-courseFilter-suggestedForFirstYear" {% if user.student.is_first_year_student %}checked="checked"{% endif %}/><label for="enr-courseFilter-suggestedForFirstYear">{% trans "Pokaż tylko przedmioty zalecane dla 1 roku" %}</label></li>
-            </ol>
-		</fieldset>
-		</td>
-		</tr>
-		</table>
-	</div>
+                <ol class="form-group filterList">
+                    {% comment %}
+                    {% if user.student %}
+                        <li class="checkbox">
+                        <input type="checkbox" id="enr-hidesigned" /><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label>
+                        </li>
+                    {% else %}
+                        <li class="checkbox" style="display: none;">
+                        <input type="checkbox" id="enr-hidesigned"/><label for="enr-hidesigned">{% trans "Schowaj przedmioty, na które byłem zapisany" %}</label>
+                        </li>
+                    {% endif %}
+                    {% endcomment %}
+                    
+                    <li class="checkbox"><input type="checkbox" id="enr-courseFilter-english" checked="checked"/><label for="enr-courseFilter-english">{% trans "Pokaż przedmioty prowadzone w j. angielskim" %}</label></li>
+                    <li class="checkbox"><input type="checkbox" id="enr-courseFilter-exam" checked="checked"/><label for="enr-courseFilter-exam">{% trans "Pokaż przedmioty kończące się egzaminem" %}</label></li>
+                    <li class="checkbox"><input type="checkbox" id="enr-courseFilter-suggestedForFirstYear" {% if user.student.is_first_year_student %}checked="checked"{% endif %}/><label for="enr-courseFilter-suggestedForFirstYear">{% trans "Pokaż tylko przedmioty zalecane dla 1 roku" %}</label></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
  

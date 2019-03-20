@@ -775,13 +775,14 @@ def get_courses_for_user(request, semester):
         Employee.DoesNotExist: If the user in the request is not 'staff' and
             not an employee.
     """
-    if request.user.is_staff:
+    user = request.user
+    if user.is_staff:
         return Course.objects.filter(semester=semester).order_by('entity__name')
     else:
-        courses = Group.objects.filter(course__semester=semester, teacher=request.user.employee)\
+        courses = Group.objects.filter(course__semester=semester, teacher=user.employee)\
             .values_list('course__pk', flat=True)
         return Course.objects.filter(Q(semester=semester), Q(
-            teachers=request.user.employee) | Q(pk__in=courses)) .order_by('name')
+            entity__owner=user.employee) | Q(pk__in=courses)).order_by('name')
 
 
 def get_groups_for_user(request, type, course):
@@ -790,14 +791,15 @@ def get_groups_for_user(request, type, course):
     Raises:
         Employee.DoesNotExist: If the user in the request is not an employee.
     """
-    sub = Course.objects.filter(pk=course, teachers=request.user.employee)
-    if request.user.is_staff or sub:
+    user = request.user
+    sub = Course.objects.filter(pk=course, entity__owner=user.employee)
+    if user.is_staff or sub:
         return Group.objects.filter(type=type, course=course).order_by('teacher')
     else:
         return Group.objects.filter(
             type=type,
             course=course,
-            teacher=request.user.employee).order_by('teacher')
+            teacher=user.employee).order_by('teacher')
 
 
 def make_pages(pages, page_number):

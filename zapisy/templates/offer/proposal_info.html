@@ -1,25 +1,25 @@
-    <table class="table-info">
+    <table class="table table-striped text-muted" id="table-info">
         {% if course.ects %}
         <tr>
-            <th>ECTS</th>
+            <th scope="row">ECTS</th>
             <td>{{ course.ects }}</td>
         </tr>
         {% endif %}
 
         <tr>
-            <th>Semestr</th>
+            <th scope="row">Semestr</th>
             <td>{{ course.get_semester_display }}</td>
         </tr>
 
         <tr>
-            <th>Status</th>
+            <th scope="row">Status</th>
             <td>{{ course.get_status_display }}</td>
         </tr>
 
 
         {% if course.get_lectures or course.get_exercises or course.get_laboratories or course.get_repetitions %}
             <tr>
-                <th>Liczba godzin</th>
+                <th scope="row">Liczba godzin</th>
                 <td>{% if course.get_lectures %}{{ course.get_lectures }}
                     (wyk) {% if course.get_exercises or course.get_laboratories or course.get_repetitions or course.get_exercises_laboratories %}
                         +{% endif %}{% endif %}
@@ -35,14 +35,14 @@
         {% endif %}
         {% if course.english %}
             <tr>
-                <th>Przedmiot prowadzony w języku angielskim</th>
+                <th scope="row">Przedmiot prowadzony w języku angielskim</th>
                 <td>Tak</td>
             </tr>
         {% endif %}
         {% include "common/common_course_info.html" with course_entity=course %}
         {% if course.web_page %}
             <tr>
-                <th>Strona WWW</th>
+                <th scope="row">Strona WWW</th>
                 <td><a href="{{ course.web_page }}">{{ course.web_page }}</a></td>
             </tr>
         {% endif %}
@@ -50,28 +50,28 @@
         TODO: turn this on when requirements are enabled
         on the backend
         <tr>
-            <th>Wymagania</th>
+            <th scope="row">Wymagania</th>
             <td>{% if course.information.requirements.all %}{{ course.information.requirements.all|join:", " }}{% else %}Brak{% endif %}</td>
         </tr>
         {% endcomment %}
         {% if course.created %}
             <tr>
-                <th>Utworzono</th>
+                <th scope="row">Utworzono</th>
                 <td>{{ course.created }}</td>
             </tr>
         {% endif %}
         {% if course.edited %}
             <tr>
-                <th>Aktualizacja</th>
+                <th scope="row">Aktualizacja</th>
                 <td>{{ course.edited }}</td>
             </tr>
         {% endif %}
 
     </table>
 
-    <div class="description">
+    <div class="description text-muted">
 
-        <h5>Opis przedmiotu:</h5>
+        <h5 class="text-dark font-weight-bold">Opis przedmiotu:</h5>
         {% if course.description %}
         <p>{{ course.description|safe }}</p>
         {% else %}

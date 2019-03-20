@@ -1,60 +1,131 @@
-from rest_framework import viewsets
-from rest_framework.authentication import (BasicAuthentication,
-                                           SessionAuthentication)
+from rest_framework import viewsets, pagination
+from rest_framework.permissions import IsAdminUser
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models import Course, CourseEntity, Group, Semester
+from apps.enrollment.courses.models.term import Term
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee
-from apps.users.utils import StaffPermission
+from apps.users.models import Employee, Student
 
-from .serializers import (ClassroomSerializer, DesiderataOtherSerializer,
-                          DesiderataSerializer, EmployeeSerializer,
-                          SemesterSerializer, SpecialReservationSerializer,
-                          SingleVoteSerializer, SystemStateSerializer)
+from apps.api.rest.v1 import serializers
+
+
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    """Paginates objects list."""
+    page_size = 200
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get']
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
     queryset = Semester.objects.order_by('-semester_beginning')
-    serializer_class = SemesterSerializer
+    serializer_class = serializers.SemesterSerializer
+
+
+class CourseEntityViewSet(viewsets.ModelViewSet):
+    """Allows modifying CourseEntity `usos_kod` field."""
+    http_method_names = ['patch']
+    permission_classes = (IsAdminUser,)
+    queryset = CourseEntity.objects.select_related('type')
+    serializer_class = serializers.CourseEntitySerializer
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    """Lists all courses.
+
+    To only show courses in a given semester, query:
+        /api/v1/?semester={semester_id}
+    """
+    http_method_names = ['get']
+    permission_classes = (IsAdminUser,)
+    queryset = Course.objects.select_related('entity', 'entity__type', 'semester')
+    filter_fields = ['semester']
+    serializer_class = serializers.CourseSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
+    queryset = Group.objects.select_related('course', 'course__entity', 'course__entity__type',
+                                            'course__semester', 'teacher', 'teacher__user')
+    filter_fields = ['course__semester']
+    serializer_class = serializers.GroupSerializer
+    pagination_class = StandardResultsSetPagination
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get']
-    permission_classes = (StaffPermission,)
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
     queryset = Classroom.objects.all()
-    serializer_class = ClassroomSerializer
+    serializer_class = serializers.ClassroomSerializer
+
+
+class TermViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
+    queryset = Term.objects.select_related('group', 'group__course',
+                                           'group__course__semester').prefetch_related('classrooms')
+    filter_fields = ['group__course__semester']
+    serializer_class = serializers.TermSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class RecordViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    permission_classes = (IsAdminUser,)
+    queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
+        'group', 'group__course', 'group__course__semester', 'student', 'student__user')
+    filter_fields = ['group__course__semester']
+    serializer_class = serializers.RecordSerializer
+    pagination_class = StandardResultsSetPagination
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get']
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
+    queryset = Employee.objects.select_related('user')
+    serializer_class = serializers.EmployeeSerializer
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    """Dumps the list of all the students.
+
+    To only list active students query:
+        /api/v1/students/?status=0.
+    """
+    http_method_names = ['get', 'patch']
+    permission_classes = (IsAdminUser,)
+    queryset = Student.objects.select_related('user')
+    serializer_class = serializers.StudentSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_fields = ['status']
 
 
 class DesiderataViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
-    permission_classes = (StaffPermission,)
+    permission_classes = (IsAdminUser,)
     queryset = Desiderata.objects.all()
-    serializer_class = DesiderataSerializer
+    serializer_class = serializers.DesiderataSerializer
     filter_fields = '__all__'
 
 
 class DesiderataOtherViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
-    permission_classes = (StaffPermission,)
+    permission_classes = (IsAdminUser,)
     queryset = DesiderataOther.objects.all()
-    serializer_class = DesiderataOtherSerializer
+    serializer_class = serializers.DesiderataOtherSerializer
     filter_fields = '__all__'
 
 
 class SpecialReservationViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
+    permission_classes = (IsAdminUser,)
     queryset = SpecialReservation.objects.all()
-    serializer_class = SpecialReservationSerializer
+    serializer_class = serializers.SpecialReservationSerializer
     filter_fields = '__all__'
 
 
@@ -65,8 +136,8 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
     value for clarity.
     """
     http_method_names = ['get']
-    permission_classes = (StaffPermission,)
-    serializer_class = SingleVoteSerializer
+    permission_classes = (IsAdminUser,)
+    serializer_class = serializers.SingleVoteSerializer
     filter_fields = '__all__'
 
     def get_queryset(self):
@@ -82,7 +153,7 @@ class SystemStateViewSet(viewsets.ModelViewSet):
     """Get all vote system states"""
 
     http_method_names = ['get']
-    permission_classes = (StaffPermission,)
+    permission_classes = (IsAdminUser,)
     queryset = SystemState.objects.all()
-    serializer_class = SystemStateSerializer
+    serializer_class = serializers.SystemStateSerializer
     filter_fields = '__all__'

@@ -1,9 +1,12 @@
 {% load render_bundle from webpack_loader %}
 
 <div id="student-profile">
-	<h2>{{student.get_full_name}}</h2>
-
-	<table class="table-info">
+	<h3 class="subheader">{{student.get_full_name}}</h3>
+	<table class="table table-condensed">
+			<colgroup>
+				<col class="table-info-type"></col>
+				<col></col>
+			</colgroup>
 		<tr>
 			<th>Adres email</th>
 			<td>
@@ -36,7 +39,7 @@
         {% endif %}
 	</table>
 
-	<h3>Plan zajęć:</h3>
+	<h3 class="subheader">Plan zajęć:</h3>
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}

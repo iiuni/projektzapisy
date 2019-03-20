@@ -1,81 +1,60 @@
 {% extends 'schedule/base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load static %}
-
 {% load compressed %}
 
+{% block events_report %} class="active"{% endblock %}
+
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
-{% endblock %}
-
-{% block styles %}
-    {{ block.super }}
-
-    <link href="{% static "css/jquery-ui-1.8.14.custom.css" %}" rel="stylesheet" type="text/css"
-          media="screen,projection"/>
-    <link href="{% static "js/timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" type="text/css"
-          media="screen,projection"/>
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Raport</li>
 {% endblock %}
 
 {% block js %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
-    <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
-    <script type="text/javascript" src="/fereol_admin/jsi18n/"></script>
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
     {% compressed_js 'proposal_edit' %}
-    <style>label { width: 50px;}</style>
-    <script type="text/javascript" src="{% static "js/timepicker/jquery.ui.timepicker.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/timepicker/i18n/jquery.ui.timepicker-pl.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery/jquery.smooth-scroll.js" %}"></script>
-    <script type="text/javascript">
-
-    var LoadPickers = function () {
-        $(".datepicker").datepicker({dateFormat: 'yy-mm-dd'});
-      }
-    window.onload = LoadPickers;
+        <script id="filtered-select-multiple-data" type="application/json">
+[{
+   "id": "#selector-widget",
+   "size": 15,
+   "txtAvailable": "Sale",
+   "txtChosen": "Wybrane"
+}]
     </script>
+    {% render_bundle "filtered-select-multiple-converter" %}
 {% endblock %}
 
+{% block all-content %}
+    <h2>Raport</h2>
+    <form action="{% url 'events:events_report' %}" method="post">
 
-{% block events_report %} class="active"{% endblock %}
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
 
-{% block content-width %}16{% endblock %}
-
-{% block content %}
-    <div class="row">
-        <div class="span15">
-            <h2>Raport</h2>
+        <div class="d-flex justify-content-center">
+            <div id="selector-widget" class="p-1 flex-fill mb-2">
+            {{ form.rooms }}
+            {{ form.rooms.errors }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="span16">
-          <form action="{% url 'events:events_report' %}" method="post">
 
-          <table>
-          {% csrf_token %}
-          {{ form.non_field_errors }}
-          {% for hidden in form.hidden_fields %}
-              {{ hidden }}
-          {% endfor %}
-          <tr>
-            <td><label for="{{ form.rooms.id_for_label }}">Sale:</label></td>
-            <td>
-              {{ form.rooms }}
-            </td>
-            <td>{{ form.rooms.errors }}</td>
-          </tr>
-          <tr>
-            <td><label for="{{ form.beg_date.id_for_label }}">Początek zapytania:</label></td>
-            <td>{{ form.beg_date }}</td>
-            <td>{{ form.beg_date.errors }}</td>
-          </tr>
-          <tr>
-            <td><label for="{{ form.end_date.id_for_label }}">Koniec zapytania:</label></td>
-            <td>{{ form.end_date }}</td>
-            <td>{{ form.beg_date.errors }}</td>
-          </tr>
-        </table>
-          <input class="btn" type="submit" value="Generuj raport" />
-          </form>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text">{{ form.beg_date.label }}</label>
+            </div>
+            {{ form.beg_date }}
+            <div class="input-group-prepend input-group-append">
+                <label class="input-group-text">{{ form.end_date.label }}</label>
+            </div>
+            {{ form.end_date }}
+            <div class="input-group-append">
+                <input type="submit" value="Generuj raport" class="btn btn-success">
+            </div>
         </div>
-    </div>
+    </form>
 {% endblock %}

@@ -1,34 +1,29 @@
-{% extends "users/employees_list.html" %}
-
-{% block enrollment_menu_employees %} class="active"{% endblock %}
-{% block main-subtitle %}Konsultacje{% endblock %}
-
 {% block content %}
         <h3>Konsultacje prowadzących:</h3>
 
         <br/>
         
         {% if employees %}
-        <table class="zebra-striped">
-            <thead>
-                <th>Imię</th>
-                <th>Nazwisko</th>
-                <th>Pokój</th>
-                <th>Konsultacje</th>
-            </thead>
-            <tbody>
-                {% for employee in employees %}
-                    <tr>
-                        <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
-                            {{employee.user.first_name}}</a></td>
-                        <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
-                            {{employee.user.last_name}}</a></td>
-                        <td>{% if employee.room %}{{employee.room}}{% endif %}</td>
-                        <td>{% if employee.consultations %}{{employee.consultations}}{% endif %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table><br />
+        <table class="table table-responsive table-hover">
+                <thead>
+                    <th scope="col">Imię</th>
+                    <th scope="col">Nazwisko</th>
+                    <th scope="col">Pokój</th>
+                    <th scope="col">Konsultacje</th>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
+                                {{employee.user.first_name}}</a></td>
+                            <td><a href="{% url 'employee-profile' employee.user.id %}" class="person">
+                                {{employee.user.last_name}}</a></td>
+                            <td>{% if employee.room %}{{employee.room}}{% endif %}</td>
+                            <td>{% if employee.consultations %}{{employee.consultations}}{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table><br />
         {% else %}
         Brak prowadzących.
         {% endif %}

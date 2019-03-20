@@ -5,24 +5,35 @@
 {% block enrollment_active %} class="active"{% endblock %}
 
 {% block system_menu %}
-    <li{% block enrollment_menu_courses %}{% endblock %}><a
-            href="{% url 'course-list' %}">{# Translators: Poziome menu na górze #}{% trans "Przedmioty" %}</a></li>
+    <li{% block enrollment_menu_courses %}{% endblock %}>
+        <a class="nav-link" href="{% url 'course-list' %}">{# Translators: Poziome menu na górze #}{% trans "Przedmioty" %}</a>
+    </li>
+
     {% if user.student or user.employee %}
-    <li{% block enrollment_menu_schedule %}{% endblock %}><a href="{% url 'my-timetable' %}">{% trans "Plan zajęć" %}</a></li>
+    <li{% block enrollment_menu_schedule %}{% endblock %}>
+        <a class="nav-link" href="{% url 'my-timetable' %}">{% trans "Plan zajęć" %}</a>
+    </li>
     {% endif %}
+
     {% if user.student %}
-    <li{% block enrollment_menu_prototype %}{% endblock %}><a
-            href="{% url 'my-prototype' %}">{% trans "Prototyp planu" %}</a></li>
+    <li{% block enrollment_menu_prototype %}{% endblock %}>
+        <a class="nav-link" href="{% url 'my-prototype' %}">{% trans "Prototyp planu" %}</a></li>
     {% endif %}
-    <li{% block enrollment_menu_employees %}{% endblock %}><a href="{% url 'employees-list' %}">{% trans "Pracownicy" %}</a>
-    </li>{% if is_employee and not is_external_contractor or is_student or user.is_staff %}
-    <li{% block enrollment_menu_students %}{% endblock %}><a href="{% url 'students-list' %}">{% trans "Studenci" %}</a>
-    </li>{% endif %}
+
+    {% if is_employee and not is_external_contractor or is_student or user.is_staff %}
+    <li{% block enrollment_menu_students %}{% endblock %}>
+        <a class="nav-link" href="{% url 'students-list' %}">{% trans "Studenci" %}</a>
+    </li>
+    {% endif %}
+
+    <li {% block enrollment_menu_employees %}{% endblock %} class="nav-item">
+        <a class="nav-link" href="{% url 'employees-list' %}">{% trans "Pracownicy" %}</a>
+    </li>
 
     {% if perms.courses.view_stats %}
-        <li{% block enrollment_statistics %}{% endblock %}>
-            <a href="{% url 'statistics:main' %}">{% trans "Statystyki" %}</a>
+        <li {% block enrollment_statistics %}{% endblock %} class="nav-item">
+            <a class="nav-link" href="{% url 'statistics:main' %}">{% trans "Statystyki" %}</a>
         </li>
     {% endif %}
-    {# end system_menu #}
+{# end system_menu #}
 {% endblock %}

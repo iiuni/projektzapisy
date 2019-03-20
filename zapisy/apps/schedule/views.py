@@ -2,6 +2,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse
@@ -10,7 +11,6 @@ from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 import operator
-
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
@@ -115,6 +115,7 @@ def session(request, semester=None):
 @login_required
 def reservations(request):
     events = EventFilter(request.GET, queryset=Event.get_all_without_courses())
+    qs = Paginator(events.qs, 10).get_page(request.GET.get('page', 1))
     title = 'Zarządzaj rezerwacjami'
     return TemplateResponse(request, 'schedule/reservations.html', locals())
 
@@ -143,6 +144,7 @@ def conflicts(request):
 @login_required
 def history(request):
     events = EventFilter(request.GET, queryset=Event.get_for_user(request.user))
+    qs = Paginator(events.qs, 10).get_page(request.GET.get('page', 1))
     title = 'Moje rezerwacje'
     return TemplateResponse(request, 'schedule/history.html', locals())
 
@@ -255,7 +257,7 @@ def statistics(request):
     semester_id = request.GET.get('semester_id', None)
     semester = Semester.get_by_id_or_default(semester_id)
 
-    exams = Course.get_courses_with_exam(semester).prefetch_related('teachers')
+    exams = Course.get_courses_with_exam(semester).select_related('entity', 'entity__owner')
 
     return TemplateResponse(request, 'schedule/statistics.html', locals())
 

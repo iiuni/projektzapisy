@@ -4,86 +4,65 @@
 {% block conflicts_manage %} class="active"{% endblock %}
 
 {% block styles %}
-    {{ block.super }}
-    <link href="{% static "css/jquery-ui-1.8.14.custom.css" %}" rel="stylesheet" type="text/css"
-          media="screen,projection"/>
-    <link href="{% static "js/timepicker/jquery.ui.timepicker.css" %}" rel="stylesheet" type="text/css"
-          media="screen,projection"/>
+{{ block.super }}
 <style>
-  #days-list { list-style: none; }
-  .rooms-list { list-style: disc; }
-  .head-list { list-style: circle; }
-  .conflicts-list { list-style: none !important; margin-left:0; }
-
+    #days-list { list-style: none; }
+    .rooms-list { list-style: disc; }
+    .head-list { list-style: circle; }
+    .conflicts-list { list-style: none !important; margin-left:0; }
 </style>
 {% endblock %}
 
-
-{% block js %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
-  <script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
-  <script type="text/javascript" src="/fereol_admin/jsi18n/"></script>
-  <script type="text/javascript" src="{% static "js/timepicker/jquery.ui.timepicker.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/timepicker/i18n/jquery.ui.timepicker-pl.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/jquery/jquery.smooth-scroll.js" %}"></script>
-  <script>
-  var LoadPickers = function () {
-      $(".datepicker").datepicker({dateFormat: 'yy-mm-dd'});
-    }
-  window.onload = LoadPickers;
-
-  </script>
-{% endblock %}
-
 {% block bread %}
-<a href="/">Strona główna</a> &raquo;
-<a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Konflikty</li>
 {% endblock %}
 
-{% block content %}
-<div class="row">
-  <div class="span16">
-    <h2>{{ title }}</h2>
-  </div>
-  <form action="{% url 'events:conflicts' %}" method="GET" class="form-stacked">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
-    Od: {{ form.beg_date }}
-    Do: {{ form.end_date }}
-    <input type="submit" value="Szukaj" class="btn success">
-  </form>
-  <ul id="days-list">
-    {% for day, rooms_data in terms.items %}
-      <li>
+{% block all-content %}
+<h2>{{ title }}</h2>
+
+<form class="form-inline" action="{% url 'events:conflicts' %}" method="GET">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text">{{ form.beg_date.label }}</label>
+        </div>
+        {{ form.beg_date }}
+        <div class="input-group-prepend input-group-append">
+            <label class="input-group-text">{{ form.end_date.label }}</label>
+        </div>
+        {{ form.end_date }}
+        <div class="input-group-append">
+            <input type="submit" value="Szukaj" class="btn btn-success">
+        </div>
+    </div>
+</form>
+
+<ul id="days-list">
+{% for day, rooms_data in terms.items %}
+    <li>
         <span><h4>{{ day|date:"l, j E Y" }}</h4></span>
         <ul class="rooms-list">
-          {% for room, data in rooms_data.items %}
+        {% for room, data in rooms_data.items %}
             <li>
-              <a href={{ room.get_absolute_url }}>Sala {{ room.number }}</a>
-              <ul class="head-list">
+                <a href={{ room.get_absolute_url }}>Sala {{ room.number }}</a>
+                <ul class="head-list">
                 {% for conflict_data in data.values %}
-                  <li>
-                    {{ conflict_data.head.pretty_print|safe }}</br>
-                    <span><i>konflikt z:</i></span>
-                    <ul class="conflicts-list">
-                      {% for conflict in conflict_data.conflicted %}
-                        <li> {{ conflict.pretty_print|safe }} </li>
-                      {% endfor %}
-                    </ul>
-                  </li>
+                    <li>
+                        {{ conflict_data.head.pretty_print|safe }}</br>
+                        <span><i>konflikt z:</i></span>
+                        <ul class="conflicts-list">
+                        {% for conflict in conflict_data.conflicted %}
+                            <li> {{ conflict.pretty_print|safe }} </li>
+                        {% endfor %}
+                        </ul>
+                    </li>
                 {% endfor %}
-              </ul>
+                </ul>
             </li>
-          {% endfor %}
+        {% endfor %}
         </ul>
-      </li>
+    </li>
     {% endfor %}
-  </ul>
-</div>
-
+</ul>
 {% endblock %}
-

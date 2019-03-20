@@ -10,52 +10,59 @@
 {% block enrollment_menu_prototype %} class="active"{% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
-	<a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+    <li class="breadcrumb-item">
+        <a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a>
+    </li>
+
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+    </li>
 {% endblock %}
 
 
 
-{% block center %}
-    <div id="timetable"></div>
+{% block all-content %}
+    <div class="row" id="timetable"></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
     {% render_bundle 'timetable-prototype-component' %}
-
+    
     {% render_bundle 'timetable-prototype-legend-stylesheet' %}
-	<hr>
-    <h4>{% trans "Legenda" %}</h4>
-    <ul class="schedule-legend">
-        <li>Prototyp <strong>aktualizuje się</strong> regularnie. Nie trzeba odświeżać tej strony.</li>
-    </ul>
-    <ul class="schedule-legend">
-        <li><div class="legend-box enrolled"></div> - Jesteś zapisany do tej grupy.</li>
-        <li><div class="legend-box enqueued"></div> - Jesteś w kolejce do tej grupy.</li>
-        <li><div class="legend-box pinned"></div> - Grupa przypięta do prototypu.</li>
-    </ul>
-    <ul class="schedule-legend">
-        <li>
-            <span class="legend-box pin"></span> - Przypina do prototypu.
-            Widoczność grupy w prototypie zostaje zapamiętana. Przycisk
-            <strong>nie zapisuje</strong> na zajęcia.
-        </li>
-        <li>
-            <span class="legend-box unpin"></span> - Odpina od prototypu.
-            Przywraca domyślną widoczność grupy w prototypie. Przycisk
-            <strong>nie wypisuje</strong> z zajęć.
-        </li>
-        <li>
-            <span class="legend-box enqueue"></span> - Zapisuje do grupy lub jej
-            kolejki. Następuje próba zapisu studenta do kolejki. Jeżeli
-            przedmiot posiada również wykład, nastąpi automatyczne dopisanie
-            także do grupy wykładowej.
-        </li>
-        <li>
-            <span class="legend-box dequeue"></span> - Wypisuje z grupy lub jej
-            kolejki. Następuje wypisanie z grupy. Wypisanie z wykładu skutkuje
-            wypisaniem się z pozostałych grup przedmiotu.
-        </li>
-    </ul>
+
+    <div class="mt-3 border-top pt-3">
+        <h4>{% trans "Legenda" %}</h4>
+        <ul class="schedule-legend">
+            <li>Prototyp <strong>aktualizuje się</strong> regularnie. Nie trzeba odświeżać tej strony.</li>
+        </ul>
+        <ul class="schedule-legend">
+            <li><div class="legend-box enrolled"></div> - Jesteś zapisany do tej grupy.</li>
+            <li><div class="legend-box enqueued"></div> - Jesteś w kolejce do tej grupy.</li>
+            <li><div class="legend-box pinned"></div> - Grupa przypięta do prototypu.</li>
+        </ul>
+        <ul class="schedule-legend">
+            <li>
+                <span class="legend-box pin"></span> - Przypina do prototypu.
+                Widoczność grupy w prototypie zostaje zapamiętana. Przycisk
+                <strong>nie zapisuje</strong> na zajęcia.
+            </li>
+            <li>
+                <span class="legend-box unpin"></span> - Odpina od prototypu.
+                Przywraca domyślną widoczność grupy w prototypie. Przycisk
+                <strong>nie wypisuje</strong> z zajęć.
+            </li>
+            <li>
+                <span class="legend-box enqueue"></span> - Zapisuje do grupy lub jej
+                kolejki. Następuje próba zapisu studenta do kolejki. Jeżeli
+                przedmiot posiada również wykład, nastąpi automatyczne dopisanie
+                także do grupy wykładowej.
+            </li>
+            <li>
+                <span class="legend-box dequeue"></span> - Wypisuje z grupy lub jej
+                kolejki. Następuje wypisanie z grupy. Wypisanie z wykładu skutkuje
+                wypisaniem się z pozostałych grup przedmiotu.
+            </li>
+        </ul>
+    </div>
 {% endblock %}
 

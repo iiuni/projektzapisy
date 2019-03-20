@@ -2,58 +2,35 @@
 
 {% block schedule_list %} class="active"{% endblock %}
 
-{% block css %}
-    {{ block.super }}
-    <style>
-        .hidden {dislay:none!important;}
-    </style>
-{% endblock %}
-
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Sale</li>
 {% endblock %}
-
-{% block content-width %}16{% endblock %}
 
 {% block content %}
-
-    <div class="row">
-        <div class="span14">
-            <div class="row">
-                <div class="span14">
-                    <h2>{% block classroomtitle %}Sale{% endblock %}</h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span14">
-                    {% block classroomview %}
-                        <div class="row">
-                        <div class="span14">
-                        <div class="alert-message warning">
-                                <a class="close" href="#">×</a>
-                                <p>Wybierz salę, by zobaczyć jakie odbywają się w niej zajęcia i wydarzenia.</p>
-                              </div>
-                        </div>
-                        </div>
-                    {% endblock %}
-                </div>
-            </div>
-        </div>
-
-        <div class="span2">
-            {% regroup rooms by get_floor_display as floor_list %}
-                {% for floor in floor_list %}
-                    <h6>{{ floor.grouper }}</h6>
-
-                    <ul style="list-style:none;">
-                        {% for r in floor.list %}
-                        <li><a href="{{ r.get_absolute_url }}"><button {% if r == room %}disabled{% endif %} class="btn span2" style="margin-bottom:3px;">{{ r.number }}</button></a></li>
-                        {% endfor %}
-                    </ul>
-                {% endfor %}
-
-        </div>
+<h2>{% block classroomtitle %}Sale{% endblock %}</h2>
+{% block classroomview %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        Wybierz salę, by zobaczyć jakie odbywają się w niej zajęcia i wydarzenia.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
+{% endblock %}
+{% endblock %}
 
-
+{% block sidebar %}
+{% regroup rooms by get_floor_display as floor_list %}
+<nav id="navbar-rooms" class="navbar navbar-light">
+    <nav class="nav nav-pills flex-column">
+    {% for floor in floor_list %}
+        <span class="text-capitalize navbar-brand" href="#">{{ floor.grouper }}</span>
+        <nav class="nav nav-pills flex-column text-center">
+            {% for r in floor.list %}
+                <a class=" nav-link ml-3 my-1 {% if r == room %}active{% else %}bg-light{% endif %}" href="{{ r.get_absolute_url }}" >{{ r.number }}</a>
+            {% endfor %}
+        </nav>
+    {% endfor %}
+    </nav>
+</nav>
 {% endblock %}

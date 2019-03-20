@@ -6,10 +6,9 @@
 {% block offer_menu_vote %} class="active"{% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
-    <h2>Głosowanie</h2>
-    {# end bread #}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item">Głosowanie</li>
 {% endblock %}
 
 {% block js %}{% endblock %}
@@ -18,11 +17,7 @@
 	{% compressed_css 'vote' %}
 {% endblock %}
 
-{% block sidebar %}{% endblock %}
-
-{% block content-width %}16{% endblock %}
-
-{% block content %}
+{% block all-content %}
 	<div id="od-vote-main">
 		{% if isVoteActive %}
 			<h3>Zasady głosowania</h3>
@@ -54,7 +49,7 @@
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas fringilla nulla sed nibh porta ultricies. Fusce lobortis nibh at ante consectetur gravida. Cras varius, nibh sit amet semper ornare, metus velit euismod eros, a lobortis ipsum sem eget nulla. Ut sagittis sodales ligula, ac congue erat mattis ut. Proin velit massa, dapibus venenatis rutrum vitae, malesuada id lacus. Suspendisse potenti. Etiam fermentum eros a lacus facilisis pulvinar. Phasellus interdum aliquet lacus, quis molestie arcu interdum commodo. Integer pellentesque sodales lorem, in suscipit metus imperdiet vel. Aliquam erat volutpat. Integer pharetra vestibulum odio eget congue. Pellentesque pellentesque enim eget nisl pulvinar vitae fringilla nisi molestie.
 			</div>
         {% else %}
-			<p class="disabled-link">Głosowanie nie jest w tej chwili aktywne.</p>
+			<p class="text-muted disabled-link">Głosowanie nie jest w tej chwili aktywne.</p>
 		{% endif %}
 
 		<p class="link"><a href="{% url 'vote-summary' %}">Podsumowanie głosowania</a></p>

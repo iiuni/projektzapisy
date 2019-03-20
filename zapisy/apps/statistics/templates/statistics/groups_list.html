@@ -1,22 +1,20 @@
 {% extends "statistics/base.html" %}
 
+{% block groups_active %}active{% endblock %}
 
-{% block groups_active %} class="active"{% endblock %}
-
-
-{% block content %}
-
+{% block all-content %}
+<div class="table-responsive">
     {% regroup groups by course as courses_list %}
 
-    <table>
-        <thead>
+    <table class="table table-striped">
+        <thead class="text-muted">
             <tr>
-                <th><h4>Prowadzący</h4></th>
-                <th><h4>Typ</h4></th>
-                <th><h4>Miejsca</h4></th>
-                <th><h4>Zapisani</h4></th>
-                <th><h4>Kolejka</h4></th>
-                <th><h4>Przypięci</h4></th>
+                <th scope="col">Prowadzący</th>
+                <th scope="col">Typ</h4>
+                <th scope="col">Miejsca</th>
+                <th scope="col">Zapisani</th>
+                <th scope="col">Kolejka</th>
+                <th scope="col">Przypięci</th>
 
             </tr>
         </thead>
@@ -26,7 +24,8 @@
                 <th colspan="12">{{ course.grouper.name }}</th>
                 </tr>
                 {% for group in course.list|dictsort:'type' %}
-                    <tr{% if group.limit < group.enrolled %} class="overlimit"{% elif group.limit == group.enrolled %} class="fulllimit"{% endif %}>
+                    <tr{% if group.limit < group.enrolled %} 
+                    class="overlimit"{% elif group.limit == group.enrolled %} class="fulllimit"{% endif %}>
                         <td>{{ group.teacher.user.get_full_name }}</td>
                         <td>{{ group.get_type_display }}</td>
                         <td>{{ group.limit }}</td>
@@ -38,4 +37,5 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

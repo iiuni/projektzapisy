@@ -658,7 +658,7 @@ def grade_logout(request):
 
 def tickets_enter(request):
     if request.user.is_authenticated:
-        return render(request, 'grade/poll/user_is_authenticated.html', {})
+        return render(request, 'grade/poll/user_is_authenticated.html', {'grade': True})
 
     grade = Semester.objects.filter(is_grade_active=True).count() > 0
     data = {}

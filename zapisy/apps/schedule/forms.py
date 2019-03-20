@@ -12,7 +12,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms.models import inlineformset_factory
 
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 
 
 class TermForm(forms.ModelForm):
@@ -79,11 +79,11 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
-        self.fields['title'].widget.attrs.update({'class': 'span7'})
-        self.fields['type'].widget.attrs.update({'class': 'span7'})
-        self.fields['course'].widget.attrs.update({'class': 'span7'})
-        self.fields['description'].widget.attrs.update({'class': 'span7'})
-        self.fields['visible'].widget.attrs.update({'checked': ''})
+        self.fields['title'].widget.attrs.update({'class': 'form-control'})
+        self.fields['type'].widget.attrs.update({'class': 'form-control'})
+        self.fields['course'].widget.attrs.update({'class': 'form-control'})
+        self.fields['description'].widget.attrs.update({'class': 'form-control'})
+        self.fields['visible'].widget.attrs.update({'checked': '', 'class': 'custom-control-input'})
 
 
 class EventModerationMessageForm(forms.ModelForm):
@@ -105,27 +105,37 @@ class DecisionForm(forms.ModelForm):
 
 
 class ReportForm(forms.Form):
+    today = date.today().isoformat()
     beg_date = forms.DateField(
+        label='Od:',
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'yyyy-mm-dd',
-                'class': 'datepicker'}))
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
     end_date = forms.DateField(
+        label='Do:',
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'yyyy-mm-dd',
-                'class': 'datepicker'}))
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
     rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
 
 
 class ConflictsForm(forms.Form):
+    today = date.today().isoformat()
     beg_date = forms.DateField(
+        label='Od:',
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'yyyy-mm-dd',
-                'class': 'datepicker'}))
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
     end_date = forms.DateField(
+        label='Do:',
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'yyyy-mm-dd',
-                'class': 'datepicker'}))
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))

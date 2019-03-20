@@ -3,36 +3,50 @@
 {% block main-subtitle %}Informacje{% endblock %}
 {% block grade_active %} class="active"{% endblock %}
 
-{% block grade-info %} class="active"{% endblock %}
+{% block grade-info %}active{% endblock %}
 
-{% block content %}
-    <div id="mainPage-container">
-   		{% if grade %}
-   			<h3>Zasady oceny</h3>
-   			<div id="od-vote-main-rules">
-   				<ol>
-                   <li><h4>Cele</h4>
-                       <p>
-                           Ocena zajęć ma na celu w pełni anonimowe zebranie informacji na temat zajęć prowadzonych w Instytucie Informatyki UWr. Posiadając takie informacje, jesteśmy w stanie pracować nad poprawą jakości naszych studiów.
-                       </p>
-                   </li>
-                   <li><h4>Przebieg</h4>
-                       <p>
-  Student po zalogowaniu powinien pobrać klucze, które umożliwią mu wypełnienie ankiet oceniających zajęcia, na które był zapisany w danym semestrze. Klucze (które są fragmentem tekstu) są tworzone przez aplikację działającą po stronie klienta i nie są w żaden sposób powiązane z użytkownikiem. Należy je skopiować z okna przeglądarki i zapisać w bezpiecznym miejscu. W czasie, gdy ocena jest aktywna, każdy użytkownik może, używając swoich kluczy, dokonać oceny (oczywiście bez logowania się do systemu). Operację tę można wykonywać wielokrotnie, dodając nowe oceny i ewentualnie zmieniając swoje poprzednie wpisy.
-                       </p>
-                   </li>
-                   <li><h4>Bonus</h4>
-                       <p>
-Każdy udział w ocenie daje *24 godzinny bonus* do otwarcia zapisów na zajęcia w kolejnym roku akademickim (maksymalnie 48 godzin). Ponieważ ocena jest anonimowa, nie jesteśmy w stanie zapamiętać rzeczywistego udziału w ocenie, pamiętamy zatem jedynie fakt pobrania kluczy -- niemniej jednak gorąco apelujemy, by każdy pobierający klucze rzeczywiście je wykorzystał do przeprowadzenia oceny.
-</p>
-                   </li>
-   				</ol>
-   			</div>
-
-           {% else %}
-   			<p class="disabled-link">Ocena nie jest w tej chwili aktywna.</p>
-   		{% endif %}
-
-   	</div>
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item active" aria-current="page">Zasady oceny</li>
 {% endblock %}
 
+
+{% block all-content %}
+    {% if grade %}
+    <h3>Zasady oceny</h3>
+    <div id="od-vote-main-rules">
+        <h4>Cele</h4>
+        <p>
+            Ocena zajęć ma na celu w pełni anonimowe zebranie informacji na temat zajęć prowadzonych w Instytucie
+            Informatyki UWr. Posiadając takie informacje, jesteśmy w stanie pracować nad poprawą jakości naszych
+            studiów.
+        </p>
+    </div>
+
+    <div id="od-vote-main-rules">
+        <h4>Przebieg</h4>
+        <p>
+            Student po zalogowaniu powinien pobrać klucze, które umożliwią mu wypełnienie ankiet oceniających zajęcia,
+            na które był zapisany w danym semestrze. Klucze (które są fragmentem tekstu) są tworzone przez aplikację
+            działającą po stronie klienta i nie są w żaden sposób powiązane z użytkownikiem. Należy je skopiować z okna
+            przeglądarki i zapisać w bezpiecznym miejscu. W czasie, gdy ocena jest aktywna, każdy użytkownik może,
+            używając swoich kluczy, dokonać oceny (oczywiście bez logowania się do systemu). Operację tę można
+            wykonywać wielokrotnie, dodając nowe oceny i ewentualnie zmieniając swoje poprzednie wpisy.
+        </p>
+    </div>
+
+    <div id="od-vote-main-rules">
+        <h4>Bonus</h4>
+        <p>
+            Każdy udział w ocenie daje *24 godzinny bonus* do otwarcia zapisów na zajęcia w kolejnym roku akademickim
+            (maksymalnie 48 godzin). Ponieważ ocena jest anonimowa, nie jesteśmy w stanie zapamiętać rzeczywistego
+            udziału w ocenie, pamiętamy zatem jedynie fakt pobrania kluczy -- niemniej jednak gorąco apelujemy, by
+            każdy pobierający klucze rzeczywiście je wykorzystał do przeprowadzenia oceny.
+        </p>
+    </div>
+
+    {% else %}
+    <p class="disabled-link">Ocena nie jest w tej chwili aktywna.</p>
+    {% endif %}
+
+    {% endblock %}

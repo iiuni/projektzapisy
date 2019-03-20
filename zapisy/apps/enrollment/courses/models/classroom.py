@@ -32,6 +32,9 @@ class Classroom(models.Model):
     can_reserve = models.BooleanField(default=False)
     slug = AutoSlugField(populate_from='number')
 
+    usos_id = models.PositiveIntegerField(
+        blank=True, null=True, unique=True, verbose_name='ID sali w systemie USOS')
+
     class Meta:
         verbose_name = 'sala'
         verbose_name_plural = 'sale'

@@ -1,0 +1,27 @@
+.termtbl1 {
+    width: 20%;
+}
+
+.termtbl4 {
+    width: 28%;
+}
+
+.termtbl2 {
+    width: 15%;
+}
+
+.termtbl2x2 {
+    width: 30%;
+}
+
+.termtbl3 {
+    width: 22%;
+}
+
+.errorlist {
+    list-style: none;
+}
+
+.errorlist > li {
+    color: red;
+}

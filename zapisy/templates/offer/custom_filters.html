@@ -1,35 +1,34 @@
 <table id="extraOfferFilters">
-<tr>
-<td>
-    <label for="enr-teacher" class="tableNameField">Prowadzący:</label>
-</td>
-<td>
-    <select id="enr-teacher">
-        <option value="-1">dowolny</option>
-        {% for teacher in teachers %}
-            <option value="{{ teacher.id }}">{{ teacher }}</option>
-        {% endfor %}
-    </select>
-</td>
-
-<tr>
-<td>
-    <label for="enr-teacher" class="tableNameField">Semestr:</label>
-</td>
-<td>
-    <select id="enr-semester">
-        <option value="any">dowolny</option>
-        <option value="l">letni</option>
-        <option value="z">zimowy</option>
-        <option value="u">nieokreślony</option>
-    </select>
-</td>
-</tr>
-</table>
-
-<hr class="filterListDivider"> 
-
-<span class="checkbox">
-    <input type="checkbox" id="enr-proposalFilter-vote" checked="checked" />
-    <label for="enr-proposalFilter-vote">Pokaż przedmioty niepoddane pod głosowanie</label>
-</span>
+        <tr>
+        <td>
+            <label for="enr-teacher" class="tableNameField">Prowadzący:</label>
+        </td>
+        <td>
+            <select id="enr-teacher">
+                <option value="-1">dowolny</option>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        
+        <tr>
+        <td>
+            <label for="enr-teacher" class="tableNameField">Semestr:</label>
+        </td>
+        <td>
+            <select id="enr-semester">
+                <option value="any">dowolny</option>
+                <option value="l">letni</option>
+                <option value="z">zimowy</option>
+                <option value="u">nieokreślony</option>
+            </select>
+        </td>
+        </tr>
+        </table>
+        
+        <hr class="filterListDivider"> 
+        
+        <ol class="filterList">
+            <li class="checkbox"><input type="checkbox" id="enr-proposalFilter-vote" checked="checked" /><label for="enr-proposalFilter-vote">Pokaż przedmioty niepoddane pod głosowanie</label></li>
+        </ol>

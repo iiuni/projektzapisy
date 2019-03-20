@@ -24,6 +24,7 @@ from apps.offer.preferences.models import Preference
 from apps.offer.proposal.forms import ProposalForm, ProposalDescriptionForm, SyllabusForm
 from apps.offer.proposal.models import Syllabus, StudentWork
 from apps.offer.proposal.exceptions import NotOwnerException
+from .forms import SelectVotingForm
 
 import json
 import logging
@@ -61,22 +62,32 @@ def offer(request, slug=None):
 
 @permission_required('proposal.can_create_offer')
 def select_for_voting(request):
-    courses = CourseEntity.noremoved.all()
-    courses = filter((lambda course: 1 <= course.get_status() <= 3), courses)
+    courses = CourseEntity.noremoved.filter(
+        status__in=[CourseEntity.STATUS_IN_OFFER, CourseEntity.STATUS_TO_VOTE])
+    courses_choices = [(x.pk, x.name) for x in courses]
+
     if request.method == 'POST':
-        for course in courses:
-            ids_for_voting = {int(x) for x in request.POST.getlist('for_voting')}
-            if not course.is_in_voting() and course.id in ids_for_voting:
-                course.mark_for_voting()
-                course.save()
-            elif course.is_in_voting() and course.id not in ids_for_voting:
-                course.status = 1
-                course.save()
+        form = SelectVotingForm(request.POST)
+        form.fields['courses'].choices = courses_choices
+        if form.is_valid():
+            selected_courses_ids = [
+                int(x) for x in form.cleaned_data['courses']
+            ]
+            for course in courses:
+                if (not course.is_in_voting() and course.id in selected_courses_ids):
+                    course.mark_for_voting()
+                    course.save()
+                elif (course.is_in_voting() and course.id not in selected_courses_ids):
+                    course.status = CourseEntity.STATUS_IN_OFFER
+                    course.save()
         return redirect('/offer/manage/select_for_voting')
     else:
-        return TemplateResponse(request,
-                                'offer/manage/select_for_voting.html',
-                                {'courses': courses})
+        courses_in_voting = courses.filter(status=CourseEntity.STATUS_TO_VOTE)
+        form = SelectVotingForm(
+            initial={'courses': [x.pk for x in courses_in_voting]})
+        form.fields["courses"].choices = courses_choices
+    return TemplateResponse(
+        request, 'offer/manage/select_for_voting.html', {'form': form})
 
 
 def all_groups(request):

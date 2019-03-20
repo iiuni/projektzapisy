@@ -1,30 +1,30 @@
 {% extends "offer/manage/base.html" %}
-{% block proposals_active %}active{% endblock %}
+{% block proposals_active %} class = "active" {% endblock %}
 
-{% block content %}
+{% block all-content %}
 <script type="text/javascript" src="/static/js/common/bootstrap-modal.js" charset="utf-8"></script>
 
-<h1>Zarządzaj propozycjami</h1>
+<h1 class="text-dark font-weight-bold">Zarządzaj propozycjami</h1>
 
-<table>
+<table class="table text-muted">
   <thead>
     <tr>
       <th>Nazwa</th>
-      <th>Zgłaszający</th>
-      <th># Efektów</th>
-      <th>Egzamin</th>
+      <th class="text-center">Zgłaszający</th>
+      <th class="text-center"># Efektów</th>
+      <th class="text-center">Egzamin</th>
     </tr>
   </thead>
   <tbody>
     {% for proposal in proposals %}
       <tr>
-        <td><a href="#" data-controls-modal="modal{{forloop.counter}}" data-backdrop="true">{{ proposal.name}}</a></td>
-        <td>{{proposal.owner}}</td>
-        <td>{{proposal.effects_count}}</td>
+        <td><a href="#" data-toggle="modal" data-target="#modal{{forloop.counter}}" data-backdrop="true">{{ proposal.name}}</a></td>
+        <td class="text-center">{{proposal.owner}}</td>
+        <td class="text-center">{{proposal.effects_count}}</td>
         {% if proposal.exam %}
-          <td>TAK</td>
+          <td class="text-center">TAK</td>
         {% else %}
-          <td>NIE</td>
+          <td class="text-center">NIE</td>
         {% endif %}
       </tr>
     {% endfor %}
@@ -32,31 +32,55 @@
 </table>
 
 {% for proposal in proposals %}
-<div id="modal{{forloop.counter}}" class="modal hide proposal-details"  style="display:none">
-  <div class="modal-header">
-    <a class="my-close" href="#">×</a>
-    <h3>{{proposal.name}}</h3>
-  </div>
-  <div class="modal-body">
-    {% include 'offer/proposal_info.html' with course=proposal %}
-  </div>
-  <div class="modal-footer">
-    <form action = "{% url 'proposal-accept' proposal.slug %}" method = "post">
-      {% csrf_token %}
-      <input type="submit" class="btn primary" value="Zaakceptuj" />
-    </form>
-    <form action = "{% url 'proposal-review' proposal.slug %}" method = "post">
-      {% csrf_token %}
-      <input type="submit" class="btn danger" value="Do poprawienia" />
-    </form>
+<div class="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title " id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
   </div>
 </div>
+
+<div id="modal{{forloop.counter}}" class="modal fade proposal-details"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+           
+              <h3 class="modal-title text-dark font-weight-bold">{{proposal.name}}</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+          </div>
+          <div class="modal-body">
+            {% include 'offer/proposal_info.html' with course=proposal %}
+          </div>
+          <div class="modal-footer">
+            <form action = "{% url 'proposal-accept' proposal.slug %}" method = "post">
+              {% csrf_token %}
+              <input type="submit" class="btn btn-primary" value="Zaakceptuj" />
+            </form>
+            <form action = "{% url 'proposal-review' proposal.slug %}" method = "post">
+              {% csrf_token %}
+              <input type="submit" class="btn btn-danger" value="Do poprawienia" />
+            </form>
+          </div>
+        </div>
+    </div>
+</div>
+
 {% endfor %}
 
-
-<script>
-  $(".modal .my-close").click(function(e) {
-    $(this).parent().parent().modal('hide');
-  });
-</script>
 {% endblock %}
+
+

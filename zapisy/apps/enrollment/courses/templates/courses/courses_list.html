@@ -11,24 +11,33 @@
 {# WARNING if you change the enr- links below make sure you don't break
     break assets/ajaxCourseLoad.ts as it depends on the DOM layout #}
 {% block bread %}
-<a href="{% url "main-page" %}">{% trans "Strona główna" %}</a>&nbsp;&raquo;&nbsp;<a
-    href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>&nbsp;<span
-        class="hidden" id="enr-course-arrow">&raquo;</span>&nbsp;<span
-            class="hidden" id="enr-course-name">{{ course.name }}</span>
-            {% if user.is_staff %}
-                <a id="enr-course-edit-link" href="" class="hidden">{% trans "Edytuj przedmiot" %}</a>
-            {% endif %}
+    <li class="breadcrumb-item">
+        <a href="{% url "main-page" %}">{% trans "Strona główna" %}</a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <a href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>
+    </li>
+
+    <li class="breadcrumb-item active hidden" id="enr-course-arrow">
+        <span class="hidden" id="enr-course-name">{{ course.name }}</span>
+    </li>
+
+    {% if user.is_staff %}
+        <li class="breadcrumb-item">
+            <a id="enr-course-edit-link" href="" class="hidden">{% trans "Edytuj przedmiot" %}</a>
+        </li>
+    {% endif %}
 {% endblock %}
 
-{% block topContent %}
+{% block top-content %}
 {% include "common/course_list_filters.html" with custom_filters="enrollment/semesterChooser.html" %}
 {% endblock %}
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
 
 {% block content %}
-    <div id="select-course-notification" class="alert-message info">
-        <a href="#" class="close">×</a>
-        <p>{% trans "Wybierz przedmiot z listy" %}</p>
-    </div>
+<div class="alert alert-primary" role="alert">
+    {% trans "Wybierz przedmiot z listy" %}
+</div>
 {% endblock %}

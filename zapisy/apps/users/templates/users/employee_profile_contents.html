@@ -1,52 +1,54 @@
 {% load render_bundle from webpack_loader %}
 
 <div id="employee-profile">
-	<h2>{{employee.get_full_name}}</h2>
-
-	<table class="table-info">
-	{% if user.is_authenticated %}
-		<tr>
-			<th>adres email</th>
-			<td>
-				{% if employee.user.email %}
-					<a href="mailto:{{employee.user.email}}">
-						{{employee.user.email}}
-					</a>
-				{% else %}
-					brak danych
-				{% endif %}
-			</td>
-		</tr>
-	{% endif %}
-		<tr>
-			<th>strona domowa</th>
-			<td>
-				{% if employee.homepage %}
-					<a href="{{employee.homepage}}">{{employee.homepage}}</a>
-				{% else %}
-					brak danych
-				{% endif %}
-			</td>
-		</tr>
-		<tr>
-			<th>pokój</th>
-			<td>
-				{% if employee.room %}
-					{{employee.room}}
-				{% else %}
-					brak danych
-				{% endif %}
-			</td>
-		</tr>
+	<h3>{{employee.get_full_name}}</h3>
+	<table class="table table-condensed">
+		<colgroup>
+			<col class="table-info-type"></col>
+			<col></col>
+		</colgroup>
+		{% if user.is_authenticated %}
+			<tr>
+				<th>adres email</th>
+				<td>
+					{% if employee.user.email %}
+						<a href="mailto:{{employee.user.email}}">
+							{{employee.user.email}}
+						</a>
+					{% else %}
+						brak danych
+					{% endif %}
+				</td>
+			</tr>
+		{% endif %}
+			<tr>
+				<th>strona domowa</th>
+				<td>
+					{% if employee.homepage %}
+						<a href="{{employee.homepage}}">{{employee.homepage}}</a>
+					{% else %}
+						brak danych
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<th>pokój</th>
+				<td>
+					{% if employee.room %}
+						{{employee.room}}
+					{% else %}
+						brak danych
+					{% endif %}
+				</td>
+			</tr>
 	</table>
-
 	{% if employee.consultations %}
-        <h3>Konsultacje:</h3>
-        <p class="consultations">{{ employee.consultations }}</p>
-        <hr>
-    {% endif %}
+		<h3>Konsultacje:</h3>
+		<p>{{ employee.consultations }}</p>
+	{% endif %}
 
-	<h3>Plan zajęć:</h3>
+	<h3 class="subheader">Plan zajęć:</h3>
+
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}

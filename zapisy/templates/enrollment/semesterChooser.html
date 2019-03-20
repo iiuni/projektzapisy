@@ -1,11 +1,10 @@
 {% load i18n %}
 
-<span class="selectbox" style="display:block; float:none;">
+<span class="form-group selectbox" style="display:block; float:none;">
 				<label for="enr-courseFilter-semester">{% trans "Semestr" %}: </label>
-				<select id="enr-courseFilter-semester">
+				<select class="form-control" id="enr-courseFilter-semester">
 					{% for semester in semester_courses %}
 						<option value="{{ semester.id }}" {% if semester.id == default_semester.id %} selected="selected" {% endif %}>{{ semester.year }} {{ semester.get_type_display }}{% if semester.id == default_semester.id %} (bieżący){% endif %}</option>
 					{% endfor %}
 				</select>
 			</span>
-			<hr class="filterListDivider"> 

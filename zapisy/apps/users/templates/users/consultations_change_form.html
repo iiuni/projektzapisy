@@ -1,4 +1,11 @@
 {% extends "base.html" %}
+{% load compressed %}
+{% load static %}
+
+{% block styles %}
+  {% compressed_css 'my_profile' %}
+  <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
+{% endblock %}
 
 {% block main-navigation %}
 <a href="/">Strona główna</a> &raquo;
@@ -6,12 +13,39 @@
 Zmień konsultacje
 {% endblock %}
 
+
+{% block main-subtitle %}Zmień konsultacje{% endblock %}
+
 {% block content %}
-<form action='' method="post" autocomplete="off">{% csrf_token %}
-	<fieldset>
-		<legend>Zmień konsultacje</legend>
-		{{form.as_p}}
-		<input type="submit" value="zmień"/>
-	</fieldset>
-</form>
+	<form action='' method="post" autocomplete="off">{% csrf_token %}
+		<fieldset>
+			<p class="info-table-header">Zmień konsultacje</p>
+			<div class="form-group">
+				<label for={{form.title.label}} class="col-sm-2 col-form-label">{{form.title.label}}</label>
+				<div class="input">
+					{{ form.title }}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for={{form.room.label}} class="col-sm-2 col-form-label">{{form.room.label}}</label>
+				<div class="input">
+					{{ form.room }}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for={{form.homepage.label}} class="col-sm-2 col-form-label">{{form.homepage.label}}</label>
+				<div class="input">
+					{{ form.homepage}}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for={{form.consultations.label}} class="col-sm-2 col-form-label">{{form.consultations.label}}</label>
+				<div class="input">
+					{{ form.consultations}}
+				</div>
+			</div>
+			<input type="submit" class="btn btn-light" value="Zmień">
+			
+		</fieldset>
+	</form>
 {% endblock %}

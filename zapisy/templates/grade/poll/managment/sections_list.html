@@ -20,34 +20,25 @@
 {% block poll-managment %}
     <form method="POST" action="{% url 'grade-poll-section_actions' %}">
         <div class="well poll-list-actions">
-            <fieldset>
                 <div class="clearfix left">
-                    <label for="action">Akcje</label>
-
-                    <div class="input">
-
-                        <select id="action" name="action" class="large">
-                            <option selected="selected" value="">---------</option>
+                    <label class="my-1 mr-2" for="action">Akcja</label>
+                        <select name="action" class="custom-select my-1 mr-sm-2">
+                            <option selected="selected" value="">Wybierz...</option>
                             <option value="delete_selected">Usuń wybrane sekcje</option>
                         </select>
-                        <button value="0" name="index" title="Wykonaj wybraną akcję" type="submit" class="btn">Wykonaj
-                        </button>
                     </div>
-                </div>
-                <div class="right">
-        <span class="action-counter" style="display: inline;"><span
-                id="object_count">0</span> z {{ polls.object_list.count }} wybranych</span>
-                    {#    {% endif %}#}
-                    <button id="new-section" value="0" name="create" title="Utwórz nową" type="submit"
-                            class="btn success">Utwórz
-                        nową
-                    </button>
-                </div>
-            </fieldset>
+        </div>                
+        
+        <div class="btn-group ml-lg-2 my-sm-2" role="group">
+                <button value="0" name="index" class="btn btn-success" type="submit">Wybierz</button>
+                <button id="new-section" value="0" name="create" class="btn btn-primary" 
+                        title="Utwórz nową" type="submit">
+                    Utwórz nową
+                </button>
         </div>
 
 
-        <table id="poll-managment-table">
+        <table class="table table-striped" id="poll-managment-table">
             <thead>
             <tr>
                 <th class="action-checkbox-column"><input type="checkbox" id="action-toggle" style="display: inline;"

@@ -528,7 +528,6 @@ class Course(models.Model):
         null=True,
         verbose_name='semestr',
         on_delete=models.CASCADE)
-    teachers = models.ManyToManyField('users.Employee', verbose_name='prowadzący', blank=True)
 
     notes = models.TextField(null=True, blank=True, verbose_name='uwagi do tej edyci przedmiotu')
     web_page = models.URLField(verbose_name='Strona WWW przedmiotu',
@@ -551,6 +550,10 @@ class Course(models.Model):
     """
     getters
     """
+    @property
+    def owner(self):
+        return self.entity.owner
+
     @property
     def exam(self):
         return self.entity.exam

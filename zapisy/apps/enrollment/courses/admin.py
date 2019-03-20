@@ -71,7 +71,7 @@ class CourseAdmin(admin.ModelAdmin):
                 'fields': [
                     'information', 'english']}), ('Szczegóły', {
                         'fields': [
-                            'records_start', 'records_end', 'teachers', 'semester', 'slug', 'web_page'], 'classes': ['collapse']}), ]
+                            'records_start', 'records_end', 'semester', 'slug', 'web_page'], 'classes': ['collapse']}), ]
     inlines = [GroupInline, ]
 
     form = CourseForm

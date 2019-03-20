@@ -114,6 +114,7 @@ class Employee(BaseUser):
         choices=EMPLOYEE_STATUS_CHOICES,
         verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
+    usos_id = models.PositiveIntegerField(verbose_name="ID w USOSie", null=True, blank=True)
 
     def has_privileges_for_group(self, group_id: int) -> bool:
         """
@@ -124,7 +125,7 @@ class Employee(BaseUser):
 
         try:
             group = Group.objects.get(pk=group_id)
-            return group.teacher == self or self in group.course.teachers.all() or self.user.is_staff
+            return group.teacher == self or group.course.owner == self or self.user.is_staff
         except Group.DoesNotExist:
             logger.error(
                 'Function Employee.has_privileges_for_group(group_id = %d) throws Group.DoesNotExist exception.' %
@@ -204,6 +205,9 @@ class Student(BaseUser):
     numeryczna_l = models.BooleanField(default=False)
     algorytmy_l = models.BooleanField(default=False)
     programowanie_l = models.BooleanField(default=False)
+
+    usos_id = models.PositiveIntegerField(
+        null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
 
     def is_active(self) -> bool:
         return self.status == 0

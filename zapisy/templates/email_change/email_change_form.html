@@ -1,21 +1,22 @@
-{% extends "email_change/base.html" %}
-z
-{% block content %}
+{% extends "base.html" %}
 
-<form action='' method="post" autocomplete="off">{% csrf_token %}
-	<fieldset>
-        <legend><h2>Zmień adres email</h2></legend>
-		<div class="clearfix">
-            <label for="id_email">Email</label>
-            <div class="input">
-              <input type="text" size="30" name="email" id="id_email" class="xlarge" value="{{ form.email.value }}">
-            </div>
-          </div>
-        <div class="actions">
-            <input type="submit" class="btn success" value="resetuj">
-          </div>
-	</fieldset>
-</form>
-        
+{% block bread %}
+  <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+  <li class="breadcrumb-item"><a href="/users">Moje konto</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Zmień e-mail</li>
 {% endblock %}
 
+{% block main-subtitle %}Zmień e-mail{% endblock %}
+
+{% block all-content %}
+  <h4>Zmień adres e-mail</h4>
+    <form action='' method="post" autocomplete="off">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_email">Email</label>
+            <input type="text" size="30" name="email" id="id_email" class="form-control" value="{{ form.email.value }}" required>
+        </div>
+        <input type="submit" class="btn btn-light" value="Resetuj">
+    </form>
+
+{% endblock %}
