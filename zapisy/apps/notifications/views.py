@@ -14,7 +14,7 @@ from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
 
 from libs.ajax_messages import AjaxFailureMessage
-
+from apps.users import views
 
 def index(request):
     if not request.user.is_authenticated:
@@ -26,7 +26,7 @@ def index(request):
         render_description(notification.description_id, notification.description_args)
         for notification in repo.get_all_for_user(request.user)
     ]
-    repo.remove_all_older_than(request.user, now)
+    #repo.remove_all_older_than(request.user, now)
 
     return render(request, 'notifications/index.html', {'notifications': notifications})
 
@@ -39,7 +39,7 @@ def preferences_save(request):
         post = form.save(commit=False)
         post.user = request.user
         post.save()
-        return HttpResponseRedirect(reverse('notifications:preferences'))
+        return HttpResponseRedirect(reverse(views.my_profile))
     else:
         messages.error(request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie")
 

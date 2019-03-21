@@ -207,39 +207,17 @@ $('.checkall').on('click', function(){
     
     <div class="mb-5">
         <h4>Ustawienia powiadomień</h4>
-        <form method="POST" action="{% url 'notifications:save' %}">
-            {% csrf_token %}
-            {{ notifications.management_form }}
-        
-            {% regroup notifications|dictsort:"category" by category as categories_list %}
-        
-            <table class="table table-condensed">
-                {% for group in categories_list %}
-                    <tr class="catgroup{{ forloop.counter }} notification-type">
-                        <th>
-                            {{ group.grouper }}
-                        </th>
-                        <th><input type="checkbox" class="checkall"></th>
-                    </tr>
-                    {% for form in group.list %}
-                    <tr class="catgroup{{ forloop.parentloop.counter }}">
-                        <td>{{ form.instance.get_type_display }}</td>
-                        <td>{{ form.value }}
-                            {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
-                            {% endfor %}</td>
-                    </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
+            <p>O czym chcesz być informowany mailowo?</p>
+                <form method="POST" action="{% url 'notifications:preferences-save' %}">
+                    {% csrf_token %}
+                    <table class="table">
+                    {{ form.as_table }}
+                    </table>
+                    <button type="submit">Zapisz</button>
+                </form>
             <p>
+                <br/>
                 <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
             </p>
-            <div class="d-flex flex-row-reverse">
-                <button type="submit" class="btn btn-light right">
-                    Zapisz
-                </button>
-            </div>
-        </form>
     </div>
 {% endblock %}

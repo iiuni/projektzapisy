@@ -1,4 +1,10 @@
-{% extends "common/index.html" %}
+{% extends "base.html" %}
+
+{% load compressed %}
+
+{% block styles %}
+{% compressed_css 'mainpage' %}
+{% endblock %}
 
 {% block main-subtitle %}Powiadomienia{% endblock %}
 
@@ -7,7 +13,7 @@
 Powiadomienia
 {% endblock %}
 
-{% block center %}
+{% block all-content %}
 <div class="notifications-list">
     <h3>Lista powiadomień</h3>
     {% if notifications %}
