@@ -83,6 +83,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                 'type': group.human_readable_type().lower()
             }))
 
+
 @receiver(post_save, sender=News)
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
@@ -94,3 +95,4 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
             NotificationType.NEWS_HAS_BEEN_ADDED, {}
         )
     )
+    

@@ -12,9 +12,9 @@ from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeac
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
-
 from libs.ajax_messages import AjaxFailureMessage
 from apps.users import views
+
 
 def index(request):
     if not request.user.is_authenticated:

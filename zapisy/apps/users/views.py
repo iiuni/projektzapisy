@@ -268,7 +268,7 @@ def my_profile(request):
 
     notifications_form = create_form(request)
     data.update({
-        'form': notifications_form,   
+        'form': notifications_form,
     })
 
     return render(request, 'users/my_profile.html', data)
