@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),
     url(r'^accounts/login$', views.login, name='cas_ng_login'),
-    url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
+    url(r'^accounts/logout$', users_views.cas_logout, name='cas_ng_logout'),
     url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
 ]
 
