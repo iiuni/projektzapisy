@@ -7,6 +7,7 @@ class NotificationType(str, Enum):
     ADDED_NEW_GROUP = 'added_new_group'
     ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER = 'assigned_to_new_group_as_teacher'
     TEACHER_HAS_BEEN_CHANGED = 'teacher_has_been_changed'
+    NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
 
 
 mapping = {
@@ -23,4 +24,6 @@ mapping = {
     NotificationType.TEACHER_HAS_BEEN_CHANGED:
     'Nastąpiła zmiana prowadzacego w grupie przedmiotu {course_name}, gdzie typ grupy to '
     '{type}, na {teacher}.',
+    NotificationType.NEWS_HAS_BEEN_ADDED:
+    'Dodano nową wiadomość w aktualnościach',
 }

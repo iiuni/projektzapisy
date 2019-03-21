@@ -4,16 +4,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.records.models import Record, Queue
+from apps.enrollment.records.models import Record
 
 
 def get_all_users_in_course_groups(course_groups: List[Group]):
-    queues = Queue.objects.filter(group__in=course_groups, deleted=False).select_related(
-        'student', 'student__user')
+    #queues = Queue.objects.filter(group__in=course_groups, deleted=False).select_related(
+    #    'student', 'student__user')
     records = Record.objects.filter(group__in=course_groups, status=1).select_related(
         'student', 'student__user')
 
-    return {element.student.user for element in queues} | {element.student.user for element in records}
+    return {element.student.user for element in records}
+
+def get_all_students():
+    records = User.objects.all()
+
+    return { element for element in records }
 
 
 class NotificationPreferencesStudent(models.Model):
@@ -24,6 +29,8 @@ class NotificationPreferencesStudent(models.Model):
                                                                      'zapisany')
     teacher_has_been_changed = models.BooleanField(default=True, verbose_name='Zmiana prowadzącego grupy z przedmiotu, '
                                                                               'na który jesteś zapisany')
+    news_has_been_added = models.BooleanField(default=True, verbose_name='Powiadomienie o nowej wiadomości w '
+                                                                                'Aktualnościach')
 
 
 class NotificationPreferencesTeacher(models.Model):

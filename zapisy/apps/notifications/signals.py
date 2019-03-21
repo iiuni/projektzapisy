@@ -3,8 +3,9 @@ from django.dispatch import receiver
 
 from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
+from apps.news.models import News
 from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.models import get_all_users_in_course_groups
+from apps.notifications.models import get_all_users_in_course_groups, get_all_students
 from apps.notifications.custom_signals import student_pulled, student_not_pulled, teacher_changed
 from apps.notifications.templates import NotificationType
 
@@ -81,3 +82,15 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                 'teacher': teacher.get_full_name(),
                 'type': group.human_readable_type().lower()
             }))
+
+@receiver(post_save, sender=News)
+def notify_that_news_was_added(sender: News, **kwargs) -> None:
+    news = kwargs['instance']
+
+    users = get_all_students()
+    notify_selected_users(
+        users,
+        Notification(
+            NotificationType.NEWS_HAS_BEEN_ADDED, {}
+        )
+    )
