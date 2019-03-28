@@ -1,8 +1,9 @@
-import logging
 import datetime
-import urllib
 import json
+import logging
 import re
+import urllib
+
 from typing import Any, Optional
 
 from django.contrib import auth, messages
@@ -327,13 +328,6 @@ def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=N
         }
         return render(request, 'users/students_list.html', data)
 
-
-@login_required
-def logout(request: HttpRequest) -> HttpResponse:
-    """logout"""
-    logger.info('User %s <id: %s> is logged out ' % (request.user.username, request.user.id))
-    auth.logout(request)
-    return HttpResponseRedirect('/')
 
 
 @login_required
