@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.urls import path
-from django_cas_ng import views
+from django_cas_ng import views as cas_views
 
 import apps.news.views
 from apps.api.rest.v1.urls import router as api_router_v1
@@ -43,9 +43,9 @@ urlpatterns = [
     url(r'^vote/', include('apps.offer.vote.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),
-    url(r'^accounts/login$', views.login, name='cas_ng_login'),
+    url(r'^accounts/login$', cas_views.login, name='cas_ng_login'),
     url(r'^accounts/logout$', users_views.cas_logout, name='cas_ng_logout'),
-    url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
+    url(r'^accounts/callback$', cas_views.callback, name='cas_ng_proxy_callback'),
 ]
 
 urlpatterns += [
