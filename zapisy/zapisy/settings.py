@@ -254,7 +254,7 @@ CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 
 # References pull request #655: https://github.com/iiuni/projektzapisy/pull/655
 # Force django_cas_ng to use protocol version 3 instead of 2 (the default).
-# This setting can be enabled as soon as the University's CAS is upgraded to a 
+# This setting can be enabled as soon as the University's CAS is upgraded to a
 # newer version. Temporary workaround: users.views.cas_logout()
 # CAS_VERSION = '3'
 

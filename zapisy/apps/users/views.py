@@ -329,7 +329,6 @@ def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=N
         return render(request, 'users/students_list.html', data)
 
 
-
 @login_required
 def cas_logout(request, **kwargs) -> HttpResponse:
     """Rewrites the logout request to correctly support user redirections.
