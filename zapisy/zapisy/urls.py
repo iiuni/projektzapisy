@@ -23,7 +23,6 @@ urlpatterns = [
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 
     url(r'^news/', include('apps.news.urls')),
-    url(r'^jstests/', TemplateView.as_view(template_name="jstests/tests.html")),
     url(r'^users/', include('apps.users.urls')),
     url('accounts/', include('apps.email_change.urls')),
 
