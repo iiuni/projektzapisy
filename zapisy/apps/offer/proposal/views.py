@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 from django.forms.models import inlineformset_factory
@@ -21,8 +21,8 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.course_type import Type
 from apps.offer.preferences.models import Preference
 
-from apps.offer.proposal.forms import ProposalForm, ProposalDescriptionForm, SyllabusForm
-from apps.offer.proposal.models import Syllabus, StudentWork
+from apps.offer.proposal.forms import ProposalForm, ProposalDescriptionForm, SyllabusForm, EditProposalForm
+from apps.offer.proposal.models import Syllabus, StudentWork, Proposal
 from apps.offer.proposal.exceptions import NotOwnerException
 from .forms import SelectVotingForm
 
@@ -197,131 +197,27 @@ def _create_missing_course_description(request, proposal):
     return description
 
 
-@login_required
 @employee_required
 def proposal_edit(request, slug=None):
-    proposal = None
-    description = None
-    syllabus = None
-    ects_field = None
-    ects = 6
-    types = Type.objects.all
-    pt = PointTypes.objects.get(name='ECTS')
-
-    if slug:
-        try:
-            proposal = CourseEntity.get_employee_proposal(request.user, slug)
-            descriptions = CourseDescription.objects.filter(entity=proposal)
-            if descriptions.count() == 0:
-                description = _create_missing_course_description(request, proposal)
-            else:
-                description = descriptions.order_by('-id')[0]
-            syllabus, _ = Syllabus.objects.get_or_create(entity=proposal)
-            ects_field, _ = PointsOfCourseEntities.objects.get_or_create(
-                entity=proposal, type_of_point=pt, program__isnull=True)
-            ects = ects_field.value
-        except NotOwnerException:
-            raise Http404
-        except ObjectDoesNotExist:
-            raise Http404
-        if (not request.user.is_staff) and (proposal.owner != request.user.employee):
-            raise Http404
-    full_edit = False
-    if request.user.has_perm('proposal.can_create_offer'):
-        full_edit = True
-    proposal_form = ProposalForm(
-        data=request.POST or None,
-        instance=proposal,
-        prefix='entity',
-        initial={
-            'ects': ects},
-        full_edit=True)
-    description_form = ProposalDescriptionForm(
-        data=request.POST or None,
-        instance=description,
-        prefix='description')
-
-    syllabus_form = SyllabusForm(data=request.POST or None, instance=syllabus, prefix='syllabus')
-    initial_data = [{'name': 'studiowanie tematyki wykładów i literatury'},
-                    {'name': 'przygotowanie do ćwiczeń'},
-                    {'name': 'przygotowanie do pracowni'},
-                    {'name': 'praca nad projektem'},
-                    {'name': 'przygotowanie do sprawdzianów/kolokwiów'},
-                    {'name': 'przygotowanie do egzaminu'},
-                    {'name': 'przygotowanie raportu/prezentacji'}]
-    extrafields = 8
-    if request.method == "POST" or (
-            syllabus is not None and len(
-            syllabus.studentwork_set.all()) > 0):
-        extrafields = 1
-    StudentWorkFormset = inlineformset_factory(
-        Syllabus, StudentWork, extra=extrafields, fields='__all__')
-    if extrafields == 1:
-        student_work_formset = StudentWorkFormset(request.POST or None, instance=syllabus)
-    else:
-        student_work_formset = StudentWorkFormset(
-            request.POST or None, instance=syllabus, initial=initial_data)
     if request.method == "POST":
-        if proposal_form.is_valid() and description_form.is_valid(
-        ) and syllabus_form.is_valid() and student_work_formset.is_valid():
-            sendnotification = False
-            new_proposal = False
-            if proposal is None:
-                new_proposal = True
-            proposal = proposal_form.save(commit=False)
-            description = description_form.save(commit=False)
-            syllabus = syllabus_form.save(commit=False)
-
-            if not proposal.owner:
-                proposal.owner = request.user.employee
-            if new_proposal or proposal.status == 5:
-                proposal.status = 0
-                sendnotification = True
-
-            proposal.save()
-
-            description.author = request.user.employee
-            description.entity_id = proposal.id
-
-            if proposal.is_proposal():
-                description.save()
-            else:
-                description.save_as_copy()
-
-            syllabus.entity_id = proposal.id
-            syllabus.save()
-            syllabus_form.save_m2m()
-            student_work_formset.instance = syllabus
-            student_work_formset.save()
-
-            if not ects_field:
-                ects_field, _ = PointsOfCourseEntities.objects.get_or_create(
-                    entity=proposal, type_of_point=pt, program__isnull=True)
-            ects_field.value = proposal_form.cleaned_data['ects']
-            ects_field.save()
-            description_form.save_m2m()
-            proposal_form.save_m2m()
-
-            proposal = proposal_for_offer(proposal.slug)
-            proposal.save()
-
-            messages.success(request, 'Propozycja zapisana')
-            if sendnotification:
-                send_notification_to_3d(proposal, new_proposal)
-                messages.success(
-                    request, 'Wysłano wiadomość do DDD z prośbą o zaakceptowanie propozycji przedmiotu')
-
-            return redirect('my-proposal-show', slug=proposal.slug)
+        # Handling filled-in proposal form.
+        form = EditProposalForm(request.POST)
+        if form.is_valid():
+            form.save()
         else:
-            messages.error(request, 'Popraw błędy w formularzu')
-
-    return TemplateResponse(request, 'offer/proposal/form.html', {
-        "form": proposal_form,
-        "desc": description_form,
-        "syllabus": syllabus_form,
-        "student_work_formset": student_work_formset,
-        "proposal": proposal,
-        "types_data": Type.get_types_for_syllabus()
+            form_errors_message = ("Formularz niezapisany. Błędy"
+                                   "<ol>{}</ol>".format("".join(
+                                       [f"<li>{e}</li>" for e in form.errors])))
+            messages.error(request, form_errors_message)
+    elif slug is not None:
+        # Editing existing proposal.
+        proposal = Proposal.objects.get(slug=slug)
+        form = EditProposalForm(proposal)
+    else:
+        # Display an empty form for new proposal.
+        form = EditProposalForm()
+    return render(request, 'proposal/edit_proposal.html', {
+        'form': form,
     })
 
 
