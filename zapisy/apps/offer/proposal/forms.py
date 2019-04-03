@@ -95,6 +95,23 @@ class SelectVotingForm(forms.Form):
     courses = forms.MultipleChoiceField(widget=FilteredSelectMultiple("courses", is_stacked=False))
 
 
+class TextareaBoundField(forms.BoundField):
+    """Extends BoundField for easy access to placeholder value."""
+
+    @property
+    def placeholder(self):
+        widget = self.field.widget
+        if widget:
+            return widget.attrs.get('placeholder', "")
+        return ""
+
+
+class TextareaField(forms.Field):
+
+    def get_bound_field(self, form, field_name):
+        return TextareaBoundField(form, self, field_name)
+
+
 class EditProposalForm(forms.ModelForm):
     """Form for editing a Proposal model.
 
@@ -102,10 +119,24 @@ class EditProposalForm(forms.ModelForm):
     using this form. It will take care to keep the current instance of the
     course up to date with the proposal.
     """
+    teaching_methods = TextareaField(label="Metody kształcenia")
+    preconditions = TextareaField(
+        label="Wymagania wstępne w zakresie wiedzy, umiejętności i kompetencji społecznych")
+    goals = TextareaField(label="Cele przedmiotu")
+    contents = TextareaField(label="Treści programowe")
+    teaching_effects = TextareaField(label="Zakładane efekty kształcenia")
+    literature = TextareaField(label="Literatura obowiązkowa i zalecana")
+    verification_methods = TextareaField(label="Metody weryfikacji zakładanych efektów kształcenia")
+    passing_means = TextareaField(
+        label="Warunki i forma zaliczenia poszczególnych komponentów przedmiotu/modułu")
+    student_labour = TextareaField(label="Nakład pracy studenta")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
+
+        for k, v in self.Meta.placeholders.items():
+            self.fields[k].widget.attrs['placeholder'] = v
 
     class Meta:
         model = Proposal
@@ -128,7 +159,6 @@ class EditProposalForm(forms.ModelForm):
             'hours_recap',
 
             'status',
-
             'teaching_methods',
             'preconditions',
             'goals',
@@ -136,21 +166,138 @@ class EditProposalForm(forms.ModelForm):
             'teaching_effects',
             'literature',
             'verification_methods',
+            'passing_means',
             'student_labour',
         ]
         help_texts = {
-            'name':
-            "Nazwa powinna być w języku wykładowym.",
-            'name_en':
-            "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
+            'name': "Nazwa powinna być w języku wykładowym.",
+            'name_en': "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
             'language': ("Wszystkie pola należy wypełnić w języku wykładowym. Aby zmienić "
                          "język istniejącego przedmiotu należy stworzyć nową propozycję."),
-            'short_name':
-            "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
-            'description':
-            "Można formatować tekst używając Markdown.",
-            'status':
-            "Szkic można sobie zapisać na później."
+            'short_name': "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
+            'description': "Można formatować tekst używając Markdown.",
+            'status': "Szkic można sobie zapisać na później."
+        }
+        # Helps filling the form by providing examples.
+        placeholders = {
+            'name': "Sztuczna inteligencja",
+            'name_en': "Artificial Intelligence",
+            'hours_lecture': 30,
+            'hours_exercise': 0,
+            'hours_lab': 0,
+            'hours_exercise_lab': 30,
+            'hours_seminar': 0,
+            'hours_recap': 0,
+            'teaching_methods': (
+                "[Wyliczyć lub krótko opisać, np.: wykład · wykład interaktywny · prezentacja · "
+                "live coding · dyskusja · analiza tekstu · e-learning · rozwiązywanie zadań z "
+                "komentowaniem · indywidualne/grupowe rozwiązywanie zadań · indywidualny/"
+                "zespołowy projekt programistyczny · samodzielna praca przy komputerze · "
+                "ćwiczenia warsztatowe · zajęcia terenowe · studium przypadku · samodzielne "
+                "wykonywanie zadań zawodowych]\n\n"
+                "Wykład, prezentacja, rozwiązywanie zadań z komentowaniem, dyskusja, "
+                "konsultowanie pomysłów na rozwiązywanie zadań programistycznych, samodzielna "
+                "praca przy komputerze, indywidualny projekt programistyczny"),
+            'preconditions': ("## Zrealizowane przedmioty:\n"
+                              " * Logika dla informatyków\n"
+                              " * Wstęp do informatyki lub Algorytmy i struktury danych\n"
+                              " * Analiza matematyczna\n"
+                              "## Niezbędne kompetencje:\n"
+                              " * Umiejętność programowania w języku wyższego poziomu\n"
+                              " * Pożądana wstępna znajomość języka Python\n"),
+            'goals': ("Podstawowym celem przedmiotu jest zapoznanie studentów z technikami "
+                      "stosowanymi do rozwiązywania problemów, które są z jednej strony "
+                      "trudne do rozwiązania przy użyciu standardowych technik "
+                      "algorytmicznych, a z drugiej są efektywnie rozwiązywane przez ludzi, "
+                      "korzystających ze swojej inteligencji. Zajęcia koncentrują się na "
+                      "następujących pojęciach: modelowanie świata, przeszukiwanie "
+                      "przestrzeni rozwiązań, wnioskowanie i uczenie się z przykładów bądź z "
+                      "symulacji."),
+            'contents': (
+                "1. Modelowanie rzeczywistości za pomocą przestrzeni stanów.\n"
+                "2. Przeszukiwanie w przestrzeni stanów: przeszukiwanie wszerz i w głąb, "
+                "iteracyjne pogłębianie, przeszukiwanie dwustronne, algorytm A*, właściwości i "
+                "tworzenie funkcji heurystycznych wspomagających przeszukiwanie. \n"
+                "3. Przeszukiwanie metaheurystyczne: hill climbing, symulowane wyżarzanie, beam "
+                "search, algorytmy ewolucyjne.\n"
+                "4. Rozwiązywanie więzów: modelowanie za pomocą więzów, spójność więzów i "
+                "algorytm AC-3, łączenie propagacji więzów z przeszukiwaniem z nawrotami, "
+                "specjalistyczne języki programowania z więzami na przykładzie Prologa z "
+                "więzami.\n"
+                "5. Strategie w grach: gry dwuosobowe, algorytm minimax, odcięcia alfa-beta, "
+                "przykłady heurystycznej oceny sytuacji na planszy w wybranych grach, losowość w "
+                "grach, algorytm Monte Carlo Tree Search.\n"
+                "6. Elementy teorii gier: strategie czyste i mieszane, rozwiązywanie prostych "
+                "gier typu dylemat więźnia.\n"
+                "7. Modelowanie za pomocą logiki zdaniowej, wnioskowanie forward-chaining i "
+                "backward-chaining, rozwiązywanie problemów spełnialności formuły w CNF (WalkSAT, "
+                "DPLL).\n"
+                "8. Modelowanie niepewności świata: sieci bayesowskie, procesy decyzyjne Markowa, "
+                "algorytmy value iteration oraz policy iteration. Elementy uczenia ze "
+                "wzmocnieniem: TD-learning oraz Q-learning.\n"
+                "9. Podstawy uczenia maszynowego: idea uczenia się z przykładów, generalizacja, "
+                "niebezpieczeństwo przeuczenia. Wybrane metody: regresja liniowa i logistyczna, "
+                "wielowarstwowe sieci neuronowe (MLP), algorytm k-NN, drzewa decyzyjne i lasy "
+                "losowe."),
+            'teaching_effects': (
+                "## Wiedza\n"
+                " * rozumie, czym zajmuje się Sztuczna inteligencja, rozumie również, na czym "
+                "polega specyficzność metod tej dziedziny\n"
+                " * posiada przeglądową wiedzę o różnych dziedzinach sztucznej inteligencji\n"
+                " * zna różne metody modelowania świata, z uwzględnieniem niepewności\n"
+                " * zna algorytmy przeszukiwania przestrzeni stanów oraz przeszukiwania drzew gry\n"
+                " * zna podstawowe algorytmy wnioskowania\n"
+                " * zna podstawowe metody uczenia maszynowego (z nadzorem oraz ze wzmocnieniem)\n\n"
+                "## Umiejętności\n"
+                " * umie modelować różne zagadnienia jako zadania przeszukiwania (lub "
+                "przeszukiwania z więzami)\n"
+                " * umie stosować i modyfikować różne algorytmy przeszukiwania (w tym również "
+                "przeszukiwania w grach)\n"
+                " * umie modelować niepewność świata za pomocą narzędzi z rachunku "
+                "prawdopodobieństwa (ze szczególnym uwzględnieniem metod Monte Carlo)\n"
+                " * umie stosować podstawowe metody uczenia maszynowego (w tym również metody "
+                "uczenia ze wzmocnieniem)\n"
+                "## Kompetencje społeczne\n"
+                " * rozumie znaczenie algorytmów sztucznej inteligencji dla funkcjonowania "
+                "współczesnego społeczeństwa, rozumie możliwości i niebezpieczeństwa z tym "
+                "związane\n"
+                " * umie prezentować swoje idee w sposób dostosowany do wiedzy słuchaczy"),
+            'literature': (
+                "[wyliczyć 1-5 pozycji; jeśli dana pozycja nie jest wymagana w całości - określić "
+                "które części/rozdziały]\n"
+                " * Stuart Russell and Peter Norvig, Artificial Intelligence: A Modern Approach.\n"
+                " * Richard S. Sutton and Andrew G. Barto, Reinforcement Learning: An "
+                "Introduction.\n"
+                " * Prateek Joshi, Artificial Intelligence with Python."),
+            'verification_methods': (
+                "[podać sposoby pozwalające sprawdzić osiągnięcie wszystkich efektów kształcenia "
+                "podanych w p. 8, np. egzamin pisemny · kolokwium · prezentacja projektu · "
+                "prezentacja rozwiązania zadania · opracowanie i przedstawienie prezentacji na "
+                "zadany temat · napisanie programu komputerowego · realizacja zadań przy "
+                "komputerze]\n\n"
+                "egzamin pisemny, prezentacja projektu, prezentacja rozwiązania zadania, "
+                "napisanie i prezentacja programu komputerowego"),
+            'passing_means': (
+                "Do zaliczenia ćwiczenio-pracowni należy zdobyć wymaganą, podaną w regulaminie "
+                "przedmiotu liczbę punktów za zadania ćwiczeniowe, pracowniowe i opcjonalny "
+                "projekt. Punkty za wszystkie wyżej wymienione aktywności liczą się łącznie. "
+                "Egzamin ma formę pisemną, aby go zaliczyć konieczne jest zdobycie wymaganej "
+                "liczby punktów. Osoby, które osiągnęły bardzo dobre wyniki na ćwiczeniach i "
+                "zdobyły ustaloną liczbę punktów za rozwiązanie dodatkowych, trudniejszych zadań "
+                "mogą uzyskać zwolnienie z egzaminu."),
+            'student_labour': (
+                "[wyliczyć rodzaje aktywności studenta i przybliżoną liczbę godzin; suma godzin "
+                "powinna wynosić około 25 * liczba ECTS]\n"
+                "## Zajęcia z udziałem nauczyciela:\n"
+                "[dodatkowe względem programowych godzin zajęć, np. udział w egzaminie]\n"
+                " * udział w egzaminie ??\n"
+                " * dodatkowe konsultacje w ramach potrzeb ??\n"
+                "## Praca własna studenta:\n"
+                "[np. rozwiązywanie zadań z list · przygotowanie do kolokwium/egzaminu · czytanie "
+                "literatury · rozwiązywanie zadań programistycznych]\n"
+                " * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych) 30\n"
+                " * samodzielne rozwiązywanie zadań pracowniowych i projektowych 60\n"
+                " * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań 20\n"),
         }
 
 
@@ -224,6 +371,7 @@ class ProposalFormHelper(FormHelper):
                 Markdown('teaching_effects'),
                 Markdown('literature'),
                 Markdown('verification_methods'),
+                Markdown('passing_means'),
                 Markdown('student_labour'),
                 css_class='collapse',
                 css_id='proposal-details-fields',

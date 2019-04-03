@@ -2,7 +2,7 @@
   <div class="row no-gutters">
     <div class="col">
         <textarea class="textarea form-control text-monospace" 
-            rows="10" :value="input" :name="name"
+            rows="10" :value="input" :name="name" :placeholder="placeholder"
             @input="update" @focusin="active = true" @focusout="active = false"></textarea>
     </div>
     <div class="border rounded-lg col-12 col-md-6" :hidden="!active">
@@ -24,6 +24,7 @@ export default {
       type: String,
       required: false,
     },
+    placeholder: String,
   },
   data: function() {
     return {
@@ -45,14 +46,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-textarea {
-  background-color: var(--light);
-  color: var(--dark);
-  &:active {
-    background-color: var(--light);
-  }
-}
 
 .preview {
   overflow: hidden;
