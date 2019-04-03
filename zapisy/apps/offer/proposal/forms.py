@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (Column, Div, Layout, Row, Submit, Field, Fieldset)
+from crispy_forms.layout import (Column, Div, HTML, Layout, Row, Submit, Field, Fieldset)
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms.models import ModelForm
@@ -119,14 +119,38 @@ class EditProposalForm(forms.ModelForm):
             'has_exam',
             'recommended_for_first_year',
             'description',
+
+            'hours_lecture',
+            'hours_exercise',
+            'hours_lab',
+            'hours_exercise_lab',
+            'hours_seminar',
+            'hours_recap',
+
             'status',
+
+            'teaching_methods',
+            'preconditions',
+            'goals',
+            'contents',
+            'teaching_effects',
+            'literature',
+            'verification_methods',
+            'student_labour',
         ]
         help_texts = {
-            'name': "Nazwa powinna być w języku wykładowym.",
-            'name_en': "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
-            'short_name': "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
-            'description': "Można formatować tekst używając Markdown.",
-            'status': "Szkic można sobie zapisać na później."
+            'name':
+            "Nazwa powinna być w języku wykładowym.",
+            'name_en':
+            "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
+            'language': ("Wszystkie pola należy wypełnić w języku wykładowym. Aby zmienić "
+                         "język istniejącego przedmiotu należy stworzyć nową propozycję."),
+            'short_name':
+            "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
+            'description':
+            "Można formatować tekst używając Markdown.",
+            'status':
+            "Szkic można sobie zapisać na później."
         }
 
 
@@ -171,10 +195,39 @@ class ProposalFormHelper(FormHelper):
                 Column(
                     CustomCheckbox('has_exam'),
                     CustomCheckbox('recommended_for_first_year'),
-                    css_class='col-md-4 row px-4 align-items-center'),
+                    css_class='col-md-4 px-4'),
+                css_class='align-items-end',
             ),
             Markdown('description'),
+            FormRow(
+                Column('hours_lecture', css_class='col-md-2'),
+                Column('hours_exercise', css_class='col-md-2'),
+                Column('hours_lab', css_class='col-md-2'),
+                Column('hours_exercise_lab', css_class='col-md-2'),
+                Column('hours_seminar', css_class='col-md-2'),
+                Column('hours_recap', css_class='col-md-2'),
+                css_class='align-items-end',
+            ),
             'status',
+        ),
+        Fieldset(
+            "Informacje szczegółowe"
+            '<a class="btn btn-outline-secondary btn-sm ml-3" data-toggle="collapse" '
+            'href="#proposal-details-fields" role="button" aria-expanded="false">'
+            'Rozwiń/Zwiń</a>',
+            Div(
+                'name_en',
+                Markdown('teaching_methods'),
+                Markdown('preconditions'),
+                Markdown('goals'),
+                Markdown('contents'),
+                Markdown('teaching_effects'),
+                Markdown('literature'),
+                Markdown('verification_methods'),
+                Markdown('student_labour'),
+                css_class='collapse',
+                css_id='proposal-details-fields',
+            )
         ),
         Submit('submit', "Zapisz"),
     )

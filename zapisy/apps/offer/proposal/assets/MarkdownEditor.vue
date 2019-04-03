@@ -1,12 +1,13 @@
 <template>
-  <div class="border rounded-sm row no-gutters">
+  <div class="row no-gutters">
     <div class="col">
-        <textarea class="textarea form-control" 
+        <textarea class="textarea form-control text-monospace" 
             rows="10" :value="input" :name="name"
             @input="update" @focusin="active = true" @focusout="active = false"></textarea>
     </div>
-    <div class="col-12 col-md-6" :hidden="!active">
-      <div class="p-3" v-html="compiledMarkdown"></div>
+    <div class="border rounded-lg col-12 col-md-6" :hidden="!active">
+      <small class="text-muted m-2">Podgląd:</small>
+      <div class="preview p-3" v-html="compiledMarkdown"></div>
     </div>
       
   </div>
@@ -46,7 +47,15 @@ export default {
 <style lang="scss" scoped>
 
 textarea {
-  background-color: #f6f6f6;
+  background-color: var(--light);
+  color: var(--dark);
+  &:active {
+    background-color: var(--light);
+  }
+}
+
+.preview {
+  overflow: hidden;
 }
 
 </style>
