@@ -1,6 +1,9 @@
-{% extends "base.html" %}
-
+{% extends "enrollment/base.html" %}
 {% load compressed %}
+{% load cache %}
+{% load i18n %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block styles %}
 {% compressed_css 'mainpage' %}
@@ -14,6 +17,7 @@ Powiadomienia
 {% endblock %}
 
 {% block all-content %}
+{{ notifications_counter }}
 <div class="notifications-list">
     <h3>Lista powiadomień</h3>
     {% if notifications %}

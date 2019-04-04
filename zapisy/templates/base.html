@@ -79,12 +79,18 @@
                         </strong>
                     </span>
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item" style="margin-left: 5px;">
-                            <span class="navbar-text">
-                                <strong>
-                                    [{{ notification_counter }}]
-                                </strong>
-                            </span>
+                        <li class="nav-item">
+                            <script id="notifications-data" type="application/json">
+                                {{ notifications_json|safe }}
+                            </script>
+                            <script id="notifications_counter-data" type="application/json">
+                                {{ notifications_counter_json|safe }}
+                            </script>
+                            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css" integrity="sha384-QokYePQSOwpBDuhlHOsX0ymF6R/vLk/UQVz3WHa6wygxI5oGTmDTv8wahFOSspdm" crossorigin="anonymous">
+                            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/regular.css" integrity="sha384-FKw7x8fCxuvzBwOJmhTJJsKzBl8dnN9e2R4+pXRfYoHivikuHkzWyhKWDSMcGNK8" crossorigin="anonymous">
+                            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
+                            <div id="notificationswidget"></div>
+                            {% render_bundle 'notifications-notifications-widget' %}
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>

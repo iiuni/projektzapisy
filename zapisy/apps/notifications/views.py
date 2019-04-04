@@ -1,5 +1,8 @@
 from datetime import datetime
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -26,9 +29,12 @@ def index(request):
         render_description(notification.description_id, notification.description_args)
         for notification in repo.get_all_for_user(request.user)
     ]
-    #repo.remove_all_older_than(request.user, now)
+    data = {
+        'notifications': notifications,
+        #'notifications_json': json.dumps(notifications),
+    }
 
-    return render(request, 'notifications/index.html', {'notifications': notifications})
+    return render(request, 'notifications/index.html', data)
 
 
 @require_POST
