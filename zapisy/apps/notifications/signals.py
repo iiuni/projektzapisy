@@ -5,7 +5,7 @@ from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
 from apps.news.models import News
 from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.models import get_all_users_in_course_groups, get_all_students
+from apps.notifications.models import get_all_users_in_course_groups, get_all_users, get_all_students
 from apps.notifications.custom_signals import student_pulled, student_not_pulled, teacher_changed
 from apps.notifications.templates import NotificationType
 
@@ -95,4 +95,3 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
             NotificationType.NEWS_HAS_BEEN_ADDED, {}
         )
     )
-    
