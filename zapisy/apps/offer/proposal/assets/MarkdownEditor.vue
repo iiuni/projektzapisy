@@ -47,6 +47,10 @@ export default {
 
 <style lang="scss" scoped>
 
+textarea {
+  height: 100%;
+}
+
 .preview {
   overflow: hidden;
 }

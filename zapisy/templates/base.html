@@ -203,7 +203,7 @@
         </nav>
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+                {{ message|safe }}
             </div>
         {% endfor %}
             {# Use this block if you don't want a layout with right-hand sidebar #}

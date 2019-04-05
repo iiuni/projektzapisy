@@ -106,7 +106,8 @@ class TextareaBoundField(forms.BoundField):
         return ""
 
 
-class TextareaField(forms.Field):
+class TextareaField(forms.CharField):
+    widget = forms.Textarea
 
     def get_bound_field(self, form, field_name):
         return TextareaBoundField(form, self, field_name)
@@ -119,24 +120,74 @@ class EditProposalForm(forms.ModelForm):
     using this form. It will take care to keep the current instance of the
     course up to date with the proposal.
     """
-    teaching_methods = TextareaField(label="Metody kształcenia")
-    preconditions = TextareaField(
-        label="Wymagania wstępne w zakresie wiedzy, umiejętności i kompetencji społecznych")
-    goals = TextareaField(label="Cele przedmiotu")
-    contents = TextareaField(label="Treści programowe")
-    teaching_effects = TextareaField(label="Zakładane efekty kształcenia")
-    literature = TextareaField(label="Literatura obowiązkowa i zalecana")
-    verification_methods = TextareaField(label="Metody weryfikacji zakładanych efektów kształcenia")
-    passing_means = TextareaField(
-        label="Warunki i forma zaliczenia poszczególnych komponentów przedmiotu/modułu")
-    student_labour = TextareaField(label="Nakład pracy studenta")
+    ects = forms.IntegerField(
+        max_value=15,
+        label="ECTS",
+        required=False,
+        disabled=True,
+        help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
+
+    def status_choices(self):
+        def choices_pair(c: Proposal.ProposalStatus):
+            return (c, c.display)
+
+        def limit_choices():
+            """Defines allowed status transitions.
+
+            Initially an employee may only set the status to DRAFT or PROPOSAL.
+            PROPOSAL is accepted by the head of teaching (who changes the status
+            to IN_OFFER) or rejected (status is changed to
+            CORRECTIONS_REQUIRED).
+
+            If corrections are required, the employee may resubmit the proposal
+            again by changing the status back to PROPOSAL.
+
+            If the proposal is accepted (IN_OFFER) it can be put into the
+            current offer voting (IN_VOTE), left for future semesters or
+            archived (WITHDRAWN).
+            """
+            if not self.data:
+                return [
+                    Proposal.ProposalStatus.DRAFT,
+                    Proposal.ProposalStatus.PROPOSAL,
+                ]
+            else:
+                current_status = self.data.status
+                if current_status == Proposal.ProposalStatus.DRAFT:
+                    return [
+                        Proposal.ProposalStatus.DRAFT,
+                        Proposal.ProposalStatus.PROPOSAL,
+                    ]
+                elif current_status == Proposal.ProposalStatus.IN_OFFER:
+                    return [
+                        Proposal.ProposalStatus.IN_OFFER,
+                        Proposal.ProposalStatus.IN_VOTE,
+                        Proposal.ProposalStatus.WITHDRAWN,
+                    ]
+                elif current_status == Proposal.ProposalStatus.CORRECTIONS_REQUIRED:
+                    return [
+                        Proposal.ProposalStatus.PROPOSAL,
+                        Proposal.ProposalStatus.CORRECTIONS_REQUIRED,
+                    ]
+                else:
+                    return [current_status]
+
+        return map(choices_pair, limit_choices())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
 
+        # Populate placeholders from dictionary.
         for k, v in self.Meta.placeholders.items():
             self.fields[k].widget.attrs['placeholder'] = v
+
+        # Populate initial values from dictionary.
+        for k, v in self.Meta.initial_values.items():
+            self.fields[k].initial = v
+
+        # Limits status choices available to the user.
+        self.fields['status'].choices = self.status_choices()
 
     class Meta:
         model = Proposal
@@ -176,7 +227,26 @@ class EditProposalForm(forms.ModelForm):
                          "język istniejącego przedmiotu należy stworzyć nową propozycję."),
             'short_name': "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
             'description': "Można formatować tekst używając Markdown.",
-            'status': "Szkic można sobie zapisać na później."
+            'status': "Szkic można sobie zapisać na później.",
+            'teaching_methods': (
+                "Wyliczyć lub krótko opisać, np.: wykład · wykład interaktywny · prezentacja · "
+                "live coding · dyskusja · analiza tekstu · e-learning · rozwiązywanie zadań z "
+                "komentowaniem · indywidualne/grupowe rozwiązywanie zadań · indywidualny/"
+                "zespołowy projekt programistyczny · samodzielna praca przy komputerze · "
+                "ćwiczenia warsztatowe · zajęcia terenowe · studium przypadku · samodzielne "
+                "wykonywanie zadań zawodowych"),
+            'literature': (
+                "Wyliczyć 1-5 pozycji; jeśli dana pozycja nie jest wymagana w całości - określić "
+                "które części/rozdziały."),
+            'verification_methods': (
+                "Podać sposoby pozwalające sprawdzić osiągnięcie wszystkich efektów kształcenia "
+                "podanych powyżej, np. egzamin pisemny · kolokwium · prezentacja projektu · "
+                "prezentacja rozwiązania zadania · opracowanie i przedstawienie prezentacji na "
+                "zadany temat · napisanie programu komputerowego · realizacja zadań przy "
+                "komputerze."),
+            'student_labour': (
+                "Wyliczyć rodzaje aktywności studenta i przybliżoną liczbę godzin. Suma godzin "
+                "powinna wynosić około 25 * liczba <abbr>ECTS</abbr>."),
         }
         # Helps filling the form by providing examples.
         placeholders = {
@@ -189,12 +259,6 @@ class EditProposalForm(forms.ModelForm):
             'hours_seminar': 0,
             'hours_recap': 0,
             'teaching_methods': (
-                "[Wyliczyć lub krótko opisać, np.: wykład · wykład interaktywny · prezentacja · "
-                "live coding · dyskusja · analiza tekstu · e-learning · rozwiązywanie zadań z "
-                "komentowaniem · indywidualne/grupowe rozwiązywanie zadań · indywidualny/"
-                "zespołowy projekt programistyczny · samodzielna praca przy komputerze · "
-                "ćwiczenia warsztatowe · zajęcia terenowe · studium przypadku · samodzielne "
-                "wykonywanie zadań zawodowych]\n\n"
                 "Wykład, prezentacja, rozwiązywanie zadań z komentowaniem, dyskusja, "
                 "konsultowanie pomysłów na rozwiązywanie zadań programistycznych, samodzielna "
                 "praca przy komputerze, indywidualny projekt programistyczny"),
@@ -263,18 +327,11 @@ class EditProposalForm(forms.ModelForm):
                 "związane\n"
                 " * umie prezentować swoje idee w sposób dostosowany do wiedzy słuchaczy"),
             'literature': (
-                "[wyliczyć 1-5 pozycji; jeśli dana pozycja nie jest wymagana w całości - określić "
-                "które części/rozdziały]\n"
                 " * Stuart Russell and Peter Norvig, Artificial Intelligence: A Modern Approach.\n"
                 " * Richard S. Sutton and Andrew G. Barto, Reinforcement Learning: An "
                 "Introduction.\n"
                 " * Prateek Joshi, Artificial Intelligence with Python."),
             'verification_methods': (
-                "[podać sposoby pozwalające sprawdzić osiągnięcie wszystkich efektów kształcenia "
-                "podanych w p. 8, np. egzamin pisemny · kolokwium · prezentacja projektu · "
-                "prezentacja rozwiązania zadania · opracowanie i przedstawienie prezentacji na "
-                "zadany temat · napisanie programu komputerowego · realizacja zadań przy "
-                "komputerze]\n\n"
                 "egzamin pisemny, prezentacja projektu, prezentacja rozwiązania zadania, "
                 "napisanie i prezentacja programu komputerowego"),
             'passing_means': (
@@ -286,18 +343,49 @@ class EditProposalForm(forms.ModelForm):
                 "zdobyły ustaloną liczbę punktów za rozwiązanie dodatkowych, trudniejszych zadań "
                 "mogą uzyskać zwolnienie z egzaminu."),
             'student_labour': (
-                "[wyliczyć rodzaje aktywności studenta i przybliżoną liczbę godzin; suma godzin "
-                "powinna wynosić około 25 * liczba ECTS]\n"
-                "## Zajęcia z udziałem nauczyciela:\n"
-                "[dodatkowe względem programowych godzin zajęć, np. udział w egzaminie]\n"
-                " * udział w egzaminie ??\n"
-                " * dodatkowe konsultacje w ramach potrzeb ??\n"
                 "## Praca własna studenta:\n"
-                "[np. rozwiązywanie zadań z list · przygotowanie do kolokwium/egzaminu · czytanie "
-                "literatury · rozwiązywanie zadań programistycznych]\n"
                 " * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych) 30\n"
                 " * samodzielne rozwiązywanie zadań pracowniowych i projektowych 60\n"
                 " * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań 20\n"),
+        }
+
+        initial_values = {
+            'hours_lecture': 30,
+            'hours_exercise': 30,
+            'hours_lab': 0,
+            'hours_exercise_lab': 0,
+            'hours_seminar': 0,
+            'hours_recap': 0,
+            'preconditions': ("## Zrealizowane przedmioty:\n"
+                              " *  \n\n"
+                              "## Niezbędne kompetencje:\n"
+                              " *  \n"),
+            'student_labour': (
+                "## Zajęcia z udziałem nauczyciela:\n"
+                "_dodatkowe względem programowych godzin zajęć, np. udział w egzaminie_\n"
+                " * udział w egzaminie **??**\n"
+                " * dodatkowe konsultacje w ramach potrzeb **??**\n\n"
+                "## Praca własna studenta:\n"
+                "_np. rozwiązywanie zadań z list · przygotowanie do kolokwium/egzaminu · czytanie "
+                "literatury · rozwiązywanie zadań programistycznych_\n"
+                " * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych) **??**\n"
+                " * samodzielne rozwiązywanie zadań pracowniowych i projektowych **??**\n"
+                " * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań **??**\n"),
+        }
+
+        field_classes = {
+            f: TextareaField for f in [
+                'description',
+                'teaching_methods',
+                'preconditions',
+                'goals',
+                'contents',
+                'teaching_effects',
+                'literature',
+                'verification_methods',
+                'passing_means',
+                'student_labour',
+            ]
         }
 
 
@@ -322,6 +410,11 @@ class Markdown(Field):
 class FormRow(Div):
     """Represents Booststrap 4 form layout row."""
     css_class = 'form-row'
+
+
+class Column(Column):
+    """Represents Bootstrap 4 layout column."""
+    css_class = 'col-12 col-sm'
 
 
 class ProposalFormHelper(FormHelper):
@@ -355,7 +448,10 @@ class ProposalFormHelper(FormHelper):
                 Column('hours_recap', css_class='col-md-2'),
                 css_class='align-items-end',
             ),
-            'status',
+            FormRow(
+                Column('ects'),
+                Column('status'),
+            )
         ),
         Fieldset(
             "Informacje szczegółowe"

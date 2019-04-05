@@ -35,7 +35,7 @@ class CourseInformation(models.Model):
         POLISH = 'pl', "polski"
 
     name = models.CharField("nazwa przedmiotu", max_length=100)
-    name_en = models.CharField("nazwa po angielsku", max_length=100)
+    name_en = models.CharField("nazwa po angielsku", max_length=100, blank=True)
     short_name = models.CharField("skrócona nazwa przedmiotu", max_length=30, blank=True)
     slug = models.SlugField("identyfikator URL", unique=True, max_length=255)
     description = models.TextField("opis przedmiotu", blank=True)
