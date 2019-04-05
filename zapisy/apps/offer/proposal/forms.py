@@ -1,15 +1,16 @@
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (Column, Div, HTML, Layout, Row, Submit, Field, Fieldset)
+import os
+import inspect
+
+from crispy_forms import helper, layout
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.forms.models import ModelForm
+import yaml
 
-from apps.enrollment.courses.models.course import (CourseDescription,
-                                                   CourseEntity)
+from apps.enrollment.courses.models.course import (CourseDescription, CourseEntity)
 from apps.offer.proposal.models import Proposal, StudentWork, Syllabus
 
 
-class ProposalForm(ModelForm):
+class ProposalForm(forms.ModelForm):
     ects = forms.IntegerField(label='ECTS')
 
     def __init__(self, *args, **kwargs):
@@ -34,32 +35,19 @@ class ProposalForm(ModelForm):
                 self.fields.pop('status')
             else:
                 self.fields['status'].choices = [
-                    x for x in self.fields['status'].choices if x[0] not in excluded_statuses]
+                    x for x in self.fields['status'].choices if x[0] not in excluded_statuses
+                ]
 
     class Meta:
-        fields = (
-            'name',
-            'name_en',
-            'status',
-            'type',
-            'exam',
-            'english',
-            'semester',
-            'web_page',
-            'effects',
-            'repetitions',
-            'lectures',
-            'exercises',
-            'laboratories',
-            'exercises_laboratiories',
-            'seminars')
+        fields = ('name', 'name_en', 'status', 'type', 'exam', 'english', 'semester', 'web_page',
+                  'effects', 'repetitions', 'lectures', 'exercises', 'laboratories',
+                  'exercises_laboratiories', 'seminars')
         model = CourseEntity
-        widgets = {
-            'effects': FilteredSelectMultiple("efekty kształcenia", is_stacked=False)
-        }
+        widgets = {'effects': FilteredSelectMultiple("efekty kształcenia", is_stacked=False)}
 
 
-class ProposalDescriptionForm(ModelForm):
+class ProposalDescriptionForm(forms.ModelForm):
+
     class Meta:
         fields = ('description', 'requirements')
         model = CourseDescription
@@ -69,22 +57,12 @@ class ProposalDescriptionForm(ModelForm):
         }
 
 
-class SyllabusForm(ModelForm):
+class SyllabusForm(forms.ModelForm):
+
     class Meta:
-        fields = (
-            'requirements',
-            'studies_type',
-            'year',
-            'requirements',
-            'objectives',
-            'effects_txt',
-            'contents',
-            'learning_methods',
-            'literature',
-            'passing_form',
-            'exam_hours',
-            'tests_hours',
-            'project_presentation_hours')
+        fields = ('requirements', 'studies_type', 'year', 'requirements', 'objectives',
+                  'effects_txt', 'contents', 'learning_methods', 'literature', 'passing_form',
+                  'exam_hours', 'tests_hours', 'project_presentation_hours')
         model = Syllabus
         widgets = {
             'learning_methods': FilteredSelectMultiple("Metody kształcenia", is_stacked=False)
@@ -128,6 +106,7 @@ class EditProposalForm(forms.ModelForm):
         help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
 
     def status_choices(self):
+
         def choices_pair(c: Proposal.ProposalStatus):
             return (c, c.display)
 
@@ -178,13 +157,18 @@ class EditProposalForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
 
-        # Populate placeholders from dictionary.
-        for k, v in self.Meta.placeholders.items():
-            self.fields[k].widget.attrs['placeholder'] = v
+        # Populate placeholders from example data file.
+        path = os.path.join(os.path.dirname(__file__), 'assets', 'example-data.yaml')
+        stream = open(path, 'r')
+        placeholders = yaml.load(stream)
+        for k, val in placeholders.items():
+            self.fields[k].widget.attrs['placeholder'] = val
 
         # Populate initial values from dictionary.
-        for k, v in self.Meta.initial_values.items():
-            self.fields[k].initial = v
+        for k, val in self.Meta.initial_values.items():
+            if isinstance(val, str):
+                val = inspect.cleandoc(val)
+            self.fields[k].initial = val
 
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
@@ -201,14 +185,12 @@ class EditProposalForm(forms.ModelForm):
             'has_exam',
             'recommended_for_first_year',
             'description',
-
             'hours_lecture',
             'hours_exercise',
             'hours_lab',
             'hours_exercise_lab',
             'hours_seminar',
             'hours_recap',
-
             'status',
             'teaching_methods',
             'preconditions',
@@ -223,130 +205,31 @@ class EditProposalForm(forms.ModelForm):
         help_texts = {
             'name': "Nazwa powinna być w języku wykładowym.",
             'name_en': "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
-            'language': ("Wszystkie pola należy wypełnić w języku wykładowym. Aby zmienić "
-                         "język istniejącego przedmiotu należy stworzyć nową propozycję."),
+            'language': """Wszystkie pola należy wypełnić w języku wykładowym.
+                Aby zmienić język istniejącego przedmiotu należy stworzyć nową
+                propozycję.""",
             'short_name': "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
             'description': "Można formatować tekst używając Markdown.",
             'status': "Szkic można sobie zapisać na później.",
-            'teaching_methods': (
-                "Wyliczyć lub krótko opisać, np.: wykład · wykład interaktywny · prezentacja · "
-                "live coding · dyskusja · analiza tekstu · e-learning · rozwiązywanie zadań z "
-                "komentowaniem · indywidualne/grupowe rozwiązywanie zadań · indywidualny/"
-                "zespołowy projekt programistyczny · samodzielna praca przy komputerze · "
-                "ćwiczenia warsztatowe · zajęcia terenowe · studium przypadku · samodzielne "
-                "wykonywanie zadań zawodowych"),
-            'literature': (
-                "Wyliczyć 1-5 pozycji; jeśli dana pozycja nie jest wymagana w całości - określić "
-                "które części/rozdziały."),
-            'verification_methods': (
-                "Podać sposoby pozwalające sprawdzić osiągnięcie wszystkich efektów kształcenia "
-                "podanych powyżej, np. egzamin pisemny · kolokwium · prezentacja projektu · "
-                "prezentacja rozwiązania zadania · opracowanie i przedstawienie prezentacji na "
-                "zadany temat · napisanie programu komputerowego · realizacja zadań przy "
-                "komputerze."),
-            'student_labour': (
-                "Wyliczyć rodzaje aktywności studenta i przybliżoną liczbę godzin. Suma godzin "
-                "powinna wynosić około 25 * liczba <abbr>ECTS</abbr>."),
-        }
-        # Helps filling the form by providing examples.
-        placeholders = {
-            'name': "Sztuczna inteligencja",
-            'name_en': "Artificial Intelligence",
-            'hours_lecture': 30,
-            'hours_exercise': 0,
-            'hours_lab': 0,
-            'hours_exercise_lab': 30,
-            'hours_seminar': 0,
-            'hours_recap': 0,
-            'teaching_methods': (
-                "Wykład, prezentacja, rozwiązywanie zadań z komentowaniem, dyskusja, "
-                "konsultowanie pomysłów na rozwiązywanie zadań programistycznych, samodzielna "
-                "praca przy komputerze, indywidualny projekt programistyczny"),
-            'preconditions': ("## Zrealizowane przedmioty:\n"
-                              " * Logika dla informatyków\n"
-                              " * Wstęp do informatyki lub Algorytmy i struktury danych\n"
-                              " * Analiza matematyczna\n"
-                              "## Niezbędne kompetencje:\n"
-                              " * Umiejętność programowania w języku wyższego poziomu\n"
-                              " * Pożądana wstępna znajomość języka Python\n"),
-            'goals': ("Podstawowym celem przedmiotu jest zapoznanie studentów z technikami "
-                      "stosowanymi do rozwiązywania problemów, które są z jednej strony "
-                      "trudne do rozwiązania przy użyciu standardowych technik "
-                      "algorytmicznych, a z drugiej są efektywnie rozwiązywane przez ludzi, "
-                      "korzystających ze swojej inteligencji. Zajęcia koncentrują się na "
-                      "następujących pojęciach: modelowanie świata, przeszukiwanie "
-                      "przestrzeni rozwiązań, wnioskowanie i uczenie się z przykładów bądź z "
-                      "symulacji."),
-            'contents': (
-                "1. Modelowanie rzeczywistości za pomocą przestrzeni stanów.\n"
-                "2. Przeszukiwanie w przestrzeni stanów: przeszukiwanie wszerz i w głąb, "
-                "iteracyjne pogłębianie, przeszukiwanie dwustronne, algorytm A*, właściwości i "
-                "tworzenie funkcji heurystycznych wspomagających przeszukiwanie. \n"
-                "3. Przeszukiwanie metaheurystyczne: hill climbing, symulowane wyżarzanie, beam "
-                "search, algorytmy ewolucyjne.\n"
-                "4. Rozwiązywanie więzów: modelowanie za pomocą więzów, spójność więzów i "
-                "algorytm AC-3, łączenie propagacji więzów z przeszukiwaniem z nawrotami, "
-                "specjalistyczne języki programowania z więzami na przykładzie Prologa z "
-                "więzami.\n"
-                "5. Strategie w grach: gry dwuosobowe, algorytm minimax, odcięcia alfa-beta, "
-                "przykłady heurystycznej oceny sytuacji na planszy w wybranych grach, losowość w "
-                "grach, algorytm Monte Carlo Tree Search.\n"
-                "6. Elementy teorii gier: strategie czyste i mieszane, rozwiązywanie prostych "
-                "gier typu dylemat więźnia.\n"
-                "7. Modelowanie za pomocą logiki zdaniowej, wnioskowanie forward-chaining i "
-                "backward-chaining, rozwiązywanie problemów spełnialności formuły w CNF (WalkSAT, "
-                "DPLL).\n"
-                "8. Modelowanie niepewności świata: sieci bayesowskie, procesy decyzyjne Markowa, "
-                "algorytmy value iteration oraz policy iteration. Elementy uczenia ze "
-                "wzmocnieniem: TD-learning oraz Q-learning.\n"
-                "9. Podstawy uczenia maszynowego: idea uczenia się z przykładów, generalizacja, "
-                "niebezpieczeństwo przeuczenia. Wybrane metody: regresja liniowa i logistyczna, "
-                "wielowarstwowe sieci neuronowe (MLP), algorytm k-NN, drzewa decyzyjne i lasy "
-                "losowe."),
-            'teaching_effects': (
-                "## Wiedza\n"
-                " * rozumie, czym zajmuje się Sztuczna inteligencja, rozumie również, na czym "
-                "polega specyficzność metod tej dziedziny\n"
-                " * posiada przeglądową wiedzę o różnych dziedzinach sztucznej inteligencji\n"
-                " * zna różne metody modelowania świata, z uwzględnieniem niepewności\n"
-                " * zna algorytmy przeszukiwania przestrzeni stanów oraz przeszukiwania drzew gry\n"
-                " * zna podstawowe algorytmy wnioskowania\n"
-                " * zna podstawowe metody uczenia maszynowego (z nadzorem oraz ze wzmocnieniem)\n\n"
-                "## Umiejętności\n"
-                " * umie modelować różne zagadnienia jako zadania przeszukiwania (lub "
-                "przeszukiwania z więzami)\n"
-                " * umie stosować i modyfikować różne algorytmy przeszukiwania (w tym również "
-                "przeszukiwania w grach)\n"
-                " * umie modelować niepewność świata za pomocą narzędzi z rachunku "
-                "prawdopodobieństwa (ze szczególnym uwzględnieniem metod Monte Carlo)\n"
-                " * umie stosować podstawowe metody uczenia maszynowego (w tym również metody "
-                "uczenia ze wzmocnieniem)\n"
-                "## Kompetencje społeczne\n"
-                " * rozumie znaczenie algorytmów sztucznej inteligencji dla funkcjonowania "
-                "współczesnego społeczeństwa, rozumie możliwości i niebezpieczeństwa z tym "
-                "związane\n"
-                " * umie prezentować swoje idee w sposób dostosowany do wiedzy słuchaczy"),
-            'literature': (
-                " * Stuart Russell and Peter Norvig, Artificial Intelligence: A Modern Approach.\n"
-                " * Richard S. Sutton and Andrew G. Barto, Reinforcement Learning: An "
-                "Introduction.\n"
-                " * Prateek Joshi, Artificial Intelligence with Python."),
-            'verification_methods': (
-                "egzamin pisemny, prezentacja projektu, prezentacja rozwiązania zadania, "
-                "napisanie i prezentacja programu komputerowego"),
-            'passing_means': (
-                "Do zaliczenia ćwiczenio-pracowni należy zdobyć wymaganą, podaną w regulaminie "
-                "przedmiotu liczbę punktów za zadania ćwiczeniowe, pracowniowe i opcjonalny "
-                "projekt. Punkty za wszystkie wyżej wymienione aktywności liczą się łącznie. "
-                "Egzamin ma formę pisemną, aby go zaliczyć konieczne jest zdobycie wymaganej "
-                "liczby punktów. Osoby, które osiągnęły bardzo dobre wyniki na ćwiczeniach i "
-                "zdobyły ustaloną liczbę punktów za rozwiązanie dodatkowych, trudniejszych zadań "
-                "mogą uzyskać zwolnienie z egzaminu."),
-            'student_labour': (
-                "## Praca własna studenta:\n"
-                " * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych) 30\n"
-                " * samodzielne rozwiązywanie zadań pracowniowych i projektowych 60\n"
-                " * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań 20\n"),
+            'teaching_methods': """Wyliczyć lub krótko opisać, np.: wykład ·
+                wykład interaktywny · prezentacja · live coding · dyskusja ·
+                analiza tekstu · e-learning · rozwiązywanie zadań z
+                komentowaniem · indywidualne/grupowe rozwiązywanie zadań ·
+                indywidualny/zespołowy projekt programistyczny · samodzielna
+                praca przy komputerze · ćwiczenia warsztatowe · zajęcia terenowe
+                · studium przypadku · samodzielne wykonywanie zadań
+                zawodowych""",
+            'literature': """Wyliczyć 1-5 pozycji; jeśli dana pozycja nie jest
+                wymagana w całości - określić które części/rozdziały.""",
+            'verification_methods': """Podać sposoby pozwalające sprawdzić
+                osiągnięcie wszystkich efektów kształcenia podanych powyżej, np.
+                egzamin pisemny · kolokwium · prezentacja projektu · prezentacja
+                rozwiązania zadania · opracowanie i przedstawienie prezentacji
+                na zadany temat · napisanie programu komputerowego · realizacja
+                zadań przy komputerze.""",
+            'student_labour': """Wyliczyć rodzaje aktywności studenta i
+                przybliżoną liczbę godzin. Suma godzin powinna wynosić około
+                25 * liczba ECTS.""",
         }
 
         initial_values = {
@@ -356,21 +239,25 @@ class EditProposalForm(forms.ModelForm):
             'hours_exercise_lab': 0,
             'hours_seminar': 0,
             'hours_recap': 0,
-            'preconditions': ("## Zrealizowane przedmioty:\n"
-                              " *  \n\n"
-                              "## Niezbędne kompetencje:\n"
-                              " *  \n"),
-            'student_labour': (
-                "## Zajęcia z udziałem nauczyciela:\n"
-                "_dodatkowe względem programowych godzin zajęć, np. udział w egzaminie_\n"
-                " * udział w egzaminie **??**\n"
-                " * dodatkowe konsultacje w ramach potrzeb **??**\n\n"
-                "## Praca własna studenta:\n"
-                "_np. rozwiązywanie zadań z list · przygotowanie do kolokwium/egzaminu · czytanie "
-                "literatury · rozwiązywanie zadań programistycznych_\n"
-                " * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych) **??**\n"
-                " * samodzielne rozwiązywanie zadań pracowniowych i projektowych **??**\n"
-                " * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań **??**\n"),
+            'preconditions': """## Zrealizowane przedmioty:
+                   *  \n
+                ## Niezbędne kompetencje:
+                   *  """,
+            'student_labour': """## Zajęcia z udziałem nauczyciela:
+                _dodatkowe względem programowych godzin zajęć, np. udział w
+                egzaminie_
+                  * udział w egzaminie **??**
+                  * dodatkowe konsultacje w ramach potrzeb **??**
+                ## Praca własna studenta:
+                _np. rozwiązywanie zadań z list · przygotowanie do
+                kolokwium/egzaminu · czytanie literatury · rozwiązywanie zadań
+                programistycznych_
+                  * przygotowywanie się do ćwiczeń (w tym czytanie materiałów
+                    dodatkowych) **??**
+                  * samodzielne rozwiązywanie zadań pracownianych i
+                    projektowych **??**
+                  * przygotowanie do egzaminu lub rozwiązywanie dodatkowych
+                    zadań **??**""",
         }
 
         field_classes = {
@@ -389,7 +276,7 @@ class EditProposalForm(forms.ModelForm):
         }
 
 
-class CustomCheckbox(Field):
+class CustomCheckbox(layout.Field):
     """Renders Bootstrap 4 custom checkboxes.
 
     Inspired by
@@ -398,7 +285,7 @@ class CustomCheckbox(Field):
     template = 'proposal/fields/custom_checkbox.html'
 
 
-class Markdown(Field):
+class Markdown(layout.Field):
     """Renders textarea with Markdown preview.
 
     For the editor to work, the bundle 'proposal-markdown-editor' must be
@@ -407,23 +294,23 @@ class Markdown(Field):
     template = 'proposal/fields/markdown.html'
 
 
-class FormRow(Div):
+class FormRow(layout.Div):
     """Represents Booststrap 4 form layout row."""
     css_class = 'form-row'
 
 
-class Column(Column):
+class Column(layout.Column):
     """Represents Bootstrap 4 layout column."""
     css_class = 'col-12 col-sm'
 
 
-class ProposalFormHelper(FormHelper):
+class ProposalFormHelper(helper.FormHelper):
     """Defines layout for the Proposal form.
 
     Fields here must be the same as in `EditProposalForm`.
     """
-    layout = Layout(
-        Fieldset(
+    layout = layout.Layout(
+        layout.Fieldset(
             "Informacje podstawowe",
             FormRow(
                 Column('name', css_class='col-md-8'),
@@ -437,8 +324,7 @@ class ProposalFormHelper(FormHelper):
                     CustomCheckbox('recommended_for_first_year'),
                     css_class='col-md-4 px-4'),
                 css_class='align-items-end',
-            ),
-            Markdown('description'),
+            ), Markdown('description'),
             FormRow(
                 Column('hours_lecture', css_class='col-md-2'),
                 Column('hours_exercise', css_class='col-md-2'),
@@ -447,18 +333,17 @@ class ProposalFormHelper(FormHelper):
                 Column('hours_seminar', css_class='col-md-2'),
                 Column('hours_recap', css_class='col-md-2'),
                 css_class='align-items-end',
-            ),
-            FormRow(
+            ), FormRow(
                 Column('ects'),
                 Column('status'),
-            )
-        ),
-        Fieldset(
+            )),
+        layout.Fieldset(
             "Informacje szczegółowe"
+            # Fieldset collapse button.
             '<a class="btn btn-outline-secondary btn-sm ml-3" data-toggle="collapse" '
             'href="#proposal-details-fields" role="button" aria-expanded="false">'
             'Rozwiń/Zwiń</a>',
-            Div(
+            layout.Div(
                 'name_en',
                 Markdown('teaching_methods'),
                 Markdown('preconditions'),
@@ -471,7 +356,6 @@ class ProposalFormHelper(FormHelper):
                 Markdown('student_labour'),
                 css_class='collapse',
                 css_id='proposal-details-fields',
-            )
-        ),
-        Submit('submit', "Zapisz"),
+            )),
+        layout.Submit('submit', "Zapisz"),
     )
