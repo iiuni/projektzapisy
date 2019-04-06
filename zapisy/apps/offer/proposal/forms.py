@@ -1,5 +1,6 @@
 import os
 import inspect
+from typing import Optional
 
 from crispy_forms import helper, layout
 from django import forms
@@ -105,53 +106,55 @@ class EditProposalForm(forms.ModelForm):
         disabled=True,
         help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
 
-    def status_choices(self):
+    @staticmethod
+    def status_transitions(current_status: Optional[Proposal.ProposalStatus]):
+        """Defines allowed status transitions.
 
+        Initially an employee may only set the status to DRAFT or PROPOSAL.
+        PROPOSAL is accepted by the head of teaching (who changes the status
+        to IN_OFFER) or rejected (status is changed to
+        CORRECTIONS_REQUIRED).
+
+        If corrections are required, the employee may resubmit the proposal
+        again by changing the status back to PROPOSAL.
+
+        If the proposal is accepted (IN_OFFER) it can be put into the
+        current offer voting (IN_VOTE), left for future semesters or
+        archived (WITHDRAWN).
+        """
+        if current_status is None:
+            return [
+                Proposal.ProposalStatus.DRAFT,
+                Proposal.ProposalStatus.PROPOSAL,
+            ]
+        current_status = Proposal.ProposalStatus(int(current_status))
+        if current_status == Proposal.ProposalStatus.DRAFT:
+            return [
+                Proposal.ProposalStatus.DRAFT,
+                Proposal.ProposalStatus.PROPOSAL,
+            ]
+        elif current_status == Proposal.ProposalStatus.IN_OFFER:
+            return [
+                Proposal.ProposalStatus.IN_OFFER,
+                Proposal.ProposalStatus.IN_VOTE,
+                Proposal.ProposalStatus.WITHDRAWN,
+            ]
+        elif current_status == Proposal.ProposalStatus.CORRECTIONS_REQUIRED:
+            return [
+                Proposal.ProposalStatus.PROPOSAL,
+                Proposal.ProposalStatus.CORRECTIONS_REQUIRED,
+            ]
+        else:
+            return [current_status]
+
+    def status_choices(self):
         def choices_pair(c: Proposal.ProposalStatus):
+            """Generates a tuple like `.choices()` but with single choice only.
+            """
             return (c, c.display)
 
-        def limit_choices():
-            """Defines allowed status transitions.
-
-            Initially an employee may only set the status to DRAFT or PROPOSAL.
-            PROPOSAL is accepted by the head of teaching (who changes the status
-            to IN_OFFER) or rejected (status is changed to
-            CORRECTIONS_REQUIRED).
-
-            If corrections are required, the employee may resubmit the proposal
-            again by changing the status back to PROPOSAL.
-
-            If the proposal is accepted (IN_OFFER) it can be put into the
-            current offer voting (IN_VOTE), left for future semesters or
-            archived (WITHDRAWN).
-            """
-            if not self.data:
-                return [
-                    Proposal.ProposalStatus.DRAFT,
-                    Proposal.ProposalStatus.PROPOSAL,
-                ]
-            else:
-                current_status = self.data.status
-                if current_status == Proposal.ProposalStatus.DRAFT:
-                    return [
-                        Proposal.ProposalStatus.DRAFT,
-                        Proposal.ProposalStatus.PROPOSAL,
-                    ]
-                elif current_status == Proposal.ProposalStatus.IN_OFFER:
-                    return [
-                        Proposal.ProposalStatus.IN_OFFER,
-                        Proposal.ProposalStatus.IN_VOTE,
-                        Proposal.ProposalStatus.WITHDRAWN,
-                    ]
-                elif current_status == Proposal.ProposalStatus.CORRECTIONS_REQUIRED:
-                    return [
-                        Proposal.ProposalStatus.PROPOSAL,
-                        Proposal.ProposalStatus.CORRECTIONS_REQUIRED,
-                    ]
-                else:
-                    return [current_status]
-
-        return map(choices_pair, limit_choices())
+        current_status = None if not self.data else self.data.get('status')
+        return map(choices_pair, self.status_transitions(current_status))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -172,6 +175,48 @@ class EditProposalForm(forms.ModelForm):
 
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
+
+    def clean_status(self):
+        """Verifies that the status change does not violate allowed transitions.
+        """
+        status = self.cleaned_data.get('status')
+        status = Proposal.ProposalStatus(status)
+        old_status = None if not self.instance else self.instance.status
+        if old_status is not None:
+            old_status = Proposal.ProposalStatus(old_status)
+        if status not in self.status_transitions(old_status):
+            raise forms.ValidationError(
+                f"Nie można przejść ze statusu {old_status.display} do {status.display}.")
+        return status
+
+    def clean(self):
+        """Verifies the correctness of provided data.
+
+        It checks that fields 'contents', 'goals', and 'literature' are
+        populated when proposal is submitted (with status PROPOSAL), as they are
+        required then.
+        """
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        if status is not None:
+            status = Proposal.ProposalStatus(status)
+        if status == Proposal.ProposalStatus.PROPOSAL:
+            contents = cleaned_data.get('contents')
+            if not contents:
+                self.add_error(
+                    'contents',
+                    f"By móc ustawić status {status.display} trzeba wypełnić treści programowe.")
+            goals = cleaned_data.get('goals')
+            if not goals:
+                self.add_error(
+                    'goals',
+                    f"By móc ustawić status {status.display} trzeba wypełnić cele przedmiotu.")
+            literature = cleaned_data.get('literature')
+            if not literature:
+                self.add_error('literature',
+                               f"By móc ustawić status {status.display} trzeba opisać literaturę.")
+
+        return cleaned_data
 
     class Meta:
         model = Proposal

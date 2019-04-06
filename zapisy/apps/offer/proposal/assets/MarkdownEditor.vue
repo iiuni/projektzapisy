@@ -1,15 +1,15 @@
 <template>
-  <div class="row no-gutters">
-    <div class="col">
-        <textarea class="textarea form-control text-monospace" 
-            rows="10" :value="input" :name="name" :placeholder="placeholder"
-            @input="update" @focusin="active = true" @focusout="active = false"></textarea>
-    </div>
-    <div class="border rounded-lg col-12 col-md-6" :hidden="!active">
+  <div class="">
+    <textarea class="textarea form-control text-monospace"
+        :class="{'is-invalid': is_invalid}"
+        rows="10" :value="input" :name="name" :placeholder="placeholder"
+        @input="update" @focusin="active = true" @focusout="active = false"></textarea>
+    <div class="border rounded-lg" :hidden="!active">
       <small class="text-muted m-2">Podgląd:</small>
       <div class="preview p-3" v-html="compiledMarkdown"></div>
     </div>
       
+    <slot></slot>
   </div>
 </template>
 
@@ -25,6 +25,11 @@ export default {
       required: false,
     },
     placeholder: String,
+    is_invalid: {
+      type: Boolean,
+      default: false,
+      required: false,
+    }
   },
   data: function() {
     return {
