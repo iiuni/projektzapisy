@@ -74,24 +74,6 @@ class SelectVotingForm(forms.Form):
     courses = forms.MultipleChoiceField(widget=FilteredSelectMultiple("courses", is_stacked=False))
 
 
-class TextareaBoundField(forms.BoundField):
-    """Extends BoundField for easy access to placeholder value."""
-
-    @property
-    def placeholder(self):
-        widget = self.field.widget
-        if widget:
-            return widget.attrs.get('placeholder', "")
-        return ""
-
-
-class TextareaField(forms.CharField):
-    widget = forms.Textarea
-
-    def get_bound_field(self, form, field_name):
-        return TextareaBoundField(form, self, field_name)
-
-
 class EditProposalForm(forms.ModelForm):
     """Form for editing a Proposal model.
 
@@ -159,13 +141,6 @@ class EditProposalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
-
-        # Populate placeholders from example data file.
-        path = os.path.join(os.path.dirname(__file__), 'assets', 'example-data.yaml')
-        stream = open(path, 'r')
-        placeholders = yaml.load(stream)
-        for k, val in placeholders.items():
-            self.fields[k].widget.attrs['placeholder'] = val
 
         # Populate initial values from dictionary.
         for k, val in self.Meta.initial_values.items():
@@ -305,21 +280,6 @@ class EditProposalForm(forms.ModelForm):
                     zadań **??**""",
         }
 
-        field_classes = {
-            f: TextareaField for f in [
-                'description',
-                'teaching_methods',
-                'preconditions',
-                'goals',
-                'contents',
-                'teaching_effects',
-                'literature',
-                'verification_methods',
-                'passing_means',
-                'student_labour',
-            ]
-        }
-
 
 class CustomCheckbox(layout.Field):
     """Renders Bootstrap 4 custom checkboxes.
@@ -369,7 +329,8 @@ class ProposalFormHelper(helper.FormHelper):
                     CustomCheckbox('recommended_for_first_year'),
                     css_class='col-md-4 px-4'),
                 css_class='align-items-end',
-            ), Markdown('description'),
+            ), 
+            Markdown('description'),
             FormRow(
                 Column('hours_lecture', css_class='col-md-2'),
                 Column('hours_exercise', css_class='col-md-2'),

@@ -1,12 +1,12 @@
 <template>
-  <div class="">
+  <div class="form-row no-gutter">
     <textarea class="textarea form-control text-monospace"
-        :class="{'is-invalid': is_invalid}"
-        rows="10" :value="input" :name="name" :placeholder="placeholder"
+        :class="{'is-invalid': is_invalid, 'col-md-6': active}"
+        rows="10" :value="input" :name="name"
         @input="update" @focusin="active = true" @focusout="active = false"></textarea>
-    <div class="border rounded-lg" :hidden="!active">
-      <small class="text-muted m-2">Podgląd:</small>
-      <div class="preview p-3" v-html="compiledMarkdown"></div>
+    <div class="border rounded-lg col-md-6 overflow-hidden" v-if="active">
+    <small class="text-muted m-2">Podgląd:</small>
+    <div class="preview p-3" v-html="compiledMarkdown"></div>
     </div>
       
     <slot></slot>
@@ -24,7 +24,6 @@ export default {
       type: String,
       required: false,
     },
-    placeholder: String,
     is_invalid: {
       type: Boolean,
       default: false,
@@ -49,15 +48,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-
-textarea {
-  height: 100%;
-}
-
-.preview {
-  overflow: hidden;
-}
-
-</style>

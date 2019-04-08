@@ -3,9 +3,8 @@
 <div id="div_{{ field.id_for_label }}" class="form-group">
     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
     <markdown-editor name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}"
-        placeholder="{{ field.placeholder }}"
         {% if field.errors %}
-            is_invalid="true"
+            is_invalid
         {% endif %}>
         {% if field.help_text %}
             <small class="form-text text-muted">{{ field.help_text|safe }}</small>
