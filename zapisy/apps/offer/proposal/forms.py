@@ -8,7 +8,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 import yaml
 
 from apps.enrollment.courses.models.course import (CourseDescription, CourseEntity)
-from apps.offer.proposal.models import Proposal, StudentWork, Syllabus
+from apps.offer.proposal.models import Proposal, ProposalStatus, StudentWork, Syllabus
 
 
 class ProposalForm(forms.ModelForm):
@@ -89,7 +89,7 @@ class EditProposalForm(forms.ModelForm):
         help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
 
     @staticmethod
-    def status_transitions(current_status: Optional[Proposal.ProposalStatus]):
+    def status_transitions(current_status: Optional[ProposalStatus]):
         """Defines allowed status transitions.
 
         Initially an employee may only set the status to DRAFT or PROPOSAL.
@@ -106,31 +106,31 @@ class EditProposalForm(forms.ModelForm):
         """
         if current_status is None:
             return [
-                Proposal.ProposalStatus.DRAFT,
-                Proposal.ProposalStatus.PROPOSAL,
+                ProposalStatus.DRAFT,
+                ProposalStatus.PROPOSAL,
             ]
-        current_status = Proposal.ProposalStatus(int(current_status))
-        if current_status == Proposal.ProposalStatus.DRAFT:
+        current_status = ProposalStatus(int(current_status))
+        if current_status == ProposalStatus.DRAFT:
             return [
-                Proposal.ProposalStatus.DRAFT,
-                Proposal.ProposalStatus.PROPOSAL,
+                ProposalStatus.DRAFT,
+                ProposalStatus.PROPOSAL,
             ]
-        elif current_status == Proposal.ProposalStatus.IN_OFFER:
+        elif current_status == ProposalStatus.IN_OFFER:
             return [
-                Proposal.ProposalStatus.IN_OFFER,
-                Proposal.ProposalStatus.IN_VOTE,
-                Proposal.ProposalStatus.WITHDRAWN,
+                ProposalStatus.IN_OFFER,
+                ProposalStatus.IN_VOTE,
+                ProposalStatus.WITHDRAWN,
             ]
-        elif current_status == Proposal.ProposalStatus.CORRECTIONS_REQUIRED:
+        elif current_status == ProposalStatus.CORRECTIONS_REQUIRED:
             return [
-                Proposal.ProposalStatus.PROPOSAL,
-                Proposal.ProposalStatus.CORRECTIONS_REQUIRED,
+                ProposalStatus.PROPOSAL,
+                ProposalStatus.CORRECTIONS_REQUIRED,
             ]
         else:
             return [current_status]
 
     def status_choices(self):
-        def choices_pair(c: Proposal.ProposalStatus):
+        def choices_pair(c: ProposalStatus):
             """Generates a tuple like `.choices()` but with single choice only.
             """
             return (c, c.display)
@@ -155,10 +155,10 @@ class EditProposalForm(forms.ModelForm):
         """Verifies that the status change does not violate allowed transitions.
         """
         status = self.cleaned_data.get('status')
-        status = Proposal.ProposalStatus(status)
+        status = ProposalStatus(status)
         old_status = None if not self.instance else self.instance.status
         if old_status is not None:
-            old_status = Proposal.ProposalStatus(old_status)
+            old_status = ProposalStatus(old_status)
         if status not in self.status_transitions(old_status):
             raise forms.ValidationError(
                 f"Nie można przejść ze statusu {old_status.display} do {status.display}.")
@@ -174,8 +174,8 @@ class EditProposalForm(forms.ModelForm):
         cleaned_data = super().clean()
         status = cleaned_data.get('status')
         if status is not None:
-            status = Proposal.ProposalStatus(status)
-        if status == Proposal.ProposalStatus.PROPOSAL:
+            status = ProposalStatus(status)
+        if status == ProposalStatus.PROPOSAL:
             all_requirements_satisfied = True
             contents = cleaned_data.get('contents')
             if not contents:

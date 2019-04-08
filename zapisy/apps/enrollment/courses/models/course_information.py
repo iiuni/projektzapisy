@@ -18,21 +18,23 @@ from .tag import Tag
 from .course import CourseEntity
 
 
+class SemesterChoices(choicesenum.ChoicesEnum):
+    UNASSIGNED = 'u', "nieokreślony"
+    WINTER = 'z', "zimowy"
+    SUMMER = 'l', "letni"
+
+
+class Language(choicesenum.ChoicesEnum):
+    ENGLISH = 'en', "angielski"
+    POLISH = 'pl', "polski"
+
+
 class CourseInformation(models.Model):
     """CourseInformation is a class defining a Course entirely.
 
     It is intended to be subclassed by Proposal (in the `offer/proposal` app)
     and Course (in this app).
     """
-
-    class SemesterChoices(choicesenum.ChoicesEnum):
-        UNASSIGNED = 'u', "nieokreślony"
-        WINTER = 'z', "zimowy"
-        SUMMER = 'l', "letni"
-
-    class Language(choicesenum.ChoicesEnum):
-        ENGLISH = 'en', "angielski"
-        POLISH = 'pl', "polski"
 
     name = models.CharField("nazwa przedmiotu", max_length=100)
     name_en = models.CharField("nazwa po angielsku", max_length=100, blank=True)

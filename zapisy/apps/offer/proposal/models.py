@@ -94,20 +94,21 @@ class StudentWork(models.Model):
         return str(self.name)
 
 
+class ProposalStatus(choicesenum.ChoicesEnum):
+    PROPOSAL = 0, "propozycja"
+    IN_OFFER = 1, "w ofercie"
+    IN_VOTE = 2, "poddana pod głosowanie"
+    WITHDRAWN = 4, "wycofana z oferty"
+    CORRECTIONS_REQUIRED = 5, "do poprawienia"
+    DRAFT = 6, "szkic"
+
+
 class Proposal(CourseInformation):
     """Models course proposal.
 
     A proposal is added by an employee. Its initial status is DRAFT. The author
     can promote it to PROPOSAL. Teaching head can change the status further.
     """
-
-    class ProposalStatus(choicesenum.ChoicesEnum):
-        PROPOSAL = 0, "propozycja"
-        IN_OFFER = 1, "w ofercie"
-        IN_VOTE = 2, "poddana pod głosowanie"
-        WITHDRAWN = 4, "wycofana z oferty"
-        CORRECTIONS_REQUIRED = 5, "do poprawienia"
-        DRAFT = 6, "szkic"
 
     status = models.PositiveSmallIntegerField(
         "status propozycji", choices=ProposalStatus.choices(), default=ProposalStatus.DRAFT)
