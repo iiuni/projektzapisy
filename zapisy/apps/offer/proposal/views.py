@@ -205,9 +205,8 @@ def proposal_edit(request, slug=None):
         if form.is_valid():
             form.save()
         else:
-            form_errors_message = ("Formularz niezapisany. Błędy"
-                                   "<ol>{}</ol>".format("".join(
-                                       [f"<li>{e}</li>" for e in form.errors])))
+            form_errors_message = ("Formularz niezapisany: " +
+                                   ";".join(form.non_field_errors()))
             messages.error(request, form_errors_message)
     elif slug is not None:
         # Editing existing proposal.

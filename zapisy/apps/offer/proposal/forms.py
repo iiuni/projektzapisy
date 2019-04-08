@@ -176,20 +176,28 @@ class EditProposalForm(forms.ModelForm):
         if status is not None:
             status = Proposal.ProposalStatus(status)
         if status == Proposal.ProposalStatus.PROPOSAL:
+            all_requirements_satisfied = True
             contents = cleaned_data.get('contents')
             if not contents:
+                all_requirements_satisfied = False
                 self.add_error(
                     'contents',
-                    f"By móc ustawić status {status.display} trzeba wypełnić treści programowe.")
+                    f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić treści programowe.")
             goals = cleaned_data.get('goals')
             if not goals:
+                all_requirements_satisfied = False
                 self.add_error(
                     'goals',
-                    f"By móc ustawić status {status.display} trzeba wypełnić cele przedmiotu.")
+                    f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić cele przedmiotu.")
             literature = cleaned_data.get('literature')
             if not literature:
+                all_requirements_satisfied = False
                 self.add_error('literature',
-                               f"By móc ustawić status {status.display} trzeba opisać literaturę.")
+                               f"By móc ustawić status <u>{status.display}</u> trzeba opisać literaturę.")
+            if not all_requirements_satisfied:
+                raise forms.ValidationError((
+                    f"By móc ustawić status <u>{status.display}</u> trzeba opisać <em>Treści "
+                    "programowe</em>, <em>Cele przedmiotu</em> i <em>Literaturę</em>."))
 
         return cleaned_data
 
@@ -329,7 +337,7 @@ class ProposalFormHelper(helper.FormHelper):
                     CustomCheckbox('recommended_for_first_year'),
                     css_class='col-md-4 px-4'),
                 css_class='align-items-end',
-            ), 
+            ),
             Markdown('description'),
             FormRow(
                 Column('hours_lecture', css_class='col-md-2'),
