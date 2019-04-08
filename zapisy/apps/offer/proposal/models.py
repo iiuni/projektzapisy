@@ -112,3 +112,7 @@ class Proposal(CourseInformation):
 
     status = models.PositiveSmallIntegerField(
         "status propozycji", choices=ProposalStatus.choices(), default=ProposalStatus.DRAFT)
+
+    class Meta:
+        verbose_name = "propozycja przedmiotu"
+        verbose_name_plural = "propozycje przedmiotu"
