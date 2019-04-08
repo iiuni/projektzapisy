@@ -1,0 +1,60 @@
+{% extends "offer/base.html" %}
+
+{% load proposal_status %}
+{% load render_bundle from webpack_loader %}
+
+{% block offer_menu_offer %} class="active"{% endblock %}
+
+{% block main-subtitle %}
+    {% if proposal %}
+        {{ proposal.name }}
+    {% else %}
+        Oferta dydaktyczna
+    {% endif %}
+{% endblock %}
+
+
+{% block top-content %}
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    {% if proposal %}
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item">{{ proposal.name }}</li>
+    {% else %}
+    <li class="breadcrumb-item">Oferta dydaktyczna</li>
+    {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+    <h3>Przedmioty w ofercie</h3>
+    {%  if request.user.employee %}
+        <a href="{% url 'proposal-form' %}" class="btn btn-success btn-block">Dodaj nową propozycję przedmiotu</a>
+    {% endif %}
+
+    <ul id="proposal-list" class="proposal-list mt-3">
+        {% for course in proposals %}
+            <li id="listItem-proposal-{{ course.id }}" class="{{ course.status|status_label }}">
+                <a href="{% url 'offer-page' course.slug %}">{{ course.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+
+    <ul id="proposal-legend" class="text-muted">
+        <li class="in_vote">Przedmiot poddany pod głosowanie w tym cyklu.</li>
+        <li class="in_offer">Przedmiot w ofercie ale nie w tym cyklu.</li>
+        <li class="withdrawn">Przedmiot wycofany z oferty (zarchiwizowany).</li>
+    </ul>
+    {% render_bundle 'proposal-proposal-list-colors' %}
+{% endblock %}
+
+
+{% block content %}
+    {% if proposal %}
+        {% include 'proposal/proposal.html' with course=proposal %}
+    {% else %}
+        <div class="alert alert-primary">Wybierz przedmiot z listy.</div>
+    {% endif %}
+{% endblock %}

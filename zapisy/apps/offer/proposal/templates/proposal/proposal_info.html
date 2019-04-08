@@ -1,0 +1,84 @@
+<table class="table table-bordered" id="table-info">
+    <colgroup>
+        <col class="table-info-type"></col>
+    </colgroup>
+    <tbody>
+        <tr>
+            <th scope="row">Język wykładowy</th>
+            <td>{{ course.get_language_display|capfirst }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Semestr</th>
+            <td>{{ course.get_semester_display|capfirst }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Status</th>
+            <td>{{ course.get_status_display|capfirst }}</td>
+        </tr>
+        <tr>
+            <th>Opiekun</th>
+            <td>
+                <a href="{% url 'employee-profile' course_entity.owner.user.id %}"
+                    class="person">{{ course.owner.user.get_full_name }}</a>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Liczba godzin</th>
+            <td id="hours">
+                <style>
+                    #hours span + span::before {
+                        content: '+';
+                        margin: 0 .5em;
+                    }
+                </style>
+                {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
+                {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
+                {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
+                {% if course.hours_exercise_lab %}<span>{{ course.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
+                {% if course.hours_seminar %}<span>{{ course.hours_seminar }} (sem.)</span>{% endif %}
+                {% if course.hours_recap %}<span>{{ course.hours_recap }} (rep.)</span>{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Rodzaj</th>
+            <td>{{ course.course_type }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Polecany dla I roku</th>
+            <td>{{ course.recommended_for_first_year|yesno|capfirst }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Egzamin</th>
+            <td>{{ course.has_exam|yesno|capfirst }}</td>
+        </tr>
+        {% if course.entity and course.entity.get_all_tags_with_weights %}
+        <tr>
+            <th scope="row">Tagi</th>
+            <td>
+                {% for tag in course.entity.get_all_tags_with_weights %}
+                    <span class="badge badge-success mx-1">{{ tag.tag }}{% if tag.weight %} — {{ tag.weight }}%</span>{% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+        {% if course.effects.all %}
+        <tr>
+            <th>Grupy efektów kształcenia</th>
+            <td>
+                {% for effect in course.effects.all %}
+                    <span class="badge badge-info">{{ effect }}</li>
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<div class="description">
+    <h5>Opis przedmiotu:</h5>
+    {% if course.description %}
+        {{ course.description|safe }}
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
+</div>

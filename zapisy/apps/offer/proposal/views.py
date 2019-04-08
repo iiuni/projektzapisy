@@ -3,6 +3,7 @@
 """
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.http import Http404
@@ -22,7 +23,7 @@ from apps.enrollment.courses.models.course_type import Type
 from apps.offer.preferences.models import Preference
 
 from apps.offer.proposal.forms import ProposalForm, ProposalDescriptionForm, SyllabusForm, EditProposalForm
-from apps.offer.proposal.models import Syllabus, StudentWork, Proposal
+from apps.offer.proposal.models import Syllabus, StudentWork, Proposal, ProposalStatus
 from apps.offer.proposal.exceptions import NotOwnerException
 from .forms import SelectVotingForm
 
@@ -32,7 +33,7 @@ from apps.offer.proposal.utils import proposal_for_offer, employee_proposal, sen
 from apps.users.models import Employee
 from apps.users.decorators import employee_required
 
-logger = logging.getLogger("")
+logger = logging.getLogger(__file__)
 
 
 def offer(request, slug=None):
@@ -40,23 +41,18 @@ def offer(request, slug=None):
     if slug is None, this view shows offer main page,
     else show proposal page
     """
-    proposal = proposal_for_offer(slug)
-    proposals = CourseEntity.get_proposals(request.user.is_authenticated)
-    serialized_proposals = [prop.serialize_for_json()
-                            for prop in proposals]
-    proposals_json = json.dumps(serialized_proposals)
-    types_list = Type.get_all_for_jsfilter()
-    teachers = Employee.get_actives()
+    if slug is not None:
+        proposal = get_object_or_404(Proposal, slug=slug)
+    else:
+        proposal = None
 
-    return TemplateResponse(request, 'offer/offer.html', {
+    filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
+    proposal_list = Proposal.objects.filter(
+        status__in=filter_statuses).select_related('course_type', 'owner__user').order_by('name')
+
+    return TemplateResponse(request, 'proposal/offer.html', {
         "proposal": proposal,
-        "proposals": proposals,
-        "proposals_json": proposals_json,
-        "types_list": types_list,
-        "teachers": teachers,
-        "effects": Effects.objects.all(),
-        "semester": Semester.get_current_semester(),
-        "tags": Tag.objects.all(),
+        "proposals": proposal_list,
     })
 
 
@@ -211,7 +207,7 @@ def proposal_edit(request, slug=None):
     elif slug is not None:
         # Editing existing proposal.
         proposal = Proposal.objects.get(slug=slug)
-        form = EditProposalForm(proposal)
+        form = EditProposalForm(instance=proposal)
     else:
         # Display an empty form for new proposal.
         form = EditProposalForm()

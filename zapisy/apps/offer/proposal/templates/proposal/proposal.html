@@ -1,0 +1,7 @@
+<h2>{{course.name}}
+{% if user.is_staff or course.owner == user.employee %}
+        <a class="btn btn-sm btn-outline-info ml-3" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
+{% endif %}
+</h2>
+
+{% include 'proposal/proposal_info.html' with course=course %}
