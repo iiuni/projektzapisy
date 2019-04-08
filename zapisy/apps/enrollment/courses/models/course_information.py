@@ -62,7 +62,7 @@ class CourseInformation(models.Model):
     # Fields for syllabus
     teaching_methods = models.TextField("metody kształcenia", blank=True)
     preconditions = models.TextField("wymagania wstępne", blank=True)
-    goals = models.TextField("cele przedmiotu", blank=True)
+    objectives = models.TextField("cele przedmiotu", blank=True)
     contents = models.TextField("treści programowe", blank=True)
     teaching_effects = models.TextField("zakładane efekty kształcenia", blank=True)
     literature = models.TextField("literatura obowiązkowa i zalecana", blank=True)

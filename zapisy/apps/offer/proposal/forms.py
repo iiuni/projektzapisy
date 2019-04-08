@@ -167,7 +167,7 @@ class EditProposalForm(forms.ModelForm):
     def clean(self):
         """Verifies the correctness of provided data.
 
-        It checks that fields 'contents', 'goals', and 'literature' are
+        It checks that fields 'contents', 'objectives', and 'literature' are
         populated when proposal is submitted (with status PROPOSAL), as they are
         required then.
         """
@@ -183,11 +183,11 @@ class EditProposalForm(forms.ModelForm):
                 self.add_error(
                     'contents',
                     f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić treści programowe.")
-            goals = cleaned_data.get('goals')
-            if not goals:
+            objectives = cleaned_data.get('objectives')
+            if not objectives:
                 all_requirements_satisfied = False
                 self.add_error(
-                    'goals',
+                    'objectives',
                     f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić cele przedmiotu.")
             literature = cleaned_data.get('literature')
             if not literature:
@@ -222,7 +222,7 @@ class EditProposalForm(forms.ModelForm):
             'status',
             'teaching_methods',
             'preconditions',
-            'goals',
+            'objectives',
             'contents',
             'teaching_effects',
             'literature',
@@ -361,7 +361,7 @@ class ProposalFormHelper(helper.FormHelper):
                 'name_en',
                 Markdown('teaching_methods'),
                 Markdown('preconditions'),
-                Markdown('goals'),
+                Markdown('objectives'),
                 Markdown('contents'),
                 Markdown('teaching_effects'),
                 Markdown('literature'),
