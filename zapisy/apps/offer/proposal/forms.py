@@ -135,10 +135,11 @@ class EditProposalForm(forms.ModelForm):
             """
             return (c, c.display)
 
-        current_status = None if not self.data else self.data.get('status')
+        current_status = None if not self.instance else self.instance.status
         return map(choices_pair, self.status_transitions(current_status))
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
 
@@ -200,6 +201,15 @@ class EditProposalForm(forms.ModelForm):
                     "programowe</em>, <em>Cele przedmiotu</em> i <em>Literaturę</em>."))
 
         return cleaned_data
+
+    def save(self, commit=True):
+        """If the proposal is new, it saves the requesting user as the owner."""
+        instance = super().save(commit=False)
+        if instance.owner is None:
+            instance.owner = self.user.employee
+        if commit:
+            instance.save()
+        return instance
 
     class Meta:
         model = Proposal

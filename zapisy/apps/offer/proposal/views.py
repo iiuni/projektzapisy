@@ -195,20 +195,20 @@ def _create_missing_course_description(request, proposal):
 
 @employee_required
 def proposal_edit(request, slug=None):
+    if slug is not None:
+        # Editing existing proposal.
+        proposal = Proposal.objects.get(slug=slug)
+        form = EditProposalForm(instance=proposal)
     if request.method == "POST":
         # Handling filled-in proposal form.
-        form = EditProposalForm(request.POST)
+        form = EditProposalForm(request.POST, instance=proposal, user=request.user)
         if form.is_valid():
             form.save()
         else:
             form_errors_message = ("Formularz niezapisany: " +
                                    ";".join(form.non_field_errors()))
             messages.error(request, form_errors_message)
-    elif slug is not None:
-        # Editing existing proposal.
-        proposal = Proposal.objects.get(slug=slug)
-        form = EditProposalForm(instance=proposal)
-    else:
+    if slug is None and request.method == "GET":
         # Display an empty form for new proposal.
         form = EditProposalForm()
     return render(request, 'proposal/edit_proposal.html', {
