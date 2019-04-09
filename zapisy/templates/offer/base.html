@@ -10,8 +10,8 @@
         <a class="nav-link" href="{% url 'offer-main' %}">Oferta</a>
     </li>
     {% if user.employee %}
-    <li {% block enrollment_menu_courses %}{% endblock %}>
-        <a class="nav-link" href="{% url 'my-proposal' %}">Moje Propozycje</a>
+    <li {% block offer_menu_my_proposals %}{% endblock %}>
+        <a class="nav-link" href="{% url 'my-proposals' %}">Moje Propozycje</a>
     </li>
     {% endif %}
     {% if user.employee %}

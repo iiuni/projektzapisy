@@ -1,0 +1,61 @@
+{% extends "offer/base.html" %}
+
+{% load proposal_status %}
+{% load render_bundle from webpack_loader %}
+
+{% block offer_menu_my_proposals %} class="active"{% endblock %}
+
+{% block main-subtitle %}
+    Moje propozycje przedmiotów
+{% endblock %}
+
+
+{% block top-content %}
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    {% if proposal %}
+        <li class="breadcrumb-item"><a href="{% url 'my-proposals' %}">Moje propozycje</a></li>
+        <li class="breadcrumb-item">{{ proposal.name }}</li>
+    {% else %}
+        <li class="breadcrumb-item">Moje propozycje</li>
+    {% endif %}
+{% endblock %}
+
+
+{% block all-content %}
+    {% regroup proposals_list|dictsort:"status" by status as statuses %}
+    {% with active_status=proposal.status|default:1 %}
+    <div class="card p-3 my-4">
+        <ul class="nav nav-pills nav-fill mb-3" role="tablist">
+            {% for status in statuses %}
+                <li class="nav-item">
+                    <a class="nav-link {% if active_status == status.grouper %}active{% endif %}" data-toggle="pill"
+                            href="#pills-{{ status.grouper|status_label }}" role="tab"
+                            aria-controls="pills-{{ status.grouper|status_label }}"
+                            aria-selected="{% if active_status == status.grouper %}true{% else %}false{% endif %}">
+                        {{ status.grouper|status_display|capfirst }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content p-3 pt-5 border-top">
+            {% for status in statuses %}
+            <div class="tab-pane fade {% if active_status == status.grouper %}show active{% endif %}"
+                    id="pills-{{ status.grouper|status_label }}" role="tabpanel">
+                <ul>
+                {% for prp in status.list %}
+                    <li><a href="{% url 'my-proposal-show' prp.slug %}">{{ prp.name }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endwith %}
+    {% if proposal %}
+        {% include 'proposal/proposal.html' with course=proposal %}
+    {% endif %}
+{% endblock %}

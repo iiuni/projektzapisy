@@ -142,39 +142,16 @@ def course_groups(request, slug):
         return redirect(request.path)
 
 
-def main(request):
-    return TemplateResponse(request, 'offer/main.html', {})
-
-
-@login_required
 @employee_required
-def proposal(request, slug=None):
-    """
-      List of user proposal
-    """
-    try:
-        proposals = CourseEntity.get_employee_proposals(request.user)
-        for_review = [course for course in proposals
-                      if course.get_status() == CourseEntity.STATUS_FOR_REVIEW]
-        not_accepted = [course for course in proposals
-                        if course.get_status() == CourseEntity.STATUS_PROPOSITION]
-        in_vote = [course for course in proposals
-                   if course.get_status() == CourseEntity.STATUS_TO_VOTE]
-        in_offer = [course for course in proposals
-                    if course.get_status() == CourseEntity.STATUS_IN_OFFER]
-        removed = [course for course in proposals
-                   if course.get_status() == CourseEntity.STATUS_WITHDRAWN]
-        proposal = employee_proposal(request.user, slug)
-        semester = Semester.get_current_semester()
-    except NotOwnerException:
-        return redirect('offer-page', slug=slug)
-    except Http404:
-        raise Http404
-
-    if proposal:
-        return TemplateResponse(request, 'offer/proposal/proposal.html', locals())
-    else:
-        return TemplateResponse(request, 'offer/proposal/employee_proposals.html', locals())
+def my_proposals(request, slug=None):
+    proposals_list = Proposal.objects.filter(owner=request.user.employee)
+    proposal = None
+    if slug is not None:
+        proposal = get_object_or_404(Proposal, slug=slug)
+    return render(request, 'proposal/my-proposals.html', {
+        'proposals_list': proposals_list,
+        'proposal': proposal,
+    })
 
 
 # FIXME: course descriptions and course entities have a two way foreign key
@@ -214,7 +191,7 @@ def proposal_edit(request, slug=None):
     if slug is None and request.method == "GET":
         # Display an empty form for new proposal.
         form = EditProposalForm()
-    return render(request, 'proposal/edit_proposal.html', {
+    return render(request, 'proposal/edit-proposal.html', {
         'form': form,
     })
 
