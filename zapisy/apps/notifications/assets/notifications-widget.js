@@ -4,15 +4,10 @@ import Widget from "./components/Widget.vue";
 
 let notifications_app = new Vue({
     el: "#notificationswidget",
-    components: { Widget },
-    data: {
-        show: false,
+    components: { 
+        Widget 
     },
     render: function (h) {
-        return h(Widget, {
-            props: {
-                show: this.show,
-            }
-        });
+        return h(Widget);
     },
 }) 
