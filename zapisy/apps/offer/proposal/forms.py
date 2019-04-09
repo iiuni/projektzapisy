@@ -149,6 +149,10 @@ class EditProposalForm(forms.ModelForm):
                 val = inspect.cleandoc(val)
             self.fields[k].initial = val
 
+        # Fill the ects field with value from entity.
+        if self.instance and self.instance.entity:
+            self.fields['ects'].initial = self.instance.entity.get_points()
+
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
 
@@ -210,6 +214,18 @@ class EditProposalForm(forms.ModelForm):
             instance.owner = self.user.employee
         if commit:
             instance.save()
+
+            # Creates entity with default ECTS value, if one does not exist.
+            if instance.entity is None:
+                entity = CourseEntity.objects.create(
+                    name="Tymczasowe entity do migracji",
+                    deleted=True)
+                entity.pointsofcourseentities_set.create(
+                    type_of_point_id=1,
+                    value=self.instance.course_type.default_ects)
+                instance.entity = entity
+                instance.save()
+
         return instance
 
     class Meta:
