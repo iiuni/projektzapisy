@@ -45,7 +45,8 @@ class CourseInformation(models.Model):
         "język wykładowy", choices=Language.choices(), max_length=2, default=Language.POLISH)
     course_type = models.ForeignKey(CourseType, verbose_name="rodzaj", on_delete=models.PROTECT)
     owner = models.ForeignKey(Employee, on_delete=models.PROTECT)
-    recommended_for_first_year = models.BooleanField("przedmiot polecany dla pierwszego roku", default=False)
+    recommended_for_first_year = models.BooleanField(
+        "przedmiot polecany dla pierwszego roku", default=False)
 
     semester = models.CharField(
         "semestr",
@@ -98,3 +99,26 @@ class CourseInformation(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def clone(self) -> 'CourseInformation':
+        """Returns a copy of the CourseInformation object.
+
+        All fields will be copied with exception of 'slug', 'owner', 'usos_kod',
+        'entity'. Names will be prepended with an indicator that the object is a
+        clone.
+
+        The returned object is not saved in the database.
+        """
+        copy = CourseInformation.objects.prefetch_related('tags', 'effects').get(pk=self.pk)
+        # This causes that when copy is saved, it becomes a new record.
+        copy.pk = None
+
+        # Clear some fields.
+        copy.slug = None
+        copy.owner = None
+        copy.usos_kod = None
+        copy.entity = None
+        copy.name = f"Klon: {copy.name}"
+        copy.name_en = f"Clone: {copy.name}" if copy.name_en else ""
+
+        return copy

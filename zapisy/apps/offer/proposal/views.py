@@ -171,6 +171,7 @@ def _create_missing_course_description(request, proposal):
 
 @employee_required
 def proposal_edit(request, slug=None):
+    proposal = None
     if slug is not None:
         # Editing existing proposal.
         proposal = get_object_or_404(Proposal, slug=slug)
@@ -184,13 +185,22 @@ def proposal_edit(request, slug=None):
         form = EditProposalForm(request.POST, instance=proposal, user=request.user)
         if form.is_valid():
             form.save()
-        else:
-            form_errors_message = ("Formularz niezapisany: " +
-                                   ";".join(form.non_field_errors()))
-            messages.error(request, form_errors_message)
+            messages.success(request, "Pomyślnie zapisano formularz.")
     if slug is None and request.method == "GET":
         # Display an empty form for new proposal.
         form = EditProposalForm()
+    return render(request, 'proposal/edit-proposal.html', {
+        'form': form,
+    })
+
+
+@employee_required
+def proposal_clone(request, slug):
+    proposal = get_object_or_404(Proposal, slug=slug)
+    clone = Proposal.from_course_information(proposal.clone())
+
+    form = EditProposalForm(instance=clone)
+    form.helper.form_action = reverse('proposal-form')
     return render(request, 'proposal/edit-proposal.html', {
         'form': form,
     })

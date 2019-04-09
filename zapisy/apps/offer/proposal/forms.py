@@ -181,31 +181,32 @@ class EditProposalForm(forms.ModelForm):
             contents = cleaned_data.get('contents')
             if not contents:
                 all_requirements_satisfied = False
-                self.add_error(
-                    'contents',
-                    f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić treści programowe.")
+                self.add_error('contents',
+                               (f"By móc ustawić status {status.display.upper()} trzeba "
+                                "wypełnić treści programowe."))
             objectives = cleaned_data.get('objectives')
             if not objectives:
                 all_requirements_satisfied = False
-                self.add_error(
-                    'objectives',
-                    f"By móc ustawić status <u>{status.display}</u> trzeba wypełnić cele przedmiotu.")
+                self.add_error('objectives',
+                               (f"By móc ustawić status {status.display.upper()} trzeba "
+                                "wypełnić cele przedmiotu."))
             literature = cleaned_data.get('literature')
             if not literature:
                 all_requirements_satisfied = False
-                self.add_error('literature',
-                               f"By móc ustawić status <u>{status.display}</u> trzeba opisać literaturę.")
+                self.add_error(
+                    'literature',
+                    f"By móc ustawić status {status.display.upper()} trzeba opisać literaturę.")
             if not all_requirements_satisfied:
                 raise forms.ValidationError((
-                    f"By móc ustawić status <u>{status.display}</u> trzeba opisać <em>Treści "
-                    "programowe</em>, <em>Cele przedmiotu</em> i <em>Literaturę</em>."))
+                    f"By móc ustawić status {status.display.upper()} trzeba opisać „Treści "
+                    "programowe”, „Cele przedmiotu” i „Literaturę”."))
 
         return cleaned_data
 
     def save(self, commit=True):
         """If the proposal is new, it saves the requesting user as the owner."""
         instance = super().save(commit=False)
-        if instance.owner is None:
+        if getattr(instance, 'owner', None) is None:
             instance.owner = self.user.employee
         if commit:
             instance.save()

@@ -1,4 +1,5 @@
 import choicesenum
+from django.core import exceptions
 from django.db import models
 
 from apps.enrollment.courses.models.course import CourseEntity
@@ -116,3 +117,22 @@ class Proposal(CourseInformation):
     class Meta:
         verbose_name = "propozycja przedmiotu"
         verbose_name_plural = "propozycje przedmiotu"
+
+    @classmethod
+    def from_course_information(cls, course_info):
+        """Creates a new Proposal instance with course_info.
+
+        The returned object is not saved.
+        """
+        proposal = cls()
+        for field in course_info._meta.get_fields():
+            try:
+                # Skip if Proposal model does not have this field.
+                cls._meta.get_field(field.name)
+                value = getattr(course_info, field.name, None)
+                setattr(proposal, field.name, value)
+            except exceptions.FieldDoesNotExist:
+                continue
+            except ValueError:
+                continue
+        return proposal
