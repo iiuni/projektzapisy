@@ -4,9 +4,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse
-from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
@@ -197,7 +196,11 @@ def _create_missing_course_description(request, proposal):
 def proposal_edit(request, slug=None):
     if slug is not None:
         # Editing existing proposal.
-        proposal = Proposal.objects.get(slug=slug)
+        proposal = get_object_or_404(Proposal, slug=slug)
+
+        # Check if the user is allowed to edit this proposal.
+        if request.user.employee != proposal.owner and not request.user.is_staff:
+            raise PermissionDenied
         form = EditProposalForm(instance=proposal)
     if request.method == "POST":
         # Handling filled-in proposal form.
