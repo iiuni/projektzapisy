@@ -3,30 +3,33 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON, CourseShell, CourseShellJSON, Filter } from "../models";
+import { GroupJSON } from "../models";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
+export interface FilterDetails {
+    property:"entity__name"|"tags"|"effects"|"first_year"|"exam"|"seminars";
+    value:string|boolean;
+}
+
+
+
 interface State {
     courses: { [id: number]: CourseShell };
-    activeFilters: Map<string,Filter>;
+    activeFilters: FilterDetails[];
     selection: number[];
+    allTags: string[]
     allEffects: string[];
-    allTypes: string[];
-    allTags: string[];
 }
 const state: State = {
     courses: {},
-    activeFilters: new Map(),
     selection: [],
+    activeFilters: [],
     allEffects: [],
-    allTypes: [],
     allTags: [],
 };
-
-export type FiltersCollection = Map<string,Filter>;
 
 const getters = {
     courses(state: State): CourseShell[] {
@@ -35,20 +38,11 @@ const getters = {
     selection(state: State) {
         return state.selection;
     },
-    activeFilters(state:State):FiltersCollection {
+    activeFilters(state:State):FilterDetails[] {
         return state.activeFilters;
-    },
-    activeFiltersArray(state:State):Filter[]{
-        return Array.from(state.activeFilters.values())
-    },
-    filter(filterId:string) {
-        return state.activeFilters.get(filterId);
     },
     allEffects(state:State):string[] {
         return state.allEffects;
-    },
-    allTypes(state:State):string[] {
-        return state.allTypes;
     },
     allTags(state:State):string[] {
         return state.allTags;
@@ -100,11 +94,11 @@ const actions = {
         commit("setCourses", coursesDump);
     },    // initFromJSONTag will be called at the start to populate the courses list.
     
-    setFilter({ commit }: ActionContext<State, any>, {filterId, filter}:{filterId:string,filter:Filter}) {
-        commit("addFilter", {filterId, filter});
+    addFilter({ commit }: ActionContext<State, any>, filter: FilterDetails) {
+        commit("addFilter", filter);
     },
-    dropFilter({ commit }: ActionContext<State, any>, filterId: string) {
-        commit("dropFilter", filterId);
+    dropFilter({ commit }: ActionContext<State, any>, filter: FilterDetails) {
+        commit("dropFilter", filter);
     },
 };
 
@@ -132,12 +126,15 @@ const mutations = {
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
     },
-    addFilter(state: State, {filterId, filter}:{filterId:string,filter:Filter}) {
-        state.activeFilters.set(filterId, filter);
+    addFilter(state: State, filter: FilterDetails) {
+        state.activeFilters.push(filter);
     },
-    dropFilter(state: State, filterId: string) {
-        state.activeFilters.delete(filterId);
+    dropFilter(state: State, filter: FilterDetails) {
+        state.activeFilters = state.activeFilters.filter( 
+            tested => !(filter.property === tested.property && 
+                        filter.value === tested.value) );
     },
+    
 };
 
 export default {

@@ -10,7 +10,6 @@ import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 
 import { CourseShell, Filter, Group, Course } from "../models";
-import { FiltersCollection } from "../store/courses";
 
 @Component({
   props: {
@@ -19,7 +18,7 @@ import { FiltersCollection } from "../store/courses";
   },
   computed: mapGetters("courses", {
     selectionState: "selection",
-    activeFilters:"activeFiltersArray"
+    activeFilters:"activeFilters"
   }),
 })
 export default class CourseList extends Vue {
