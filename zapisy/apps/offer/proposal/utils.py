@@ -15,20 +15,6 @@ def proposal_for_offer(slug):
     return None
 
 
-def employee_proposal(user, slug):
-    if slug:
-        try:
-            proposal = CourseEntity.get_employee_proposal(user, slug)
-            proposal.information = CourseDescription.objects.filter(
-                entity=proposal).order_by('-id')[0]
-        except (ObjectDoesNotExist, IndexError) as e:
-            raise Http404
-    else:
-        proposal = None
-
-    return proposal
-
-
 def send_notification_to_3d(proposal, new=False):
     address = 'mabi@cs.uni.wroc.pl'
     subject = 'Nowa propozycja: ' + proposal.name

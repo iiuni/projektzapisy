@@ -13,7 +13,6 @@ from apps.cache_utils import cache_result, cache_result_for
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.student_options import StudentOptions
 from apps.enrollment.courses.models.tag import Tag
-from apps.offer.proposal.exceptions import NotOwnerException
 from apps.users.models import Student
 
 import logging
@@ -471,24 +470,6 @@ class CourseEntity(models.Model):
 
         proposal.information = information
         return proposal
-
-    @staticmethod
-    def get_employee_proposals(user):
-        """Returns Courses owned by the user.
-
-        Raises:
-            Employee.DoesNotExist: If the user is not an employee.
-        """
-        return CourseEntity.noremoved.filter(owner=user.employee)
-
-    @staticmethod
-    def get_employee_proposal(user, slug):
-        proposal = CourseEntity.noremoved.get(slug=slug)
-
-        if user.is_staff or proposal.owner == user.employee:
-            return proposal
-        else:
-            raise NotOwnerException
 
 
 class Related(models.Manager):
