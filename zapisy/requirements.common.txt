@@ -33,3 +33,6 @@ postmarkup==1.2.2
 unidecode==1.0.22
 # PyYAML is used for fixtures.
 pyyaml==5.1
+
+# We use html2text for one-off migration from HTML to markdown.
+html2text

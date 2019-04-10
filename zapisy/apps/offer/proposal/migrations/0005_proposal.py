@@ -5,6 +5,7 @@ import apps.offer.proposal.models
 from django.core import exceptions
 from django.db import migrations, models
 import django.db.models.deletion
+from html2text import html2text as markdownify
 
 # These methods are copied from CourseEntity models. We could not import the
 # model, because it may be gone in the codebase when people are running this
@@ -78,7 +79,7 @@ def migrate_entities_to_proposals(apps, schema_editor):
             name_en=e.name_en or '',
             short_name=e.shortName or '',
             slug=e.slug,
-            description=e.information.description if e.information else None or '',
+            description=markdownify(e.information.description if e.information else None or ''),
             language='en' if e.english else 'pl',
             course_type=e.type,
             owner=e.owner or nn, # Sets 'Nieznany Prowadzący' as owner if none is set.
@@ -105,18 +106,18 @@ def migrate_entities_to_proposals(apps, schema_editor):
         if hasattr(e, 'syllabus'):
             s = e.syllabus
             p.teaching_methods = '\n'.join([f"* {l.name}" for l in s.learning_methods.all()])
-            p.preconditions = s.requirements
-            p.objectives = s.objectives
-            p.contents = s.contents
-            p.teaching_effects = s.effects_txt
-            p.literature = s.literature
+            p.preconditions = markdownify(s.requirements)
+            p.objectives = markdownify(s.objectives)
+            p.contents = markdownify(s.contents)
+            p.teaching_effects = markdownify(s.effects_txt)
+            p.literature = markdownify(s.literature)
             p.verification_methods = ", ".join(
                 filter(lambda x: x, [
                     gtz(s.exam_hours, "egzamin"),
                     gtz(s.tests_hours, "sprawdziany/kolokwia"),
                     gtz(s.project_presentation_hours, "prezentacja projektu")
                 ]))
-            p.passing_means = s.passing_form
+            p.passing_means = markdownify(s.passing_form)
             p.student_labour = '\n'.join([f"* {w.name} {w.hours}" for w in s.studentwork_set.all()])
         
         p.save()

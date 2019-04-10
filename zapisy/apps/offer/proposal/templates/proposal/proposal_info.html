@@ -1,3 +1,5 @@
+{% load render_bundle from webpack_loader %}
+
 <table class="table table-bordered table-md-responsive" id="table-info">
     <colgroup>
         <col class="table-info-type"></col>
@@ -18,7 +20,7 @@
         <tr>
             <th>Opiekun</th>
             <td>
-                <a href="{% url 'employee-profile' course_entity.owner.user.id %}"
+                <a href="{% url 'employee-profile' course.owner.user_id %}"
                     class="person">{{ course.owner.user.get_full_name }}</a>
             </td>
         </tr>
@@ -43,6 +45,14 @@
             <th scope="row">Rodzaj</th>
             <td>{{ course.course_type }}</td>
         </tr>
+        {% if course.entity %}
+        <tr>
+            <th><abbr title="European Credit Transfer System">ECTS</abbr></th>
+            <td>
+                {{ course.entity.get_points }}
+            </td>
+        </tr>
+        {% endif %}
         <tr>
             <th scope="row">Polecany dla I roku</th>
             <td>{{ course.recommended_for_first_year|yesno|capfirst }}</td>
@@ -77,8 +87,10 @@
 <div class="description">
     <h5>Opis przedmiotu:</h5>
     {% if course.description %}
-        {{ course.description|safe }}
+        <div class="markdown">{{ course.description }}</div>
     {% else %}
         <p>Brak</p>
     {% endif %}
 </div>
+
+{% render_bundle 'proposal-render-markdown' %}
