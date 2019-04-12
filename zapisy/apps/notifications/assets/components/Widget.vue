@@ -26,67 +26,57 @@ export default {
 
 <template>
 <div>
-    <div @click="change">
-        <i v-if="ns_c == 0" class="far fa-bell bell nav-link"></i>
-        <i v-else class="fas fa-bell bell nav-link"></i>
-    </div>
-
-    <div class="triangle" v-show="showModal"></div>
-    <div id="modal-container" v-show="showModal">
-        <p>Lista powiadomień:</p>
-        <div v-if="ns_c != 0">
-            <div v-for="elem in ns" :key="elem" class="onemessage">
-                <div class="textM">
-                    {{ elem }}
+    
+    <li class="nav-item dropdown" id="login-dropdown">
+        <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i v-if="ns_c == 0" class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
+            <i v-else class="fas fa-bell bell nav-link"  style="padding-right: 0;"></i>
+        </a>
+        <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
+            <p>Lista powiadomień:</p>
+            <div v-if="ns_c != 0">
+                <div>
+                    <div v-for="elem in ns" :key="elem" class="onemessage">
+                        <div>
+                            <div class="textM">
+                                {{ elem }}
+                            </div>
+                            <div class="deleteM">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="deleteM">
-                    <i class="fas fa-times"></i>
+                <div class="deleteAllM">
+                    <div>Usuń wszystkie powiadomienia.</div>
                 </div>
             </div>
-            <div class="deleteAllM">
-                Usuń wszystkie powiadomienia.
+            <div v-else class="NoM">
+                Brak nowych powiadomień.
             </div>
         </div>
-        <div v-else class="NoM">
-            Brak nowych powiadomień.
-        </div>
-    </div>
+    </li>
 
 </div>
 </template>
 
 <style>
+#login-dropdown .dropdown-menu{
+    background: rgb(248, 249, 250) !important;
+    width: 350px;
+}
+.specialdropdown::after{
+    content: none;
+}
 .bell{
-    font-size: 20px;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    font-size: 23px;
+    padding: 0;
 }
 #modal-container {
-  display: block;
-  position: absolute;
-  width: 400px;
-  z-index: 9998;
-  min-height: 50px;
-  top: 45px;
-  right: 300px;
-  padding: 17px 3px 10px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
-  font-family: Helvetica, Arial, sans-serif;
   overflow-y: scroll;
-}
-
-.triangle {
-  width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid rgb(255, 255, 255);
-    position: absolute;
-    top: 40px;
-    right: 334px;
+  max-height: 500px;
 }
 
 #modal-container p {
@@ -130,6 +120,8 @@ export default {
 .textM {
     float: left;
     padding-top: 5px;
+    padding-bottom: 5px;
+    width: 260px;
 }
 
 .deleteAllM {
