@@ -3,7 +3,8 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON } from "../models";
+import { GroupJSON, CourseShellJSON, Course, CourseShell } from "../models";
+import store from ".";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -20,8 +21,9 @@ interface State {
     courses: { [id: number]: CourseShell };
     activeFilters: FilterDetails[];
     selection: number[];
-    allTags: string[]
     allEffects: string[];
+    allTags: string[]
+    allTypes: string[];
 }
 const state: State = {
     courses: {},
@@ -29,6 +31,7 @@ const state: State = {
     activeFilters: [],
     allEffects: [],
     allTags: [],
+    allTypes: [],
 };
 
 const getters = {
@@ -46,6 +49,9 @@ const getters = {
     },
     allTags(state:State):string[] {
         return state.allTags;
+    },
+    allTypes(state:State):string[] {
+        return state.allTypes;
     },
 };
 
@@ -90,7 +96,7 @@ const actions = {
     initFromJSONTag({ commit }: ActionContext<State, any>) {
         const coursesDump = JSON.parse(
             document.getElementById("courses-list")!.innerHTML
-        ) as CourseShell[];
+        ) as CourseShellJSON[];
         commit("setCourses", coursesDump);
     },    // initFromJSONTag will be called at the start to populate the courses list.
     
@@ -109,7 +115,8 @@ const mutations = {
     setCourses(state: State, courses: CourseShell[]) {
         const allEffects:string[] = [];
         const allTags:string[] = [];
-        courses.forEach(c => {
+        const allTypes:string[] = [];
+        courses.forEach((c : CourseShell) => {
             if(!c.effects) c.effects=[];
             c.effects
                 .filter(e => !allEffects.includes(e))
@@ -118,10 +125,12 @@ const mutations = {
             c.tags
                 .filter(e => !allTags.includes(e))
                 .forEach(e => allTags.push(e));
+            if(!!c.type && !allTypes.includes(c.type)) allTypes.push(c.type); 
             state.courses[c.id] = c;
         });
         state.allEffects = allEffects;
         state.allTags = allTags;
+        state.allTypes = allTypes;
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
