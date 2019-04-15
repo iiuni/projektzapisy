@@ -19,12 +19,12 @@ class SingleVote (models.Model):
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="głosujący")
     entity = models.ForeignKey(CourseEntity, verbose_name='podstawa', on_delete=models.CASCADE)
-    proposal = models.ForeignKey(Proposal, verbose_name="propozycja")
+    proposal = models.ForeignKey(Proposal, verbose_name="propozycja", on_delete=models.CASCADE, null=True)
 
     state = models.ForeignKey(SystemState, on_delete=models.CASCADE, verbose_name="Rok akademicki")
 
-    value = models.SmallPositiveIntegerField("przyznane punkty", choices=votes, default=0)
-    correction = models.SmallPositiveIntegerField(
+    value = models.PositiveSmallIntegerField("przyznane punkty", choices=votes, default=0)
+    correction = models.PositiveSmallIntegerField(
         "punkty przyznane w korekcie", choices=votes, default=0)
 
     # The field used to count votes that should not count into the limit.
@@ -34,9 +34,9 @@ class SingleVote (models.Model):
         verbose_name = "pojedynczy głos"
         verbose_name_plural = "pojedyncze głosy"
         app_label = 'vote'
-        ordering = ('student', 'entity', '-value')
+        ordering = ('student', 'proposal', '-value')
 
-        unique_together = ('course', 'state', 'student')
+        unique_together = ('proposal', 'state', 'student')
 
     def __str__(self):
         return (f"[{self.state.year}] Głos użytkownika: {self.student.user.username}; "

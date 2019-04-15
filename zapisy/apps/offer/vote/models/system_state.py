@@ -5,9 +5,9 @@ corresponds to a single academic year.
 """
 from datetime import date
 import re
-from typing import Optional
+from typing import Optional, Callable
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.enrollment.courses.models.semester import Semester
@@ -18,49 +18,74 @@ DEFAULT_MAX_VOTE = 3
 
 class SystemState(models.Model):
 
-    semester_winter = models.ForeignKey(Semester, on_delete=models.CASCADE,
-                                        verbose_name="Semestr zimowy",
-                                        related_name='winter_votes',
-                                        null=True, blank=True)
+    @staticmethod
+    def _get_default_semester_for_season(season: Semester.TYPE_CHOICES):
+        """Finds a semester for upcoming year with specified type."""
+        query = Semester.objects.filter(year=SystemState._get_default_year, type=season)
+        try:
+            return query.get().pk
+        except Semester.DoesNotExist:
+            return None
 
-    semester_summer = models.ForeignKey(Semester,
-                                        on_delete=models.CASCADE,
-                                        verbose_name="Semestr letni",
-                                        related_name='summer_votes',
-                                        null=True, blank=True)
+    def _get_default_winter_semester() -> Optional[Semester]:
+        return SystemState._get_default_semester_for_season(Semester.TYPE_WINTER)
 
-    def get_default_year():
+    semester_winter = models.ForeignKey(
+        Semester,
+        on_delete=models.CASCADE,
+        verbose_name="Semestr zimowy",
+        related_name='+',  # Let's not pollute the semester with this.
+        null=True,
+        blank=True,
+        default=_get_default_winter_semester)
+
+    def _get_default_summer_semester() -> Optional[Semester]:
+        return SystemState._get_default_semester_for_season(Semester.TYPE_SUMMER)
+
+    semester_summer = models.ForeignKey(
+        Semester,
+        on_delete=models.CASCADE,
+        verbose_name="Semestr letni",
+        related_name='+',  # Let's not pollute the semester with this.
+        null=True,
+        blank=True,
+        default=_get_default_summer_semester)
+
+    def _get_default_year():
         """Usually we are creating a new system state for the upcoming year."""
         current_year = date.today().year
         return f"{current_year}/{current_year % 100 + 1}"
 
-    def validate_year_format(value: str):
+    def _validate_year_format(value: str):
         """Verifies that the year is in format YYYY/YY."""
-        m = re.fullmatch('(\d{4})/(\d{2})', value)
-        if not m:
+        match = re.fullmatch(r'(\d{4})/(\d{2})', value)
+        if not match:
             raise ValidationError(
                 "%(value)s does not comply to format YYYY/YY.", params={'value', value})
-        y1 = int(m.group(1)) % 100
-        y2 = int(m.group(2))
-        if y1 + 1 != y2:
-            raise ValidationError("Academic year should span two calendar years.")
+        year1 = int(match.group(1)) % 100
+        year2 = int(match.group(2))
+        if year1 + 1 != year2:
+            raise ValidationError("Academic year should span two consecutive calendar years.")
 
 
-    year = models.CharField("Rok akademicki", max_length=7,
-        default=get_default_year, validators=[validate_year_format])
+    year = models.CharField(
+        "Rok akademicki",
+        max_length=7,
+        default=_get_default_year,
+        validators=[_validate_year_format])
 
-    vote_beg = models.DateField("Początek głosowania", null=True, default=None)
-    vote_end = models.DateField("Koniec głosowania", null=True, default=None)
+    vote_beg = models.DateField("Początek głosowania", blank=True, null=True, default=None)
+    vote_end = models.DateField("Koniec głosowania", blank=True, null=True, default=None)
 
     winter_correction_beg = models.DateField(
-        "Początek korekty na semestr zimowy", null=True, default=None)
+        "Początek korekty na semestr zimowy", blank=True, null=True)
     winter_correction_end = models.DateField(
-        "Koniec korekty na semestr zimowy", null=True, default=None)
+        "Koniec korekty na semestr zimowy", blank=True, null=True)
 
     summer_correction_beg = models.DateField(
-        "Początek korekty na semestr letni", null=True, default=None)
+        "Początek korekty na semestr letni", blank=True, null=True)
     summer_correction_end = models.DateField(
-        "Koniec korekty na semestr letni", null=True, default=True)
+        "Koniec korekty na semestr letni", blank=True, null=True)
 
     class Meta:
         verbose_name = 'ustawienia głosowania'
@@ -71,21 +96,20 @@ class SystemState(models.Model):
         return f"Ustawienia systemu na rok akademicki {self.year}"
 
     @staticmethod
-    def get_current_state() -> Optional['SystemState']:
+    def get_state_for_semester(semester: Semester) -> Optional['SystemState']:
         """Returns the state corresponding to the current semester.
-        
+
         If one does not exist, returns None.
         """
         state: Optional[SystemState] = None
-        s = Semester.objects.get_next()
-        if s.type == Semester.TYPE_WINTER:
+        if semester.type == Semester.TYPE_WINTER:
             try:
-                state = SystemState.objects.get(semester_winter=s)
+                state = SystemState.objects.get(semester_winter=semester)
             except SystemState.DoesNotExist:
                 return None
-        if s.type == Semester.TYPE_SUMMER:
+        if semester.type == Semester.TYPE_SUMMER:
             try:
-                state = SystemState.objects.get(semester_summer=s)
+                state = SystemState.objects.get(semester_summer=semester)
             except SystemState.DoesNotExist:
                 return None
         return state

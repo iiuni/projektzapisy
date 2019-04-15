@@ -162,7 +162,6 @@ class CourseEntity(models.Model):
     objects = WithInformation()
     simple = models.Manager()
     noremoved = NoRemoved()
-    statistics = StatisticsManager()
 
     def _add_or_none(self, hours1, hours2):
         """
