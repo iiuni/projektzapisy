@@ -51,6 +51,8 @@ class Migration(migrations.Migration):
                 ('entity', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='courses.CourseEntity', verbose_name='tymczasowe pole ułatwiające migrację')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='users.Employee')),
                 ('tags', models.ManyToManyField(to='courses.Tag', verbose_name='tagi')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Data utworzenia')),
+                ('modified', models.DateTimeField(auto_now=True, verbose_name='Data modyfikacji')),
             ],
         ),
     ]

@@ -85,6 +85,9 @@ class CourseInformation(models.Model):
     tags = models.ManyToManyField(Tag, verbose_name="tagi")
     effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia")
 
+    created = models.DateTimeField("Data utworzenia", auto_now_add=True)
+    modified = models.DateTimeField("Data modyfikacji", auto_now=True)
+
     entity = models.OneToOneField(
         CourseEntity,
         on_delete=models.SET_NULL,

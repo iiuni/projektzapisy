@@ -138,6 +138,17 @@ class Migration(migrations.Migration):
                 ('status', models.PositiveSmallIntegerField(choices=[(apps.offer.proposal.models.ProposalStatus(0), 'propozycja'), (apps.offer.proposal.models.ProposalStatus(1), 'w ofercie'), (apps.offer.proposal.models.ProposalStatus(2), 'poddana pod głosowanie'), (apps.offer.proposal.models.ProposalStatus(4), 'wycofana z oferty'), (apps.offer.proposal.models.ProposalStatus(5), 'do poprawienia'), (apps.offer.proposal.models.ProposalStatus(6), 'szkic')], default=apps.offer.proposal.models.ProposalStatus(6), verbose_name='status propozycji')),
             ],
             bases=('courses.courseinformation',),
+            options={'verbose_name': 'propozycja przedmiotu', 'verbose_name_plural': 'propozycje przedmiotu'},
         ),
         migrations.RunPython(migrate_entities_to_proposals, reverse_code=migrations.RunPython.noop),
+        migrations.RunSQL("""
+            UPDATE courses_courseinformation
+            SET
+                created=e.created,
+                modified=e.edited
+            FROM
+                courses_courseentity e
+            WHERE
+                entity_id=e.id
+        """, reverse_sql=migrations.RunSQL.noop)
     ]
