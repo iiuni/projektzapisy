@@ -82,8 +82,8 @@ class CourseInformation(models.Model):
     level = models.CharField("poziom studiów", max_length=100, blank=True)
     year = models.CharField("rok studiów", max_length=50, blank=True)
 
-    tags = models.ManyToManyField(Tag, verbose_name="tagi")
-    effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia")
+    tags = models.ManyToManyField(Tag, verbose_name="tagi", blank=True)
+    effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia", blank=True)
 
     created = models.DateTimeField("Data utworzenia", auto_now_add=True)
     modified = models.DateTimeField("Data modyfikacji", auto_now=True)
