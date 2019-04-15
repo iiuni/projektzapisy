@@ -70,7 +70,7 @@ class CourseInformation(models.Model):
     teaching_effects = models.TextField("zakładane efekty kształcenia", blank=True)
     literature = models.TextField("literatura obowiązkowa i zalecana", blank=True)
     verification_methods = models.TextField(
-        "metoda weryfikacji zakładanych efektów kształcenia", blank=True)
+        "metody weryfikacji zakładanych efektów kształcenia", blank=True)
     passing_means = models.TextField("Warunki i forma zaliczenia", blank=True)
     student_labour = models.TextField("nakład pracy studenta", blank=True)
 

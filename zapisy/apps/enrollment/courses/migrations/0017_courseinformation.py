@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('contents', models.TextField(blank=True, verbose_name='treści programowe')),
                 ('teaching_effects', models.TextField(blank=True, verbose_name='zakładane efekty kształcenia')),
                 ('literature', models.TextField(blank=True, verbose_name='literatura obowiązkowa i zalecana')),
-                ('verification_methods', models.TextField(blank=True, verbose_name='metoda weryfikacji zakładanych efektów kształcenia')),
+                ('verification_methods', models.TextField(blank=True, verbose_name='metody weryfikacji zakładanych efektów kształcenia')),
                 ('passing_means', models.TextField(blank=True, verbose_name='Warunki i forma zaliczenia')),
                 ('student_labour', models.TextField(blank=True, verbose_name='nakład pracy studenta')),
                 ('teaching_unit', models.CharField(blank=True, max_length=100, verbose_name='jednostka prowadząca przedmiot')),
