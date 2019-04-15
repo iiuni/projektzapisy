@@ -1,4 +1,5 @@
 """Proposal views"""
+import copy
 import json
 import logging
 
@@ -75,7 +76,7 @@ def proposal_edit(request, slug=None):
 def proposal_clone(request, slug):
     """Provides a proposal form pre-filled with data from other proposal."""
     proposal = get_object_or_404(Proposal, slug=slug)
-    clone = Proposal.from_course_information(proposal.clone())
+    clone = copy.copy(proposal)
 
     form = EditProposalForm(instance=clone)
     form.helper.form_action = reverse('proposal-form')

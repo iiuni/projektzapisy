@@ -104,25 +104,28 @@ class CourseInformation(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def clone(self) -> 'CourseInformation':
-        """Returns a copy of the CourseInformation object.
+    def __copy__(self) -> 'CourseInformation':
+        """Returns a (shallow) copy of the CourseInformation object.
 
-        All fields will be copied with exception of 'slug', 'owner', 'usos_kod',
+        All fields will be copied with exception of 'slug', 'usos_kod',
         'entity'. Names will be prepended with an indicator that the object is a
         clone.
 
         The returned object is not saved in the database.
+
+        To use it run copy.copy on a model instance.
         """
-        copy = CourseInformation.objects.prefetch_related('tags', 'effects').get(pk=self.pk)
+        copy = CourseInformation.__new__(CourseInformation)
+
+        # Copies all shallow fields from self to copy.
+        copy.__dict__.update(self.__dict__)
+
         # This causes that when copy is saved, it becomes a new record.
         copy.pk = None
 
         # Clear some fields.
         copy.slug = None
-        copy.owner = None
         copy.usos_kod = None
         copy.entity = None
-        copy.name = f"Klon: {copy.name}"
-        copy.name_en = f"Clone: {copy.name}" if copy.name_en else ""
 
         return copy
