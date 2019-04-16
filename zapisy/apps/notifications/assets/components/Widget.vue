@@ -27,35 +27,37 @@ export default {
 <template>
 <div>
     
-    <li class="nav-item dropdown" id="login-dropdown">
+    <li class="nav-item dropdown" id="notification-dropdown">
         <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i v-if="ns_c == 0" class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
             <i v-else class="fas fa-bell bell nav-link"  style="padding-right: 0;"></i>
         </a>
         <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
-            <p>Lista powiadomień:</p>
-            <div v-if="ns_c != 0">
-                <div>
-                    <div v-for="elem in ns" :key="elem" class="onemessage">
-                        <div>
-                            <div class="textM">
-                                {{ elem }}
+            <form>
+                <p>Lista powiadomień:</p>
+                <div v-if="ns_c != 0">
+                    <div>
+                        <div v-for="elem in ns" :key="elem" class="onemessage">
+                            <div>
+                                <div class="textM">
+                                    {{ elem }}
+                                </div>
+                                <div class="deleteM">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <div style="clear: both;"></div>
                             </div>
-                            <div class="deleteM">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div style="clear: both;"></div>
                         </div>
                     </div>
+                    <div class="deleteAllM">
+                        <div>Usuń wszystkie powiadomienia.</div>
+                    </div>
                 </div>
-                <div class="deleteAllM">
-                    <div>Usuń wszystkie powiadomienia.</div>
+                <div v-else class="NoM">
+                    Brak nowych powiadomień.
                 </div>
-            </div>
-            <div v-else class="NoM">
-                Brak nowych powiadomień.
-            </div>
+            </form>
         </div>
     </li>
 
@@ -63,12 +65,17 @@ export default {
 </template>
 
 <style>
-#login-dropdown .dropdown-menu{
-    background: rgb(248, 249, 250) !important;
+#notification-dropdown .dropdown-menu{
+    background: rgb(248, 249, 250);
+    padding: 12px;
     width: 350px;
+    padding-bottom: 0;
 }
 .specialdropdown::after{
     content: none;
+}
+.dropdown-menu-right{
+    right: -160px;
 }
 .bell{
     font-size: 23px;
@@ -130,6 +137,7 @@ export default {
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px solid #00000021;
+    padding-bottom: 12px;
 }
 
 </style>
