@@ -11,6 +11,12 @@ class EmailChangeForm(forms.ModelForm):
 
 
 class ConsultationsChangeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ConsultationsChangeForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = "form-control"
+            visible.field.widget.attrs['size'] = 41
+
     class Meta:
         fields = ['title', 'room', 'homepage', 'consultations']
         model = Employee

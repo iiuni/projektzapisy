@@ -1,5 +1,7 @@
 {% extends "offer/manage/base.html" %}
-{% block groups_active %}active{% endblock %}
+{% load course_types %}
+
+{% block groups_active %} class = "active" {% endblock %}
 
 {% block js %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
@@ -7,14 +9,15 @@
   <script>jQuery.dataInvalidate_check = function(){};</script>
 {% endblock %}
 
-{% block content %}
+{% block all-content %}
 <link rel="stylesheet" href="/static/vendor/chosen.css" />
 
-<h1>{{course}}</h1>
+<h1 class="text-dark font-weight-bold">{{course}}</h1>
 <form action="{{path}}" method="POST" id="groups">
 {% csrf_token %}
-<table class="zebra-stripped">
-<thead>
+<div class="table-responsive">
+<table class="table table-stripped">
+<thead class="text-muted">
 <tr>
   <th>Prowadzący</th>
   <th>Nowy prowadzący</th>
@@ -24,7 +27,7 @@
   <th>Limit</th>
 </tr>
 </thead>
-<tbody>
+<tbody class="text-muted">
   {% for group, group_teachers in groups_with_teachers %}
   <tr>
     <td>
@@ -53,13 +56,14 @@
         <span>{{ d }}</span>
       {% endfor %}
     </td>
-    <td>{{group.get_count_of_enrolled}}</td>
+    <td>{{ students_in_group|length }}</td>
     <td>{{group.limit}}</td>
   </tr>
   {% endfor %}
 </tbody>
 </table>
-<input value="Zapisz" class="btn primary" type="submit" />
+</div>
+<input value="Zapisz" class="btn btn-primary" type="submit" />
 </form>
 <script type="text/javascript">$("form#groups select").chosen()</script>
 {% endblock %}

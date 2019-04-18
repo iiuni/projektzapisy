@@ -82,7 +82,8 @@ class FullCalendarAdapter(object):
         """
         String/Integer. Optional
 
-        Uniquely identifies the given event. Different instances of repeating events should all have the same id.
+        Uniquely identifies the given event. Different instances of repeating events
+        should all have the same id.
         """
         return item.event_id
 
@@ -99,40 +100,34 @@ class FullCalendarAdapter(object):
         true or false. Optional.
 
         Whether an event occurs at a specific time-of-day. This property affects whether
-        an event's time is shown. Also, in the agenda views, determines
-        if it is displayed in the "all-day" section.
-
-        When specifying Event Objects for events or eventSources, omitting
-         his property will make it inherit from allDayDefault, which is normally true.
+        an event's time is shown. Also, in the agenda views, determines if it is displayed
+        in the "all-day" section. If this value is not explicitly specified, allDayDefault
+        will be used if it is defined. If all else fails, FullCalendar will try to guess.
+        If either the start or end value has a "T" as part of the ISO8601 date string,
+        allDay will become false. Otherwise, it will be true. Don't include quotes around
+        your true/false. This value is a boolean, not a string!
         """
         return False
 
     def get_start(self, item):
-        """The date/time an event begins.
-
-        When specifying Event Objects for events or eventSources, you may
-        specify a string in IETF format (ex: "Wed, 18 Oct 2009 13:00:00 EST"),
-        a string in ISO8601 format (ex: "2009-11-05T13:15:30Z") or a UNIX
-        timestamp.
         """
-        import time
-        return time.mktime(
-            datetime.datetime.combine(item.day, item.start).timetuple())
+        The date/time an event begins. Required.
+
+        A Moment-ish input, like an ISO8601 string. Throughout the API this will become
+        a real Moment object.
+        """
+        return datetime.datetime.combine(item.day, item.start).isoformat()
 
     def get_end(self, item):
-        """The date/time an event ends.
-
-        As with start, you may specify it in IETF, ISO8601, or UNIX timestamp
-        format. If an event is all-day the end date is inclusive. This means an
-        event with start Nov 10 and end Nov 12 will span 3 days on the
-        calendar. If an event is NOT all-day the end date is exclusive. This is
-        only a gotcha when your end has time 00:00. It means your event ends on
-        midnight, and it will not span through the next day.
-
         """
-        import time
-        return time.mktime(
-            datetime.datetime.combine(item.day, item.end).timetuple())
+        The exclusive date/time an event ends. Optional.
+
+        A Moment-ish input, like an ISO8601 string. Throughout the API this will become
+        a real Moment object. It is the moment immediately after the event has ended.
+        For example, if the last full day of an event is Thursday, the exclusive end
+        of the event will be 00:00:00 on Friday!
+        """
+        return datetime.datetime.combine(item.day, item.end).isoformat()
 
     def get_description(self, item):
         return item.event.description
@@ -196,14 +191,26 @@ class FullCalendarView(BaseListView):
         if 'start' not in self.request.GET or 'end' not in self.request.GET:
             raise Http404
 
-        start = datetime.datetime.fromtimestamp(
-            int(self.request.GET.get('start')))
-        end = datetime.datetime.fromtimestamp(int(self.request.GET.get('end')))
+        start = self.request.GET.get('start')
+        if 'T' in start:
+            start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S")
+        else:
+            start = datetime.datetime.strptime(start, "%Y-%m-%d")
+
+        end = self.request.GET.get('end')
+        if 'T' in end:
+            end = datetime.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
+        else:
+            end = datetime.datetime.strptime(end, "%Y-%m-%d")
+
+        # 3.7
+        # start = datetime.datetime.fromisoformat(self.request.GET.get('start'))
+        # end = datetime.datetime.fromisoformat(self.request.GET.get('end'))
 
         if not self.queryset:
             self.queryset = super(FullCalendarView, self).get_queryset()
 
-        return self.queryset.filter(Q(day__gte=start), Q(day__lte=end)).select_related('event')
+        return self.queryset.filter(Q(day__gte=start), Q(day__lt=end)).select_related('event')
 
     def render_to_response(self, context):
         return self.get_json_response(self.convert_to_json(context['object_list']))

@@ -1,6 +1,7 @@
 {% extends "enrollment/base.html" %}
 {% load compressed %}
 {% load cache %}
+
 {% block styles %}
     {% compressed_css 'userslist' %}
 {% endblock %}
@@ -12,79 +13,90 @@
 {% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
-	<a href="{% url 'course-list' %}">Zapisy</a> &raquo;
-	Pracownicy
+  <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+  <li class="breadcrumb-item"><a href="/courses">Zapisy</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Pracownicy</li>
 {% endblock %}
+
 {% block enrollment_menu_employees %} class="active"{% endblock %}
 
-
 {% block content %}
-<div id="employee-profile">
-    <div class="alert-message warning">
-        <a href="#" class="close">×</a>
-        <p>Wybierz pracownika z listy</p>
-    </div>
+<div class="alert alert-primary">
+    Wybierz pracownika z listy
+</div>
+<a class="btn btn-secondary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Konsultacje
+</a>
+<div class="collapse mt-2" id="collapseExample" >
+        {% include "users/consultations_list.html" %}
 </div>
 {% endblock %}
 
 {% block sidebar %}
     {% cache 10000 employees_list char %}
-<div id="main-sidebar">
-	<div id="employees-list">
-		<h2>Lista pracowników</h2>
-		<ul  class="employees">
-			{% for e in employees %}
-			<li><a href="{% url 'employee-profile' e.user.id %}" class="employee-profile-link">{{e.get_full_name}}</a>
-                <input type='hidden' name='employee-id' value='{{ e.id }}' />
-                <input type='hidden' name='employee-email' value='{{ e.user.email }}' />
-                <input type='hidden' name='employee-short_old' value='{{ e.user.first_name|slice:":1"}}{{ e.user.last_name|slice:":2"}}' />
-                <input type='hidden' name='employee-short_new' value='{{ e.user.first_name|slice:":2"}}{{ e.user.last_name|slice:":2"}}' />
-            </li>
-			{% endfor %}
-		</ul>
-	</div>
-</div>
+    <div id="main-sidebar" class="col-lg">
+        <div id="employees-list">
+            <h3>Lista pracowników</h3>
+            <ul class="employees">
+                {% for e in employees %}
+                <li><a href="{% url 'employee-profile' e.user.id %}" class="employee-profile-link">{{e.get_full_name}}</a>
+                    <input type='hidden' name='employee-id' value='{{ e.id }}' />
+                    <input type='hidden' name='employee-email' value='{{ e.user.email }}' />
+                    <input type='hidden' name='employee-short_old' value='{{ e.user.first_name|slice:":1"}}{{ e.user.last_name|slice:":2"}}' />
+                    <input type='hidden' name='employee-short_new' value='{{ e.user.first_name|slice:":2"}}{{ e.user.last_name|slice:":2"}}' />
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     {% endcache %}
 {% endblock %}
 
-{% block topContent %}
-	<div id="enr-EmployeesList-top-bar" class="main-top-bar" style="display: none">
-		<fieldset>
-			<legend><span>Filtrowanie</span></legend>
-			<div class="main-filter-input">
-				<input class="text filter-phrase" type="text"{% if query %} value="{{ query }}"{% endif %} />
-				<input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
-			</div>
-		</fieldset>
-	</div>
-    <div id="user-alpha-list" class="main-top-bar">
-        <span class="consultations"><a href="{% url 'consultations-list' %}">Konsultacje</a></span>
-        <ul id="user-list-menu">
-            <li><a href="{% url 'employees-char-list' 'A' %}" class="ajax{% if char == 'A' %} active{% endif %}">A</a></li>
-            <li><a href="{% url 'employees-char-list' 'B' %}" class="ajax{% if char == 'B' %} active{% endif %}">B</a></li>
-            <li><a href="{% url 'employees-char-list' 'C' %}" class="ajax{% if char == 'C' %} active{% endif %}">C</a></li>
-            <li><a href="{% url 'employees-char-list' 'D' %}" class="ajax{% if char == 'D' %} active{% endif %}">D</a></li>
-            <li><a href="{% url 'employees-char-list' 'E' %}" class="ajax{% if char == 'E' %} active{% endif %}">E</a></li>
-            <li><a href="{% url 'employees-char-list' 'F' %}" class="ajax{% if char == 'F' %} active{% endif %}">F</a></li>
-            <li><a href="{% url 'employees-char-list' 'G' %}" class="ajax{% if char == 'G' %} active{% endif %}">G</a></li>
-            <li><a href="{% url 'employees-char-list' 'H' %}" class="ajax{% if char == 'H' %} active{% endif %}">H</a></li>
-            <li><a href="{% url 'employees-char-list' 'I' %}" class="ajax{% if char == 'I' %} active{% endif %}">I</a></li>
-            <li><a href="{% url 'employees-char-list' 'J' %}" class="ajax{% if char == 'J' %} active{% endif %}">J</a></li>
-            <li><a href="{% url 'employees-char-list' 'K' %}" class="ajax{% if char == 'K' %} active{% endif %}">K</a></li>
-            <li><a href="{% url 'employees-char-list' 'L' %}" class="ajax{% if char == 'L' %} active{% endif %}">L</a></li>
-            <li><a href="{% url 'employees-char-list' 'M' %}" class="ajax{% if char == 'M' %} active{% endif %}">M</a></li>
-            <li><a href="{% url 'employees-char-list' 'N' %}" class="ajax{% if char == 'N' %} active{% endif %}">N</a></li>
-            <li><a href="{% url 'employees-char-list' 'O' %}" class="ajax{% if char == 'O' %} active{% endif %}">O</a></li>
-            <li><a href="{% url 'employees-char-list' 'P' %}" class="ajax{% if char == 'P' %} active{% endif %}">P</a></li>
-            <li><a href="{% url 'employees-char-list' 'R' %}" class="ajax{% if char == 'R' %} active{% endif %}">R</a></li>
-            <li><a href="{% url 'employees-char-list' 'S' %}" class="ajax{% if char == 'S' %} active{% endif %}">S</a></li>
-            <li><a href="{% url 'employees-char-list' 'T' %}" class="ajax{% if char == 'T' %} active{% endif %}">T</a></li>
-            <li><a href="{% url 'employees-char-list' 'U' %}" class="ajax{% if char == 'U' %} active{% endif %}">U</a></li>
-            <li><a href="{% url 'employees-char-list' 'W' %}" class="ajax{% if char == 'W' %} active{% endif %}">W</a></li>
-            <li><a href="{% url 'employees-char-list' 'Y' %}" class="ajax{% if char == 'Y' %} active{% endif %}">Y</a></li>
-            <li><a href="{% url 'employees-char-list' 'Z' %}" class="ajax{% if char == 'Z' %} active{% endif %}">Z</a></li>
-            <li><a href="{% url 'employees-char-list' 'All' %}" class="ajax{% if char == 'All' %} active{% endif %}">Wszyscy</a></li>
-        </ul>
-    </div>
+{% block top-content %}
+<div class="filter-box">
+    <ul class="card bg-light list-group list-group-flush">
+        <li class="list-group-item bg-light">
+            <fieldset class="small-fieldset">
+                <div class="filter row" id="enr-EmployeesList-top-bar">
+                    <label for="filter" class="filter-label">Filtrowanie</label>
+                    <div class="main-filter-input">
+                        <input class="text filter-phrase" id="filter" type="text"{% if query %} value="{{ query }}"{% endif %} />
+                        <input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
+                    </div>
+                </div>
+            </fieldset>
+        </li>
+        <li class="list-group-item bg-light">
+            <div id="user-alpha-list">
+                <ul id="user-list-menu">
+                    <li><a href="{% url 'employees-char-list' 'A' %}" class="ajax{% if char == 'A' %} active{% endif %}">A</a></li>
+                    <li><a href="{% url 'employees-char-list' 'B' %}" class="ajax{% if char == 'B' %} active{% endif %}">B</a></li>
+                    <li><a href="{% url 'employees-char-list' 'C' %}" class="ajax{% if char == 'C' %} active{% endif %}">C</a></li>
+                    <li><a href="{% url 'employees-char-list' 'D' %}" class="ajax{% if char == 'D' %} active{% endif %}">D</a></li>
+                    <li><a href="{% url 'employees-char-list' 'E' %}" class="ajax{% if char == 'E' %} active{% endif %}">E</a></li>
+                    <li><a href="{% url 'employees-char-list' 'F' %}" class="ajax{% if char == 'F' %} active{% endif %}">F</a></li>
+                    <li><a href="{% url 'employees-char-list' 'G' %}" class="ajax{% if char == 'G' %} active{% endif %}">G</a></li>
+                    <li><a href="{% url 'employees-char-list' 'H' %}" class="ajax{% if char == 'H' %} active{% endif %}">H</a></li>
+                    <li><a href="{% url 'employees-char-list' 'I' %}" class="ajax{% if char == 'I' %} active{% endif %}">I</a></li>
+                    <li><a href="{% url 'employees-char-list' 'J' %}" class="ajax{% if char == 'J' %} active{% endif %}">J</a></li>
+                    <li><a href="{% url 'employees-char-list' 'K' %}" class="ajax{% if char == 'K' %} active{% endif %}">K</a></li>
+                    <li><a href="{% url 'employees-char-list' 'L' %}" class="ajax{% if char == 'L' %} active{% endif %}">L</a></li>
+                    <li><a href="{% url 'employees-char-list' 'M' %}" class="ajax{% if char == 'M' %} active{% endif %}">M</a></li>
+                    <li><a href="{% url 'employees-char-list' 'N' %}" class="ajax{% if char == 'N' %} active{% endif %}">N</a></li>
+                    <li><a href="{% url 'employees-char-list' 'O' %}" class="ajax{% if char == 'O' %} active{% endif %}">O</a></li>
+                    <li><a href="{% url 'employees-char-list' 'P' %}" class="ajax{% if char == 'P' %} active{% endif %}">P</a></li>
+                    <li><a href="{% url 'employees-char-list' 'R' %}" class="ajax{% if char == 'R' %} active{% endif %}">R</a></li>
+                    <li><a href="{% url 'employees-char-list' 'S' %}" class="ajax{% if char == 'S' %} active{% endif %}">S</a></li>
+                    <li><a href="{% url 'employees-char-list' 'T' %}" class="ajax{% if char == 'T' %} active{% endif %}">T</a></li>
+                    <li><a href="{% url 'employees-char-list' 'U' %}" class="ajax{% if char == 'U' %} active{% endif %}">U</a></li>
+                    <li><a href="{% url 'employees-char-list' 'W' %}" class="ajax{% if char == 'W' %} active{% endif %}">W</a></li>
+                    <li><a href="{% url 'employees-char-list' 'Y' %}" class="ajax{% if char == 'Y' %} active{% endif %}">Y</a></li>
+                    <li><a href="{% url 'employees-char-list' 'Z' %}" class="ajax{% if char == 'Z' %} active{% endif %}">Z</a></li>
+                    <li><a href="{% url 'employees-char-list' 'All' %}" class="ajax{% if char == 'All' %} active{% endif %}">Wszyscy</a></li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+
 {% endblock %}

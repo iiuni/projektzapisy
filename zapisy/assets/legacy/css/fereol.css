@@ -67,54 +67,6 @@ div.top .systemtopbar ul li.active a {
   font-size: 15px;
 }
 
-#login-dp {
-    min-width: 250px;
-    padding: 14px 14px 0;
-    overflow:hidden;
-    z-index: 10000;
-}
-
-#btn-usos {
-  padding: 10px 0;
-  margin-bottom:10px;
-  background-color: #00709e;
-  text-align: center;
-  background-image: none;
-  border: none;
-  color: white;
-  font-weight: bold;
-}
-
-#btn-no-usos {
-  text-align: center;
-  width: 100%;
-  font-weight: bold;
-  background-color: #00709e;
-  background-image: none;
-}
-
-#btn-no-usos:hover, #btn-usos:hover {
-  background-color: #2696C4;
-}
-
-#login-dp .row {
-  margin-left: 0px;
-}
-
-#login-dp .form-group {
-  margin-bottom: 10px;
-}
-
-#login-dp .form-group label {
-  float: none;
-  color: #808080;
-}
-
-div.top .topbar .inline-inputs label {
-  float: none;
-  color: #FFFFFF;
-}
-
 div.news_list {
   padding: 20px;
   margin-top: 20px;
@@ -233,17 +185,11 @@ table th:nth-child(5) {
 }
 
 table.table-info th {
-  width: 100px;
-  background-color: #F9F9F9;
-  border-top-width: 1px;
-  border-bottom-width: 1px;
+  width: 120px;
 }
 
 table.table-info-big th {
   width: 200px;
-  background-color: #F9F9F9;
-  border-top-width: 1px;
-  border-bottom-width: 1px;
 }
 
 .controls form {
@@ -316,10 +262,6 @@ input.small {
 #enr-schedulePrototype-other input[type="checkbox"],
 #enr-coursesList-other input[type="checkbox"] {
   margin-right: 3px;
-}
-
-.bread, .main-top-bar {
-  margin-bottom: 10px;
 }
 
 .filter-phrase {

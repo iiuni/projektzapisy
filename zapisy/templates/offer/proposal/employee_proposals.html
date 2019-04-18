@@ -1,11 +1,13 @@
-{% extends "base.html" %}
+{% extends "offer/base.html" %}
 
-{% block content %}
+{% block enrollment_menu_courses %} class="active"{% endblock %}
 
-    <a href="/offer/add" class="btn primary">Zgłoś propozycję</a>
+{% block all-content %}
+
+    <a href="/offer/add" class="btn btn-primary">Zgłoś propozycję</a>
     <br />
     <br />
-    <h2>Do poprawienia</h2>
+    <h2 class="text-dark font-weight-bold">Do poprawienia</h2>
     {% if for_review %}
         <ul>
         {% for proposal in for_review %}
@@ -13,9 +15,9 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Brak</p>
+        <p class="text-muted">Brak</p>
     {% endif %}
-    <h2>Niezaakceptowane</h2>
+    <h2 class="text-dark font-weight-bold">Niezaakceptowane</h2>
     {% if not_accepted %}
         <ul>
         {% for proposal in not_accepted %}
@@ -23,9 +25,9 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Brak</p>
+        <p class="text-muted">Brak</p>
     {% endif %}
-    <h2>Poddane pod głosowanie</h2>
+    <h2 class="text-dark font-weight-bold">Poddane pod głosowanie</h2>
     {% if in_vote %}
         <ul>
         {% for proposal in in_vote %}
@@ -33,9 +35,9 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Brak</p>
+        <p class="text-muted">Brak</p>
     {% endif %}
-    <h2>W ofercie</h2>
+    <h2 class="text-dark font-weight-bold">W ofercie</h2>
     {% if in_offer %}
         <ul>
         {% for proposal in in_offer %}
@@ -43,9 +45,9 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Brak</p>
+        <p class="text-muted">Brak</p>
     {% endif %}
-    <h2>Wycofane z oferty</h2>
+    <h2 class="text-dark font-weight-bold">Wycofane z oferty</h2>
     {% if removed %}
         <ul>
         {% for proposal in removed %}
@@ -53,6 +55,6 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Brak</p>
+        <p class="text-muted">Brak</p>
     {% endif %}
 {% endblock %}

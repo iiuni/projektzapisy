@@ -1,5 +1,10 @@
 {% extends 'schedule/reservations.html' %}
 
+{% block bread %}
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Historia</li>
+{% endblock %}
 
 {% block schedule_manage %}{% endblock %}
 {% block schedule_history %} class="active"{% endblock %}

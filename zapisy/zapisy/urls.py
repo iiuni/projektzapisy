@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.urls import path
-from django_cas_ng import views
+from django_cas_ng import views as cas_views
 
 import apps.news.views
 from apps.api.rest.v1.urls import router as api_router_v1
@@ -23,9 +23,7 @@ urlpatterns = [
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 
     url(r'^news/', include('apps.news.urls')),
-    url(r'^jstests/', TemplateView.as_view(template_name="jstests/tests.html")),
     url(r'^users/', include('apps.users.urls')),
-    url('accounts/', include('apps.email_change.urls')),
 
     url(r'^grade/', include('apps.grade.urls')),
     url(r'^feeds/news/$', LatestNews()),
@@ -43,9 +41,13 @@ urlpatterns = [
     url(r'^vote/', include('apps.offer.vote.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),
-    url(r'^accounts/login$', views.login, name='cas_ng_login'),
-    url(r'^accounts/logout$', views.logout, name='cas_ng_logout'),
-    url(r'^accounts/callback$', views.callback, name='cas_ng_proxy_callback'),
+
+
+    path('accounts/', include('apps.email_change.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/login', cas_views.LoginView.as_view(), name='cas_ng_login'),
+    path('accounts/logout', users_views.cas_logout, name='cas_ng_logout'),
+    path('accounts/callback', cas_views.CallbackView.as_view(), name='cas_ng_proxy_callback'),
 ]
 
 urlpatterns += [

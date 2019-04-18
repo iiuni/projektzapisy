@@ -8,9 +8,9 @@
 {% block enrollment_preferences %} class="active"{% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'offer-main' %}">Oferta</a> &raquo;
-    Preferencje
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta</a></li>
+    <li class="breadcrumb-item">Preferencje</li>
 {% endblock %}
 
 {% block js %}
@@ -33,7 +33,7 @@
                 };
                 let changedselname = $(elem).attr('name').split('-').slice(-1)[0];
                 data[changedselname] = val;
-                $.post('{% url 'preference-save' %}', data, newRow => row.replaceWith(newRow));
+                $.post("{% url 'preference-save' %}", data, newRow => row.replaceWith(newRow));
             }
 
             $("tr select").live('change', function () {
@@ -44,32 +44,24 @@
     </script>
 {% endblock %}
 
-{% block scripts %}
+
+{% block all-content %}
+    <p class="text-muted">UWAGA: Po zmianie statusu preferencji zostaje ona automatycznie zapisana</p>
+    <div class="table-responsive-sm">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">{% trans "Przedmiot" %}</th>
+                <th scope="col">{% trans "Wykład" %}/{% trans "Seminarium" %}</th>
+                <th scope="col">{% trans "Ćwiczenia" %}</th>
+                <th scope="col">{% trans "Pracownia" %}/{% trans "Ćwiczenio-Pracownia" %}</th>
+                <th scope="col">{% trans "Repetytorium" %}</th>
+            </tr>
+            </thead>
+            {% for form in formset %}
+                {% include "offer/preferences/form_row.html" %}
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
 
-
-{% block top-bar %}
-{% endblock %}
-
-{% block content-width %}16{% endblock %}
-{% block content %}
-    <p>UWAGA: Po zmianie statusu preferencji zostaje ona automatycznie zapisana</p>
-    <table class="zebra-striped">
-        <thead>
-        <tr>
-            <th>{% trans "Przedmiot" %}</th>
-            <th>{% trans "Wykład" %}/{% trans "Seminarium" %}</th>
-            <th>{% trans "Ćwiczenia" %}</th>
-            <th>{% trans "Pracownia" %}/{% trans "Ćwiczenio-Pracownia" %}</th>
-            <th>{% trans "Repetytorium" %}</th>
-        </tr>
-        </thead>
-        {% for form in formset %}
-            {% include "offer/preferences/form_row.html" %}
-        {% endfor %}
-    </table>
-{% endblock %}
-
-{% block sidebar-width %}0{% endblock %}
-{% block sidebar %}
-{% endblock %}

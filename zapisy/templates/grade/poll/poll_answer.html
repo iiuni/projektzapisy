@@ -1,5 +1,7 @@
 {% extends "grade/poll/polls_for_user.html" %}
 {% load poll_answers_extra %}
+{% load crispy_forms_tags %}
+
 
 
 {% block main-subtitle %}Ankiety{% endblock %}
@@ -25,33 +27,41 @@
         {% if form_errors %}
             {{ form|as_divs_with_errors:form_errors }}
         {% else %}
-            {{ form.as_divs }}
+            {{ form|crispy }}
         {% endif %}
-        {% if form.finish %}
-            <div class="fieldWrapper">
-                {{ form.finish.errors }}
-                {{ form.finish }}
-                <helptext>{{ form.finish.help_text }}</helptext>
-            </div>
-        {% endif %}
+
         {% if not errors %}
+        <div class="btn-group" role="group">
             <input type="submit"
                    name="Prev"
-                   class="btn"
+                   class="btn btn-secondary"
                     {% if not prev %}
-                   disabled="True"
-                    {% endif %}
-                   value="<< Poprzednia ankieta"/>
+                   disabled="true"
+                    {% endif %} 
+                   value="&laquo; Poprzednia ankieta"/>
             {% if not form.finished %}
-                <input class="btn" type="submit" name="Save" value="Zapisz ankietę"/>
+                <button 
+                    class="btn btn-secondary" 
+                    type="submit" 
+                    name="Save"
+                    data-toggle="tooltip" data-placement="bottom" 
+                    value="Zapisz ankietę"
+                    title="Zapisze wypełnioną ankietę na serwerze ale nie zamknie możliwości jej edytowania.">
+                    Zapisz ankietę
+                </button>
             {% endif %}
             <input type="submit"
                    name="Next"
-                   class="btn"
+                   class="btn btn-secondary"
                     {% if not next %}
-                   disabled="True"
+                   disabled="true"
                     {% endif %}
-                   value="Następna ankieta >>"/>
+                   value="Następna ankieta &raquo;"/>
+        </div>
+        <a class="btn btn-primary float-right" href="{% url 'poll-end-grading' %}"
+           title="Opuszcza stronę oceniania zajęć. Można do niej wrócić wklejając swoje klucze.">
+           Zakończ oceniać
+        </a>
         {% endif %}
 
     </form>

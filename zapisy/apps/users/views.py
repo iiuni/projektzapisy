@@ -1,7 +1,9 @@
-import logging
 import datetime
 import json
+import logging
 import re
+import urllib
+
 from typing import Any, Optional
 
 from django.contrib import auth, messages
@@ -14,6 +16,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect, Http404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
+from django_cas_ng import views as cas_baseviews
 
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
@@ -206,14 +209,6 @@ def consultations_change(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def password_change_done(request: HttpRequest) -> HttpResponse:
-    """informs if password were changed"""
-    logger.info('User (%s) changed password' % request.user.get_full_name())
-    messages.success(request, "Twoje hasło zostało zmienione.")
-    return HttpResponseRedirect(reverse('my-profile'))
-
-
-@login_required
 def my_profile(request):
     """User profile page.
 
@@ -327,11 +322,39 @@ def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=N
 
 
 @login_required
-def logout(request: HttpRequest) -> HttpResponse:
-    """logout"""
-    logger.info('User %s <id: %s> is logged out ' % (request.user.username, request.user.id))
-    auth.logout(request)
-    return HttpResponseRedirect('/')
+def cas_logout(request, **kwargs) -> HttpResponse:
+    """Rewrites the logout request to correctly support user redirections.
+
+    If the given HttpResponse is a redirect to CAS and it is being processed
+    using the legacy protocol (version 2), rewrite the given url to match
+    the new schema. If not, simply return the original response.
+    """
+    response = cas_baseviews.LogoutView.as_view()(request, **kwargs)
+
+    if (isinstance(response, HttpResponseRedirect) and
+            int(settings.CAS_VERSION) == 2):
+        # Explode the full generated response URL to CAS into a tuple
+        parsed_response_url: tuple = urllib.parse.urlsplit(response['Location'])
+        scheme, netloc, path, query, fragment = parsed_response_url
+
+        # Get the query parameters from the URL, and:
+        # - remove the old `url` parameter if present
+        # - generate new target URL for the redirect
+        # - append `service` with the new URL to a dictionary
+        parameters: dict = urllib.parse.parse_qs(query)
+        parameters.pop('url', None)
+        redirect_target_url: str = request.build_absolute_uri(settings.CAS_REDIRECT_URL)
+        parameters['service'] = [redirect_target_url]
+
+        # Turn a dictionary of parameters into a string
+        new_query: str = urllib.parse.urlencode(parameters, doseq=True)
+
+        # Recreate the logout URL to CAS with updated parameters
+        new_url = (scheme, netloc, path, new_query, fragment)
+        new_url: str = urllib.parse.urlunsplit(new_url)
+        response['Location'] = new_url
+
+    return response
 
 
 def login_plus_remember_me(request: HttpRequest, **kwargs: Any) -> HttpResponse:

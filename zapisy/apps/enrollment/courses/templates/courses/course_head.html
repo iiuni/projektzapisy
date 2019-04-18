@@ -3,23 +3,27 @@
 
 <h2>{{ course.name }}</h2>
 <h5>{{ course.semester.get_short_name }}</h5>
+
 {% if ects_limit_would_be_exceeded %}
-<div class="main-message">Nie możesz zapisać się na ten przedmiot, gdyż przekroczony zostałby limit {{ max_ects }} punktów ECTS
-(masz już {{ current_ects }} na ten semestr).
-Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
-</div>
+    <div class="main-message">Nie możesz zapisać się na ten przedmiot, gdyż przekroczony zostałby limit {{ max_ects }} punktów ECTS
+    (masz już {{ current_ects }} na ten semestr).
+    Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
+    </div>
 {% endif %}
-<div class="details course-details">
-    <table class="table-info">
+
+
+<table class="table table-bordered" id="table-info">
+    <colgroup><col class="table-info-type"><col></colgroup>
+    <tbody>
         {% if points %}
             <tr>
-                <th>{% trans "Punkty ECTS" %}</th>
+                <th scope="row">{% trans "Punkty ECTS" %}</th>
                 <td>{{ points }}</td>
             </tr>
         {% endif %}
         {% if course.lectures or course.exercises or course.laboratories or course.repetitions %}
             <tr>
-                <th>{% trans "Liczba godzin" %}</th>
+                <th scope="row">{% trans "Liczba godzin" %}</th>
                 <td>{% if course.lectures %}{{ course.lectures }}
                     (wyk) {% if course.exercises or course.laboratories or course.repetitions or course.exercises_laboratories %}
                         +{% endif %}{% endif %}
@@ -36,52 +40,50 @@ Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
 
         {% if course.english %}
             <tr>
-                <th>{% trans "Przedmiot prowadzony w j.angielskim" %}</th>
+                <th scope="row">{% trans "Przedmiot prowadzony w j.angielskim" %}</th>
                 <td>{% trans "Tak" %}</td>
             </tr>
         {% endif %}
         {% include "common/common_course_info.html" with course_entity=course.entity %}
         {% if course.web_page %}
             <tr>
-                <th>{% trans "Strona WWW" %}</th>
+                <th scope="row">{% trans "Strona WWW" %}</th>
                 <td><a href="{{ course.web_page }}">{{ course.web_page }}</a></td>
             </tr>{% endif %}
         {% if requirements %}
             <tr>
-                <th>{% trans "Wymagane" context "zależności przedmiotu" %}</th>
+                <th scope="row">{% trans "Wymagane" context "zależności przedmiotu" %}</th>
                 <td>{{ requirements|join:", " }}</td>
             </tr>
         {% endif %}
         {% if False %}
             <tr>
-                <th>{% trans "Konsultacje" %}</th>
+                <th scope="row">{% trans "Konsultacje" %}</th>
                 <td><a href="{% url 'course-consiltations-page' course.slug %}">{% trans "link" %}</a></td>
             </tr>
             <tr>
-                <th>{% trans "Oddane głosy" %}</th>
+                <th scope="row">{% trans "Oddane głosy" %}</th>
                 <td> {{ course.votes_count }} <a href="{% url 'course-votes' course.slug %}">{% trans "lista" %}</a></td>
             </tr>
         {% endif %}
         {% for group_of_waiting_students in grouped_waiting_students %}
             {% if group_of_waiting_students.students_amount %}
                 <tr>
-                    <th>Liczba chętnych na {{ group_of_waiting_students.type_name }}</th>
+                    <th scope="row">Liczba chętnych na {{ group_of_waiting_students.type_name }}</th>
                     <td>{{ group_of_waiting_students.students_amount }}</td>
                 </tr>
             {% endif %}
         {% endfor %}
-    </table>
+    </tbody>
+</table>
 
-    <div class="description">
+<div class="description">
 
-        <h5>{% trans "Opis przedmiotu" %}:</h5>
-        {% if course.description %}
-        <p>{{ course.description|safe }}</p>
-        {% else %}
-            <p>{% trans "Brak" %}</p>
-        {% endif %}
-    </div>
-
-    <div class="footer"></div>
-
+    <h5>{% trans "Opis przedmiotu" %}:</h5>
+    {% if course.description %}
+    <p>{{ course.description|safe }}</p>
+    {% else %}
+        <p>{% trans "Brak" %}</p>
+    {% endif %}
 </div>
+

@@ -1,40 +1,42 @@
 {% extends "offer/manage/base.html" %}
-{% block voting_active %}active{% endblock %}
-
-{% block js %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-<script>jQuery.dataInvalidate_check = function(){};</script>
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load compressed %}
+ 
+{% block voting_active %} class = "active" {% endblock %}
+ 
+{% block js %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+    {% compressed_js 'proposal_edit' %}
+        <script id="filtered-select-multiple-data" type="application/json">
+[{
+   "id": "#selector-voting",
+   "size": 15,
+   "txtAvailable": "Przedmioty",
+   "txtChosen": "Przedmioty w głosowaniu"
+}]
+    </script>
+    {% render_bundle "filtered-select-multiple-converter" %}
 {% endblock %}
-
-{% block content %}
+ 
+{% block all-content %}
 <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
-
 <link type="text/css" rel="stylesheet" href="/static/vendor/bootstrap-duallistbox.css" />
 <script type="text/javascript" src="/static/vendor/jquery.bootstrap-duallistbox.js"></script>
-
-<h1>Wybierz przedmioty pod głosowanie</h1>
-
-<form id="courses-in-voting" action="/offer/manage/select_for_voting" method="POST">
-  {% csrf_token %}
-  <input type="submit" value="Zapisz" class="btn primary" />
-  <select name="for_voting" multiple="multiple">
-    {% for course in courses %}
-      {% if course.is_in_voting %}
-        <option value="{{course.id}}" selected="selected">{{course.name}}</option>
-      {% else %}
-        <option value="{{course.id}}">{{course.name}}</option>
-      {% endif %}
-    {% endfor %}
-  </select>
-  <script>
-    $('form#courses-in-voting select').bootstrapDualListbox({
-      'bootstrap2Compatible': true,
-      'nonSelectedListLabel': 'Przedmioty',
-      'selectedListLabel': 'Przedmioty w głosowaniu'
-    })
-  </script>
-  <div id="test"></div>
-  <input type="submit" value="Zapisz" class="btn primary" />
-</form>
-
+ 
+<h1 class="text-dark font-weight-bold">Wybierz przedmioty pod głosowanie</h1>
+  <form action="/offer/manage/select_for_voting" method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+ 
+      <div class="d-flex justify-content-center">
+          <div id="selector-voting" class="p-1 flex-fill mb-2">
+          {{ form.courses }}
+          {{ form.courses.errors }}
+          </div>
+      </div>
+ 
+      <input type="submit" value="Zapisz" class="btn btn-primary" />
+  </form>
 {% endblock %}

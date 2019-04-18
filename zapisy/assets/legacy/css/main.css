@@ -103,171 +103,6 @@
 
 
 
-/*** BREADCRUMBS - koniec ***/
-
-#main-content-container
-{
-	position: relative;
-}
-
-/*** ZAWARTOŚĆ ***/
-
-#main-content
-{
-	position:relative;
-	background: white;
-}
-
-
-#main-content-left 
-{
-	position:absolute;
-	width:30%;
-	height: 100%;
-	top:0; 
-	left:0;
-}
-
-#main-content-right 
-{
-	margin-left: 30%;
-	margin-top: 10px;
-	margin-bottom:10px;
-	width:70%;
-	border-left: 2px solid black;
-}
-
-#main-content.narrow
-{
-	padding: 70px 150px;
-}
-
-#main-content.normal
-{
-	padding: 70px;
-}
-
-#main-content.wide
-{
-	padding: 15px 20px;
-    min-height: 140px;
-}
-
-/*** ZAWARTOŚĆ - koniec ***/
-
-
-/*** SIDEBAR ***/
-
-#main-sidebar
-{
-	position: relative;
-	padding-right: 5px;
-}
-
-#main-content-container.sidebar-visible.sidebar-right,
-#main-content-container.sidebar-visible.sidebar-left
-{
-	background: #f8f8f8;
-}
-
-#main-content-container.sidebar-visible.sidebar-right #main-sidebar
-{
-	float: right;
-}
-
-#main-content-container.sidebar-visible.sidebar-left #main-sidebar
-{
-	float: left;
-}
-
-#main-content-container.sidebar-visible.sidebar-right #main-content
-{
-	margin-right: 250px;
-	padding-left: 20px;
-	padding-right: 20px;
-	border-right: 1px solid #cccccc;
-}
-
-#main-content-container.sidebar-visible.sidebar-left #main-content
-{
-	margin-left: 250px;
-	padding-left: 10px;
-	padding-right: 10px;
-	border-left: 1px solid #cccccc;
-}
-
-a.main-sidebar-toggle-button
-{
-	border: 1px solid #cccccc;
-
-	display: block;
-	width: 16px;
-	height: 16px;
-	padding: 2px;
-
-	background: white;
-	text-decoration: none;
-	color: black;
-	overflow: hidden;
-	text-align: center;
-	font-weight: bold;
-}
-
-#main-content-container.sidebar-visible.sidebar-right a.main-sidebar-toggle-button.hide,
-#main-content-container.sidebar-left a.main-sidebar-toggle-button.show
-{
-	-moz-border-radius: 0 4px 4px 0;
-	-webkit-border-radius: 0 4px 4px 0;
-	border-radius: 0 4px 4px 0;
-	border-left: 0;
-}
-
-#main-content-container.sidebar-visible.sidebar-right a.main-sidebar-toggle-button.hide
-{
-	position: absolute;
-	top: 20px;
-	left: 0;
-}
-
-#main-content-container.sidebar-visible.sidebar-left a.main-sidebar-toggle-button.hide
-{
-	position: absolute;
-	top: 20px;
-	left: 229px;
-}
-
-#main-content-container.sidebar-right a.main-sidebar-toggle-button.show,
-#main-content-container.sidebar-visible.sidebar-left a.main-sidebar-toggle-button.hide
-{
-	-moz-border-radius: 4px 0 0 4px;
-	-webkit-border-radius: 4px 0 0 4px;
-	border-radius: 4px 0 0 4px;
-	border-right: 0;
-}
-
-#main-content-container.sidebar-right a.main-sidebar-toggle-button.show
-{
-	float: right;
-	position: relative;
-	z-index: 1;
-	top: 5px;
-	left: 20px;
-}
-
-#main-content-container.sidebar-left a.main-sidebar-toggle-button.show
-{
-	position: absolute;
-	top: 20px;
-	left: 0;
-}
-
-a.main-sidebar-toggle-button:hover
-{
-	background: #dddddd;
-}
-
-
-/*** SIDEBAR - koniec ***/
 
 
 /*** KOMUNIKATY - koniec ***/
@@ -343,41 +178,6 @@ a.main-sidebar-toggle-button:hover
 	margin-top: 7px;
 }
 
-.main-filter-input .text
-{
-	border: 1px solid #999999;
-	height: 20px;
-	float: left;
-	background: white url('/static/images/search-ico.png') no-repeat 3px 4px;
-	padding: 1px 4px 1px 20px;
-
-	-moz-border-radius: 4px 0 0 4px;
-	-webkit-border-radius: 4px 0 0 4px;
-	border-radius: 4px 0 0 4px;
-}
-
-
-.main-filter-input .reset
-{
-	border: 1px solid #999999;
-	border-left: 1px dotted #999999;
-	height: 24px;
-	background-color: white;
-	font-weight: bold;
-
-	position: relative;
-	left: -5px;
-
-	-moz-border-radius: 0 4px 4px 0;
-	-webkit-border-radius: 0 4px 4px 0;
-	border-radius: 0 4px 4px 0;
-}
-
-.main-filter-input .reset:hover
-{
-	background-color: #cccccc;
-	cursor: pointer;
-}
 
 /*** PANEL FILTROWANIA - KOMPONENTY - koniec ***/
 
@@ -506,3 +306,22 @@ img#consent-icon {
 	margin-right: 20px;
 	margin-top: -15px;
 }
+
+/*** STICKY FOOTER ***/
+.content-container
+{
+	min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.inner-content-container
+{
+	flex: 1 0 auto;
+}
+
+.sticky-footer
+{
+	padding-top: 30px;
+}
+/*** STICKY FOOTER - koniec ***/

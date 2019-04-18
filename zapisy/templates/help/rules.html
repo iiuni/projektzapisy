@@ -1,30 +1,58 @@
 {% extends "help/base.html" %}
 
-{% block content %} 
-<h2>Zasady</h2><br/>
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/help">Pomoc</a></li>
+<li class="breadcrumb-item active" aria-current="page">Zasady zapisów</li>
+{% endblock %}
 
-    <h3>Zasady zapisów</h3>
-    <ul>
-        <li>Godzina otwarcia zapisów dla studenta zależy od:
+{% block content %}
+<h2>Zasady</h2><br />
+
+<div class=container>
+        <h3>Zasady zapisów</h3>
         <ul>
-            <li>ilości zarejestrowanych w systemie punktów ECTS (5 minut bonusu za każdy punkt),</li>
-            <li>udziału w ocenie zajęć (24h bonusu za ocenianie zajęć z poprzedniego semestru),</li>
-            <li>udziału w głosowaniu na ofertę dydaktyczną.<br/> Każdy punkt przydzielony danemu przedmiotowi podczas głosowania daje otwarcie zapisów na ten przedmiot 24h wcześniej (jednemu przedmiotowi można przydzielić maksymalnie 3 takie punkty).</li>
-        </ul>
-        <li>Na początku zapisów (około tygodnia od otwarcia systemu) obowiązuje limit 40 punktów ECTS przy zapisach na zajęcia. Oznacza to, że nie można wybrać przedmiotów, których suma wartości w punktach ECTS przekracza 40. Limit ten jest odblokowywany po pewnym czasie od otwarcia zapisów dla ostatniego studenta.</li>
-        <li>Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00.</li>
-    </ul><br/>
-    <h3>Zasady w kolejkach</h3>
-    <ul>
-        Kolejki w systemie zapisów służą do zapamiętywania użytkowników, którzy chcieli zapisać się do danej grupy zajęciowej, która była pełna.<br/><br/>
-        <li>Jeżeli wszystkie miejsca na wybranych zajęciach są zajęte, użytkownik otrzymuje możliwość dopisania się do kolejki.</li>
-        <li>W momencie zwolnienia miejsca w grupie, pierwsza osoba z kolejki zostaje zapisana do grupy.</li>
-        <li>Użytkownik ma możliwość zapisania się do kilku kolejek na zajęcia tego samego typu, prowadzone dla tego samego przedmiotu.</li>
-        <li>Każdej z kolejek może przyporządkować priorytet z zakresu 1 (słabo) - 5 (bardzo). Różnica wartości priorytetów nie jest istotna, ważny jest ich porządek.
-        <li>Gdy w pewnej grupie zwalnia się miejsce (lub zostaje zwiększony limit), a w kolejce do niej jest zapisany użytkownik, zostaje wtedy przepisany do grupy, a jego kolejki o niższych lub takich samych priorytetach zostają usunięte (w ramach jednego przedmiotu i rodzaju zajęć).</li>
-        <li>W kolejkach obowiązuje zasada "kto pierwszy, ten lepszy".</li>
-        <li>Do kolejki można zapisać się dopiero po otwarciu zapisów na wybrany przedmiot.</li>
-        <li>Jeżeli w grupie pojawi się wolne miejsce, system podejmie próbę wpisania na to miejsce osoby, która znajduje się na pierwszym miejscu kolejki. Próba ta może się nie powieść: tak będzie wówczas, gdy  obowiązuje limit 40 p. ECTS, a wpisanie na przedmiot spowodowałoby przekroczenie tego limitu. W takiej sytuacji dana osoba zostaje wypisana z kolejki.</li>
-    </ul><br/>
+            <li>Godzina otwarcia zapisów dla studenta zależy od:
+                <ul>
+                    <li>ilości zarejestrowanych w systemie punktów ECTS (5 minut bonusu za każdy punkt),</li>
+                    <li>udziału w ocenie zajęć (24h bonusu za ocenianie zajęć z poprzedniego semestru),</li>
+                    <li>udziału w głosowaniu na ofertę dydaktyczną.<br /> Każdy punkt przydzielony danemu przedmiotowi
+                        podczas głosowania daje otwarcie zapisów na ten przedmiot 24h wcześniej (jednemu przedmiotowi
+                        można
+                        przydzielić maksymalnie 3 takie punkty).</li>
+                </ul>
+            <li>Na początku zapisów (około tygodnia od otwarcia systemu) obowiązuje limit 35 punktów ECTS przy zapisach
+                na
+                zajęcia. Oznacza to, że nie można wybrać przedmiotów, których suma wartości w punktach ECTS przekracza
+                35.
+                Limit ten jest odblokowywany po pewnym czasie od otwarcia zapisów dla ostatniego studenta.</li>
+            <li>Terminy T0 są przydzielane tak, aby wypadały pomiędzy godziną 10.00 a 22.00.</li>
+        </ul><br />
+        <h3>Zasady w kolejkach</h3>
+        <ul>
+            Kolejki w systemie zapisów służą do zapamiętywania użytkowników, którzy chcieli zapisać się do danej grupy
+            zajęciowej, która była pełna.<br /><br />
+            <li>Jeżeli wszystkie miejsca na wybranych zajęciach są zajęte, użytkownik otrzymuje możliwość dopisania się
+                do
+                kolejki.</li>
+            <li>W momencie zwolnienia miejsca w grupie, pierwsza osoba z kolejki zostaje zapisana do grupy.</li>
+            <li>Użytkownik ma możliwość zapisania się do kilku kolejek na zajęcia tego samego typu, prowadzone dla tego
+                samego przedmiotu.</li>
+            <li>Każdej z kolejek może przyporządkować priorytet z zakresu 1 (słabo) - 5 (bardzo). Różnica wartości
+                priorytetów nie jest istotna, ważny jest ich porządek.
+            <li>Gdy w pewnej grupie zwalnia się miejsce (lub zostaje zwiększony limit), a w kolejce do niej jest
+                zapisany
+                użytkownik, zostaje wtedy przepisany do grupy, a jego kolejki o niższych lub takich samych priorytetach
+                zostają usunięte (w ramach jednego przedmiotu i rodzaju zajęć).</li>
+            <li>W kolejkach obowiązuje zasada "kto pierwszy, ten lepszy".</li>
+            <li>Do kolejki można zapisać się dopiero po otwarciu zapisów na wybrany przedmiot.</li>
+            <li>Jeżeli w grupie pojawi się wolne miejsce, system podejmie próbę wpisania na to miejsce osoby, która
+                znajduje się na pierwszym miejscu kolejki. Próba ta może się nie powieść: tak będzie wówczas, gdy
+                obowiązuje limit 35 p. ECTS, a wpisanie na przedmiot spowodowałoby przekroczenie tego limitu. W
+                takiej
+                sytuacji dana osoba zostaje wypisana z kolejki.</li>
+        </ul><br />
+</div>
 
-{% endblock %} 
+
+{% endblock %}

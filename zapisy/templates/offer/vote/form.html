@@ -7,10 +7,10 @@
 
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
-    <a href="{% url 'vote-main' %}">Głosowanie</a> &raquo;
-    <h2>Oddaj głos</h2>
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> </li>
+    <li class="breadcrumb-item"><a href="{% url 'vote-main' %}">Głosowanie</a> </li>
+    <li class="breadcrumb-item"><span>Oddaj głos</span></li>
     {# end bread #}
 {% endblock %}
 
@@ -23,7 +23,7 @@
     {% endif %}
 {% endblock %}
 
-{% block topContent %}
+{% block top-content %}
     <div id="od-vote-top-bar" class="main-top-bar" style="display: none">
         <fieldset id="od-vote-filter">
             <legend><span>Filtrowanie</span></legend>
@@ -71,6 +71,6 @@
             {% include 'offer/vote/vote_li.html' with label='Semestr nieokreślony' semester='unknown' formset=formset.unknown.formset %}
         {% endif %}
 
-        <p id="od-vote-submitBar"><input type="submit" class="btn success" value="Głosuj"/></p>
+        <p id="od-vote-submitBar"><input type="submit" class="btn btn-success" value="Głosuj"/></p>
     </form>
 {% endblock %}

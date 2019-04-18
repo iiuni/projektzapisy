@@ -2,57 +2,79 @@
 {% load compressed %}
 {% load static %}
 {% block styles %}
-	{% compressed_css 'help' %}
+{% compressed_css 'help' %}
 {% endblock %}
 
 {% block main-subtitle %}Pomoc{% endblock %}
 
-{% block content %}
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item active" aria-current="page">Pomoc</li>
+{% endblock %}
 
-<h2>Do czego służy System zapisów?</h2><br/>
-    System zapisów jest aplikacją umożliwiającą studentom Instytutu Informatyki
-    Uniwersytetu Wrocławskiego udział w:
-    <ul>
-        <li><a href="{% url 'course-list' %}">Zapisach</a> - czyli zapisywaniu się na zajęcia.</li>
-        <li>{% comment %}<a href="{% url 'offer-main' %}">Kształtowaniu oferty dydaktycznej</a>{% endcomment %}Kształtowaniu oferty dydaktycznej - zgłaszaniu i głosowaniu na propozycje przedmiotów, które będą wykładane w kolejnym roku akademickim.</li>
-        <li>{% comment %}<a href="{% url 'grade-main' %}">Ocenie zajęć</a>{% endcomment %}Ocenie zajęć - anonimowej ankiecie na temat zajęć, na które student uczęszczał.</li>
-    </ul>
-Udział w głosowaniu na ofertę dydaktyczną oraz ocenie zajęć umożliwia studentowi wcześniejsze zapisywanie się na zajęcia w Zapisach{% comment %}(<a href="{% url 'help-terms' %}">terminy</a>){% endcomment %}.
-<p>Na rysunku poniżej został przedstawiony "cykl życia" oferty dydaktycznej.</p><br/><br/>
-<img src="{% static "help/main/cykl_oferty.png" %}" id="cykl-oferty" title="Cykl życia oferty dydaktycznej" /><br/><br/>
-Podstawowy cykl opieki nad zajęciami w II UWr. wygląda następująco:
-<ul>
-    <li>Przed rozpoczęciem roku akademickiego (i w trakcie trwania poprzedniego roku) składane są propozycje dotyczące oferty dydaktycznej (zgłaszanie przedmiotów i pomysłów na przedmioty). Propozycje te to także poprzednie oferty dydaktyczne - czyli z lat wcześniejszych.</li>
-    <li>W pewnym momencie utworzona w ten sposób Proponowana Oferta trafia pod głosowanie studentów, w wyniku czego powstaje Oferta Dydaktyczna.</li>
-    <li>Oferta Dydaktyczna jest łączona ze zbieranymi dotychczas preferencjami prowadzących (kadry instytutu) i przekształca się w Ofertę wraz z Przydziałami Prowadzących.</li>
-    <li>Po dodaniu terminów zajęć oraz sal, w których będą one prowadzone, Oferta wraz z Przydziałami staje się Planem Zajęć.</li>
-    <li>Plan zajęć zostaje przedstawiony studentom, a ci się zapisują na zajęcia. Po zamknięciu zapisów otrzymujemy Plany Studentów.</li>
-    <li>Co semestr następuje ocena zajęć. Wyniki tej oceny (anonimowe) trafiają - razem z ocenianymi przedmiotami - do Historii Zajęć.</li>
-</ul>
+{% block content %}
+<div class="container" id="main-content">
+    <div class="row">
+            <h2>Do czego służy System zapisów?</h2><br />
+            System zapisów jest aplikacją umożliwiającą studentom Instytutu Informatyki
+            Uniwersytetu Wrocławskiego udział w:
+            <ul>
+                <li><a href="{% url 'course-list' %}">Zapisach</a> - czyli zapisywaniu się na zajęcia.</li>
+                <li>{% comment %}<a href="{% url 'offer-main' %}">Kształtowaniu oferty dydaktycznej</a>{% endcomment
+                    %}Kształtowaniu oferty dydaktycznej - zgłaszaniu i głosowaniu na propozycje przedmiotów, które będą wykładane w
+                    kolejnym roku akademickim.</li>
+                <li>{% comment %}<a href="{% url 'grade-main' %}">Ocenie zajęć</a>{% endcomment %}Ocenie zajęć - anonimowej
+                    ankiecie na temat zajęć, na które student uczęszczał.</li>
+            </ul>
+            Udział w głosowaniu na ofertę dydaktyczną oraz ocenie zajęć umożliwia studentowi wcześniejsze zapisywanie się na
+            zajęcia w Zapisach{% comment %}(<a href="{% url 'help-terms' %}">terminy</a>){% endcomment %}.
+            <p>Na rysunku poniżej został przedstawiony "cykl życia" oferty dydaktycznej.</p><br /><br />
+            <img src="{% static "help/main/cykl_oferty.png" %}" id="cykl-oferty" title="Cykl życia oferty dydaktycznej" /><br /><br />
+            Podstawowy cykl opieki nad zajęciami w II UWr. wygląda następująco:
+            <ul>
+                <li>Przed rozpoczęciem roku akademickiego (i w trakcie trwania poprzedniego roku) składane są propozycje dotyczące
+                    oferty dydaktycznej (zgłaszanie przedmiotów i pomysłów na przedmioty). Propozycje te to także poprzednie oferty
+                    dydaktyczne - czyli z lat wcześniejszych.</li>
+                <li>W pewnym momencie utworzona w ten sposób Proponowana Oferta trafia pod głosowanie studentów, w wyniku czego
+                    powstaje Oferta Dydaktyczna.</li>
+                <li>Oferta Dydaktyczna jest łączona ze zbieranymi dotychczas preferencjami prowadzących (kadry instytutu) i
+                    przekształca się w Ofertę wraz z Przydziałami Prowadzących.</li>
+                <li>Po dodaniu terminów zajęć oraz sal, w których będą one prowadzone, Oferta wraz z Przydziałami staje się Planem
+                    Zajęć.</li>
+                <li>Plan zajęć zostaje przedstawiony studentom, a ci się zapisują na zajęcia. Po zamknięciu zapisów otrzymujemy
+                    Plany Studentów.</li>
+                <li> Co semestr następuje ocena zajęć. Wyniki tej oceny (anonimowe) trafiają - razem z ocenianymi przedmiotami - do
+                    Historii Zajęć.</li>
+            </ul>
+    </div>
+        
+</div>
 {% endblock %}
 
 {% block sidebar %}
-<div id="main-sidebar">
-<h2>Menu</h2>
-<ul>
-    {% comment %}<li><a href="{% url 'help-terms' %}">Terminy</a></li>{% endcomment %}
-    <li><a href="{% url 'help' %}">Opis Systemu zapisów</a></li>
-    <li><a href="{% url 'help-rules' %}">Zasady zapisów</a></li>
-    <li><a href="{% url 'help-enrollment' %}">System zapisów</a></li>
-    <li><a href="{% url 'help-export' %}">Eksport planu zajęć</a></li>
-    {% comment %}
-    <!-- TODO(jak będzie mobilna) <li><a href="{% url 'help-mobile' %}">Wersja mobilna</a></li> /!-->
-    <!-- TODO(jak będzie eksport, to go podlinkować do pomocy) <li><a href="{% url 'help-export' %}">Eksport planu zajęć</a></li> /!-->
-    <li><a href="{% url 'help-grade' %}">Ocena zajęć</a></li>
-    <li><a href="{% url 'help-offer' %}">Kształtowanie oferty dydaktycznej</a></li>
-    {% if user.employee %}
-        <li><a href="{% url 'help-employee' %}">Kształtowanie oferty dydaktycznej - pracownik</a></li>
-    {% endif %}
-    {% if request.user.is_staff %}
-        <li><a href="{% url 'help-admin' %}">Administracja systemem</a></li>
-    {% endif %}
-    {% endcomment %}
-
-</ul>
+<div class="container" id="main-sidebar">
+    <h2 class="ml-3">Menu</h2>
+    <div class="row">
+            <ul class="list-group-flush" id="list-tab" role="tablist">
+                {% comment %}<li class="list-group-item"><a href="{% url 'help-terms' %}">Terminy</a></li>{% endcomment %}
+                <li class="list-group-item"><a href="{% url 'help' %}">Opis Systemu zapisów</a></li>
+                <li class="list-group-item"><a href="{% url 'help-rules' %}">Zasady zapisów</a></li>
+                <li class="list-group-item"><a href="{% url 'help-enrollment' %}">System zapisów</a></li>
+                <li class="list-group-item"><a href="{% url 'help-export' %}">Eksport planu zajęć</a></li>
+        
+                <li class="list-group-item disabled">Wersja mobilna</li>
+        
+                {% comment %}
+                <li class="list-group-item"><a href="{% url 'help-offer' %}">Kształtowanie oferty dydaktycznej</a></li>
+                <li class="list-group-item"><a href="{% url 'help-grade' %}">Ocena zajęć</a></li>
+                {% if user.employee %}
+                <li class="list-group-item"><a href="{% url 'help-employee' %}">Kształtowanie oferty dydaktycznej - pracownik</a></li>
+                {% endif %}
+                {% if request.user.is_staff %}
+                <li class="list-group-item"><a href="{% url 'help-admin' %}">Administracja systemem</a></li>
+                {% endif %}
+                {% endcomment %}
+            </ul>
+    </div>
 </div>
 {% endblock %}

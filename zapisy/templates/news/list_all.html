@@ -8,73 +8,89 @@
 {% block content-class %}narrow{% endblock %}
 
 {% block rss %}
-    <link href="/feeds/news/" rel="alternate" type="application/rss+xml" title="Aktualności RSS"/>
+<link href="/feeds/news/" rel="alternate" type="application/rss+xml" title="Aktualności RSS" />
 {% endblock %}
 
-{% block styles %}
-    {% compressed_css 'news' %}
-{% endblock %}
-
-{% block js %}
-    {% compressed_js 'news' %}
-{% endblock %}
-u
 {% block bread %}
-    <a href="/">Strona główna</a>  &raquo;
-    Aktualności
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item active" aria-current="page">Aktualności</li>
 {% endblock %}
 
-{% block topContent %}
-    <div id="od-news-top-bar" class="main-top-bar">
-        <form id="od-news-search-form" method="get">
-            <div class="main-filter-input">
-                <input class="text" type="text" name="q" id="od-news-search-q" value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..."/>
-                <input class="reset" type="reset" id="od-news-search-reset" value="X"/>
+{% block all-content %}
+
+<h1 class="display-1 p-2">Aktualności</h1>
+
+<div class="row p-2 m-2">
+    <div class="col-10 col-md-10 col-lg-8">
+        <form class="input-group">
+            <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
+                    value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
+            <div class="input-group-append">
+                <button class="btn btn-success" type="submit">Wyszukaj</button>
             </div>
         </form>
+        {% if query %}
+            <p class="mx-auto font-weight-bolder m-2">Wyniki wyszukiwania dla 
+                <mark class="px-2 text-monospace">{{ query|lower }}</mark>
+                <a class="btn btn-sm btn-danger ml-2" href="{% url 'news-all' %}">wyczyść filtr</a>
+            </p>
         
-        <div class="od-news-navigator">
-            <a href="/feeds/news/" title="Aktualności RSS" id="od-news-rss-icon">
-                <img src="{% static "images/rss.png" %}" alt="RSS"/>
-            </a>
-        </div>
-
-        <div style="clear: both;"></div>
+        {% endif %}
+        
     </div>
-{% endblock %}
+    {% if not query %}
+    <div class="col-2 offset-lg-3 col-lg-1">
+        <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
+            <img src="{% static "images/rss.png" %}" alt="RSS" />
+        </a>
+    </div>
+    {% endif %}
 
-{% block content %}
-    <h2>Aktualności</h2>
-    {% if query %}<p> Wyniki wyszukiwania dla "{{ query|lower }}" | <a href="/news">usuń filtr</a></p>{% endif %}
-    <div id="news-content">
+</div>
+
+
+<div class="row">
+    <div class="col">
         {% if items %}
-            <div class="od-news-list">
-                {% for news in items %}
-                    <div id="od-news-{{news.id}}" class="od-news-item">
-                        <div class="od-news-header">
-                            <h3>{{ news.title }}</h3>
-                            <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>
-                        </div>
-                        <div class="od-news-body">
+            {% for news in items %}
+                <div id="od-news-{{news.id}}" class="jumbotron shadow-sm p-4">
+                    <div class="container m-2">
+                        <h3>{{ news.title }}</h3>
+                        <span>{{ news.date|date:"l, d.m.Y - G:i" }} &mdash; {{ news.author.get_full_name }}</span>
+                        <p class="p-2">
                             {{ news.body|safe }}
-                        </div>
-                        <div class="od-news-footer">
-                            {{ news.author.first_name }} {{ news.author.last_name }}
-                        </div>
+                        </p>
                     </div>
-                {% endfor %}
-            </div>
-            <div class="pagination">
-              <ul>
-                <li class="prev{% if not items.has_previous %} disabled{% endif %}"><a {% if items.has_previous %}href="?page={{ items.previous_page_number }}"{% endif %}>&larr; Poprzednia</a></li>
-                {% for index in page_range %}
-                  <li{% if index == items.page %} class="active"{% endif %}><a href="?page={{ index }}">{{ index }}</a></li>
-                {% endfor %}
-                <li class="next{% if not items.has_next %} disabled{% endif %}"><a {% if items.has_next %}href="?page={{ items.next_page_number }}"{% endif %}>Następna &rarr;</a></li>
-              </ul>
-            </div>
+                </div>
+            {% endfor %}
         {% else %}
-            <p>Nie ma ogłoszeń pasujących do zapytania.</p>
+            <div class="alert alert-warning">
+                Nie ma ogłoszeń pasujących do zapytania.
+            </div>
         {% endif %}
     </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="pagination justify-content-center">
+            <ul class="pagination">
+                <li class="page-item prev {% if not items.has_previous %}disabled{% endif %}">
+                    <a class="page-link" {% if items.has_previous %}href="?page={{ items.previous_page_number }}"{% endif %}>Poprzednia</a>
+                </li>
+                {% for index in page_range %}
+                    {% if index <= items.number|add:3 and index >= items.number|add:-3 %}
+                        <li class="page-item {% if forloop.counter == items.number %}active{% endif %}">
+                            <a class="page-link" href="?page={{ forloop.counter }}"> {{ forloop.counter }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                <li class="page-item next {% if not items.has_next %}disabled{% endif %}">
+                    <a class="page-link" {%if items.has_next %}href="?page={{ items.next_page_number }}"{% endif %}>Następna</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

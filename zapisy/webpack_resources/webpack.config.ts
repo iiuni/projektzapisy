@@ -17,6 +17,8 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const WebpackShellPlugin = require("webpack-shell-plugin");
+const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
+
 
 // Leave one cpu free for the ts type checker...
 const happyThreadPool = HappyPack.ThreadPool({
@@ -240,9 +242,10 @@ const webpackConfig: webpack.Configuration = {
                     chunks: "initial",
                     name: "vendors",
                     priority: 10,
-                    enforce: true
+                    enforce: false
                 }
             },
+            minChunks: 2,
         },
     },
     module: {
@@ -317,6 +320,17 @@ const webpackConfig: webpack.Configuration = {
                     use: [{
                         loader: "css-loader",
                         options: { minimize: !DEV }
+                    }, {
+                        loader: "postcss-loader",
+                        options: {
+                            plugins: function () { // post css plugins, can be exported to postcss.config.js
+                                return [
+                                    require("precss"),
+                                    require("autoprefixer")
+                                ];
+                            }
+                        }
+
                     }, {
                         loader: "sass-loader"
                     }]
@@ -400,6 +414,11 @@ const webpackConfig: webpack.Configuration = {
         }),
         new VueLoaderPlugin(),
         new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true }),
+
+        new MomentLocalesPlugin({
+            localesToKeep: ["pl"],
+        }),
+
     ],
 };
 

@@ -2,6 +2,8 @@ import os
 import logging
 import environ
 
+from django.contrib.messages import constants as messages
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env()
@@ -173,6 +175,8 @@ TEMPLATES = [
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -181,7 +185,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'middleware.error_handling.ErrorHandlerMiddleware',
-    'pipeline.middleware.MinifyHTMLMiddleware',
     'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
@@ -229,7 +232,8 @@ INSTALLED_APPS = (
     'apps.schedulersync',
     'django_extensions',
     'django_filters',
-    'el_pagination',
+    'bootstrap_pagination',
+    'crispy_forms',
     'apps.notifications',
     'django_cas_ng',
     'django_rq',
@@ -249,6 +253,17 @@ DATETIME_FORMAT = "j N Y, H:i"
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
 CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
+
+# References pull request #655: https://github.com/iiuni/projektzapisy/pull/655
+# Force django_cas_ng to use protocol version 3 instead of 2 (the default).
+# This setting can be enabled as soon as the University's CAS is upgraded to a
+# newer version. Temporary workaround: users.views.cas_logout()
+# CAS_VERSION = '3'
+
+# URL where user will be redirected to after logging out if there is
+# no referrer and no next page set.
+LOGOUT_REDIRECT_URL = '/'
+CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
@@ -280,10 +295,39 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # custom objects, and we need this behavior.
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
+# Attach X-XSS-Protection header to all outgoing HTTP responses.
+# It tells conformant browsers to activate their built-in
+# XSS (cross-site scripting attack) detection filter.
+SECURE_BROWSER_XSS_FILTER = True
+
+# Attach X-Content-Type-Options header with a value of nosniff
+# to all outgoing HTTP responses.
+# What it does is preventing the browser from trying to guess
+# a file type by 'sniffing' (applying some heuristic algorithms to) it.
+# Such feature can be abused in surprising ways, e.g. by disguising
+# JavaScript code in a text/plain file.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# How long should our site be remembered to be HTTPS-only
+# by browsers.
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+
+# Manifest the will to be included in so-called browser preload list,
+# physically distributed with browsers (Chrome for instance) to
+# basically do what HSTS would do, but even when a specific site
+# has never been seen before.
+SECURE_HSTS_PRELOAD = True
+
 DEBUG_TOOLBAR_ALLOWED_USERS = env.list('DEBUG_TOOLBAR_ALLOWED_USERS', default=[])
 DEBUG_TOOLBAR_PANELS = env.list('DEBUG_TOOLBAR_PANELS', default=[])
 
 ROLLBAR = env.dict('ROLLBAR', default={})
+
+# Message classes set to be compatible with Bootstrap 4 alerts.
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+    messages.DEBUG: 'dark',
+}
 
 
 def show_toolbar(request):
@@ -324,6 +368,8 @@ PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
 COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
 COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
 COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'

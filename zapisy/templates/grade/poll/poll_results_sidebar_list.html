@@ -1,0 +1,23 @@
+<ul class="sitemap list-group my-4">
+    <li class="list-group-item text-center p-1"><h5 class="m-1">{{ summary }}</h5></li>
+    {% for poll_list in polls %}
+        <li class="list-group-item p-0">
+            <h6><a class="text-dark list-link"
+                style="display:block; margin: 1rem;">{{ poll_list.0 }}</a></h6>
+            <ul class="result-groupped-list list-group list-group-flush">
+            {% for poll in poll_list.1 %}
+                <li class="list-group-item
+                            list-group-item-action
+                            {% if  poll.id == pid %}active active_poll{% else %}list-group-item-secondary{% endif %}">
+                    <a href="{% url 'grade-poll-poll-results-semester' semester.id 'S' poll.id %}"
+                            id="grade-fillable-poll-link-{{ poll.0 }}"
+                            class="{% if  poll.id == pid %}text-light{% else %}text-secondary{% endif %}"
+                            style="display: block; padding-left: 1rem;">
+                        {{ poll.group.teacher }} - {{ poll.title }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>

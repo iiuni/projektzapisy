@@ -3,39 +3,47 @@
 {% load compressed %}
 
 {% block styles %}
-    {% compressed_css 'mainpage' %}
+{% compressed_css 'mainpage' %}
 {% endblock %}
 
- {% block main-subtitle %}Strona główna{% endblock %}
+{% block main-subtitle %}Strona główna{% endblock %}
 
-{% block center %}
-    <h1>Aktualności</h1>
-    <div class="hero-unit">
-      <h3>{{ news.title }}</h3>
-      <h5>{{ news.date|date:"l, d.m.Y - G:i" }} - {{ news.author.get_full_name }}</h5>
-      <p>{{ news.body|safe }}</p>
-      <p><a class="btn primary right" href="/news/">Więcej &raquo;</a></p>
+{% block all-content %}
+
+    <div class="jumbotron jumbotron-fluid shadow-sm p-4">
+        <div class="container">
+            <h2 class="display-2">Aktualności</h2>
+            <div class="container">
+                {% for news in recent_news %}
+                <div class="od-news-item p-2">
+                    <h3>{{ news.title }}</h3>
+                    <span>{{ news.date|date:"l, d.m.Y - G:i" }}
+                        &mdash; {{ news.author.get_full_name }}</span>
+                    <div class="my-3">{{ news.body|safe }}</div>
+                </div>
+                {% endfor %}
+                <div class="row justify-content-end">
+                    <a class="float-right btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Example row of columns -->
-    <div class="row space">
-      <div class="span-one-third">
-        <h2>System Zapisów</h2>
-        <p>System zapisów na zajęcia w Instytucie Informatyki
-				Uniwersytetu Wrocławskiego.</p>
-        <p><a class="btn" href="{% url 'course-list' %}">Przejdź &raquo;</a></p>
-      </div>
-      <div class="span-one-third">
-        <h2>Oferta Dydaktyczna</h2>
-         <p>System kształtowania oferty dydaktycznej w Instytucie
-				Informatyki.</p>
-        <p><a class="btn" href="{% url 'offer-main' %}">Przejdź &raquo;</a></p>
-     </div>
-      <div class="span-one-third">
-        <h2>Ocena zajęć</h2>
-        <p>System oceny zajęć w Instytucie
-				Informatyki Uniwersytetu Wrocławskiego.</p>
-        <p><a class="btn" href="{% url 'grade-main' %}">Przejdź &raquo;</a></p>
-      </div>
+    
+    <div class="row align-items-end">
+        <div class="col">
+            <h1 class="display-1">System Zapisów</h1>
+            <p class="lead">System zapisów na zajęcia w Instytucie Informatyki Uniwersytetu Wrocławskiego.</p>
+            <a class="btn btn-secondary" href="{% url 'course-list' %}">Przejdź</a>
+        </div>
+        <div class="col">
+            <h1 class="display-1">Oferta Dydaktyczna</h1>
+            <p class="lead">System kształtowania oferty dydaktycznej w Instytucie Informatyki.</p>
+            <a class="btn btn-secondary" href="{% url 'offer-main' %}">Przejdź</a>
+        </div>
+        <div class="col">
+            <h1 class="display-1">Ocena zajęć</h1>
+            <p class="lead">System oceny zajęć w Instytucie Informatyki Uniwersytetu Wrocławskiego.</p>
+            <a class="btn btn-secondary" href="{% url 'grade-main' %}">Przejdź</a>
+        </div>
     </div>
 {% endblock %}

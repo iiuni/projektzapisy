@@ -96,7 +96,7 @@ export default class DayComponent extends DayProps {
 
 <style lang="scss" scoped>
 .day {
-  margin: 50px 0px;
+  margin-bottom: 3rem;
   grid-template-columns: 0 1fr;
   // First row is for week-day label. Then we have a row for every quarter-hour
   // between 8:00 and 23:00.

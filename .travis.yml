@@ -9,6 +9,7 @@ addons:
         key_url: 'http://dl.yarnpkg.com/debian/pubkey.gpg'
     packages:
       - yarn
+  postgresql: '9.6'
 services:
   - postgresql
 

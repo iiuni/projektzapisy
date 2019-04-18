@@ -3,9 +3,8 @@
 {% block results %}
     {% if results %}
         {% if completness %}
-            <div class="alert-message info">
-                    <a class="close" href="#">×</a>
-                    <p>{{ completness }}</p>
+            <div class="alert alert-warning">
+                    {{ completness }}
               </div>
         {% endif %}
         <div class="poll-header">
@@ -13,72 +12,73 @@
             <h3>{{ poll_group }} {{ poll_teacher }}</h3>
         </div>
         {% for s_result in results %}
-            <div class="section-results">
-                <h3><a class="section-link" href="">{{ s_result.0 }}</a></h3>
-                <table>
+            <div class="section-results col-12 my-3">
+                <h4><a class="section-link" href="">{{ s_result.0 }}</a></h4>
+                <div class="row">
                     {% for ans_data in s_result.1 %}
-                    <tr><th><h4>{{ ans_data.1 }}</h4></th></tr>
-                    <tr><td><div class="answers-field">
+                        <div class="col-12 border my-3 p-3 d-flex flex-column align-items-center">
+                            <h5>{{ ans_data.1 }}</h5> {# Pytanie #}
 
-                        {% if ans_data.0 == 'single' %}
-                            <div id="answer-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="chart"></div>
-                            {% for ans in ans_data.2 %}
-                                <span class="answer-data">
-                                    <div class="answer-text">
-                                        {{ ans.0 }}
-                                    </div>
-                                    <div class="answers-count">
-                                        {{ ans.1 }}
-                                    </div>
-                                    <div class="answers-percentage">
-                                        {{ ans.2 }}%
-                                    </div>
-                                </span>
-                            {% endfor %}
-                        {% elif ans_data.0 == 'multi' %}
-                            <div id="answer-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="chart"></div>
-                            {% for ans in ans_data.2 %}
-                                <span class="answer-data" style="width: {{ ans_data.3 }}%">
-                                    <div class="answer-text">
+
+                            {% if ans_data.0 == 'single' %}
+                                <div id="answer-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="chart"></div>
+                                {% for ans in ans_data.2 %}
+                                    <span class="answer-data">
+                                        <div class="answer-text">
+                                            {{ ans.0 }}
+                                        </div>
+                                        <div class="answers-count">
+                                            {{ ans.1 }}
+                                        </div>
+                                        <div class="answers-percentage">
+                                            {{ ans.2 }}%
+                                        </div>
+                                    </span>
+                                {% endfor %}
+                            {% elif ans_data.0 == 'multi' %}
+                                <div id="answer-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" class="chart"></div>
+                                {% for ans in ans_data.2 %}
+                                    <span class="answer-data" style="width: {{ ans_data.3 }}%">
+                                        <div class="answer-text">
+                                            {% if ans.0 == 'Inne' %}
+                                                <a class="show-other-ans-link" href="">{{ ans.0 }}</a>
+                                            {% else %}
+                                                {{ ans.0 }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="answers-count">
+                                            {{ ans.1 }}
+                                        </div>
+                                        <div class="answers-percentage">
+                                            {{ ans.2 }}%
+                                        </div>
                                         {% if ans.0 == 'Inne' %}
-                                        <a class="show-other-ans-link" href="">{{ ans.0 }}</a>
-                                        {% else %}
-                                        {{ ans.0 }}
+                                            <div class="hidden-answers">
+                                                <ul>
+                                                {% for other in ans.3 %}
+                                                    <li>{{ other }}</li>
+                                                {% endfor %}
+                                                </ul>
+                                            </div>
                                         {% endif %}
-                                    </div>
-                                    <div class="answers-count">
-                                        {{ ans.1 }}
-                                    </div>
-                                    <div class="answers-percentage">
-                                        {{ ans.2 }}%
-                                    </div>
-                                    {% if ans.0 == 'Inne' %}
-                                    <div class="hidden-answers">
-                                        <ul>
-                                        {% for other in ans.3 %}
-                                            <li>{{ other }}</li>
+                                    </span>
+                                {% endfor %}
+                            {% elif ans_data.0 == 'open' %}
+                                {% if ans_data.3 != 0 %}
+                                    <div class="hidden-answers w-100">
+                                        {% for ans in ans_data.2 %}
+                                        <blockquote class="blockquote border-bottom p-3">
+                                            <pre {% if last_visit < ans.time %}class="text-info"{% endif %}>{{ ans.content }}</pre>
+                                        </blockquote>
                                         {% endfor %}
-                                        </ul>
                                     </div>
-                                    {% endif %}
-                                </span>
-                            {% endfor %}
-                        {% elif ans_data.0 == 'open' %}
-                            {% if ans_data.3 != 0 %}
-                                <div class="hidden-answers">
-                                    <ul>
-                                    {% for ans in ans_data.2 %}
-                                        <li{% if last_visit < ans.time %} class="new"{% endif %}>{{ ans.content }}</li>
-                                    {% endfor %}
-                                    </ul>
-                                </div>
+                                {% endif %}
+                                
+                                Liczba odpowiedzi: {{ ans_data.3 }}
                             {% endif %}
-
-                            Liczba odpowiedzi: {{ ans_data.3 }}
-                        {% endif %}
-                    </div></td></tr>
+                        </div>
                     {% endfor %}
-                </table>
+                </div>
             </div>
         {% endfor %}
         <span class="result-details">

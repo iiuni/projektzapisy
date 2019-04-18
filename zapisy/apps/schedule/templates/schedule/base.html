@@ -2,40 +2,47 @@
 
 {% block events_active %} class="active"{% endblock %}
 
-
 {% block main-subtitle %}Rezerwacja Sal{% endblock %}
 
 {% block system_menu %}
-    {% if user.is_authenticated %}
-        <li{% block schedule_list %}{% endblock %}><a
-                href="{% url 'events:classrooms' %}">Sale</a></li>
-    {% endif %}
-    <li{% block scedule_events %}{% endblock %}><a
-            href="{% url 'events:event_show' %}">Wydarzenia</a></li>
+    <li {% block schedule_list %}{% endblock %}>
+        <a class="nav-link" href="{% url 'events:classrooms' %}">Sale</a>
+    </li>
+    <li {% block scedule_events %}{% endblock %}>
+        <a class="nav-link" href="{% url 'events:event_show' %}">Wydarzenia</a>
+    </li>
+    <li {% block schedule_session %}{% endblock %}>
+        <a class="nav-link" href="{% url 'events:session' %}">Egzaminy</a>
+    </li>
 
-    <li{% block schedule_session %}{% endblock %}><a
-            href="{% url 'events:session' %}">Egzaminy</a></li>
-
     {% if user.is_authenticated %}
-        <li{% block schedule_reservation %}{% endblock %}><a
-                href="{% url 'events:reservation' %}">Rezerwuj</a></li>
+        <li{% block schedule_reservation %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:reservation' %}">Rezerwuj</a>
+        </li>
     {% endif %}
     {% if perms.schedule.manage_events %}
-        <li {% block schedule_manage %}{% endblock %}><a href="{% url 'events:reservations' %}">Zarządzaj</a></li>
-        <li {% block conflicts_manage %}{% endblock %}><a href="{% url 'events:conflicts' %}">Konflikty</a></li>
-
+        <li {% block schedule_manage %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:reservations' %}">Zarządzaj</a>
+        </li>
+        <li {% block conflicts_manage %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:conflicts' %}">Konflikty</a>
+        </li>
     {% endif %}
     {% if user.is_authenticated %}
-        <li{% block schedule_history %}{% endblock %}><a
-                href="{% url 'events:history' %}">Historia</a></li>
+        <li {% block schedule_history %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:history' %}">Historia</a>
+        </li>
+    {% endif %}
+    {% if perms.schedule.manage_events %}
+        <li {% block schedule_statistic %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:statistics' %}">Statystyki</a>
+        </li>
+    {% endif %}
+    {% if perms.schedule.manage_events %}
+        <li {% block events_report %}{% endblock %}>
+            <a class="nav-link" href="{% url 'events:events_report' %}">Raport</a>
+        </li>
     {% endif %}
 
-    {% if perms.schedule.manage_events %}
-        <li {% block schedule_statistic %}{% endblock %}><a href="{% url 'events:statistics' %}">Statystyki</a></li>
-    {% endif %}
-
-    {% if perms.schedule.manage_events %}
-        <li {% block events_report %}{% endblock %}><a href="{% url 'events:events_report' %}">Raport</a></li>
-    {% endif %}
     {# end system_menu #}
 {% endblock %}

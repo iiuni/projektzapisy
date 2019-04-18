@@ -11,17 +11,17 @@
 {% endblock %}
 
 
-{% block topContent %}
+{% block top-content %}
 {% include "common/course_list_filters.html" with custom_filters="offer/custom_filters.html" %}
 {% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
     {% if proposal %}
-    <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
-        {{ proposal.name }}
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item">{{ proposal.name }}</li>
     {% else %}
-    Oferta dydaktyczna
+    <li class="breadcrumb-item">Oferta dydaktyczna</li>
     {% endif %}
     {# end bread #}
 {% endblock %}

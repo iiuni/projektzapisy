@@ -1,146 +1,91 @@
 {% extends 'schedule/classrooms.html' %}
+{% load render_bundle from webpack_loader %}
 {% load static %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'events:classrooms' %}">Sale</a> &raquo;
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
 {% endblock %}
 
 {% block js %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static "js/fullcalendar/fullcalendar.css" %}">
-    <style>
+    <script id="calendar-data" type="application/json">
+[{
+    "selector":"#calendar",
+    "settings":{
+        "header":{
+            "left":"prev,next today",
+            "center":"title",
+            "right":"month,agendaWeek,agendaDay"
+        },
 
+        "themeSystem":"bootstrap4",
+        "allDayDefault":false,
+        "buttonText":{
+            "prev": "<",
+            "next": ">",
+            "today":"dziś",
+            "month":"miesiąc",
+            "week":"tydzień",
+            "day":"dzień"
+        },
 
-        .tbl-border {
-        	border: 1px solid #d9deeb;
-        }
+        "locale":"pl",
+        "height":"auto",
 
-        .tbl {
-        	font-size: 11px;
-        	color: #333;
-        	background-color: #fff;
-        	padding: 6px;
-        }
+        "defaultView": "agendaWeek",
+        "views":{
+            "month":{
+                "titleFormat":"MMMM YYYY",
+                "columnFormat":"ddd",
+                "timeFormat":"HH(:mm)"
+            },
+            "week":{
+                "titleFormat":"DD MMM YYYY",
+                "columnFormat":"ddd DD.MM",
+                "timeFormat":"HH:mm"
+            },
+            "day":{
+                "titleFormat":"dddd, d MMM, YYYY",
+                "columnFormat":"dddd DD.MM",
+                "timeFormat":"HH:mm"
+            }
+        },
 
-        .tbl1 {
-        	font-size: 11px;
-        	color: #333;
-        	background-color: #fff;
-        	padding: 6px;
-        }
+        "minTime":"08:00:00",
+        "maxTime":"22:00:00",
+        "slotLabelFormat":"HH(:mm)",
+        "allDaySlot":false,
 
-        .tbl1 a, .tbl2 a {
-        	font-size: 12px;
-        }
-
-        .tbl1 a.profile-link, .tbl2 a.profile-link {
-        	font-size: 11px;
-        }
-
-        .tbl2 {
-        	font-size: 11px;
-        	color: #333;
-        	background-color: #ECEFF5;
-        	padding: 6px;
-        }
-
-    </style>
-    <script type="text/javascript" src="{% static "js/fullcalendar/fullcalendar.js" %}"></script>
-    <script>
-
-        $(document).ready(function () {
-
-            $('#calendar').fullCalendar({
-                {#               defaultView: 'BasicWeek',#}
-                header:{
-                    left:'prev,next today',
-                    center:'title',
-                    right:'month,agendaWeek,agendaDay'
-                },
-
-                {##}
-                               defaultView: 'agendaWeek',
-
-                allDayDefault:false,
-                buttonText:{
-                    prev:'&nbsp;&#9668;&nbsp;',
-                    next:'&nbsp;&#9658;&nbsp;',
-                    prevYear:'&nbsp;&lt;&lt;&nbsp;',
-                    nextYear:'&nbsp;&gt;&gt;&nbsp;',
-                    today:'dziś',
-                    month:'miesiąc',
-                    week:'tydzień',
-                    day:'dzień'
-                },
-                monthNames:['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec',
-                    'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
-                monthNamesShort:['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip',
-                    'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
-                dayNames:['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
-                dayNamesShort:['Ni', 'Pn', 'Wt', 'Śr', 'Cz', 'Pi', 'So'],
-                firstHour:8,
-                firstDay:1,
-                allDaySlot:false,
-
-                // time formats
-                titleFormat:{
-                    month:'MMMM yyyy',
-                    week: " d [MMM] [ yyyy]{ '&#8212;' d} { MMM yyyy} ",
-                    day:'dddd, d MMM, yyyy'
-                },
-
-                columnFormat:{
-                    month:'ddd',
-                    week:'ddd d.M',
-                    day:'dddd d.M'
-                },
-                timeFormat:{ // for event elements
-                    '':'HH(:mm)', // default
-
-                    agenda:'HH:mm{ - HH:mm}'
-                },
-                minTime:8,
-                maxTime:22,
-
-                axisFormat:'HH(:mm)',
-                events: '{% url 'events:classroom_ajax' room.slug %}'
-            });
-
-        });
-
-    </script>{% endblock %}
+        "events": "{% url "events:classroom_ajax" room.slug %}"
+    }
+}]
+    </script>
+    {% render_bundle "fullcalendar" %}
+{% endblock %}
 
 {% block classroomtitle %}Sala {{ room.number }}{% endblock %}
 
 {% block classroomview %}
+    <table class="table border">
+    	<tbody>
+            <tr>
+        		<th width="12%" class="text-light bg-info">Piętro</th>
+        		<td width="*">{{ room.get_floor_display }}</td>
+        		<th width="12%" class="text-light bg-info">Pojemność</th>
+        		<td width="20%">{{ room.capacity }}</td>
+    	    </tr>
+    	    <tr>
+                <th class="text-light bg-info">Typ</th>
+                <td colspan="3">{{ room.get_type_display }}</td>
+            </tr>
+    		<tr>
+                <th class="text-light bg-info">Opis</th>
+                <td colspan="3">
+                    {% if room.description %}{{ room.description }}{% else %}Brak{% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-    <div class="row" style="margin-left: -40px;">
-        <div class="span14">
-
-            <table class="span10" cellpadding="0" cellspacing="1" class="tbl-border" style="border: 1px solid #D9DEEB;border-bottom: 0px;">
-            		<tbody><tr>
-            		<td class="tbl2" width="12%"><strong>Piętro</strong></td>
-            		<td class="tbl1" width="*">{{ room.get_floor_display }}</td>
-            		<td class="tbl2" width="12%"><b>Pojemność</b></td>
-            		<td class="tbl1" width="20%">{{ room.capacity }}</td>
-            		</tr>
-            		<tr>
-            <td class="tbl2"><b>Typ</b></td>
-            <td colspan="3" class="tbl1">
-                {{ room.get_type_display }}
-
-            </td></tr>
-            		<tr>
-            <td class="tbl2"><b>Opis</b></td>
-            <td colspan="3" class="tbl1">
-            {% if room.description %}{{ room.description }}{% else %}Brak{% endif %}
-
-            </td></tr></tbody></table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="span14">
-            <div id='calendar'></div>
-        </div>
-    </div>
+    <div id='calendar'></div>
 {% endblock %}

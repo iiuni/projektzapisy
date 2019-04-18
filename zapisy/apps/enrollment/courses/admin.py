@@ -204,9 +204,9 @@ class TermInline(admin.TabularInline):
 class RecordInline(admin.TabularInline):
     model = Record
     extra = 0
-    readonly_fields = ('id',)
+    fields = ('student', 'status',)
     raw_id_fields = ('student',)
-    can_delete = True
+    can_delete = False
 
     def get_queryset(self, request):
         """Only shows enrolled and queued students.

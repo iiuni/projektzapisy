@@ -1,298 +1,252 @@
+{# Base template for an entire System #}
+
 {% load fereol_common %}
-{% load compressed %}
-{% load staticfiles %}
+{% load static %}
 {% load should_display_debug %}
 {% load debug_info %}
 {% load i18n %}
 {% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" class="h-100">
+
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
-    <meta name="description"
-          content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
-    <meta name="author" content="KSI i Studenci Instytutu Informatyki Uniwersytetu Wrocławskiego">
-    {% render_bundle "polyfill" %}
-    {% render_bundle "vendors" %}
-    {% render_bundle "main" %}
-    <!-- Le fav and touch icons -->
+    <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/apple-touch-icon-114x114.png' %}">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
         gtag('js', new Date());
         gtag('config', 'UA-109984921-1');
     </script>
-    <!-- Le styles -->
-    <style>
-        .label {
-          padding: 1px 3px 2px;
-          font-size: 9.75px;
-          font-weight: bold;
-          color: #ffffff;
-          text-transform: uppercase;
-          white-space: nowrap;
-          background-color: #bfbfbf;
-          -webkit-border-radius: 3px;
-          -moz-border-radius: 3px;
-          border-radius: 3px;
-        }
-        .label.important {
-          background-color: #c43c35;
-        }
-        .label.warning {
-          background-color: #f89406;
-        }
-        .label.success {
-          background-color: #46a546;
-        }
-        .label.notice {
-          background-color: #62cffc;
-        }
 
-    </style>
-    {% block styles %}
-        {% compressed_css 'main' %}
+    {% render_bundle "main" %}
+    {% render_bundle "polyfill" %}
+    {% render_bundle "vendors" %}
+    {% block rendered_bundles %}
     {% endblock %}
-    <script type="text/javascript">
-            const user_is_student = {% if request.user.student %}true{% else %}false{% endif %};
-    </script>
-    {% block js %}{% compressed_js 'main' %}{% endblock %}
+    {% block styles %}
+    {% endblock %}
+    {% block js %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/cookieconsent.min.css' %}" />
-    <script src="{% static 'js/cookieconsent.min.js' %}"></script>
-    <script>
-    window.addEventListener("load", function(){
-        window.cookieconsent.initialise({
-          "palette": {
-            "popup": {
-              "background": "#222222"
-            },
-            "button": {
-              "background": "#00709e"
-            }
-          },
-          "showLink": false,
-          "theme": "classic",
-          "position": "bottom",
-          "content": {
-            "message": "{% trans 'System zapisów wykorzystuje pliki cookies. Korzystanie z witryny oznacza zgodę na ich zapis lub odczyt według ustawień przeglądarki.' %}",
-            "dismiss": "OK"
-          }
-        })
-    });
-    </script>
-    <script src="{% static "js/common/utils.js" %}"></script>
-    <script src="{% static "js/common/base.js" %}"></script>
+    
 </head>
 
-<body>
+<body class="d-flex flex-column h-100">
+    <div class="container-fluid p-0 d-print-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-
-<form action="/" method="post" style="display: none">
-    <p><input type="hidden" name="data-invalidated" value="no"/></p>
-</form>
-<script type="text/javascript">
-    jQuery.dataInvalidate_check();
-    $(document).ready(function() {
-        $('.dropdown-menu input,label').click(function(e) {
-                e.stopPropagation(); //This will prevent the event from bubbling up and close the dropdown when you type/click on text boxes.
-        });
-    });
-</script>
-
-<div class="top">
-    <div class="topbar">
-        <div class="fill">
-            <!-- up-menu  -->
-            <div class="container">
-
-                <ul class="topBarLinkContainer">
-                    <li{% block enrollment_active %}{% endblock %}>
-                        <a href="{% url 'course-list' %}">System Zapisów</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li {% block enrollment_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'course-list' %}" class="nav-link">System Zapisów</a>
                     </li>
-                    <li{% block grade_active %}{% endblock %}>
-                        <a href="{% url 'grade-main' %}">Ocena Zajęć</a>
+                    <li {% block grade_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
                     </li>
-                    <li{% block offer_active %}{% endblock %}>
-                        <a href="{% url 'offer-main' %}">Oferta</a>
+                    <li {% block offer_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
                     </li>
                     {% if perms.courses.view_stats %}
-                        <li{% block statistics_active %}{% endblock %}>
-                            <a href="{% url 'statistics:main' %}">Statystyki</a>
-                        </li>
-                    {% endif %}
-                    <li{% block events_active %}{% endblock %}>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'events:classrooms' %}">Sale</a>
-                        {% else %}
-                            <a href="{% url 'events:event_show' %}">Sale</a>
-                        {% endif %}
+                    <li {% block statistics_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'statistics:main' %}" class="nav-link">Statystyki</a>
                     </li>
-
+                    {% endif %}
+                    <li {% block events_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                    </li>
                 </ul>
-                {% if user.is_authenticated %}
-                    <div class="user-panel">
+            {% if user.is_authenticated %}
+                <div class="navbar-nav ml-auto">
+                    <span class="navbar-text">
                         <strong>
-                        {{ user.get_full_name }}
+                            {{ user.get_full_name }}
                         </strong>
-                        |
-                        <a href="{% url 'my-profile' %}">Moje konto</a> |
+                    </span>
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
+                        </li>
                         {% if user.is_staff %}
-                            <a href="/fereol_admin/">Admin</a> |
+                            <li class="nav-item">
+                                <a href="/fereol_admin/" class="nav-link">Admin</a>
+                            </li>
                         {% endif %}
-                        {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
-                            <a href="{% url 'news-all' %}"
-                               class="unread">Aktualności ({{ user.student.get_number_of_news }})</a> |
+                        <li class="nav-item">
+                            {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
+                                <a href="{% url 'news-all' %}"
+                                   class="unread nav-link">Aktualności ({{ user.student.get_number_of_news }})</a>
                             {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
                                 <a href="{% url 'news-all' %}"
-                                   class="unread">Aktualności ({{ user.employee.get_number_of_news }})</a> |
+                                   class="unread nav-link">Aktualności ({{ user.employee.get_number_of_news }})</a>
                             {% else %}
-                                <a href="{% url 'news-all' %}">Aktualności</a> |
-
-                        {% endif %}
-                        <a href="{% url 'help' %}">Pomoc</a> |
-                        <a href="{% url 'cas_ng_logout' %}">Wyloguj</a>
-                    </div>
-                {% else %}
-      <ul class="nav secondary-nav">
-          <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" id="login-dropdown" class="dropdown-toggle" data-toggle="dropdown"><b>Zaloguj się</b> <span class="caret"></span></a>
-                <ul id="login-dp" class="dropdown-menu">
-                    <li>
-                         <div class="row">
-                                <div class="col-md-12">
-                                    <a href="{% url 'cas_ng_login' %}" class="btn" id="btn-usos"><img src="{% static 'images/usos-login-logo.png'%}" alt="Uniwersytet Wrocławski">Zaloguj się przez USOS</a>
-                                    <button class="btn primary" id="btn-no-usos">
-                                      lub użyj konta Systemu Zapisów
-                                    </button>
-                                    <div id="login-without-usos">
-                                      <form action="{% url 'user-login' %}" method="POST">
-                                          {% csrf_token %}
-                                          {% if request.path == '/' %}
-                                              <input type="hidden" name="next" value="{% url 'course-list' %}"/>
-                                          {% else %}
-                                              <input type="hidden" name="next" value="{{request.path}}"/>
-                                          {% endif %}
-                                          <div class="form-group">
-                                              <input tabindex="1" type="text" id="id_login" name="username" placeholder="Użytkownik">
-                                          </div>
-                                          <div class="form-group">
-                                              <input tabindex="2" type="password" id="id_password" name="password" placeholder="Hasło">
-                                          </div>
-                                          <div class="form-group">
-                                               <button type="submit" tabindex="4" class="btn btn-primary btn-block">Zaloguj &raquo;</button>
-                                          </div>
-                                          <div class="form-group">
-                                              <label>
-                                              <input type="checkbox" tabindex="3"  value="true" id="xlInput3" name="remember_me"> Pamiętaj mnie</label>
-                                          </div>
-                                      </form>
-                                    </div>
-                                </div>
-                         </div>
+                                <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'help' %}" class="nav-link">Pomoc</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown" id="login-dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b>Zaloguj się</b><span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right m-2">
+                            <div class="social-buttons m-3">
+                                <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
+                                    <img src="{% static 'images/logo_UWr.svg' %}"
+                                         alt="Uniwersytet Wrocławski">
+                                    <div class="clearfix"></div>
+                                    Zaloguj się przez USOS
+                                </a>
+                            </div>
+                            <form class="m-3">
+                                <a class="btn btn-primary" data-toggle="collapse" 
+                                        href="#login-without-usos" role="button" 
+                                        aria-expanded="false" aria-controls="login-without-usos">
+                                    lub użyj konta Systemu Zapisów
+                                </a>
+                            </form>
+                            <div class="collapse" id="login-without-usos">
+                                <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                        {% csrf_token %}
+                                        {% if request.path == '/' %}
+                                            <input type="hidden" name="next"
+                                                    value="{% url 'my-timetable' %}"/>
+                                        {% else %}
+                                            <input type="hidden" name="next" value="{{ request.path }}"/>
+                                        {% endif %}
+                                        <div class="form-group">
+                                            <label>Login</label>
+                                            <input type="text" class="form-control"
+                                                    name="username"
+                                                    placeholder="Użytkownik"
+                                                    oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
+                                                    required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Hasło</label>
+                                            <input type="password" class="form-control"
+                                                    name="password" placeholder="Hasło"
+                                                    oninvalid="this.setCustomValidity('Hasło jest wymagane')"
+                                                    required>
+                                        </div>
+        
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" value="true"
+                                                    id="remember" name="remember_me">
+                                            <label class="form-check-label" for="remember">
+                                                Pamiętaj mnie
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Zaloguj</button>
+                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                                    </form>
+                            </div>
+                        </div>
                     </li>
                 </ul>
-            </li>
-        </ul>
-                {% endif %}
+            {% endif %}
             </div>
-            <!-- end up-menu  -->
-        </div>
-    </div>
-
-
-    <div class="header">
-
-        <div class="container">
-            <div class="logo">
-                <a href="/">
-                    <img src="{% static 'images/logotyp.jpg'%}" alt="Uniwersytet Wrocławski">
-                </a>
+        </nav>
+        <div class="top">
+            <div class="logo header">
+                <div class="container">
+                    <a href="/">
+                        <img src="{% static 'images/logo_UWr.svg' %}" alt="Uniwersytet Wrocławski">
+                    </a>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- down-menu  -->
-    <div class="topbar systemtopbar">
-        <div class="fill">
             <div class="container">
-                <ul id="main-menu-list">
-                    {% block system_menu %}
-                        {# end system_menu #}
-                    {% endblock %}
-                </ul>
-
-
+                <div class="row">
+                    <div id="system_menu"> 
+                        <ul class="nav nav-tabs" id="main-menu-list" role="tablist">
+                            {% block system_menu %}
+                            {% endblock %}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- end down-menu  -->
-</div>
-
     {% if user.student and not user.student.consent_answered %}
-      {% include "consent-dialog.html" %}
+        {% include "consent-dialog.html" %}
     {% endif %}
-
-
-<div class="container">
-    <div class="container space">
-        <div class="bread">
-            {% block bread %}
-            {% endblock %}
-        </div>
-        {% block messages %}
+    <div class="container sidebar-right" id="main-content-container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% block bread %}
+                {% endblock %}
+            </ol>
+        </nav>
         {% for message in messages %}
-            <div class="alert-message {{ message.tags }}">
+            <div class="alert alert-{{ message.tags }}">
                 {{ message }}
             </div>
         {% endfor %}
-        {% endblock %}
-        <div id="main-content-container" class="row show-grid sidebar-right marginFix">
-            {% block topContent %}{% endblock %}
-            {% block center %}
-                <div class="span{% block content-width %}11{% endblock %} columns marginFix contentNoCollapse">
-                    {# WARNING ajaxCourseLoad.ts depends on this #}
-                    <div id="main-content">
-                        {% block content %}
-                        {% endblock %}
-                    </div>
-                </div>
-                <div class="span{% block sidebar-width %}5{% endblock %} columns">
-                    {% block sidebar %}
+            {# Use this block if you don't want a layout with right-hand sidebar #}
+            {% block all-content %}
+            <div class="row d-print-none">
+                <div class="col">
+                    {% block top-content %}
                     {% endblock %}
                 </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-lg-9 col-12" id="main-content">
+                    {# WARNING ajaxCourseLoad.ts depends on this #}
+                        {% block content %}
+                        {% endblock %}
+                </div>
+                <nav class="col-lg-3 col-12 d-print-none" id="sidebar">
+                    {% block sidebar %}
+                    {% endblock %}
+                </nav>
+            </div>
             {% endblock %}
-        </div>
     </div>
-
-
-    <footer>
-        <p>
-            &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-            {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-            {% endif %}
-            | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a> Wygenerowano: {% now "H:i:s" %}
-        </p>
-        {% should_display_debug as display_debug %}
-        {% if display_debug is True %}
-            {% autoescape off %}
-                {% debug_info %}
-            {% endautoescape %}
-        {% endif %}
+    <footer class="mt-auto d-print-none">
+        <div class="container-fluid">
+            <div class="container">
+                <p>
+                    &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
+                    {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
+                    <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
+                    {% endif %}
+                    | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                    Wygenerowano: {% now "H:i:s" %}
+                    {% should_display_debug as display_debug %}
+                    {% if display_debug is True %}
+                    {% autoescape off %}
+                    {% debug_info %}
+                    {% endautoescape %}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
     </footer>
-
-</div>
-<!-- /container -->
-
 </body>
 
 </html>

@@ -10,32 +10,40 @@
 {% block enrollment_menu_schedule %} class="active"{% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a> &raquo;
-	<a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+    <li class="breadcrumb-item">
+        <a href="{% url 'main-page' %}">{% trans "Strona główna" %}</a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <a href="{% url 'course-list' %}">{% trans "Zapisy" %}</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Plan zajęć</li>
 {% endblock %}
 
 
-
-{% block center %}
-    <div style="float:right;margin-bottom: 20px;"><a href="{% url 'ical' %}">{% trans "Eksportuj plan zajęć do pliku .ical" %}</a>
+{% block all-content %}
+    <p class="text-right">
+        <a class="text-secondary" href="{% url 'ical' %}">{% trans "Eksportuj plan zajęć do pliku .ical" %}</a>
+    </p>
+    <div class="row m-0" id="timetable">
     </div>
-    <div id="timetable"></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     {% render_bundle 'timetable-timetable-component' %}
-
+    
     {% if user.student %}
     <h3>{% trans "Zajęcia, na które jesteś zapisany" %}</h3>
-	<table id="enr-schedule-listByCourse" class="zebra-striped">
+    <div class="table-responsive">
+	<table id="enr-schedule-listByCourse" class="table table-striped">
 		<thead>
 			<tr>
                 {# Translators: Tytuł kolumny w tabelce #}
-				<th>{% trans "Przedmiot" %}</th>
+				<th scope="col">{% trans "Przedmiot" %}</th>
 				{% if user.student %}
                     {# Translators: Tytuł kolumny w tabelce #}
-                    <th class="ects">{% trans "ECTS" %}</th>
+                    <th class="ects" scope="col">{% trans "ECTS" %}</th>
                 {% else %}
                     {# Translators: Tytuł kolumny w tabelce #}
-                    <th class="ects">{% trans "Godziny" %}</th>
+                    <th class="ects" scope="col">{% trans "Godziny" %}</th>
                 {% endif %}
 			</tr>
 		</thead>
@@ -49,7 +57,7 @@
             {% regroup groups|dictsort:"course_id" by course as courses %}
             {% for course in courses %}
             <tr class="courseHeader">
-                <td class="name">
+                <td class="name" scope="col">
                     <a href="{% url 'course-page' course.grouper.slug %}">
                         {{ course.grouper.name }}
                     </a>
@@ -85,7 +93,8 @@
             </tr>
             {% endfor %}
 		</tbody>
-	</table>
+    </table>
+    </div>  
     {% endif %}
 {% endblock %}
 

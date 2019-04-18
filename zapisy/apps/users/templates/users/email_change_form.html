@@ -1,17 +1,23 @@
 {% extends "base.html" %}
+{% load compressed %}
+{% load static %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-<a href="{% url 'my-profile' %}">Moje konto</a>< &raquo;
-Zmień e-mail
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item active" aria-current="page">Zmień e-mail</li>
 {% endblock %}
 
-{% block content %}
-<form action='' method="post" autocomplete="off">{% csrf_token %}
+{% block main-subtitle %}Zmień email{% endblock %}
+
+{% block all-content %}
+<h4>Zmień adres email</h4>
+<form action="" method="post" autocomplete="off">{% csrf_token %}
 	<fieldset>
-        <legend><h2>Zmień adres email</h2></legend>
-		{{form.as_p}}
-		<input type="submit" class="btn success" value="zmień"/>
+		<div class="form-group">
+			<label for="id_email" class="col-sm-1 col-form-label">Email</label>
+			<input type="email" name="email" value="email@example.org" class="xlarge form-control" maxlength="254" id="id_email" size="30">
+		</div>
+		<input type="submit" class="btn btn-light" value="Zmień">
 	</fieldset>
 </form>
 {% endblock %}

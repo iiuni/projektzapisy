@@ -1,7 +1,5 @@
 #main-content img {
-        border: 5px #C0C0C0 solid;
-        width: 100%;
-        margin: auto;
-        align: middle;
-
-    }
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+}

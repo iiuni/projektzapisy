@@ -7,20 +7,20 @@
 
 {% for tutorial in groups_by_type %}
 
-    <div class="tutorial">
-        <h2>{{ tutorial.grouper|decode_class_type_plural  }}</h2>
-        <table class="zebra-striped">
-            <thead>
+    <div class="table-responsive tutorial">
+        <h3>{{ tutorial.grouper|decode_class_type_plural  }}</h3>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
             <tr>
                 {# Translators: nagłówek tabeli #}
                 <th>{% trans "Prowadzący" %}</th>
-                <th class="term">{% trans "Termin zajęć" %}</th>
-                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="number">{% trans "Limit" %}</th>
-                <th title="Liczba aktualnie zapisanych osób" class="number termEnrolledHeader">{% trans "Zapisani" %}</th>
-                <th title="Liczba osób oczekujących na zapis" class="number termQueuedHeader">{% trans "Kolejka" %}</th>
+                <th class="term align-middle" scope="col">{% trans "Termin zajęć" %}</th>
+                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" class="align-middle number" scope="col">{% trans "Limit" %}</th>
+                <th title="Liczba aktualnie zapisanych osób" class="align-middle number termEnrolledHeader" scope="col">{% trans "Zapisani" %}</th>
+                <th title="Liczba osób oczekujących na zapis" class="align-middle number termQueuedHeader" scope="col">{% trans "Kolejka" %}</th>
                 {% if course.is_enrollment_on %}
-                <th class="controls"></th>
-                <th class="priority">{% trans "Priorytet" %}</th>
+                <th class="align-middle controls" scope="col"></th>
+                <th class="align-middle priority" scope="col">{% trans "Priorytet" %}</th>
                 {% endif %}
                 {% if user.student or user.employee or user.is_staff %}
                     <th></th>
@@ -30,7 +30,7 @@
             <tbody>
             {% for group in tutorial.list %}
                 <tr {% if group.is_enrolled %} class="signed" {% endif %} >
-                    <td>
+                    <td class="align-middle" >
                         {% if group.teacher %}
                             <a href="{% url 'employee-profile' group.teacher.user.id %}" class="person">
                                 {{ group.teacher.user.get_full_name }}
@@ -42,21 +42,21 @@
                             <br/><span class="small">{{ group.get_extra_display }}</span>
                         {% endif %}
                     </td>
-                    <td class="term">
+                    <td class="term align-middle">
                         {% for term in group.term.all %}
                             <span>{{ term }}</span>
                         {% endfor %}
                     </td>
-                    <td class="number termLimit">{{ group.limit }}</td>
-                    <td class="number termEnrolledCount">{{ group.num_enrolled }}</td>
-                    <td class="number termQueuedCount">{{ group.num_enqueued }}</td>
+                    <td class="number termLimit align-middle">{{ group.limit }}</td>
+                    <td class="number termEnrolledCount align-middle">{{ group.num_enrolled }}</td>
+                    <td class="number termQueuedCount align-middle">{{ group.num_enqueued }}</td>
                     {% if course.is_enrollment_on %}
-                        <td class="controls">
+                        <td class="controls align-middle">
                             {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
                             <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
                                     <div>
                                         <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                        <button type="submit" class="btn small success setEnrolledButton"
+                                        <button type="submit" class="btn btn-success btn-sm success setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
                                         Zapisz
                                     </button>
@@ -66,7 +66,7 @@
                                 <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
                                     <div>
                                         <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                        <button type="submit" class="btn small danger setEnrolledButton"
+                                        <button type="submit" class="btn btn-danger btn-sm danger setEnrolledButton"
                                         onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
                                         Wypisz
                                     </button>
@@ -74,7 +74,7 @@
                             </form>
                             {% endif %}
                         </td>
-                        <td class="priority">
+                        <td class="priority align-middle">
                             {% if group.can_enqueue and group.is_enqueued %}
                             <form action="{% url 'records-set-priority' %}" method="post">{% csrf_token %}
                                 <input type="hidden" name="group_id" value="{{ group.id }}"/>
@@ -91,7 +91,7 @@
                         </td>
                     {% endif %}
                     {% if user.student or user.employee or user.is_staff %}
-                        <td>
+                        <td class="align-middle">
                             <a href="{% url 'group-view' group.pk %}">{% trans "lista" %}</a>
                         </td>
                     {% endif %}

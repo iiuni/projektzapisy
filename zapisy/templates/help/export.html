@@ -1,13 +1,25 @@
 {% extends "help/base.html" %}
 {% load static %}
 
-{% block content %} 
-<h2>Eksport planu zajęć</h2><br/>
-
-Plan zajęć można wyeksportować do pliku w formacie <a href="http://www.google.com/search?q=iCalendar">iCalendar</a>.<br/>
-Jest to format pliku przechowującego dane kalendarzowe(terminy, plany zajęć). Można go zaimportować do swojej ulubionej aplikacji-organizera.<br/>
-Plik można pobrać w widoku planu zajęć klikając w link <a href="{% url 'ical' %}">Eksportuj do ical</a>.<br/><br/>
-    <img src="{% static "help/enrollment/enrollment8.png" %}" id="enrollment8" title="Zapisy"/><br/><br/>
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/help">Pomoc</a></li>
+<li class="breadcrumb-item active" aria-current="page">Eksport planu zajęć</li>
+{% endblock %}
 
 
-{% endblock %} 
+{% block content %}
+<div class="container">
+    <h2>Eksport planu zajęć</h2><br />
+
+    Plan zajęć można wyeksportować do pliku w formacie <a href="http://www.google.com/search?q=iCalendar">iCalendar</a>.<br />
+    Jest to format pliku przechowującego dane kalendarzowe(terminy, plany zajęć). Można go zaimportować do swojej
+    ulubionej aplikacji-organizera.<br />
+    Plik można pobrać w widoku planu zajęć klikając w link <a href="{% url 'ical' %}">Eksportuj do ical</a>.<br /><br />
+    <img src="{% static "help/enrollment/enrollment8.png" %}" id="enrollment8" title="Zapisy" /><br /><br />
+
+</div>
+
+
+
+{% endblock %}

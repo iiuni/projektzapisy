@@ -1,29 +1,14 @@
 {% extends "base.html" %}
-{% load compressed %}
 {% load static %}
 {% load i18n %}
 
-{% block styles %}
-    {% compressed_css 'main' %}
-    <style>
-        .notifications ul {list-style-type: none;}
-        .notifications tr td:nth-child(2),
-        .notifications tr th:nth-child(2) { text-align: center; }
-
-        .notifications th { background-color: #F9F9F9;
-        border-top-width: 1px;
-        border-bottom-width: 1px;}
-    </style>
-    <link rel="stylesheet" href="{% static "css/users/my_profile.css" %}" type="text/css">
-
-{% endblock %}
 
 {% block js %}{{ block.super }}
 
 
 <script>
 $(function(){
-$('.checkall').live('click', function(){
+$('.checkall').on('click', function(){
     var cls = $(this).parent().parent().attr('class');
     if( $(this).attr('checked')){
         $('tr[class="'+ cls +'"]').find('input[type="checkbox"]').attr('checked', true);
@@ -37,228 +22,224 @@ $('.checkall').live('click', function(){
 {% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
-	Moje konto
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Moje konto</li>
 {% endblock %}
 
 {% block main-subtitle %}Moje konto{% endblock %}
 
-{% block content %}
-
-
-<p class="info-table-header">Moje dane</p>
-    <table class="table-info">
-        <tr>
-            <th>login</th>
-            <td>{{ request.user.username }}</td>
-        </tr>
-        <tr>
-            <th>email</th>
-            <td>{{ request.user.email }}</td>
-        </tr>
-        {% if user.student %}
-        <form action="{% url 'personal_data_consent' %}" method="post">
-            {% csrf_token %}
+{% block all-content %}
+    <div class="mb-5">
+        <h4>Moje dane</h4>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
             <tr>
-                <th>Zgoda na udostępnianie danych innym studentom</th>
-                <td>
-                {% if user.student.consent_granted %}
-                    Tak&emsp;
-                    <input type="submit" value="Wycofaj zgodę" name="no" class="btn secondary" />
-                {% else %}
-                    Nie&emsp;
-                    <input type="submit" value="Udziel zgody" name="yes" class="btn secondary" />
-                {% endif %}</td>
+                <th>login</th>
+                <td>{{ request.user.username }}</td>
             </tr>
-        </form>
-        {% endif %}
-    {% if user.employee %}
-        <tr>
-            <th>pokój</th>
-            <td>{{ room }}</td>
-        </tr>
-        <tr>
-            <th>strona domowa</th>
-            <td><a href="{{ homepage }}">{{ homepage }}</a></td>
-        </tr>
-        <tr>
-            <th>tytuł naukowy</th>
-            <td>{{ title }}</td>
-        </tr>
-    {%endif%}
-    </table>
-
-    <a class="change_profile" href="{% url 'password_change' %}">zmień hasło</a>
-&nbsp;
-<a href="{% url 'email_change' %}">zmień adres email</a>
-{% if user.employee %}
-&nbsp;
-<a href="{% url 'consultations-change' %}">zmień inne dane</a>
-{% endif %}
-
-{% if user.employee %}
-<p class="info-table-header">Konsultacje</p>
-    {% if consultations %}
-		{{ consultations }}
-    {% else %}
-        Brak informacji
-    {% endif %}
-{% endif %}
-
-{% if user.student %}
-<p class="info-table-header">Moje studia</p>
-    <table class="table-info">
-        <tr>
-            <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
-            <td>{{ user.student.ects }}</td>
-        </tr>
-        <tr>
-            <th>Program</th>
-            <td>{{ user.student.program }}</td>
-        </tr>
-        <tr>
-            <th>Semestr studiów</th>
-            <td>{{ user.student.semestr }}</td>
-        </tr>
-        <tr>
-            <th>Aktualny semestr</th>
-            <td>{{ semester }}</td>
-        </tr>
-     </table>
-{% endif %}
-
-<p class="info-table-header">Terminy</p>
-<table class="table-info-big">
-    {% with dateFormatStr="l j E G:i" %}
-        <tr>
-            <th>Zniesienie limitu 35 ECTS</th>
-            <td>{{ semester.records_ects_limit_abolition|date:dateFormatStr }}</td>
-        </tr>
-        {% if semester.records_ending %}
             <tr>
-                <th>Koniec wypisów</th>
-                <td>{{ semester.records_ending|date:dateFormatStr }}</td>
+                <th>email</th>
+                <td>{{ request.user.email }}</td>
             </tr>
-        {% endif %}
-        <tr>
-            <th>Koniec zapisów</th>
-            <td>{{ semester.records_closing|date:dateFormatStr }}</td>
-        </tr>
-
-        {% if groups_times %}
-            {% regroup groups_times|dictsort:"opening_time" by opening_time as times %}
-            {% for time in times %}
-            <tr>
-                <th>Czas:</th>
-                <td>{{ time.grouper|date:dateFormatStr }}</td>
-            </tr>
+            {% if user.student %}
+                <form action="{% url 'personal_data_consent' %}" method="post">
+                    {% csrf_token %}
+                    <tr>
+                        <th>Zgoda na udostępnianie danych innym studentom</th>
+                        <td>
+                        {% if user.student.consent_granted %}
+                            Tak&emsp;
+                            <button type="submit" value="Wycofaj zgodę" name="no" class="btn btn-secondary">Wycofaj zgodę</button>
+                        {% else %}
+                            Nie&emsp;
+                            <button type="submit" value="Udziel zgody" name="yes" class="btn btn-secondary">Udziel zgody</button>
+                        {% endif %}</td>
+                    </tr>
+                </form>
+            {% endif %}
+            {% if user.employee %}
                 <tr>
-                <td></td>
-                <td>
-                    {% with groups_at_time=time.list %}
-                    {% if time.list %}
-                    {% regroup groups_at_time|dictsort:"course_id" by course as courses %}
-                        <ul class="voted-courses">
-                        {% for course in courses %}
-                            <li><a href="{{ course.grouper.get_absolute_url }}">{{ course.grouper.name }}</a>
-                                <ul>
-                                    {% for group in course.list|dictsort:"type" %}
-                                        <li>
-                                            <a href="{% url 'group-view' group.pk %}">{{ group.human_readable_type }} {{ group.term.all|join:";" }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% endwith %}
-                </td>
-            </tr>
-            {% endfor %}
+                    <th>pokój</th>
+                    <td>{{ request.user.employee.room }}</td>
+                </tr>
+                <tr>
+                    <th>strona domowa</th>
+                    <td><a href="{{ homepage }}">{{ request.user.employee.homepage|default:"" }}</a></td>
+                </tr>
+                <tr>
+                    <th>tytuł naukowy</th>
+                    <td>{{ request.user.employee.title }}</td>
+                </tr>
+            {%endif%}
+        </table>
+    
+        <a class="btn btn-light" href="{% url 'password_change' %}" role="button">Zmień hasło</a>
+        <a class="btn btn-light" href="{% url 'email_change' %}" role="button">Zmień adres email</a>
+        {% if user.employee %}
+            <a class="btn btn-light" href="{% url 'consultations-change' %}" role="button">Zmień inne dane</a>
         {% endif %}
-        {% if t0_time %}
-        <tr>
-            <th>Czas T0</th>
-            <td>{{ t0_time|date:dateFormatStr }}</td>
-        </tr>
-        {% endif %}
-    {% endwith %}
-</table>
+    </div>
+    
+    {% if user.employee %}
+        <div class="mb-5">
+            <h4>Konsultacje</h4>
+            {% if user.employee.consultations %}
+                {{ user.employee.consultations }}
+            {% else %}
+                Brak informacji
+            {% endif %}
+        </div>
+    {% endif %}
 
-{% if semesters_participated_in_grade %}
-    <p class="info-table-header">Udział w Ocenie zajęć</p>
-    <table class="table-info-big">
-        {% for semester in semesters_participated_in_grade %}
+    {% if perms.users.mailto_all_students %}
+        <div class="mb-5">
+            <h4>Kontakt</h4>
+            <a class="btn btn-light" href="{% url 'email-students' %}" role="button">Wyślij wiadomość do studentów</a>
+        </div>
+    {% endif %}
+
+    {% if user.student %}
+    <div class="mb-5">
+        <h4>Moje studia</h4>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
             <tr>
+                <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
+                <td>{{ user.student.ects }}</td>
+            </tr>
+            <tr>
+                <th>Program</th>
+                <td>{{ user.student.program }}</td>
+            </tr>
+            <tr>
+                <th>Semestr studiów</th>
+                <td>{{ user.student.semestr }}</td>
+            </tr>
+            <tr>
+                <th>Aktualny semestr</th>
                 <td>{{ semester }}</td>
             </tr>
-        {% endfor %}
-    </table>
-{% endif %}
+        </table>
+    </div>
+    {% endif %}
 
-{% if user.is_staff %}
-<p class="info-table-header">{%  trans "Ustawienie preferencji językowych" %}</p>
-{% get_available_languages as LANGUAGES %}
-<form method="post" action="{% url 'setlang' %}">
-    {% csrf_token %}
-    <table class="table-striped">
-        <tr>
-            <th>{%  trans "Select language" %}</th>
-            <th></th>
-        </tr>
-        <tr>
-            <td>
-                <select name="language">
-                    {% for lang in LANGUAGES %}
-                    <option value="{{ lang.0 }}"{% if request.session.django_language == lang.0 %}selected="selected"{% endif %}>{{ lang.1 }}</option>
+    <div class="mb-5">
+        <h4>Terminy</h4>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
+            {% with dateFormatStr="l j E G:i" %}
+            <tr>
+                <th>Zniesienie limitu 35 ECTS</th>
+                <td>{{ semester.records_ects_limit_abolition|date:dateFormatStr }}</td>
+            </tr>
+            {% if semester.records_ending %}
+                <tr>
+                    <th>Koniec wypisów</th>
+                    <td>{{ semester.records_ending|date:dateFormatStr }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>Koniec zapisów</th>
+                <td>{{ semester.records_closing|date:dateFormatStr }}</td>
+            </tr>
+
+            {% if groups_times %}
+                {% regroup groups_times|dictsort:"opening_time" by opening_time as times %}
+                {% for time in times %}
+                <tr>
+                    <th>Czas:</th>
+                    <td>{{ time.grouper|date:dateFormatStr }}</td>
+                </tr>
+                    <tr>
+                    <td class="blank-field"></td>
+                    <td>
+                        {% with groups_at_time=time.list %}
+                        {% if time.list %}
+                        {% regroup groups_at_time|dictsort:"course_id" by course as courses %}
+                            <ul class="voted-courses">
+                            {% for course in courses %}
+                                <li><a href="{{ course.grouper.get_absolute_url }}">{{ course.grouper.name }}</a>
+                                    <ul class="classes-list">
+                                        {% for group in course.list|dictsort:"type" %}
+                                            <li>
+                                                <a href="{% url 'group-view' group.pk %}">{{ group.human_readable_type }} {{ group.term.all|join:";" }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </table>
+    </div>
+    
+    {% if semesters_participated_in_grade %}
+        <div class="mb-5">
+            <h4>Udział w Ocenie zajęć</h4>
+            <table class="table table-condensed">
+                <colgroup>
+                    <col class="table-info-type"></col>
+                    <col></col>
+                </colgroup>
+                {% for semester in semesters_participated_in_grade %}
+                    <tr>
+                        <td>{{ semester }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+    
+    <div class="mb-5">
+        <h4>Ustawienia powiadomień</h4>
+        <form method="POST" action="{% url 'notifications:save' %}">
+            {% csrf_token %}
+            {{ notifications.management_form }}
+        
+            {% regroup notifications|dictsort:"category" by category as categories_list %}
+        
+            <table class="table table-condensed">
+                {% for group in categories_list %}
+                    <tr class="catgroup{{ forloop.counter }} notification-type">
+                        <th>
+                            {{ group.grouper }}
+                        </th>
+                        <th><input type="checkbox" class="checkall"></th>
+                    </tr>
+                    {% for form in group.list %}
+                    <tr class="catgroup{{ forloop.parentloop.counter }}">
+                        <td>{{ form.instance.get_type_display }}</td>
+                        <td>{{ form.value }}
+                            {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}</td>
+                    </tr>
                     {% endfor %}
-                </select>
-            </td>
-            <td>
-                <button class="btn primary" type="submit">Ustaw</button>
-            </td>
-        </tr>
-    </table>
-</form>
-{% endif %}
-<p class="info-table-header">Ustawienia powiadomień</p>
-
-<form method="POST" action="{% url 'notifications:save' %}">
-    {% csrf_token %}
-    {{ notifications.management_form }}
-
-    {% regroup notifications|dictsort:"category" by category as categories_list %}
-
-
-
-    <table class="notifications">
-    {% for group in categories_list %}
-        <tr class="catgroup{{ forloop.counter }}">
-            <th>
-                {{ group.grouper }}
-            </th>
-            <th><input type="checkbox" class="checkall"></th>
-        </tr>
-        {% for form in group.list %}
-        <tr class="catgroup{{ forloop.parentloop.counter }}">
-            <td>{{ form.instance.get_type_display }}</td>
-            <td>{{ form.value }}
-                {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-                {% endfor %}</td>
-        </tr>
-        {% endfor %}
-    {% endfor %}
-    </table>
-    <p>
-        <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
-    </p>
-    <button type="submit" class="btn success right">
-        Zapisz
-    </button>
-</form>
-{% if perms.users.mailto_all_students %}
-    <a href="{% url 'email-students' %}">Wyślij wiadomość do studentów</a>
-{% endif %}
+                {% endfor %}
+            </table>
+            <p>
+                <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
+            </p>
+            <div class="d-flex flex-row-reverse">
+                <button type="submit" class="btn btn-light right">
+                    Zapisz
+                </button>
+            </div>
+        </form>
+    </div>
 {% endblock %}

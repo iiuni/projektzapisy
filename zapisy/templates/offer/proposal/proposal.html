@@ -1,5 +1,4 @@
 {% extends "offer/base.html" %}
-{% block sidebar %}{% endblock %}
 {% load compressed %}
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
@@ -12,13 +11,13 @@
     {% endif %}{% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
     {% if proposal %}
-    <a href="{% url 'my-proposal' %}">Moje przedmioty</a> &raquo;
-        {{ proposal.name }}
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="{% url 'my-proposal' %}">Moje przedmioty</a></li>
+    <li class="breadcrumb-item">{{ proposal.name }}</li>
     {% else %}
-        Moje przedmioty
+    <li class="breadcrumb-item">Moje przedmioty</li>
     {% endif %}
     {# end bread #}
 {% endblock %}
@@ -28,7 +27,7 @@
     {% compressed_css 'proposal' %}
 {% endblock %}
 
-{% block content %}
+{% block all-content %}
     {% include 'offer/proposal.html' with course=proposal %}
 {% endblock %}
 

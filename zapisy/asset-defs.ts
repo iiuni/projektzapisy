@@ -9,6 +9,20 @@ export default {
         { from: "legacy/feed-icon.png", to: "feed-icon.png" },
     ],
     bundles: {
-        "main": ["common/expose_libs.ts"],
+        "main": [
+            "common/expose_libs.ts",
+            "common/_variables.scss",
+            "common/index.scss",
+            "common/cookieconsent/display-cookieconsent.ts",
+        ],
+        "fullcalendar": [
+            "common/fullcalendar.ts"
+        ],
+        "filtered-select-multiple-converter": [
+            "common/filtered-select-multiple-converter.js"
+        ],
+        "consent-dialog": [
+            "common/consent-dialog.ts"
+        ]
     },
 };

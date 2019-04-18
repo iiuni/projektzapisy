@@ -34,12 +34,12 @@
             {% if tagsList|length > 1 %}
                 <ul class="tagEffectListInCourseHead">
                     {% for tagInfo in tagsList %}
-                        <li><span class="label success">{{ tagInfo.tag }}</span>{% if tagInfo.weight %} - {{ tagInfo.weight }}%{% endif %}</li>
+                        <li><span class="badge badge-success">{{ tagInfo.tag }}</span>{% if tagInfo.weight %} - {{ tagInfo.weight }}%{% endif %}</li>
                     {% endfor %}
                 </ul>
             {% else %}
                 {% with tagsList.0 as tagInfo %}
-                    <span class="label success">{{ tagInfo.tag }}</span>{% if tagInfo.weight %} - {{ tagInfo.weight }}%{% endif %}
+                    <span class="badge badge-success">{{ tagInfo.tag }}</span>{% if tagInfo.weight %} - {{ tagInfo.weight }}%{% endif %}
                 {% endwith %}
             {% endif %}
         </td>

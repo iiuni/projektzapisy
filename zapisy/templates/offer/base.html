@@ -17,22 +17,25 @@
 {% block offer_active %} class="active"{% endblock %}
 
 {% block system_menu %}
-    <li{% block offer_menu_offer %}{% endblock %}><a href="{% url 'offer-main' %}">Oferta</a></li>
+    <li {% block offer_menu_offer %}{% endblock %}>
+        <a class="nav-link" href="{% url 'offer-main' %}">Oferta</a>
+    </li>
     {% if user.employee %}
-    <li{% block enrollment_menu_courses %}{% endblock %}><a
-            href="{% url 'my-proposal' %}">Moje Propozycje</a></li>{% endif %}
+    <li {% block enrollment_menu_courses %}{% endblock %}>
+        <a class="nav-link" href="{% url 'my-proposal' %}">Moje Propozycje</a></li>{% endif %}
     {% if perms.proposal.can_create_offer %}
-    <li><a href="{% url 'manage' %}">Zarządzaj</a></li>
+    <li><a class="nav-link" href="{% url 'manage' %}">Zarządzaj</a></li>
     {% endif %}
     {% if user.employee %}
-    <li{% block enrollment_preferences %}{% endblock %}><a
-            href="{% url 'prefs-default-view' %}">Preferencje</a></li>{% endif %}
+    <li {% block enrollment_preferences %}{% endblock %}>
+            <a class="nav-link" href="{% url 'prefs-default-view' %}">Preferencje</a></li>{% endif %}
     {% if user.employee or user.student %}
-    <li{% block offer_menu_vote %}{% endblock %}><a
-            href="{% url 'vote-main' %}">Głosowanie</a></li>{% endif %}
+    <li {% block offer_menu_vote %}{% endblock %}>
+            <a class="nav-link" href="{% url 'vote-main' %}">Głosowanie</a></li>{% endif %}
 
     {% if user.employee and semester.desiderata_is_open %}
-    <li{% block offer_menu_desiderata %} {% endblock %}><a href="{% url 'change_desiderata' %}">Dezyderaty</a></li>{% endif %}
+    <li {% block offer_menu_desiderata %} {% endblock %}>
+            <a class="nav-link" href="{% url 'change_desiderata' %}">Dezyderaty</a></li>{% endif %}
     {# end system_menu #}
 {% endblock %}
 

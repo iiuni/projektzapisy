@@ -1,47 +1,55 @@
-{% load staticfiles %}
-    <div class="modal fade" id="consentDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+{% load static %}
+{% load render_bundle from webpack_loader %}
+<div class="modal fade" id="consentDialog" tabindex="-1" role="dialog" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="consentDialogLongTitle">Twoje dane osobowe
-            w Systemie Zapisów</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <img id="consent-icon" src="{% static 'images/ecommerce-user-profile.png' %}">
-            <p>
-              Potrzebujemy Twojej zgody, aby móc udostępniać Twoje dane osobowe innym studentom mającym konta w Systemie Zapisów.
-              Jeśli nie wyrazisz zgody, wówczas Twoje dane zostaną ukryte, ale wszystkie funkcjonalności Systemu Zapisów nadal będą dla Ciebie dostępne. Jeśli wyrazisz zgodę, w każdej chwili będziesz mógł ją cofnąć.
-            </p>
-            <p><strong>
-              Czy zgadzasz się, by Twoje imię, nazwisko, adres e-mail oraz plan zajęć były widoczne dla innych studentów mających konta w Systemie Zapisów?</strong>
-            </p>
-          </div>
-          <div class="modal-footer">
-            <form action="{% url 'personal_data_consent' %}" method="post">
-              {% csrf_token %}
-              <input type="submit" value="Nie zgadzam się" name="no" class="btn secondary" />
-              <input type="submit" value="Zgadzam się" name="yes" class="btn primary" />
-            </form>
-            <hr>
-            <p>Zgodnie z przepisami o ochronie danych osobowych informujemy, że:</p>
-            <textarea readonly>
+            <div class="modal-header">
+                <h5 class="modal-title" id="consentDialogLongTitle">Twoje dane osobowe w Systemie Zapisów</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="consent-icon" src="{% static 'images/ecommerce-user-profile.png' %}">
+                <p>
+                    Potrzebujemy Twojej zgody, aby móc udostępniać Twoje dane
+                    osobowe innym studentom mającym konta w Systemie Zapisów.
+                    Jeśli nie wyrazisz zgody, wówczas Twoje dane zostaną ukryte,
+                    ale wszystkie funkcjonalności Systemu Zapisów nadal będą dla
+                    Ciebie dostępne. Jeśli wyrazisz zgodę, w każdej chwili
+                    będziesz mógł ją cofnąć.
+                </p>
+                <p>
+                    <strong>Czy zgadzasz się, by Twoje imię, nazwisko, adres
+                    e-mail oraz plan zajęć były widoczne dla innych studentów
+                    mających konta w Systemie Zapisów?</strong>
+                </p>
+                <hr>
+                <p>Zgodnie z przepisami o ochronie danych osobowych informujemy, że:</p>
+                <textarea style="word-break: break-all;" readonly>
 1. Administratorem danych osobowych jest Uniwersytet Wrocławski.
-
+                    
 2. Dane osobowe studenta są przetwarzane przez System Zapisów na podstawie zgody wyrażonej w procesie rekrutacji na studia w UWr. na warunkach tam określonych.
-
+                    
 3. Dane osobowe są przetwarzane w celu obsługi zajęć dydaktycznych w Instytucie Informatyki obejmującej samodzielne zapisywanie się na zajęcia, głosowanie na ofertę dydaktyczną oraz wypełnianie ankiet oceny zajęć przez studentów.
-
+                    
 4. Za dodatkowo wyrażoną zgodą System Zapisów udostępnia innym studentom mającym konto w serwisie dane identyfikacyjne studenta (imię, nazwisko, prywatny adres emailowy jeśli został podany) obok numeru indeksu.
-
+                    
 5. Student ma prawo do aktualizacji swoich danych identyfikacyjnych.
-
+                    
 6. Student ma prawo do wycofania lub przywrócenia zgody na udostępnianie swoich danych identyfikacyjnych innym studentom mającym konto w Systemie Zapisów.
-
-7. Dane osobowe przetwarzane w serwisie są pobierane z systemu USOS i zawierają wyłącznie imię, nazwisko, numer indeksu, adres emailowy, kierunek i etap studiów oraz liczbę punktów ECTS</textarea>
-          </div>
+                    
+7. Dane osobowe przetwarzane w serwisie są pobierane z systemu USOS i zawierają wyłącznie imię, nazwisko, numer indeksu, adres emailowy, kierunek i etap studiów oraz liczbę punktów ECTS
+                </textarea>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url 'personal_data_consent' %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Nie zgadzam się" name="no" class="btn btn-secondary m-1" />
+                    <input type="submit" value="Zgadzam się" name="yes" class="btn btn-primary m-1" />
+                </form>
+            </div>
         </div>
-      </div>
     </div>
+</div>
+{% render_bundle 'consent-dialog' %}

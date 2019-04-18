@@ -12,62 +12,67 @@
 {% endblock %}
 
 {% block bread %}
-	<a href="{% url 'main-page' %}">Strona główna</a> &raquo;
-	<a href="{% url 'course-list' %}">Zapisy</a> &raquo;
-	Studenci
+  <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+  <li class="breadcrumb-item"><a href="/courses">Zapisy</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Studenci</li>
 {% endblock %}
-
 
 
 {% block enrollment_menu_students %} class="active"{% endblock %}
 
-{% block topContent %}
+{% block top-content %}
 
-	<div id="enr-StudentsList-top-bar" class="main-top-bar" style="display: none">
-		<fieldset>
-			<legend><span>Filtrowanie</span></legend>
-			<div class="main-filter-input">
-				<input class="text filter-phrase" type="text"{% if query %} value="{{ query }}"{% endif %} />
-				<input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
-			</div>
-		</fieldset>
-	</div>
-
-    <div id="user-alpha-list" class="main-top-bar">
-        <ul id="user-list-menu">
-            <li><a href="{% url 'students-char-list' 'A' %}" class="ajax{% if char == 'A' %} active{% endif %}">A</a></li>
-            <li><a href="{% url 'students-char-list' 'B' %}" class="ajax{% if char == 'B' %} active{% endif %}">B</a></li>
-            <li><a href="{% url 'students-char-list' 'C' %}" class="ajax{% if char == 'C' %} active{% endif %}">C</a></li>
-            <li><a href="{% url 'students-char-list' 'D' %}" class="ajax{% if char == 'D' %} active{% endif %}">D</a></li>
-            <li><a href="{% url 'students-char-list' 'E' %}" class="ajax{% if char == 'E' %} active{% endif %}">E</a></li>
-            <li><a href="{% url 'students-char-list' 'F' %}" class="ajax{% if char == 'F' %} active{% endif %}">F</a></li>
-            <li><a href="{% url 'students-char-list' 'G' %}" class="ajax{% if char == 'G' %} active{% endif %}">G</a></li>
-            <li><a href="{% url 'students-char-list' 'H' %}" class="ajax{% if char == 'H' %} active{% endif %}">H</a></li>
-            <li><a href="{% url 'students-char-list' 'I' %}" class="ajax{% if char == 'I' %} active{% endif %}">I</a></li>
-            <li><a href="{% url 'students-char-list' 'J' %}" class="ajax{% if char == 'J' %} active{% endif %}">J</a></li>
-            <li><a href="{% url 'students-char-list' 'K' %}" class="ajax{% if char == 'K' %} active{% endif %}">K</a></li>
-            <li><a href="{% url 'students-char-list' 'L' %}" class="ajax{% if char == 'L' %} active{% endif %}">L</a></li>
-            <li><a href="{% url 'students-char-list' 'M' %}" class="ajax{% if char == 'M' %} active{% endif %}">M</a></li>
-            <li><a href="{% url 'students-char-list' 'N' %}" class="ajax{% if char == 'N' %} active{% endif %}">N</a></li>
-            <li><a href="{% url 'students-char-list' 'O' %}" class="ajax{% if char == 'O' %} active{% endif %}">O</a></li>
-            <li><a href="{% url 'students-char-list' 'P' %}" class="ajax{% if char == 'P' %} active{% endif %}">P</a></li>
-            <li><a href="{% url 'students-char-list' 'R' %}" class="ajax{% if char == 'R' %} active{% endif %}">R</a></li>
-            <li><a href="{% url 'students-char-list' 'S' %}" class="ajax{% if char == 'S' %} active{% endif %}">S</a></li>
-            <li><a href="{% url 'students-char-list' 'T' %}" class="ajax{% if char == 'T' %} active{% endif %}">T</a></li>
-            <li><a href="{% url 'students-char-list' 'U' %}" class="ajax{% if char == 'U' %} active{% endif %}">U</a></li>
-            <li><a href="{% url 'students-char-list' 'W' %}" class="ajax{% if char == 'W' %} active{% endif %}">W</a></li>
-            <li><a href="{% url 'students-char-list' 'Y' %}" class="ajax{% if char == 'Y' %} active{% endif %}">Y</a></li>
-            <li><a href="{% url 'students-char-list' 'Z' %}" class="ajax{% if char == 'Z' %} active{% endif %}">Z</a></li>
-            <li><a href="{% url 'students-char-list' 'All' %}" class="ajax{% if char == 'All' %} active{% endif %}">Wszyscy</a></li>
+    <div class="card bg-light filter-box">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-light">
+                <fieldset class="small-fieldset">
+                    <div class="filter row" id="enr-StudentsList-top-bar">
+                        <label for="filter" class="filter-label">Filtrowanie</label>
+                        <div class="main-filter-input">
+                            <input class="text filter-phrase" id="filter" type="text"{% if query %} value="{{ query }}"{% endif %} />
+                            <input class="reset filter-phrase-reset" type="button" value="X" style="display:none;" />
+                        </div>
+                    </div>
+                </fieldset>
+            </li>
+            <li class="list-group-item bg-light">
+                <div id="user-alpha-list">
+                    <ul id="user-list-menu">
+                        <li><a href="{% url 'students-char-list' 'A' %}" class="ajax{% if char == 'A' %} active{% endif %}">A</a></li>
+                        <li><a href="{% url 'students-char-list' 'B' %}" class="ajax{% if char == 'B' %} active{% endif %}">B</a></li>
+                        <li><a href="{% url 'students-char-list' 'C' %}" class="ajax{% if char == 'C' %} active{% endif %}">C</a></li>
+                        <li><a href="{% url 'students-char-list' 'D' %}" class="ajax{% if char == 'D' %} active{% endif %}">D</a></li>
+                        <li><a href="{% url 'students-char-list' 'E' %}" class="ajax{% if char == 'E' %} active{% endif %}">E</a></li>
+                        <li><a href="{% url 'students-char-list' 'F' %}" class="ajax{% if char == 'F' %} active{% endif %}">F</a></li>
+                        <li><a href="{% url 'students-char-list' 'G' %}" class="ajax{% if char == 'G' %} active{% endif %}">G</a></li>
+                        <li><a href="{% url 'students-char-list' 'H' %}" class="ajax{% if char == 'H' %} active{% endif %}">H</a></li>
+                        <li><a href="{% url 'students-char-list' 'I' %}" class="ajax{% if char == 'I' %} active{% endif %}">I</a></li>
+                        <li><a href="{% url 'students-char-list' 'J' %}" class="ajax{% if char == 'J' %} active{% endif %}">J</a></li>
+                        <li><a href="{% url 'students-char-list' 'K' %}" class="ajax{% if char == 'K' %} active{% endif %}">K</a></li>
+                        <li><a href="{% url 'students-char-list' 'L' %}" class="ajax{% if char == 'L' %} active{% endif %}">L</a></li>
+                        <li><a href="{% url 'students-char-list' 'M' %}" class="ajax{% if char == 'M' %} active{% endif %}">M</a></li>
+                        <li><a href="{% url 'students-char-list' 'N' %}" class="ajax{% if char == 'N' %} active{% endif %}">N</a></li>
+                        <li><a href="{% url 'students-char-list' 'O' %}" class="ajax{% if char == 'O' %} active{% endif %}">O</a></li>
+                        <li><a href="{% url 'students-char-list' 'P' %}" class="ajax{% if char == 'P' %} active{% endif %}">P</a></li>
+                        <li><a href="{% url 'students-char-list' 'R' %}" class="ajax{% if char == 'R' %} active{% endif %}">R</a></li>
+                        <li><a href="{% url 'students-char-list' 'S' %}" class="ajax{% if char == 'S' %} active{% endif %}">S</a></li>
+                        <li><a href="{% url 'students-char-list' 'T' %}" class="ajax{% if char == 'T' %} active{% endif %}">T</a></li>
+                        <li><a href="{% url 'students-char-list' 'U' %}" class="ajax{% if char == 'U' %} active{% endif %}">U</a></li>
+                        <li><a href="{% url 'students-char-list' 'W' %}" class="ajax{% if char == 'W' %} active{% endif %}">W</a></li>
+                        <li><a href="{% url 'students-char-list' 'Y' %}" class="ajax{% if char == 'Y' %} active{% endif %}">Y</a></li>
+                        <li><a href="{% url 'students-char-list' 'Z' %}" class="ajax{% if char == 'Z' %} active{% endif %}">Z</a></li>
+                        <li><a href="{% url 'students-char-list' 'All' %}" class="ajax{% if char == 'All' %} active{% endif %}">Wszyscy</a></li>
+                        </ul>
+                </div>
+            </li>
         </ul>
     </div>
 {% endblock %}
 
 {% block content %}
 <div id="student-profile">
-    <div class="alert-message warning">
-        <a href="#" class="close">×</a>
-        <p>Wybierz studenta z listy</p>
+    <div class="alert alert-primary">
+        Wybierz studenta z listy
     </div>
 </div>
 {% endblock %}
@@ -76,7 +81,7 @@
 {% block sidebar %}
 <div id="main-sidebar">
 	<div id="students-list">
-		<h2>Lista studentów</h2>
+		<h3>Lista studentów</h3>
 		<ul class="students">
 			{% for s in students %}
                 <li>

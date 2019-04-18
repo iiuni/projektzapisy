@@ -1,8 +1,7 @@
 {% extends "offer/base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block main-subtitle %}Dezyderaty{% endblock %}
-{% block sidebar %}{% endblock %}
 {% block js %}
     {{ block.super }}
     <script type="text/javascript" src="{% static "js/offer/desiderata.js" %}"></script>
@@ -11,19 +10,19 @@
 {% block offer_menu_desiderata %} class="active"{% endblock %}
 
 {% block bread %}
-    <a href="/">Strona główna</a> &raquo;
-    <a href="{% url 'offer-main' %}">Oferta dydaktyczna</a> &raquo;
-    <a href="{% url 'change_desiderata' %}">Dezyderaty</a>
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Dezyderaty</li>
     
     {# end bread #}
 {% endblock %}
 
-{% block content %}
+{% block all-content %}
     <h3>Dezyderaty</h3>
 
     {% if semester.desiderata_is_open %}
     <p>Pozostaw zaznaczone te godziny, w których <strong>możesz</strong> prowadzić zajęcia:</p>
-    <form method="post">{% csrf_token %}
+    <form method="post" class="table table-striped">{% csrf_token %}
     <table>
         <thead>
             <tr>

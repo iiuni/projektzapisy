@@ -1,61 +1,9 @@
 ﻿{% extends "grade/base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load compressed %}
 
 {% block  main-subtitle %}Wyniki Oceny{% endblock %}
-{% block grade_result %} class="active"{% endblock %}
-{% block styles %}{{ block.super }}
-<style>
-    .sitemap, .sitemap ul, .sitemap li{
-    	margin:0;
-    	padding:0;
-    	list-style:none;
-    }
-    .sitemap{}
-    .sitemap ul{
-    	display:none;
-    }
-    .sitemap li{
-    	line-height:200%;
-    	margin-top:1px;
-    	background:#eee;
-    	position:relative;
-    	width:350px;
-    }
-    /* IE leaves a blank space where span is added so this is to avoid that */
-    * html .sitemap li{
-    	float:left;
-    	display:inline;
-    }
-
-    .sitemap li a{padding-left:5px;}
-    .sitemap li span{float:left;position:absolute;top:5px;left:5px;width:13px;height:13px;cursor:auto;font-size:0;}
-    .sitemap li span, .sitemap li span.collapsed{background:url(../images/collapsed.gif) no-repeat 0 0;}
-    .sitemap li span.expanded{background:url(../images/expanded.gif) no-repeat 0 0;}
-
-    /* second level */
-
-    .sitemap li li{
-    	background:#fff;
-    }
-    .sitemap li li span{left:28px;}
-
-    /* third level */
-
-    .sitemap li li li a{padding-left:84px;}
-    .sitemap li li li span{left:56px;}
-    #container{
-    	margin:0 auto;
-    	width:680px;
-    	background:#fff;
-    	padding-bottom:20px;
-    }
-    #content{margin:0 20px;}
-    p{
-    	margin:0 auto;
-    	width:680px;
-    }
-</style>{% endblock %}
+{% block grade_result %}active{% endblock %}
 
 
 {% block js %}
@@ -114,13 +62,12 @@
     })
 
 </script>
-
 {% endblock %}
 
-{% block main-navigation %}
-    <li><a href="/">Strona Główna</a></li>
-    <li><a href="{% url 'grade-main' %}">Ocena zajęć</a></li>
-    <li>Wyniki oceny</li>
+{% block bread %}
+<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="/grade">Ocena zajęć</a></li>
+<li class="breadcrumb-item active" aria-current="page">Wyniki oceny</li>
 {% endblock %}
 
 
@@ -131,64 +78,31 @@
     <input type="hidden" id="poll-id" value="{% if pid %}{{pid}}{% else %}-1{% endif %}">
     <input type="hidden" id="display-mode" value="{{mode}}">
 
-        <div id="results-poll-menu">
-
-                <form action="{% url 'poll-change-semester' %}" method="POST" class="form-stacked">
-                    {% csrf_token %}
-                    <div class="clearfix">
-                        <label for="semester_change">Semestr</label>
-                        <div class="input">
-
-                            <select name="semester" id="semester_change">
-                                {% for s in semesters %}
-                                    <option value="{{ s.id }}"{% if semester.id == s.id %} selected="selected"{% endif %}>{{ s }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn" type="submit">Zmień</button>
-                </form>
-
-
-                    <h4>Ankiety - przedmioty</h4>
-
-                    <ul class="sitemap">
-                        {% for poll_list in polls_by_course %}
-                           <li><h6><a class="list-link">{{ poll_list.0 }}</a></h6>
-
-                                <ul class="result-groupped-list">
-                            {% for poll in poll_list.1 %}
-
-                            <li{% if  poll.id == pid %} class="active_poll"{% endif %}><a id="grade-fillable-poll-link-{{ poll.id }}"
-                                    
-                                   href="{% url 'grade-poll-poll-results-semester' semester.id 'S' poll.id %}">{{ poll.group.teacher }} - {{ poll.title }}
-
-                            </a></li>
-                            {% endfor %}
-                        </ul></li>
-                        {% endfor %}
-                    </ul>
-                    <h4>Ankiety - osoby</h4>
-
-                    <ul class="sitemap">
-                        {% for poll_list in polls_by_teacher %}
-                        <li><h6><a class="list-link" href="">{{ poll_list.0 }}</a></h6>
-                        <ul class="result-groupped-list">
-                            {% for poll in poll_list.1 %}
-                            <li><a id="results-by-teacher-{{ poll.id }}"
-                                   class="result-poll-link"
-                                   href="{% url 'grade-poll-poll-results-semester' semester.id 'T' poll.id %}">{% if poll.group %}{{ poll.group.course.name }} - {% endif %}{{ poll.title }}
-                            </a></li>
-                            {% endfor %}
-                        </ul></li>
-                        {% endfor %}
-                    </ul>
+    <form action="{% url 'poll-change-semester' %}" method="POST" class="container">
+        {% csrf_token %}
+        <div class="row align-items-end form-group">
+            <div class="col pl-0">
+                <label class="justify-content-start" for="semester_change">Semestr</label>
+                <select name="semester" id="semester_change" class="custom-select">
+                    {% for s in semesters %}
+                        <option value="{{ s.id }}" {% if semester.id == s.id %} selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-secondary btn-small" type="submit">Zmień</button>
         </div>
+    </form>
+    
+    {% include "grade/poll/poll_results_sidebar_list.html" with polls=polls_by_course semester=semester pid=pid summary="Ankiety &mdash; przedmioty" only %}
+    {% include "grade/poll/poll_results_sidebar_list.html" with polls=polls_by_teacher semester=semester pid=pid summary="Ankiety &mdash; osoby" only %}
+    
+    
+    
 {% endblock %}
 {% block content %}
 {#<!-- NA GÓRĘ MA IŚĆ PASEK FILTRÓW! -->#}
     <h1>Wyniki dla semestru: {{ semester }}</h1>
-    <div id="results-content">
+    <div id="results-content" class="container-fluid">
     {% block results %}{% endblock %}
     </div>
 {% endblock %}
