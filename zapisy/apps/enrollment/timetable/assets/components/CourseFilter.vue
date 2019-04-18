@@ -48,6 +48,5 @@ export default class CourseFilter extends Vue {
 .flex-row{
   display: flex;
   flex-direction: row;
-  width
 }
 </style>
