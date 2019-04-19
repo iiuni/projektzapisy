@@ -140,7 +140,7 @@ const mutations = {
     updateFilter(state: State, filterIdAndFilterValue: [string,string|Set<string>]) {
         let filter = state.activeFilters.get(filterIdAndFilterValue[0]);
         if(typeof filter === undefined) {
-            state.activeFilters.set(filterIdAndFilterValue[0],new Filter(filterIdAndFilterValue[1]))
+            state.activeFilters.set(filterIdAndFilterValue[0],new Filter(undefined,filterIdAndFilterValue[1]))
         }
         filter.textValue = "";
         filter.manyValue = new Set();
