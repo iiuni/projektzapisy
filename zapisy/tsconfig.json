@@ -5,7 +5,7 @@
     "sourceMap": true,
     "target": "es6",
     "alwaysStrict": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "strict": true,
     "jsx": "react",
     "module": "esnext",
