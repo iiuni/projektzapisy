@@ -137,12 +137,13 @@ export class CourseShell {
 
 export class Filter{
     textValue:string;
-    manyValue:string[];
+    manyValue:Set<string>;
     test:(courseShell:CourseShell)=>boolean;
-    constructor(test:(courseShell:CourseShell)=>boolean,value?:string|string[]){
-        this.test = test;
+    constructor(test?:(courseShell:CourseShell)=>boolean,value?:string|Set<string>){
+        this.test = ()=>true;
+        if(typeof test !== "undefined") this.test = test;
         this.textValue = "";
-        this.manyValue = [];
+        this.manyValue = new Set();
         if(typeof value === "string") this.textValue = value;
         else if(typeof value !== "undefined") this.manyValue = value;
     }

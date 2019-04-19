@@ -14,12 +14,15 @@ import { CourseShell, Filter, Group, Course } from "../models";
 @Component({
   props: {
   },
-  computed: mapGetters("courses", {
-    activeFilters:"activeFilters",
-    allTypes:"allTypes",
-    allTags:"allTags",
-    allEffects:"allEffects",
-  })
+  computed: {
+    ...mapGetters("courses", {
+      activeFilters:"activeFilters",
+      activeFilter:"activeFilter",
+      allTypes:"allTypes",
+      allTags:"allTags",
+      allEffects:"allEffects",
+    })
+  }
 })
 export default class CourseFilter extends Vue {
  extended=false
@@ -27,26 +30,47 @@ export default class CourseFilter extends Vue {
 </script>
 
 <template>
-  <div class="course-list-wrapper">
-    <div><h3>Filtry są fajne</h3></div>
-    <div v-bind:class='extended ? "extendable extended" : "extendable"'>
-      
-      
+    <div class="flex-row full-width">
+      <div class="third vert-list">
+        <div class="vert-list">
+          <h4>Tagi:</h4>
+          <div 
+            class="form-check" 
+            v-for="tag in allTags"
+            v-bind:key="tag"
+          >
+            <input class="form-check-input" v-on:click="handleTag($event)" type="checkbox" v-bind:value="activeFilter('tagi').manyValue.has(tag)"/> 
+            <label class="form-check-label">
+              {{tag}}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="third vert-list">
+        <div class="vert-list">
+        </div>
+      </div>
+      <div class="third vert-list">
+        <div class="vert-list">
+        </div>
+      </div>
     </div>
-    <div v-on:click='extended = !extended'>And this one is like forever</div>
-  </div>
 </template>
 
 <style lang="scss" scoped>
-.extendable{
-  max-height: 4rem;
-  overflow: hidden;
-}
-.extended{
-  max-height: unset;
-}
 .flex-row{
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+}
+.third{
+  width: 33%;
+}
+.vert-list{
+  display: flex;
+  flex-direction: column;
+}
+.full-width{
+  width: 100%;
 }
 </style>

@@ -3,32 +3,25 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON, CourseShellJSON, Course, CourseShell } from "../models";
+import { GroupJSON, CourseShellJSON, Course, CourseShell, Filter } from "../models";
 import store from ".";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-export interface FilterDetails {
-    property:"entity__name"|"tags"|"effects"|"first_year"|"exam"|"seminars";
-    value:string|boolean;
-}
-
-
-
 interface State {
     courses: { [id: number]: CourseShell };
-    activeFilters: FilterDetails[];
+    activeFilters: Map<string,Filter>;
     selection: number[];
     allEffects: string[];
-    allTags: string[]
+    allTags: string[];
     allTypes: string[];
 }
 const state: State = {
     courses: {},
     selection: [],
-    activeFilters: [],
+    activeFilters: new Map(),
     allEffects: [],
     allTags: [],
     allTypes: [],
@@ -41,8 +34,11 @@ const getters = {
     selection(state: State) {
         return state.selection;
     },
-    activeFilters(state:State):FilterDetails[] {
-        return state.activeFilters;
+    activeFilters(state:State):Filter[] {
+        return Array.from(state.activeFilters.values());
+    },
+    activeFilter(state:State):(id:string)=>Filter {
+        return (id)=>state.activeFilters.get(id) || new Filter();
     },
     allEffects(state:State):string[] {
         return state.allEffects;
@@ -100,10 +96,13 @@ const actions = {
         commit("setCourses", coursesDump);
     },    // initFromJSONTag will be called at the start to populate the courses list.
     
-    addFilter({ commit }: ActionContext<State, any>, filter: FilterDetails) {
+    addFilter({ commit }: ActionContext<State, any>, filter: Filter) {
         commit("addFilter", filter);
     },
-    dropFilter({ commit }: ActionContext<State, any>, filter: FilterDetails) {
+    updateFilter({ commit }: ActionContext<State, any>, filterIdAndFilterValue: [string,string|Set<string>]) {
+        commit("updateFilter", filterIdAndFilterValue);
+    },
+    dropFilter({ commit }: ActionContext<State, any>, filter: Filter) {
         commit("dropFilter", filter);
     },
 };
@@ -135,13 +134,19 @@ const mutations = {
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
     },
-    addFilter(state: State, filter: FilterDetails) {
-        state.activeFilters.push(filter);
+    addFilter(state: State, filterIdAndFilter: [string,Filter]) {
+        state.activeFilters.set(filterIdAndFilter[0],filterIdAndFilter[1]);
     },
-    dropFilter(state: State, filter: FilterDetails) {
-        state.activeFilters = state.activeFilters.filter( 
-            tested => !(filter.property === tested.property && 
-                        filter.value === tested.value) );
+    updateFilter(state: State, filterIdAndFilterValue: [string,string|Set<string>]) {
+        const filter = state.activeFilters.get(filterIdAndFilterValue[0]);
+        if(typeof filter === undefined) throw new Error("SZ store/courses attempted to update non-existing filter | unable to recover")
+        filter.textValue = "";
+        filter.manyValue = new Set();
+        if(typeof filterIdAndFilterValue[1] === "string") filter.textValue = filterIdAndFilterValue[1];
+        if(typeof filterIdAndFilterValue[1] === "object") filter.manyValue = filterIdAndFilterValue[1];
+    },
+    dropFilter(state: State, filterId: string) {
+        state.activeFilters.delete(filterId);
     },
     
 };

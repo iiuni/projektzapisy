@@ -58,10 +58,10 @@ export default class Prototype extends Vue {
         <CourseFilter/>
     </div>
     <div class="row">
-        <div class="span12 columns">
+        <div class="col-12 col-sm-9">
             <PrototypeTimetable :groups="groupsGetter"/>
         </div>
-        <div class="span4 columns course-list-sidebar-wrapper">
+        <div class="col-12 col-sm-3 columns course-list-sidebar-wrapper">
           <CourseList :courses="courses"/>
         </div>
     </div>
