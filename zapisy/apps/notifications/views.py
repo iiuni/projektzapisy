@@ -44,13 +44,26 @@ def get_notifications(request):
         render_description(notification.description_id, notification.description_args)
         for notification in repo.get_all_for_user(request.user)
     ]
+    key_list = [ i for i in range(len(notifications))]
+    d = [(key, value) for (key, value) in zip(key_list, notifications)]
+
 
     data = {
-        'notifications': notifications,
-        #'notifications_json': json.dumps(notifications),
+        'notifications_json': json.dumps(d),
     }
 
     return render(request, 'notifications/get_notifications.html', data)
+
+
+@login_required
+def get_counter(request):
+    repo = get_notifications_repository()
+    notification_counter = repo.get_count_for_user(request.user)
+    data = {
+        'notifications_counter_json': json.dumps(notification_counter)
+    }
+
+    return render(request, 'notifications/counter.html', data)
 
 
 @require_POST
@@ -88,4 +101,3 @@ def create_form(request):
 @login_required
 def deleteAll(request):
     """Removes all user's notifications"""
-    

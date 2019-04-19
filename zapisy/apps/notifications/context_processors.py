@@ -13,6 +13,6 @@ def notification_ico(request):
 
     return {
         "notification_counter": notification_counter,
-        "notification_counter_json": json.dumps(notification_counter),
+        #"notification_counter_json": json.dumps(notification_counter),
         "notifications_json": json.dumps(notifications),
     }

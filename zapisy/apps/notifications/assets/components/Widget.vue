@@ -6,8 +6,7 @@ import Component from "vue-class-component";
 export default {
     data () {
         return {
-            ns: JSON.parse(document.getElementById("notifications-data").innerHTML),
-            ns_c: JSON.parse(document.getElementById("notification_counter-data").innerHTML),
+            ns_c: 0,
             nss: [],
         }
     },
@@ -18,8 +17,18 @@ export default {
                 console.log(result.data)
                 this.nss = result.data
             })
-        }
+        },
+        getCount: function () {
+            axios.get('/notifications/count')
+            .then((result) => {
+                console.log(result.data)
+                this.ns_c = result.data
+            })
+        },
     },
+    created () {
+        this.getCount()
+    }
 }
 
 </script>
@@ -39,10 +48,10 @@ export default {
                 <p>Lista powiadomień:</p>
                 <div v-if="ns_c != 0">
                     <div>
-                        <div v-for="elem in nss" :key="elem" class="onemessage">
+                        <div v-for="elem in nss" :key="elem[0]" class="onemessage">
                             <div>
                                 <div class="textM">
-                                    {{ elem }}
+                                    {{ elem[1] }}
                                 </div>
                                 <div class="deleteM">
                                     <i class="fas fa-times"></i>
