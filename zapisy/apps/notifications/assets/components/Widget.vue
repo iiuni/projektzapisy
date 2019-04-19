@@ -1,5 +1,6 @@
 <script>
 import Vue from "vue";
+import axios from 'axios';
 import Component from "vue-class-component";
 
 export default {
@@ -7,16 +8,16 @@ export default {
         return {
             ns: JSON.parse(document.getElementById("notifications-data").innerHTML),
             ns_c: JSON.parse(document.getElementById("notification_counter-data").innerHTML),
-            showModal: false,
+            nss: [],
         }
     },
     methods: {
-        change: function(){
-            this.showModal = !this.showModal
-            console.log(this.showModal)
-        },
-        close: function(){
-            this.showModal = false
+        getNotifications: function () {
+            axios.get('/notifications/get')
+            .then((result) => {
+                console.log(result.data)
+                this.nss = result.data
+            })
         }
     },
 }
@@ -29,7 +30,7 @@ export default {
     
     <li class="nav-item dropdown" id="notification-dropdown">
         <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="getNotifications">
             <i v-if="ns_c == 0" class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
             <i v-else class="fas fa-bell bell nav-link"  style="padding-right: 0;"></i>
         </a>
@@ -38,7 +39,7 @@ export default {
                 <p>Lista powiadomień:</p>
                 <div v-if="ns_c != 0">
                     <div>
-                        <div v-for="elem in ns" :key="elem" class="onemessage">
+                        <div v-for="elem in nss" :key="elem" class="onemessage">
                             <div>
                                 <div class="textM">
                                     {{ elem }}
@@ -51,7 +52,7 @@ export default {
                         </div>
                     </div>
                     <div class="deleteAllM">
-                        <div>Usuń wszystkie powiadomienia.</div>
+                        <a href="">Usuń wszystkie powiadomienia.</a>
                     </div>
                 </div>
                 <div v-else class="NoM">

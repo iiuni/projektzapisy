@@ -36,6 +36,22 @@ def index(request):
 
     return render(request, 'notifications/index.html', data)
 
+@login_required
+def get_notifications(request):
+    now = datetime.now()
+    repo = get_notifications_repository()
+    notifications = [
+        render_description(notification.description_id, notification.description_args)
+        for notification in repo.get_all_for_user(request.user)
+    ]
+
+    data = {
+        'notifications': notifications,
+        #'notifications_json': json.dumps(notifications),
+    }
+
+    return render(request, 'notifications/get_notifications.html', data)
+
 
 @require_POST
 @login_required
@@ -67,3 +83,9 @@ def create_form(request):
     if request.method == 'POST':
         return PreferencesFormStudent(request.POST, instance=instance)
     return PreferencesFormStudent(instance=instance)
+
+
+@login_required
+def deleteAll(request):
+    """Removes all user's notifications"""
+    
