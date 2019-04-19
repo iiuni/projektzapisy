@@ -138,8 +138,10 @@ const mutations = {
         state.activeFilters.set(filterIdAndFilter[0],filterIdAndFilter[1]);
     },
     updateFilter(state: State, filterIdAndFilterValue: [string,string|Set<string>]) {
-        const filter = state.activeFilters.get(filterIdAndFilterValue[0]);
-        if(typeof filter === undefined) throw new Error("SZ store/courses attempted to update non-existing filter | unable to recover")
+        let filter = state.activeFilters.get(filterIdAndFilterValue[0]);
+        if(typeof filter === undefined) {
+            state.activeFilters.set(filterIdAndFilterValue[0],new Filter(filterIdAndFilterValue[1]))
+        }
         filter.textValue = "";
         filter.manyValue = new Set();
         if(typeof filterIdAndFilterValue[1] === "string") filter.textValue = filterIdAndFilterValue[1];

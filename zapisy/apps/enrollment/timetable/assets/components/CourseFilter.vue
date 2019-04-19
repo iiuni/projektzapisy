@@ -8,10 +8,13 @@
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
-
+import CourseFilterSublist from "./CourseFilterSublist.vue";
 import { CourseShell, Filter, Group, Course } from "../models";
 
 @Component({
+  components: {
+    CourseFilterSublist,
+  },
   props: {
   },
   computed: {
@@ -25,26 +28,13 @@ import { CourseShell, Filter, Group, Course } from "../models";
   }
 })
 export default class CourseFilter extends Vue {
- extended=false
 }
 </script>
 
 <template>
     <div class="flex-row full-width">
       <div class="third vert-list">
-        <div class="vert-list">
-          <h4>Tagi:</h4>
-          <div 
-            class="form-check" 
-            v-for="tag in allTags"
-            v-bind:key="tag"
-          >
-            <input class="form-check-input" v-on:click="handleTag($event)" type="checkbox" v-bind:value="activeFilter('tagi').manyValue.has(tag)"/> 
-            <label class="form-check-label">
-              {{tag}}
-            </label>
-          </div>
-        </div>
+        <CourseFilterSublist :filter="activeFilter('tags')" filterId="tags" title="Tags" v-bind:allAvaiable="allTags" />
       </div>
       <div class="third vert-list">
         <div class="vert-list">
