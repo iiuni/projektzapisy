@@ -26,7 +26,7 @@ import { CourseShell, Group, Course } from "../models";
     ...mapGetters("filters", {
       activeFilter:"activeFilter"
     })
-  }
+  },
 })
 export default class CourseFilter extends Vue {
 }
@@ -35,15 +35,14 @@ export default class CourseFilter extends Vue {
 <template>
     <div class="flex-row full-width">
       <div class="third vert-list">
-        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="tags" title="Tags" v-bind:allAvaiable="allTags" />
+        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="types" title="Rodzaje" v-bind:allAvaiable="allTypes" />
       </div>
       <div class="third vert-list">
-        <div class="vert-list">
-        </div>
+        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="effects" title="Efekty" v-bind:allAvaiable="allEffects" />
       </div>
       <div class="third vert-list">
-        <div class="vert-list">
-        </div>
+        
+        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="tags" title="Tagi" v-bind:allAvaiable="allTags" />
       </div>
     </div>
 </template>
