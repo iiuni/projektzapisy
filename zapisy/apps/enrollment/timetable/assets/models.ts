@@ -104,6 +104,7 @@ export interface CourseShellJSON{
     english:boolean;
     effects:string[];
     tags:string[];
+    semester?:string;
 }
 
 // Basic data about course that backend happily gives about all the courses at once
@@ -120,6 +121,7 @@ export class CourseShell {
     effects:string[];
     tags:string[];
     groups?:number[];
+    semester?:string;
     constructor(src:CourseShellJSON) {
         this.id = src.id;
         this.name = src.name;
@@ -132,6 +134,7 @@ export class CourseShell {
         this.english = src.english;
         this.effects = src.effects;
         this.tags = src.tags;
+        this.semester = src.semester;
     }
 }
 
