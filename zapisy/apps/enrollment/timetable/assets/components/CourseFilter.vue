@@ -9,11 +9,15 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 import CourseFilterSublist from "./CourseFilterSublist.vue";
+import CourseFilterSemester from "./CourseFilterSemester.vue";
+import CourseFilterName from "./CourseFilterName.vue";
 import { CourseShell, Group, Course } from "../models";
 
 @Component({
   components: {
     CourseFilterSublist,
+    CourseFilterSemester,
+    CourseFilterName,
   },
   props: {
   },
@@ -22,9 +26,12 @@ import { CourseShell, Group, Course } from "../models";
       allTypes:"allTypes",
       allTags:"allTags",
       allEffects:"allEffects",
+      allSemesters:"allSemesters",
     }),
     ...mapGetters("filters", {
-      activeFilter:"activeFilter"
+      activeFilter:"activeFilter",
+      semester:"semester",
+      name:"name",
     })
   },
 })
@@ -35,14 +42,15 @@ export default class CourseFilter extends Vue {
 <template>
     <div class="flex-row full-width">
       <div class="third vert-list">
-        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="types" title="Rodzaje" v-bind:allAvaiable="allTypes" />
+        <CourseFilterSublist :activeFilter="activeFilter" filterId="types" title="Rodzaje" :allAvaiable="allTypes" />
       </div>
       <div class="third vert-list">
-        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="effects" title="Efekty" v-bind:allAvaiable="allEffects" />
+        <CourseFilterSublist :activeFilter="activeFilter" filterId="effects" title="Efekty" :allAvaiable="allEffects" />
       </div>
       <div class="third vert-list">
-        
-        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="tags" title="Tagi" v-bind:allAvaiable="allTags" />
+        <CourseFilterName :name="name"/>
+        <CourseFilterSemester :allAvaiable="allSemesters" :selected="semester"/>
+        <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
       </div>
     </div>
 </template>

@@ -11,18 +11,20 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
 interface State {
-    name: string,
+    name: string;
+    semester: string;
     effects: string[];
     types: string[];
     tags: string[];
 }
 const state: State = {
     name: "",
+    semester: "",
     effects: [],
     types: [],
     tags: [],
 };
-type FilterId = "name"|"effects"|"tags"|"types";
+type FilterId = "name"|"semester"|"effects"|"tags"|"types";
 type FilterArrayId = "effects"|"tags"|"types";
 const getters = {
     activeFilter(state:State){
@@ -37,7 +39,7 @@ const getters = {
     },
     tester(state:State){
         return (course:CourseShell)=>{
-            // console.log("testing ",course.shortName)
+            if(state.semester !== "" && course.semester !== state.semester) return false;
             if(state.name !== "" && !course.name.startsWith(state.name)) return false; 
             if(state.tags.length !== 0){
                 if(!state.tags.reduce( (prev,curr)=>prev && course.tags.includes(curr) , true )) return false;
@@ -53,6 +55,9 @@ const getters = {
     },
 	name(state:State):string {
 		 return state.name;
+	},
+	semester(state:State):string {
+		 return state.semester;
 	},
 	effects(state:State):string[] {
 		 return state.effects;
@@ -84,11 +89,9 @@ const actions = {
 
 const mutations = {
     setFilter(state: State, [filterId,filterValue]: [FilterId,string]) {
-		if(filterId === "name") {
-			state.name = filterValue;
-			return;
-		}
 		let hook:string[];
+		if(filterId === "name") state.name = filterValue;
+		if(filterId === "semester") state.semester = filterValue;
 		if(filterId === "effects") hook = state.effects;
 		if(filterId === "types") hook = state.types;
 		if(filterId === "tags") hook = state.tags;
