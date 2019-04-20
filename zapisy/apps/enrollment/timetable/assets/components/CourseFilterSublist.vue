@@ -3,27 +3,27 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 
-import { CourseShell, Filter, Group, Course } from "../models";
+import { CourseShell, Group, Course } from "../models";
 
 @Component({
   props: {
     title: String as ()=>String,
     filterId: String as ()=>String,
-	 allAvaiable: Array as ()=>String[],
-	 filter: Filter,
+	 	allAvaiable: Array as ()=>String[],
+    activeFilter: Function as ()=>Function, 
   },
-  computed: mapGetters("courses", {
-    activeFilter:"activeFilter"
-  }),
 })
 export default class CourseFilterSublist extends Vue {
-  actives: number[];
-  get active(): number[] {
-    return this.actives;
+  // The computed property selectionState comes from store.
+  get selection(): string[] {
+		const selectionState = this.$props.activeFilter(this.$props.filterId);
+		console.info("CourseFilterList getter:",selectionState)
+		return selectionState;
+		//"avaiable.split(' ').join('')"
   }
-  set active(value: number[]) {
-	 this.$props.filter.manyValue = value;
-    this.$store.dispatch("courses/updateFilter", [this.$props.filterId,this.$props.filter]);
+  set selection(value: string[]) {
+		console.info("CourseFilterList setter:",value)
+    this.$store.dispatch("filters/updateFilter", [this.$props.filterId,value]);
   }
 }
 </script>
@@ -36,12 +36,7 @@ export default class CourseFilterSublist extends Vue {
 		v-for="avaiable in allAvaiable"
 		v-bind:key="avaiable"
 		>
-			<input class="form-check-input" 
-					 v-model="active" 
-					 type="checkbox"
-					 v-bind:id="avaiable.split(' ').join('')"
-					 v-bind:value="activeFilter(filterId).manyValue.has(tag)"
-			/> 
+			<input type="checkbox" :id="avaiable" :value="avaiable" v-model="selection">
 			<label class="form-check-label">
 				{{avaiable}}
 			</label>

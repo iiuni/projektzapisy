@@ -9,7 +9,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 import CourseFilterSublist from "./CourseFilterSublist.vue";
-import { CourseShell, Filter, Group, Course } from "../models";
+import { CourseShell, Group, Course } from "../models";
 
 @Component({
   components: {
@@ -19,11 +19,12 @@ import { CourseShell, Filter, Group, Course } from "../models";
   },
   computed: {
     ...mapGetters("courses", {
-      activeFilters:"activeFilters",
-      activeFilter:"activeFilter",
       allTypes:"allTypes",
       allTags:"allTags",
       allEffects:"allEffects",
+    }),
+    ...mapGetters("filters", {
+      activeFilter:"activeFilter"
     })
   }
 })
@@ -34,7 +35,7 @@ export default class CourseFilter extends Vue {
 <template>
     <div class="flex-row full-width">
       <div class="third vert-list">
-        <CourseFilterSublist :filter="activeFilter('tags')" filterId="tags" title="Tags" v-bind:allAvaiable="allTags" />
+        <CourseFilterSublist v-bind:activeFilter="activeFilter" filterId="tags" title="Tags" v-bind:allAvaiable="allTags" />
       </div>
       <div class="third vert-list">
         <div class="vert-list">

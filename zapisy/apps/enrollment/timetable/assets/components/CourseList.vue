@@ -9,17 +9,20 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 
-import { CourseShell, Filter, Group, Course } from "../models";
+import { CourseShell, Group, Course } from "../models";
 
 @Component({
   props: {
     courses: Array as () => CourseShell[],
-    activeFilters: Array as () => Filter[],
   },
-  computed: mapGetters("courses", {
-    selectionState: "selection",
-    activeFilters:"activeFilters"
-  }),
+  computed: {
+    ...mapGetters("courses", {
+      selectionState: "selection",
+    }),
+    ...mapGetters("filters", {
+      tester:"tester"
+    })
+  },
 })
 export default class CourseList extends Vue {
   // The computed property selectionState comes from store.
@@ -28,6 +31,7 @@ export default class CourseList extends Vue {
     return this.selectionState;
   }
   set selection(value: number[]) {
+    console.info("CourseList setter:")
     this.$store.dispatch("courses/updateSelection", value);
   }
 }
@@ -38,7 +42,7 @@ export default class CourseList extends Vue {
     <a @click="selection = []">Odznacz wszystkie</a>
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
-        <li v-for="c of courses.filter(c=>activeFilters.reduce( (ac,cur)=>ac && cur.test(c) ,true ))" :key="c.id">
+        <li v-for="c of courses.filter(tester)" :key="c.id">
           <input type="checkbox" :id="c.id" :value="c.id" v-model="selection">
           <label :for="c.id">{{ c.name }}</label>
         </li>

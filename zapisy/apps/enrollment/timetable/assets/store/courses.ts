@@ -12,7 +12,6 @@ axios.defaults.xsrfCookieName = "csrftoken";
 
 interface State {
     courses: { [id: number]: CourseShell };
-    activeFilters: Map<string,Filter>;
     selection: number[];
     allEffects: string[];
     allTags: string[];
@@ -21,7 +20,6 @@ interface State {
 const state: State = {
     courses: {},
     selection: [],
-    activeFilters: new Map(),
     allEffects: [],
     allTags: [],
     allTypes: [],
@@ -33,12 +31,6 @@ const getters = {
     },
     selection(state: State) {
         return state.selection;
-    },
-    activeFilters(state:State):Filter[] {
-        return Array.from(state.activeFilters.values());
-    },
-    activeFilter(state:State):(id:string)=>Filter {
-        return (id)=>state.activeFilters.get(id) || new Filter();
     },
     allEffects(state:State):string[] {
         return state.allEffects;
@@ -95,16 +87,6 @@ const actions = {
         ) as CourseShellJSON[];
         commit("setCourses", coursesDump);
     },    // initFromJSONTag will be called at the start to populate the courses list.
-    
-    addFilter({ commit }: ActionContext<State, any>, filter: Filter) {
-        commit("addFilter", filter);
-    },
-    updateFilter({ commit }: ActionContext<State, any>, filterIdAndFilterValue: [string,string|Set<string>]) {
-        commit("updateFilter", filterIdAndFilterValue);
-    },
-    dropFilter({ commit }: ActionContext<State, any>, filter: Filter) {
-        commit("dropFilter", filter);
-    },
 };
 
 const mutations = {
@@ -133,24 +115,7 @@ const mutations = {
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
-    },
-    addFilter(state: State, filterIdAndFilter: [string,Filter]) {
-        state.activeFilters.set(filterIdAndFilter[0],filterIdAndFilter[1]);
-    },
-    updateFilter(state: State, filterIdAndFilterValue: [string,string|Set<string>]) {
-        let filter = state.activeFilters.get(filterIdAndFilterValue[0]);
-        if(typeof filter === undefined) {
-            state.activeFilters.set(filterIdAndFilterValue[0],new Filter(undefined,filterIdAndFilterValue[1]))
-        }
-        filter.textValue = "";
-        filter.manyValue = new Set();
-        if(typeof filterIdAndFilterValue[1] === "string") filter.textValue = filterIdAndFilterValue[1];
-        if(typeof filterIdAndFilterValue[1] === "object") filter.manyValue = filterIdAndFilterValue[1];
-    },
-    dropFilter(state: State, filterId: string) {
-        state.activeFilters.delete(filterId);
-    },
-    
+    },    
 };
 
 export default {

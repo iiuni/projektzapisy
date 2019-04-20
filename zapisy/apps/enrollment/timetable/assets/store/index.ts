@@ -10,6 +10,7 @@ import Vuex from "vuex";
 
 import groups from "./groups";
 import courses from "./courses";
+import filters from "./filters";
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     modules: {
         groups,
         courses,
+        filters,
     },
     strict: debug,
 });
