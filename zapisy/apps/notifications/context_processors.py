@@ -12,7 +12,7 @@ def notification_ico(request):
     notification_counter = repo.get_count_for_user(request.user)
 
     return {
-        "notification_counter": notification_counter,
+        #"notification_counter": notification_counter,
         #"notification_counter_json": json.dumps(notification_counter),
-        "notifications_json": json.dumps(notifications),
+        #"notifications_json": json.dumps(notifications),
     }

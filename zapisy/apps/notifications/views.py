@@ -7,13 +7,13 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
 from apps.users.models import BaseUser
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
-from apps.notifications.repositories import get_notifications_repository
+from apps.notifications.repositories import get_notifications_repository, RedisNotificationsRepository
 from apps.notifications.utils import render_description
 from libs.ajax_messages import AjaxFailureMessage
 from apps.users import views
@@ -36,34 +36,28 @@ def index(request):
 
     return render(request, 'notifications/index.html', data)
 
+
 @login_required
 def get_notifications(request):
+    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     now = datetime.now()
     repo = get_notifications_repository()
     notifications = [
-        render_description(notification.description_id, notification.description_args)
+        [ render_description(notification.description_id, notification.description_args), notification.issued_on.strftime(DATE_TIME_FORMAT) ]
         for notification in repo.get_all_for_user(request.user)
     ]
     key_list = [ i for i in range(len(notifications))]
-    d = [(key, value) for (key, value) in zip(key_list, notifications)]
+    d = [[key]+value for (key, value) in zip(key_list, notifications)]
 
-
-    data = {
-        'notifications_json': json.dumps(d),
-    }
-
-    return render(request, 'notifications/get_notifications.html', data)
+    return HttpResponse(json.dumps(d), content_type="application/json")
 
 
 @login_required
 def get_counter(request):
     repo = get_notifications_repository()
     notification_counter = repo.get_count_for_user(request.user)
-    data = {
-        'notifications_counter_json': json.dumps(notification_counter)
-    }
 
-    return render(request, 'notifications/counter.html', data)
+    return HttpResponse(json.dumps(notification_counter), content_type="application/json")
 
 
 @require_POST
@@ -101,3 +95,23 @@ def create_form(request):
 @login_required
 def deleteAll(request):
     """Removes all user's notifications"""
+    now = datetime.now()
+    repo = get_notifications_repository()
+    repo.remove_all_older_than(request.user,now)
+
+    return get_notifications(request)
+
+
+@login_required
+def deleteOne(request):
+    """Removes one notification"""
+    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+
+    issued_on = request.GET.get('issued_on')
+    issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
+
+    repo = get_notifications_repository()
+    t = repo.remove_one_issued_on(request.user, issued_on)
+
+    #return HttpResponse(json.dumps(t), content_type="application/json")
+    return get_notifications(request)

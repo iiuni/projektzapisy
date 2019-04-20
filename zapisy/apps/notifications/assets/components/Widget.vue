@@ -11,13 +11,6 @@ export default {
         }
     },
     methods: {
-        getNotifications: function () {
-            axios.get('/notifications/get')
-            .then((result) => {
-                console.log(result.data)
-                this.nss = result.data
-            })
-        },
         getCount: function () {
             axios.get('/notifications/count')
             .then((result) => {
@@ -25,6 +18,34 @@ export default {
                 this.ns_c = result.data
             })
         },
+        getNotifications: function () {
+            axios.get('/notifications/get')
+            .then((result) => {
+                console.log(result.data)
+                this.nss = result.data
+            })
+        },
+        deleteAll: function () {
+            axios.get('/notifications/delete/all')
+            .then((request) => {
+                this.nss = request.data
+            })
+            this.getCount();
+        },
+        deleteOne: function (id){
+            axios.defaults.xsrfCookieName = 'csrftoken';
+            axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+            axios.get('/notifications/delete',{
+                    params: {
+                        issued_on: this.nss[id][2],
+                    }
+                }            
+            ).then((request) => {
+                this.nss = request.data
+                //console.log(request.data)
+            })
+            this.getCount()
+        }
     },
     created () {
         this.getCount()
@@ -39,9 +60,9 @@ export default {
     
     <li class="nav-item dropdown" id="notification-dropdown">
         <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @click="getNotifications">
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i v-if="ns_c == 0" class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
-            <i v-else class="fas fa-bell bell nav-link"  style="padding-right: 0;"></i>
+            <i v-else class="fas fa-bell bell nav-link"  style="padding-right: 0;" @click="getNotifications"></i>
         </a>
         <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
             <form>
@@ -53,7 +74,7 @@ export default {
                                 <div class="textM">
                                     {{ elem[1] }}
                                 </div>
-                                <div class="deleteM">
+                                <div class="deleteM" @click="deleteOne(elem[0])">
                                     <i class="fas fa-times"></i>
                                 </div>
                                 <div style="clear: both;"></div>
@@ -61,7 +82,7 @@ export default {
                         </div>
                     </div>
                     <div class="deleteAllM">
-                        <a href="">Usuń wszystkie powiadomienia.</a>
+                        <a href="#" @click="deleteAll" >Usuń wszystkie powiadomienia.</a>
                     </div>
                 </div>
                 <div v-else class="NoM">
@@ -79,7 +100,6 @@ export default {
     background: rgb(248, 249, 250);
     padding: 12px;
     width: 350px;
-    padding-bottom: 0;
 }
 .specialdropdown::after{
     content: none;
@@ -126,6 +146,7 @@ export default {
 .NoM {
     color: #9c9999;
     text-align: center;
+    padding-bottom: 5px;
 }
 
 .deleteM {
@@ -147,7 +168,6 @@ export default {
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px solid #00000021;
-    padding-bottom: 12px;
 }
 
 </style>

@@ -1,4 +1,3 @@
-
 import Vue from "vue";
 import Widget from "./components/Widget.vue";
 
