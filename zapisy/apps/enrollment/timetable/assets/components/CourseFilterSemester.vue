@@ -25,7 +25,7 @@ export default class CourseFilterSemester extends Vue {
 <template>
 	<div class="form-group">
 		<h4>Semestr</h4>
-    <select class="form-control" id="exampleFormControlSelect1">
+    <select class="form-control" v-model="selection" id="exampleFormControlSelect1">
       <option v-bind:key="avaiable" v-for="avaiable in allAvaiable">{{avaiable}}</option>
     </select>
   </div>

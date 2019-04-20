@@ -55,7 +55,7 @@ export default class Prototype extends Vue {
 <template>
   <div>
     <div class="row">
-        <CourseFilter/>
+        <CourseFilter :hideSemester="true"/>
     </div>
     <div class="row">
         <div class="col-12 col-sm-9">

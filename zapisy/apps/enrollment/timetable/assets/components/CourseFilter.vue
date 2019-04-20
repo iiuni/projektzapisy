@@ -20,6 +20,7 @@ import { CourseShell, Group, Course } from "../models";
     CourseFilterName,
   },
   props: {
+    hideSemester:Boolean as ()=>Boolean,
   },
   computed: {
     ...mapGetters("courses", {
@@ -49,7 +50,7 @@ export default class CourseFilter extends Vue {
       </div>
       <div class="third vert-list">
         <CourseFilterName :name="name"/>
-        <CourseFilterSemester :allAvaiable="allSemesters" :selected="semester"/>
+        <CourseFilterSemester v-if="!hideSemester" :allAvaiable="allSemesters" :selected="semester"/>
         <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
       </div>
     </div>
