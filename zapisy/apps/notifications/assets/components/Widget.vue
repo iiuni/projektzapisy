@@ -33,8 +33,6 @@ export default {
             this.getCount();
         },
         deleteOne: function (id){
-            axios.defaults.xsrfCookieName = 'csrftoken';
-            axios.defaults.xsrfHeaderName = 'X-CSRFToken';
             axios.get('/notifications/delete',{
                     params: {
                         issued_on: this.nss[id][2],

@@ -111,8 +111,14 @@ class RedisNotificationsRepository(NotificationsRepository):
     def remove_one_issued_on(self, user: User, point_in_time: datetime) -> int:
         self.removed_count = 0
 
-        key = self._generate_sent_key_for_user(user)
+        self._remove_one_issued_on(
+            self._generate_unsent_key_for_user(user), point_in_time)
+        self._remove_one_issued_on(
+            self._generate_sent_key_for_user(user), point_in_time)
 
+        return self.removed_count
+
+    def _remove_one_issued_on(self, key: str, point_in_time: datetime) -> int:
         notifications_under_that_key = map(self.serializer.deserialize,
                                            self.redis_client.smembers(key))
 
@@ -121,8 +127,6 @@ class RedisNotificationsRepository(NotificationsRepository):
                 self.redis_client.srem(key,
                                        self.serializer.serialize(notification))
                 self.removed_count += 1
-
-        return self.removed_count
 
     def _generate_unsent_key_for_user(self, user: User) -> str:
         return f'notifications:unsent#{user.id}'
