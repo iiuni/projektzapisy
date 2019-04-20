@@ -3,7 +3,7 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON, CourseShellJSON, Course, CourseShell, Filter } from "../models";
+import { GroupJSON, CourseShellJSON, Course, CourseShell } from "../models";
 import store from ".";
 
 // Sets header for all POST requests to enable CSRF protection.
@@ -16,6 +16,7 @@ interface State {
     allEffects: string[];
     allTags: string[];
     allTypes: string[];
+    allSemesters: string[];
 }
 const state: State = {
     courses: {},
@@ -23,6 +24,7 @@ const state: State = {
     allEffects: [],
     allTags: [],
     allTypes: [],
+    allSemesters: [],
 };
 
 const getters = {
@@ -40,6 +42,9 @@ const getters = {
     },
     allTypes(state:State):string[] {
         return state.allTypes;
+    },
+    allSemesters(state:State):string[] {
+        return state.allSemesters;
     },
 };
 
@@ -97,6 +102,7 @@ const mutations = {
         const allEffects:string[] = [];
         const allTags:string[] = [];
         const allTypes:string[] = [];
+        const allSemesters:string[] = [];
         courses.forEach((c : CourseShell) => {
             if(!c.effects) c.effects=[];
             c.effects
@@ -107,11 +113,13 @@ const mutations = {
                 .filter(e => !allTags.includes(e))
                 .forEach(e => allTags.push(e));
             if(!!c.type && !allTypes.includes(c.type)) allTypes.push(c.type); 
+            if(!!c.semester && !allSemesters.includes(c.semester)) allSemesters.push(c.semester); 
             state.courses[c.id] = c;
         });
         state.allEffects = allEffects.sort();
         state.allTags = allTags.sort();
         state.allTypes = allTypes.sort();
+        state.allSemesters = allSemesters.sort();
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;

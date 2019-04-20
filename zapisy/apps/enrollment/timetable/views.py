@@ -87,7 +87,8 @@ def list_courses_in_semester(semester: Semester):
             'exam':course.exam,
             'seminars':course.seminars > 0,
             'tags':tagi,
-            'english':course.english
+            'english':course.english,
+            'semester':course.semester.get_name()
         })
     return json.dumps(list(results))
 
