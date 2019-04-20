@@ -109,9 +109,9 @@ const mutations = {
             if(!!c.type && !allTypes.includes(c.type)) allTypes.push(c.type); 
             state.courses[c.id] = c;
         });
-        state.allEffects = allEffects;
-        state.allTags = allTags;
-        state.allTypes = allTypes;
+        state.allEffects = allEffects.sort();
+        state.allTags = allTags.sort();
+        state.allTypes = allTypes.sort();
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
