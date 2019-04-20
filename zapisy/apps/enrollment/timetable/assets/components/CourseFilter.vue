@@ -35,13 +35,26 @@ import { CourseShell, Group, Course } from "../models";
       name:"name",
     })
   },
+  data: ()=>({
+    extended:false,
+    toggleMsg:"⇩ więcej ⇩"
+  }),
+  methods:{
+    toggle:function (){
+      this.$data.extended = !this.$data.extended;
+      this.$data.toggleMsg = this.$data.extended ? "⇧ mniej ⇧" : "⇩ więcej ⇩";
+    }
+  }
+
 })
 export default class CourseFilter extends Vue {
+  
 }
 </script>
 
 <template>
-    <div class="flex-row full-width">
+  <div class="full-width">
+    <div :class="'flex-row full-width extendable ' + (extended ? 'extended' : 'not-extended')">
       <div class="third vert-list">
         <CourseFilterSublist :activeFilter="activeFilter" filterId="types" title="Rodzaje" :allAvaiable="allTypes" />
       </div>
@@ -54,6 +67,12 @@ export default class CourseFilter extends Vue {
         <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
       </div>
     </div>
+    <div class="expansion-toggle" v-on:click="toggle">
+      <hr/>
+      <h5>{{toggleMsg}}</h5>
+      <hr/>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -71,5 +90,16 @@ export default class CourseFilter extends Vue {
 }
 .full-width{
   width: 100%;
+}
+.extendable{
+  max-height: 40rem;
+  transition: 100ms;
+}
+.not-extended{
+  max-height: 7rem;
+  overflow-y: hidden;
+}
+.expansion-toggle{
+  text-align: center;
 }
 </style>
