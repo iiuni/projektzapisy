@@ -25,11 +25,11 @@ def get_notifications(request):
     now = datetime.now()
     repo = get_notifications_repository()
     notifications = [
-        [ render_description(notification.description_id, notification.description_args), notification.issued_on.strftime(DATE_TIME_FORMAT) ]
+        [render_description(notification.description_id, notification.description_args), notification.issued_on.strftime(DATE_TIME_FORMAT)]
         for notification in repo.get_all_for_user(request.user)
     ]
-    key_list = [ i for i in range(len(notifications))]
-    d = [[key]+value for (key, value) in zip(key_list, notifications)]
+    key_list = [i for i in range(len(notifications))]
+    d = [[key] + value for (key, value) in zip(key_list, notifications)]
 
     return HttpResponse(json.dumps(d), content_type="application/json")
 
@@ -79,7 +79,7 @@ def deleteAll(request):
     """Removes all user's notifications"""
     now = datetime.now()
     repo = get_notifications_repository()
-    repo.remove_all_older_than(request.user,now)
+    repo.remove_all_older_than(request.user, now)
 
     return get_notifications(request)
 
