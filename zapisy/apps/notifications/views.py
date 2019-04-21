@@ -19,24 +19,6 @@ from libs.ajax_messages import AjaxFailureMessage
 from apps.users import views
 
 
-def index(request):
-    if not request.user.is_authenticated:
-        return AjaxFailureMessage.auto_render(
-            'NotAuthenticated', 'Nie jesteś zalogowany.', request)
-    now = datetime.now()
-    repo = get_notifications_repository()
-    notifications = [
-        render_description(notification.description_id, notification.description_args)
-        for notification in repo.get_all_for_user(request.user)
-    ]
-    data = {
-        'notifications': notifications,
-        #'notifications_json': json.dumps(notifications),
-    }
-
-    return render(request, 'notifications/index.html', data)
-
-
 @login_required
 def get_notifications(request):
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
@@ -113,5 +95,4 @@ def deleteOne(request):
     repo = get_notifications_repository()
     t = repo.remove_one_issued_on(request.user, issued_on)
 
-    #return HttpResponse(json.dumps(t), content_type="application/json")
     return get_notifications(request)
