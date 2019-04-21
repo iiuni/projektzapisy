@@ -7,21 +7,19 @@ export default {
     data () {
         return {
             ns_c: 0,
-            nss: [],
+            nss: [], // structure: [ [id, text, issued on], [...], ... ]
         }
     },
     methods: {
         getCount: function () {
             axios.get('/notifications/count')
             .then((result) => {
-                console.log(result.data)
                 this.ns_c = result.data
             })
         },
         getNotifications: function () {
             axios.get('/notifications/get')
             .then((result) => {
-                console.log(result.data)
                 this.nss = result.data
             })
         },
@@ -35,12 +33,11 @@ export default {
         deleteOne: function (id){
             axios.get('/notifications/delete',{
                     params: {
-                        issued_on: this.nss[id][2],
+                        issued_on: this.nss[id][2], 
                     }
                 }            
             ).then((request) => {
                 this.nss = request.data
-                //console.log(request.data)
             })
             this.getCount()
         }
@@ -65,23 +62,25 @@ export default {
         <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
             <form>
                 <p>Lista powiadomień:</p>
-                <div v-if="ns_c != 0">
-                    <div>
-                        <div v-for="elem in nss" :key="elem[0]" class="onemessage">
-                            <div>
-                                <div class="textM">
-                                    {{ elem[1] }}
-                                </div>
-                                <div class="deleteM" @click="deleteOne(elem[0])">
-                                    <i class="fas fa-times"></i>
-                                </div>
-                                <div style="clear: both;"></div>
+                <div v-if="ns_c != 0" class="place-for-notifications">
+                    <div v-for="elem in nss" :key="elem[0]" class="onemessage">
+                        <div>
+                            <div class="textM">
+                                {{ elem[1] }}
                             </div>
+                            <div class="deleteM" @click="deleteOne(elem[0])">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div style="clear: both;"></div>
                         </div>
                     </div>
-                    <div class="deleteAllM">
-                        <a href="#" @click="deleteAll" >Usuń wszystkie powiadomienia.</a>
-                    </div>
+                </div>
+            </form>
+            <form>
+                <div v-if="ns_c != 0" class="deleteAllM">
+                    <a href="#" @click="deleteAll">
+                        Usuń wszystkie powiadomienia.
+                    </a>
                 </div>
                 <div v-else class="NoM">
                     Brak nowych powiadomień.
@@ -96,8 +95,9 @@ export default {
 <style>
 #notification-dropdown .dropdown-menu{
     background: rgb(248, 249, 250);
-    padding: 12px;
-    width: 350px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    min-width: 350px;
 }
 .specialdropdown::after{
     content: none;
@@ -110,17 +110,17 @@ export default {
     padding: 0;
 }
 #modal-container {
-  overflow-y: scroll;
   max-height: 500px;
 }
 
 #modal-container p {
     display: block;
     width: 100%;
-    padding-left: 10px;
     font-size: 16px;
     color: #00709e;
     font-weight: bold;
+    margin-bottom: 8px;
+    margin-left: 12px;
 }
 
 .onemessage {
@@ -141,10 +141,18 @@ export default {
     background-color: #00709e12;
 }
 
+.place-for-notifications{
+    max-height: 395px;
+    overflow-y: scroll;
+    margin-left: 7px;
+    padding-right: 5px;
+}
+
 .NoM {
     color: #9c9999;
     text-align: center;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .deleteM {
@@ -163,7 +171,6 @@ export default {
 .deleteAllM {
     width: 100%;
     text-align: center;
-    margin-top: 15px;
     padding-top: 10px;
     border-top: 1px solid #00000021;
 }
