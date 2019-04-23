@@ -17,42 +17,17 @@ from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.semester import Semester
 from apps.users.decorators import student_required
 
+from .forms import prepare_vote_formset
+
 
 @student_required
 def vote(request):
-    from apps.offer.vote.vote_form import VoteFormsets
+    semester = Semester.objects.get_next()
+    system_state = SystemState.get_state_for_semester(semester)
+    formset = prepare_vote_formset(system_state, request.user.student)
 
-    student = request.user.student
-    state = SystemState.get_state()
-
-    if not state.is_system_active():
-        raise Http404
-
-    SingleVote.make_votes(student, state=state)
-
-    kwargs = {'student': student, 'state': state}
-    if request.method == 'POST':
-        kwargs['post'] = request.POST
-
-    formset = VoteFormsets(**kwargs)
-
-    if request.method == 'POST':
-
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, "Oddano poprawny głos")
-            return redirect('vote')
-
-        else:
-            messages.error(request, "Nie udało się oddać głosu")
-            for error in formset.errors:
-                messages.error(request, error)
-
-    data = {'formset': formset,
-            'proposalTypes': Type.objects.all().select_related('group'),
-            'isCorrectionActive': state.is_correction_active()}
-
-    return render(request, 'offer/vote/form.html', data)
+    data = {'formset': formset}
+    return render(request, 'vote/form.html', data)
 
 
 @login_required

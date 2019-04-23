@@ -1,0 +1,20 @@
+{% extends "offer/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block offer_menu_vote %}class="active"{% endblock offer_menu_vote %}
+
+{% block all-content %}
+
+<form method="POST">
+    <table class="table table-striped">
+    {% for form in formset %}
+        <tr>
+            <th scope="row">{{ form.instance.proposal.name }}</th>
+            <td>{{ form|crispy }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</form>
+
+{% endblock all-content %}
