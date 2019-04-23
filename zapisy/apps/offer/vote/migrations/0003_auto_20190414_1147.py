@@ -98,6 +98,10 @@ class Migration(migrations.Migration):
             model_name='singlevote',
             name='course',
         ),
+        migrations.RemoveField(
+            model_name='singlevote',
+            name='free_vote',
+        ),
         migrations.AlterUniqueTogether(
             name='singlevote',
             unique_together={('proposal', 'state', 'student')},
