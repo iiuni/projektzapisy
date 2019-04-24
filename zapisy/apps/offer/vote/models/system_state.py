@@ -5,7 +5,7 @@ corresponds to a single academic year.
 """
 from datetime import date
 import re
-from typing import Optional, Callable
+from typing import Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -66,7 +66,6 @@ class SystemState(models.Model):
         year2 = int(match.group(2))
         if year1 + 1 != year2:
             raise ValidationError("Academic year should span two consecutive calendar years.")
-
 
     year = models.CharField(
         "Rok akademicki",

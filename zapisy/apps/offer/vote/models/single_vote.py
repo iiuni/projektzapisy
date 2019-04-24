@@ -57,5 +57,9 @@ class SingleVote(models.Model):
         new_votes = []
         for proposal in proposals:
             if proposal.pk not in existing_votes:
-                new_votes.append(SingleVote(student=student, state=state, proposal=proposal, entity=proposal.entity))
+                new_votes.append(
+                    SingleVote(student=student,
+                               state=state,
+                               proposal=proposal,
+                               entity=proposal.entity))
         SingleVote.objects.bulk_create(new_votes)

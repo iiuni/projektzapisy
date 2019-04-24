@@ -1,6 +1,5 @@
 from django import forms
 
-from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.users.models import Student
 
 from .models import SingleVote, SystemState
