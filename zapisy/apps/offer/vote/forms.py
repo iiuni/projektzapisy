@@ -57,7 +57,6 @@ class SingleCorrectionFrom(forms.ModelForm):
 
 
 def prepare_vote_formset(state: SystemState, student: Student):
-    proposals_in_offer = Proposal.objects.filter(status=ProposalStatus.IN_OFFER)
-    initial_data = [SingleVote(state=state, student=student, proposal=p) for p in proposals_in_offer]
-    formset_factory = forms.modelformset_factory(SingleVote, form=SingleVoteForm)
-    return formset_factory(queryset=initial_data)
+    SingleVote.create_missing_votes(student, state)
+    formset_factory = forms.modelformset_factory(SingleVote, form=SingleVoteForm, extra=0)
+    return formset_factory(queryset=SingleVote.objects.filter(state=state, student=student))

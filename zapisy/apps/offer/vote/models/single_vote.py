@@ -2,13 +2,13 @@ from django.db import models
 
 from apps.enrollment.courses.models.course import CourseEntity
 from apps.enrollment.courses.models.course_information import SemesterChoices
-from apps.offer.proposal.models import Proposal
+from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.users.models import Student
 
 from .system_state import SystemState
 
 
-class SingleVote (models.Model):
+class SingleVote(models.Model):
     """Student's single vote for a course proposal in an academic cycle (year).
     """
     VALUE_CHOICES = [(0, '0'), (1, '1'), (2, '2'), (3, '3')]
@@ -39,3 +39,23 @@ class SingleVote (models.Model):
     @staticmethod
     def points_for_semester(student: Student, state: SystemState, semester: SemesterChoices):
         pass
+
+    @staticmethod
+    def create_missing_votes(student: Student, state: SystemState):
+        """Creates vote objects for a student.
+
+        Only missing vote objects are created. This is useful, because we may
+        call this function multiple times for one student during the vote. It
+        might add objects on subsequent runs and proposal might be included in
+        the voting during the vote.
+        """
+        existing_votes = SingleVote.objects.filter(student=student,
+                                                   state=state).values_list('proposal_id',
+                                                                            flat=True)
+        existing_votes = set(existing_votes)
+        proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE)
+        new_votes = []
+        for proposal in proposals:
+            if proposal.pk not in existing_votes:
+                new_votes.append(SingleVote(student=student, state=state, proposal=proposal, entity=proposal.entity))
+        SingleVote.objects.bulk_create(new_votes)
