@@ -2,10 +2,21 @@ from django.db import models
 
 from apps.enrollment.courses.models.course import CourseEntity
 from apps.enrollment.courses.models.course_information import SemesterChoices
+from apps.enrollment.courses.models import Semester
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.users.models import Student
 
 from .system_state import SystemState
+
+
+class SingleVoteQuerySet(models.QuerySet):
+    def in_semester(self, semester: Semester):
+        """Filters only votes for courses taught in a given semester.
+
+        NOTE: This function will need to be modified when CourseEntity is
+        fully replaced with proposal model.
+        """
+        return self.filter(entity__course__semester=semester)
 
 
 class SingleVote(models.Model):
@@ -23,6 +34,8 @@ class SingleVote(models.Model):
     value = models.PositiveSmallIntegerField("przyznane punkty", choices=VALUE_CHOICES, default=0)
     correction = models.PositiveSmallIntegerField(
         "punkty przyznane w korekcie", choices=VALUE_CHOICES, default=0)
+
+    objects = SingleVoteQuerySet.as_manager()
 
     class Meta:
         verbose_name = "pojedynczy głos"
