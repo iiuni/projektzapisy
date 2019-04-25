@@ -8,29 +8,15 @@ from .models import SingleVote, SystemState
 class SingleVoteForm(forms.ModelForm):
     class Meta:
         model = SingleVote
-        fields = ('state', 'student', 'proposal', 'value',)
-        widgets = {
-            'state': forms.HiddenInput(),
-            'student': forms.HiddenInput(),
-            'proposal': forms.HiddenInput(),
-            'entity': forms.HiddenInput(),
-        }
-        labels = {
-            'value': "",
-        }
-
-    def save(self, commit=True):
-        """We only will save votes that are not blank."""
-        m = super().save(commit=False)
-        if commit and m.value > 0:
-            m.save()
-        return m
+        fields = ('value',)
+        labels = {'value': ""}
 
 
 class SingleCorrectionFrom(forms.ModelForm):
     class Meta:
         model = SingleVote
-        fields = ['correction']
+        fields = ('correction', )
+        labels = {'correction': ""}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,15 +33,39 @@ class SingleCorrectionFrom(forms.ModelForm):
                 "Wartość w korekcie nie może być niższa niż w pierwszym głosowaniu.")
         return cleaned_data
 
-    def save(self, commit=True):
-        """We only will save votes that are not blank."""
-        m = super().save(commit=False)
-        if commit and m.correction > 0:
-            m.save()
-        return m
+
+class SingleVoteFormset(forms.BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        self.limit = kwargs.pop('limit', None)
+        if self.limit is None:
+            self.limit = SystemState.DEFAULT_MAX_POINTS
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        """Checks that the points limit is not exceeded."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on
+            # its own
+            return
+        total = 0
+        for form in self.forms:
+            # Some proposal types are free to vote for.
+            if form.instance.proposal.course_type.free_in_vote:
+                continue
+            form_value = form.cleaned_data.get('value', 0)
+            form_correction = form.cleaned_data.get('correction', 0)
+            total += form_correction or form_value
+        if total > self.limit:
+            raise forms.ValidationError(
+                f"Suma przyznanych punktów nie może przekraczać {self.limit}.")
 
 
-def prepare_vote_formset(state: SystemState, student: Student):
+def prepare_vote_formset(state: SystemState, student: Student, post=None):
     SingleVote.create_missing_votes(student, state)
-    formset_factory = forms.modelformset_factory(SingleVote, form=SingleVoteForm, extra=0)
-    return formset_factory(queryset=SingleVote.objects.filter(state=state, student=student))
+    formset_factory = forms.modelformset_factory(
+        SingleVote, formset=SingleVoteFormset, form=SingleVoteForm, extra=0)
+    if post:
+        return formset_factory(post)
+    else:
+        return formset_factory(
+            post, queryset=SingleVote.objects.in_vote().filter(state=state, student=student))

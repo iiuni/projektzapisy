@@ -7,14 +7,32 @@
 {% block all-content %}
 
 <form method="POST">
-    <table class="table table-striped">
-    {% for form in formset %}
-        <tr>
-            <th scope="row">{{ form.instance.proposal.name }}</th>
-            <td>{{ form|crispy }}</td>
-        </tr>
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    {% regroup formset|dictsort:"instance.proposal.semester" by instance.proposal.get_semester_display as formset_by_semester %}
+
+    {% for semester_display, forms in formset_by_semester %}
+        <fieldset>
+            <legend>Semestr {{ semester_display }}</legend>
+            <table class="table table-sm table-borderless table-hover">
+            <style>
+                .form-group {
+                    margin-bottom: 0;
+                }
+            </style>
+            {% for form in forms %}
+                <tr>
+                    <th scope="row">{{ form.instance.proposal.name }}</th>
+                    <td>{{ form|crispy }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </fieldset>    
     {% endfor %}
-    </table>
+
+
+    <button type="submit" class="btn btn-primary">Głosuj</button>
 </form>
 
 {% endblock all-content %}

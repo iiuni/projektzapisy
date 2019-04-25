@@ -18,6 +18,10 @@ class SingleVoteQuerySet(models.QuerySet):
         """
         return self.filter(entity__course__semester=semester)
 
+    def in_vote(self):
+        """Filters only votes for courses in vote."""
+        return self.filter(proposal__status=ProposalStatus.IN_VOTE)
+
 
 class SingleVote(models.Model):
     """Student's single vote for a course proposal in an academic cycle (year).
@@ -48,6 +52,11 @@ class SingleVote(models.Model):
     def __str__(self):
         return (f"[{self.state.year}] Głos użytkownika: {self.student.user.username}; "
                 f"{self.proposal.name}; {self.value}")
+
+    @property
+    def val(self):
+        """True value of a vote: either a correction or a value."""
+        return self.correction or self.value
 
     @staticmethod
     def points_for_semester(student: Student, state: SystemState, semester: SemesterChoices):

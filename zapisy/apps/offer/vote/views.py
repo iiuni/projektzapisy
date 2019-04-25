@@ -24,7 +24,15 @@ from .forms import prepare_vote_formset
 def vote(request):
     semester = Semester.objects.get_next()
     system_state = SystemState.get_state_for_semester(semester)
-    formset = prepare_vote_formset(system_state, request.user.student)
+    if request.method == 'POST':
+        formset = prepare_vote_formset(system_state, request.user.student, post=request.POST)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, "Zapisano głos.")
+        else:
+            messages.error(request, "\n".join(formset.non_form_errors()))
+    else:
+        formset = prepare_vote_formset(system_state, request.user.student)
 
     data = {'formset': formset}
     return render(request, 'vote/form.html', data)
