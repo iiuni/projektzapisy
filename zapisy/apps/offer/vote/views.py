@@ -1,14 +1,10 @@
-"""
-    Vote views
-"""
 from datetime import date
 from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, reverse
 from django.template.response import TemplateResponse
 from apps.enrollment.courses.models.course import CourseEntity
 
@@ -24,6 +20,11 @@ from .forms import prepare_vote_formset
 def vote(request):
     semester = Semester.objects.get_next()
     system_state = SystemState.get_state_for_semester(semester)
+
+    if not system_state.is_vote_active() and system_state.correction_active_semester() is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('vote-main')
+
     if request.method == 'POST':
         formset = prepare_vote_formset(system_state, request.user.student, post=request.POST)
         if formset.is_valid():
@@ -31,11 +32,11 @@ def vote(request):
             messages.success(request, "Zapisano głos.")
         else:
             messages.error(request, "\n".join(formset.non_form_errors()))
+
     else:
         formset = prepare_vote_formset(system_state, request.user.student)
 
-    data = {'formset': formset}
-    return render(request, 'vote/form.html', data)
+    return render(request, 'vote/form.html', {'formset': formset})
 
 
 @login_required
@@ -43,8 +44,9 @@ def vote_main(request):
     """
         Vote main page
     """
-    sytem_state = SystemState.get_state()
-    data = {'isVoteActive': sytem_state.is_system_active(), 'max_points': sytem_state.max_points,
+    semester = Semester.objects.get_next()
+    sytem_state = SystemState.get_state_for_semester(semester)
+    data = {'isVoteActive': sytem_state.is_vote_active(), 'max_points': 3,
             'semester': Semester.get_current_semester()}
     return render(request, 'offer/vote/index.html', data)
 

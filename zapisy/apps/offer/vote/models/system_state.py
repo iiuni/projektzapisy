@@ -118,3 +118,31 @@ class SystemState(models.Model):
             except SystemState.DoesNotExist:
                 return None
         return state
+
+    def is_vote_active(self, day: Optional[date] = None) -> bool:
+        """Checks if voting (not the correction) is active.
+
+        We treat the beginning and end dates as a closed interval. Should voting
+        only be active on one day, the dates should be the same.
+        """
+        if day is None:
+            day = date.today()
+        if self.vote_beg is None or self.vote_end is None:
+            return False
+        return self.vote_beg <= day <= self.vote_end
+
+    def correction_active_semester(self, day: Optional[date] = None) -> Optional[Semester]:
+        """Checks if correction is active.
+
+        Returns a semester for which the correction is active, or None, if it is
+        not.
+        """
+        if day is None:
+            day = date.today()
+        if self.winter_correction_beg is not None and self.winter_correction_end is not None:
+            if self.winter_correction_beg <= day <= self.winter_correction_end:
+                return self.semester_winter
+        if self.summer_correction_beg is not None and self.summer_correction_end is not None:
+            if self.summer_correction_beg <= day <= self.summer_correction_end:
+                return self.semester_summer
+        return None

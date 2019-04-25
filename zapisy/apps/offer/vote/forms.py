@@ -61,11 +61,27 @@ class SingleVoteFormset(forms.BaseModelFormSet):
 
 
 def prepare_vote_formset(state: SystemState, student: Student, post=None):
+    """Constructs a formset for voting or correction.
+
+    It is assumed that the voting/correction is currently active. The function
+    will fail otherwise.
+    """
     SingleVote.create_missing_votes(student, state)
+
+    queryset = SingleVote.objects.filter(state=state, student=student)
+    if state.is_vote_active():
+        formset_class = SingleVoteForm
+        queryset = queryset.in_vote()
+    elif state.correction_active_semester() is not None:
+        semester = state.correction_active_semester()
+        formset_class = SingleCorrectionFrom
+        queryset = queryset.in_semester(semester=semester)
+    else:
+        raise AssertionError("Voting or Correction must be active.")
+
     formset_factory = forms.modelformset_factory(
-        SingleVote, formset=SingleVoteFormset, form=SingleVoteForm, extra=0)
+        SingleVote, formset=SingleVoteFormset, form=formset_class, extra=0)
     if post:
         return formset_factory(post)
     else:
-        return formset_factory(
-            post, queryset=SingleVote.objects.in_vote().filter(state=state, student=student))
+        return formset_factory(queryset=queryset)
