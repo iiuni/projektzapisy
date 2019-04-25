@@ -274,6 +274,14 @@ class Markdown(layout.Field):
     template = 'proposal/fields/markdown.html'
 
 
+class CollapsableFieldset(layout.Fieldset):
+    """Renders fieldset with a _collapse_ button.
+
+    It uses Bootstrap 4 collapse class. It is vital to provide css_id for it, if
+    many such fieldsets are going to be used on the same page."""
+    template = 'proposal/fields/collapsable-fieldset.html'
+
+
 class FormRow(layout.Div):
     """Represents Booststrap 4 form layout row."""
     css_class = 'form-row'
@@ -318,25 +326,19 @@ class ProposalFormHelper(helper.FormHelper):
                 Column('ects'),
                 Column('status'),
             )),
-        layout.Fieldset(
-            "Informacje szczegółowe"
-            # Fieldset collapse button.
-            '<a class="btn btn-outline-secondary btn-sm ml-3" data-toggle="collapse" '
-            'href="#proposal-details-fields" role="button" aria-expanded="false">'
-            'Rozwiń/Zwiń</a>',
-            layout.Div(
-                'name_en',
-                Markdown('teaching_methods'),
-                Markdown('preconditions'),
-                Markdown('objectives'),
-                Markdown('contents'),
-                Markdown('teaching_effects'),
-                Markdown('literature'),
-                Markdown('verification_methods'),
-                Markdown('passing_means'),
-                Markdown('student_labour'),
-                css_class='collapse',
-                css_id='proposal-details-fields',
-            )),
+        CollapsableFieldset(
+            "Informacje szczegółowe",
+            'name_en',
+            Markdown('teaching_methods'),
+            Markdown('preconditions'),
+            Markdown('objectives'),
+            Markdown('contents'),
+            Markdown('teaching_effects'),
+            Markdown('literature'),
+            Markdown('verification_methods'),
+            Markdown('passing_means'),
+            Markdown('student_labour'),
+            css_id='syllabus-fields',
+        ),
         layout.Submit('submit', "Zapisz"),
     )

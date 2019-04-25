@@ -1,0 +1,14 @@
+<fieldset {% if fieldset.css_id %}id="{{ fieldset.css_id }}"{% endif %} 
+    {% if fieldset.css_class or form_style %}class="{{ fieldset.css_class }} {{ form_style }}"{% endif %}
+    {{ fieldset.flat_attrs|safe }}>
+    <legend>
+        {% if legend %}{{ legend|safe }}{% endif %}
+        <a class="btn btn-outline-secondary btn-sm ml-3" data-toggle="collapse"
+                href="#{{ fieldset.css_id }}-fields" role="button" aria-expanded="false">
+            Rozwiń/Zwiń
+        </a>
+    </legend>
+    <div class="collapse" id="{{ fieldset.css_id }}-fields">
+        {{ fields|safe }} 
+    </div>
+</fieldset>
