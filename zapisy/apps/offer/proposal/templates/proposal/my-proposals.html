@@ -26,33 +26,28 @@
 
 
 {% block all-content %}
-    {% regroup proposals_list|dictsort:"status" by status as statuses %}
+    {% regroup proposals_list|dictsort:"status" by get_status_display as statuses %}
     {% with active_status=proposal.status|default:1 %}
-    <div class="card p-3 my-4">
-        <ul class="nav nav-pills nav-fill mb-3" role="tablist">
-            {% for status in statuses %}
-                <li class="nav-item">
-                    <a class="nav-link {% if active_status == status.grouper %}active{% endif %}" data-toggle="pill"
-                            href="#pills-{{ status.grouper|status_label }}" role="tab"
-                            aria-controls="pills-{{ status.grouper|status_label }}"
-                            aria-selected="{% if active_status == status.grouper %}true{% else %}false{% endif %}">
-                        {{ status.grouper|status_display|capfirst }}
-                    </a>
-                </li>
+    <div class="jumbotron">
+        <dl>
+            {% for status, proposals in statuses %}
+                <dt class="nav-item">{{ status|capfirst }}<dt>
+                <dd>
+                    <ul>
+                        {% for prp in proposals %}
+                        <li>
+                            <a href="{% url 'my-proposal-show' prp.slug %}"
+                                    {% if prp == proposal %}class="font-weight-bolder"{% endif %}>
+                                {{ prp.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            {% empty %}
+                <p class="lead">Brak propozycji przedmiotów.</p>
             {% endfor %}
-        </ul>
-        <div class="tab-content p-3 pt-5 border-top">
-            {% for status in statuses %}
-            <div class="tab-pane fade {% if active_status == status.grouper %}show active{% endif %}"
-                    id="pills-{{ status.grouper|status_label }}" role="tabpanel">
-                <ul>
-                {% for prp in status.list %}
-                    <li><a href="{% url 'my-proposal-show' prp.slug %}">{{ prp.name }}</a></li>
-                {% endfor %}
-                </ul>
-            </div>
-            {% endfor %}
-        </div>
+        </dl>
     </div>
     {% endwith %}
     {% if proposal %}
