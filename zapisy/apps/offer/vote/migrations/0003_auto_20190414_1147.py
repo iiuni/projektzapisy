@@ -52,12 +52,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='systemstate',
             name='semester_summer',
-            field=models.ForeignKey(blank=True, default=apps.offer.vote.models.system_state.SystemState._get_default_summer_semester, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='courses.Semester', verbose_name='Semestr letni'),
+            field=models.ForeignKey(blank=True, default=apps.offer.vote.models.system_state._get_default_summer_semester, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='courses.Semester', verbose_name='Semestr letni'),
         ),
         migrations.AlterField(
             model_name='systemstate',
             name='semester_winter',
-            field=models.ForeignKey(blank=True, default=apps.offer.vote.models.system_state.SystemState._get_default_winter_semester, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='courses.Semester', verbose_name='Semestr zimowy'),
+            field=models.ForeignKey(blank=True, default=apps.offer.vote.models.system_state._get_default_winter_semester, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='courses.Semester', verbose_name='Semestr zimowy'),
         ),
         migrations.AlterField(
             model_name='systemstate',
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='systemstate',
             name='year',
-            field=models.CharField(default=apps.offer.vote.models.system_state.SystemState._get_default_year, max_length=7, validators=[apps.offer.vote.models.system_state.SystemState._validate_year_format], verbose_name='Rok akademicki'),
+            field=models.CharField(default=apps.offer.vote.models.system_state._get_default_year, max_length=7, validators=[apps.offer.vote.models.system_state._validate_year_format], verbose_name='Rok akademicki'),
         ),
         migrations.RemoveField(
             model_name='singlevote',
