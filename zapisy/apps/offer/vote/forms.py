@@ -1,5 +1,6 @@
 from django import forms
 
+from apps.enrollment.courses.models import Semester
 from apps.users.models import Student
 
 from .models import SingleVote, SystemState
@@ -70,18 +71,20 @@ def prepare_vote_formset(state: SystemState, student: Student, post=None):
 
     queryset = SingleVote.objects.filter(state=state, student=student)
     if state.is_vote_active():
-        formset_class = SingleVoteForm
+        FormsetClass = SingleVoteForm
+        limit = SystemState.DEFAULT_MAX_POINTS
         queryset = queryset.in_vote()
     elif state.correction_active_semester() is not None:
-        semester = state.correction_active_semester()
-        formset_class = SingleCorrectionFrom
+        semester: Semester = state.correction_active_semester()
+        limit = SingleVote.points_for_semester(student, state, semester.type)
+        FormsetClass = SingleCorrectionFrom
         queryset = queryset.in_semester(semester=semester)
     else:
         raise AssertionError("Voting or Correction must be active.")
 
     formset_factory = forms.modelformset_factory(
-        SingleVote, formset=SingleVoteFormset, form=formset_class, extra=0)
+        SingleVote, formset=SingleVoteFormset, form=FormsetClass, extra=0)
     if post:
-        return formset_factory(post)
+        return formset_factory(post, limit=limit)
     else:
-        return formset_factory(queryset=queryset)
+        return formset_factory(queryset=queryset, limit=limit)

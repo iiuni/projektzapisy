@@ -116,18 +116,6 @@ PIPELINE_CSS = {
             'media': 'screen,projection',
         },
     },
-
-    'vote': {
-        'source_filenames': (
-            'css/main.css',
-            'css/fereol.css',
-            'css/offer/vote.css'
-        ),
-        'output_filename': 'css/vote.min.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
     'old': {
         'source_filenames': (
             'css/bootstrap-1.2.0.css',

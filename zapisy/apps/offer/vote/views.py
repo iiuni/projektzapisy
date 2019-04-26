@@ -1,16 +1,13 @@
 from datetime import date
+
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
-from apps.enrollment.courses.models.course import CourseEntity
 
+from apps.enrollment.courses.models import CourseEntity, Semester
 from apps.offer.vote.models import SingleVote, SystemState
-from apps.enrollment.courses.models.course_type import Type
-from apps.enrollment.courses.models.semester import Semester
 from apps.users.decorators import student_required
 
 from .forms import prepare_vote_formset
@@ -18,10 +15,10 @@ from .forms import prepare_vote_formset
 
 @student_required
 def vote(request):
-    semester = Semester.objects.get_next()
-    system_state = SystemState.get_state_for_semester(semester)
+    """Renders voting form to the student and handles voting POST requests."""
+    system_state = SystemState.get_current_state()
 
-    if not system_state.is_vote_active() and system_state.correction_active_semester() is None:
+    if not system_state.is_vote_active() and (system_state.correction_active_semester() is None):
         messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
         return redirect('vote-main')
 
@@ -41,25 +38,29 @@ def vote(request):
 
 @login_required
 def vote_main(request):
-    """
-        Vote main page
-    """
-    semester = Semester.objects.get_next()
-    sytem_state = SystemState.get_state_for_semester(semester)
-    data = {'isVoteActive': sytem_state.is_vote_active(), 'max_points': 3,
-            'semester': Semester.get_current_semester()}
-    return render(request, 'offer/vote/index.html', data)
+    """Vote main page."""
+    system_state = SystemState.get_current_state()
+    is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
+    data = {
+        'is_vote_active': is_vote_active,
+        'max_points': SystemState.DEFAULT_MAX_POINTS,
+        'semester': Semester.get_current_semester()
+    }
+    return render(request, 'vote/index.html', data)
 
 
 @student_required
-def vote_view(request):
-    """
-        View of once given vote
-    """
-    votes = SingleVote.get_votes(request.user.student)
-    is_voting_active = SystemState.get_state(date.today().year).is_system_active()
+def my_vote(request):
+    """Shows the student his own vote."""
+    system_state = SystemState.get_current_state()
+    votes = SingleVote.objects.meaningful().filter(state=system_state, student=request.user.student)
 
-    return TemplateResponse(request, 'offer/vote/view.html', locals())
+    is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
+
+    return TemplateResponse(request, 'vote/my_vote.html', {
+        'votes': votes,
+        'is_vote_active': is_vote_active,
+    })
 
 
 @login_required

@@ -119,6 +119,17 @@ class SystemState(models.Model):
                 return None
         return state
 
+    @staticmethod
+    def get_current_state() -> Optional['SystemState']:
+        """Returns an upcoming system state.
+
+        This is a common use-case where we want a current (or upcoming if we are
+        at the edge of the academic years) system state.
+        """
+        semester = Semester.objects.get_next()
+        return SystemState.get_state_for_semester(semester)
+
+
     def is_vote_active(self, day: Optional[date] = None) -> bool:
         """Checks if voting (not the correction) is active.
 

@@ -2,10 +2,17 @@
 
 {% load crispy_forms_tags %}
 
+{% block main-subtitle %}Głosowanie{% endblock %}
+
 {% block offer_menu_vote %}class="active"{% endblock offer_menu_vote %}
 
-{% block all-content %}
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Głosowanie</li>
+{% endblock %}
 
+{% block all-content %}
 <form method="POST">
     {% csrf_token %}
     {{ formset.management_form }}

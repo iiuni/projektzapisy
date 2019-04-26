@@ -16,12 +16,12 @@
     {% endif %}
     {% if user.employee %}
     <li {% block enrollment_preferences %}{% endblock %}>
-            <a class="nav-link" href="{% url 'preferences-main' %}">Preferencje</a>
+        <a class="nav-link" href="{% url 'preferences-main' %}">Preferencje</a>
     </li>
     {% endif %}
     {% if user.employee or user.student %}
     <li {% block offer_menu_vote %}{% endblock %}>
-            <a class="nav-link" href="{% url 'vote-main' %}">Głosowanie</a>
+        <a class="nav-link" href="{% url 'vote-main' %}">Głosowanie</a>
     </li>
     {% endif %}
 

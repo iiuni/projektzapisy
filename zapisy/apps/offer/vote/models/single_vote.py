@@ -10,6 +10,8 @@ from .system_state import SystemState
 
 
 class SingleVoteQuerySet(models.QuerySet):
+    """Defines chainable filters on SingleVote querysets."""
+
     def in_semester(self, semester: Semester):
         """Filters only votes for courses taught in a given semester.
 
@@ -21,6 +23,10 @@ class SingleVoteQuerySet(models.QuerySet):
     def in_vote(self):
         """Filters only votes for courses in vote."""
         return self.filter(proposal__status=ProposalStatus.IN_VOTE)
+
+    def meaningful(self):
+        """Filters out null votes."""
+        return self.exclude(value=0, correction=0)
 
 
 class SingleVote(models.Model):
@@ -59,8 +65,18 @@ class SingleVote(models.Model):
         return self.correction or self.value
 
     @staticmethod
-    def points_for_semester(student: Student, state: SystemState, semester: SemesterChoices):
-        pass
+    def points_for_semester(student: Student, state: SystemState, semester: SemesterChoices) -> int:
+        """Counts votes the student cast for proposals in semester.
+
+        Only votes for proposals that aren't free are counted. The purpose is to
+        set the limit for correction.
+        """
+        agg_dict = SingleVote.objects.filter(student=student,
+                                             state=state,
+                                             proposal__semester=semester,
+                                             proposal__course_type__free_in_vote=True).aggregate(
+                                                 models.Sum('value'))
+        return agg_dict.get('value__sum')
 
     @staticmethod
     def create_missing_votes(student: Student, state: SystemState):
