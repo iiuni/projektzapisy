@@ -18,9 +18,9 @@
     <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
     {% if proposal %}
         <li class="breadcrumb-item"><a href="{% url 'my-proposals' %}">Moje propozycje</a></li>
-        <li class="breadcrumb-item">{{ proposal.name }}</li>
+        <li class="breadcrumb-item active">{{ proposal.name }}</li>
     {% else %}
-        <li class="breadcrumb-item">Moje propozycje</li>
+        <li class="breadcrumb-item active">Moje propozycje</li>
     {% endif %}
 {% endblock %}
 
