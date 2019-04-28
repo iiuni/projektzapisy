@@ -12,6 +12,7 @@ def status_label(status: int) -> str:
     status = ProposalStatus(status)
     return status._name_.lower()
 
+
 @register.filter
 def semester_display(semester: SemesterChoices) -> str:
     """Returns a display value of a SemesterChoices enum."""

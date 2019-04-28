@@ -129,7 +129,6 @@ class SystemState(models.Model):
         semester = Semester.objects.get_next()
         return SystemState.get_state_for_semester(semester)
 
-
     def is_vote_active(self, day: Optional[date] = None) -> bool:
         """Checks if voting (not the correction) is active.
 

@@ -30,7 +30,7 @@ class SingleVoteQuerySet(models.QuerySet):
 
     def true_val(self):
         """Annotates the votes with their true value.
-        
+
         True value is the 'value' field before the correction has been cast, and
         'correction' afterwards. The same as `SingleVote.val` property.
         """
@@ -39,6 +39,7 @@ class SingleVoteQuerySet(models.QuerySet):
             default='correction'
         )
         return self.annotate(true_val=val_ann)
+
 
 class SingleVote(models.Model):
     """Student's single vote for a course proposal in an academic cycle (year).
