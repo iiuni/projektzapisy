@@ -1,7 +1,0 @@
-<li><span>{{ label }}</span>
-	<ul>
-		{% for vote in votes %}
-			<li><span><a href="{% url 'offer-page' vote.entity.slug %}">{{ vote.entity.name }}</a></span> {{ vote.correction }}</li>
-		{% endfor %}
-	</ul>
-</li>
