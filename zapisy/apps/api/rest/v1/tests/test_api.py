@@ -13,9 +13,9 @@ from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFact
 class VoteSystemTests(TestCase):
 
     def setUp(self):
-        state1 = SystemState(year=2010)
+        state1 = SystemState(year="2010/11")
         state1.save()
-        state2 = SystemState(year=2018)
+        state2 = SystemState(year="2018/19")
         state2.save()
         students = [StudentFactory(), StudentFactory()]
         courses = [CourseEntityFactory(name="Pranie"), CourseEntityFactory(name="Zmywanie")]
@@ -66,8 +66,14 @@ class VoteSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         resp_json = json.loads(json.dumps(response.data))
         self.assertEqual(len(resp_json), 2)
-        self.assertEqual(resp_json[0], {"id": self.state1.pk, "state_name": "Ustawienia systemu na rok 2010"})
-        self.assertEqual(resp_json[1], {"id": self.state2.pk, "state_name": "Ustawienia systemu na rok 2018"})
+        self.assertEqual(resp_json[0], {
+            "id": self.state1.pk,
+            "state_name": "Ustawienia systemu na rok akademicki 2010/11"
+        })
+        self.assertEqual(resp_json[1], {
+            "id": self.state2.pk,
+            "state_name": "Ustawienia systemu na rok akademicki 2018/19"
+        })
 
     def test_votes_endpoint(self):
         """Tests votes endpoint.
