@@ -45,7 +45,6 @@ class AdminTestCase(TestCase):
         "/fereol_admin/users/student/",
         "/fereol_admin/auth/group/",
         "/fereol_admin/auth/user/",
-        "/fereol_admin/vote/singlevote/",
         "/fereol_admin/vote/systemstate/"]
 
     @classmethod
