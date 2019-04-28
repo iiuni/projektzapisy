@@ -23,7 +23,7 @@ class SingleCorrectionFrom(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance:
             value = self.instance.value
-            self.fields['correction'].choices = filter(lambda v, l: v >= value,
+            self.fields['correction'].choices = filter(lambda v: v[0] >= value,
                                                        SingleVote.VALUE_CHOICES)
             self.fields['correction'].default = value
 
@@ -69,22 +69,24 @@ def prepare_vote_formset(state: SystemState, student: Student, post=None):
     """
     SingleVote.create_missing_votes(student, state)
 
-    queryset = SingleVote.objects.filter(state=state, student=student)
+    queryset = SingleVote.objects.filter(state=state, student=student).select_related(
+        'proposal', 'proposal__course_type')
     if state.is_vote_active():
-        FormsetClass = SingleVoteForm
+        FormClass = SingleVoteForm
         limit = SystemState.DEFAULT_MAX_POINTS
         queryset = queryset.in_vote()
     elif state.correction_active_semester() is not None:
         semester: Semester = state.correction_active_semester()
         limit = SingleVote.points_for_semester(student, state, semester.type)
-        FormsetClass = SingleCorrectionFrom
+        FormClass = SingleCorrectionFrom
         queryset = queryset.in_semester(semester=semester)
     else:
         raise AssertionError("Voting or Correction must be active.")
 
     formset_factory = forms.modelformset_factory(
-        SingleVote, formset=SingleVoteFormset, form=FormsetClass, extra=0)
+        SingleVote, formset=SingleVoteFormset, form=FormClass, extra=0)
     if post:
         return formset_factory(post, limit=limit)
     else:
-        return formset_factory(queryset=queryset, limit=limit)
+        formset = formset_factory(queryset=queryset, limit=limit)
+        return formset

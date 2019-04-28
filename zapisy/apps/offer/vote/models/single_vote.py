@@ -28,6 +28,17 @@ class SingleVoteQuerySet(models.QuerySet):
         """Filters out null votes."""
         return self.exclude(value=0, correction=0)
 
+    def true_val(self):
+        """Annotates the votes with their true value.
+        
+        True value is the 'value' field before the correction has been cast, and
+        'correction' afterwards. The same as `SingleVote.val` property.
+        """
+        val_ann = models.Case(
+            models.When(correction=0, then='value'),
+            default='correction'
+        )
+        return self.annotate(true_val=val_ann)
 
 class SingleVote(models.Model):
     """Student's single vote for a course proposal in an academic cycle (year).
@@ -57,7 +68,7 @@ class SingleVote(models.Model):
 
     def __str__(self):
         return (f"[{self.state.year}] Głos użytkownika: {self.student.user.username}; "
-                f"{self.proposal.name}; {self.value}")
+                f"{self.proposal.name}; {self.val}")
 
     @property
     def val(self):

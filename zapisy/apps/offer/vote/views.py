@@ -1,12 +1,10 @@
-from datetime import date
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
-from django.shortcuts import redirect, render
-from django.template.response import TemplateResponse
+from django.db import models
+from django.shortcuts import redirect, render, get_object_or_404
 
-from apps.enrollment.courses.models import CourseEntity, Semester
+from apps.enrollment.courses.models import Semester
+from apps.offer.proposal.models import Proposal
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.decorators import student_required
 
@@ -57,7 +55,7 @@ def my_vote(request):
 
     is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
 
-    return TemplateResponse(request, 'vote/my_vote.html', {
+    return render(request, 'vote/my_vote.html', {
         'votes': votes,
         'is_vote_active': is_vote_active,
     })
@@ -65,52 +63,36 @@ def my_vote(request):
 
 @login_required
 def vote_summary(request):
-    """
-        summary for vote
-    """
-    summer = []
-    winter = []
-    unknown = []
+    """Summarizes the voting period."""
+    state = SystemState.get_current_state()
 
-    year = date.today().year
-    state = SystemState.get_state(year)
+    votes_sum_agg = models.Sum('true_val')
+    votes_count_agg = models.Count('id')
 
-    subs = CourseEntity.get_vote()
-    subs = SingleVote.add_vote_count(subs, state)
+    proposals = SingleVote.objects.filter(
+        state=state).in_vote().meaningful().true_val().order_by('proposal').values(
+            'proposal', 'proposal__name', 'proposal__slug', 'proposal__semester')
 
-    for sub in subs:
-        if sub.semester == 'z':
-            winter.append((sub.votes, sub.voters, sub))
-        elif sub.semester == 'l':
-            summer.append((sub.votes, sub.voters, sub))
-        elif sub.semester == 'u':
-            unknown.append((sub.votes, sub.voters, sub))
+    proposals = proposals.annotate(total=votes_sum_agg).annotate(count=votes_count_agg)
 
-    data = {
-        'winter': winter,
-        'summer': summer,
-        'unknown': unknown,
-        'is_voting_active': state.is_system_active()
-    }
-
-    return render(request, 'offer/vote/summary.html', data)
+    return render(request, 'vote/summary.html', {
+        'proposals': proposals,
+    })
 
 
 @login_required
 def proposal_vote_summary(request, slug):
-    """
-        Summary for given course
-    """
-    try:
-        course = CourseEntity.noremoved.get(slug=slug)
-    except ObjectDoesNotExist:
-        raise Http404
+    """Lists students voting for a proposal."""
+    proposal: Proposal = get_object_or_404(Proposal, slug=slug)
+    state = SystemState.get_current_state()
 
-    points, votes, voters = SingleVote.get_points_and_voters(course)
+    votes = SingleVote.objects.meaningful().filter(state=state, proposal=proposal).select_related(
+        'student', 'student__user').true_val()
 
-    data = {'proposal': course,
-            'points': points,
-            'votes': votes,
-            'voters': voters}
+    total = votes.aggregate(total=models.Sum('true_val')).get('total', 0)
 
-    return render(request, 'offer/vote/proposal_summary.html', data)
+    return render(request, 'vote/proposal_summary.html', {
+        'proposal': proposal,
+        'votes': votes,
+        'total': total,
+    })
