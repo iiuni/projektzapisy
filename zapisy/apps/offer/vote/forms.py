@@ -86,7 +86,7 @@ def prepare_vote_formset(state: SystemState, student: Student, post=None):
     formset_factory = forms.modelformset_factory(
         SingleVote, formset=SingleVoteFormset, form=FormClass, extra=0)
     if post:
-        return formset_factory(post, limit=limit)
+        formset = formset_factory(post, limit=limit)
     else:
         formset = formset_factory(queryset=queryset, limit=limit)
-        return formset
+    return formset

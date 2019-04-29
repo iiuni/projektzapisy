@@ -86,7 +86,7 @@ class SingleVote(models.Model):
         agg_dict = SingleVote.objects.filter(student=student,
                                              state=state,
                                              proposal__semester=semester,
-                                             proposal__course_type__free_in_vote=True).aggregate(
+                                             proposal__course_type__free_in_vote=False).aggregate(
                                                  models.Sum('value'))
         return agg_dict.get('value__sum')
 

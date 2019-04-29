@@ -1,6 +1,7 @@
 {% extends "offer/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block main-subtitle %}Głosowanie{% endblock %}
 
@@ -13,6 +14,10 @@
 {% endblock %}
 
 {% block all-content %}
+
+{# This will be used by Vue component to display currently used points #}
+<div id="point-counter">{{ formset.limit }}</div>
+
 <form method="POST">
     {% csrf_token %}
     {{ formset.management_form }}
@@ -31,7 +36,13 @@
             {% for form in forms %}
                 <tr>
                     <th scope="row">{{ form.instance.proposal.name }}</th>
-                    <td>{{ form|crispy }}</td>
+                    <td
+                            {% if not form.instance.course_type.free_in_vote %}
+                                class="limit"
+                            {% endif %}
+                    >
+                        {{ form|crispy }}
+                    </td>
                 </tr>
             {% endfor %}
             </table>
@@ -41,5 +52,7 @@
 
     <button type="submit" class="btn btn-primary">Głosuj</button>
 </form>
+
+{% render_bundle "vote-point-counter" %}
 
 {% endblock all-content %}
