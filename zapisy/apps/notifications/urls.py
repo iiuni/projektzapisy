@@ -1,6 +1,9 @@
 from django.conf.urls import url
 from . import views
 
+# Urls: "get", "count", "delete" and "delete/all" 
+# are in charge of manage notifications in Widget.vue
+
 app_name = "notifications"
 urlpatterns = [
     url(r'^get$', views.get_notifications, name='get_notifications'),

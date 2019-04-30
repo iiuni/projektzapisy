@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
 from apps.users.models import BaseUser
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -24,14 +24,16 @@ def get_notifications(request):
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     now = datetime.now()
     repo = get_notifications_repository()
-    notifications = [
-        [render_description(notification.description_id, notification.description_args), notification.issued_on.strftime(DATE_TIME_FORMAT)]
-        for notification in repo.get_all_for_user(request.user)
-    ]
-    key_list = [i for i in range(len(notifications))]
-    d = [[key] + value for (key, value) in zip(key_list, notifications)]
+    notifications = [ {
+        'description': render_description(notification.description_id, notification.description_args),
+        'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
+    } for notification in repo.get_all_for_user(request.user) ]
 
-    return HttpResponse(json.dumps(d), content_type="application/json")
+    for (i, d) in enumerate(notifications):
+        d.update({'key': i})
+
+
+    return JsonResponse(notifications, safe=False)
 
 
 @login_required
@@ -39,7 +41,7 @@ def get_counter(request):
     repo = get_notifications_repository()
     notification_counter = repo.get_count_for_user(request.user)
 
-    return HttpResponse(json.dumps(notification_counter), content_type="application/json")
+    return JsonResponse(notification_counter, safe=False)
 
 
 @require_POST
@@ -77,9 +79,10 @@ def create_form(request):
 @login_required
 def deleteAll(request):
     """Removes all user's notifications"""
-    now = datetime.now()
-    repo = get_notifications_repository()
-    repo.remove_all_older_than(request.user, now)
+    if request.method == 'POST':
+        now = datetime.now()
+        repo = get_notifications_repository()
+        repo.remove_all_older_than(request.user, now)
 
     return get_notifications(request)
 
@@ -89,10 +92,11 @@ def deleteOne(request):
     """Removes one notification"""
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
-    issued_on = request.GET.get('issued_on')
-    issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
+    if request.method == 'POST':
+        issued_on = request.POST.get('issued_on')
+        issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
 
-    repo = get_notifications_repository()
-    t = repo.remove_one_issued_on(request.user, issued_on)
-
+        repo = get_notifications_repository()
+        repo.remove_one_issued_on(request.user, issued_on)
+    
     return get_notifications(request)
