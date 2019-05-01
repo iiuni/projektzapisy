@@ -2,7 +2,6 @@
 import Vue from "vue";
 import axios from 'axios';
 import Component from "vue-class-component";
-import { debounce } from "lodash";
 
 export default {
     
@@ -22,7 +21,6 @@ export default {
         getNotifications: function () {
             axios.get('/notifications/get')
             .then((result) => {
-                console.log(result.data);
                 this.n_array = result.data
             })
         },
@@ -51,12 +49,20 @@ export default {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                 }}
+            }).then((request) => {
+                this.n_array = request.data
             })
-            this.getCount()
+            this.getCount();
+        },
+        refresh: function(){
+            if(this.n_counter == 0){
+                this.getCount();
+            }
         }
     },
     created () {
-        this.getCount()
+        this.getCount();
+        setInterval(this.refresh, 2000);
     }
 }
 
@@ -80,13 +86,13 @@ export default {
             <form>
                 <p>Lista powiadomień:</p>
                 <div v-if="n_counter != 0" class="place-for-notifications">
-                    <div v-for="elem in n_array" :key="elem.key" class="alert alert-dismissible fade show border border-info rounded hoverable onemessage">
-                        <div>
-                            <span class="">{{ elem.description }}</span>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="deleteOne(elem.key)">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                    <div v-for="elem in n_array" :key="elem.key" class="alert alert-dismissible show border border-info rounded hoverable onemessage">
+                        <a :href="elem.target">
+                            <div>{{ elem.description }}</div>
+                        </a>
+                        <button type="button" class="close" aria-label="Close" @click="deleteOne(elem.key)">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -138,12 +144,15 @@ export default {
 }
 
 .onemessage {
-    cursor: pointer;
     margin-bottom: 10px;
 }
 
 .onemessage:hover{
     background-color: #00709e12;
+}
+
+.onemessage a{
+    color: #212529;
 }
 
 .place-for-notifications{

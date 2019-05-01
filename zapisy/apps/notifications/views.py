@@ -24,14 +24,14 @@ def get_notifications(request):
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     now = datetime.now()
     repo = get_notifications_repository()
-    notifications = [ {
+    notifications = [{
         'description': render_description(notification.description_id, notification.description_args),
         'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
-    } for notification in repo.get_all_for_user(request.user) ]
+        'target': notification.target,
+    } for notification in repo.get_all_for_user(request.user)]
 
     for (i, d) in enumerate(notifications):
         d.update({'key': i})
-
 
     return JsonResponse(notifications, safe=False)
 

@@ -31,6 +31,7 @@ class JsonNotificationSerializer(NotificationSerializer):
             'issued_on': json_friendly_issued_on,
             'description_id': notification.description_id,
             'description_args': notification.description_args,
+            'target': notification.target,
         }, sort_keys=True, indent=None)
 
     def deserialize(self, serialized: str) -> Notification:
