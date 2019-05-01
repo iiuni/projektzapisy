@@ -98,5 +98,5 @@ def deleteOne(request):
 
         repo = get_notifications_repository()
         repo.remove_one_issued_on(request.user, issued_on)
-    
+
     return get_notifications(request)
