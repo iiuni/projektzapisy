@@ -29,6 +29,8 @@ class SingleCorrectionFrom(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        if 'correction' not in cleaned_data:
+            raise forms.ValidationError("Wartość korekty musi być podana.")
         if cleaned_data['correction'] < self.instance.value:
             raise forms.ValidationError(
                 "Wartość w korekcie nie może być niższa niż w pierwszym głosowaniu.")
