@@ -1,5 +1,5 @@
 export default {
     bundles: {
-        "point-counter": ["point-counter.js"],
+        "point-counter": ["point-counter.ts"],
     },
 };

@@ -20,8 +20,11 @@
       "lodash",
       "bootstrap",
       "popper.js"
-    ]
+    ],
   },
+  "files": [
+    "./webpack_resources/typescript_decls.d.ts",
+  ],
   "exclude": [
     "./node_modules",
     // Config files are compiled separately, see tsconfig.webpack-config
