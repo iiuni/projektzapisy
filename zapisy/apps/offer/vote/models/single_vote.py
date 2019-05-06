@@ -111,5 +111,5 @@ class SingleVote(models.Model):
                     SingleVote(student=student,
                                state=state,
                                proposal=proposal,
-                               entity=proposal.entity))
+                               entity_id=proposal.entity_id))
         SingleVote.objects.bulk_create(new_votes)

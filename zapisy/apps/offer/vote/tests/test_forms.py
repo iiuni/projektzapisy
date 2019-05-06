@@ -153,6 +153,18 @@ class VoteFormsetTest(test.TestCase):
                                  [3, 0, 2, 2, 3, 2],
                                  transform=lambda sv: sv.value)
 
+    @freeze_time(date(2011, 6, 2))
+    def test_form_view(self):
+        c = test.Client()
+        c.force_login(self.student1.user)
+
+        # This number is a bit artificial — we just care that it is a constant.
+        # I have inspected the queries and they look ok, so this is just
+        # supposed to test that no one breaks performance in the future.
+        with self.assertNumQueries(18):
+            response = c.get('/vote/vote/')
+        self.assertContains(response, '<select', count=6)
+
     @freeze_time(date(2011, 9, 10))
     def test_correction_form_correct(self):
         formset = prepare_vote_formset(self.state, self.student2)
