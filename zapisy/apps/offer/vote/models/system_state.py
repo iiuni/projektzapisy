@@ -40,8 +40,7 @@ def _validate_year_format(value: str):
     """Verifies that the year is in format YYYY/YY."""
     match = re.fullmatch(r'(\d{4})/(\d{2})', value)
     if not match:
-        raise ValidationError(
-            "%(value)s does not comply to format YYYY/YY.", params={'value', value})
+        raise ValidationError(f"{value} does not comply to format YYYY/YY.")
     year1 = int(match.group(1)) % 100
     year2 = int(match.group(2))
     if year1 + 1 != year2:
