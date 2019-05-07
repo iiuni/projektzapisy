@@ -4,7 +4,7 @@ import axios from 'axios';
 import Component from "vue-class-component";
 
 export default {
-    
+
     data () {
         return {
             n_counter: 0,
@@ -71,7 +71,7 @@ export default {
 
 <template>
 <div>
-    
+
     <li class="nav-item dropdown" id="notification-dropdown">
         <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -84,7 +84,6 @@ export default {
         </a>
         <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
             <form>
-                <p>Lista powiadomień:</p>
                 <div v-if="n_counter != 0" class="place-for-notifications">
                     <div v-for="elem in n_array" :key="elem.key" class="alert alert-dismissible show border border-info rounded hoverable onemessage">
                         <a :href="elem.target">
@@ -116,35 +115,29 @@ export default {
 #notification-dropdown .dropdown-menu{
     background: rgb(248, 249, 250);
     padding-bottom: 12px;
-    padding-top: 8px;
+    padding-top: 0;
     min-width: 350px;
 }
+
 .specialdropdown::after{
     content: none;
 }
+
 .dropdown-menu-right{
     right: -160px;
 }
+
 .bell{
     height: 23px;
     padding: 0;
 }
+
 #modal-container {
   max-height: 500px;
 }
 
-#modal-container p {
-    display: block;
-    width: 100%;
-    font-size: 18px;
-    color: #00709e;
-    font-weight: bold;
-    margin-bottom: 8px;
-    margin-left: 8px;
-}
-
 .onemessage {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .onemessage:hover{
@@ -158,6 +151,7 @@ export default {
 .place-for-notifications{
     max-height: 395px;
     overflow-y: scroll;
+    padding-top: 8px;
     margin-left: 7px;
     padding-right: 5px;
 }
@@ -167,6 +161,7 @@ export default {
     text-align: center;
     padding-bottom: 10px;
     padding-top: 10px;
+    margin-top: 10px;
 }
 
 .deleteAllM {

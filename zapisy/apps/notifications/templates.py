@@ -12,7 +12,7 @@ class NotificationType(str, Enum):
 
 mapping = {
     NotificationType.PULLED_FROM_QUEUE:
-    'Nastąpiło wciągnięcie Cię do grupy przedmiotu {course_name}, gdzie prowadzący to {teacher} a '
+    'Nastąpiło wciągnięcie Cię do grupy przedmiotu {course_name}, gdzie prowadzący to {teacher}, a '
     'typ grupy {type}.',
     NotificationType.NOT_PULLED_FROM_QUEUE:
     'Proces wciągania Cię do grupy przedmiotu {course_name}, gdzie prowadzący to {teacher} a '
