@@ -34,18 +34,18 @@
                 }
             </style>
             {% for form in forms %}
-                <tr>
+                <tr
+                        {% if not form.instance.proposal.course_type.free_in_vote %}
+                            class="limit"
+                        {% endif %}
+                >
                     <th scope="row">
                         {{ form.instance.proposal.name }}
                         {% if form.instance.proposal.course_type.free_in_vote %}
                             <small class="text-muted ml-2">Przedmiot darmowy</small>
                         {% endif %}
                     </th>
-                    <td
-                            {% if not form.instance.proposal.course_type.free_in_vote %}
-                                class="limit"
-                            {% endif %}
-                    >
+                    <td>
                         {{ form|crispy }}
                     </td>
                 </tr>
