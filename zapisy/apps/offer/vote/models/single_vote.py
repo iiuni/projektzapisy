@@ -18,7 +18,7 @@ class SingleVoteQuerySet(models.QuerySet):
         NOTE: This function will need to be modified when CourseEntity is
         fully replaced with proposal model.
         """
-        return self.filter(entity__course__semester=semester)
+        return self.filter(proposal__entity__course__semester=semester)
 
     def in_vote(self):
         """Filters only votes for courses in vote."""
@@ -47,7 +47,6 @@ class SingleVote(models.Model):
     VALUE_CHOICES = [(0, '0'), (1, '1'), (2, '2'), (3, '3')]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="głosujący")
-    entity = models.ForeignKey(CourseEntity, verbose_name='podstawa', on_delete=models.CASCADE)
     proposal = models.ForeignKey(
         Proposal, verbose_name="propozycja", on_delete=models.CASCADE, null=True)
 
@@ -63,7 +62,7 @@ class SingleVote(models.Model):
         verbose_name = "pojedynczy głos"
         verbose_name_plural = "pojedyncze głosy"
         app_label = 'vote'
-        ordering = ('student', 'proposal', 'entity', '-value')
+        ordering = ('student', 'proposal', '-value')
 
         unique_together = ('proposal', 'state', 'student')
 
@@ -110,6 +109,5 @@ class SingleVote(models.Model):
                 new_votes.append(
                     SingleVote(student=student,
                                state=state,
-                               proposal=proposal,
-                               entity_id=proposal.entity_id))
+                               proposal=proposal))
         SingleVote.objects.bulk_create(new_votes)
