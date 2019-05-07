@@ -165,6 +165,12 @@ class VoteFormsetTest(test.TestCase):
             response = c.get('/vote/vote/')
         self.assertContains(response, '<select', count=6)
 
+        # Number of queries should not change when we add one more proposal.
+        ProposalFactory(status=ProposalStatus.IN_VOTE)
+        with self.assertNumQueries(18):
+            response = c.get('/vote/vote/')
+        self.assertContains(response, '<select', count=7)
+
     @freeze_time(date(2011, 9, 10))
     def test_correction_form_correct(self):
         formset = prepare_vote_formset(self.state, self.student2)
