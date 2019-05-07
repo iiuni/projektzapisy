@@ -219,7 +219,6 @@
   fields:
     state_id: 1
     student_id: 1
-    entity_id: 1
     proposal_id: 1
     correction: 2
 
@@ -229,7 +228,6 @@
   fields:
     state_id: 1
     student_id: 2
-    entity_id: 3
     proposal_id: 3
     correction: 2
 - model: vote.SingleVote
@@ -237,6 +235,5 @@
   fields:
     state_id: 1
     student_id: 2
-    entity_id: 1
     proposal_id: 1
     correction: 1
