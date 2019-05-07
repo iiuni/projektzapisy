@@ -113,7 +113,7 @@ class SingleVoteSerializer(serializers.ModelSerializer):
     Gets correct vote value, course name and student id.
     """
     vote_points = serializers.SerializerMethodField()
-    course_name = serializers.CharField(source='entity.name')
+    course_name = serializers.CharField(source='proposal.name')
 
     def get_vote_points(self, vote_model):
         """Getter function for vote_points field."""
