@@ -1,34 +1,47 @@
 from datetime import datetime
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
 from apps.users.models import BaseUser
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
-from apps.notifications.repositories import get_notifications_repository
+from apps.notifications.repositories import get_notifications_repository, RedisNotificationsRepository
 from apps.notifications.utils import render_description
 from libs.ajax_messages import AjaxFailureMessage
 from apps.users import views
 
 
-def index(request):
-    if not request.user.is_authenticated:
-        return AjaxFailureMessage.auto_render(
-            'NotAuthenticated', 'Nie jesteś zalogowany.', request)
+@login_required
+def get_notifications(request):
+    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     now = datetime.now()
     repo = get_notifications_repository()
-    notifications = [
-        render_description(notification.description_id, notification.description_args)
-        for notification in repo.get_all_for_user(request.user)
-    ]
-    #repo.remove_all_older_than(request.user, now)
+    notifications = [{
+        'description': render_description(notification.description_id, notification.description_args),
+        'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
+        'target': notification.target,
+    } for notification in repo.get_all_for_user(request.user)]
 
-    return render(request, 'notifications/index.html', {'notifications': notifications})
+    for (i, d) in enumerate(notifications):
+        d.update({'key': i})
+
+    return JsonResponse(notifications, safe=False)
+
+
+@login_required
+def get_counter(request):
+    repo = get_notifications_repository()
+    notification_counter = repo.get_count_for_user(request.user)
+
+    return JsonResponse(notification_counter, safe=False)
 
 
 @require_POST
@@ -61,3 +74,29 @@ def create_form(request):
     if request.method == 'POST':
         return PreferencesFormStudent(request.POST, instance=instance)
     return PreferencesFormStudent(instance=instance)
+
+
+@login_required
+def deleteAll(request):
+    """Removes all user's notifications"""
+    if request.method == 'POST':
+        now = datetime.now()
+        repo = get_notifications_repository()
+        repo.remove_all_older_than(request.user, now)
+
+    return get_notifications(request)
+
+
+@login_required
+def deleteOne(request):
+    """Removes one notification"""
+    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+
+    if request.method == 'POST':
+        issued_on = request.POST.get('issued_on')
+        issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
+
+        repo = get_notifications_repository()
+        repo.remove_one_issued_on(request.user, issued_on)
+
+    return get_notifications(request)

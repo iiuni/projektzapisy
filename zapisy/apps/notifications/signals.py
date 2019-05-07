@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
 
 from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
@@ -8,6 +9,8 @@ from apps.notifications.api import notify_user, notify_selected_users
 from apps.notifications.models import get_all_users_in_course_groups, get_all_users, get_all_students
 from apps.notifications.custom_signals import student_pulled, student_not_pulled, teacher_changed
 from apps.notifications.templates import NotificationType
+
+from apps.news.views import all_news
 
 
 @receiver(post_save, sender=Group)
@@ -89,9 +92,10 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
 
     users = get_all_students()
+    target = reverse(all_news)
+
     notify_selected_users(
         users,
         Notification(
-            NotificationType.NEWS_HAS_BEEN_ADDED, {}
-        )
-    )
+            NotificationType.NEWS_HAS_BEEN_ADDED, {}, target
+        ))

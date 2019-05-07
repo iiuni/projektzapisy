@@ -172,7 +172,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
-                'apps.notifications.context_processors.notification_ico',
                 'apps.users.context_processors.roles',
             ],
             'loaders': TEMPLATE_LOADERS_TO_USE
