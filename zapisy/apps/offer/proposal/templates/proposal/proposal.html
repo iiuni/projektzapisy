@@ -1,10 +1,18 @@
 <h2>{{course.name}}
 {% if user.is_staff or course.owner == user.employee %}
-    <a class="btn btn-sm btn-outline-info mx-3" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
+    <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
+    {% if course.get_status_display == "szkic" %}
+        <a class="btn btn-sm btn-outline-danger mx-1" 
+          href="{% url 'proposal-delete' course.slug %}"
+          onclick="return confirm('Na pewno usunąć propozycję?');">
+            Usuń szkic
+        </a>
+    {% endif %}
 {% endif %}
 {% if user.employee %}
-    <a class="btn btn-sm btn-outline-secondary" href="{% url 'proposal-clone' course.slug %}">Sklonuj</a>
+    <a class="btn btn-sm btn-outline-secondary mx-1" href="{% url 'proposal-clone' course.slug %}">Sklonuj</a>
 {% endif %}
+
 </h2>
 
 {% include 'proposal/proposal_info.html' with course=course %}

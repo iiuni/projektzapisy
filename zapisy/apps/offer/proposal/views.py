@@ -84,3 +84,18 @@ def proposal_clone(request, slug):
     return render(request, 'proposal/edit-proposal.html', {
         'form': form,
     })
+
+
+@employee_required
+def proposal_delete_draft(request, slug):
+    """Deletes draft of a proposal if it belongs to the requesting employee."""
+    proposal = get_object_or_404(Proposal, slug=slug)
+    # We actually allow staff members to do that even though they wouldn't see
+    # other's drafts witout a link.
+    if not proposal.owner == request.user.employee and not request.user.is_staff:
+        raise PermissionDenied
+    if not proposal.status == ProposalStatus.DRAFT:
+        raise PermissionDenied
+    proposal.delete()
+    messages.info(request, f"Usunięto propozycję <em>{proposal.name}</em>.")
+    return redirect('my-proposals')
