@@ -117,17 +117,6 @@ PIPELINE_CSS = {
         },
     },
 
-    'proposal': {
-        'source_filenames': (
-            'css/main.css',
-            'css/fereol.css',
-            'css/offer/proposal.css'
-        ),
-        'output_filename': 'css/proposal.min.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
     'vote': {
         'source_filenames': (
             'css/main.css',
@@ -284,56 +273,6 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/studentlist.min.js',
     },
-
-    'proposal': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/utils.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/components/topBarFilter.js',
-            'js/common/listFilter.js',
-            'js/common/listFilter-courseType.js',
-            'js/common/FilteredCoursesList.js',
-            'js/offer/proposal/OfferCoursesList.js',
-            'js/common/courses-list-filters-ui.js'
-        ),
-        'output_filename': 'js/proposal.min.js',
-
-    },
-
-    'proposal_edit': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-
-            'admin/js/core.js',
-            'admin/js/admin/RelatedObjectLookups.js',
-            'admin/js/jquery.js',
-            'admin/js/jquery.init.js',
-            'admin/js/actions.js',
-            'admin/js/urlify.js',
-            'admin/js/prepopulate.js',
-            'admin/js/SelectBox.js',
-            'admin/js/SelectFilter2.js',
-            'js/tinymce/tinymce.min.js',
-            'js/textareas.js',
-            'js/jquery/jquery.formset.js',
-            'js/offer/proposal/noAdmin.js',
-            'js/offer/proposal/proposal.js'
-
-        ),
-        'output_filename': 'js/proposal_form.min.js',
-
-    },
-
 
     'preferences': {
         'source_filenames': (
