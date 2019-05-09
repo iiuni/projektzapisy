@@ -243,6 +243,7 @@ class EditProposalForm(forms.ModelForm):
                 egzaminie_
                   * udział w egzaminie **??**
                   * dodatkowe konsultacje w ramach potrzeb **??**
+
                 ## Praca własna studenta:
                 _np. rozwiązywanie zadań z list · przygotowanie do
                 kolokwium/egzaminu · czytanie literatury · rozwiązywanie zadań
