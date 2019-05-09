@@ -1,7 +1,9 @@
+{% load proposal_status %}
+
 <h2>{{course.name}}
 {% if user.is_staff or course.owner == user.employee %}
     <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
-    {% if course.get_status_display == "szkic" %}
+    {% if course.status|status_label == "draft" %}
         <a class="btn btn-sm btn-outline-danger mx-1" 
           href="{% url 'proposal-delete' course.slug %}"
           onclick="return confirm('Na pewno usunąć propozycję?');">
