@@ -24,11 +24,6 @@ class ProposalAdmin(admin.ModelAdmin):
         'put_under_vote',
     ]
 
-    # def __init__(self, *args, **kwargs):
-    #     """We save queries by loading all semesters into memory."""
-    #     super().__init__(*args, **kwargs)
-    #     self.semesters = {s.id: s for s in Semester.objects.all()}
-
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related('owner__user', 'course_type')
@@ -43,10 +38,13 @@ class ProposalAdmin(admin.ModelAdmin):
 
     def last_semester(self, obj):
         """Transforms the id of last semester into a proper object."""
-        # if obj._last_semester is None:
-        #     return None
-        # return self.semesters[obj._last_semester]
-        return obj._last_semester
+        # Load all semesters into memory once instead of querying them by id
+        # separately.
+        if getattr(self, 'semesters', None) is None:
+            self.semesters = {s.id: s for s in Semester.objects.all()}
+        if obj._last_semester is None:
+            return None
+        return self.semesters[obj._last_semester]
     last_semester.short_description = "Ostatni semestr"
     last_semester.admin_order_field = '_last_semester'
 
