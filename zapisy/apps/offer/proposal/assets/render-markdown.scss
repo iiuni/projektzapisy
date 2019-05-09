@@ -1,0 +1,26 @@
+// Scale down headers in course description and syllabus sections. We do that
+// because H1 used in the markdown description should not be larger than h2
+// before it.
+
+
+// We are importing Boostrap variables to relate our font sizes to those from
+// Boostrap.
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.markdown {
+    // Description contents will be slightly indented and visually separated
+    // from the headers.
+    margin: map-get($spacers, 2) 0 map-get($spacers, 4) map-get($spacers, 2);
+
+    // H1 in the description must be visibly smaller than H3 outside.
+    h1 {
+        font-size: $h3-font-size * 0.75;
+    }
+    h2 { 
+        font-size: $h4-font-size * 0.75;
+    }
+    h3 {
+        font-size: $h5-font-size * 0.75;
+    }
+}

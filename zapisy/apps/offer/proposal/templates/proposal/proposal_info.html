@@ -86,11 +86,7 @@
 
 <div class="description">
     <h3>Opis przedmiotu:</h3>
-    {% if course.description %}
-    <div class="markdown">{{ course.description }}</div>
-    {% else %}
-    <p>Brak</p>
-    {% endif %}
+    <div class="markdown">{{ course.description.strip|default:"Brak" }}</div>
 </div>
 
 {% if request.user.is_authenticated %}
@@ -100,31 +96,31 @@
     </a>
     <div class="collapse mt-3 d-print-block" id="syllabus">
         <h3>Metody kształcenia</h3>
-        <div class="markdown">{{ course.teaching_methods|default:"—" }}</div>
+        <div class="markdown">{{ course.teaching_methods.strip|default:"—" }}</div>
         
         <h3>Wymagania wstępne</h3>
-        <div class="markdown">{{ course.preconditions|default:"—" }}</div>
+        <div class="markdown">{{ course.preconditions.strip|default:"—" }}</div>
 
         <h3>Cele przedmiotu</h3>
-        <div class="markdown">{{ course.objectives|default:"—" }}</div>
+        <div class="markdown">{{ course.objectives.strip|default:"—" }}</div>
 
         <h3>Treści programowe</h3>
-        <div class="markdown">{{ course.contents|default:"—" }}</div>
+        <div class="markdown">{{ course.contents.strip|default:"—" }}</div>
 
         <h3>Zakładane efekty kształcenia</h3>
-        <div class="markdown">{{ course.teaching_effects|default:"—" }}</div>
+        <div class="markdown">{{ course.teaching_effects.strip|default:"—" }}</div>
 
         <h3>Literatura obowiązkowa i zalecana</h3>
-        <div class="markdown">{{ course.literature|default:"—" }}</div>
+        <div class="markdown">{{ course.literature.strip|default:"—" }}</div>
 
         <h3>Metody weryfikacji zakładanych efektów kształcenia</h3>
-        <div class="markdown">{{ course.verification_methods|default:"—" }}</div>
+        <div class="markdown">{{ course.verification_methods.strip|default:"—" }}</div>
 
         <h3>Warunki i forma zaliczenia</h3>
-        <div class="markdown">{{ course.passing_means|default:"—" }}</div>
+        <div class="markdown">{{ course.passing_means.strip|default:"—" }}</div>
 
         <h3>Nakład pracy studenta</h3>
-        <div class="markdown">{{ course.student_labour|default:"—" }}</div>
+        <div class="markdown">{{ course.student_labour.strip|default:"—" }}</div>
     </div>
 {% endif %}
 
