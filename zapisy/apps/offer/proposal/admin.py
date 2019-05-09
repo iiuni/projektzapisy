@@ -25,6 +25,7 @@ class ProposalAdmin(admin.ModelAdmin):
     ]
 
     def __init__(self, *args, **kwargs):
+        """We save queries by loading all semesters into memory."""
         super().__init__(*args, **kwargs)
         self.semesters = {s.id: s for s in Semester.objects.all()}
 
@@ -33,11 +34,15 @@ class ProposalAdmin(admin.ModelAdmin):
         qs = qs.select_related('owner__user', 'course_type')
         qs = qs.prefetch_related('entity__course_set__semester')
 
+        # Every proposal will be annotated with last semester, when it was
+        # conducted.
         last_semester_agg = models.Max('entity__course__semester')
         qs = qs.annotate(_last_semester=last_semester_agg)
+
         return qs
 
     def last_semester(self, obj):
+        """Transforms the id of last semester into a proper object."""
         if obj._last_semester is None:
             return None
         return self.semesters[obj._last_semester]
