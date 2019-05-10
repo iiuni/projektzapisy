@@ -41,4 +41,4 @@ class NotificationPreferencesStudent(models.Model):
 class NotificationPreferencesTeacher(models.Model):
     user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
     assigned_to_new_group_as_teacher = models.BooleanField(default=True, verbose_name='Przydzielenie do grupy')
-    news_has_been_added = models.BooleanField(default=True,verbose_name='Powiadomienie o nowej wiadomości w Aktualnościach')
+    news_has_been_added = models.BooleanField(default=True, verbose_name='Powiadomienie o nowej wiadomości w Aktualnościach')
