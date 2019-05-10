@@ -12,5 +12,6 @@ class NotificationsSerializationTestCase(SimpleTestCase):
         after = JsonNotificationSerializer().deserialize(serialized)
 
         self.assertEqual(before.issued_on, after.issued_on)
+        self.assertEqual(before.target, after.target)
         self.assertEqual(before.description_id, after.description_id)
         self.assertEqual(before.description_args, after.description_args)

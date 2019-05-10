@@ -7,7 +7,7 @@ from apps.enrollment.courses.models.group import Group
 from apps.news.models import News
 from apps.notifications.api import notify_user, notify_selected_users
 from apps.notifications.models import get_all_users_in_course_groups, get_all_users, get_all_students
-from apps.notifications.custom_signals import student_pulled, student_not_pulled, teacher_changed
+from apps.notifications.custom_signals import teacher_changed
 from apps.notifications.templates import NotificationType
 
 from apps.news.views import all_news
@@ -32,35 +32,6 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
             Notification(NotificationType.ADDED_NEW_GROUP, {
                 'course_name': course_name,
                 'teacher': teacher.get_full_name()
-            }))
-
-
-@receiver(student_pulled, sender=Group)
-def notify_that_user_was_pulled_from_queue(sender: Group, **kwargs) -> None:
-    group = kwargs['instance']
-
-    notify_user(
-        kwargs['user'],
-        Notification(
-            NotificationType.PULLED_FROM_QUEUE, {
-                'course_name': group.course.information.entity.name,
-                'teacher': group.teacher.user.get_full_name(),
-                'type': group.human_readable_type().lower()
-            }))
-
-
-@receiver(student_not_pulled, sender=Group)
-def notify_that_user_was_not_pulled_from_queue(sender: Group,
-                                               **kwargs) -> None:
-    group = kwargs['instance']
-
-    notify_user(
-        kwargs['user'],
-        Notification(
-            NotificationType.NOT_PULLED_FROM_QUEUE, {
-                'course_name': group.course.information.entity.name,
-                'teacher': group.teacher.user.get_full_name(),
-                'type': group.human_readable_type().lower()
             }))
 
 
@@ -91,7 +62,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
 
-    users = get_all_students()
+    users = get_all_users()
     target = reverse(all_news)
 
     notify_selected_users(
