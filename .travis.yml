@@ -11,6 +11,7 @@ addons:
       - yarn
 services:
   - postgresql
+  - redis-server
 
 install:
   - pip install -r zapisy/requirements.test.txt

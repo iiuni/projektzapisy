@@ -52,6 +52,7 @@ def preferences_save(request):
         post = form.save(commit=False)
         post.user = request.user
         post.save()
+        messages.success(request, 'Zmieniono ustawienia powiadomień')
         return HttpResponseRedirect(reverse(views.my_profile))
     else:
         messages.error(request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie")
