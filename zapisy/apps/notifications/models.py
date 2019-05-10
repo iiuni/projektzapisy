@@ -29,8 +29,8 @@ def get_all_students():
 
 class NotificationPreferencesStudent(models.Model):
     user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
-    pulled_from_queue = models.BooleanField(default=True, verbose_name='Wciągnięcie do grupy')
-    not_pulled_from_queue = models.BooleanField(default=True, verbose_name='Anulowanie wciągnięcia do grupy')
+    #pulled_from_queue = models.BooleanField(default=True, verbose_name='Wciągnięcie do grupy')
+    #not_pulled_from_queue = models.BooleanField(default=True, verbose_name='Anulowanie wciągnięcia do grupy')
     added_new_group = models.BooleanField(default=True, verbose_name='Dodanie nowej grupy przedmiotu, na który jesteś '
                                                                      'zapisany')
     teacher_has_been_changed = models.BooleanField(default=True, verbose_name='Zmiana prowadzącego grupy z przedmiotu, '
@@ -41,3 +41,4 @@ class NotificationPreferencesStudent(models.Model):
 class NotificationPreferencesTeacher(models.Model):
     user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
     assigned_to_new_group_as_teacher = models.BooleanField(default=True, verbose_name='Przydzielenie do grupy')
+    news_has_been_added = models.BooleanField(default=True,verbose_name='Powiadomienie o nowej wiadomości w Aktualnościach')

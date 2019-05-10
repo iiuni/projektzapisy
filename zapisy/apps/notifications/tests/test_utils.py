@@ -7,16 +7,6 @@ from apps.notifications.utils import render_description
 
 class NotificationsUtilsTestCase(TestCase):
 
-    def test_pulled_from_queue_renders_properly(self):
-        descr_args = {'course_name': 'matematyka dyskretna', 'teacher': 'Jan Kowalski', 'type': 'ćwiczenia'}
-
-        rendered = render_description(
-            NotificationType.PULLED_FROM_QUEUE, descr_args)
-
-        self.assertEqual(
-            'Nastąpiło wciągnięcie Cię do grupy przedmiotu matematyka dyskretna, gdzie prowadzący to Jan Kowalski a typ grupy ćwiczenia.',
-            rendered)
-
     def test_added_new_group_renders_properly(self):
         descr_args = {'course_name': 'matematyka dyskretna', 'teacher': 'Jan Kowalski'}
 
@@ -42,4 +32,4 @@ class NotificationsUtilsTestCase(TestCase):
 
         with self.assertRaises(DescriptionArgumentMissingException):
             rendered = render_description(
-                NotificationType.PULLED_FROM_QUEUE, descr_args)
+                NotificationType.TEACHER_HAS_BEEN_CHANGED, descr_args)

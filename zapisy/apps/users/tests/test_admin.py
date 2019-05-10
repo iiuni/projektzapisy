@@ -29,7 +29,6 @@ class AdminTestCase(TestCase):
         "/fereol_admin/mailer/messagelog/",
         "/fereol_admin/mailer/message/",
         "/fereol_admin/news/news/",
-        "/fereol_admin/notifications/notificationpreferences/",
         "/fereol_admin/poll/template/",
         "/fereol_admin/poll/savedticket/",
         "/fereol_admin/preferences/preference/",
