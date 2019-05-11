@@ -5,6 +5,7 @@ from apps.users.decorators import employee_required
 
 from .forms import prepare_formset
 
+
 @employee_required
 def main(request):
     employee = request.user.employee
