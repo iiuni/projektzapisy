@@ -1,0 +1,46 @@
+{% extends "offer/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block main-subtitle %}Preferencje pracownika{% endblock %}
+
+{% block enrollment_preferences %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta</a></li>
+    <li class="breadcrumb-item">Preferencje pracownika</li>
+{% endblock bread %}
+
+{% block all-content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table class="table table-bordered">
+            <style>
+                .form-group {
+                    margin-bottom: 0;
+                }
+            </style>
+            <thead>
+                <th>Przedmiot</th>
+                <th>Typ zajęć</th>
+                <th>Odpowiedź</th>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr
+                      {% if form.instance.answer is None %}class="bg-danger text-light"{% endif %}
+                    >
+                        <td class="align-middle">{{ form.instance.question.proposal }}</td>
+                        <td class="align-middle">{{ form.instance.question.get_class_type_display }}</td>
+                        <td class="align-middle">{{ form|crispy }}</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Zapisz</button>
+    </form>
+{% endblock all-content %}
+

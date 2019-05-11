@@ -11,11 +11,10 @@ from apps.offer.proposal.models import Proposal
 from apps.users.models import Employee
 
 
-class ManagerWithSelectRelated(models.Manager):
-    """This manager automatically joins the queryset with model foreign fields.
-    """
+class PreferencesQuestionManager(models.Manager):
+    """This manager automatically joins the queryset with proposal."""
     def get_queryset(self):
-        return super().get_queryset().select_related()
+        return super().get_queryset().select_related('proposal')
 
 
 class PreferencesQuestion(models.Model):
@@ -27,7 +26,7 @@ class PreferencesQuestion(models.Model):
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, verbose_name="przedmiot")
     class_type = models.CharField("typ zajęć", max_length=2, choices=GROUP_TYPE_CHOICES)
 
-    objects = ManagerWithSelectRelated()
+    objects = PreferencesQuestionManager()
 
     class Meta:
         verbose_name = "pytanie"
@@ -37,6 +36,13 @@ class PreferencesQuestion(models.Model):
 
     def __str__(self):
         return f"{self.proposal} | {self.get_class_type_display()}"
+
+
+class PreferenceManager(models.Manager):
+    """Automatically joins the queryset with employee, user and question."""
+    def get_queryset(self):
+        return super().get_queryset().select_related('employee', 'employee__user', 'question',
+                                                     'question__proposal')
 
 
 class Preference(models.Model):
@@ -57,7 +63,7 @@ class Preference(models.Model):
                                               null=True,
                                               blank=True)
 
-    objects = ManagerWithSelectRelated()
+    objects = PreferenceManager()
 
     class Meta:
         verbose_name = "preferencja pracownika"

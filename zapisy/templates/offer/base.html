@@ -16,7 +16,7 @@
     {% endif %}
     {% if user.employee %}
     <li {% block enrollment_preferences %}{% endblock %}>
-            <a class="nav-link" href="{% url 'prefs-default-view' %}">Preferencje</a>
+            <a class="nav-link" href="{% url 'preferences-main' %}">Preferencje</a>
     </li>
     {% endif %}
     {% if user.employee or user.student %}
