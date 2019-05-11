@@ -273,22 +273,4 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/studentlist.min.js',
     },
-
-    'preferences': {
-        'source_filenames': (
-            'js/jquery/jquery-1.5.2.js',
-            'js/jquery/jquery-ui-1.8.17.custom.js',
-            'js/jquery/jquery.cookies.2.2.0.min.js',
-            'js/jquery/baseExtensions.js',
-            'js/main.js',
-            'js/common/bootstrap-dropdown.js',
-            'js/components/messageBox.js',
-            'js/components/topBarFilter.js',
-            #'js/common/listFilter.js',
-            #'js/common/listFilter-courseType.js',
-            #'js/offer/proposal/proposals-list.js'
-        ),
-        'output_filename': 'js/preferenes.min.js',
-
-    }
 }
