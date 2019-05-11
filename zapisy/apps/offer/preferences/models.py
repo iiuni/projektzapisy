@@ -1,131 +1,80 @@
-from django.db import models
-from apps.enrollment.courses.models.course import CourseEntity
-from apps.offer.preferences.exceptions import CoursePreferencesAlreadySet, UnknownPreferenceValue
+"""This app helps the Head of Teaching assign employees to the course groups.
 
+The Head of Teaching selects courses (proposals) and group types that are
+understaffed. Then the employees can express their willingness to teach
+different classes.
+"""
+from django.db import models
+
+from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
+from apps.offer.proposal.models import Proposal
 from apps.users.models import Employee
 
-PREFERENCE_CHOICES = (
-    (3, 'Chętnie'),
-    (2, 'Być może'),
-    (1, 'Raczej nie'),
-    (0, 'Nie'),
-)
 
-
-class PreferenceManager(models.Manager):
+class ManagerWithSelectRelated(models.Manager):
+    """This manager automatically joins the queryset with model foreign fields.
     """
-        Manages preferences
+    def get_queryset(self):
+        return super().get_queryset().select_related()
+
+
+class PreferencesQuestion(models.Model):
+    """Contains all the classes, which employees need to set their preferences.
+
+    A single question is a proposal-type pair defining a class that can be
+    taught by an employee.
     """
+    proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, verbose_name="przedmiot")
+    class_type = models.CharField("typ zajęć", max_length=2, choices=GROUP_TYPE_CHOICES)
 
-    def get_employees_prefs(self, employee, hidden=None, types=None, query=None):
-        """
-            Returns employee's preferences.
+    objects = ManagerWithSelectRelated()
 
-            hidden - include hidden
-            types  - accepted type of the related proposal
-            q      - substring of the related proposal's name
-        """
-        prefs = Preference.objects.filter(
-            employee=employee)
-        if not hidden:
-            prefs = prefs.exclude(hidden=True)
-        if types:
-            prefs = prefs.filter(proposal__descriptions__type__in=types)
-        if query:  # TODO: zaawansowane filtrowanie
-            prefs = prefs.filter(proposal__name__icontains=query)
-        return prefs
+    class Meta:
+        verbose_name = "pytanie"
+        verbose_name_plural = "pytania"
+        unique_together = ('proposal', 'class_type')
+        ordering = ['proposal']
 
-    def init_preference(self, employee, course):
-        """
-            Sets initial values for employee's preferences with regard
-            to the given course.
-        """
-        try:
-            Preference.objects.get(employee=employee, proposal=course)
-            raise CoursePreferencesAlreadySet
-        except Preference.DoesNotExist:
-            pref = Preference(
-                employee=employee,
-                proposal=course,
-                hidden=False,
-                lecture=0,
-                review_lecture=0,
-                tutorial=0,
-                lab=0)
-            pref.save()
-            return pref
+    def __str__(self):
+        return f"{self.proposal} | {self.get_class_type_display()}"
 
 
 class Preference(models.Model):
-    """
-        A model representing employee's will to give lectures and tutor
-        for a course.
-    """
-    employee = models.ForeignKey(Employee, verbose_name='pracownik', on_delete=models.CASCADE)
+    """A model representing employee's willingness to teach a class."""
+    PREFERENCE_CHOICES = (
+        (3, "Chętnie"),
+        (2, "Być może"),
+        (1, "Raczej nie"),
+        (0, "Nie"),
+    )
 
-    proposal = models.ForeignKey(CourseEntity, verbose_name='propozycja', on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, verbose_name="pracownik", on_delete=models.CASCADE)
+    question = models.ForeignKey(PreferencesQuestion,
+                                 verbose_name="pytanie",
+                                 on_delete=models.CASCADE)
+    answer = models.PositiveSmallIntegerField("wola",
+                                              choices=PREFERENCE_CHOICES,
+                                              null=True,
+                                              blank=True)
 
-    # preferences
-    lecture = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                                  verbose_name='wykład')
-    review_lecture = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                                         verbose_name='repetytorium')
-    tutorial = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                                   verbose_name='ćwiczenia')
-    lab = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                              verbose_name='pracownia')
-    tutorial_lab = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                                       verbose_name='ćwiczenio-pracownia')
-    seminar = models.IntegerField(choices=PREFERENCE_CHOICES, null=True, blank=True,
-                                  verbose_name='seminarium')
+    objects = ManagerWithSelectRelated()
 
     class Meta:
-        verbose_name = 'preferencja'
-        verbose_name_plural = 'preferencje'
+        verbose_name = "preferencja pracownika"
+        verbose_name_plural = "preferencje pracowników"
+
+        unique_together = ('employee', 'question')
 
     def __str__(self):
-        return f'{self.employee.user.get_full_name()}: {self.proposal.name}'
-
-    def set_preference(self, **kwargs):
-        """
-            Sets employee's preferences.
-
-            Example usage:
-            p.set_preference(lecture=2, tutorial=0)
-
-            Values are restricted with PREFERENCE_CHOICES.
-        """
-        valid_prefs = {'lecture', 'review_lecture', 'tutorial', 'lab'}
-        valid_values = {key for key, _ in PREFERENCE_CHOICES}
-        for pref, val in kwargs.items():
-            if pref not in valid_prefs:
-                continue
-            if val not in valid_values:
-                raise UnknownPreferenceValue
-            self.__setattr__(pref, val)
-        self.save()
+        return f"{self.employee.user.get_full_name()}, {self.question}: {self.get_answer_display()}"
 
     @staticmethod
-    def for_employee(employee):
-        return (Preference.objects.filter(employee=employee, proposal__in_prefs=True)
-                .select_related('proposal', 'proposal__type', 'employee', 'employee__user'))
-
-    @staticmethod
-    def make_preferences(employee):
+    def make_preferences(employee: Employee):
+        """Creates preferences for questions that do not have a preference
+        object for the given employee.
         """
-        Creates preferences for courses that are in_prefs but do not have a preference object
-        for the given employee
-        """
-        existing_preferences_courses_ids = (Preference.objects
-                                            .filter(employee=employee)
-                                            .order_by('proposal__id')
-                                            .values_list('proposal__id'))
-
-        courses_without_preference = (CourseEntity.objects
-                                      .exclude(id__in=existing_preferences_courses_ids)
-                                      .filter(in_prefs=True))
-
-        new_preferences = [Preference(employee=employee, proposal=course_entity)
-                           for course_entity in courses_without_preference]
-
+        existing_preferences = Preference.objects.filter(employee=employee).values_list(
+            'question_id', flat=True)
+        missing_questions = PreferencesQuestion.objects.exclude(pk__in=existing_preferences)
+        new_preferences = [Preference(employee=employee, question=q) for q in missing_questions]
         Preference.objects.bulk_create(new_preferences)
