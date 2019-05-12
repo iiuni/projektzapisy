@@ -124,8 +124,9 @@ def my_timetable(request):
     elif BaseUser.is_employee(request.user):
         data = employee_timetable_data(request.user.employee)
     else:
-        messages.error(request, "Nie masz planu zajęć, ponieważ "
-        "nie jesteś ani studentem ani pracownikiem :c")
+        messages.error(
+            request,
+            "Nie masz planu zajęć, ponieważ nie jesteś ani studentem ani pracownikiem :c")
         return redirect("main-page")
 
     return render(request, 'timetable/timetable.html', data)
