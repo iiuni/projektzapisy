@@ -3,11 +3,12 @@ import json
 from typing import List
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import Http404, HttpResponse, render
+from django.shortcuts import Http404, HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -122,6 +123,10 @@ def my_timetable(request):
         data = student_timetable_data(request.user.student)
     elif BaseUser.is_employee(request.user):
         data = employee_timetable_data(request.user.employee)
+    else:
+        messages.error(request, "Nie masz planu zajęć, ponieważ "
+        "nie jesteś ani studentem ani pracownikiem :c")
+        return redirect("main-page")
 
     return render(request, 'timetable/timetable.html', data)
 
