@@ -126,7 +126,7 @@ def my_timetable(request):
     else:
         messages.error(
             request,
-            "Nie masz planu zajęć, ponieważ nie jesteś ani studentem ani pracownikiem :c")
+            "Nie masz planu zajęć, ponieważ nie jesteś ani studentem ani pracownikiem.")
         return redirect("main-page")
 
     return render(request, 'timetable/timetable.html', data)
