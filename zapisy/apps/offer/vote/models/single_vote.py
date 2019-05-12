@@ -1,9 +1,7 @@
 from django.db import models
 
-from apps.enrollment.courses.models.course import CourseEntity
-from apps.enrollment.courses.models.course_information import SemesterChoices
 from apps.enrollment.courses.models import Semester
-from apps.offer.proposal.models import Proposal, ProposalStatus
+from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.users.models import Student
 
 from .system_state import SystemState

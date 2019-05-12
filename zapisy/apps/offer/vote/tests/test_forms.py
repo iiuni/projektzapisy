@@ -3,12 +3,11 @@ from datetime import date
 from django import test
 from freezegun import freeze_time
 
-from apps.enrollment.courses.models.course_information import SemesterChoices
 from apps.enrollment.courses.tests.factories import CourseFactory, SemesterFactory
 from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.tests.factories import StudentFactory
-from apps.offer.proposal.models import ProposalStatus
+from apps.offer.proposal.models import ProposalStatus, SemesterChoices
 
 from ..forms import prepare_vote_formset
 

@@ -1,7 +1,6 @@
 from django import template
 
-from apps.enrollment.courses.models.course_information import SemesterChoices
-from apps.offer.proposal.models import ProposalStatus
+from apps.offer.proposal.models import ProposalStatus, SemesterChoices
 
 register = template.Library()
 
