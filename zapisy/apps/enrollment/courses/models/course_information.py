@@ -18,12 +18,6 @@ from .tag import Tag
 from .course import CourseEntity
 
 
-class SemesterChoices(choicesenum.ChoicesEnum):
-    UNASSIGNED = 'u', "nieokreślony"
-    WINTER = 'z', "zimowy"
-    SUMMER = 'l', "letni"
-
-
 class Language(choicesenum.ChoicesEnum):
     ENGLISH = 'en', "angielski"
     POLISH = 'pl', "polski"
@@ -48,11 +42,6 @@ class CourseInformation(models.Model):
     recommended_for_first_year = models.BooleanField(
         "przedmiot polecany dla pierwszego roku", default=False)
 
-    semester = models.CharField(
-        "semestr",
-        choices=SemesterChoices.choices(),
-        max_length=1,
-        default=SemesterChoices.UNASSIGNED)
     has_exam = models.BooleanField("przedmiot z egzaminem", default=True)
 
     hours_lecture = models.PositiveSmallIntegerField("godzin wykładu")

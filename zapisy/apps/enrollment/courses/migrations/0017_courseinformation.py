@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, verbose_name='opis przedmiotu')),
                 ('language', models.CharField(choices=[(apps.enrollment.courses.models.course_information.Language('en'), 'angielski'), (apps.enrollment.courses.models.course_information.Language('pl'), 'polski')], default=apps.enrollment.courses.models.course_information.Language('pl'), max_length=2, verbose_name='język wykładowy')),
                 ('recommended_for_first_year', models.BooleanField(default=False, verbose_name='przedmiot polecany dla pierwszego roku')),
-                ('semester', models.CharField(choices=[(apps.enrollment.courses.models.course_information.SemesterChoices('u'), 'nieokreślony'), (apps.enrollment.courses.models.course_information.SemesterChoices('z'), 'zimowy'), (apps.enrollment.courses.models.course_information.SemesterChoices('l'), 'letni')], default=apps.enrollment.courses.models.course_information.SemesterChoices('u'), max_length=1, verbose_name='semestr')),
+                ('semester', models.CharField(choices=[('u', 'nieokreślony'), ('z', 'zimowy'), ('l', 'letni')], default=apps.offer.proposal.models.SemesterChoices('u'), max_length=1, verbose_name='semestr')),
                 ('has_exam', models.BooleanField(default=True, verbose_name='przedmiot z egzaminem')),
                 ('hours_lecture', models.PositiveSmallIntegerField(verbose_name='godzin wykładu')),
                 ('hours_exercise', models.PositiveSmallIntegerField(verbose_name='godzin ćwiczeń')),

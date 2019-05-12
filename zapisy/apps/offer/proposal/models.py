@@ -95,6 +95,12 @@ class StudentWork(models.Model):
         return str(self.name)
 
 
+class SemesterChoices(choicesenum.ChoicesEnum):
+    UNASSIGNED = 'u', "nieokreślony"
+    WINTER = 'z', "zimowy"
+    SUMMER = 'l', "letni"
+
+
 class ProposalStatus(choicesenum.ChoicesEnum):
     PROPOSAL = 0, "propozycja"
     IN_OFFER = 1, "w ofercie"
@@ -113,6 +119,11 @@ class Proposal(CourseInformation):
 
     status = models.PositiveSmallIntegerField(
         "status propozycji", choices=ProposalStatus.choices(), default=ProposalStatus.DRAFT)
+    semester = models.CharField(
+        "semestr",
+        choices=SemesterChoices.choices(),
+        max_length=1,
+        default=SemesterChoices.UNASSIGNED)
 
     class Meta:
         verbose_name = "propozycja przedmiotu"
