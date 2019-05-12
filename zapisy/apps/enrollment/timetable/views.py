@@ -127,7 +127,7 @@ def my_timetable(request):
         messages.error(
             request,
             "Nie masz planu zajęć, ponieważ nie jesteś ani studentem ani pracownikiem.")
-        return redirect("main-page")
+        return redirect("course-list")
 
     return render(request, 'timetable/timetable.html', data)
 
