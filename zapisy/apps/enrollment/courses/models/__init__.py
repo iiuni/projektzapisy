@@ -1,3 +1,4 @@
 from .course import Course, CourseEntity
+from .course_instance import CourseInstance
 from .group import Group
 from .semester import Semester
