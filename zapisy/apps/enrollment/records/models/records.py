@@ -52,7 +52,7 @@ from django.contrib.auth.models import User
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from apps.enrollment.courses.models import Course, Group, StudentPointsView, Semester
+from apps.enrollment.courses.models import Course, Group, Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import BaseUser, Student
@@ -151,11 +151,27 @@ class Record(models.Model):
         # Check if enrolling would not make the student exceed the current ECTS
         # limit.
         semester: Semester = group.course.semester
-        points = StudentPointsView.student_points_in_semester(
-            student, semester, [group.course])
+        points = cls.student_points_in_semester(student, semester, [group.course])
         if points > semester.get_current_limit(time):
             return EnrollStatus.ECTS_ERR
         return EnrollStatus.SUCCESS
+
+    @classmethod
+    def student_points_in_semester(cls, student: Student, semester: Semester,
+                                   additional_courses: Iterable[Course] = []) -> int:
+        """Returns total points the student has accumulated in semester.
+
+        Args:
+            additional_courses is a list of potential courses a student might
+            also want to enroll into.
+        """
+        records = cls.objects.filter(
+            student=student,
+            group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
+                'group', 'group__course').prefetch_related('group__course__instance')
+        courses = set(r.group.course.instance for r in records)
+        courses.update(c.instance for c in additional_courses)
+        return sum(c.points for c in courses)
 
     @staticmethod
     def can_dequeue(student: Optional[Student], group: Group, time: datetime = None) -> bool:

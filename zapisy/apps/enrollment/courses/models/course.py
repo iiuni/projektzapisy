@@ -244,14 +244,6 @@ class CourseEntity(models.Model):
         # As it is, we need this so lists in the offer app are sorted properly
         ordering = ['name_pl']
 
-    def get_points(self, student: Optional[Student] = None) -> int:
-        """Returns credits value of the course for the given student.
-
-        If student is not provided, the function will return the default value.
-        """
-        from apps.enrollment.courses.models.points import StudentPointsView
-        return StudentPointsView.course_value_for_student(student, self.pk)
-
     def get_short_name(self):
         """
         Return short name if present (e.g. JFiZO = Języki Formalne
@@ -617,13 +609,6 @@ class Course(models.Model):
             return "nieznany semestr"
         else:
             return self.semester.get_name()
-
-    def get_points(self, student: Optional[Student] = None) -> int:
-        """Returns credits value of the course for the given student.
-
-        If student is not provided, the function will return the default value.
-        """
-        return self.entity.get_points(student)
 
     def get_effects_list(self):
         return self.entity.get_all_effects()

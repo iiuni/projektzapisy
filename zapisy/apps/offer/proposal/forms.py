@@ -21,7 +21,7 @@ class EditProposalForm(forms.ModelForm):
     using this form. It will take care to keep the current instance of the
     course up to date with the proposal.
     """
-    ects = forms.IntegerField(
+    points = forms.IntegerField(
         max_value=15,
         label="ECTS",
         required=False,
@@ -91,7 +91,7 @@ class EditProposalForm(forms.ModelForm):
 
         # Fill the ects field with value from entity.
         if self.instance and self.instance.entity:
-            self.fields['ects'].initial = self.instance.entity.get_points()
+            self.fields['points'].initial = self.instance.points
 
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
@@ -155,16 +155,16 @@ class EditProposalForm(forms.ModelForm):
         if commit:
             instance.save()
 
-            # Creates entity with default ECTS value, if one does not exist.
+            # Creates entity, if one does not exist.
             if instance.entity is None:
                 entity = CourseEntity.objects.create(
                     name="Tymczasowe entity do migracji",
                     deleted=True)
-                entity.pointsofcourseentities_set.create(
-                    type_of_point_id=1,
-                    value=self.instance.course_type.default_ects)
                 instance.entity = entity
-                instance.save()
+
+            # Populates default ECTS value.
+            instance.points = self.instance.course_type.default_ects
+            instance.save()
 
         return instance
 
@@ -186,6 +186,7 @@ class EditProposalForm(forms.ModelForm):
             'hours_exercise_lab',
             'hours_seminar',
             'hours_recap',
+            'points',
             'status',
             'teaching_methods',
             'preconditions',
@@ -325,7 +326,7 @@ class ProposalFormHelper(helper.FormHelper):
                 Column('hours_recap', css_class='col-md-2'),
                 css_class='align-items-end',
             ), FormRow(
-                Column('ects'),
+                Column('points'),
                 Column('status'),
             )),
         CollapsableFieldset(

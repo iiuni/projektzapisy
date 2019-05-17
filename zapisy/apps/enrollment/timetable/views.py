@@ -12,7 +12,7 @@ from django.shortcuts import Http404, HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from apps.enrollment.courses.models import Course, Group, Semester, StudentPointsView
+from apps.enrollment.courses.models import Course, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
@@ -85,19 +85,20 @@ def student_timetable_data(student: Student):
         student=student, group__course__semester=semester, status=RecordStatus.ENROLLED
     ).select_related(
         'group__teacher', 'group__teacher__user', 'group__course', 'group__course__entity'
-    ).prefetch_related('group__term', 'group__term__classrooms')
+    ).prefetch_related('group__course__instance', 'group__term', 'group__term__classrooms')
     groups = [r.group for r in records]
     group_dicts = build_group_list(groups)
 
-    points_for_courseentities = StudentPointsView.points_for_entities(
-        student, [g.course.entity_id for g in groups])
+    points_for_courses = {
+        r.group.course.instance.id: r.group.course.instance.points for r in records
+    }
 
     for group in groups:
-        group.course.points = points_for_courseentities[group.course.entity_id]
+        group.course.points = points_for_courses[group.course.instance.id]
 
     data = {
         'groups': groups,
-        'sum_points': sum(points_for_courseentities.values()),
+        'sum_points': sum(points_for_courses.values()),
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
     return data

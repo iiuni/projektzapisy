@@ -13,7 +13,6 @@ from apps.enrollment.courses.models.course import Course, CourseDescription, Cou
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models.points import PointsOfCourseEntities, PointTypes
 from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
@@ -140,11 +139,6 @@ class CourseInline(admin.TabularInline):
     model = Course
 
 
-class PointsInline(admin.TabularInline):
-    model = PointsOfCourseEntities
-    extra = 0
-
-
 class TagsInline(admin.TabularInline):
     model = TagCourseEntity
     extra = 0
@@ -185,7 +179,7 @@ class CourseEntityAdmin(TranslationAdmin):
     list_filter = ('semester', 'status', 'type', EffectsListFilter, 'owner')
     form = CourseEntityForm
 
-    inlines = [PointsInline, TagsInline]
+    inlines = [TagsInline]
 
     def get_queryset(self, request):
         """
@@ -385,5 +379,3 @@ admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Freeday, FreedayAdmin)
 admin.site.register(ChangedDay)
 admin.site.register(Type, TypeAdmin)
-admin.site.register(PointTypes)
-admin.site.register(PointsOfCourseEntities)

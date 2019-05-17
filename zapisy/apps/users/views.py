@@ -24,7 +24,7 @@ from django.conf import settings
 from vobject import iCalendar
 import unidecode
 
-from apps.enrollment.courses.models import Group, Semester, StudentPointsView
+from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
 from apps.enrollment.timetable.views import build_group_list
 from apps.enrollment.utils import mailto
@@ -254,7 +254,7 @@ def my_profile(request):
         grade_info = StudentGraded.objects.filter(
             student=student).select_related('semester').order_by('-semester__records_opening')
         semesters_participated_in_grade = [x.semester for x in grade_info]
-        current_semester_ects = StudentPointsView.student_points_in_semester(student, semester)
+        current_semester_ects = Record.student_points_in_semester(student, semester)
         data.update({
             't0_time': t0_time,
             'groups_times': groups_times,

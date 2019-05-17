@@ -119,7 +119,7 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
     data = {
         'course': course,
         'teachers': teachers,
-        'points': course.get_points(student),
+        'points': course.instance.points,
         'groups': groups,
         'grouped_waiting_students': get_grouped_waiting_students(course, request)
     }

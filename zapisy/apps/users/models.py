@@ -294,10 +294,6 @@ class Program(models.Model):
         Program of student studies
     """
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
-    type_of_points = models.ForeignKey(
-        'courses.PointTypes',
-        verbose_name='rodzaj punktów',
-        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name: str = 'Program studiów'

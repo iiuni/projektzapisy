@@ -41,6 +41,7 @@ class CourseInformation(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.PROTECT)
     recommended_for_first_year = models.BooleanField(
         "przedmiot polecany dla pierwszego roku", default=False)
+    points = models.PositiveSmallIntegerField("ECTS", default=6)
 
     has_exam = models.BooleanField("przedmiot z egzaminem", default=True)
 
