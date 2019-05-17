@@ -351,12 +351,6 @@ CACHES = {
 
 NEWS_PER_PAGE = 15
 
-# The URL to the issue tracker where users
-# can submit issues or bug reports. Used in several templates.
-ISSUE_TRACKER_URL = "https://github.com/iiuni/projektzapisy/issues"
-# As above, but takes the user straight to the "create new issue" page
-ISSUE_TRACKER_NEW_ISSUE_URL = "https://github.com/iiuni/projektzapisy/issues/new"
-
 if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
     exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
 

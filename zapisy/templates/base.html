@@ -235,7 +235,7 @@
                     {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
                     <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
                     {% endif %}
-                    | Błędy i uwagi: <a href="https://tracker-zapisy.ii.uni.wroc.pl/">[link]</a>
+                    | Błędy i uwagi: <a href="https://github.com/iiuni/projektzapisy/issues">[link]</a>
                     Wygenerowano: {% now "H:i:s" %}
                     {% should_display_debug as display_debug %}
                     {% if display_debug is True %}
