@@ -10,6 +10,7 @@ import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 import CourseFilterSublist from "./CourseFilterSublist.vue";
 import CourseFilterSemester from "./CourseFilterSemester.vue";
+import CourseFilterOwner from "./CourseFilterOwner.vue";
 import CourseFilterName from "./CourseFilterName.vue";
 import { CourseShell, Group, Course } from "../models";
 
@@ -18,6 +19,7 @@ import { CourseShell, Group, Course } from "../models";
     CourseFilterSublist,
     CourseFilterSemester,
     CourseFilterName,
+    CourseFilterOwner,
   },
   props: {
     hideSemester:Boolean as ()=>Boolean,
@@ -28,10 +30,12 @@ import { CourseShell, Group, Course } from "../models";
       allTags:"allTags",
       allEffects:"allEffects",
       allSemesters:"allSemesters",
+      allOwners:"allOwners",
     }),
     ...mapGetters("filters", {
       activeFilter:"activeFilter",
       semester:"semester",
+      owner:"owner",
       name:"name",
     })
   },
@@ -64,6 +68,7 @@ export default class CourseFilter extends Vue {
       <div class="third vert-list">
         <CourseFilterName :name="name"/>
         <CourseFilterSemester v-if="!hideSemester" :allAvaiable="allSemesters" :selected="semester"/>
+        <CourseFilterOwner :allAvaiable="allOwners" :selected="owner"/>
         <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
       </div>
     </div>

@@ -17,6 +17,7 @@ interface State {
     allTags: string[];
     allTypes: string[];
     allSemesters: string[];
+    allOwners: string[];
 }
 const state: State = {
     courses: {},
@@ -25,6 +26,7 @@ const state: State = {
     allTags: [],
     allTypes: [],
     allSemesters: [],
+    allOwners: [],
 };
 
 const getters = {
@@ -45,6 +47,9 @@ const getters = {
     },
     allSemesters(state:State):string[] {
         return state.allSemesters;
+    },
+    allOwners(state:State):string[] {
+        return state.allOwners;
     },
 };
 
@@ -103,11 +108,13 @@ const mutations = {
         const allTags:string[] = [];
         const allTypes:string[] = [];
         const allSemesters:string[] = [];
+        const allOwners:string[] = [];
         courses.forEach((c : CourseShell) => {
             if(!c.effects) c.effects=[];
             c.effects
                 .filter(e => !allEffects.includes(e))
                 .forEach(e => allEffects.push(e));
+            if(c.owner && !allOwners.includes(c.owner)) allOwners.push(c.owner);
             if(!c.tags) c.tags=[];
             c.tags
                 .filter(e => !allTags.includes(e))
@@ -120,6 +127,7 @@ const mutations = {
         state.allTags = allTags.sort();
         state.allTypes = allTypes.sort();
         state.allSemesters = allSemesters.sort();
+        state.allOwners = allOwners.sort();
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;

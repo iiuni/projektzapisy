@@ -13,6 +13,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 interface State {
     name: string;
     semester: string;
+    owner: string;
     effects: string[];
     types: string[];
     tags: string[];
@@ -20,11 +21,12 @@ interface State {
 const state: State = {
     name: "",
     semester: "",
+    owner:"",
     effects: [],
     types: [],
     tags: [],
 };
-type FilterId = "name"|"semester"|"effects"|"tags"|"types";
+type FilterId = "name"|"semester"|"effects"|"tags"|"types"|"owner";
 type FilterArrayId = "effects"|"tags"|"types";
 const getters = {
     activeFilter(state:State){
@@ -41,6 +43,7 @@ const getters = {
         return (course:CourseShell)=>{
             if(state.semester !== "" && course.semester !== state.semester) return false;
             if(state.name !== "" && !course.name.startsWith(state.name)) return false; 
+            if(state.owner !== "" && course.owner !== state.owner) return false; 
             if(state.tags.length !== 0){
                 if(!state.tags.reduce( (prev,curr)=>prev && course.tags.includes(curr) , true )) return false;
             }
@@ -55,6 +58,9 @@ const getters = {
     },
 	name(state:State):string {
 		 return state.name;
+	},
+	owner(state:State):string {
+		 return state.owner;
 	},
 	semester(state:State):string {
 		 return state.semester;
@@ -91,6 +97,7 @@ const mutations = {
     setFilter(state: State, [filterId,filterValue]: [FilterId,string]) {
 		let hook:string[];
 		if(filterId === "name") state.name = filterValue;
+		if(filterId === "owner") state.name = filterValue;
 		if(filterId === "semester") state.semester = filterValue;
 		if(filterId === "effects") hook = state.effects;
 		if(filterId === "types") hook = state.types;
@@ -99,6 +106,7 @@ const mutations = {
     },
     clearFilter(state: State, filterId: FilterId) {
         if(filterId === "name") state.name = "";
+        if(filterId === "owner") state.owner = "";
         if(filterId === "effects") state.effects = [];
         if(filterId === "types") state.types = [];
         if(filterId === "tags") state.tags = [];

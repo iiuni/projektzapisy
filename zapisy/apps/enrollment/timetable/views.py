@@ -70,6 +70,10 @@ def list_courses_in_semester(semester: Semester):
     courses = Course.objects.filter(semester=semester).select_related('entity', 'entity__type').prefetch_related('entity__tags', 'entity__effects')
     results = []
     for course in courses:
+        if course.owner:
+            owner = course.owner.get_full_name()
+        else:
+            owner = ""
         efekty = []
         for e in course.get_effects_list():
             efekty.append( e.group_name )
@@ -88,7 +92,8 @@ def list_courses_in_semester(semester: Semester):
             'seminars':course.seminars > 0,
             'tags':tagi,
             'english':course.english,
-            'semester':course.semester.get_name()
+            'semester':course.semester.get_name(),
+            'owner':owner
         })
     return json.dumps(list(results))
 
