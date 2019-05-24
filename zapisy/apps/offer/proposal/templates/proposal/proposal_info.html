@@ -45,14 +45,12 @@
             <th scope="row">Rodzaj</th>
             <td>{{ course.course_type }}</td>
         </tr>
-        {% if course.entity %}
         <tr>
             <th><abbr title="European Credit Transfer System">ECTS</abbr></th>
             <td>
                 {{ course.points }}
             </td>
         </tr>
-        {% endif %}
         <tr>
             <th scope="row">Polecany dla I roku</th>
             <td>{{ course.recommended_for_first_year|yesno|capfirst }}</td>
@@ -61,12 +59,12 @@
             <th scope="row">Egzamin</th>
             <td>{{ course.has_exam|yesno|capfirst }}</td>
         </tr>
-        {% if course.entity and course.entity.get_all_tags_with_weights %}
+        {% if course.tags.all %}
         <tr>
             <th scope="row">Tagi</th>
             <td>
-                {% for tag in course.entity.get_all_tags_with_weights %}
-                    <span class="badge badge-success mx-1">{{ tag.tag }}{% if tag.weight %} — {{ tag.weight }}%</span>{% endif %}
+                {% for tag in course.tags.all %}
+                    <span class="badge badge-success mx-1">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>

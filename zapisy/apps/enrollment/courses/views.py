@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group
@@ -23,18 +23,18 @@ from apps.users.models import BaseUser, Student
 def get_course_list_info_for_semester(semester):
     """Builds a list of courses in the semester to show on the right side.
     """
-    courses = (
-        Course.visible.filter(semester=semester).order_by('entity__name').select_related(
-            'entity', 'entity__type'
-        ).prefetch_related('entity__effects', 'entity__tags', 'entity__owner')
-    )
-    courses_list_for_json = [c.serialize_for_json() for c in courses]
+    courses = CourseInstance.objects.filter(
+        semester=semester
+    ).order_by('name').select_related('owner').prefetch_related('effects', 'tags')
     semester_for_json = {
-        "id": semester.pk,
-        "year": semester.year,
-        "type": semester.get_type_display()
+        'id': semester.pk,
+        'year': semester.year,
+        'type': semester.get_type_display(),
     }
-    courses_list_info = {"courseList": courses_list_for_json, "semesterInfo": semester_for_json}
+    courses_list_info = {
+        'courseList': [c.__json__() for c in courses],
+        'semesterInfo': semester_for_json,
+    }
     return courses_list_info
 
 
@@ -73,25 +73,24 @@ def semester_info(request, semester_id):
     return JsonResponse(courses_list)
 
 
-def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
+def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[Dict]]:
     """Retrieves course and relevant data for the request.
 
     If course does not exist it returns two None objects.
     """
-    course: Course = None
+    course: CourseInstance = None
     try:
-        course = (
-            Course.objects.filter(slug=slug).select_related('semester', 'entity', 'entity__type')
-            .prefetch_related('groups', 'entity__tags', 'entity__effects').get()
-        )
-    except Course.DoesNotExist:
+        course = CourseInstance.objects.filter(slug=slug).select_related(
+            'semester', 'entity', 'course_type', 'old_course'
+        ).prefetch_related('tags', 'effects').get()
+    except CourseInstance.DoesNotExist:
         return None, None
 
     student: Student = None
     if request.user.is_authenticated and BaseUser.is_student(request.user):
         student = request.user.student
 
-    groups = course.groups.exclude(extra='hidden').select_related(
+    groups = course.old_course.groups.exclude(extra='hidden').select_related(
         'teacher',
         'teacher__user',
     ).prefetch_related('term', 'term__classrooms')
@@ -100,8 +99,8 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
     student_status_groups = Record.is_recorded_in_groups(student, groups)
-    student_can_enqueue = Record.can_enqueue_groups(student, course.groups.all())
-    student_can_dequeue = Record.can_dequeue_groups(student, course.groups.all())
+    student_can_enqueue = Record.can_enqueue_groups(student, course.old_course.groups.all())
+    student_can_dequeue = Record.can_dequeue_groups(student, course.old_course.groups.all())
 
     for group in groups:
         group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
@@ -119,7 +118,6 @@ def course_view_data(request, slug) -> Tuple[Optional[Course], Optional[Dict]]:
     data = {
         'course': course,
         'teachers': teachers,
-        'points': course.instance.points,
         'groups': groups,
         'grouped_waiting_students': get_grouped_waiting_students(course, request)
     }
@@ -139,7 +137,6 @@ def course_ajax(request, slug):
     return JsonResponse({
         'courseHtml': rendered_html,
         'courseName': course.name,
-        'courseEditLink': reverse('admin:courses_course_change', args=[course.pk])
     })
 
 
@@ -254,6 +251,6 @@ def get_grouped_waiting_students(course, request) -> List:
     ]
 
     return [{
-        'students_amount': Record.get_number_of_waiting_students(course, group_type['id']),
+        'students_amount': Record.get_number_of_waiting_students(course.old_course, group_type['id']),
         'type_name': group_type['name']
     } for group_type in group_types]

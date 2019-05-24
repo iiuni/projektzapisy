@@ -1,72 +1,88 @@
-{% load fereol_common %}
-{% load i18n %}
+{% load render_bundle from webpack_loader %}
 
-<h2>{{ course.name }}</h2>
+<h2>
+    {{ course.name }}
+    {% if user.is_staff or course.owner == user.employee %}
+        {% if course.semester.is_current_semester %}
+            <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+        {% endif %}
+    {% endif %}
+</h2>
 <h5>{{ course.semester.get_short_name }}</h5>
 
-{% if ects_limit_would_be_exceeded %}
-    <div class="main-message">Nie możesz zapisać się na ten przedmiot, gdyż przekroczony zostałby limit {{ max_ects }} punktów ECTS
-    (masz już {{ current_ects }} na ten semestr).
-    Zrezygnuj z innych przedmiotów, aby zapisać się na ten.
-    </div>
-{% endif %}
-
-
-<table class="table table-bordered" id="table-info">
-    <colgroup><col class="table-info-type"><col></colgroup>
+<table class="table table-bordered table-md-responsive" id="table-info">
+    <colgroup>
+        <col class="table-info-type"></col>
+    </colgroup>
     <tbody>
-        {% if points %}
-            <tr>
-                <th scope="row">{% trans "Punkty ECTS" %}</th>
-                <td>{{ points }}</td>
-            </tr>
+        <tr>
+            <th scope="row">Język wykładowy</th>
+            <td>{{ course.get_language_display|capfirst }}</td>
+        </tr>
+        <tr>
+            <th>Opiekun</th>
+            <td>
+                <a href="{% url 'employee-profile' course.owner.user_id %}"
+                    class="person">{{ course.owner.user.get_full_name }}</a>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Liczba godzin</th>
+            <td id="hours">
+                <style>
+                    #hours span + span::before {
+                        content: '+';
+                        margin: 0 .5em;
+                    }
+                </style>
+                {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
+                {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
+                {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
+                {% if course.hours_exercise_lab %}<span>{{ course.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
+                {% if course.hours_seminar %}<span>{{ course.hours_seminar }} (sem.)</span>{% endif %}
+                {% if course.hours_recap %}<span>{{ course.hours_recap }} (rep.)</span>{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Rodzaj</th>
+            <td>{{ course.course_type }}</td>
+        </tr>
+        <tr>
+            <th><abbr title="European Credit Transfer System">ECTS</abbr></th>
+            <td>
+                {{ course.points }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Polecany dla I roku</th>
+            <td>{{ course.recommended_for_first_year|yesno|capfirst }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Egzamin</th>
+            <td>{{ course.has_exam|yesno|capfirst }}</td>
+        </tr>
+        {% if course.tags.all %}
+        <tr>
+            <th scope="row">Tagi</th>
+            <td>
+                {% for tag in course.tags.all %}
+                    <span class="badge badge-success mx-1">{{ tag }}</span>
+                {% endfor %}
+            </td>
+        </tr>
         {% endif %}
-        {% if course.lectures or course.exercises or course.laboratories or course.repetitions %}
-            <tr>
-                <th scope="row">{% trans "Liczba godzin" %}</th>
-                <td>{% if course.lectures %}{{ course.lectures }}
-                    (wyk) {% if course.exercises or course.laboratories or course.repetitions or course.exercises_laboratories %}
-                        +{% endif %}{% endif %}
-                    {% if course.exercises_laboratories %}{{ course.exercises_laboratories }}
-                        (ćw+prac) {% if course.exercises or course.laboratories or course.repetitions %}
-                        +{% endif %}{% endif %}
-                    {% if course.repetitions %}{{ course.repetitions }}
-                        (rep) {% if course.lectures or course.laboratories %}+{% endif %}{% endif %}
-                    {% if course.exercises %}{{ course.exercises }} (ćw) {% if course.laboratories %}
-                        +{% endif %}{% endif %}
-                    {% if course.laboratories %}{{ course.laboratories }} (prac){% endif %}</td>
-            </tr>
-        {% endif %}
-
-        {% if course.english %}
-            <tr>
-                <th scope="row">{% trans "Przedmiot prowadzony w j.angielskim" %}</th>
-                <td>{% trans "Tak" %}</td>
-            </tr>
-        {% endif %}
-        {% include "common/common_course_info.html" with course_entity=course.entity %}
-        {% if course.web_page %}
-            <tr>
-                <th scope="row">{% trans "Strona WWW" %}</th>
-                <td><a href="{{ course.web_page }}">{{ course.web_page }}</a></td>
-            </tr>{% endif %}
-        {% if requirements %}
-            <tr>
-                <th scope="row">{% trans "Wymagane" context "zależności przedmiotu" %}</th>
-                <td>{{ requirements|join:", " }}</td>
-            </tr>
-        {% endif %}
-        {% if False %}
-            <tr>
-                <th scope="row">{% trans "Konsultacje" %}</th>
-                <td><a href="{% url 'course-consiltations-page' course.slug %}">{% trans "link" %}</a></td>
-            </tr>
-            <tr>
-                <th scope="row">{% trans "Oddane głosy" %}</th>
-                <td> {{ course.votes_count }} <a href="{% url 'course-votes' course.slug %}">{% trans "lista" %}</a></td>
-            </tr>
+        {% if course.effects.all %}
+        <tr>
+            <th>Grupy efektów kształcenia</th>
+            <td>
+                {% for effect in course.effects.all %}
+                    <span class="badge badge-info">{{ effect }}</span>
+                {% endfor %}
+            </td>
+        </tr>
         {% endif %}
         {% for group_of_waiting_students in grouped_waiting_students %}
+            {# This will only be non-empty when the requesting user is staff #}
             {% if group_of_waiting_students.students_amount %}
                 <tr>
                     <th scope="row">Liczba chętnych na {{ group_of_waiting_students.type_name }}</th>
@@ -78,12 +94,8 @@
 </table>
 
 <div class="description">
-
-    <h5>{% trans "Opis przedmiotu" %}:</h5>
-    {% if course.description %}
-    <p>{{ course.description|safe }}</p>
-    {% else %}
-        <p>{% trans "Brak" %}</p>
-    {% endif %}
+    <h3>Opis przedmiotu:</h3>
+    <div class="markdown">{{ course.description|default:"Brak" }}</div>
 </div>
 
+{% render_bundle 'proposal-render-markdown' %}

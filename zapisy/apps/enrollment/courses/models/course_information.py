@@ -119,3 +119,19 @@ class CourseInformation(models.Model):
         copy.entity = None
 
         return copy
+
+    def __json__(self):
+        """Returns a JSON-serializable dict with al course information."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'short_name': self.short_name or self.name,
+            'slug': self.slug,
+            'type': self.course_type_id,
+            'english': self.language == Language.ENGLISH,
+            'exam': self.has_exam,
+            'suggested_for_first_year': self.recommended_for_first_year,
+            'teacher': self.owner_id,
+            'effects': [effect.pk for effect in self.effects.all()],
+            'tags': [tag.pk for tag in self.tags.all()],
+        }

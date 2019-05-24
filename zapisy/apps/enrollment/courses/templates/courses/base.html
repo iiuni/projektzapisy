@@ -15,7 +15,6 @@
 {% endblock %}
 
 {% block sidebar %}
-	{% cache 3600 courses_list %}
 	<div id="main-sidebar">
 		<div id="course-list">
             <p class="main-side-message hidden" id="fetchingListMessage">
@@ -43,5 +42,4 @@
             </div>
 		</div>
 	</div>
-	{% endcache %}
 {% endblock %}

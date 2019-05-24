@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
 
 from apps.offer.proposal.models import Proposal
@@ -33,3 +34,10 @@ class CourseInstance(CourseInformation):
 
     def __str__(self):
         return f"{self.name} ({self.semester})"
+
+    def __json__(self):
+        d = super().__json__()
+        d.update({
+            'url': reverse('course-page', args=[str(self.slug)]),
+        })
+        return d
