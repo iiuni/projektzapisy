@@ -162,9 +162,8 @@ class ShallowGroupSerializer(serializers.ModelSerializer):
 class TermSerializer(serializers.ModelSerializer):
     """Serializes a Term instance.
 
-    When serializing multiple objects, query them with `select_related('group',
-    'group__course', 'group__course__entity', 'group__teacher',
-    'group__teacher__user').prefetch_related('classrooms')`.
+    When serializing multiple objects, query them with
+    `select_related('group').prefetch_related('classrooms')`.
     """
     group = ShallowGroupSerializer(read_only=True)
     classrooms = ClassroomSerializer(read_only=True, many=True)

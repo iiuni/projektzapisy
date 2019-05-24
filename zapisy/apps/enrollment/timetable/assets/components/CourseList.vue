@@ -12,7 +12,7 @@ import Component from "vue-class-component";
 import { Group } from "../models";
 import { CourseShell } from "../store/courses";
 
-export type CourseObject = { id: number; course__entity: string; url: string };
+export type CourseObject = { id: number; name: string; url: string };
 
 @Component({
   props: {
@@ -41,7 +41,7 @@ export default class CourseList extends Vue {
       <ul class="course-list-sidebar-inner">
         <li v-for="c of courses" :key="c.id">
           <input type="checkbox" :id="c.id" :value="c.id" v-model="selection">
-          <label :for="c.id">{{ c.entity__name }}</label>
+          <label :for="c.id">{{ c.name }}</label>
         </li>
       </ul>
     </div>

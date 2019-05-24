@@ -590,7 +590,7 @@ class Course(models.Model):
     def get_all_enrolled_emails(self):
         from apps.enrollment.records.models import Record, RecordStatus
         return Record.objects.filter(
-            group__course=self, status=RecordStatus.ENROLLED
+            group__course__old_course=self, status=RecordStatus.ENROLLED
         ).values_list(
             'student__user__email', flat=True
         ).distinct()

@@ -46,7 +46,7 @@ class OpeningTimesTest(TestCase):
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
         bolek_votes_for_knitting = SingleVote.objects.get(
             student=self.bolek,
-            proposal=self.knitting_lecture_group.course.entity.courseinformation.pk).correction
+            proposal=self.knitting_lecture_group.course.offer_id).correction
         bolek_knitting_group_opening = bolek_t0 - timedelta(days=bolek_votes_for_knitting)
         self.assertFalse(
             GroupOpeningTimes.is_group_open_for_student(
@@ -101,7 +101,7 @@ class OpeningTimesTest(TestCase):
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
         bolek_votes_for_knitting = SingleVote.objects.get(
             student=self.bolek,
-            proposal=self.knitting_lecture_group.course.entity.courseinformation.pk).correction
+            proposal=self.knitting_lecture_group.course.offer_id).correction
 
         bolek_knitting_group_opening = bolek_t0 - timedelta(days=bolek_votes_for_knitting)
         self.assertFalse(

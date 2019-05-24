@@ -7,12 +7,12 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from django.conf import settings
 from django.db import models, transaction
 
-from apps.enrollment.courses.models import Course, Group, Semester
+from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.users.models import Program, Student
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
@@ -156,7 +156,7 @@ class GroupOpeningTimes(models.Model):
         fetched with select_related('course', 'course__semester').
         """
         if not groups:
-            return []
+            return {}
         # We assume all the groups are in the same semester.
         is_after_t0 = T0Times.is_after_t0(student, groups[0].course.semester, time)
 
@@ -191,7 +191,7 @@ class GroupOpeningTimes(models.Model):
         return ret
 
     @classmethod
-    def is_enrollment_open(cls, course: Course, time: datetime):
+    def is_enrollment_open(cls, course: CourseInstance, time: datetime):
         """Decides if enrollment is open for this course in general.
 
         Usually enrollment is for all courses at the beginning of the semester,
@@ -204,6 +204,7 @@ class GroupOpeningTimes(models.Model):
         return is_course_open or is_semester_open
 
     @classmethod
+    @transaction.atomic
     def populate_opening_times(cls, semester: Semester):
         """Computes opening times (bonuses) for students that cast votes.
 
@@ -212,48 +213,48 @@ class GroupOpeningTimes(models.Model):
         """
         # First make sure, that all SingleVotes have their course field
         # populated.
-        with transaction.atomic():
-            # First delete all already existing records for this semester.
-            cls.objects.filter(group__course__semester_id=semester.id).delete()
-            # We need T0 of each student.
-            t0times: Dict[int, int] = dict(
-                T0Times.objects.filter(semester_id=semester.id).values_list("student_id", "time"))
+        # First delete all already existing records for this semester.
+        cls.objects.filter(group__course__semester_id=semester.id).delete()
+        # We need T0 of each student.
+        t0times: Dict[int, datetime] = dict(
+            T0Times.objects.filter(semester_id=semester.id).values_list("student_id", "time")
+        )
 
-            opening_time_objects: List[cls] = []
-            votes = SingleVote.objects.meaningful().in_semester(semester=semester)
-            groups = Group.objects.filter(course__semester=semester).select_related(
-                'course__entity__courseinformation')
+        opening_time_objects: List['GroupOpeningTimes'] = []
+        votes = SingleVote.objects.meaningful().in_semester(semester=semester)
+        groups = Group.objects.filter(course__semester=semester).select_related('course')
 
-            votes_by_proposal = defaultdict(list)
-            for vote in votes:
-                votes_by_proposal[vote.proposal_id].append(vote)
+        votes_by_proposal: Dict[int, List[SingleVote]] = defaultdict(list)
+        for vote in votes:
+            votes_by_proposal[vote.proposal_id].append(vote)
 
-            groups_by_proposal = defaultdict(list)
-            for group in groups:
-                groups_by_proposal[group.course.entity.courseinformation.pk].append(group)
+        groups_by_proposal: Dict[int, List[Group]] = defaultdict(list)
+        for group in groups:
+            groups_by_proposal[group.course.offer_id].append(group)
 
-            for proposal_id, groups in groups_by_proposal.items():
-                single_vote: SingleVote
-                for single_vote in votes_by_proposal[proposal_id]:
-                    # Every point gives a day worth of bonus.
-                    for group in groups:
-                        bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
-                        bonus_obj.time = max(
-                            filter(
-                                None,
-                                [
-                                    # The opening cannot be earlier than the group is opened
-                                    # (if that is specified).
-                                    group.course.records_start,
-                                    # If the student does not have T0, we use
-                                    # the general records opening time in the
-                                    # semester.
-                                    t0times.get(single_vote.student_id, semester.records_opening) -
-                                    timedelta(days=single_vote.val),
-                                ]
+        for proposal_id, groups in groups_by_proposal.items():
+            single_vote: SingleVote
+            for single_vote in votes_by_proposal[proposal_id]:
+                # Every point gives a day worth of bonus.
+                for group in groups:
+                    bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
+                    bonus_obj.time = max(
+                        filter(
+                            None,
+                            (
+                                # The opening cannot be earlier than the group is opened
+                                # (if that is specified).
+                                group.course.records_start,
+                                # If the student does not have T0, we use
+                                # the general records opening time in the
+                                # semester.
+                                t0times.get(single_vote.student_id, semester.records_opening) -
+                                timedelta(days=single_vote.val),
                             )
                         )
-                        bonus_obj.save()
+                    )
+                    opening_time_objects.append(bonus_obj)
+        cls.objects.bulk_create(opening_time_objects)
 
     @classmethod
     @transaction.atomic
@@ -266,12 +267,12 @@ class GroupOpeningTimes(models.Model):
         # First delete all already existing records for this group.
         cls.objects.filter(group=group).delete()
         # We need T0 of each student.
-        t0times: Dict[int, int] = dict(
+        t0times: Dict[int, datetime] = dict(
             T0Times.objects.filter(semester_id=group.course.semester_id).values_list(
                 "student_id", "time"))
         # We also need votes for the course.
-        votes = SingleVote.objects.filter(entity__course=group.course)
-        opening_time_objects: List[cls] = []
+        votes = SingleVote.objects.filter(proposal=group.course.offer)
+        opening_time_objects: List['GroupOpeningTimes'] = []
         single_vote: SingleVote
         for single_vote in votes:
             # Every point gives a day worth of bonus.

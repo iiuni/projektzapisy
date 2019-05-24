@@ -125,7 +125,7 @@ class CourseInformation(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'short_name': self.short_name or self.name,
+            'short_name': self.get_short_name(),
             'slug': self.slug,
             'type': self.course_type_id,
             'english': self.language == Language.ENGLISH,
@@ -135,3 +135,6 @@ class CourseInformation(models.Model):
             'effects': [effect.pk for effect in self.effects.all()],
             'tags': [tag.pk for tag in self.tags.all()],
         }
+
+    def get_short_name(self):
+        return self.short_name or self.name

@@ -4,6 +4,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 from ..models.course import Course, CourseEntity, CourseDescription
+from ..models.course_instance import CourseInstance
 from ..models.group import Group
 from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
@@ -103,11 +104,19 @@ class CourseFactory(DjangoModelFactory):
     semester = factory.SubFactory(SemesterFactory)
 
 
+class CourseInstanceFactory(CourseInformationFactory):
+    class Meta:
+        model = CourseInstance
+
+    semester = factory.SubFactory(SemesterFactory)
+    old_course = factory.SubFactory(CourseFactory)
+
+
 class GroupFactory(DjangoModelFactory):
     class Meta:
         model = Group
 
-    course = factory.SubFactory(CourseFactory)
+    course = factory.SubFactory(CourseInstanceFactory)
     type = 2
     limit = 10
     teacher = factory.SubFactory(EmployeeFactory)

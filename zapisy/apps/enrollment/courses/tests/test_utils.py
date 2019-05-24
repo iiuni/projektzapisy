@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group as DjangoUserGroup
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.views import can_user_view_students_list_for_group
@@ -19,7 +19,7 @@ class StudentsInfoVisibilityForExternalContractorsTestCase(TestCase):
         cls.teacher_user = User.objects.get(pk=2)
         cls.teacher_employee = Employee.objects.get(pk=2)
         cls.semester = Semester.objects.get(pk=1)
-        cls.course = Course.objects.get(pk=1)
+        cls.course = CourseInstance.objects.get(pk=1)
         cls.exercise_group = Group.objects.get(pk=1)
         ext_contractors_group, _ = DjangoUserGroup.objects.get_or_create(name='external_contractors')
         cls.teacher_user.groups.add(ext_contractors_group)

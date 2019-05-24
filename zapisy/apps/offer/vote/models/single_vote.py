@@ -11,13 +11,9 @@ class SingleVoteQuerySet(models.QuerySet):
     """Defines chainable filters on SingleVote querysets."""
 
     def in_semester(self, semester: Semester):
-        """Filters only votes for courses taught in a given semester.
-
-        NOTE: This function will need to be modified when CourseEntity is
-        fully replaced with proposal model.
-        """
+        """Filters only votes for courses taught in a given semester."""
         system_state = SystemState.get_state_for_semester(semester)
-        return self.filter(state=system_state, proposal__entity__course__semester=semester)
+        return self.filter(state=system_state, proposal__courseinstance__semester=semester)
 
     def in_vote(self):
         """Filters only votes for courses in vote."""

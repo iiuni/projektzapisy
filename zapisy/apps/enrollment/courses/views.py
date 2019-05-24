@@ -90,7 +90,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     if request.user.is_authenticated and BaseUser.is_student(request.user):
         student = request.user.student
 
-    groups = course.old_course.groups.exclude(extra='hidden').select_related(
+    groups = course.groups.exclude(extra='hidden').select_related(
         'teacher',
         'teacher__user',
     ).prefetch_related('term', 'term__classrooms')
@@ -99,8 +99,8 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
     student_status_groups = Record.is_recorded_in_groups(student, groups)
-    student_can_enqueue = Record.can_enqueue_groups(student, course.old_course.groups.all())
-    student_can_dequeue = Record.can_dequeue_groups(student, course.old_course.groups.all())
+    student_can_enqueue = Record.can_enqueue_groups(student, course.groups.all())
+    student_can_dequeue = Record.can_dequeue_groups(student, course.groups.all())
 
     for group in groups:
         group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
@@ -119,7 +119,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         'course': course,
         'teachers': teachers,
         'groups': groups,
-        'grouped_waiting_students': get_grouped_waiting_students(course, request)
+        'grouped_waiting_students': get_grouped_waiting_students(course, request.user)
     }
     return course, data
 
@@ -239,9 +239,12 @@ def group_queue_csv(request, group_id):
     return recorded_students_csv(group_id, RecordStatus.QUEUED)
 
 
-def get_grouped_waiting_students(course, request) -> List:
-    """Return numbers of waiting students grouped by course group type."""
-    if not request.user.is_superuser:
+def get_grouped_waiting_students(course: CourseInstance, user) -> List:
+    """Return numbers of waiting students grouped by course group type.
+
+    The user argument is used to decide if the list should be generated at all.
+    """
+    if not user.is_superuser:
         return []
 
     group_types: List = [
@@ -251,6 +254,6 @@ def get_grouped_waiting_students(course, request) -> List:
     ]
 
     return [{
-        'students_amount': Record.get_number_of_waiting_students(course.old_course, group_type['id']),
+        'students_amount': Record.get_number_of_waiting_students(course, group_type['id']),
         'type_name': group_type['name']
     } for group_type in group_types]

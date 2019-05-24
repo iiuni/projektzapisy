@@ -608,7 +608,7 @@ class EventTestCase(TestCase):
             Record.objects.create(student=student, group=group, status=RecordStatus.ENROLLED)
         users = [student.user for student in students]
         event = factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
-                                       interested=users, course=group.course)
+                                       interested=users, course=group.course.old_course)
         followers = event.get_followers()
         users_emails = [user.email for user in users]
         self.assertEqual(len(users_emails), len(followers))

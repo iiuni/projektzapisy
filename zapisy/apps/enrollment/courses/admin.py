@@ -10,6 +10,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course import Course, CourseDescription, CourseEntity, TagCourseEntity
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group
@@ -71,7 +72,6 @@ class CourseAdmin(admin.ModelAdmin):
                     'information', 'english']}), ('Szczegóły', {
                         'fields': [
                             'records_start', 'records_end', 'semester', 'slug', 'web_page'], 'classes': ['collapse']}), ]
-    inlines = [GroupInline, ]
 
     form = CourseForm
 
@@ -255,10 +255,8 @@ class GroupAdmin(admin.ModelAdmin):
         changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(
             day__lte=semester.lectures_ending)).values_list('day', 'weekday')
         terms = T.objects.filter(
-            group=obj).select_related(
-            'group',
-            'group__course',
-            'group__course__entity')
+            group=obj
+        ).select_related('group', 'group__course', 'group__course__old_course')
         days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
 
         day = semester.lectures_beginning
@@ -283,8 +281,8 @@ class GroupAdmin(admin.ModelAdmin):
         for t in terms:
             ev = Event()
             ev.group = obj
-            ev.course = t.group.course
-            ev.title = ev.course.entity.get_short_name()
+            ev.course = t.group.course.old_course
+            ev.title = t.group.course.get_short_name()
             ev.type = '3'
             ev.visible = True
             ev.status = '1'
@@ -379,3 +377,5 @@ admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Freeday, FreedayAdmin)
 admin.site.register(ChangedDay)
 admin.site.register(Type, TypeAdmin)
+
+admin.site.register(CourseInstance)
