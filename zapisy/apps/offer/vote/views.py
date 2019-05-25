@@ -16,6 +16,10 @@ def vote(request):
     """Renders voting form to the student and handles voting POST requests."""
     system_state = SystemState.get_current_state()
 
+    if not system_state:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
+
     if not system_state.is_vote_active() and (system_state.correction_active_semester() is None):
         messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
         return redirect('vote-main')
@@ -38,7 +42,13 @@ def vote(request):
 def vote_main(request):
     """Vote main page."""
     system_state = SystemState.get_current_state()
+
+    if system_state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
+
     is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
+
     data = {
         'is_vote_active': is_vote_active,
         'max_points': SystemState.DEFAULT_MAX_POINTS,
@@ -51,6 +61,11 @@ def vote_main(request):
 def my_vote(request):
     """Shows the student his own vote."""
     system_state = SystemState.get_current_state()
+
+    if system_state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
+
     votes = SingleVote.objects.meaningful().filter(state=system_state, student=request.user.student)
 
     is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
@@ -65,6 +80,10 @@ def my_vote(request):
 def vote_summary(request):
     """Summarizes the voting period."""
     state = SystemState.get_current_state()
+
+    if state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
 
     votes_sum_agg = models.Sum('true_val')
     votes_count_agg = models.Count('id')
@@ -85,6 +104,10 @@ def proposal_vote_summary(request, slug):
     """Lists students voting for a proposal."""
     proposal: Proposal = get_object_or_404(Proposal, slug=slug)
     state = SystemState.get_current_state()
+
+    if state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
 
     votes = SingleVote.objects.meaningful().filter(state=state, proposal=proposal).select_related(
         'student', 'student__user').true_val()
