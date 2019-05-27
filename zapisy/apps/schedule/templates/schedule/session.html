@@ -24,7 +24,7 @@
         {% regroup exams by day as terms_list %}
         {% for exam in terms_list %}
             <dt><h4>{{ exam.grouper|date:"l, j E Y" }}</h4></dt>
-            {% regroup exam.list|dictsort:"event.course.entity.name" by event.course as list %}
+            {% regroup exam.list|dictsort:"event.course.name" by event.course as list %}
             {% for ll in list %}
                 <dd>
                     <h6><a href="{{ ll.grouper.get_absolute_url }}">{{ ll.grouper.name }}</a></h6>

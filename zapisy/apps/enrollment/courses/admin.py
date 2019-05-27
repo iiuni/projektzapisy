@@ -1,9 +1,6 @@
-import datetime
-
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django import forms
 from modeltranslation.admin import TranslationAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -232,78 +229,6 @@ class GroupAdmin(admin.ModelAdmin):
 
     raw_id_fields = ('course', 'teacher')
 
-    def response_add(self, request, new_object, post_url_continue='../%s/'):
-        obj = self.after_saving_model_and_related_inlines(new_object)
-        return super(GroupAdmin, self).response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj):
-        obj = self.after_saving_model_and_related_inlines(obj)
-        return super(GroupAdmin, self).response_change(request, obj)
-
-    def after_saving_model_and_related_inlines(self, obj):
-        from apps.enrollment.courses.models.term import Term as T
-        from apps.schedule.models.event import Event
-        from apps.schedule.models.term import Term
-        # Perform extra operation after all inlines are saved
-
-        Event.objects.filter(group=obj, type='3').delete()
-        semester = obj.course.semester
-
-        freedays = Freeday.objects.filter(Q(day__gte=semester.lectures_beginning),
-                                          Q(day__lte=semester.lectures_ending))\
-            .values_list('day', flat=True)
-        changed = ChangedDay.objects.filter(Q(day__gte=semester.lectures_beginning), Q(
-            day__lte=semester.lectures_ending)).values_list('day', 'weekday')
-        terms = T.objects.filter(
-            group=obj
-        ).select_related('group', 'group__course', 'group__course__old_course')
-        days = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
-
-        day = semester.lectures_beginning
-
-        while day <= semester.lectures_ending:
-
-            if day in freedays:
-                day = day + datetime.timedelta(days=1)
-                continue
-
-            weekday = day.weekday()
-
-            for d in changed:
-                if d[0] == day:
-                    weekday = int(d[1]) - 1
-                    break
-
-            days[weekday].append(day)
-
-            day = day + datetime.timedelta(days=1)
-
-        for t in terms:
-            ev = Event()
-            ev.group = obj
-            ev.course = t.group.course.old_course
-            ev.title = t.group.course.get_short_name()
-            ev.type = '3'
-            ev.visible = True
-            ev.status = '1'
-            if obj.teacher:
-                ev.author_id = obj.teacher.user.id
-            else:
-                ev.author_id = 1
-            ev.save()
-
-            for room in t.classrooms.all():
-                for day in days[int(t.dayOfWeek) - 1]:
-                    newTerm = Term()
-                    newTerm.event = ev
-                    newTerm.day = day
-                    newTerm.start = t.start_time
-                    newTerm.end = t.end_time
-                    newTerm.room = room
-                    newTerm.save()
-
-        return obj
-
     def changelist_view(self, request, extra_context=None):
 
         if 'course__semester__id__exact' not in request.GET:
@@ -321,7 +246,7 @@ class GroupAdmin(admin.ModelAdmin):
         display those for the currently signed in user.
         """
         qs = super(GroupAdmin, self).get_queryset(request)
-        return qs.select_related('teacher', 'teacher__user', 'course', 'course__entity',
+        return qs.select_related('teacher', 'teacher__user', 'course',
                                  'course__semester').prefetch_related('term', 'record_set')
 
 

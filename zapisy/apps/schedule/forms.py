@@ -1,7 +1,7 @@
 from copy import deepcopy
 from django import forms
 from django.forms import HiddenInput
-from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
@@ -62,20 +62,21 @@ class EventForm(forms.ModelForm):
             self.fields['type'].choices = Event.TYPES_FOR_STUDENT
 
         if not BaseUser.is_employee(user):
-            self.fields['course'].queryset = Course.objects.none()
+            self.fields['course'].queryset = CourseInstance.objects.none()
         else:
             semester = Semester.get_current_semester()
 
             previous_semester = Semester.get_semester(datetime.now().date() - timedelta(days=30))
 
-            queryset = Course.objects.filter(semester__in=[semester, previous_semester]). \
-                select_related('semester', 'entity'). \
+            queryset = CourseInstance.objects.filter(semester__in=[semester, previous_semester]). \
+                select_related('semester'). \
                 order_by('semester')
 
             if not user.has_perm('schedule.manage_events'):
-                queryset = Course.objects.filter(groups__type='1',
-                                                 groups__teacher=user.employee,
-                                                 semester__in=[semester, previous_semester])
+                queryset = CourseInstance.objects.filter(
+                    groups__type='1',
+                    groups__teacher=user.employee,
+                    semester__in=[semester, previous_semester])
 
             self.fields['course'].queryset = queryset
 

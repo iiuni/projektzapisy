@@ -243,9 +243,7 @@ def change_interested(request, event_id):
         event.interested.add(request.user)
         messages.success(request, 'Obserwujesz wydarzenie')
 
-        return redirect(event)
-
-    raise Http404
+    return redirect(event)
 
 
 @login_required
@@ -257,7 +255,7 @@ def statistics(request):
     semester_id = request.GET.get('semester_id', None)
     semester = Semester.get_by_id_or_default(semester_id)
 
-    exams = Course.get_courses_with_exam(semester).select_related('entity', 'entity__owner')
+    exams = Course.get_courses_with_exam(semester)
 
     return TemplateResponse(request, 'schedule/statistics.html', locals())
 

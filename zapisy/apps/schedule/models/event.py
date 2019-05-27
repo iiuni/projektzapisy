@@ -1,11 +1,12 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import ValidationError
 from django.db import models
 from django.http import Http404
 
-from django.core.validators import ValidationError
-
-from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import BaseUser
 
 
@@ -39,8 +40,6 @@ class Event(models.Model):
                          (TYPE_TEST, 'Kolokwium'),
                          (TYPE_GENERIC, 'Wydarzenie')]
 
-    from django.contrib.auth.models import User
-
     title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
     description = models.TextField(verbose_name='Opis', blank=True)
     type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
@@ -48,7 +47,7 @@ class Event(models.Model):
 
     status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
 
-    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+    course = models.ForeignKey(CourseInstance, null=True, blank=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
     reservation = models.ForeignKey(
         'schedule.SpecialReservation',
@@ -167,7 +166,7 @@ class Event(models.Model):
         @return: Event object
         """
         try:
-            event = cls.objects.select_related('group', 'course', 'course__entity', 'author') \
+            event = cls.objects.select_related('group', 'course', 'author') \
                 .prefetch_related('term_set', 'term_set__room').get(pk=id)
         except ObjectDoesNotExist:
             raise Http404
@@ -189,7 +188,7 @@ class Event(models.Model):
         @return: Event object
         """
         try:
-            event = cls.objects.select_related('group', 'course', 'course__entity', 'author') \
+            event = cls.objects.select_related('group', 'course', 'author') \
                 .prefetch_related('term_set', 'term_set__room').get(pk=id)
         except ObjectDoesNotExist:
             raise Http404
@@ -211,7 +210,7 @@ class Event(models.Model):
         @return: Event object
         """
         try:
-            event = cls.objects.select_related('group', 'course', 'course__entity', 'author') \
+            event = cls.objects.select_related('group', 'course', 'author') \
                 .prefetch_related('term_set', 'term_set__room').get(pk=id)
         except ObjectDoesNotExist:
             raise Http404
@@ -229,7 +228,7 @@ class Event(models.Model):
 
         @return: Event QuerySet
         """
-        return cls.objects.all().select_related('group', 'course', 'course__entity', 'author') \
+        return cls.objects.all().select_related('group', 'course', 'author') \
             .prefetch_related('term_set', 'term_set__room')
 
     @classmethod
@@ -250,7 +249,7 @@ class Event(models.Model):
         @param user: auth.User object
         @return: Event QuerySet
         """
-        return cls.objects.filter(author=user).select_related('course', 'course__entity', 'author')\
+        return cls.objects.filter(author=user).select_related('course', 'author')\
             .prefetch_related('term_set')
 
     @classmethod
@@ -261,11 +260,14 @@ class Event(models.Model):
         @return Event QuerySet
         """
         return cls.objects.filter(type=Event.TYPE_EXAM, status=Event.STATUS_ACCEPTED)\
-            .order_by('-created').select_related('course', 'course__entity')
+            .order_by('-created').select_related('course')
 
     def get_followers(self):
         if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST]:
-            return self.course.get_all_enrolled_emails()
+            emails = Record.objects.filter(group__course=self.course,
+                                           status=RecordStatus.ENROLLED).values_list(
+                                               'student__user__email', flat=True).distinct()
+            return emails
 
         return self.interested.values_list('email', flat=True)
 
