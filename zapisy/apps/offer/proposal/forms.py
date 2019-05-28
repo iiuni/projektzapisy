@@ -10,7 +10,6 @@ from typing import Optional
 from crispy_forms import helper, layout
 from django import forms
 
-from apps.enrollment.courses.models import CourseEntity
 from .models import Proposal, ProposalStatus
 
 
@@ -89,10 +88,6 @@ class EditProposalForm(forms.ModelForm):
                 val = inspect.cleandoc(val)
             self.fields[k].initial = val
 
-        # Fill the ects field with value from entity.
-        if self.instance and self.instance.entity:
-            self.fields['points'].initial = self.instance.points
-
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
 
@@ -154,13 +149,6 @@ class EditProposalForm(forms.ModelForm):
             instance.owner = self.user.employee
         if commit:
             instance.save()
-
-            # Creates entity, if one does not exist.
-            if instance.entity is None:
-                entity = CourseEntity.objects.create(
-                    name="Tymczasowe entity do migracji",
-                    deleted=True)
-                instance.entity = entity
 
             # Populates default ECTS value.
             instance.points = self.instance.course_type.default_ects
