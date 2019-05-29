@@ -3,7 +3,6 @@ from django.db import models
 from apps.users.models import Employee, \
     Program
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
-from apps.enrollment.courses.models.course import CourseEntity
 
 from .section import SectionOrdering, Section
 
@@ -14,12 +13,6 @@ class Template(models.Model):
     studies_type = models.ForeignKey(
         Program,
         verbose_name='typ studiów',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    course = models.ForeignKey(
-        CourseEntity,
-        verbose_name='przedmiot',
         blank=True,
         null=True,
         on_delete=models.CASCADE)

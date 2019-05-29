@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST
 
 from apps.grade.poll.models.last_visit import LastVisit
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
-from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.ticket_create.utils import from_plaintext
 from apps.grade.ticket_create.models import PublicKey
@@ -278,7 +278,7 @@ def ajax_get_courses(request):
     if request.is_ajax():
         if request.method == 'POST':
             semester = int(request.POST.get('semester', '0'))
-            courses = course_list(Course.objects.filter(semester=semester).order_by('name'))
+            courses = course_list(CourseInstance.objects.filter(semester=semester).order_by('name'))
             message = json.dumps(courses)
     return HttpResponse(message)
 
@@ -343,7 +343,7 @@ def poll_edit(request):
             edit_poll(poll, request, origin)
             messages.success(request, "Ankieta została zmieniona")
 
-    return HttpResponseRedirect(reverse('grade-poll-list'))
+    return HttpResponseRedirect(reverse('grade-main'))
 
 
 @employee_required
@@ -377,15 +377,15 @@ def poll_create(request):
 
         except NoTitleException:
             messages.error(request, "Nie można utworzyć ankiety; brak tytułu")
-            return HttpResponseRedirect(reverse('grade-poll-list'))
+            return HttpResponseRedirect(reverse('grade-main'))
         except NoSectionException:
             messages.error(request, "Nie można utworzyć ankiety; ankieta jest pusta")
-            return HttpResponseRedirect(reverse('grade-poll-list'))
+            return HttpResponseRedirect(reverse('grade-main'))
         except NoPollException:
             messages.info(request, "Nie utworzono żadnej ankiety")
-            return HttpResponseRedirect(reverse('grade-poll-list'))
+            return HttpResponseRedirect(reverse('grade-main'))
 
-    return HttpResponseRedirect(reverse('grade-poll-list'))
+    return HttpResponseRedirect(reverse('grade-main'))
 
 
 #
@@ -471,76 +471,6 @@ def delete_sections(request):
 
 
 @employee_required
-def polls_list(request):
-    data = {}
-    semester = Semester.get_current_semester()
-
-    if not semester:
-        messages.info(request, "Ocena zajęć jest obecnie zamknięta.")
-        return render(request, 'grade/main.html', {'grade': False})
-
-    grade = semester.is_grade_active
-    if grade:
-        messages.error(
-            request,
-            "Ocena zajęć jest otwarta; operacja nie jest w tej chwili dozwolona")
-        return HttpResponseRedirect(reverse('grade-main'))
-
-    if request.method == 'POST':
-
-        kwargs = {}
-        if 'q' in request.POST:
-            kwargs['title__icontains'] = request.POST['q']
-            data['q'] = request.POST['q']
-
-        if int(request.POST['filter-semester']) > 0:
-            kwargs['semester__pk'] = int(request.POST['filter-semester'])
-            data['filter_semester'] = int(request.POST['filter-semester'])
-
-        if int(request.POST['filter-course']) > 0:
-            kwargs['group__course__entity__pk'] = int(request.POST['filter-course'])
-            data['filter_course'] = int(request.POST['filter-course'])
-
-        if int(request.POST['filter-studies_type']) > 0:
-            kwargs['studies_type__pk'] = int(request.POST['filter-studies_type'])
-            data['filter_studies_type'] = int(request.POST['filter-studies_type'])
-
-        if int(request.POST['filter-type']) > 0:
-            kwargs['group__type'] = int(request.POST['filter-type'])
-            data['filter_type'] = request.POST['filter-type']
-
-        if 'my-polls' in request.POST and request.POST['my-polls'] == 'on':
-            kwargs['author'] = request.user.employee
-            data['my_polls'] = True
-
-        if int(request.POST['filter-employee']) > 0:
-            kwargs['group__teacher__pk'] = int(request.POST['filter-employee'])
-            data['filter_employee'] = int(request.POST['filter-employee'])
-
-        polls = Poll.objects.filter(**kwargs)
-        page, paginator = make_paginator(request, objects=polls)
-    else:
-        page, paginator = make_paginator(request, object=Poll)
-
-    data['polls'] = page
-    data['polls_word'] = declination_poll(paginator.count, True)
-    data['grade'] = grade
-    data['pages'] = make_pages(paginator.num_pages + 1, page.number)
-    data['pages_range'] = paginator.page_range
-    data['tab'] = "poll_list"
-    data['semesters'] = Semester.objects.all()
-    data['courses'] = CourseEntity.objects.all().order_by('name')
-    data['sections'] = Section.objects.all()
-    data['employees'] = Employee.objects.all(). \
-        select_related().order_by('user__last_name', 'user__first_name')
-    data['studies_types'] = Program.objects.all()
-    data['types'] = GROUP_TYPE_CHOICES
-    data['keys_to_create'] = Poll.count_polls_without_keys()
-
-    return render(request, 'grade/poll/managment/polls_list.html', data)
-
-
-@employee_required
 def show_poll(request, poll_id):
     poll = Poll.objects.get(pk=poll_id)
     form = PollForm()
@@ -564,7 +494,7 @@ def poll_actions(request):
         if action == 'delete_selected':
             data['polls'] = get_objects(request, Poll)
             return render(request, 'grade/poll/managment/poll_confirm_delete.html', data)
-    return HttpResponseRedirect(reverse('grade-poll-list'))
+    return HttpResponseRedirect(reverse('grade-main'))
 
 
 @employee_required
@@ -574,7 +504,7 @@ def delete_polls(request):
         message = 'Usunięto ' + str(counter) + ' ' + declination_poll(counter)
         messages.info(request, SafeText(message))
 
-    return HttpResponseRedirect(reverse('grade-poll-list'))
+    return HttpResponseRedirect(reverse('grade-main'))
 
 
 @employee_required

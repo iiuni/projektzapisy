@@ -19,7 +19,6 @@ urlpatterns = [
     url(r'^poll_results/(?P<mode>[S,T])(?P<poll_id>[1-9][0-9]*)/details/(?P<st_id>[1-9][0-9]*)?$', views.poll_results_detailed, name='grade-poll-poll-results-detailed'),
     url(r'^(?P<semester>[\d]*)/poll_results/(?P<mode>[S,T])(?P<poll_id>[1-9][0-9]*)/details/(?P<st_id>[1-9][0-9]*)?$', views.poll_results_detailed, name='grade-poll-poll-results-detailed-semester'),
 
-    url(r'^managment/polls_list/$', views.polls_list, name='grade-poll-list'),
     url(r'^managment/sections_list/$', views.sections_list, name='grade-poll-sections-list'),
     url(r'^managment/groups_without_polls/$', views.groups_without_poll, name='grade-poll-groups_without_polls'),
     url(r'^managment/poll_create/$', views.poll_create, name='grade-poll-poll-create'),
