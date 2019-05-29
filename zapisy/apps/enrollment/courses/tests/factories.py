@@ -109,7 +109,6 @@ class CourseInstanceFactory(CourseInformationFactory):
         model = CourseInstance
 
     semester = factory.SubFactory(SemesterFactory)
-    old_course = factory.SubFactory(CourseFactory)
 
 
 class GroupFactory(DjangoModelFactory):
