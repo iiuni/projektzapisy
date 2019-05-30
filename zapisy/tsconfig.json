@@ -5,7 +5,7 @@
     "sourceMap": true,
     "target": "es6",
     "alwaysStrict": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "strict": true,
     "jsx": "react",
     "module": "esnext",
@@ -20,7 +20,8 @@
       "lodash",
       "bootstrap",
       "popper.js"
-    ]
+    ],
+    "lib":["dom","es2017"]
   },
   "exclude": [
     "./node_modules",

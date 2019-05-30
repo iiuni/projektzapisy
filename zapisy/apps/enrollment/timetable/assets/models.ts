@@ -91,13 +91,63 @@ export class Teacher {
     constructor(public name: string, public id: number, public url: string) { }
 }
 
-export class CourseEntity {
-    constructor(public name: string, public shortName: string) { }
+// Format of JSON representing CourseShell that backend passes to the frontend 
+export interface CourseShellJSON{
+    id:number;
+    name:string;
+    shortName:string;
+    type:string;
+    url:string;
+    firstYearFriendly:boolean;
+    exam:boolean;
+    seminars:boolean;
+    english:boolean;
+    effects:string[];
+    tags:string[];
+    semester?:string;
+    owner:string;
 }
 
-// Course is defined in apps/enrollment/courses/models/course.py.
-export class Course {
-    constructor(public entity: CourseEntity, public url: string) { }
+// Basic data about course that backend happily gives about all the courses at once
+export class CourseShell {
+    id:number;
+    name:string;
+    shortName:string;
+    type:string;
+    url:string;
+    firstYearFriendly:boolean;
+    exam:boolean;
+    seminars:boolean;
+    english:boolean;
+    effects:string[];
+    tags:string[];
+    groups?:number[];
+    semester?:string;
+    owner?:string;
+    constructor(src:CourseShellJSON) {
+        this.id = src.id;
+        this.name = src.name;
+        this.shortName = src.shortName;
+        this.type = src.type;
+        this.url = src.url;
+        this.firstYearFriendly = src.firstYearFriendly;
+        this.exam = src.exam;
+        this.seminars = src.seminars;
+        this.english = src.english;
+        this.effects = src.effects;
+        this.tags = src.tags;
+        this.semester = src.semester;
+    }
+}
+
+// Format of JSON representing Course that backend passes to the frontend 
+export interface CourseJSON extends CourseShellJSON{}
+
+// Detailed data about course that should be fetch only when neccesary
+export class Course extends CourseShell{
+    constructor(src : CourseJSON) {
+        super(src);
+    }
 
 }
 

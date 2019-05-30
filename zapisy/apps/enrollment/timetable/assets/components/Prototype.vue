@@ -12,12 +12,14 @@ import Component from "vue-class-component";
 import VueTimers from "vue-timers/mixin";
 
 import { Group, GroupJSON } from "../models";
-import CourseList, { CourseObject } from "./CourseList.vue";
+import CourseList from "./CourseList.vue";
+import CourseFilter from "./CourseFilter.vue";
 import PrototypeTimetable from "./PrototypeTimetable.vue";
 
 @Component({
   components: {
     CourseList,
+    CourseFilter,
     PrototypeTimetable
   },
   computed: {
@@ -51,12 +53,17 @@ export default class Prototype extends Vue {
 </script>
 
 <template>
-<div class="row">
-    <div class="col-md-9 ">
-        <PrototypeTimetable :groups="groupsGetter"/>
+  <div>
+    <div class="row">
+        <CourseFilter :hideSemester="true"/>
     </div>
-    <div class="col-md-3  course-list-sidebar-wrapper">
-      <CourseList :courses="courses"/>
+    <div class="row">
+        <div class="col-12 col-sm-9">
+            <PrototypeTimetable :groups="groupsGetter"/>
+        </div>
+        <div class="col-12 col-sm-3 columns course-list-sidebar-wrapper">
+          <CourseList :courses="courses"/>
+        </div>
     </div>
-</div>
+  </div>
 </template>
