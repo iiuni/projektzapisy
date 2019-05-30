@@ -43,7 +43,10 @@ const getters = {
         return (course:CourseShell)=>{
             if(state.semester !== "" && course.semester !== state.semester) return false;
             if(state.name !== "" && !course.name.startsWith(state.name)) return false; 
-            if(state.owner !== "" && course.owner !== state.owner) return false; 
+            if(state.owner !== "" && course.owner !== state.owner) {
+                console.log(state.owner, "!==", course.owner);
+                return false; 
+            }
             if(state.tags.length !== 0){
                 if(!state.tags.reduce( (prev,curr)=>prev && course.tags.includes(curr) , true )) return false;
             }
@@ -78,6 +81,7 @@ const getters = {
 
 const actions = {
     setFilter({ commit }: ActionContext<State, any>, [id,payload]:[string,string]) {
+        console.log("[action] setting filter",id,payload)
         commit("setFilter", [id,payload]);
     },
     updateFilter({ commit }: ActionContext<State, any>, [id,payload]:[FilterArrayId,string[]]) {
@@ -95,9 +99,10 @@ const actions = {
 
 const mutations = {
     setFilter(state: State, [filterId,filterValue]: [FilterId,string]) {
-		let hook:string[];
+        console.log("[mut]setting filter",filterId,filterValue)
+		let hook:string[] = [];
 		if(filterId === "name") state.name = filterValue;
-		if(filterId === "owner") state.name = filterValue;
+		if(filterId === "owner") state.owner = filterValue;
 		if(filterId === "semester") state.semester = filterValue;
 		if(filterId === "effects") hook = state.effects;
 		if(filterId === "types") hook = state.types;

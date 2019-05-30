@@ -11,7 +11,7 @@ import { CourseShell, Group, Course } from "../models";
 		owner: String as ()=>string,
 	},
 })
-export default class CourseFilterSemester extends Vue {
+export default class CourseFilterOwner extends Vue {
   // The computed property selectionState comes from store.
   get selection(): string {
 		return this.$props.owner;
