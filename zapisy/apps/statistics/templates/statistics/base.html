@@ -1,26 +1,28 @@
-{% extends "base.html" %}
+{% extends "enrollment/base.html" %}
 
-
-{% block statistics_active %} class="active"{% endblock %}
 {% block main-subtitle %}Statystyki{% endblock %}
-{% block content-width %}16{% endblock %}
-
 
 {% block bread %}
 <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
 <li class="breadcrumb-item active" aria-current="page">Statystyki</li>
 {% endblock %}
 
-{% block system_menu %}
+{% block enrollment_statistics %}class="active"{% endblock %}
+
+{% block all-content %}
+
 <ul class="nav nav-tabs">
-        <li class="nav-item {% block swaps_active %}{% endblock %}">
-                <a class="nav-link" href="{% url 'statistics:swap' %}">Swapy</a>
-        </li>
-        <li class="nav-item {% block students_active %}{% endblock %}">
-                <a class="nav-link" href="{% url 'statistics:students' %}">Studenci</a>
-        </li>
-        <li class="nav-item {% block groups_active %}{% endblock %}">
-                <a class="nav-link" href="{% url 'statistics:groups' %}">Grupy</a>
-        </li>
+    <li class="nav-item">
+        <a class="nav-link {% block statistics-groups-active %}{% endblock %}" 
+           href="{% url 'statistics:groups' %}">Grupy</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% block statistics-students-active %}{% endblock %}"
+           href="{% url 'statistics:students' %}">Studenci</a>
+    </li>
 </ul>
-{% endblock %}
+<div class="tab-content p-3 border-left border-right">
+    {% block statistics-content %}{% endblock %}
+</div>
+
+{% endblock all-content %}

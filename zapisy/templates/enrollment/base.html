@@ -32,7 +32,7 @@
 
     {% if perms.courses.view_stats %}
         <li {% block enrollment_statistics %}{% endblock %} class="nav-item">
-            <a class="nav-link" href="{% url 'statistics:main' %}">{% trans "Statystyki" %}</a>
+            <a class="nav-link" href="{% url 'statistics:groups' %}">{% trans "Statystyki" %}</a>
         </li>
     {% endif %}
 {# end system_menu #}
