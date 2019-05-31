@@ -35,7 +35,11 @@ def vote(request):
     else:
         formset = prepare_vote_formset(system_state, request.user.student)
 
-    return render(request, 'vote/form.html', {'formset': formset})
+    if system_state.is_vote_active():
+        template_name = 'vote/form.html'
+    elif system_state.correction_active_semester():
+        template_name = 'vote/form_correction.html'
+    return render(request, template_name, {'formset': formset})
 
 
 @login_required
