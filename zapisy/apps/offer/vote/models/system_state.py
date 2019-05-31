@@ -125,6 +125,15 @@ class SystemState(models.Model):
         This is a common use-case where we want a current (or upcoming if we are
         at the edge of the academic years) system state.
         """
+        # Try to find current SystemState — most recent that already had voting
+        # opened.
+        qs = SystemState.objects.filter(vote_beg__lte=date.today())
+        try:
+            return qs.latest('vote_beg')
+        except SystemState.DoesNotExist:
+            raise
+
+        # Edge case. Try current semester.
         semester = Semester.objects.get_next()
         return SystemState.get_state_for_semester(semester)
 
