@@ -1,6 +1,7 @@
 {% extends "offer/base.html" %}
 
 {% load proposal_status %}
+{% load render_bundle from webpack_loader %}
 
 {% block main-subtitle %}Podsumowanie głosowania{% endblock %}
 
@@ -18,12 +19,14 @@
     {% regroup proposals|dictsort:"proposal__semester" by proposal__semester as proposals_per_semester %}
     {% for semester, proposals_in_semester in proposals_per_semester %}
         <h2>Semestr {{ semester|semester_display }}</h2>
-        <table class="table table-striped">
+        <table class="table table-striped sortable">
             <thead>
-                <th scope="col">Propozycja przedmiotu</th>
-                <th scope="col" class="text-center">Suma punktów</th>
-                <th scope="col" class="text-center">Liczba głosujących</th>
-                <th></th>
+                <tr>
+                    <th scope="col" class="az" data-defaultsign="nospan" data-defaultsort="asc">Propozycja przedmiotu</th>
+                    <th scope="col" class="text-center">Suma punktów</th>
+                    <th scope="col" class="text-center">Liczba głosujących</th>
+                    <th data-defaultsort='disabled'></th>
+                </tr>
             </thead>
             <tbody>
                 {% for proposal in proposals_in_semester %}
@@ -39,4 +42,6 @@
     {% empty %}
         <div class="alert alert-info">Nikt na nic jeszcze nie zagłosował.</div>
     {% endfor %}
+
+    {% render_bundle 'vote-bootstrap-table' %}
 {% endblock all-content %}
