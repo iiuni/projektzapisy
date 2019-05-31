@@ -20,11 +20,20 @@ function setValueMapFromInput(
 
 // Given a <select> element highlights a table row containing it, if its value
 // is not a minimum option and removes highlight if it is.
+//
+// If the value is minimum available, but not 0 (which means the user is now in
+// correction and had voted for the course in the primary voting, we put a
+// colour on the course).
 function highlightVotedRow(select: HTMLSelectElement) {
     let tableRow = select.closest("tr");
     if (select.value !== select.options[0].text) {
+        tableRow.classList.remove("table-success");
         tableRow.classList.add("table-primary");
+    } else if (select.value !== "0") {
+        tableRow.classList.add("table-success");
+        tableRow.classList.remove("table-primary");
     } else {
+        tableRow.classList.remove("table-success");
         tableRow.classList.remove("table-primary");
     }
 }
