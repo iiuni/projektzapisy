@@ -29,6 +29,7 @@ def get_notifications(request):
         'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
         'target': notification.target,
     } for notification in repo.get_all_for_user(request.user)]
+    notifications.sort(key=lambda x: x['issued_on'], reverse=True)
 
     for (i, d) in enumerate(notifications):
         d.update({'key': i})
