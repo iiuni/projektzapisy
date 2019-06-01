@@ -35,6 +35,8 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@types/bootstrap": "^4.1.2",
     "@types/glob": "^5.0.33",
     "@types/jquery": "^3.3.4",
