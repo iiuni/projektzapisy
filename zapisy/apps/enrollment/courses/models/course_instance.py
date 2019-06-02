@@ -41,3 +41,24 @@ class CourseInstance(CourseInformation):
             'url': reverse('course-page', args=[str(self.slug)]),
         })
         return d
+
+    @classmethod
+    def create_proposal_instance(cls, proposal: Proposal, semester: Semester):
+        """Constructs an instance of the course in the semester."""
+        proposal_dict = proposal.courseinformation_ptr.__dict__.copy()
+        del proposal_dict['_state']
+        del proposal_dict['id']
+        del proposal_dict['slug']
+        del proposal_dict['created']
+        del proposal_dict['modified']
+        del proposal_dict['entity_id']
+        proposal_dict.update({
+            'semester': semester,
+            'offer': proposal,
+        })
+
+        instance = cls(**proposal_dict)
+        instance.save()
+        instance.tags.set(proposal.tags.all())
+        instance.effects.set(proposal.effects.all())
+        return instance
