@@ -18,10 +18,6 @@ class CourseInstance(CourseInformation):
     records_start = models.DateTimeField("Początek zapisów", null=True, blank=True)
     records_end = models.DateTimeField("Koniec zapisów", null=True, blank=True)
 
-    # A temporary field for migrations.
-    old_course = models.OneToOneField(
-        'courses.Course', null=True, blank=True, on_delete=models.SET_NULL, related_name='instance')
-
     class Meta:
         verbose_name = "Instancja przedmiotu"
         verbose_name_plural = "Instancje przedmiotów"
@@ -51,7 +47,6 @@ class CourseInstance(CourseInformation):
         del proposal_dict['slug']
         del proposal_dict['created']
         del proposal_dict['modified']
-        del proposal_dict['entity_id']
         proposal_dict.update({
             'semester': semester,
             'offer': proposal,

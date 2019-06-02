@@ -15,7 +15,6 @@ from apps.users.models import Employee
 from .course_type import Type as CourseType
 from .effects import Effects
 from .tag import Tag
-from .course import CourseEntity
 
 
 class Language(choicesenum.ChoicesEnum):
@@ -78,12 +77,6 @@ class CourseInformation(models.Model):
     created = models.DateTimeField("Data utworzenia", auto_now_add=True)
     modified = models.DateTimeField("Data modyfikacji", auto_now=True)
 
-    entity = models.OneToOneField(
-        CourseEntity,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name="tymczasowe pole ułatwiające migrację")
-
     def save(self, *args, **kwargs):
         """Overrides standard Django `save` function."""
         super().save(*args, **kwargs)
@@ -97,9 +90,8 @@ class CourseInformation(models.Model):
     def __copy__(self) -> 'CourseInformation':
         """Returns a (shallow) copy of the CourseInformation object.
 
-        All fields will be copied with exception of 'slug', 'usos_kod',
-        'entity'. Names will be prepended with an indicator that the object is a
-        clone.
+        All fields will be copied with exception of 'slug', 'usos_kod'. Names
+        will be prepended with an indicator that the object is a clone.
 
         The returned object is not saved in the database.
 
@@ -116,7 +108,6 @@ class CourseInformation(models.Model):
         # Clear some fields.
         copy.slug = None
         copy.usos_kod = None
-        copy.entity = None
 
         return copy
 

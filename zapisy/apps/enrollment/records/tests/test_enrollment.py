@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group, Course
+from apps.enrollment.courses.models import Semester, Group
 from apps.users.models import Student
 
 

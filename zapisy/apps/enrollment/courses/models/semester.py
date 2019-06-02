@@ -4,7 +4,6 @@ from django.db import models
 
 from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException, \
     MoreThanOneSemesterWithOpenRecordsException
-from .course import Course
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db.models import Q
 from django.core.validators import ValidationError
@@ -120,10 +119,6 @@ class Semester(models.Model):
             if timestamp < self.records_ects_limit_abolition:
                 return settings.ECTS_INITIAL_LIMIT
         return settings.ECTS_FINAL_LIMIT
-
-    def get_courses(self):
-        """ gets all courses linked to semester """
-        return Course.objects.filter(semester=self.pk)
 
     def get_name(self):
         """ returns name of semester """

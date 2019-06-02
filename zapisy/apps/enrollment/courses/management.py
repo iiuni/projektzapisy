@@ -29,7 +29,7 @@ from typing import List
 from django.contrib.auth.models import Group as AuthGroup
 from django.db import transaction
 
-from apps.enrollment.courses.models import Course, Group, Semester
+from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus, T0Times, GroupOpeningTimes
 from apps.enrollment.records.models.opening_times import ProgramGroupRestrictions
@@ -189,7 +189,7 @@ def adjust_split_in_three_opening_times():
         groups = Group.objects.filter(course__semester=semester, extra=label)
 
         # Find all corresponding lecture groups.
-        courses = Course.objects.filter(groups__in=groups).distinct()
+        courses = CourseInstance.objects.filter(groups__in=groups).distinct()
         lecture_groups = []
         for c in courses:
             lecture_groups.extend(Group.get_lecture_groups(c))
