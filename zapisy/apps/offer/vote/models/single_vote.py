@@ -16,7 +16,8 @@ class SingleVoteQuerySet(models.QuerySet):
         NOTE: This function will need to be modified when CourseEntity is
         fully replaced with proposal model.
         """
-        return self.filter(proposal__entity__course__semester=semester)
+        system_state = SystemState.get_state_for_semester(semester)
+        return self.filter(state=system_state, proposal__entity__course__semester=semester)
 
     def in_vote(self):
         """Filters only votes for courses in vote."""

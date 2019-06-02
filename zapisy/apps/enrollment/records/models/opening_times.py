@@ -217,11 +217,10 @@ class GroupOpeningTimes(models.Model):
             cls.objects.filter(group__course__semester_id=semester.id).delete()
             # We need T0 of each student.
             t0times: Dict[int, int] = dict(
-                T0Times.objects.filter(semester_id=semester.id).values_list("student_id", "time")
-            )
+                T0Times.objects.filter(semester_id=semester.id).values_list("student_id", "time"))
 
             opening_time_objects: List[cls] = []
-            votes = SingleVote.objects.in_semester(semester=semester)
+            votes = SingleVote.objects.meaningful().in_semester(semester=semester)
             groups = Group.objects.filter(course__semester=semester).select_related(
                 'course__entity__courseinformation')
 
