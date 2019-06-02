@@ -42,7 +42,7 @@ from apps.users.models import Student, Program
 def merge_groups(group: Group, merge_queues: bool = False):
     """Merges the provided course group with its sister groups.
 
-    Sister groups are the ones who correspond to the same entity in scheduler.
+    Sister groups are the ones who correspond to the same proposal in scheduler.
     The limit of the resulting group will be a sum of the limits of the mergees.
     Every student enrolled into one of the merged groups will be enrolled into
     the resulting group, but the new group's queue is going to be empty unless

@@ -81,8 +81,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     course: CourseInstance = None
     try:
         course = CourseInstance.objects.filter(slug=slug).select_related(
-            'semester', 'entity', 'course_type', 'old_course'
-        ).prefetch_related('tags', 'effects').get()
+            'semester', 'course_type').prefetch_related('tags', 'effects').get()
     except CourseInstance.DoesNotExist:
         return None, None
 

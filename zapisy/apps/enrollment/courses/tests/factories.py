@@ -3,7 +3,6 @@ from datetime import datetime
 import factory
 from factory.django import DjangoModelFactory
 
-from ..models.course import Course, CourseEntity, CourseDescription
 from ..models.course_instance import CourseInstance
 from ..models.group import Group
 from ..models.semester import ChangedDay, Semester
@@ -59,26 +58,6 @@ class SemesterFactory(DjangoModelFactory):
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 3, 1))
 
 
-class CourseEntityFactory(DjangoModelFactory):
-    class Meta:
-        model = CourseEntity
-
-    name = factory.Sequence(lambda n: 'course_{0}'.format(n))
-    ects = 5
-    suggested_for_first_year = False
-
-
-class CourseDescriptionFactory(DjangoModelFactory):
-    class Meta:
-        model = CourseDescription
-
-    author = factory.SubFactory(EmployeeFactory)
-    entity = factory.SubFactory(CourseEntityFactory)
-    lectures = 30
-    exercises = 30
-    laboratories = 30
-
-
 class CourseTypeFactory(DjangoModelFactory):
     class Meta:
         model = Type
@@ -88,20 +67,10 @@ class CourseInformationFactory(DjangoModelFactory):
     class Meta:
         model = CourseInformation
 
-    entity = factory.SubFactory(CourseEntityFactory)
     owner = factory.SubFactory(EmployeeFactory)
     course_type = factory.SubFactory(CourseTypeFactory)
 
     name = factory.Iterator(["Szydełkowanie", "Gotowanie", "Prasowanie", "Mycie naczyń", "Pranie"])
-
-
-class CourseFactory(DjangoModelFactory):
-    class Meta:
-        model = Course
-
-    entity = factory.SubFactory(CourseEntityFactory)
-    information = factory.SubFactory(CourseDescriptionFactory)
-    semester = factory.SubFactory(SemesterFactory)
 
 
 class CourseInstanceFactory(CourseInformationFactory):
