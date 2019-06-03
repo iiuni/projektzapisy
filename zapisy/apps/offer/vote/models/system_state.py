@@ -52,7 +52,7 @@ def _get_default_summer_semester() -> Optional[Semester]:
 
 
 class SystemState(models.Model):
-    DEFAULT_MAX_POINTS = 50
+    DEFAULT_MAX_POINTS = 40
 
     year = models.CharField(
         "Rok akademicki",
