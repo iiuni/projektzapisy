@@ -197,8 +197,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'zapisy.urls'
 
 INSTALLED_APPS = (
-    'modeltranslation',  # needs to be before django.contrib.admin
-
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -245,8 +243,6 @@ INSTALLED_APPS = (
     'django_rq',
     'webpack_loader',
 )
-
-MODELTRANSLATION_FALLBACK_LANGUAGES = ('pl',)
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
