@@ -56,6 +56,8 @@ from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import BaseUser, Student
 
+from apps.notifications.custom_signals import student_put_into_queue, student_enrolled
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -305,6 +307,8 @@ class Record(models.Model):
         Record.objects.create(
             group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
         LOGGER.info('User %s is enqueued into group %s', student, group)
+        # Send notification to user
+        student_put_into_queue.send(sender=Record, instance=group, user=student.user)
         GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
         enqueued_groups.append(group.id)
         return enqueued_groups
@@ -495,4 +499,6 @@ class Record(models.Model):
             other_groups_query.update(status=RecordStatus.REMOVED)
             self.status = RecordStatus.ENROLLED
             self.save()
+            # Send notification to user
+            student_enrolled.send(sender=self.__class__, instance=self.group, user=self.student.user)
             return other_groups_query_list

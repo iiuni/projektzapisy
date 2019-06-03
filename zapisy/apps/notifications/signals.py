@@ -4,14 +4,45 @@ from django.urls import reverse
 
 from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
+from apps.enrollment.records.models import Record
 from apps.news.models import News
 from apps.notifications.api import notify_user, notify_selected_users
 from apps.notifications.models import get_all_users_in_course_groups, get_all_users, get_all_students, get_all_users_from_group, get_enrolled_users_from_group, get_queued_users_from_group
-from apps.notifications.custom_signals import teacher_changed
+from apps.notifications.custom_signals import teacher_changed, terms_changed, student_put_into_queue, student_enrolled
 from apps.notifications.templates import NotificationType
 
 from apps.news.views import all_news
 from apps.enrollment.courses.views import course_view
+
+
+@receiver(student_put_into_queue, sender=Record)
+def notify_that_student_was_put_into_the_queue(sender: Record, **kwargs) -> None:
+    group = kwargs['instance']
+    target = reverse(course_view, args=[group.course.slug])
+
+    notify_user(
+        kwargs['user'],
+        Notification(
+            NotificationType.STUDENT_HAS_BEEN_PUT_INTO_THE_QUEUE, {
+                'course_name': group.course.information.entity.name,
+                'teacher': group.teacher.user.get_full_name(),
+                'type': group.human_readable_type().lower()
+            }, target))
+
+
+@receiver(student_enrolled, sender=Record)
+def notify_that_student_was_enrolled(sender: Record, **kwargs) -> None:
+    group = kwargs['instance']
+    target = reverse(course_view, args=[group.course.slug])
+
+    notify_user(
+        kwargs['user'],
+        Notification(
+            NotificationType.STUDENT_HAS_BEEN_ENROLLED, {
+                'course_name': group.course.information.entity.name,
+                'teacher': group.teacher.user.get_full_name(),
+                'type': group.human_readable_type().lower()
+            }, target))
 
 
 @receiver(post_save, sender=Group)
@@ -70,6 +101,31 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
                 'type': group.human_readable_type().lower()
+            }, target))
+
+
+@receiver(terms_changed, sender=Group)
+def notify_that_terms_of_group_were_changed(sender: Group, **kwargs) -> None:
+    group = kwargs['instance']
+
+    course_name = group.course.information.entity.name
+    target = reverse(course_view, args=[group.course.slug])
+
+    queued_users = get_queued_users_from_group(group)
+    enrolled_users = get_enrolled_users_from_group(group)
+
+    notify_selected_users(
+        queued_users,
+        Notification(
+            NotificationType.TERMS_HAVE_BEEN_CHANGED_QUEUED, {
+                'course_name': course_name,
+            }, target))
+
+    notify_selected_users(
+        enrolled_users,
+        Notification(
+            NotificationType.TERMS_HAVE_BEEN_CHANGED_ENROLLED, {
+                'course_name': course_name,
             }, target))
 
 
