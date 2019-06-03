@@ -12,6 +12,12 @@ class SingleVoteForm(forms.ModelForm):
         fields = ('value',)
         labels = {'value': ""}
 
+    def save(self, commit=True):
+        super().save(commit=False)
+        # This simple trick should radically save on number of queries.
+        if commit and self.changed_data:
+            self.instance.save()
+
 
 class SingleCorrectionFrom(forms.ModelForm):
     class Meta:
@@ -35,6 +41,12 @@ class SingleCorrectionFrom(forms.ModelForm):
             raise forms.ValidationError(
                 "Wartość w korekcie nie może być niższa niż w pierwszym głosowaniu.")
         return cleaned_data
+
+    def save(self, commit=True):
+        super().save(commit=False)
+        # This simple trick should radically save on number of queries.
+        if commit and self.changed_data:
+            self.instance.save()
 
 
 class SingleVoteFormset(forms.BaseModelFormSet):
