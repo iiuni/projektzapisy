@@ -101,7 +101,7 @@ class SingleVote(models.Model):
                                                    state=state).values_list('proposal_id',
                                                                             flat=True)
         existing_votes = set(existing_votes)
-        proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE)
+        proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).only('id')
         new_votes = []
         for proposal in proposals:
             if proposal.pk not in existing_votes:

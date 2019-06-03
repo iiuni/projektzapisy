@@ -83,8 +83,10 @@ def prepare_vote_formset(state: SystemState, student: Student, post=None):
     """
     SingleVote.create_missing_votes(student, state)
 
-    queryset = SingleVote.objects.filter(state=state, student=student).select_related(
-        'proposal', 'proposal__course_type')
+    queryset = SingleVote.objects.filter(
+        state=state, student=student).select_related('proposal', 'proposal__course_type').only(
+            'value', 'correction', 'proposal__name', 'proposal__slug',
+            'proposal__course_type', 'proposal__course_type__free_in_vote', 'proposal__semester')
     if state.is_vote_active():
         FormClass = SingleVoteForm
         limit = SystemState.DEFAULT_MAX_POINTS
