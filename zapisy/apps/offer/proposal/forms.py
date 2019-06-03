@@ -10,6 +10,8 @@ from typing import Optional
 from crispy_forms import helper, layout
 from django import forms
 
+from apps.enrollment.courses.models import CourseInstance
+
 from .models import Proposal, ProposalStatus
 
 
@@ -150,9 +152,17 @@ class EditProposalForm(forms.ModelForm):
         if commit:
             instance.save()
 
-            # Populates default ECTS value.
-            instance.points = self.instance.course_type.default_ects
-            instance.save()
+            # If the course is taught now, also update the current CourseInstance.
+            course = CourseInstance.get_current_instance(instance)
+            if course is not None:
+                for field in self.changed_data:
+                    course.__dict__[field] = self.cleaned_data[field]
+                course.save()
+
+            if self.fields['points'] is None:
+                # Populates default ECTS value.
+                instance.points = self.instance.course_type.default_ects
+                instance.save()
 
         return instance
 

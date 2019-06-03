@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models
 from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
@@ -57,3 +59,17 @@ class CourseInstance(CourseInformation):
         instance.tags.set(proposal.tags.all())
         instance.effects.set(proposal.effects.all())
         return instance
+
+    @classmethod
+    def get_current_instance(cls, proposal: Proposal) -> Optional['CourseInstance']:
+        """For a given proposal returns its currently taught instance or None.
+
+        None is returned if the proposal is not currently taught.
+        """
+        semester = Semester.get_current_semester()
+        if semester is None:
+            return None
+        try:
+            return cls.objects.get(semester=semester, offer=proposal)
+        except cls.DoesNotExist:
+            return None
