@@ -32,4 +32,4 @@ class NotificationsUtilsTestCase(TestCase):
 
         with self.assertRaises(DescriptionArgumentMissingException):
             rendered = render_description(
-                NotificationType.TEACHER_HAS_BEEN_CHANGED, descr_args)
+                NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, descr_args)

@@ -11,7 +11,7 @@ from django.urls import reverse
 from apps.enrollment.courses.models.course import Course
 from apps.users.models import Employee
 
-from apps.notifications.custom_signals import teacher_changed
+from apps.notifications.custom_signals import teacher_changed, terms_changed
 
 
 # w przypadku edycji, poprawić też javascript: Fereol.Enrollment.CourseGroup.groupTypes
@@ -185,7 +185,11 @@ class Group(models.Model):
         return list(group_query)
 
     def save(self, *args, **kwargs):
+        """Overloaded save method - during save check changes and send signals to notifications app"""
         old = type(self).objects.get(pk=self.pk) if self.pk else None
         super(Group, self).save(*args, **kwargs)
-        if old and old.teacher != self.teacher:
-            teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
+        if old:
+            if old.teacher != self.teacher:
+                teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
+            if set(old.get_all_terms()) != set(self.get_all_terms()):
+                terms_changed.send(sender=self.__class__, instance=self)
