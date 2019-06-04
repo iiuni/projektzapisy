@@ -34,12 +34,13 @@ export default {
             })
             this.getCount();
         },
-        deleteOne: function (id){
+        deleteOne: function (i){
             axios.defaults.xsrfCookieName = 'csrftoken';
             axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
             var FormBody = new FormData();
-            FormBody.append('issued_on', this.n_array[id].issued_on);
+            FormBody.append('issued_on', this.n_array[i].issued_on);
+            FormBody.append('id', this.n_array[i].id);
 
             axios({
                 method: 'post',

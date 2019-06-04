@@ -40,7 +40,7 @@ class NotificationsRepository(ABC):
         pass
 
     @abstractmethod
-    def remove_one_issued_on(self, user: User, point_in_time: datetime) -> int:
+    def remove_one_with_id_issued_on(self, user: User, ID: str, point_in_time: datetime) -> int:
         pass
 
 
@@ -108,22 +108,22 @@ class RedisNotificationsRepository(NotificationsRepository):
                     key, self.serializer.serialize(notification))
                 self.removed_count += 1
 
-    def remove_one_issued_on(self, user: User, point_in_time: datetime) -> int:
+    def remove_one_with_id_issued_on(self, user: User, ID: str, point_in_time: datetime) -> int:
         self.removed_count = 0
 
-        self._remove_one_issued_on(
-            self._generate_unsent_key_for_user(user), point_in_time)
-        self._remove_one_issued_on(
-            self._generate_sent_key_for_user(user), point_in_time)
+        self._remove_one_with_id_issued_on(
+            self._generate_unsent_key_for_user(user), ID, point_in_time)
+        self._remove_one_with_id_issued_on(
+            self._generate_sent_key_for_user(user), ID, point_in_time)
 
         return self.removed_count
 
-    def _remove_one_issued_on(self, key: str, point_in_time: datetime) -> int:
+    def _remove_one_with_id_issued_on(self, key: str, ID: str, point_in_time: datetime) -> int:
         notifications_under_that_key = map(self.serializer.deserialize,
                                            self.redis_client.smembers(key))
 
         for notification in notifications_under_that_key:
-            if notification.issued_on == point_in_time:
+            if notification.nid == ID:
                 self.redis_client.srem(key,
                                        self.serializer.serialize(notification))
                 self.removed_count += 1

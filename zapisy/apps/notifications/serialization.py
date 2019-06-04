@@ -28,6 +28,7 @@ class JsonNotificationSerializer(NotificationSerializer):
         json_friendly_issued_on = notification.issued_on.strftime(
             self.DATE_TIME_FORMAT)
         return json.dumps({
+            'nid': notification.nid,
             'issued_on': json_friendly_issued_on,
             'description_id': notification.description_id,
             'description_args': notification.description_args,
