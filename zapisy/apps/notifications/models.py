@@ -50,7 +50,6 @@ class NotificationPreferencesStudent(models.Model):
     user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
     #pulled_from_queue = models.BooleanField(default=True, verbose_name='Wciągnięcie do grupy')
     #not_pulled_from_queue = models.BooleanField(default=True, verbose_name='Anulowanie wciągnięcia do grupy')
-    student_has_been_put_into_the_queue = models.BooleanField(default=True, verbose_name='Wciągniecie Cię do kolejki')
     student_has_been_enrolled = models.BooleanField(default=True, verbose_name='Zapisanie Cię do grupy')
     added_new_group = models.BooleanField(default=True, verbose_name='Dodanie nowej grupy przedmiotu, na który jesteś '
                                                                      'zapisany/a')

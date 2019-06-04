@@ -3,7 +3,6 @@ from enum import Enum
 
 class NotificationType(str, Enum):
     #NOT_PULLED_FROM_QUEUE = 'not_pulled_from_queue'
-    STUDENT_HAS_BEEN_PUT_INTO_THE_QUEUE = 'student_has_been_put_into_the_queue'
     STUDENT_HAS_BEEN_ENROLLED = 'student_has_been_enrolled'
     ADDED_NEW_GROUP = 'added_new_group'
     ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER = 'assigned_to_new_group_as_teacher'
@@ -18,9 +17,6 @@ mapping = {
     #NotificationType.NOT_PULLED_FROM_QUEUE:
     #'Proces wciągania Cię do grupy przedmiotu {course_name}, gdzie prowadzący to {teacher} a '
     #'typ grupy {type}, został anulowany, ze względu na przekroczenie limitu ECTS.',
-    NotificationType.STUDENT_HAS_BEEN_PUT_INTO_THE_QUEUE:
-    'Nastąpiło wciągnięcie Cię do kolejki grupy przedmiotu "{course_name}", gdzie prowadzący grupy '
-    'to {teacher}, a typ grupy to {type}.',
     NotificationType.STUDENT_HAS_BEEN_ENROLLED:
     'Nastąpiło zapisanie Cię do grupy przedmiotu "{course_name}", gdzie prowadzący grupy '
     'to {teacher}, a typ grupy to {type}.',

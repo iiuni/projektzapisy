@@ -25,6 +25,7 @@ def get_notifications(request):
     now = datetime.now()
     repo = get_notifications_repository()
     notifications = [{
+        'id': notification.nid,
         'description': render_description(notification.description_id, notification.description_args),
         'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
         'target': notification.target,
@@ -97,8 +98,9 @@ def deleteOne(request):
     if request.method == 'POST':
         issued_on = request.POST.get('issued_on')
         issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
+        ID = request.POST.get('id')
 
         repo = get_notifications_repository()
-        repo.remove_one_issued_on(request.user, issued_on)
+        repo.remove_one_with_id_issued_on(request.user, ID, issued_on)
 
     return get_notifications(request)
