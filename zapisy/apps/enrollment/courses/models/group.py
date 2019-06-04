@@ -191,5 +191,4 @@ class Group(models.Model):
         if old:
             if old.teacher != self.teacher:
                 teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
-            if set(old.get_all_terms()) != set(self.get_all_terms()):
-                terms_changed.send(sender=self.__class__, instance=self)
+                #terms_changed.send(sender=self.__class__, instance=self)

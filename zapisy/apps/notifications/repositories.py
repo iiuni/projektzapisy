@@ -123,7 +123,7 @@ class RedisNotificationsRepository(NotificationsRepository):
                                            self.redis_client.smembers(key))
 
         for notification in notifications_under_that_key:
-            if notification.nid == ID:
+            if notification.id == ID:
                 self.redis_client.srem(key,
                                        self.serializer.serialize(notification))
                 self.removed_count += 1
