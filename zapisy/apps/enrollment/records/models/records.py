@@ -56,7 +56,7 @@ from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import BaseUser, Student
 
-from apps.notifications.custom_signals import student_enrolled
+from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
 
@@ -139,7 +139,11 @@ class Record(models.Model):
         semester: Semester = group.course.semester
         points = StudentPointsView.student_points_in_semester(
             student, semester, [group.course])
-        if points > semester.get_current_limit(time):
+        diff = points - semester.get_current_limit(time)
+        if diff > 0:
+            # Send notification to user
+            reason = 'przekroczenie limitu ECTS o ' + str(diff) + ' pkt'
+            student_not_pulled.send(sender=Record, instance=group, user=student.user, reason=reason)
             return False
         return True
 
@@ -472,6 +476,8 @@ class Record(models.Model):
                     if not is_enrolled_into_any_lecture_group:
                         self.status = RecordStatus.REMOVED
                         self.save()
+                        # Send notification to user
+                        student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
                         LOGGER.info(("Student %s not enrolled into group %s because "
                                      "he is not in any lecture group"), self.student, group)
                         return []
@@ -498,5 +504,5 @@ class Record(models.Model):
             self.status = RecordStatus.ENROLLED
             self.save()
             # Send notification to user
-            student_enrolled.send(sender=self.__class__, instance=self.group, user=self.student.user)
+            student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
             return other_groups_query_list

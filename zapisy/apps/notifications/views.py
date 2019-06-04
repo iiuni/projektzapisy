@@ -25,7 +25,7 @@ def get_notifications(request):
     now = datetime.now()
     repo = get_notifications_repository()
     notifications = [{
-        'id': notification.nid,
+        'id': notification.id,
         'description': render_description(notification.description_id, notification.description_args),
         'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
         'target': notification.target,
