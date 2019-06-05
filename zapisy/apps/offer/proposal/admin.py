@@ -1,10 +1,11 @@
 """Proposal admin configuration.
 """
+from datetime import date
 
 from django.contrib import admin, messages
 from django.db import models
 
-from apps.enrollment.courses.models import Semester
+from apps.enrollment.courses.models import CourseInstance, Semester
 
 from .models import Proposal, ProposalStatus
 
@@ -99,3 +100,39 @@ class ProposalAdmin(admin.ModelAdmin):
                           level=messages.SUCCESS)
     put_under_vote.short_description = (
         f"Zmień status wybranych propozycji na {ProposalStatus.IN_VOTE.display.upper()}")
+
+    def create_instances_action_for_semester(self, semester: Semester):
+        """Defines an admin action for creating course instances in a semester.
+
+        A single action will correspond to a single semester. It will create
+        course instances in that semester for all selected proposals.
+        """
+        def create_instances(self, request, queryset):
+            created_instances = []
+            for proposal in queryset:
+                c = CourseInstance.create_proposal_instance(proposal, semester)
+                created_instances.append(str(c))
+            self.message_user(
+                request,
+                "Stworzono następujące instancje przedmiotów: " + ", ".join(created_instances),
+                level=messages.SUCCESS)
+
+        return create_instances
+
+    def get_actions(self, request):
+        """Adds per-semester course-creation admin actions to the panel.
+
+        See link https://docs.djangoproject.com/en/dev/ref/contrib/admin/actions
+        /#django.contrib.admin.ModelAdmin.get_actions.
+        """
+        actions = super().get_actions(request)
+
+        future_semesters = Semester.objects.filter(
+            visible=True, semester_ending__gt=date.today()).order_by('semester_beginning')
+        for semester in future_semesters:
+            create_instances_action = (
+                self.create_instances_action_for_semester(semester), f'create_instances_{semester}',
+                f"Stwórz instancję przedmiotu w semestrze {semester}")
+            actions[f'create_instances_{semester}'] = create_instances_action
+
+        return actions
