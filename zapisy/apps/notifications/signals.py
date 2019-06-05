@@ -30,6 +30,9 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
     target = reverse(course_view, args=[group.course.slug])
 
+    if group.course.information is None:
+        return
+
     notify_user(
         kwargs['user'],
         Notification(
@@ -44,6 +47,9 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
 def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
     target = reverse(course_view, args=[group.course.slug])
+
+    if group.course.information is None:
+        return
 
     notify_user(
         kwargs['user'],
