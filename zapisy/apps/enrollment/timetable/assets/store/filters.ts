@@ -42,19 +42,19 @@ const getters = {
     tester(state:State){
         return (course:CourseShell)=>{
             if(state.semester !== "" && course.semester !== state.semester) return false;
-            if(state.name !== "" && !course.name.startsWith(state.name)) return false; 
+            if(state.name !== "" && !course.name.toUpperCase().startsWith(state.name.toUpperCase())) return false; 
             if(state.owner !== "" && course.owner !== state.owner) {
                 console.log(state.owner, "!==", course.owner);
                 return false; 
             }
             if(state.tags.length !== 0){
-                if(!state.tags.reduce( (prev,curr)=>prev && course.tags.includes(curr) , true )) return false;
+                if(!state.tags.reduce( (prev,curr)=>prev || course.tags.includes(curr) , false )) return false;
             }
             if(state.effects.length !== 0){
-                if(!state.effects.reduce( (prev,curr)=>prev && course.effects.includes(curr) , true )) return false;
+                if(!state.effects.reduce( (prev,curr)=>prev || course.effects.includes(curr) , false )) return false;
             }
             if(state.types.length !== 0){
-                if(!state.types.reduce( (prev,curr)=>prev && course.type === curr , true )) return false;
+                if(!state.types.reduce( (prev,curr)=>prev || course.type === curr , false )) return false;
             }
             return true;
         }
