@@ -142,8 +142,9 @@ class Record(models.Model):
         diff = points - semester.get_current_limit(time)
         if diff > 0:
             # Send notification to user
-            reason = 'przekroczenie limitu ECTS o ' + str(diff) + ' pkt'
-            student_not_pulled.send(sender=Record, instance=group, user=student.user, reason=reason)
+            if group.course.information is not None:
+                reason = 'przekroczenie limitu ECTS o ' + str(diff) + ' pkt'
+                student_not_pulled.send(sender=Record, instance=group, user=student.user, reason=reason)
             return False
         return True
 
@@ -477,7 +478,8 @@ class Record(models.Model):
                         self.status = RecordStatus.REMOVED
                         self.save()
                         # Send notification to user
-                        student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
+                        if self.group.information is not None:
+                            student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
                         LOGGER.info(("Student %s not enrolled into group %s because "
                                      "he is not in any lecture group"), self.student, group)
                         return []
@@ -504,5 +506,6 @@ class Record(models.Model):
             self.status = RecordStatus.ENROLLED
             self.save()
             # Send notification to user
-            student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
+            if self.group.course.information is not None:
+                student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
             return other_groups_query_list
