@@ -14,7 +14,7 @@ class NotificationsUtilsTestCase(TestCase):
             NotificationType.ADDED_NEW_GROUP, descr_args)
 
         self.assertEqual(
-            'W przedmiocie matematyka dyskretna została dodana grupa prowadzona przez Jan Kowalski.',
+            'W przedmiocie "matematyka dyskretna" została dodana grupa prowadzona przez Jan Kowalski.',
             rendered)
 
     def test_assigned_to_new_group_as_teacher_renders_properly(self):
@@ -24,7 +24,7 @@ class NotificationsUtilsTestCase(TestCase):
             NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, descr_args)
 
         self.assertEqual(
-            'Przydzielono Cię do grupy przedmiotu matematyka dyskretna jako prowadzącego.',
+            'Przydzielono Cię do grupy przedmiotu "matematyka dyskretna" jako prowadzącego.',
             rendered)
 
     def test_trying_to_render_with_insufficient_arguments_raises(self):
