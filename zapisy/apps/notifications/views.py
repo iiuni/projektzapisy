@@ -55,14 +55,9 @@ def preferences_save(request):
         post.user = request.user
         post.save()
         messages.success(request, 'Zmieniono ustawienia powiadomień')
-        return HttpResponseRedirect(reverse(views.my_profile))
     else:
         messages.error(request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie")
-
-
-def preferences(request):
-    form = create_form(request)
-    return render(request, 'notifications/preferences.html', {'form': form})
+    return HttpResponseRedirect(reverse(views.my_profile))
 
 
 def create_form(request):
@@ -80,27 +75,28 @@ def create_form(request):
 
 
 @login_required
-def deleteAll(request):
+@require_POST
+def delete_all(request):
     """Removes all user's notifications"""
-    if request.method == 'POST':
-        now = datetime.now()
-        repo = get_notifications_repository()
-        repo.remove_all_older_than(request.user, now)
+
+    now = datetime.now()
+    repo = get_notifications_repository()
+    repo.remove_all_older_than(request.user, now)
 
     return get_notifications(request)
 
 
 @login_required
+@require_POST
 def deleteOne(request):
     """Removes one notification"""
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
-    if request.method == 'POST':
-        issued_on = request.POST.get('issued_on')
-        issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
-        ID = request.POST.get('id')
+    issued_on = request.POST.get('issued_on')
+    issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
+    ID = request.POST.get('id')
 
-        repo = get_notifications_repository()
-        repo.remove_one_with_id_issued_on(request.user, ID, issued_on)
+    repo = get_notifications_repository()
+    repo.remove_one_with_id_issued_on(request.user, ID, issued_on)
 
     return get_notifications(request)

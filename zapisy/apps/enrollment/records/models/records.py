@@ -55,7 +55,6 @@ from apps.enrollment.courses.models import Course, Group, StudentPointsView, Sem
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import BaseUser, Student
-
 from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
@@ -139,12 +138,7 @@ class Record(models.Model):
         semester: Semester = group.course.semester
         points = StudentPointsView.student_points_in_semester(
             student, semester, [group.course])
-        diff = points - semester.get_current_limit(time)
-        if diff > 0:
-            # Send notification to user
-            if group.course.information is not None:
-                reason = 'przekroczenie limitu ECTS o ' + str(diff) + ' pkt'
-                student_not_pulled.send(sender=Record, instance=group, user=student.user, reason=reason)
+        if points > semester.get_current_limit(time):
             return False
         return True
 
@@ -478,8 +472,7 @@ class Record(models.Model):
                         self.status = RecordStatus.REMOVED
                         self.save()
                         # Send notification to user
-                        if self.group.information is not None:
-                            student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
+                        student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
                         LOGGER.info(("Student %s not enrolled into group %s because "
                                      "he is not in any lecture group"), self.student, group)
                         return []
@@ -506,6 +499,5 @@ class Record(models.Model):
             self.status = RecordStatus.ENROLLED
             self.save()
             # Send notification to user
-            if self.group.course.information is not None:
-                student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
+            student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
             return other_groups_query_list

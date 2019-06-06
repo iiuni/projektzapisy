@@ -22,8 +22,6 @@ urlpatterns = [
     url(r'^statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     url(r'^consultations/$', users_views.consultations_list, name="consultations-list"),
 
-    path('django-rq/', include('django_rq.urls')),
-
     url(r'^news/', include('apps.news.urls')),
     url(r'^users/', include('apps.users.urls')),
 

@@ -11,7 +11,8 @@ def notify_user(user: User, notification: Notification):
     """Dispatch one notification to one user.
 
     Repository saves notification to redis.
-    Then we queue user to send(regarding preferences) all his pending notifications, including this one.
+    Then we queue user to send(regarding preferences)
+    all his pending notifications, including this one.
     """
     repo = get_notifications_repository()
     repo.save(user, notification)

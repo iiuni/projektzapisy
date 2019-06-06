@@ -2,48 +2,10 @@ from typing import List
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Q
 
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import Student
-
-
-def get_all_users_in_course_groups(course_groups: List[Group]) -> set:
-    records = Record.objects.filter(group__in=course_groups, status=1).select_related(
-        'student', 'student__user')
-
-    return {element.student.user for element in records}
-
-
-def get_all_users_from_group(group: Group) -> set:
-    records = Record.objects.filter(Q(group=group) & (Q(status=RecordStatus.QUEUED) | Q(status=RecordStatus.ENROLLED))).select_related('student', 'student__user')
-
-    return {element.student.user for element in records}
-
-
-def get_queued_users_from_group(group: Group) -> set:
-    records = Record.objects.filter(group=group, status=RecordStatus.QUEUED).select_related('student', 'student__user')
-
-    return {element.student.user for element in records}
-
-
-def get_enrolled_users_from_group(group: Group) -> set:
-    records = Record.objects.filter(group=group, status=RecordStatus.ENROLLED).select_related('student', 'student__user')
-
-    return {element.student.user for element in records}
-
-
-def get_all_users() -> set:
-    records = User.objects.all()
-
-    return {element for element in records}
-
-
-def get_all_students() -> set:
-    students = Student.objects.all()
-
-    return {element.user for element in students}
 
 
 class NotificationPreferencesStudent(models.Model):
