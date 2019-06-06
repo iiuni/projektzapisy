@@ -10,7 +10,6 @@ from django.urls import reverse
 
 from apps.enrollment.courses.models.course import Course
 from apps.users.models import Employee
-
 from apps.notifications.custom_signals import teacher_changed, terms_changed
 
 
@@ -191,4 +190,3 @@ class Group(models.Model):
         if old:
             if old.teacher != self.teacher:
                 teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
-                #terms_changed.send(sender=self.__class__, instance=self)

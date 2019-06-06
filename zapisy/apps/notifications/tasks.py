@@ -13,7 +13,7 @@ from apps.users.models import BaseUser
 def dispatch_notifications_task(user):
     """Dispatch all pending notifications for the given user.
 
-    It's purposedly designed around processing all notification_s_
+    It's purposely designed around processing all notification_s_
     at a time instead of handling them one by one
     so we can introduce a rate-limit and/or batch them together
     should there ever be a need to do so.

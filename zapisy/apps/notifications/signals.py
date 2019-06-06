@@ -1,20 +1,20 @@
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 import uuid
 from datetime import datetime
 
+from apps.users.models import Student, Employee
 from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.records.models import Record
+from apps.enrollment.courses.views import course_view
+from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News
+from apps.news.views import all_news
 from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.models import get_all_users_in_course_groups, get_all_users, get_all_students, get_all_users_from_group, get_enrolled_users_from_group, get_queued_users_from_group
 from apps.notifications.custom_signals import teacher_changed, terms_changed, student_pulled, student_not_pulled
 from apps.notifications.templates import NotificationType
-
-from apps.news.views import all_news
-from apps.enrollment.courses.views import course_view
 
 
 def get_id() -> str:
@@ -78,7 +78,8 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
                          NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
                          {'course_name': course_name}, target))
 
-        users = get_all_users_in_course_groups(course_groups)
+        records = Record.objects.filter(group__in=course_groups, status=1).select_related('student', 'student__user')
+        users = {element.student.user for element in records}
         notify_selected_users(
             users,
             Notification(
@@ -103,8 +104,13 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                      NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
                      {'course_name': course_name}, target))
 
-    queued_users = get_queued_users_from_group(group)
-    enrolled_users = get_enrolled_users_from_group(group)
+    queued_users = User.objects.filter(
+        student__record__group=group,
+        student__record__status=RecordStatus.QUEUED)
+
+    enrolled_users = User.objects.filter(
+        student__record__group=group,
+        student__record__status=RecordStatus.ENROLLED)
 
     notify_selected_users(
         queued_users,
@@ -134,8 +140,13 @@ def notify_that_terms_of_group_were_changed(sender: Group, **kwargs) -> None:
     course_name = group.course.information.entity.name
     target = reverse(course_view, args=[group.course.slug])
 
-    queued_users = get_queued_users_from_group(group)
-    enrolled_users = get_enrolled_users_from_group(group)
+    queued_users = User.objects.filter(
+        student__record__group=group,
+        student__record__status=RecordStatus.QUEUED)
+
+    enrolled_users = User.objects.filter(
+        student__record__group=group,
+        student__record__status=RecordStatus.ENROLLED)
 
     notify_selected_users(
         queued_users,
@@ -158,7 +169,8 @@ def notify_that_terms_of_group_were_changed(sender: Group, **kwargs) -> None:
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
 
-    users = get_all_users()
+    records = list(Employee.get_actives()) + list(Student.objects.filter(status=0))
+    users = {element.user for element in records}
     target = reverse(all_news)
 
     notify_selected_users(
