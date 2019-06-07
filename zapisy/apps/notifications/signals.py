@@ -78,7 +78,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
                          NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
                          {'course_name': course_name}, target))
 
-        records = Record.objects.filter(group__in=course_groups, status=1).select_related('student', 'student__user')
+        records = Record.objects.filter(group__in=course_groups, status=RecordStatus.ENROLLED).select_related('student', 'student__user')
         users = {element.student.user for element in records}
         notify_selected_users(
             users,

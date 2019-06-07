@@ -9,8 +9,8 @@ from django.db import models, transaction
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course import Course
-from apps.users.models import Employee
 from apps.notifications.custom_signals import teacher_changed, terms_changed
+from apps.users.models import Employee
 
 
 # w przypadku edycji, poprawić też javascript: Fereol.Enrollment.CourseGroup.groupTypes
