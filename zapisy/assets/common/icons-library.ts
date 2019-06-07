@@ -1,5 +1,4 @@
 /*  This is a FontAwesome icon library for System Zapisów.
-
     To use a new icon, find it in a cheatsheet
     https://fontawesome.com/cheatsheet and add it to our collection. It can be
     used in any template in the project, just like with the typical FontAwesome

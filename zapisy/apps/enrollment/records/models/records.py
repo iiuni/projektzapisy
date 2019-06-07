@@ -67,6 +67,13 @@ class RecordStatus(ChoicesEnum):
     REMOVED = '2'
 
 
+class EnrollStatus(ChoicesEnum):
+    SUCCESS = True
+    ECTS_ERR = 'ects'
+    NOT_QUEUED_ERR = 'not_queued'
+    OTHER_ERROR = False
+
+
 class Record(models.Model):
     """Record is a tie between a student and a group.
 
@@ -119,7 +126,7 @@ class Record(models.Model):
         return ret
 
     @classmethod
-    def can_enroll(cls, student: Optional[Student], group: Group, time: datetime = None) -> bool:
+    def can_enroll(cls, student: Optional[Student], group: Group, time: datetime = None) -> EnrollStatus:
         """Checks if the student can join the queue of the group.
 
         At the point the function is purely cosmetic. Some conditions may be
@@ -130,17 +137,17 @@ class Record(models.Model):
         if time is None:
             time = datetime.now()
         if student is None:
-            return False
+            return EnrollStatus.OTHER_ERROR
         if not cls.can_enqueue(student, group, time):
-            return False
+            return EnrollStatus.NOT_QUEUED_ERR
         # Check if enrolling would not make the student exceed the current ECTS
         # limit.
         semester: Semester = group.course.semester
         points = StudentPointsView.student_points_in_semester(
             student, semester, [group.course])
         if points > semester.get_current_limit(time):
-            return False
-        return True
+            return EnrollStatus.ECTS_ERR
+        return EnrollStatus.SUCCESS
 
     @staticmethod
     def can_dequeue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
@@ -472,15 +479,22 @@ class Record(models.Model):
                         self.status = RecordStatus.REMOVED
                         self.save()
                         # Send notification to user
-                        student_not_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
+                        student_not_pulled.send_robust(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
                         LOGGER.info(("Student %s not enrolled into group %s because "
                                      "he is not in any lecture group"), self.student, group)
                         return []
 
             # Check if he can be enrolled at all.
-            if not self.can_enroll(self.student, group):
+            can_enroll_status = self.can_enroll(self.student, group)
+            if not can_enroll_status.is_success:
                 self.status = RecordStatus.REMOVED
                 self.save()
+
+                #Send notifications
+                if can_enroll_status.is_ects_err:
+                    student_not_pulled.send_robust(sender=self.__class__, instance=self.group,
+                                                   user=self.student.user, reason='przekroczenie limitu ECTS')
+
                 return []
             # Remove him from all parallel groups (and queues of lower
             # priority). These groups need to be afterwards pulled into
@@ -499,5 +513,5 @@ class Record(models.Model):
             self.status = RecordStatus.ENROLLED
             self.save()
             # Send notification to user
-            student_pulled.send(sender=self.__class__, instance=self.group, user=self.student.user)
+            student_pulled.send_robust(sender=self.__class__, instance=self.group, user=self.student.user)
             return other_groups_query_list

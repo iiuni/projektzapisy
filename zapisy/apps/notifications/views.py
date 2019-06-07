@@ -6,7 +6,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
-from apps.users.models import BaseUser
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -15,8 +14,9 @@ from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeac
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository, RedisNotificationsRepository
 from apps.notifications.utils import render_description
-from libs.ajax_messages import AjaxFailureMessage
 from apps.users import views
+from apps.users.models import BaseUser
+from libs.ajax_messages import AjaxFailureMessage
 
 
 @login_required

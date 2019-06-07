@@ -22,10 +22,10 @@ class NotificationPreferencesStudent(models.Model):
                                                                                       'do której jesteś zapisany/a')
     terms_have_been_changed_queued = models.BooleanField(default=True, verbose_name='Zmiana terminu grupy, '
                                                                                     'do której czekasz w kolejce')
-    news_has_been_added = models.BooleanField(default=True, verbose_name='Powiadomienie o nowej wiadomości w Aktualnościach')
+    news_has_been_added = models.BooleanField(default=True, verbose_name='Nowa wiadomość w Aktualnościach')
 
 
 class NotificationPreferencesTeacher(models.Model):
     user = models.ForeignKey(User, verbose_name='użytkownik', on_delete=models.CASCADE)
     assigned_to_new_group_as_teacher = models.BooleanField(default=True, verbose_name='Przydzielenie do grupy')
-    news_has_been_added = models.BooleanField(default=True, verbose_name='Powiadomienie o nowej wiadomości w Aktualnościach')
+    news_has_been_added = models.BooleanField(default=True, verbose_name='Nowa wiadomość w Aktualnościach')
