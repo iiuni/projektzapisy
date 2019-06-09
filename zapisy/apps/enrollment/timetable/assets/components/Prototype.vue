@@ -18,7 +18,6 @@ import PrototypeTimetable from "./PrototypeTimetable.vue";
 
 @Component({
   components: {
-    CourseList,
     CourseFilter,
     PrototypeTimetable
   },
@@ -58,11 +57,8 @@ export default class Prototype extends Vue {
         <CourseFilter :hideSemester="true"/>
     </div>
     <div class="row">
-        <div class="col-12 col-sm-9">
+        <div class="col-12">
             <PrototypeTimetable :groups="groupsGetter"/>
-        </div>
-        <div class="col-12 col-sm-3 columns course-list-sidebar-wrapper">
-          <CourseList :courses="courses"/>
         </div>
     </div>
   </div>

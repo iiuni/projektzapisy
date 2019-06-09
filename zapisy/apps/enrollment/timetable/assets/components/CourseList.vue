@@ -13,11 +13,12 @@ import { CourseShell, Group, Course } from "../models";
 
 @Component({
   props: {
-    courses: Array as () => CourseShell[],
+    // courses: Array as () => CourseShell[],
   },
   computed: {
     ...mapGetters("courses", {
       selectionState: "selection",
+      courses: "courses"
     }),
     ...mapGetters("filters", {
       tester:"tester"

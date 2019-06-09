@@ -5,6 +5,10 @@ import Component from "vue-class-component";
 
 import { CourseShell, Group, Course } from "../models";
 
+function cap(min:number,max:number,val:number){
+	return Math.max( min, Math.min(max,val) )
+}
+
 @Component({
   props: {
     title: String as ()=>String,
@@ -24,7 +28,7 @@ export default class CourseFilterSublist extends Vue {
   set selection(value: string[]) {
 		console.info("CourseFilterList setter:",value)
     this.$store.dispatch("filters/updateFilter", [this.$props.filterId,value]);
-  }
+	}
 }
 </script>
 
@@ -37,9 +41,7 @@ export default class CourseFilterSublist extends Vue {
 		v-bind:key="avaiable"
 		>
 			<input type="checkbox" :id="avaiable" :value="avaiable" v-model="selection">
-			<label class="form-check-label">
-				{{avaiable}}
-			</label>
+			<label class="form-check-label">{{avaiable}}</label>
 		</div>
 	</div>
 </template>

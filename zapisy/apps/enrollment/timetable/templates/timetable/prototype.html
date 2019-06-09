@@ -5,6 +5,12 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
+
+{% block vue_index_scripts %}
+    {% render_bundle 'timetable-prototype-component' %}
+    {% render_bundle 'timetable-prototype-legend-stylesheet' %}
+{% endblock %}
+
 {% block main-subtitle %}{# Translators: podtytuł #}{% trans "Prototyp planu" %}{% endblock %}
 
 {% block enrollment_menu_prototype %} class="active"{% endblock %}
@@ -19,16 +25,15 @@
     </li>
 {% endblock %}
 
+{% block sidebar %}
+    <course-list/>
+{% endblock %}
 
-
-{% block all-content %}
-    <div class="row" id="timetable"></div>
+{% block content %}
+    <div class="row" id="timetable"><Prototype/></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
-    {% render_bundle 'timetable-prototype-component' %}
-    
-    {% render_bundle 'timetable-prototype-legend-stylesheet' %}
 
     <div class="mt-3 border-top pt-3">
         <h4>{% trans "Legenda" %}</h4>

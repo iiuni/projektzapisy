@@ -9,15 +9,17 @@
 
 import Vue from "vue";
 import Prototype from "./components/Prototype.vue";
+import CourseList from "./components/CourseList.vue";
 import store from "./store";
 
 Vue.config.productionTip = false
 
 let timetable_app = new Vue({
-    el: "#timetable",
+    el: "#main-content-container",
     components: {
         Prototype,
+        "course-list":CourseList,
     },
     store,
-    render: h => { return h(Prototype); },
 })
+
