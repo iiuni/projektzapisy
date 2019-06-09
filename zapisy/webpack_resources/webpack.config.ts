@@ -366,7 +366,7 @@ const webpackConfig: webpack.Configuration = {
         ],
         extensions: [".ts", ".js", ".vue", ".tsx", ".png", ".jpg", ".gif"],
         alias: {
-            vue$: "vue/dist/vue.runtime.esm.js",
+            vue$: "vue/dist/vue.esm.js",
             vuex$: "vuex/dist/vuex.esm.js",
         },
     },
