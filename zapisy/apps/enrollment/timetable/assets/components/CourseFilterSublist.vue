@@ -36,8 +36,8 @@ export default class CourseFilterSublist extends Vue {
 		v-for="avaiable in allAvaiable"
 		v-bind:key="avaiable"
 		>
-			<input type="checkbox" :id="avaiable" :value="avaiable" v-model="selection">
-			<label class="form-check-label">{{avaiable}}</label>
+			<input type="checkbox" :id="title+'_'+avaiable" :value="avaiable" v-model="selection">
+			<label class="form-check-label" :for="title+'_'+avaiable">{{avaiable}}</label>
 		</div>
 	</div>
 </template>
