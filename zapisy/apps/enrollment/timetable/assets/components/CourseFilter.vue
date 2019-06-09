@@ -106,5 +106,6 @@ export default class CourseFilter extends Vue {
 }
 .expansion-toggle{
   text-align: center;
+  cursor: pointer;
 }
 </style>
