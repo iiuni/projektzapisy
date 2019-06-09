@@ -5,10 +5,6 @@ import Component from "vue-class-component";
 
 import { CourseShell, Group, Course } from "../models";
 
-function cap(min:number,max:number,val:number){
-	return Math.max( min, Math.min(max,val) )
-}
-
 @Component({
   props: {
     title: String as ()=>String,
