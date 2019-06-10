@@ -75,11 +75,13 @@ export default {
 
     <li class="nav-item dropdown" id="notification-dropdown">
         <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i v-if="n_counter == 0" class="fa fa-bell bell nav-link" style="padding-right: 0;"></i>
-            <i v-else class="fa fa-bell bell nav-link"  style="padding-right: 0;" @click="getNotifications"></i>
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding-top: 0.2rem; padding-bottom: 0;">
+            <i v-if="n_counter == 0" class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
+            <div v-else @click="getNotifications">
+                <i class="fas fa-bell bell nav-link" style="padding-right: 0;"></i>
+            </div>
         </a>
-        <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2">
+        <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2" style="margin-top: 0.7rem !important">
             <form>
                 <div v-if="n_counter != 0" class="place-for-notifications">
                     <div v-for="elem in n_array" :key="elem.key" class="alert alert-dismissible show border border-info rounded hoverable onemessage">
@@ -125,7 +127,7 @@ export default {
 }
 
 .bell{
-    font-size: 23px;
+    font-size: 32px;
     padding: 0;
 }
 

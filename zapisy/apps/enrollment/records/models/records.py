@@ -47,6 +47,7 @@ from datetime import datetime
 from typing import Dict, Iterable, List, Optional, Set
 
 from choicesenum import ChoicesEnum
+from enum import Enum
 from django.contrib.auth.models import User
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -67,7 +68,7 @@ class RecordStatus(ChoicesEnum):
     REMOVED = '2'
 
 
-class EnrollStatus(ChoicesEnum):
+class EnrollStatus(Enum):
     SUCCESS = True
     ECTS_ERR = 'ects'
     NOT_QUEUED_ERR = 'not_queued'
@@ -486,12 +487,12 @@ class Record(models.Model):
 
             # Check if he can be enrolled at all.
             can_enroll_status = self.can_enroll(self.student, group)
-            if not can_enroll_status.is_success:
+            if not can_enroll_status == EnrollStatus.SUCCESS:
                 self.status = RecordStatus.REMOVED
                 self.save()
 
                 #Send notifications
-                if can_enroll_status.is_ects_err:
+                if can_enroll_status == EnrollStatus.ECTS_ERR:
                     student_not_pulled.send_robust(sender=self.__class__, instance=self.group,
                                                    user=self.student.user, reason='przekroczenie limitu ECTS')
 

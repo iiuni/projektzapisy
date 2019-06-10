@@ -7,7 +7,6 @@ from apps.users.tests.factories import EmployeeFactory
 from apps.notifications.templates import NotificationType
 from apps.notifications.utils import render_description
 from apps.notifications.custom_signals import teacher_changed
-
 from apps.enrollment.courses.models.group import Group
 
 
