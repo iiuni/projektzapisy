@@ -39,7 +39,7 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
             get_id(), get_time(), NotificationType.PULLED_FROM_QUEUE, {
                 'course_name': group.course.information.entity.name,
                 'teacher': group.teacher.user.get_full_name(),
-                'type': group.human_readable_type().lower()
+                'type': group.get_type_display(),
             }, target))
 
 
@@ -57,7 +57,7 @@ def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> N
             get_id(), get_time(), NotificationType.NOT_PULLED_FROM_QUEUE, {
                 'course_name': group.course.information.entity.name,
                 'teacher': group.teacher.user.get_full_name(),
-                'type': group.human_readable_type().lower(),
+                'type': group.get_type_display(),
                 'reason': kwargs['reason']
             }, target))
 
@@ -119,7 +119,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
             NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
-                'type': group.human_readable_type().lower()
+                'type': group.get_type_display(),
             }, target))
 
     notify_selected_users(
@@ -129,7 +129,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
             NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
-                'type': group.human_readable_type().lower()
+                'type': group.get_type_display(),
             }, target))
 
 

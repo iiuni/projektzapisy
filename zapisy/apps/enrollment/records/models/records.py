@@ -93,13 +93,15 @@ class Record(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     @staticmethod
-    def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
+    def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> EnrollStatus:
         """Checks if the student can join the queue of the group.
 
         Will return False if student is None. The function will not check if the
         student already belongs to the queue.
         """
-        return Record.can_enqueue_groups(student, [group], time)[group.pk]
+        if Record.can_enqueue_groups(student, [group], time)[group.pk]:
+            return EnrollStatus.SUCCESS
+        return EnrollStatus.NOT_QUEUED_ERR
 
     @staticmethod
     def can_enqueue_groups(student: Optional[Student], groups: List[Group],
@@ -139,7 +141,7 @@ class Record(models.Model):
             time = datetime.now()
         if student is None:
             return EnrollStatus.OTHER_ERROR
-        if not cls.can_enqueue(student, group, time):
+        if cls.can_enqueue(student, group, time) != EnrollStatus.SUCCESS:
             return EnrollStatus.NOT_QUEUED_ERR
         # Check if enrolling would not make the student exceed the current ECTS
         # limit.
