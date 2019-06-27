@@ -52,14 +52,10 @@ export default class Prototype extends Vue {
 </script>
 
 <template>
-  <div>
-    <div class="row">
+  <div style="width:100%">
+    <!-- <div class="row">
         <CourseFilter :hideSemester="true"/>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <PrototypeTimetable :groups="groupsGetter"/>
-        </div>
-    </div>
+    </div> -->
+    <PrototypeTimetable :groups="groupsGetter"/>
   </div>
 </template>

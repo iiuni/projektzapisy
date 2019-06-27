@@ -51,6 +51,9 @@ const getters = {
     allOwners(state:State):string[] {
         return state.allOwners;
     },
+    allProps():string[] {
+        return ["exam","english","firstYearFriendly"];
+    },
 };
 
 const actions = {

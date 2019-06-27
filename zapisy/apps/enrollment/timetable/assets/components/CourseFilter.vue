@@ -22,11 +22,12 @@ import { CourseShell, Group, Course } from "../models";
     CourseFilterOwner,
   },
   props: {
-    hideSemester:Boolean as ()=>Boolean,
+    hidesemester:String as ()=>any,
   },
   computed: {
     ...mapGetters("courses", {
       allTypes:"allTypes",
+      allProps:"allProps",
       allTags:"allTags",
       allEffects:"allEffects",
       allSemesters:"allSemesters",
@@ -47,6 +48,12 @@ import { CourseShell, Group, Course } from "../models";
     toggle:function (){
       this.$data.extended = !this.$data.extended;
       this.$data.toggleMsg = this.$data.extended ? "⇧ mniej ⇧" : "⇩ więcej ⇩";
+    },
+    mapProps:function(id){
+      if(id==="exam") return "Zakończone egzaminem";
+      if(id==="english") return "W języku Angielskim";
+      if(id==="firstYearFriendly") return "Polecane dla pierwszego roku";
+      return id;
     }
   }
 
@@ -60,16 +67,17 @@ export default class CourseFilter extends Vue {
   <div class="full-width">
     <div :class="'flex-row full-width extendable ' + (extended ? 'extended' : 'not-extended')">
       <div class="third vert-list">
+        <CourseFilterName :name="name"/>
+        <CourseFilterSublist :activeFilter="activeFilter" filterId="effects" title="Efekty" :allAvaiable="allEffects" />
+        <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
+      </div>
+      <div class="third vert-list">
         <CourseFilterSublist :activeFilter="activeFilter" filterId="types" title="Rodzaje" :allAvaiable="allTypes" />
       </div>
       <div class="third vert-list">
-        <CourseFilterSublist :activeFilter="activeFilter" filterId="effects" title="Efekty" :allAvaiable="allEffects" />
-      </div>
-      <div class="third vert-list">
-        <CourseFilterName :name="name"/>
-        <CourseFilterSemester v-if="!hideSemester" :allAvaiable="allSemesters" :selected="semester"/>
+        <!-- <CourseFilterSemester v-if="()=>{console.log('hidesemester',hidesemester); return !hidesemester}" :allAvaiable="allSemesters" :selected="semester"/> -->
         <CourseFilterOwner :allAvaiable="allOwners" :selected="owner"/>
-        <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
+        <CourseFilterSublist :activeFilter="activeFilter" :labelMap="mapProps" filterId="props" title="" :allAvaiable="allProps" />
       </div>
     </div>
     <div class="expansion-toggle" v-on:click="toggle">
@@ -101,7 +109,7 @@ export default class CourseFilter extends Vue {
   transition: 100ms;
 }
 .not-extended{
-  max-height: 7rem;
+  max-height: 9rem;
   overflow-y: hidden;
 }
 .expansion-toggle{

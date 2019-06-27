@@ -17,6 +17,7 @@ interface State {
     effects: string[];
     types: string[];
     tags: string[];
+    props: string[];
 }
 const state: State = {
     name: "",
@@ -25,9 +26,10 @@ const state: State = {
     effects: [],
     types: [],
     tags: [],
+    props: []
 };
-type FilterId = "name"|"semester"|"effects"|"tags"|"types"|"owner";
-type FilterArrayId = "effects"|"tags"|"types";
+type FilterArrayId = "effects"|"tags"|"types"|"props";
+type FilterId = "name"|"semester"|"owner"|FilterArrayId;
 const getters = {
     activeFilter(state:State){
         return (id:FilterArrayId)=>{
@@ -35,6 +37,7 @@ const getters = {
             if(id === "effects") return state.effects;
             if(id === "types") return state.types;
             if(id === "tags") return state.tags;
+            if(id === "props") return state.props;
             console.error("had to anwser garbage!");
             return [];
         }
@@ -56,6 +59,9 @@ const getters = {
             if(state.types.length !== 0){
                 if(!state.types.reduce( (prev,curr)=>prev || course.type === curr , false )) return false;
             }
+            if(state.props.length !== 0){
+                if(!state.props.reduce( (prev,curr)=>prev && (course as any)[curr] , true )) return false;
+            }
             return true;
         }
     },
@@ -76,6 +82,9 @@ const getters = {
     },
     types(state:State):string[] {
         return state.types;
+    },
+    props(state:State):string[] {
+        return state.props;
     },
 };
 
@@ -107,6 +116,7 @@ const mutations = {
 		if(filterId === "effects") hook = state.effects;
 		if(filterId === "types") hook = state.types;
 		if(filterId === "tags") hook = state.tags;
+		if(filterId === "props") hook = state.props;
 		hook.push(filterValue); // could add check for duplicates in case of time hazads
     },
     clearFilter(state: State, filterId: FilterId) {
@@ -115,6 +125,7 @@ const mutations = {
         if(filterId === "effects") state.effects = [];
         if(filterId === "types") state.types = [];
         if(filterId === "tags") state.tags = [];
+        if(filterId === "props") state.tags = [];
     },
     dropFilter(state: State, [filterId,filterValue]: [string,string]) {
         if(filterId === "name") {
@@ -130,6 +141,9 @@ const mutations = {
 		else if(filterId === "tags"){
             state.tags = state.tags.filter( el => el !== filterValue);
         }
+		else if(filterId === "props"){
+            state.props = state.props.filter( el => el !== filterValue);
+        }
     },
     updateFilter(state: State, [filterId,filterValue]: [FilterArrayId,string[]]) {
 		if(filterId === "effects"){
@@ -140,6 +154,9 @@ const mutations = {
         }
 		else if(filterId === "tags"){
             state.tags = filterValue;
+        }
+		else if(filterId === "props"){
+            state.props = filterValue;
         }
     },
     

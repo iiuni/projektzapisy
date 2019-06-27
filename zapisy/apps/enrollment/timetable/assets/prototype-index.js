@@ -10,6 +10,7 @@
 import Vue from "vue";
 import Prototype from "./components/Prototype.vue";
 import CourseList from "./components/CourseList.vue";
+import CourseFilter from "./components/CourseFilter.vue";
 import store from "./store";
 
 Vue.config.productionTip = false
@@ -19,6 +20,7 @@ let timetable_app = new Vue({
     components: {
         Prototype,
         "course-list":CourseList,
+        "course-filter":CourseFilter
     },
     store,
 })

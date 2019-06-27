@@ -29,8 +29,15 @@
     <course-list/>
 {% endblock %}
 
+{% block top-content %}
+    <course-filter hidesemester="true"/>
+{% endblock %}
+
+
 {% block content %}
-    <div class="row" id="timetable"><Prototype/></div>
+    <div class="row" id="timetable">
+        <Prototype/>
+    </div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
