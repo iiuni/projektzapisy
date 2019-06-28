@@ -13,7 +13,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News
 from apps.news.views import all_news
 from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.custom_signals import teacher_changed, terms_changed, student_pulled, student_not_pulled
+from apps.notifications.custom_signals import teacher_changed, student_pulled, student_not_pulled
 from apps.notifications.templates import NotificationType
 
 
@@ -130,38 +130,6 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
                 'type': group.get_type_display(),
-            }, target))
-
-
-@receiver(terms_changed, sender=Group)
-def notify_that_terms_of_group_were_changed(sender: Group, **kwargs) -> None:
-    group = kwargs['instance']
-
-    course_name = group.course.information.entity.name
-    target = reverse(course_view, args=[group.course.slug])
-
-    queued_users = User.objects.filter(
-        student__record__group=group,
-        student__record__status=RecordStatus.QUEUED)
-
-    enrolled_users = User.objects.filter(
-        student__record__group=group,
-        student__record__status=RecordStatus.ENROLLED)
-
-    notify_selected_users(
-        queued_users,
-        Notification(
-            get_id(), get_time(),
-            NotificationType.TERMS_HAVE_BEEN_CHANGED_QUEUED, {
-                'course_name': course_name,
-            }, target))
-
-    notify_selected_users(
-        enrolled_users,
-        Notification(
-            get_id(), get_time(),
-            NotificationType.TERMS_HAVE_BEEN_CHANGED_ENROLLED, {
-                'course_name': course_name,
             }, target))
 
 

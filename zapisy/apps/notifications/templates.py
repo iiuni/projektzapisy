@@ -8,8 +8,6 @@ class NotificationType(str, Enum):
     ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER = 'assigned_to_new_group_as_teacher'
     TEACHER_HAS_BEEN_CHANGED_ENROLLED = 'teacher_has_been_changed_enrolled'
     TEACHER_HAS_BEEN_CHANGED_QUEUED = 'teacher_has_been_changed_queued'
-    TERMS_HAVE_BEEN_CHANGED_ENROLLED = 'terms_have_been_changed_enrolled'
-    TERMS_HAVE_BEEN_CHANGED_QUEUED = 'terms_have_been_changed_queued'
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
 
 
@@ -30,10 +28,6 @@ mapping = {
     NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED:
     'Nastąpiła zmiana prowadzacego w grupie przedmiotu "{course_name}", do której jesteś w kolejce. '
     'Typ grupy to {type}, a nowy prowadzący to {teacher}.',
-    NotificationType.TERMS_HAVE_BEEN_CHANGED_ENROLLED:
-    'Grupa przedmiotu "{course_name}", do której należysz, ma nowy termin.',
-    NotificationType.TERMS_HAVE_BEEN_CHANGED_QUEUED:
-    'Grupa przedmiotu "{course_name}", do której jesteś w kolejce, ma nowy termin.',
     NotificationType.NEWS_HAS_BEEN_ADDED:
     'Dodano nową wiadomość w aktualnościach.',
 }

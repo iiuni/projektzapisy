@@ -18,10 +18,6 @@ class NotificationPreferencesStudent(models.Model):
                                                                                        'do której jesteś zapisany/a')
     teacher_has_been_changed_queued = models.BooleanField(default=True, verbose_name='Zmiana prowadzącego grupy, '
                                                                                      'do której czekasz w kolejce')
-    terms_have_been_changed_enrolled = models.BooleanField(default=True, verbose_name='Zmiana terminu grupy, '
-                                                                                      'do której jesteś zapisany/a')
-    terms_have_been_changed_queued = models.BooleanField(default=True, verbose_name='Zmiana terminu grupy, '
-                                                                                    'do której czekasz w kolejce')
     news_has_been_added = models.BooleanField(default=True, verbose_name='Nowa wiadomość w Aktualnościach')
 
 
