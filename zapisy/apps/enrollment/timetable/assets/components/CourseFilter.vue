@@ -65,16 +65,16 @@ export default class CourseFilter extends Vue {
 
 <template>
   <div class="full-width">
-    <div :class="'flex-row full-width extendable ' + (extended ? 'extended' : 'not-extended')">
-      <div class="third vert-list">
+    <div :class="'row extendable ' + (extended ? 'extended' : 'not-extended')">
+      <div class="col-xs-12 col-sm-4 vert-list">
         <CourseFilterName :name="name"/>
         <CourseFilterSublist :activeFilter="activeFilter" filterId="effects" title="Efekty" :allAvaiable="allEffects" />
         <CourseFilterSublist :activeFilter="activeFilter" filterId="tags" title="Tagi" :allAvaiable="allTags" />
       </div>
-      <div class="third vert-list">
+      <div class="col-xs-12 col-sm-4 vert-list">
         <CourseFilterSublist :activeFilter="activeFilter" filterId="types" title="Rodzaje" :allAvaiable="allTypes" />
       </div>
-      <div class="third vert-list">
+      <div class="col-xs-12 col-sm-4 vert-list">
         <!-- <CourseFilterSemester v-if="()=>{console.log('hidesemester',hidesemester); return !hidesemester}" :allAvaiable="allSemesters" :selected="semester"/> -->
         <CourseFilterOwner :allAvaiable="allOwners" :selected="owner"/>
         <CourseFilterSublist :activeFilter="activeFilter" :labelMap="mapProps" filterId="props" title="" :allAvaiable="allProps" />
@@ -105,11 +105,11 @@ export default class CourseFilter extends Vue {
   width: 100%;
 }
 .extendable{
-  max-height: 40rem;
+  height: auto;
   transition: 100ms;
 }
 .not-extended{
-  max-height: 9rem;
+  height: 9rem;
   overflow-y: hidden;
 }
 .expansion-toggle{
