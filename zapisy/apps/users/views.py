@@ -219,13 +219,9 @@ def my_profile(request):
     consultations).
     """
     semester = Semester.objects.get_next()
-    #notifications = NotificationFormset(
-    #    queryset=NotificationPreferences.objects.create_and_get(request.user)
-    #)
 
     data = {
         'semester': semester,
-        #'notifications': notifications,
     }
 
     if BaseUser.is_employee(request.user):
