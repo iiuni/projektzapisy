@@ -33,12 +33,11 @@ type FilterId = "name"|"semester"|"owner"|FilterArrayId;
 const getters = {
     activeFilter(state:State){
         return (id:FilterArrayId)=>{
-            console.log("got asked about:",id);
             if(id === "effects") return state.effects;
             if(id === "types") return state.types;
             if(id === "tags") return state.tags;
             if(id === "props") return state.props;
-            console.error("had to anwser garbage!");
+            console.error(`[vuex][filters][getters][activeFilter] had to anwser garbage! (querry:${id})`);
             return [];
         }
     },
@@ -47,7 +46,6 @@ const getters = {
             if(state.semester !== "" && course.semester !== state.semester) return false;
             if(state.name !== "" && !course.name.toUpperCase().startsWith(state.name.toUpperCase())) return false; 
             if(state.owner !== "" && course.owner !== state.owner) {
-                console.log(state.owner, "!==", course.owner);
                 return false; 
             }
             if(state.tags.length !== 0){
