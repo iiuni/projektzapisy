@@ -42,12 +42,10 @@ import { CourseShell, Group, Course } from "../models";
   },
   data: ()=>({
     extended:false,
-    toggleMsg:"⇩ więcej ⇩"
   }),
   methods:{
     toggle:function (){
       this.$data.extended = !this.$data.extended;
-      this.$data.toggleMsg = this.$data.extended ? "⇧ mniej ⇧" : "⇩ więcej ⇩";
     },
     mapProps:function(id){
       if(id==="exam") return "Zakończone egzaminem";
@@ -64,7 +62,7 @@ export default class CourseFilter extends Vue {
 </script>
 
 <template>
-  <div class="full-width">
+  <div class="jumbotron">
     <div :class="'row extendable ' + (extended ? 'extended' : 'not-extended')">
       <div class="col-xs-12 col-sm-4 vert-list">
         <CourseFilterName :name="name"/>
@@ -80,10 +78,19 @@ export default class CourseFilter extends Vue {
         <CourseFilterSublist :activeFilter="activeFilter" :labelMap="mapProps" filterId="props" title="" :allAvaiable="allProps" />
       </div>
     </div>
-    <div class="expansion-toggle" v-on:click="toggle">
-      <hr/>
-      <h5>{{toggleMsg}}</h5>
-      <hr/>
+    <div v-if="extended" class="expansion-toggle" v-on:click="toggle">
+      <h5>
+        <font-awesome-icon icon="chevron-up"/>
+        <span class="expansion-toggle-text">ukryj filtry</span>
+        <font-awesome-icon icon="chevron-up"/>
+      </h5>
+    </div>
+    <div v-if="!extended" class="expansion-toggle" v-on:click="toggle">
+      <h5>
+        <font-awesome-icon icon="chevron-down"/>
+        <span class="expansion-toggle-text">pokaż wszystkie filtry</span>
+        <font-awesome-icon icon="chevron-down"/>
+      </h5>
     </div>
   </div>
 </template>
@@ -115,5 +122,12 @@ export default class CourseFilter extends Vue {
 .expansion-toggle{
   text-align: center;
   cursor: pointer;
+  padding: 1rem 0 0 0;
+}
+.expansion-toggle-text{
+  margin: 0 0.5rem;
+}
+.jumbotron{
+  padding: 2rem 1rem;
 }
 </style>
