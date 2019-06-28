@@ -27,8 +27,8 @@ let timetable_app = new Vue({
     components: {
         Prototype,
         "course-list":CourseList,
-        "course-filter":CourseFilter,
-        // 'font-awesome-icon':FontAwesomeIcon
+        "course-filter":CourseFilter
     },
     store,
 })
+
