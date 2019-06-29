@@ -47,7 +47,7 @@ export default class NotificationsComponent extends Vue{
         })
     }
 
-    async deleteAll(): Promise<void> {
+    deleteAll(): Promise<void> {
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
@@ -80,15 +80,14 @@ export default class NotificationsComponent extends Vue{
     }
 
     refresh(): void{
-        if(this.n_counter === 0){
+        if(this.n_counter){}
+        else{
             this.updateCounter();
         }
     }
 
     async created() {
-        console.log(this.n_counter)
         await this.updateCounter()
-        console.log(this.n_counter)
         setInterval(this.refresh, 2000);
     }
 
@@ -98,36 +97,34 @@ export default class NotificationsComponent extends Vue{
 
 <template>
 <div>
-    <li class="nav-item dropdown" id="notification-dropdown">
-        <a class="nav-link dropdown-toggle specialdropdown" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding-top: 0.2rem; padding-bottom: 0;">
+    <li id="notification-dropdown" class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle specialdropdown ml-1" href="#" id="navbarDropdown" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div v-if="n_counter" @click="getNotifications()">
-                <i class="fas fa-bell bell nav-link" style="padding-right: 0;"></i>
+                <i class="fas fa-bell bell nav-link p-0"></i>
             </div>
             <div v-else>
-               <i class="far fa-bell bell nav-link" style="padding-right: 0;"></i>
+               <i class="far fa-bell bell nav-link p-0"></i>
             </div>
         </a>
-        <div id="modal-container" class="dropdown-menu dropdown-menu-right m-2" style="margin-top: 0.7rem !important">
+        <div class="dropdown-menu dropdown-menu-right m-2 pb-2 pt-0">
             <form>
-                <div v-if="n_counter" class="place-for-notifications">
-                    <div v-for="elem in n_list" :key="elem.key" class="alert alert-dismissible show border border-info rounded hoverable onemessage">
-                        <a :href="elem.target">
+                <div v-if="n_counter" class="place-for-notifications pt-2 ml-2 pr-2">
+                    <div v-for="elem in n_list" :key="elem.key" class="alert alert-dismissible show border border-info rounded onemessage mb-2">
+                        <a :href="elem.target" class="text-dark">
                             <div>{{ elem.description }}</div>
                         </a>
-                        <button type="button" class="close" aria-label="Close" @click="deleteOne(elem.key)">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" class="close" @click="deleteOne(elem.key)">
+                            &times;
                         </button>
                     </div>
                 </div>
             </form>
             <form>
-                <div v-if="n_counter" class="deleteAllM">
-                    <a href="#" @click="deleteAll">
-                        Usuń wszystkie powiadomienia.
-                    </a>
+                <div v-if="n_counter" class="pt-2 border-top text-center w-100">
+                    <a href="#" @click="deleteAll">Usuń wszystkie powiadomienia.</a>
                 </div>
-                <div v-else class="NoM">
+                <div v-else class="text-center text-muted pb-2 pt-2 mt-2">
                     Brak nowych powiadomień.
                 </div>
             </form>
@@ -138,63 +135,38 @@ export default class NotificationsComponent extends Vue{
 </template>
 
 <style>
+
+/*  Modyfikacja bootstrapowej klasy .dropdown-menu na potrzeby
+    wyświetlania widżetu z powiadomieniami  */
 #notification-dropdown .dropdown-menu{
-    background: rgb(248, 249, 250);
-    padding-bottom: 12px;
-    padding-top: 0;
     min-width: 350px;
+    max-height: 500px;
+    right: -160px;
 }
 
+/*  Usunięcie strzałki, domyślnie widocznej
+    przy tagu <a> w .dropdown-menu  */
 .specialdropdown::after{
     content: none;
 }
 
-.dropdown-menu-right{
-    right: -160px;
-}
-
+/*  Dopasowanie wielkości dzwonka  */
 .bell{
-    font-size: 32px;
-    padding: 0;
+    font-size: 24px;
 }
 
-#modal-container {
-  max-height: 500px;
-}
-
-.onemessage {
-    margin-bottom: 8px;
-}
-
+/*  Zmiana koloru pojedynczego powiadomienia
+    po najechaniu kursorem myszy  */
 .onemessage:hover{
     background-color: #00709e12;
 }
 
-.onemessage a{
-    color: #212529;
-}
-
+/*  Wymuszenie widoczności paska do scrollowania
+    i określenie wysokości niescrollowanej części
+    diva zawierającego powiadomienia  */
 .place-for-notifications{
     max-height: 395px;
     overflow-y: scroll;
-    padding-top: 8px;
-    margin-left: 7px;
-    padding-right: 5px;
-}
-
-.NoM {
-    color: #9c9999;
-    text-align: center;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-
-.deleteAllM {
-    width: 100%;
-    text-align: center;
-    padding-top: 10px;
-    border-top: 1px solid #00000021;
 }
 
 </style>

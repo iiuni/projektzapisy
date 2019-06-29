@@ -88,7 +88,7 @@ def delete_all(request):
 
 @login_required
 @require_POST
-def deleteOne(request):
+def delete_one(request):
     """Removes one notification"""
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
