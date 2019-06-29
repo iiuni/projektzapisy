@@ -14,10 +14,23 @@
   fields:
     semester_winter_id: 1
 
+- model: auth.User
+  pk: 10
+  fields:
+    username: goguś
+- model: users.Employee
+  pk: 10
+  fields:
+    user: 10
+
 - model: courses.PointTypes
   pk: 1
   fields:
     name: ECTS
+- model: courses.Type
+  pk: 1
+  fields:
+    name: 'I2'
 
 # We will have three students.
 - model: auth.User
@@ -78,6 +91,18 @@
     shortName: 'Szydełkowanie'
     created: 2011-08-31T12:30:12+02:00
     edited: 2011-08-31T12:30:12+02:00
+- model: courses.CourseInformation
+  pk: 1
+  fields:
+    entity: 1
+    course_type: 1
+    owner: 10
+    slug: 'szydekowanie'
+    created: 2011-08-31T12:30:12+02:00
+    modified: 2011-08-31T12:30:12+02:00
+- model: proposal.Proposal
+  fields:
+    courseinformation_ptr_id: 1
 - model: courses.PointsOfCourseEntities
   fields:
     type_of_point_id: 1  # ECTS
@@ -103,6 +128,18 @@
     shortName: 'Mycie naczyń'
     created: 2011-11-13T14:32:24+02:00
     edited: 2011-11-13T14:32:24+02:00
+- model: courses.CourseInformation
+  pk: 2
+  fields:
+    entity: 2
+    course_type: 1
+    owner: 10
+    slug: 'mycie-naczy'
+    created: 2011-11-13T14:32:24+02:00
+    modified: 2011-11-13T14:32:24+02:00
+- model: proposal.Proposal
+  fields:
+    courseinformation_ptr_id: 2
 - model: courses.PointsOfCourseEntities
   fields:
     type_of_point_id: 1  # ECTS
@@ -135,6 +172,18 @@
     shortName: 'Gotowanie'
     created: 2011-08-27T12:32:41+02:00
     edited: 2011-08-31T12:33:18+02:00
+- model: courses.CourseInformation
+  pk: 3
+  fields:
+    entity: 3
+    course_type: 1
+    owner: 10
+    slug: 'gotowanie'
+    created: 2011-08-27T12:32:41+02:00
+    modified: 2011-08-31T12:33:18+02:00
+- model: proposal.Proposal
+  fields:
+    courseinformation_ptr_id: 3
 - model: courses.PointsOfCourseEntities
   fields:
     type_of_point_id: 1  # ECTS
@@ -170,7 +219,7 @@
   fields:
     state_id: 1
     student_id: 1
-    entity_id: 1
+    proposal_id: 1
     correction: 2
 
 # Lolek cast 2 points for 'Gotowanie' and one for 'Szydełkowanie'
@@ -179,12 +228,12 @@
   fields:
     state_id: 1
     student_id: 2
-    entity_id: 3
+    proposal_id: 3
     correction: 2
 - model: vote.SingleVote
   pk: 3
   fields:
     state_id: 1
     student_id: 2
-    entity_id: 1
+    proposal_id: 1
     correction: 1

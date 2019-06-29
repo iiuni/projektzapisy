@@ -1,0 +1,47 @@
+{% extends "offer/base.html" %}
+
+{% load proposal_status %}
+{% load render_bundle from webpack_loader %}
+
+{% block main-subtitle %}Podsumowanie głosowania{% endblock %}
+
+{% block offer_menu_vote %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'vote-main' %}">Głosowanie</a></li>
+    <li class="breadcrumb-item active">Podsumowanie</li>
+{% endblock bread %}
+
+{% block all-content %}
+    <h1>Podsumowanie głosowania</h1>
+    {% regroup proposals|dictsort:"semester" by semester as proposals_per_semester %}
+    {% for semester, proposals_in_semester in proposals_per_semester %}
+        <h2>Semestr {{ semester|semester_display }}</h2>
+        <table class="table table-striped sortable">
+            <thead>
+                <tr>
+                    <th scope="col" class="az" data-defaultsign="nospan" data-defaultsort="asc">Propozycja przedmiotu</th>
+                    <th scope="col" class="text-center">Suma punktów</th>
+                    <th scope="col" class="text-center">Liczba głosujących</th>
+                    <th data-defaultsort='disabled'></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proposal in proposals_in_semester %}
+                <tr>
+                    <td><a href="{% url 'offer-page' slug=proposal.slug %}">{{ proposal.name }}</a></td>
+                    <td class="text-center">{{ proposal.total }}</td>
+                    <td class="text-center">{{ proposal.count }}</td>
+                    <td><a href="{% url 'proposal-vote-summary' slug=proposal.slug %}">lista</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% empty %}
+        <div class="alert alert-info">Nikt na nic jeszcze nie zagłosował.</div>
+    {% endfor %}
+
+    {% render_bundle 'vote-bootstrap-table' %}
+{% endblock all-content %}

@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from apps.api.rest.v1.views import SingleVoteViewSet, SystemStateViewSet
 from apps.enrollment.courses.tests.factories import (CourseFactory, CourseEntityFactory,
                                                      GroupFactory, SemesterFactory)
+from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
@@ -13,21 +14,23 @@ from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFact
 class VoteSystemTests(TestCase):
 
     def setUp(self):
-        state1 = SystemState(year=2010)
+        state1 = SystemState(year="2010/11")
         state1.save()
-        state2 = SystemState(year=2018)
+        state2 = SystemState(year="2018/19")
         state2.save()
         students = [StudentFactory(), StudentFactory()]
-        courses = [CourseEntityFactory(name="Pranie"), CourseEntityFactory(name="Zmywanie")]
+        proposals = [ProposalFactory(name="Pranie"), ProposalFactory(name="Zmywanie")]
         SingleVote.objects.bulk_create([
-            SingleVote(state=state1, student=students[0], entity=courses[0], value=2),
-            SingleVote(state=state1, student=students[1], entity=courses[0], value=0),
-            SingleVote(state=state1, student=students[0], entity=courses[1], value=3),
-            SingleVote(state=state1, student=students[1], entity=courses[1], value=1),
-            SingleVote(state=state2, student=students[0], entity=courses[0], value=0),
-            SingleVote(state=state2, student=students[1], entity=courses[0], value=0, correction=1),
-            SingleVote(state=state2, student=students[0], entity=courses[1], value=3),
-            SingleVote(state=state2, student=students[1], entity=courses[1], value=1, correction=2),
+            SingleVote(state=state1, student=students[0], proposal=proposals[0], value=2),
+            SingleVote(state=state1, student=students[1], proposal=proposals[0], value=0),
+            SingleVote(state=state1, student=students[0], proposal=proposals[1], value=3),
+            SingleVote(state=state1, student=students[1], proposal=proposals[1], value=1),
+            SingleVote(state=state2, student=students[0], proposal=proposals[0], value=0),
+            SingleVote(
+                state=state2, student=students[1], proposal=proposals[0], value=0, correction=1),
+            SingleVote(state=state2, student=students[0], proposal=proposals[1], value=3),
+            SingleVote(
+                state=state2, student=students[1], proposal=proposals[1], value=1, correction=2),
         ])
         self.state1 = state1
         self.state2 = state2
@@ -35,7 +38,7 @@ class VoteSystemTests(TestCase):
         self.employee = EmployeeFactory()
 
         self.semester = SemesterFactory()
-        self.course_instance = CourseFactory(entity=courses[1], semester=self.semester)
+        self.course_instance = CourseFactory(entity=proposals[1].entity, semester=self.semester)
 
         self.staff_member = UserFactory(is_staff=True)
 
@@ -66,8 +69,14 @@ class VoteSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         resp_json = json.loads(json.dumps(response.data))
         self.assertEqual(len(resp_json), 2)
-        self.assertEqual(resp_json[0], {"id": self.state1.pk, "state_name": "Ustawienia systemu na rok 2010"})
-        self.assertEqual(resp_json[1], {"id": self.state2.pk, "state_name": "Ustawienia systemu na rok 2018"})
+        self.assertEqual(resp_json[0], {
+            "id": self.state1.pk,
+            "state_name": "Ustawienia systemu na rok akademicki 2010/11"
+        })
+        self.assertEqual(resp_json[1], {
+            "id": self.state2.pk,
+            "state_name": "Ustawienia systemu na rok akademicki 2018/19"
+        })
 
     def test_votes_endpoint(self):
         """Tests votes endpoint.
@@ -134,7 +143,7 @@ class VoteSystemTests(TestCase):
         response = client.get(f'/api/v1/courses/?semester={self.semester.pk}')
         self.assertEqual(response.data['count'], 1)
         entity_dict = response.data['results'][0]['entity']
-        self.assertEqual(entity_dict['name'], "Zmywanie")
+        self.assertEqual(entity_dict['name'], self.course_instance.entity.name)
         self.assertEqual(entity_dict['usos_kod'], '')
 
         response = client.patch(f'/api/v1/courseentities/{self.course_instance.entity_id}/', {

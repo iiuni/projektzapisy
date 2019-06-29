@@ -7,6 +7,8 @@ from ..models.course import Course, CourseEntity, CourseDescription
 from ..models.group import Group
 from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
+from ..models.course_information import CourseInformation
+from ..models.course_type import Type
 from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 from .semester_year_provider import SemesterYearProvider
@@ -74,6 +76,22 @@ class CourseDescriptionFactory(DjangoModelFactory):
     lectures = 30
     exercises = 30
     laboratories = 30
+
+
+class CourseTypeFactory(DjangoModelFactory):
+    class Meta:
+        model = Type
+
+
+class CourseInformationFactory(DjangoModelFactory):
+    class Meta:
+        model = CourseInformation
+
+    entity = factory.SubFactory(CourseEntityFactory)
+    owner = factory.SubFactory(EmployeeFactory)
+    course_type = factory.SubFactory(CourseTypeFactory)
+
+    name = factory.Iterator(["Szydełkowanie", "Gotowanie", "Prasowanie", "Mycie naczyń", "Pranie"])
 
 
 class CourseFactory(DjangoModelFactory):

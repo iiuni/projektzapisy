@@ -44,12 +44,12 @@ class CourseInformation(models.Model):
 
     has_exam = models.BooleanField("przedmiot z egzaminem", default=True)
 
-    hours_lecture = models.PositiveSmallIntegerField("godzin wykładu")
-    hours_exercise = models.PositiveSmallIntegerField("godzin ćwiczeń")
-    hours_lab = models.PositiveSmallIntegerField("godzin pracowni")
-    hours_exercise_lab = models.PositiveSmallIntegerField("godzin ćwiczenio-pracowni")
-    hours_seminar = models.PositiveSmallIntegerField("godzin seminarium")
-    hours_recap = models.PositiveSmallIntegerField("godzin repetytorium")
+    hours_lecture = models.PositiveSmallIntegerField("godzin wykładu", default=0)
+    hours_exercise = models.PositiveSmallIntegerField("godzin ćwiczeń", default=0)
+    hours_lab = models.PositiveSmallIntegerField("godzin pracowni", default=0)
+    hours_exercise_lab = models.PositiveSmallIntegerField("godzin ćwiczenio-pracowni", default=0)
+    hours_seminar = models.PositiveSmallIntegerField("godzin seminarium", default=0)
+    hours_recap = models.PositiveSmallIntegerField("godzin repetytorium", default=0)
 
     # Fields for syllabus
     teaching_methods = models.TextField("metody kształcenia", blank=True)

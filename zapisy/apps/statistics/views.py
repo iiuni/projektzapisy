@@ -46,12 +46,6 @@ def groups(request):
 
 
 @permission_required('courses.view_stats')
-def votes(request):
-    proposals = CourseEntity.statistics.in_year()
-    return TemplateResponse(request, 'statistics/votes.html', locals())
-
-
-@permission_required('courses.view_stats')
 def swap(request):
     semester = Semester.objects.get_next()
     courses = Course.objects.filter(semester=semester).select_related('entity')

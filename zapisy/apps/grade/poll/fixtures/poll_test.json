@@ -1,7 +1,7 @@
 [
 {"pk": 1, "model": "records.record", "fields": {"status": "1", "group": 1, "student": 1, "created":"2011-01-09 00:40:19", "modified":"2011-01-09 00:40:19"}},
 {"pk": 2, "model": "records.record", "fields": {"status": "1", "group": 1, "student": 3, "created":"2011-01-09 00:40:19", "modified":"2011-01-09 00:40:19"}},
-{"pk": 1, "model": "vote.systemstate", "fields": {"max_vote": 30, "max_points": 3, "vote_beg": "2011-01-01", "vote_end": "2011-12-31", "year": 2011}},
+{"pk": 1, "model": "vote.systemstate", "fields": {"vote_beg": "2011-01-01", "vote_end": "2011-12-31", "year": "2010/11"}},
 {"pk": 1, "model": "users.employee", "fields": {"consultations": "brak", "receive_mass_mail_offer": true, "user": 2, "receive_mass_mail_enrollment": true}},
 {"pk": 2, "model": "users.employee", "fields": {"consultations": "brak", "receive_mass_mail_offer": true, "user": 7, "receive_mass_mail_enrollment": true}},
 {"pk": 3, "model": "users.employee", "fields": {"consultations": "brak", "receive_mass_mail_offer": true, "user": 8, "receive_mass_mail_enrollment": true}},

@@ -25,6 +25,7 @@
     "axios": "^0.18.0",
     "babel-runtime": "^6.26.0",
     "bootstrap": "^4.3",
+    "bootstrap-sortable": "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
     "fullcalendar": "^3.10.0",
     "jquery": "^3.2.1",
     "js-yaml": "^3.13.1",
@@ -37,6 +38,8 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@types/bootstrap": "^4.1.2",
     "@types/glob": "^5.0.33",
     "@types/jquery": "^3.3.4",

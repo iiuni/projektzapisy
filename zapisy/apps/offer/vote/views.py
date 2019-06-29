@@ -1,130 +1,132 @@
-"""
-    Vote views
-"""
-from datetime import date
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.template.response import TemplateResponse
-from apps.enrollment.courses.models.course import CourseEntity
+from django.db import models
+from django.shortcuts import redirect, render, get_object_or_404
 
+from apps.enrollment.courses.models import Semester
+from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models import SingleVote, SystemState
-from apps.enrollment.courses.models.course_type import Type
-from apps.enrollment.courses.models.semester import Semester
 from apps.users.decorators import student_required
+
+from .forms import prepare_vote_formset
 
 
 @student_required
 def vote(request):
-    from apps.offer.vote.vote_form import VoteFormsets
+    """Renders voting form to the student and handles voting POST requests."""
+    system_state = SystemState.get_current_state()
 
-    student = request.user.student
-    state = SystemState.get_state()
+    if not system_state:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
 
-    if not state.is_system_active():
-        raise Http404
-
-    SingleVote.make_votes(student, state=state)
-
-    kwargs = {'student': student, 'state': state}
-    if request.method == 'POST':
-        kwargs['post'] = request.POST
-
-    formset = VoteFormsets(**kwargs)
+    if not system_state.is_vote_active() and (system_state.correction_active_semester() is None):
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('vote-main')
 
     if request.method == 'POST':
-
+        formset = prepare_vote_formset(system_state, request.user.student, post=request.POST)
         if formset.is_valid():
             formset.save()
-            messages.success(request, "Oddano poprawny głos")
-            return redirect('vote')
-
+            messages.success(request, "Zapisano głos.")
         else:
-            messages.error(request, "Nie udało się oddać głosu")
-            for error in formset.errors:
-                messages.error(request, error)
+            messages.error(request, "\n".join(formset.non_form_errors()))
 
-    data = {'formset': formset,
-            'proposalTypes': Type.objects.all().select_related('group'),
-            'isCorrectionActive': state.is_correction_active()}
+    else:
+        formset = prepare_vote_formset(system_state, request.user.student)
 
-    return render(request, 'offer/vote/form.html', data)
+    if system_state.is_vote_active():
+        template_name = 'vote/form.html'
+    elif system_state.correction_active_semester():
+        template_name = 'vote/form_correction.html'
+    return render(request, template_name, {'formset': formset})
 
 
 @login_required
 def vote_main(request):
-    """
-        Vote main page
-    """
-    sytem_state = SystemState.get_state()
-    data = {'isVoteActive': sytem_state.is_system_active(), 'max_points': sytem_state.max_points,
-            'semester': Semester.get_current_semester()}
-    return render(request, 'offer/vote/index.html', data)
+    """Vote main page."""
+    system_state = SystemState.get_current_state()
+
+    if system_state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
+
+    is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
+
+    data = {
+        'is_vote_active': is_vote_active,
+        'max_points': SystemState.DEFAULT_MAX_POINTS,
+        'semester': Semester.get_current_semester()
+    }
+    return render(request, 'vote/index.html', data)
 
 
 @student_required
-def vote_view(request):
-    """
-        View of once given vote
-    """
-    votes = SingleVote.get_votes(request.user.student)
-    is_voting_active = SystemState.get_state(date.today().year).is_system_active()
+def my_vote(request):
+    """Shows the student his own vote."""
+    system_state = SystemState.get_current_state()
 
-    return TemplateResponse(request, 'offer/vote/view.html', locals())
+    if system_state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
+
+    votes = SingleVote.objects.meaningful().filter(state=system_state, student=request.user.student)
+
+    is_vote_active = system_state.is_vote_active() or system_state.correction_active_semester()
+
+    return render(request, 'vote/my_vote.html', {
+        'votes': votes,
+        'is_vote_active': is_vote_active,
+    })
 
 
 @login_required
 def vote_summary(request):
-    """
-        summary for vote
-    """
-    summer = []
-    winter = []
-    unknown = []
+    """Summarizes the voting period."""
+    state = SystemState.get_current_state()
 
-    year = date.today().year
-    state = SystemState.get_state(year)
+    if state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
 
-    subs = CourseEntity.get_vote()
-    subs = SingleVote.add_vote_count(subs, state)
+    # Sum all the vote true values for proposal. This is the same as
+    # `true_val()` in SingleVote manager or SingleVote.val property.
+    votes_sum_agg = models.Sum(models.Case(
+        models.When(singlevote__correction=0, then='singlevote__value'),
+        default='singlevote__correction'
+    ), filter=models.Q(singlevote__state=state))
+    # Count all the non-zero votes for the proposal.
+    votes_count_agg = models.Count(
+        'singlevote__id',
+        filter=models.Q(singlevote__state=state) &
+        ~models.Q(singlevote__value=0, singlevote__correction=0),
+        distinct=True)
 
-    for sub in subs:
-        if sub.semester == 'z':
-            winter.append((sub.votes, sub.voters, sub))
-        elif sub.semester == 'l':
-            summer.append((sub.votes, sub.voters, sub))
-        elif sub.semester == 'u':
-            unknown.append((sub.votes, sub.voters, sub))
+    proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE)
+    proposals = proposals.annotate(total=votes_sum_agg).annotate(count=votes_count_agg)
 
-    data = {
-        'winter': winter,
-        'summer': summer,
-        'unknown': unknown,
-        'is_voting_active': state.is_system_active()
-    }
-
-    return render(request, 'offer/vote/summary.html', data)
+    return render(request, 'vote/summary.html', {
+        'proposals': proposals,
+    })
 
 
 @login_required
 def proposal_vote_summary(request, slug):
-    """
-        Summary for given course
-    """
-    try:
-        course = CourseEntity.noremoved.get(slug=slug)
-    except ObjectDoesNotExist:
-        raise Http404
+    """Lists students voting for a proposal."""
+    proposal: Proposal = get_object_or_404(Proposal, slug=slug)
+    state = SystemState.get_current_state()
 
-    points, votes, voters = SingleVote.get_points_and_voters(course)
+    if state is None:
+        messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
+        return redirect('/')
 
-    data = {'proposal': course,
-            'points': points,
-            'votes': votes,
-            'voters': voters}
+    votes = SingleVote.objects.meaningful().filter(state=state, proposal=proposal).select_related(
+        'student', 'student__user').true_val()
 
-    return render(request, 'offer/vote/proposal_summary.html', data)
+    total = votes.aggregate(total=models.Sum('true_val')).get('total', 0)
+
+    return render(request, 'vote/proposal_summary.html', {
+        'proposal': proposal,
+        'votes': votes,
+        'total': total,
+    })

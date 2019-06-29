@@ -1,0 +1,58 @@
+{% extends "offer/base.html" %}
+
+{% block main-subtitle %}Głosowanie{% endblock %}
+
+{% block offer_menu_vote %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Głosowanie</li>
+{% endblock %}
+
+{% block all-content %}
+    <div class="jumbotron">
+        <h1 class="display-1">Zasady głosowania</h1>
+        <h2>Cele</h2>
+        <p>
+            Głosowanie ma na celu wybór przedmiotów na przyszły rok
+            akademicki oraz zoptymalizowanie planu.
+        </p>
+
+        <h2>Przebieg</h2>
+        <p>
+            Student może przyznać każdemu przedmiotowi <strong>0-1-2-3
+            punkty</strong>, sygnalizując swoje zainteresowanie przedmiotem.
+            Suma przyznanych punktów nie może przekroczyć
+            <strong>{{max_points}}</strong>. Do sumy nie wliczają się przedmioty
+            nieinformatyczne. Swój głos można zmieniać do czasu zakończenia
+            głosowania.
+        </p>
+
+        <h2>Bonus <small>(marchewka)</small></h2>
+        <p>
+            Każdy oddany punkt na przedmiot daje studentowi <strong>24 godzinny
+            bonus</strong> otwarcia zapisów na niego.
+        </p>
+
+        <h2>Przedmioty „przegrane”</h2>
+        <p>
+            Przed rozpoczęciem semestru odbędzie się <strong>korekta</strong>,
+            podczas której można będzie ponownie przydzielić punkty „zmarnowane”
+            w głosowaniu na przedmioty, które nie będą prowadzone w tym roku.
+        </p>
+    </div>
+
+    {% if user.student %}
+        {% if is_vote_active %}
+            <a href="{% url 'vote' %}" class="btn btn-block btn-info btn-lg">Głosuj</a>
+        {% else %}
+            <button class="btn btn-block btn-lg btn-info" disabled>Głosowanie nie jest aktywne</button>
+        {% endif %}
+    {% endif %}
+		
+		<a href="{% url 'vote-summary' %}" class="btn btn-block btn-light">Podsumowanie głosowania</a>
+    {% if user.student %}
+        <a href="{% url 'my-vote-view' %}" class="btn btn-block btn-light">Pokaż mój głos</a>
+    {% endif %}
+{% endblock %}

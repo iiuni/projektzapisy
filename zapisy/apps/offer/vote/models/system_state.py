@@ -1,77 +1,95 @@
-"""
-    System State for vote
-    Default values are dafined as module variables
-"""
-from django.core.exceptions import ObjectDoesNotExist
+"""System State for vote application.
 
-from django.db import models
+Voting cycle spans two semesters in one academic year. Thus the system state
+corresponds to a single academic year.
+"""
 from datetime import date
+import re
+from typing import Optional
+
+from django.core.exceptions import ValidationError
+from django.db import models
+
 from apps.enrollment.courses.models.semester import Semester
 
-DEFAULT_YEAR = date.today().year - 2
-DEFAULT_MAX_POINTS = 50
-DEFAULT_MAX_VOTE = 3
-DEFAULT_DAY_BEG = 1          #
-DEFAULT_DAY_END = 31         # Te dane trzeba będzie tak ustawić
-DEFAULT_MONTH_BEG = 1          # żeby były prawdziwe. Na razie tak
-DEFAULT_MONTH_END = 7         # jest wygodnie, chociażby do testów
-DEFAULT_VOTE_BEG = date(DEFAULT_YEAR, 6, 10)
-DEFAULT_VOTE_END = date(DEFAULT_YEAR, 7, 10)
-DEFAULT_CORRECTION_BEG = date(DEFAULT_YEAR, DEFAULT_MONTH_BEG, DEFAULT_DAY_BEG)
-DEFAULT_CORRECTION_END = date(DEFAULT_YEAR, DEFAULT_MONTH_END, DEFAULT_DAY_END)
+
+def _get_default_semester_for_season(season):
+    """Finds a semester for upcoming year with specified type.
+
+    Parameters:
+      Season is supposed to be one of Semester.TYPE_CHOICES.
+    """
+    query = Semester.objects.filter(year=_get_default_year, type=season)
+    try:
+        return query.get().pk
+    except Semester.DoesNotExist:
+        return None
+
+
+def _get_default_winter_semester() -> Optional[Semester]:
+    return _get_default_semester_for_season(Semester.TYPE_WINTER)
+
+
+def _get_default_year():
+    """Usually we are creating a new system state for the upcoming year."""
+    current_year = date.today().year
+    return f"{current_year}/{current_year % 100 + 1}"
+
+
+def _validate_year_format(value: str):
+    """Verifies that the year is in format YYYY/YY."""
+    match = re.fullmatch(r'(\d{4})/(\d{2})', value)
+    if not match:
+        raise ValidationError(f"{value} does not comply to format YYYY/YY.")
+    year1 = int(match.group(1)) % 100
+    year2 = int(match.group(2))
+    if year1 + 1 != year2:
+        raise ValidationError("Academic year should span two consecutive calendar years.")
+
+
+def _get_default_summer_semester() -> Optional[Semester]:
+    return _get_default_semester_for_season(Semester.TYPE_SUMMER)
 
 
 class SystemState(models.Model):
-    """
-        System state for vote
-    """
+    DEFAULT_MAX_POINTS = 40
 
-    semester_winter = models.ForeignKey(Semester, on_delete=models.CASCADE,
-                                        verbose_name='Semestr zimowy',
-                                        related_name='winter_votes',
-                                        null=True, blank=True)
+    year = models.CharField(
+        "Rok akademicki",
+        max_length=7,
+        default=_get_default_year,
+        validators=[_validate_year_format])
 
-    semester_summer = models.ForeignKey(Semester,
-                                        on_delete=models.CASCADE,
-                                        verbose_name='Semestr letni',
-                                        related_name='summer_votes',
-                                        null=True, blank=True)
+    semester_winter = models.ForeignKey(
+        Semester,
+        on_delete=models.CASCADE,
+        verbose_name="Semestr zimowy",
+        related_name='+',  # Let's not pollute the semester with this.
+        null=True,
+        blank=True,
+        default=_get_default_winter_semester)
 
-    year = models.IntegerField(
-        verbose_name='Rok akademicki',
-        default=date.today().year)
+    semester_summer = models.ForeignKey(
+        Semester,
+        on_delete=models.CASCADE,
+        verbose_name="Semestr letni",
+        related_name='+',  # Let's not pollute the semester with this.
+        null=True,
+        blank=True,
+        default=_get_default_summer_semester)
 
-    max_points = models.IntegerField(
-        verbose_name='Maksimum punktów na przedmioty',
-        default=DEFAULT_MAX_POINTS)
-
-    max_vote = models.IntegerField(
-        verbose_name='Maksymalna wartość głosu',
-        default=DEFAULT_MAX_VOTE)
-
-    vote_beg = models.DateField(
-        verbose_name='Początek głosowania',
-        default=DEFAULT_VOTE_BEG)
-
-    vote_end = models.DateField(
-        verbose_name='Koniec głosowania',
-        default=DEFAULT_VOTE_END)
+    vote_beg = models.DateField("Początek głosowania", blank=True, null=True, default=None)
+    vote_end = models.DateField("Koniec głosowania", blank=True, null=True, default=None)
 
     winter_correction_beg = models.DateField(
-        verbose_name='Początek korekty zimowej',
-        default=DEFAULT_CORRECTION_BEG)
-
+        "Początek korekty na semestr zimowy", blank=True, null=True)
     winter_correction_end = models.DateField(
-        verbose_name='Koniec korekty zimowej',
-        default=DEFAULT_CORRECTION_END)
+        "Koniec korekty na semestr zimowy", blank=True, null=True)
 
     summer_correction_beg = models.DateField(
-        verbose_name='Początek korekty letniej',
-        default=DEFAULT_CORRECTION_BEG)
-
+        "Początek korekty na semestr letni", blank=True, null=True)
     summer_correction_end = models.DateField(
-        verbose_name='Koniec korekty letniej',
-        default=DEFAULT_CORRECTION_END)
+        "Koniec korekty na semestr letni", blank=True, null=True)
 
     class Meta:
         verbose_name = 'ustawienia głosowania'
@@ -79,60 +97,70 @@ class SystemState(models.Model):
         app_label = 'vote'
 
     def __str__(self):
-        return "Ustawienia systemu na rok " + str(self.year)
+        return f"Ustawienia systemu na rok akademicki {self.year}"
 
     @staticmethod
-    def get_state(year=None):
+    def get_state_for_semester(semester: Semester) -> Optional['SystemState']:
+        """Returns the state corresponding to the current semester.
+
+        If one does not exist, returns None.
         """
-            Gets actual system state from database
-            Creates one if necessary
+        state: Optional[SystemState] = None
+        if semester.type == Semester.TYPE_WINTER:
+            try:
+                state = SystemState.objects.get(semester_winter=semester)
+            except SystemState.DoesNotExist:
+                return None
+        if semester.type == Semester.TYPE_SUMMER:
+            try:
+                state = SystemState.objects.get(semester_summer=semester)
+            except SystemState.DoesNotExist:
+                return None
+        return state
+
+    @staticmethod
+    def get_current_state() -> Optional['SystemState']:
+        """Returns an upcoming system state.
+
+        This is a common use-case where we want a current (or upcoming if we are
+        at the edge of the academic years) system state.
         """
-        if not year:
-            year = date.today().year
+        # Try to find current SystemState — most recent that already had voting
+        # opened.
+        qs = SystemState.objects.filter(vote_beg__lte=date.today())
         try:
-            return SystemState.objects.get(year=year)
-        except ObjectDoesNotExist:
-            return SystemState.create_default_state(year)
+            return qs.latest('vote_beg')
+        except SystemState.DoesNotExist:
+            raise
 
-    @staticmethod
-    def create_default_state(year=None):
+        # Edge case. Try current semester.
+        semester = Semester.objects.get_next()
+        return SystemState.get_state_for_semester(semester)
+
+    def is_vote_active(self, day: Optional[date] = None) -> bool:
+        """Checks if voting (not the correction) is active.
+
+        We treat the beginning and end dates as a closed interval. Should voting
+        only be active on one day, the dates should be the same.
         """
-            Creates system state from default variables
+        if day is None:
+            day = date.today()
+        if self.vote_beg is None or self.vote_end is None:
+            return False
+        return self.vote_beg <= day <= self.vote_end
+
+    def correction_active_semester(self, day: Optional[date] = None) -> Optional[Semester]:
+        """Checks if correction is active.
+
+        Returns a semester for which the correction is active, or None, if it is
+        not.
         """
-        if not year:
-            year = date.today().year
-        new_state = SystemState()
-        new_state.year = year
-        new_state.max_points = DEFAULT_MAX_POINTS
-        new_state.vote_beg = date(year, 6, 10)
-        new_state.vote_end = date(year, 7, 10)
-        new_state.save()
-        return new_state
-
-    def is_system_active(self):
-        return self.is_vote_active() or self.is_correction_active()
-
-    def is_vote_active(self):
-        """
-            Checks if vote is active
-        """
-        today = date.today()
-
-        return self.vote_beg <= today <= self.vote_end
-
-    def is_correction_active(self):
-        """
-            Checks if correction is active
-        """
-
-        return self.is_winter_correction_active() or self.is_summer_correction_active()
-
-    def is_winter_correction_active(self):
-        today = date.today()
-
-        return self.winter_correction_beg <= today <= self.winter_correction_end
-
-    def is_summer_correction_active(self):
-        today = date.today()
-
-        return self.summer_correction_beg <= today <= self.summer_correction_end
+        if day is None:
+            day = date.today()
+        if self.winter_correction_beg is not None and self.winter_correction_end is not None:
+            if self.winter_correction_beg <= day <= self.winter_correction_end:
+                return self.semester_winter
+        if self.summer_correction_beg is not None and self.summer_correction_end is not None:
+            if self.summer_correction_beg <= day <= self.summer_correction_end:
+                return self.semester_summer
+        return None

@@ -1,0 +1,54 @@
+{% extends "offer/base.html" %}
+
+{% block main-subtitle %}Pokaż mój głos{% endblock %}
+
+{% block offer_menu_vote %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Głosowanie</li>
+{% endblock bread %}
+
+{% block all-content %}
+    <h1>
+        Mój głos 
+        {% if is_vote_active %}
+            <a href="{% url 'vote' %}" class="btn btn-outline-info btn-sm ml-3">Głosuj</a>
+        {% endif %}
+    </h1>
+
+
+    {% if votes %}
+        {% regroup votes|dictsort:"proposal.semester" by proposal.get_semester_display as semesters %}
+        {% for semester, votes_in_semester in semesters %}
+            <h3>Semestr {{ semester }}</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Przedmiot</th>
+                        <th class="text-center">Punkty w głosowaniu</th>
+                        <th class="text-center">Punkty w korekcie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vote in votes_in_semester %}
+                        <tr>
+                            <td><a href="{% url 'offer-page' vote.proposal.slug %}">{{ vote.proposal.name }}</a></td>
+                            <td class="text-center">{{ vote.value }}</td>
+                            <td class="text-center">{{ vote.correction }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning">
+            Nie zagłosowałeś jeszcze na żaden przedmiot.
+        </div>
+    {% endif %}
+        <p><strong>Każdy przyznany punkt</strong> daje bonus 24 godzin do
+        zapisów na dany przedmiot.</p>
+        <p>Domyślną wartością w korekcie jest wartość przydzielona w
+        głosowaniu.</p>
+{% endblock all-content %}

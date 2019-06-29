@@ -14,6 +14,7 @@ export default {
             "common/_variables.scss",
             "common/index.scss",
             "common/cookieconsent/display-cookieconsent.ts",
+            "common/icons-library.ts",
         ],
         "fullcalendar": [
             "common/fullcalendar.ts"

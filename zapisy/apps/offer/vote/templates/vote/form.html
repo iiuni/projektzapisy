@@ -1,0 +1,68 @@
+{% extends "offer/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block main-subtitle %}Głosowanie{% endblock %}
+
+{% block offer_menu_vote %}class="active"{% endblock offer_menu_vote %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Głosowanie</li>
+{% endblock %}
+
+{% block all-content %}
+
+{# This will be used by Vue component to display currently used points #}
+<div id="point-counter">{{ formset.limit }}</div>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    {% regroup formset|dictsort:"instance.proposal.semester" by instance.proposal.get_semester_display as formset_by_semester %}
+
+    {% for semester_display, forms in formset_by_semester %}
+        <fieldset>
+            <legend>Semestr {{ semester_display }}</legend>
+            <table class="table table-sm table-borderless table-hover">
+            <style>
+                .form-group {
+                    margin-bottom: 0;
+                }
+            </style>
+            {% for form in forms %}
+                <tr
+                        {% if not form.instance.proposal.course_type.free_in_vote %}
+                            class="limit"
+                        {% endif %}
+                >
+                    <th scope="row">
+                        {{ form.instance.proposal.name }}
+                        <a href="{% url 'offer-page' form.instance.proposal.slug  %}" 
+                                class="mx-2 font-weight-light" target="new"
+                                title="Otwórz w nowym oknie">
+                            <i class="fa fa-sm fa-external-link-alt"></i>
+                        </a>
+                        {% if form.instance.proposal.course_type.free_in_vote %}
+                            <small class="text-muted ml-2">Przedmiot darmowy</small>
+                        {% endif %}
+                    </th>
+                    <td>
+                        {{ form|crispy }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </fieldset>    
+    {% endfor %}
+
+
+    <button type="submit" class="btn btn-primary">Głosuj</button>
+</form>
+
+{% render_bundle "vote-point-counter" %}
+
+{% endblock all-content %}

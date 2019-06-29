@@ -51,44 +51,6 @@ class DefaultCourseManager(models.Manager):
             'information')
 
 
-class StatisticsManager(models.Manager):
-    def in_year(self, year=None):
-        from apps.offer.vote.models import SystemState
-
-        if not year:
-            year = date.today().year
-
-        state = SystemState.get_state(year)
-
-        # TODO: po przeniesieniu wszystkich metod do managerów filtrowanie na
-        #  status powinno byc  z dziedziczenia
-        return self.get_queryset().filter(
-            status=2) .select_related(
-            'type',
-            'owner',
-            'owner__user') .order_by('name') .extra(
-            select={
-                'votes': "COALESCE((SELECT SUM(vote_singlevote.correction) FROM vote_singlevote WHERE"
-                " vote_singlevote.entity_id = courses_courseentity.id"
-                " AND vote_singlevote.state_id = %d), 0)" %
-                state.id,
-                'voters': "SELECT COUNT(*) FROM vote_singlevote WHERE"
-                " vote_singlevote.entity_id = courses_courseentity.id "
-                "AND vote_singlevote.correction > 0 "
-                "AND vote_singlevote.state_id = %d" %
-                state.id,
-                'maxpoints_votes': "COALESCE((SELECT SUM(vote_singlevote.correction) FROM vote_singlevote WHERE"
-                " vote_singlevote.correction = 3 "
-                " AND vote_singlevote.entity_id = courses_courseentity.id"
-                " AND vote_singlevote.state_id = %d), 0)" %
-                state.id,
-                'maxpoints_voters': "SELECT COUNT(*) FROM vote_singlevote WHERE"
-                " vote_singlevote.entity_id = courses_courseentity.id "
-                "AND vote_singlevote.correction = 3 "
-                "AND vote_singlevote.state_id = %d" %
-                state.id})
-
-
 semesters = (('u', 'nieoznaczony'), ('z', 'zimowy'), ('l', 'letni'))
 ectslist = [(x, str(x)) for x in range(1, 16)]
 
@@ -200,7 +162,6 @@ class CourseEntity(models.Model):
     objects = WithInformation()
     simple = models.Manager()
     noremoved = NoRemoved()
-    statistics = StatisticsManager()
 
     def _add_or_none(self, hours1, hours2):
         """
@@ -421,20 +382,6 @@ class CourseEntity(models.Model):
 
     def is_in_voting(self):
         return self.status == CourseEntity.STATUS_TO_VOTE
-
-    def get_all_voters(self, year=None):
-        from apps.offer.vote.models.single_vote import SingleVote
-        from apps.offer.vote.models.system_state import SystemState
-
-        if not year:
-            year = date.today().year
-        current_state = SystemState.get_state(year)
-
-        votes = SingleVote.objects.filter(
-            value__gte=1, state=current_state, entity=self).select_related(
-            'student', 'student__user').order_by('student__matricula')
-
-        return [vote.student for vote in votes]
 
     @staticmethod
     def get_vote():
