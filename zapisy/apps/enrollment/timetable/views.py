@@ -87,7 +87,7 @@ def list_courses_in_semester(semester: Semester):
             'name': course.entity.name,
             'shortName': course.entity.shortName,
             'effects': efekty,
-            'firstYearFriendly':course.suggested_for_first_year,
+            'firstYearFriendly': course.suggested_for_first_year,
             'type': course.entity.type.name,
             'exam': course.exam,
             'seminars': course.seminars > 0,
