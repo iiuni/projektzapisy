@@ -1,6 +1,6 @@
 {% load proposal_status %}
 
-<h2>{{course.name}}
+<h2 class="d-print-none">{{course.name}}
 {% if user.is_staff or course.owner == user.employee %}
     <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
     {% if course.status|status_label == "draft" %}

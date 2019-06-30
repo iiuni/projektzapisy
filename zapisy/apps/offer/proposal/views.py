@@ -2,6 +2,7 @@
 import copy
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -30,6 +31,16 @@ def offer(request, slug=None):
     return render(request, 'proposal/offer.html', {
         "proposal": proposal,
         "proposals": proposal_list,
+    })
+
+
+@login_required
+def syllabus(request, slug):
+    """Prints the syllabus for a proposal."""
+    proposal = get_object_or_404(Proposal, slug=slug)
+
+    return render(request, 'proposal/syllabus.html', {
+        'proposal': proposal,
     })
 
 

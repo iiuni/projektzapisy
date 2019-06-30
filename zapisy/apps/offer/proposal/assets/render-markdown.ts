@@ -5,6 +5,9 @@ let callback = function(mutations, observer) {
         const raw = element.textContent;
         const rendered = marked(raw);
         element.innerHTML = rendered;
+        // This way Markdown is not rendered twice.
+        element.classList.remove("markdown");
+        element.classList.add("markdown-rendered");
     }
 };
 

@@ -16,6 +16,7 @@ class Type(models.Model):
         blank=True,
         verbose_name='grupa',
         on_delete=models.CASCADE)
+    obligatory = models.BooleanField(default=False, verbose_name='przedmioty obowiązkowe')
     meta_type = models.BooleanField(default=False, verbose_name='Grupa typow')
     free_in_vote = models.BooleanField(default=False)
 

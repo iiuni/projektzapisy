@@ -1,0 +1,222 @@
+{% comment %}
+    The layout of this is a bit peculiar: what should be a single table is laid
+    out in many separate tables. Somehow it was the only way to make Chrome not
+    cut it mid-row when printing.
+{% endcomment %}
+
+<style>
+    #syllabus table {
+
+        page-break-before: auto;
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    #syllabus th.number-cell {
+        width: 30px;
+    }
+</style>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">1.</th>
+            <th colspan="2">Nazwa przedmiotu w języku polskim oraz angielskim</th>
+        </tr>
+        <tr><td colspan="2">
+            {{ proposal.name }}
+            {% if proposal.language != 'en' %}
+                <br>
+                <em>{{ proposal.name_en }}</em>
+            {% endif %}
+        </td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">2.</th>
+            <th colspan="2">Dyscyplina</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.dyscypline }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">3.</th>
+            <th colspan="2">Język wykładowy</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.get_language_display }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">4.</th>
+            <th colspan="2">Jednostka prowadząca przedmiot</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.teaching_unit }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">5.</th>
+            <th colspan="2">Kod przedmiotu/modułu</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.usos_kod }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">6.</th>
+            <th colspan="2">Rodzaj przedmiotu/modułu (obowiązkowy lub do wyboru)</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.course_type.obligatory|yesno:"obowiązkowy,do wyboru" }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">7.</th>
+            <th colspan="2">Kierunek studiów (specjalność/specjalizacja)</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.major }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">8.</th>
+            <th colspan="2">Poziom studiów (I stopień, II stopień, jednolite studia magisterskie, studia doktoranckie)</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.level }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">9.</th>
+            <th colspan="2">Rok studiów (jeśli obowiązuje)</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.year }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">10.</th>
+            <th colspan="2">Semestr (zimowy lub letni)</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.get_semester_display }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">11.</th>
+            <th>Forma zajęć i liczba godzin</th>
+            <td id="hours">
+                <style>
+                    #hours span + span::before {
+                        content: '+';
+                        margin: 0 .5em;
+                    }
+                </style>
+                {% if proposal.hours_lecture %}<span>{{ proposal.hours_lecture }} (wyk.)</span>{% endif %}
+                {% if proposal.hours_exercise %}<span>{{ proposal.hours_exercise }} (ćw.)</span>{% endif %}
+                {% if proposal.hours_lab %}<span>{{ proposal.hours_lab }} (prac.)</span>{% endif %}
+                {% if proposal.hours_exercise_lab %}<span>{{ proposal.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
+                {% if proposal.hours_seminar %}<span>{{ proposal.hours_seminar }} (sem.)</span>{% endif %}
+                {% if proposal.hours_recap %}<span>{{ proposal.hours_recap }} (rep.)</span>{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Metody uczenia się</th>
+            <td class="markdown">{{ proposal.teaching_methods }}</td>
+        </tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">12.</th>
+            <th colspan="2">Imię, nazwisko, tytuł/stopień naukowy osoby prowadzącej zajęcia</th>
+        </tr>
+        <tr><td colspan="2">{{ proposal.owner }} ({{ proposal.owner.title }})</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">13.</th>
+            <th colspan="2">Wymagania wstępne w zakresie wiedzy, umiejętności i kompetencji społecznych dla przedmiotu/modułu</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.preconditions }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">14.</th>
+            <th colspan="2">Cele przedmiotu</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.objectives }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">15.</th>
+            <th colspan="2">Treści programowe</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.contents }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">16.</th>
+            <th colspan="2">Zakładane efekty uczenia się</th>
+        </tr>
+        <tr>
+            <td colspan="2" class="markdown">{{ proposal.teaching_effects }}</td>
+        </tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">17.</th>
+            <th colspan="2">Literatura obowiązkowa i zalecana</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.literature }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">18.</th>
+            <th colspan="2">Metody weryfikacji zakładanych efektów kształcenia</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.verification_methods }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">19.</th>
+            <th colspan="2">Warunki i forma zaliczenia poszczególnych komponentów przedmiotu/modułu</th>
+        </tr>
+        <tr><td colspan="2" class="markdown">{{ proposal.passing_means }}</td></tr>
+    </tbody>
+</table>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th class="number-cell" rowspan="2" scope="rowgroup">20.</th>
+            <th colspan="2">Nakład pracy studenta/doktoranta</th>
+        <tr><td colspan="2" class="markdown">{{ proposal.student_labour }}</td></tr>
+    </tbody>
+</table>

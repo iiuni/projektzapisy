@@ -70,6 +70,7 @@ class CourseInformation(models.Model):
     major = models.CharField("kierunek studiów", max_length=100, blank=True)
     level = models.CharField("poziom studiów", max_length=100, blank=True)
     year = models.CharField("rok studiów", max_length=50, blank=True)
+    discipline = models.CharField("dyscyplina", max_length=100, default="Informatyka")
 
     tags = models.ManyToManyField(Tag, verbose_name="tagi", blank=True)
     effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia", blank=True)
