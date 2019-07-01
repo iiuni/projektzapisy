@@ -23,7 +23,13 @@ interface ServerResponseCount {
 }
 
 
-@Component
+@Component({
+    filters: {
+        subStr: function(str: string) {
+    	    return str.substring(0,19);
+        }
+    }
+})
 export default class NotificationsComponent extends Vue{
 
     n_counter: number|null = null;
@@ -101,22 +107,24 @@ export default class NotificationsComponent extends Vue{
         <a class="nav-link dropdown-toggle specialdropdown ml-1" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div v-if="n_counter" @click="getNotifications()">
-                <i class="fas fa-bell bell nav-link p-0"></i>
+                <i class="fas fa-bell fa-lg"></i>
             </div>
             <div v-else>
-               <i class="far fa-bell bell nav-link p-0"></i>
+               <i class="far fa-bell fa-lg"></i>
             </div>
         </a>
         <div class="dropdown-menu dropdown-menu-right m-2 pb-2 pt-0">
-            <form>
-                <div v-if="n_counter" class="place-for-notifications pt-2 ml-2 pr-2">
-                    <div v-for="elem in n_list" :key="elem.key" class="alert alert-dismissible show border border-info rounded onemessage mb-2">
-                        <a :href="elem.target" class="text-dark">
-                            <div>{{ elem.description }}</div>
-                        </a>
-                        <button type="button" class="close" @click="deleteOne(elem.key)">
+            <form class="p-2 place-for-notifications">
+                <div v-for="elem in n_list" :key="elem.key" class="toast fade show mw-100 mb-2">
+                    <div class="toast-header">
+                        <strong class="mr-auto"></strong>
+                        <small class="text-muted">{{ elem.issued_on|subStr }}</small>
+                        <button type="button" class="ml-2 mb-1 close" @click="deleteOne(elem.key)">
                             &times;
                         </button>
+                    </div>
+                    <div class="toast-body">
+                        <a :href="elem.target" class="text-body">{{ elem.description }}</a>
                     </div>
                 </div>
             </form>
@@ -124,7 +132,7 @@ export default class NotificationsComponent extends Vue{
                 <div v-if="n_counter" class="pt-2 border-top text-center w-100">
                     <a href="#" @click="deleteAll">Usuń wszystkie powiadomienia.</a>
                 </div>
-                <div v-else class="text-center text-muted pb-2 pt-2 mt-2">
+                <div v-else class="text-center text-muted pb-2 pt-1">
                     Brak nowych powiadomień.
                 </div>
             </form>
@@ -150,23 +158,9 @@ export default class NotificationsComponent extends Vue{
     content: none;
 }
 
-/*  Dopasowanie wielkości dzwonka  */
-.bell{
-    font-size: 24px;
-}
-
-/*  Zmiana koloru pojedynczego powiadomienia
-    po najechaniu kursorem myszy  */
-.onemessage:hover{
-    background-color: #00709e12;
-}
-
-/*  Wymuszenie widoczności paska do scrollowania
-    i określenie wysokości niescrollowanej części
-    diva zawierającego powiadomienia  */
 .place-for-notifications{
     max-height: 395px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 </style>
