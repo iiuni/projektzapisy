@@ -1,5 +1,6 @@
 from typing import List
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from apps.notifications.datatypes import Notification
@@ -16,7 +17,10 @@ def notify_user(user: User, notification: Notification):
     """
     repo = get_notifications_repository()
     repo.save(user, notification)
-    dispatch_notifications_task.delay(user)
+    if not settings.RUN_ASYNC:
+        dispatch_notifications_task(user)
+    else:
+        dispatch_notifications_task.delay(user)
 
 
 def notify_selected_users(users: List[User], notification: Notification):

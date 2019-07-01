@@ -64,11 +64,9 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
+        'ASYNC': RUN_ASYNC,
     },
 }
-
-if TESTING:
-    RQ_QUEUES['dispatch-notifications']['ASYNC'] = False
 
 # mass-mail account
 # You can test sending with:

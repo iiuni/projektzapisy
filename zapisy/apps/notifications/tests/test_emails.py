@@ -1,6 +1,6 @@
 from django.core import mail
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.tests.factories import CourseFactory, GroupFactory
@@ -10,6 +10,7 @@ from apps.notifications.utils import render_description
 from apps.users.tests.factories import EmployeeFactory
 
 
+@override_settings(RUN_ASYNC=False)
 class NotificationsEmailTestCase(TestCase):
     def test_teacher_changed(self):
         teacher = EmployeeFactory()
