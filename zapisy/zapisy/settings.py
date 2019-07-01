@@ -4,8 +4,6 @@ import environ
 import sys
 from django.contrib.messages import constants as messages
 
-TESTING = 'test' in sys.argv
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env()
