@@ -1,7 +1,6 @@
 import os
 import logging
 import environ
-import sys
 from django.contrib.messages import constants as messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

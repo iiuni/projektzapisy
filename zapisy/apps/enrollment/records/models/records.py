@@ -96,8 +96,9 @@ class Record(models.Model):
     def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> EnrollStatus:
         """Checks if the student can join the queue of the group.
 
-        Will return False if student is None. The function will not check if the
-        student already belongs to the queue.
+        Will return EnrollStatus.NOT_QUEUED_ERR if student is None
+        or EnrollStatus.SUCCESS otherwise.
+        The function will not check if the student already belongs to the queue.
         """
         if Record.can_enqueue_groups(student, [group], time)[group.pk]:
             return EnrollStatus.SUCCESS
@@ -133,9 +134,14 @@ class Record(models.Model):
         """Checks if the student can join the queue of the group.
 
         At the point the function is purely cosmetic. Some conditions may be
-        added in future. Will return False if student is None. The function will
-        not check if the student is already enrolled into the group or present
-        in its queue.
+        added in future. The function will return:
+         - EnrollStatus.SUCCESS if everything is alright,
+         - EnrollStatus.OTHER_ERROR if student is None,
+         - EnrollStatus.NOT_QUEUED_ERR if function can_enqueue is not EnrollStatus.SUCCESS,
+         - EnrollStatus.ECTS_ERR if student exceed ECTS limit.
+
+        The function will not check if the student is already enrolled
+        into the group or present in its queue.
         """
         if time is None:
             time = datetime.now()
@@ -482,14 +488,17 @@ class Record(models.Model):
                         self.status = RecordStatus.REMOVED
                         self.save()
                         # Send notification to user
-                        student_not_pulled.send_robust(sender=self.__class__, instance=self.group, user=self.student.user, reason='brak możliwości zapisu do grupy wykładowej')
+                        student_not_pulled.send_robust(sender=self.__class__,
+                                                       instance=self.group,
+                                                       user=self.student.user,
+                                                       reason='brak możliwości zapisu do grupy wykładowej')
                         LOGGER.info(("Student %s not enrolled into group %s because "
                                      "he is not in any lecture group"), self.student, group)
                         return []
 
             # Check if he can be enrolled at all.
             can_enroll_status = self.can_enroll(self.student, group)
-            if not can_enroll_status == EnrollStatus.SUCCESS:
+            if can_enroll_status != EnrollStatus.SUCCESS:
                 self.status = RecordStatus.REMOVED
                 self.save()
 
