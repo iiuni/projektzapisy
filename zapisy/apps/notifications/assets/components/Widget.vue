@@ -1,7 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
-import axios, { AxiosProxyConfig, AxiosPromise } from 'axios';
 import Component from "vue-class-component";
+import axios, { AxiosProxyConfig, AxiosPromise } from 'axios';
+import moment from 'moment'
 
 interface NotificationsArray {
     id: string;
@@ -25,8 +26,8 @@ interface ServerResponseCount {
 
 @Component({
     filters: {
-        subStr: function(str: string) {
-    	    return str.substring(0,19);
+        Moment: function(str: string) {
+    	    return moment(str).locale('pl').fromNow();
         }
     }
 })
@@ -118,7 +119,7 @@ export default class NotificationsComponent extends Vue{
                 <div v-for="elem in n_list" :key="elem.key" class="toast fade show mw-100 mb-2">
                     <div class="toast-header">
                         <strong class="mr-auto"></strong>
-                        <small class="text-muted">{{ elem.issued_on|subStr }}</small>
+                        <small class="text-muted">{{ elem.issued_on|Moment }}</small>
                         <button type="button" class="ml-2 mb-1 close" @click="deleteOne(elem.key)">
                             &times;
                         </button>
