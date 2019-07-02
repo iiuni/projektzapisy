@@ -28,6 +28,7 @@ from apps.enrollment.courses.models import Group, Semester, StudentPointsView
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
 from apps.enrollment.timetable.views import build_group_list
 from apps.enrollment.utils import mailto
+from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
@@ -38,7 +39,6 @@ from apps.users.exceptions import InvalidUserException
 from libs.ajax_messages import AjaxSuccessMessage
 from mailer.models import Message
 
-from apps.notifications.views import create_form
 
 logger = logging.getLogger()
 

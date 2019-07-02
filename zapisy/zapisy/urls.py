@@ -37,7 +37,6 @@ urlpatterns = [
     url(r'^prefs/', include('apps.offer.preferences.urls')),
     url(r'^desiderata/', include('apps.offer.desiderata.urls')),
     url(r'^', include(('apps.schedule.urls', 'events'), namespace='events')),
-    url(r'^notifications/', include('apps.notifications.urls')),
     url(r'^vote/', include('apps.offer.vote.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),
@@ -52,4 +51,5 @@ urlpatterns = [
 
 urlpatterns += [
     path('django-rq/', include('django_rq.urls')),
+    path('notifications/', include('apps.notifications.urls')),
 ]

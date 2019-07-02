@@ -145,16 +145,16 @@ export default class NotificationsComponent extends Vue{
 
 <style>
 
-/*  Modyfikacja bootstrapowej klasy .dropdown-menu na potrzeby
-    wyświetlania widżetu z powiadomieniami  */
+/*  Modification of the bootstrap class .dropdown-menu
+    for display notifications widget correctly.  */
 #notification-dropdown .dropdown-menu{
     min-width: 350px;
     max-height: 500px;
     right: -160px;
 }
 
-/*  Usunięcie strzałki, domyślnie widocznej
-    przy tagu <a> w .dropdown-menu  */
+/*  Hide arrow, what is default
+    for tag <a> in .dropdown-menu  */
 .specialdropdown::after{
     content: none;
 }

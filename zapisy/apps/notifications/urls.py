@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from . import views
 
 # Urls: "get", "count", "delete" and "delete/all"
@@ -6,9 +6,9 @@ from . import views
 
 app_name = "notifications"
 urlpatterns = [
-    url(r'^get$', views.get_notifications, name='get_notifications'),
-    url(r'^count$', views.get_counter, name='get_counter'),
-    url(r'^delete$', views.delete_one, name='delete-one-notification'),
-    url(r'^delete/all$', views.delete_all, name='delete-all-notifications'),
-    url(r'^preferences/save$', views.preferences_save, name='preferences-save'),
+    path('get', views.get_notifications, name='get_notifications'),
+    path('count', views.get_counter, name='get_counter'),
+    path('delete', views.delete_one, name='delete-one-notification'),
+    path('delete/all', views.delete_all, name='delete-all-notifications'),
+    path('preferences/save', views.preferences_save, name='preferences-save'),
 ]

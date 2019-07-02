@@ -96,8 +96,7 @@ class Record(models.Model):
     def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> EnrollStatus:
         """Checks if the student can join the queue of the group.
 
-        Will return EnrollStatus.NOT_QUEUED_ERR if student is None
-        or EnrollStatus.SUCCESS otherwise.
+        Will return EnrollStatus.NOT_QUEUED_ERR if student is None.
         The function will not check if the student already belongs to the queue.
         """
         if Record.can_enqueue_groups(student, [group], time)[group.pk]:
@@ -135,7 +134,7 @@ class Record(models.Model):
 
         At the point the function is purely cosmetic. Some conditions may be
         added in future. The function will return:
-         - EnrollStatus.SUCCESS if everything is alright,
+         - EnrollStatus.SUCCESS if everything is fine,
          - EnrollStatus.OTHER_ERROR if student is None,
          - EnrollStatus.NOT_QUEUED_ERR if function can_enqueue is not EnrollStatus.SUCCESS,
          - EnrollStatus.ECTS_ERR if student exceed ECTS limit.

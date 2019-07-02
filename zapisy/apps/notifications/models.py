@@ -3,7 +3,6 @@ from typing import List
 from django.db import models
 from django.contrib.auth.models import User
 
-from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import Student
 

@@ -11,7 +11,7 @@ from apps.users.models import BaseUser
 
 @job('dispatch-notifications')
 def dispatch_notifications_task(user):
-    """Dispatch all pending notifications for the given user.
+    """Dispatch all pending notifications for the given user by email.
 
     It's purposely designed around processing all notification_s_
     at a time instead of handling them one by one
@@ -27,6 +27,8 @@ def dispatch_notifications_task(user):
     pending_notifications = repo.get_unsent_for_user(user)
 
     for pn in pending_notifications:
+        # User controls in account settings
+        # what notifications will be send
         if not getattr(model, pn.description_id):
             continue
 
