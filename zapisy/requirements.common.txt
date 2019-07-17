@@ -14,7 +14,7 @@ rq==0.12.0
 django-rq==1.2
 django-test-without-migrations==0.6
 django-webpack-loader==0.6.0
-djangorestframework==3.8.2
+djangorestframework==3.9.1
 
 Fabric3==1.14.post1
 ipdb==0.11
