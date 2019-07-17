@@ -24,7 +24,7 @@
     "bootstrap": "^4.3",
     "bootstrap-sortable": "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
     "fullcalendar": "^3.10.0",
-    "jquery": "^3.2.1",
+    "jquery": "^3.4.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.13",
     "marked": "^0.6.1",
