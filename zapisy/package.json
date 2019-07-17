@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/iiuni/projektzapisy#README",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-runtime": "^6.26.0",
     "bootstrap": "^4.3",
     "bootstrap-sortable": "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
