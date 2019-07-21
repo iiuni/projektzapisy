@@ -18,6 +18,8 @@ def decode_class_type_plural(value: str):
         '8': "Zajęcia sportowe",
         '9': "Repetytoria",
         '10': "Projekty",
+        '11': "Tutoring",
+        '12': "Proseminaria",
     }
     return types_dict.get(value, "")
 
@@ -36,5 +38,7 @@ def decode_class_type_singular(value: str):
         '8': "Zajęcia sportowe",
         '9': "Repetytorium",
         '10': "Projekt",
+        '11': "Tutoring",
+        '12': "Proseminarium",
     }
     return types_dict.get(value, "")

@@ -25,9 +25,9 @@ SLACK_WEBHOOK_URL = (
 
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
-# e (repetytorium), o (projekt)
+# e (repetytorium), o (projekt), t (tutoring), m (proseminarium)
 GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
-               'r': '5', 's': '6', 'o': '10'}
+               'r': '5', 's': '6', 'o': '10', 't': '11', 'm': '12'}
 
 # The default limits for group types
 LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}

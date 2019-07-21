@@ -17,7 +17,8 @@ from apps.users.models import Employee
 GROUP_TYPE_CHOICES = [('1', 'wykład'), ('2', 'ćwiczenia'), ('3', 'pracownia'),
                       ('5', 'ćwiczenio-pracownia'),
                       ('6', 'seminarium'), ('7', 'lektorat'), ('8', 'WF'),
-                      ('9', 'repetytorium'), ('10', 'projekt')]
+                      ('9', 'repetytorium'), ('10', 'projekt'),
+                      ('11', 'tutoring'), ('12', 'proseminarium')]
 
 GROUP_EXTRA_CHOICES = [('', ''),
                        ("pierwsze 7 tygodni", "pierwsze 7 tygodni"),
