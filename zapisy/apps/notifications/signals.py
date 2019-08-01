@@ -76,21 +76,19 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
             notify_user(
                 teacher,
                 Notification(get_id(), get_time(),
-                            NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                            {'course_name': course_name}, target))
+                             NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
+                             {'course_name': course_name}, target))
 
-        records = Record.objects.filter(group__in=course_groups,
-                                        status=RecordStatus.ENROLLED).select_related('student',
-                                                                                     'student__user')
+        records = Record.objects.filter(
+            group__in=course_groups, status=RecordStatus.ENROLLED).select_related(
+                'student', 'student__user')
         users = {element.student.user for element in records}
         notify_selected_users(
             users,
-            Notification(
-                get_id(), get_time(),
-                NotificationType.ADDED_NEW_GROUP, {
-                    'course_name': course_name,
-                    'teacher': group.get_teacher_full_name()
-                }, target))
+            Notification(get_id(), get_time(), NotificationType.ADDED_NEW_GROUP, {
+                'course_name': course_name,
+                'teacher': group.get_teacher_full_name()
+            }, target))
 
 
 @receiver(teacher_changed, sender=Group)
@@ -104,23 +102,19 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 
         notify_user(
             teacher,
-            Notification(get_id(), get_time(),
-                        NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                        {'course_name': course_name}, target))
+            Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
+                         {'course_name': course_name}, target))
 
     queued_users = User.objects.filter(
-        student__record__group=group,
-        student__record__status=RecordStatus.QUEUED)
+        student__record__group=group, student__record__status=RecordStatus.QUEUED)
 
     enrolled_users = User.objects.filter(
-        student__record__group=group,
-        student__record__status=RecordStatus.ENROLLED)
+        student__record__group=group, student__record__status=RecordStatus.ENROLLED)
 
     notify_selected_users(
         queued_users,
         Notification(
-            get_id(), get_time(),
-            NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
+            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
                 'course_name': course_name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
@@ -129,8 +123,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     notify_selected_users(
         enrolled_users,
         Notification(
-            get_id(), get_time(),
-            NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
+            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
                 'type': group.get_type_display(),
@@ -146,6 +139,4 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
     target = reverse(all_news)
 
     notify_selected_users(
-        users,
-        Notification(get_id(), get_time(),
-                     NotificationType.NEWS_HAS_BEEN_ADDED, {}, target))
+        users, Notification(get_id(), get_time(), NotificationType.NEWS_HAS_BEEN_ADDED, {}, target))
