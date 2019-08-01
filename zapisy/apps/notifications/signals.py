@@ -38,7 +38,7 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
         Notification(
             get_id(), get_time(), NotificationType.PULLED_FROM_QUEUE, {
                 'course_name': group.course.information.entity.name,
-                'teacher': group.teacher.user.get_full_name(),
+                'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
             }, target))
 
@@ -56,7 +56,7 @@ def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> N
         Notification(
             get_id(), get_time(), NotificationType.NOT_PULLED_FROM_QUEUE, {
                 'course_name': group.course.information.entity.name,
-                'teacher': group.teacher.user.get_full_name(),
+                'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
                 'reason': kwargs['reason']
             }, target))
@@ -69,14 +69,15 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
         course_groups = Group.objects.filter(course=group.course)
         course_name = group.course.information.entity.name
 
-        teacher = group.teacher.user
-        target = reverse(course_view, args=[group.course.slug])
+        if group.teacher is not None:
+            teacher = group.teacher.user
+            target = reverse(course_view, args=[group.course.slug])
 
-        notify_user(
-            teacher,
-            Notification(get_id(), get_time(),
-                         NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                         {'course_name': course_name}, target))
+            notify_user(
+                teacher,
+                Notification(get_id(), get_time(),
+                            NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
+                            {'course_name': course_name}, target))
 
         records = Record.objects.filter(group__in=course_groups,
                                         status=RecordStatus.ENROLLED).select_related('student',
@@ -88,7 +89,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
                 get_id(), get_time(),
                 NotificationType.ADDED_NEW_GROUP, {
                     'course_name': course_name,
-                    'teacher': teacher.get_full_name()
+                    'teacher': group.get_teacher_full_name()
                 }, target))
 
 
@@ -96,15 +97,16 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
 def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     group = kwargs['instance']
 
-    teacher = group.teacher.user
-    course_name = group.course.information.entity.name
-    target = reverse(course_view, args=[group.course.slug])
+    if group.teacher is not None:
+        teacher = group.teacher.user
+        course_name = group.course.information.entity.name
+        target = reverse(course_view, args=[group.course.slug])
 
-    notify_user(
-        teacher,
-        Notification(get_id(), get_time(),
-                     NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                     {'course_name': course_name}, target))
+        notify_user(
+            teacher,
+            Notification(get_id(), get_time(),
+                        NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
+                        {'course_name': course_name}, target))
 
     queued_users = User.objects.filter(
         student__record__group=group,
@@ -120,7 +122,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
             get_id(), get_time(),
             NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
                 'course_name': course_name,
-                'teacher': teacher.get_full_name(),
+                'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
             }, target))
 
