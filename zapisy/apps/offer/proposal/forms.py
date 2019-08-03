@@ -298,6 +298,7 @@ class ProposalFormHelper(helper.FormHelper):
 
     Fields here must be the same as in `EditProposalForm`.
     """
+    form_id = 'edit-proposal-form'
     layout = layout.Layout(
         layout.Fieldset(
             "Informacje podstawowe",
