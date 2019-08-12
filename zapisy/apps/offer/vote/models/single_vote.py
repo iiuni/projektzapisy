@@ -46,8 +46,7 @@ class SingleVote(models.Model):
     VALUE_CHOICES = [(0, '0'), (1, '1'), (2, '2'), (3, '3')]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="głosujący")
-    proposal = models.ForeignKey(
-        Proposal, verbose_name="propozycja", on_delete=models.CASCADE)
+    proposal = models.ForeignKey(Proposal, verbose_name="propozycja", on_delete=models.CASCADE)
 
     state = models.ForeignKey(SystemState, on_delete=models.CASCADE, verbose_name="Rok akademicki")
 
