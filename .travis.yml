@@ -19,9 +19,9 @@ install:
   - |
     if [[ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]]; then
       # Installs Yarn/NPM dependencies.
-      cd zapisy && yarn && cd ..
+      (cd zapisy && yarn) || exit 1
       # Builds assets.
-      cd zapisy && yarn build && cd ..
+      (cd zapisy && yarn build) || exit 1
       # Don't store the build cache; it changes after each build, Travis then
       # picks that change up and repacks the cache archive which takes forever
       rm -rf zapisy/node_modules/.cache-loader-*
