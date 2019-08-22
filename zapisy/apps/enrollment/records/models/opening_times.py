@@ -101,23 +101,6 @@ class T0Times(models.Model):
             cls.objects.bulk_create(created)
 
 
-class ProgramGroupRestrictions(models.Model):
-    """Closes a group for the entire studies program.
-
-    This feature could potentially be implemented using GroupOpeningTimes but
-    having a simpler rule for that is neater. The rules saved in this model are
-    going to be used in methods of the GroupOpeningTimes class.
-    """
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ("group", "program")
-        indexes = [
-            models.Index(fields=["group", "program"])
-        ]
-
-
 class GroupOpeningTimes(models.Model):
     """Stores student opening times for groups.
 
@@ -147,9 +130,8 @@ class GroupOpeningTimes(models.Model):
         """For each group in groups checks if the group is open for the student.
 
         For a single group, we first look at the relation between the group and
-        the student (GroupOpeningTimes) and potential restriction for the
-        student's program. If there is none, the group might have its own
-        opening and closing times. Finally, we look at the student's T0.
+        the student (GroupOpeningTimes). If there is none, the group might have
+        its own opening and closing times. Finally, we look at the student's T0.
 
         The function will assume, that all the groups are in the same semester.
         In order to ensure the performance of this function, Groups should be
@@ -164,18 +146,11 @@ class GroupOpeningTimes(models.Model):
 
         for k in groups:
             groups[k].opening_time_for_student = None
-            groups[k].restricted_for_student = False
         for rec in cls.objects.filter(student=student, group__in=groups):
             groups[rec.group_id].opening_time_for_student = rec.time
-        for rec in ProgramGroupRestrictions.objects.filter(
-                program_id=student.program_id, group__in=groups):
-            groups[rec.group_id].restricted_for_student = True
 
         ret: Dict[int, bool] = {}
         for k, group in groups.items():
-            if group.restricted_for_student:
-                ret[k] = False
-                continue
             if group.opening_time_for_student is not None:
                 ret[k] = (
                     group.opening_time_for_student <= time <= group.course.semester.records_closing
