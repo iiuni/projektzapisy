@@ -99,11 +99,7 @@ const mutations = {
         flipSelection.forEach(id => {
             let group = state.store[id];
             // We will not show the group that is hidden.
-            if (group.isSelected) {
-                group.isSelected = false;
-            } else {
-                group.isSelected = !group.shouldBeHidden();
-            }
+            group.isSelected = !group.isSelected;
             Vue.set(state.store, id.toString(), group);
         });
     }

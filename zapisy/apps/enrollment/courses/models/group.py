@@ -3,7 +3,7 @@
 A group may have multiple terms - that is, students may meet with the teacher
 more than one time a week.
 """
-from typing import Iterable
+from typing import Optional
 
 from django.db import models, transaction
 from django.urls import reverse
@@ -175,14 +175,17 @@ class Group(models.Model):
         return copy
 
     @classmethod
-    def get_lecture_groups(cls, course_id: int) -> Iterable['Group']:
+    def get_lecture_group(cls, course_id: int) -> Optional['Group']:
         """Given a course_id returns a lecture group for this course, if one exists.
 
         The Group.MultipleObjectsReturned exception will be raised when many
         lecture groups exist for course.
         """
         group_query = cls.objects.filter(course_id=course_id, type=Group.GROUP_TYPE_LECTURE)
-        return list(group_query)
+        try:
+            return group_query.get()
+        except cls.DoesNotExist:
+            return None
 
     def save(self, *args, **kwargs):
         """Overloaded save method - during save check changes and send signals to notifications app"""
