@@ -37,9 +37,6 @@ GROUP_EXTRA_CHOICES = [('', ''),
                        ('pracownia linuksowa', 'pracownia linuksowa'),
                        ('grupa anglojęzyczna', 'grupa anglojęzyczna'),
                        ('I rok', 'I rok'), ('II rok', 'II rok'), ('ISIM', 'ISIM'),
-                       ('tura1', 'grupa wirtualna dla pierwszej 1/3 pierwszaków'),
-                       ('tura2', 'grupa wirtualna dla drugiej 1/3 pierwszaków'),
-                       ('tura3', 'grupa wirtualna dla trzeciej 1/3 pierwszaków'),
                        ('hidden', 'grupa ukryta'),
                        ]
 
