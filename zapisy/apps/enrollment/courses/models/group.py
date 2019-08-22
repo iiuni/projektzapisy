@@ -191,3 +191,21 @@ class Group(models.Model):
         if old:
             if old.teacher != self.teacher:
                 teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
+
+
+class GuaranteedSpots(models.Model):
+    """Defines an additional pool of spots in a course group reserved for a role.
+
+    Normally a course group would have a single limit defining how many students
+    can be enrolled to it at the same time. Sometimes we would however like to
+    reserve a number of spots to a group of students (i.e. freshmen, or ISIM).
+    This mechanism will allow us to do that.
+    """
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='guaranteed_spots',
+        verbose_name="grupa zajęciowa")
+    role = models.ForeignKey(
+        'auth.Group', on_delete=models.CASCADE, related_name='+', verbose_name='grupa użytkowników')
+    limit = models.PositiveSmallIntegerField("liczba miejsc")
