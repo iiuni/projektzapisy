@@ -53,6 +53,7 @@ from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models.group import GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import BaseUser, Student
@@ -291,6 +292,39 @@ class Record(models.Model):
         return ret_dict
 
     @classmethod
+    def free_spots_by_role(cls, group: Group) -> Dict[str, int]:
+        """Counts the number of free spots indexed by user role.
+
+        The purpose of this is to establish if the group has free place in it at
+        all and how many students are enrolled according to which
+        GuaranteedSpots rule. Note, that this function will only work
+        deterministically and sanely, if the roles defined in GuaranteedSpots
+        rules are distinct for this groups.
+
+        The number of students not matched to any GuaranteedSpots rule will be
+        indexed with '-'.
+        """
+        ret: Dict[str, int] = {}
+        guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
+        all_enrolled_records = cls.objects.filter(
+            group=group, status=RecordStatus.ENROLLED).select_related(
+                'student', 'student__user').prefetch_related('student__user__groups')
+        all_enrolled_students = set(r.student.user for r in all_enrolled_records)
+
+        for gsr in guaranteed_spots_rules:
+            role = gsr.role
+            counter = 0
+            for user in all_enrolled_students.copy():
+                if role in user.groups.all():
+                    all_enrolled_students.remove(user)
+                    counter += 1
+                    if counter == gsr.limit:
+                        break
+            ret[gsr.role] = gsr.limit - counter
+        ret['-'] = group.limit - len(all_enrolled_students)
+        return ret
+
+    @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
         """Returns ids of those of groups that user is involved in.
 
@@ -434,14 +468,26 @@ class Record(models.Model):
             # We obtain a lock on the records in this group.
             records = cls.objects.filter(group_id=group_id).exclude(
                 status=RecordStatus.REMOVED).select_for_update()
-            num_enrolled = records.filter(status=RecordStatus.ENROLLED).count()
-            if num_enrolled >= group.limit:
+            free_spots_by_role = cls.free_spots_by_role(group)
+            no_one_waiting = True
+            # We rely here on the fact, that '-' will be in the order before all
+            # the role names.
+            for role in sorted(free_spots_by_role):
+                if free_spots_by_role[role] <= 0:
+                    continue
+                try:
+                    queue_query = records.filter(status=RecordStatus.QUEUED)
+                    if role != '-':
+                        queue_query = queue_query.filter(student__user__groups__name=role)
+                    first_in_line = queue_query.earliest('created')
+                    no_one_waiting = False
+                    trigger_groups = first_in_line.enroll_or_remove(group)
+                except cls.DoesNotExist:
+                    pass
+
+            if no_one_waiting:
                 return False
-            try:
-                first_in_line = records.filter(status=RecordStatus.QUEUED).earliest('created')
-                trigger_groups = first_in_line.enroll_or_remove(group)
-            except cls.DoesNotExist:
-                return False
+
         # The tasks should be triggered outside of the transaction
         for trigger_group_id in trigger_groups:
             GROUP_CHANGE_SIGNAL.send(None, group_id=trigger_group_id)
