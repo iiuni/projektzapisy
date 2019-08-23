@@ -115,7 +115,7 @@ export default class TermComponent extends TermProps {
         <p class="popup-info">Sala: {{ term.classrooms }}</p>
         <a class="group-link" :href="group.url">
           lista studentów zapisanych do grupy
-          ({{ group.numEnrolled }}/{{ group.limit }})
+          ({{ group.numEnrolled }}/{{ group.limit }}<span v-for="gs of group.guaranteedSpots" :key="gs.role" title="">+{{ gs.limit }}</span>)
         </a>
     </div>
   </transition>

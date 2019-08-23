@@ -100,6 +100,11 @@ export class Course {
     ) {}
 }
 
+export interface GuaranteedSpot {
+    role: string;
+    limit: number;
+}
+
 // GroupJSON is used to cast JSON into it and translate it into proper Group
 // class instance.
 export interface GroupJSON {
@@ -112,6 +117,7 @@ export interface GroupJSON {
     teacher: Teacher;
     url: string;
     term: Array<TermJSON>;
+    guaranteed_spots: Array<GuaranteedSpot>;
 
     is_enrolled?: boolean;
     is_enqueued?: boolean;
@@ -132,6 +138,7 @@ export class Group {
     public teacher: Teacher;
     public url: string;
     public terms: Array<Term>;
+    public guaranteedSpots: Array<GuaranteedSpot>;
 
     public isEnrolled = false;
     public isEnqueued = false;
@@ -156,6 +163,7 @@ export class Group {
         for (const term of json.term) {
             this.terms.push(new Term(term, this));
         }
+        this.guaranteedSpots = json.guaranteed_spots;
 
         this.isEnrolled = json.is_enrolled || false;
         this.isEnqueued = json.is_enqueued || false;
