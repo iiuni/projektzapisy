@@ -61,6 +61,13 @@
             <h3>{% trans "Lista osób zapisanych na przedmiot" %}:</h3>
             <p>
                 {% trans "Liczba zapisanych osób" %}: {{students_in_group|length}} / {{group.limit}}
+                {% for gs in guaranteed_spots %}
+                    + 
+                    <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                        {{ gs.limit }}
+                        <span class="badge badge-dark">{{ gs.role.name }}</span>
+                    </span>
+                {% endfor %}
             </p>
 
             {% if students_in_group %}

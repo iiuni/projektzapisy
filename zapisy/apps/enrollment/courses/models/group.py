@@ -193,6 +193,12 @@ class Group(models.Model):
                 teacher_changed.send(sender=self.__class__, instance=self, teacher=self.teacher)
 
 
+class GuaranteedSpotsManager(models.Manager):
+    """This thin manager always pulls auth.Group names for efficiency."""
+    def get_queryset(self):
+        return super().get_queryset().select_related('role')
+
+
 class GuaranteedSpots(models.Model):
     """Defines an additional pool of spots in a course group reserved for a role.
 
@@ -209,3 +215,5 @@ class GuaranteedSpots(models.Model):
     role = models.ForeignKey(
         'auth.Group', on_delete=models.CASCADE, related_name='+', verbose_name='grupa użytkowników')
     limit = models.PositiveSmallIntegerField("liczba miejsc")
+
+    objects = GuaranteedSpotsManager()

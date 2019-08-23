@@ -47,7 +47,15 @@
                             <span>{{ term }}</span>
                         {% endfor %}
                     </td>
-                    <td class="number termLimit align-middle">{{ group.limit }}</td>
+                    <td class="number termLimit align-middle">
+                        {{ group.limit }}
+                        {% for gs in group.guaranteed_spots.all %}
+                            + 
+                            <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                                {{ gs.limit }}
+                            </span>
+                        {% endfor %}
+                    </td>
                     <td class="number termEnrolledCount align-middle">{{ group.num_enrolled }}</td>
                     <td class="number termQueuedCount align-middle">{{ group.num_enqueued }}</td>
                     {% if course.is_enrollment_on %}

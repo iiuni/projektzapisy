@@ -11,7 +11,7 @@ from django.urls import reverse
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.records.models import Record, RecordStatus
@@ -92,7 +92,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     groups = course.groups.exclude(extra='hidden').select_related(
         'teacher',
         'teacher__user',
-    ).prefetch_related('term', 'term__classrooms')
+    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
@@ -172,11 +172,17 @@ def group_view(request, group_id):
 
     records = Record.objects.filter(
         group_id=group_id).exclude(status=RecordStatus.REMOVED).select_related(
-            'student', 'student__user', 'student__program', 'student__consent').order_by('created')
+            'student', 'student__user', 'student__program',
+            'student__consent').prefetch_related('student__user__groups').order_by('created')
+
+    guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
+
     students_in_group = []
     students_in_queue = []
     record: Record
     for record in records:
+        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+            role.name for role in record.student.user.groups.all())
         if record.status == RecordStatus.ENROLLED:
             students_in_group.append(record.student)
         elif record.status == RecordStatus.QUEUED:
@@ -185,6 +191,7 @@ def group_view(request, group_id):
     data.update({
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
+        'guaranteed_spots': guaranteed_spots_rules,
         'group': group,
         'can_user_see_all_students_here': can_user_view_students_list_for_group(
             request.user, group),
