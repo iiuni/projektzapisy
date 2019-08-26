@@ -229,10 +229,10 @@ class Record(models.Model):
                 only('student').values_list('student')).distinct('student').count()
 
     @classmethod
-    def is_enrolled(cls, student_id: int, group_id: int) -> bool:
+    def is_enrolled(cls, student: Student, group: Group) -> bool:
         """Checks if the student is already enrolled into the group."""
         records = cls.objects.filter(
-            student_id=student_id, group_id=group_id, status=RecordStatus.ENROLLED)
+            student=student, group=group, status=RecordStatus.ENROLLED)
         return records.exists()
 
     @classmethod
@@ -320,7 +320,7 @@ class Record(models.Model):
                     counter += 1
                     if counter == gsr.limit:
                         break
-            ret[gsr.role] = gsr.limit - counter
+            ret[gsr.role.name] = gsr.limit - counter
         ret['-'] = group.limit - len(all_enrolled_students)
         return ret
 
