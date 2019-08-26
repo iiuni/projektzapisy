@@ -88,9 +88,13 @@ class TermInline(admin.TabularInline):
     extra = 0
 
 
-class GuaranteedSpotsInline(admin.TabularInline):
+class GuaranteedSpotsInline(admin.StackedInline):
     model = GuaranteedSpots
-    extra = 1
+    extra = 0
+    fieldsets = ((None, {
+        'fields': ('role', 'limit'),
+        'description': "<strong style='color: red'>Grupy użytkowników, którym gwarantujemy miejsca w jednej grupie zajęciowej muszą być rozłączne!</strong>",
+    }), )
 
 
 class RecordInline(admin.TabularInline):

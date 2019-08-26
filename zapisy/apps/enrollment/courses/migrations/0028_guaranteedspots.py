@@ -20,5 +20,6 @@ class Migration(migrations.Migration):
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='guaranteed_spots', to='courses.Group', verbose_name='grupa zajęciowa')),
                 ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='auth.Group', verbose_name='grupa użytkowników')),
             ],
+            options={'verbose_name': 'miejsca gwarantowane', 'verbose_name_plural': 'miejsca gwarantowane'},
         ),
     ]

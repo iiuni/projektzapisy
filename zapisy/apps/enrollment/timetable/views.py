@@ -109,7 +109,7 @@ def employee_timetable_data(employee: Employee):
     semester = Semester.objects.get_next()
     groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
         'teacher', 'teacher__user', 'course').prefetch_related(
-            'term', 'term__classrooms', 'group__guaranteed_spots', 'group__guaranteed_spots__role')
+            'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
     group_dicts = build_group_list(groups)
     data = {
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),

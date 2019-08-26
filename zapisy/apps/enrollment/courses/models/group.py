@@ -217,3 +217,10 @@ class GuaranteedSpots(models.Model):
     limit = models.PositiveSmallIntegerField("liczba miejsc")
 
     objects = GuaranteedSpotsManager()
+
+    class Meta:
+        verbose_name = 'miejsca gwarantowane'
+        verbose_name_plural = 'miejsca gwarantowane'
+
+    def __str__(self):
+        return f"{self.limit} miejsc gwarantowanych w grupie {self.group} dla użytkowników {self.role}"
