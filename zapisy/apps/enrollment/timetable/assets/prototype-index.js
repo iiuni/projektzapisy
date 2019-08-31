@@ -9,15 +9,26 @@
 
 import Vue from "vue";
 import Prototype from "./components/Prototype.vue";
+import CourseList from "./components/CourseList.vue";
+import CourseFilter from "./components/CourseFilter.vue";
 import store from "./store";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faChevronDown,faChevronUp, } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+library.add(faChevronDown)
+library.add(faChevronUp)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 
 let timetable_app = new Vue({
-    el: "#timetable",
+    el: "#main-content-container",
     components: {
         Prototype,
+        "course-list":CourseList,
+        "course-filter":CourseFilter
     },
     store,
-    render: h => { return h(Prototype); },
 })
+

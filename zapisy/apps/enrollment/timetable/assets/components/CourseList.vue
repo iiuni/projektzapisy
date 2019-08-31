@@ -16,11 +16,17 @@ export type CourseObject = { id: number; name: string; url: string };
 
 @Component({
   props: {
-    courses: Array as () => CourseObject[],
+    // courses: Array as () => CourseShell[],
   },
-  computed: mapGetters("courses", {
-    selectionState: "selection"
-  }),
+  computed: {
+    ...mapGetters("courses", {
+      selectionState: "selection",
+      courses: "courses"
+    }),
+    ...mapGetters("filters", {
+      tester:"tester"
+    })
+  },
 })
 export default class CourseList extends Vue {
   // The computed property selectionState comes from store.
@@ -29,6 +35,7 @@ export default class CourseList extends Vue {
     return this.selectionState;
   }
   set selection(value: number[]) {
+    console.info("CourseList setter:")
     this.$store.dispatch("courses/updateSelection", value);
   }
 }
@@ -39,7 +46,7 @@ export default class CourseList extends Vue {
     <a @click="selection = []">Odznacz wszystkie</a>
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
-        <li v-for="c of courses" :key="c.id">
+        <li v-for="c of courses.filter(tester)" :key="c.id">
           <input type="checkbox" :id="c.id" :value="c.id" v-model="selection">
           <label :for="c.id">{{ c.name }}</label>
         </li>

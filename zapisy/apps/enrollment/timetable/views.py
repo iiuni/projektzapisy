@@ -75,10 +75,32 @@ def list_courses_in_semester(semester: Semester):
     """
     courses = CourseInstance.objects.filter(semester=semester).values('id', 'name')
     for course in courses:
-        course.update({
-            'url': reverse('prototype-get-course', args=(course['id'], )),
+        if course.owner:
+            owner = course.owner.get_full_name()
+        else:
+            owner = ""
+        efekty = []
+        for e in course.get_effects_list():
+            efekty.append(e.group_name)
+        tagi = []
+        for t in course.get_tags_list():
+            tagi.append(t.full_name)
+        results.append({
+            'url': reverse('prototype-get-course', args=(course.id, )),
+            'id': course.id,
+            'name': course.entity.name,
+            'shortName': course.entity.shortName,
+            'effects': efekty,
+            'firstYearFriendly': course.suggested_for_first_year,
+            'type': course.entity.type.name,
+            'exam': course.exam,
+            'seminars': course.seminars > 0,
+            'tags': tagi,
+            'english': course.english,
+            'semester': course.semester.get_name(),
+            'owner': owner
         })
-    return json.dumps(list(courses))
+    return json.dumps(list(results))
 
 
 def student_timetable_data(student: Student):

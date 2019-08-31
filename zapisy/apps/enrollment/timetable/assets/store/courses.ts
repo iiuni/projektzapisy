@@ -3,7 +3,8 @@
 import axios from "axios";
 import { values, flatten, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { GroupJSON } from "../models";
+import { GroupJSON, CourseShellJSON, Course, CourseShell } from "../models";
+import store from ".";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -18,11 +19,21 @@ export interface CourseShell {
 
 interface State {
     courses: { [id: number]: CourseShell };
-    selection: Array<number>;
+    selection: number[];
+    allEffects: string[];
+    allTags: string[];
+    allTypes: string[];
+    allSemesters: string[];
+    allOwners: string[];
 }
 const state: State = {
     courses: {},
     selection: [],
+    allEffects: [],
+    allTags: [],
+    allTypes: [],
+    allSemesters: [],
+    allOwners: [],
 };
 
 const getters = {
@@ -31,19 +42,35 @@ const getters = {
     },
     selection(state: State) {
         return state.selection;
-    }
+    },
+    allEffects(state:State):string[] {
+        return state.allEffects;
+    },
+    allTags(state:State):string[] {
+        return state.allTags;
+    },
+    allTypes(state:State):string[] {
+        return state.allTypes;
+    },
+    allSemesters(state:State):string[] {
+        return state.allSemesters;
+    },
+    allOwners(state:State):string[] {
+        return state.allOwners;
+    },
+    allProps():string[] {
+        return ["exam","english","firstYearFriendly"];
+    },
 };
 
 const actions = {
     // updateSelection will fetch all the courses, for which we miss the data,
     // and then update the selection flags.
-    updateSelection({ state, commit, dispatch }: ActionContext<State, any>,
-        ids: number[]) {
-        const idsToFetch = ids.filter(id =>
-            state.courses[id].groups === undefined);
-        if (idsToFetch.length === 0) {
-            dispatch("commitSelection", ids);
-        }
+    updateSelection(context:ActionContext<State, any>, ids: number[]) {
+        const { state, commit, dispatch } = context; 
+        const idsToFetch = ids.filter(id => state.courses[id].groups === undefined);
+        if(!idsToFetch.length) dispatch("commitSelection", ids);
+        
         // This puts a lock on all the courses that will be fetched. That way we
         // avoid fetching the same course in parallel when the student is
         // clicking too fast.
@@ -63,6 +90,7 @@ const actions = {
 
     },
 
+
     // Once all courses are downloaded, it updates the selection.
     commitSelection({ state, commit }: ActionContext<State, any>,
         ids: number[]) {
@@ -76,9 +104,9 @@ const actions = {
     initFromJSONTag({ commit }: ActionContext<State, any>) {
         const coursesDump = JSON.parse(
             document.getElementById("courses-list")!.innerHTML
-        ) as CourseShell[];
+        ) as CourseShellJSON[];
         commit("setCourses", coursesDump);
-    },
+    },    // initFromJSONTag will be called at the start to populate the courses list.
 };
 
 const mutations = {
@@ -86,13 +114,34 @@ const mutations = {
         state.courses[c].groups = ids;
     },
     setCourses(state: State, courses: CourseShell[]) {
-        courses.forEach(c => {
+        const allEffects:string[] = [];
+        const allTags:string[] = [];
+        const allTypes:string[] = [];
+        const allSemesters:string[] = [];
+        const allOwners:string[] = [];
+        courses.forEach((c : CourseShell) => {
+            if(!c.effects) c.effects=[];
+            c.effects
+                .filter(e => !allEffects.includes(e))
+                .forEach(e => allEffects.push(e));
+            if(c.owner && !allOwners.includes(c.owner)) allOwners.push(c.owner);
+            if(!c.tags) c.tags=[];
+            c.tags
+                .filter(e => !allTags.includes(e))
+                .forEach(e => allTags.push(e));
+            if(!!c.type && !allTypes.includes(c.type)) allTypes.push(c.type); 
+            if(!!c.semester && !allSemesters.includes(c.semester)) allSemesters.push(c.semester); 
             state.courses[c.id] = c;
         });
+        state.allEffects = allEffects.sort();
+        state.allTags = allTags.sort();
+        state.allTypes = allTypes.sort();
+        state.allSemesters = allSemesters.sort();
+        state.allOwners = allOwners.sort();
     },
     setSelection(state: State, ids: number[]) {
         state.selection = ids;
-    }
+    },    
 };
 
 export default {
