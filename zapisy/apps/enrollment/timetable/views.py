@@ -13,10 +13,12 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.timetable.models import Pin
+from apps.offer.proposal.models import Proposal
 from apps.users.decorators import student_required
 from apps.users.models import BaseUser, Employee, Student
 
@@ -73,34 +75,21 @@ def list_courses_in_semester(semester: Semester):
 
     This list will be used in prototype.
     """
-    courses = CourseInstance.objects.filter(semester=semester).values('id', 'name')
-    for course in courses:
-        if course.owner:
-            owner = course.owner.get_full_name()
-        else:
-            owner = ""
-        efekty = []
-        for e in course.get_effects_list():
-            efekty.append(e.group_name)
-        tagi = []
-        for t in course.get_tags_list():
-            tagi.append(t.full_name)
-        results.append({
-            'url': reverse('prototype-get-course', args=(course.id, )),
+    qs = CourseInstance.objects.filter(semester=semester).prefetch_related('effects', 'tags')
+    courses = []
+    for course in qs:
+        courses.append({
             'id': course.id,
-            'name': course.entity.name,
-            'shortName': course.entity.shortName,
-            'effects': efekty,
-            'firstYearFriendly': course.suggested_for_first_year,
-            'type': course.entity.type.name,
-            'exam': course.exam,
-            'seminars': course.seminars > 0,
-            'tags': tagi,
-            'english': course.english,
-            'semester': course.semester.get_name(),
-            'owner': owner
+            'name': course.name,
+            'effects': list(e.id for e in course.effects.all()),
+            'tags': list(t.id for t in course.tags.all()),
+            'owner': course.owner_id,
+            'english': course.language == Language.ENGLISH,
+            'hasExam': course.has_exam,
+            'recommendedForFirstYear': course.recommended_for_first_year,
+            'url': reverse('prototype-get-course', args=(course.id,)),
         })
-    return json.dumps(list(results))
+    return json.dumps(list(courses))
 
 
 def student_timetable_data(student: Student):
@@ -192,10 +181,12 @@ def my_prototype(request):
         group.can_dequeue = can_dequeue_dict.get(group.pk)
 
     group_dicts = build_group_list(all_groups)
-
+    filters_dict = CourseInstance.prepare_filter_data(
+        CourseInstance.objects.filter(semester=semester))
     courses_json = list_courses_in_semester(semester)
     data = {
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'filters_json': json.dumps(filters_dict, cls=DjangoJSONEncoder),
         'courses_json': courses_json,
     }
     return render(request, 'timetable/prototype.html', data)

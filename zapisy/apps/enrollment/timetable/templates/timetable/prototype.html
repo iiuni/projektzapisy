@@ -24,16 +24,17 @@
 {% endblock %}
 
 {% block top-content %}
-    <course-filter hidesemester="true"/>
+    <course-filter/>
 {% endblock %}
 
 
 {% block content %}
     <div class="row" id="timetable">
-        <Prototype/>
+        <prototype/>
     </div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
+    {{ filters_json|json_script:"filters-data" }}
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
 
     <div class="mt-3 border-top pt-3">
@@ -70,7 +71,9 @@
             </li>
         </ul>
     </div>
+{% endblock %}
 
+{% block rendered_bundles %}
     {% render_bundle 'timetable-prototype-component' %}
     {% render_bundle 'timetable-prototype-legend-stylesheet' %}
 {% endblock %}

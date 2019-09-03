@@ -9,6 +9,7 @@
     ],
     "plugins": [
       "transform-runtime",
+      "babel-plugin-transform-object-rest-spread",
       ["transform-imports", {
         "lodash": {
           "transform": "lodash/${member}",

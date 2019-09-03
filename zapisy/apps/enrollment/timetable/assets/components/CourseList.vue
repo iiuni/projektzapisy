@@ -10,21 +10,18 @@ import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 
 import { Group } from "../models";
-import { CourseShell } from "../store/courses";
+import courses, { CourseInfo } from "../store/courses";
 
 export type CourseObject = { id: number; name: string; url: string };
 
 @Component({
-  props: {
-    // courses: Array as () => CourseShell[],
-  },
   computed: {
     ...mapGetters("courses", {
       selectionState: "selection",
       courses: "courses"
     }),
     ...mapGetters("filters", {
-      tester:"tester"
+      tester: "visible"
     })
   },
 })
@@ -35,8 +32,22 @@ export default class CourseList extends Vue {
     return this.selectionState;
   }
   set selection(value: number[]) {
-    console.info("CourseList setter:")
     this.$store.dispatch("courses/updateSelection", value);
+  }
+
+  // The list should be initialised to contain all the courses and then apply
+  // filters whenever they update.
+  visibleCourses: CourseInfo[] = [];
+  mounted() {
+    this.visibleCourses = this.courses;
+
+    this.$store.subscribe((mutation, state) => {
+      switch(mutation.type) {
+        case "filters/registerFilter":
+          this.visibleCourses = this.courses.filter(this.tester);
+          break;
+      }
+    });
   }
 }
 </script>
@@ -46,7 +57,7 @@ export default class CourseList extends Vue {
     <a @click="selection = []">Odznacz wszystkie</a>
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
-        <li v-for="c of courses.filter(tester)" :key="c.id">
+        <li v-for="c of visibleCourses" :key="c.id">
           <input type="checkbox" :id="c.id" :value="c.id" v-model="selection">
           <label :for="c.id">{{ c.name }}</label>
         </li>

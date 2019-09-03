@@ -12,19 +12,27 @@ export enum DayOfWeek {
     Thursday,
     Friday,
     Saturday,
-    Sunday,
+    Sunday
 }
 
 export function nameDay(day: DayOfWeek): string {
     switch (day) {
-        case DayOfWeek.Monday: return "Poniedziałek";
-        case DayOfWeek.Tuesday: return "Wtorek";
-        case DayOfWeek.Wednesday: return "Środa";
-        case DayOfWeek.Thursday: return "Czwartek";
-        case DayOfWeek.Friday: return "Piątek";
-        case DayOfWeek.Saturday: return "Sobota";
-        case DayOfWeek.Sunday: return "Niedziela";
-        default: return "";
+        case DayOfWeek.Monday:
+            return "Poniedziałek";
+        case DayOfWeek.Tuesday:
+            return "Wtorek";
+        case DayOfWeek.Wednesday:
+            return "Środa";
+        case DayOfWeek.Thursday:
+            return "Czwartek";
+        case DayOfWeek.Friday:
+            return "Piątek";
+        case DayOfWeek.Saturday:
+            return "Sobota";
+        case DayOfWeek.Sunday:
+            return "Niedziela";
+        default:
+            return "";
     }
 }
 
@@ -88,7 +96,7 @@ export class Term {
 // Teacher is defined in apps/users/models.py as Employee, but we add the name
 // field corresponding to `self.user.get_full_name()`.
 export class Teacher {
-    constructor(public name: string, public id: number, public url: string) { }
+    constructor(public name: string, public id: number, public url: string) {}
 }
 
 // Course is defined in apps/enrollment/courses/models/course.py.
@@ -172,4 +180,14 @@ export class Group {
         this.canDequeue = json.can_dequeue || false;
         this.actionURL = json.action_url || "";
     }
+}
+
+export interface KVDict {
+    [key: number]: string;
+}
+
+export interface FilterDataJSON {
+    allTags: KVDict;
+    allEffects: KVDict;
+    allOwners: KVDict;
 }

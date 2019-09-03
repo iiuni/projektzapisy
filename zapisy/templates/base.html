@@ -33,8 +33,6 @@
     {% render_bundle "main" %}
     {% render_bundle "polyfill" %}
     {% render_bundle "vendors" %}
-    {% block rendered_bundles %}
-    {% endblock %}
     {% block styles %}
     {% endblock %}
     {% block js %}{% endblock %}
@@ -226,6 +224,8 @@
             </div>
             {% endblock %}
     </div>
+    {% block rendered_bundles %}
+    {% endblock %}
     <footer class="mt-auto d-print-none">
         <div class="container-fluid">
             <div class="container">

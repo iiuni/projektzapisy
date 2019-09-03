@@ -5,6 +5,7 @@ CourseInformation is a base class instantiated in Proposal (an abstract
 Course entity spanning the years) and CourseInstance (Course being given in a
 single semester).
 """
+from typing import Dict
 
 import choicesenum
 from django.db import models
@@ -130,3 +131,17 @@ class CourseInformation(models.Model):
 
     def get_short_name(self):
         return self.short_name or self.name
+
+    @staticmethod
+    def prepare_filter_data(qs: models.QuerySet) -> Dict:
+        """Prepares the data for course filter based on a given queryset."""
+        all_effects = Effects.objects.all().values_list('id', 'group_name', named=True)
+        all_tags = Tag.objects.all().values_list('id', 'full_name', named=True)
+        all_owners = qs.annotate(owner_name=models.functions.Concat(
+            'owner__user__first_name', models.Value(' '), 'owner__user__last_name')).values_list(
+                'owner', 'owner_name', named=True).distinct()
+        return {
+            'allEffects': {e.id: e.group_name for e in all_effects},
+            'allTags': {t.id: t.full_name for t in all_tags},
+            'allOwners': {o.owner: o.owner_name for o in all_owners},
+        }
