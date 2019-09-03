@@ -53,9 +53,11 @@ export default Vue.extend({
 
 <template>
     <div class="input-group">
-        <input class="form-control" type="text" v-model="pattern" :placeholder="placeholder">
+        <input class="form-control" type="text" 
+            v-model="pattern" :placeholder="placeholder">
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" @click="pattern = ''">x</button>
+            <button class="btn btn-outline-secondary" type="button" 
+                @click="pattern = ''">x</button>
         </div>
     </div>
 </template>

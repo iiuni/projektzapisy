@@ -187,7 +187,7 @@ export interface KVDict {
 }
 
 export interface FilterDataJSON {
-    allTags: KVDict;
     allEffects: KVDict;
+    allTags: KVDict;
     allOwners: KVDict;
 }

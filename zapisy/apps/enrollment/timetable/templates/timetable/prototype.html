@@ -34,7 +34,7 @@
     </div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
-    {{ filters_json|json_script:"filters-data" }}
+    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
 
     <div class="mt-3 border-top pt-3">

@@ -54,7 +54,7 @@ export default class CourseList extends Vue {
 
 <template>
   <div class="course-list-wrapper">
-    <a @click="selection = []">Odznacz wszystkie</a>
+    <a class="btn btn-small btn-light" @click="selection = []">Odznacz wszystkie</a>
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
         <li v-for="c of visibleCourses" :key="c.id">
@@ -89,19 +89,6 @@ label {
   text-align: left;
   width: auto;
   float: initial;
-}
-
-.course-list-wrapper {
-  margin-top: 30px;
-}
-
-.course-list-sidebar {
-  margin-top: 5px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 10;
-  max-height: 600px;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
 }
 
 .course-list-sidebar-inner {
