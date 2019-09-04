@@ -1,22 +1,27 @@
 <script lang="ts">
-import { cloneDeep } from "lodash";
+import { cloneDeep, sortBy, toPairs } from "lodash";
 import Vue from "vue";
 
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
+import SelectFilter from "./filters/SelectFilter.vue";
+import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, KVDict } from "./../models";
 
 export default Vue.extend({
     components: {
         TextFilter,
         LabelsFilter,
+        SelectFilter,
+        CheckFilter,
     },
     data: function() {
         return {
-            allEffects: undefined,
-            allTags: undefined,
-            allOwners: undefined,
-        }
+            allEffects: {},
+            allTags: {},
+            allOwners: [] as [number, string][],
+            allTypes: {}
+        };
     },
     created: function() {
         const filtersData = JSON.parse(
@@ -24,8 +29,16 @@ export default Vue.extend({
         ) as FilterDataJSON;
         this.allEffects = cloneDeep(filtersData.allEffects);
         this.allTags = cloneDeep(filtersData.allTags);
-        this.allOwners = cloneDeep(filtersData.allOwners);
-    },
+        this.allOwners = sortBy(
+            toPairs(filtersData.allOwners),
+            ([k, [a, b]]) => {
+                return b;
+            }
+        ).map(([k, [a, b]]) => {
+            return [Number(k), `${a} ${b}`] as [number, string];
+        });
+        this.allTypes = toPairs(filtersData.allTypes);
+    }
 });
 </script>
 
@@ -39,7 +52,7 @@ export default Vue.extend({
                         property="name"
                         placeholder="Nazwa przedmiotu"
                     />
-                    <hr>
+                    <hr />
                     <LabelsFilter
                         title="Tagi"
                         filterKey="tags-filter"
@@ -48,6 +61,13 @@ export default Vue.extend({
                     />
                 </div>
                 <div class="col-md-4">
+                    <SelectFilter
+                        filterKey="type-filter"
+                        property="courseType"
+                        :options="allTypes"
+                        placeholder="Rodzaj przedmiotu"
+                    />
+                    <hr>
                     <LabelsFilter
                         title="Efekty kształcenia"
                         filterKey="effects-filter"
@@ -55,7 +75,20 @@ export default Vue.extend({
                         :allLabels="allEffects"
                     />
                 </div>
-                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <SelectFilter
+                        filterKey="owner-filter"
+                        property="owner"
+                        :options="allOwners"
+                        placeholder="Opiekun przedmiotu"
+                    />
+                    <hr>
+                    <CheckFilter
+                        filterKey="freshmen-filter"
+                        property="recommendedForFirstYear"
+                        label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+                    />
+                </div>
             </div>
         </div>
     </div>

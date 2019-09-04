@@ -18,8 +18,6 @@ export interface CourseInfo {
     effects: Array<number>;
     tags: Array<number>;
     owner: number;
-    english: boolean;
-    hasExam: boolean;
     recommendedForFirstYear: boolean;
 
     groups?: Array<number>;

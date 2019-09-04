@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
@@ -83,9 +82,8 @@ def list_courses_in_semester(semester: Semester):
             'name': course.name,
             'effects': list(e.id for e in course.effects.all()),
             'tags': list(t.id for t in course.tags.all()),
+            'courseType': course.course_type_id,
             'owner': course.owner_id,
-            'english': course.language == Language.ENGLISH,
-            'hasExam': course.has_exam,
             'recommendedForFirstYear': course.recommended_for_first_year,
             'url': reverse('prototype-get-course', args=(course.id,)),
         })

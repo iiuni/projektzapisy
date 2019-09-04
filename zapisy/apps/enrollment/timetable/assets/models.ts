@@ -186,8 +186,13 @@ export interface KVDict {
     [key: number]: string;
 }
 
+export interface PersonDict {
+    [key: number]: [string, string]
+}
+
 export interface FilterDataJSON {
     allEffects: KVDict;
     allTags: KVDict;
-    allOwners: KVDict;
+    allOwners: PersonDict;
+    allTypes: KVDict;
 }
