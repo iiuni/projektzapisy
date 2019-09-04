@@ -3,74 +3,48 @@ import json
 from typing import Tuple, Optional, Dict, List
 
 from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.course_type import Type
-from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import BaseUser, Student
 
 
-def get_course_list_info_for_semester(semester):
-    """Builds a list of courses in the semester to show on the right side.
+def list_courses_in_semester(semester: Semester):
+    """Returns a JSON of all the course names in semester.
+
+    This list will be used in prototype.
     """
-    courses = CourseInstance.objects.filter(
-        semester=semester
-    ).order_by('name').select_related('owner').prefetch_related('effects', 'tags')
-    semester_for_json = {
-        'id': semester.pk,
-        'year': semester.year,
-        'type': semester.get_type_display(),
-    }
-    courses_list_info = {
-        'courseList': [c.__json__() for c in courses],
-        'semesterInfo': semester_for_json,
-    }
-    return courses_list_info
-
-
-def prepare_courses_list_to_render(request, semester=None):
-    ''' generates template data for filtering and list of courses '''
-    if not semester:
-        semester = Semester.objects.get_next()
-    semesters = Semester.objects.filter(visible=True)
-    courses_list_json = json.dumps(get_course_list_info_for_semester(semester))
-    return {
-        'courses_list_json': courses_list_json,
-        'semester_courses': semesters,
-        'types_list': Type.get_all_for_jsfilter(),
-        'default_semester': semester,
-        'effects': Effects.objects.all(),
-        'tags': Tag.objects.all(),
-    }
+    qs = CourseInstance.objects.filter(semester=semester).prefetch_related('effects', 'tags')
+    courses = []
+    for course in qs:
+        course_dict = course.__json__()
+        course_dict.update({
+            'url': reverse('course-page', args=(course.slug,)),
+        })
+        courses.append(course_dict)
+    return json.dumps(list(courses))
 
 
 def courses_list(request):
     """A basic courses view with courses listed on the right and no course selected.
     """
-    return render(request, 'courses/courses_list.html', prepare_courses_list_to_render(request))
-
-
-def semester_info(request, semester_id):
-    """Provides courses list for a given semester."""
-    semester: Semester = None
-    try:
-        semester = Semester.objects.get(pk=semester_id)
-    except Semester.DoesNotExist:
-        raise Http404
-    if not semester.visible:
-        raise Http404
-    courses_list = get_course_list_info_for_semester(semester)
-    return JsonResponse(courses_list)
+    semester = Semester.objects.get_next()
+    filters_dict = CourseInstance.prepare_filter_data(
+        CourseInstance.objects.filter(semester=semester))
+    return render(
+        request, 'courses/courses_list.html', {
+            'courses_json': list_courses_in_semester(semester),
+            'filters_json': json.dumps(filters_dict, cls=DjangoJSONEncoder),
+        })
 
 
 def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[Dict]]:
@@ -143,7 +117,11 @@ def course_view(request, slug):
     course, data = course_view_data(request, slug)
     if course is None:
         raise Http404
-    data.update(prepare_courses_list_to_render(request, course.semester))
+    data.update({
+            'courses_json': list_courses_in_semester(course.semester),
+            'filters_json': CourseInstance.prepare_filter_data(
+                CourseInstance.objects.filter(semester=course.semester)),
+        })
     return render(request, 'courses/course.html', data)
 
 
@@ -187,8 +165,9 @@ def group_view(request, group_id):
             students_in_group.append(record.student)
         elif record.status == RecordStatus.QUEUED:
             students_in_queue.append(record.student)
-    data = prepare_courses_list_to_render(request)
-    data.update({
+    data = {
+        'semester': group.course.semester,
+        'courses': CourseInstance.objects.filter(semester=group.course.semester).order_by('name'),
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
         'guaranteed_spots': guaranteed_spots_rules,
@@ -199,7 +178,7 @@ def group_view(request, group_id):
         'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
         'mailto_group_bcc': mailto(request.user, students_in_group, bcc=True),
         'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
-    })
+    }
     return render(request, 'courses/group.html', data)
 
 

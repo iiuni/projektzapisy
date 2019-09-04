@@ -18,5 +18,5 @@ urlpatterns = [
     path('group/<int:group_id>/group/csv', views.group_enrolled_csv, name='group-csv'),
     path('group/<int:group_id>/queue/csv', views.group_queue_csv, name='queue-csv'),
 
-    path('get_semester_info/<int:semester_id>', views.semester_info),
+    # path('get_semester_info/<int:semester_id>', views.semester_info),
 ]

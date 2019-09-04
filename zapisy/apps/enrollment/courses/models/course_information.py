@@ -118,11 +118,7 @@ class CourseInformation(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'short_name': self.get_short_name(),
-            'slug': self.slug,
             'type': self.course_type_id,
-            'english': self.language == Language.ENGLISH,
-            'exam': self.has_exam,
             'suggested_for_first_year': self.recommended_for_first_year,
             'teacher': self.owner_id,
             'effects': [effect.pk for effect in self.effects.all()],

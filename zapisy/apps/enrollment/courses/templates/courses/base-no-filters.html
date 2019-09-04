@@ -1,0 +1,13 @@
+{% extends "enrollment/base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block sidebar %}
+	<h3>{{ semester }}</h3>
+	<div id="course-list">
+		<ul>
+			{% for c in courses %}
+				<li class="mb-1"><a href="{% url 'course-page' c.slug %}">{{ c.name }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}

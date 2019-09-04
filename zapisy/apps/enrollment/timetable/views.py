@@ -77,16 +77,11 @@ def list_courses_in_semester(semester: Semester):
     qs = CourseInstance.objects.filter(semester=semester).prefetch_related('effects', 'tags')
     courses = []
     for course in qs:
-        courses.append({
-            'id': course.id,
-            'name': course.name,
-            'effects': list(e.id for e in course.effects.all()),
-            'tags': list(t.id for t in course.tags.all()),
-            'courseType': course.course_type_id,
-            'owner': course.owner_id,
-            'recommendedForFirstYear': course.recommended_for_first_year,
+        course_dict = course.__json__()
+        course_dict.update({
             'url': reverse('prototype-get-course', args=(course.id,)),
         })
+        courses.append(course_dict)
     return json.dumps(list(courses))
 
 
