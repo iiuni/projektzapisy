@@ -112,7 +112,7 @@ export default Vue.extend({
         position: absolute;
         display: block;
         // Height of the card footer.
-        bottom: 30px;
+        bottom: 28px;
         left: 0;
         height: 50%;
         width: 100%;
@@ -132,5 +132,9 @@ export default Vue.extend({
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         padding-top: 1em;
     }
+}
+
+.card-footer {
+    height: 28px;
 }
 </style>
