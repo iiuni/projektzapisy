@@ -20,18 +20,16 @@
 {% endblock %}
 
 {% block sidebar %}
-    <course-list/>
+    <div id="course-list"></div>
 {% endblock %}
 
 {% block top-content %}
-    <course-filter/>
+    <div id="course-filter"></div>
 {% endblock %}
 
 
 {% block content %}
-    <div class="row" id="timetable">
-        <prototype/>
-    </div>
+    <div class="row" id="timetable"></div>
     <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
     <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
     <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>

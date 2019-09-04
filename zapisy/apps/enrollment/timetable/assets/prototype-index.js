@@ -14,14 +14,6 @@ import CourseList from "./components/CourseList.vue";
 import CourseFilter from "./components/CourseFilter.vue";
 import store from "./store";
 
-Vue.config.productionTip = false
-
-let timetable_app = new Vue({
-    el: "#main-content-container",
-    components: {
-        Prototype,
-        CourseList,
-        CourseFilter,
-    },
-    store,
-})
+new Vue({ el: '#timetable', render: h => h(Prototype), store });
+new Vue({ el: '#course-filter', render: h => h(CourseFilter), store });
+new Vue({ el: '#course-list', render: h => h(CourseList), store });
