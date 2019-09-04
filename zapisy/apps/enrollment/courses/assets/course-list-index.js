@@ -13,5 +13,8 @@ const store = new Vuex.Store({
     }
 });
 
-new Vue({ el: "#course-filter", render: h => h(CourseFilter), store });
+if (document.getElementById("course-filter") !== null) {
+    new Vue({ el: "#course-filter", render: h => h(CourseFilter), store });
+}
+
 new Vue({ el: "#course-list", render: h => h(CourseList), store });

@@ -1,4 +1,5 @@
 <script lang="ts">
+import axios from "axios";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 
@@ -21,6 +22,8 @@ export default Vue.extend({
         const courseData = JSON.parse(
             document.getElementById("courses-data")!.innerHTML
         ) as CourseInfo[];
+        this.courses = courseData;
+        this.visibleCourses = courseData;
 
         this.$store.subscribe((mutation, _) => {
             switch(mutation.type) {
@@ -29,13 +32,13 @@ export default Vue.extend({
                 break;
             }
         });
-    }
+    },
 });
 </script>
 
 <template>
     <ul>
-        <li v-for="c in visibleCourses" v-bind:key="c.id">
+        <li v-for="c in visibleCourses" v-bind:key="c.id" class="mb-1">
             <a :href="c.url">{{ c.name }}</a>
         </li>
     </ul>

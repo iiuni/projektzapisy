@@ -57,7 +57,7 @@ export default Vue.extend({
             v-model="pattern" :placeholder="placeholder">
         <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="button" 
-                @click="pattern = ''">x</button>
+                @click="pattern = ''">&times;</button>
         </div>
     </div>
 </template>

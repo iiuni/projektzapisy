@@ -18,33 +18,36 @@ from apps.users.decorators import employee_required
 from apps.users.models import BaseUser, Student
 
 
-def list_courses_in_semester(semester: Semester):
-    """Returns a JSON of all the course names in semester.
-
-    This list will be used in prototype.
-    """
-    qs = CourseInstance.objects.filter(semester=semester).prefetch_related('effects', 'tags')
+def prepare_courses_list_data(semester: Semester):
+    """Returns a dict used by course list and filter in various views.""" 
+    qs = CourseInstance.objects.filter(semester=semester)
     courses = []
-    for course in qs:
+    for course in qs.prefetch_related('effects', 'tags'):
         course_dict = course.__json__()
         course_dict.update({
             'url': reverse('course-page', args=(course.slug,)),
         })
         courses.append(course_dict)
-    return json.dumps(list(courses))
+    filters_dict = CourseInstance.prepare_filter_data(qs)
+    all_semesters = Semester.objects.filter(visible=True)
+    return {
+        'semester': semester,
+        'all_semesters': all_semesters,
+        'courses_json': json.dumps(courses),
+        'filters_json': json.dumps(filters_dict),
+    }
 
 
-def courses_list(request):
+def courses_list(request, semester_id: Optional[int] = None):
     """A basic courses view with courses listed on the right and no course selected.
     """
-    semester = Semester.objects.get_next()
-    filters_dict = CourseInstance.prepare_filter_data(
-        CourseInstance.objects.filter(semester=semester))
+    if semester_id is None:
+        semester = Semester.objects.get_next()
+    else:
+        semester = Semester.objects.get(pk=semester_id)
+    data = prepare_courses_list_data(semester)
     return render(
-        request, 'courses/courses_list.html', {
-            'courses_json': list_courses_in_semester(semester),
-            'filters_json': json.dumps(filters_dict, cls=DjangoJSONEncoder),
-        })
+        request, 'courses/courses_list.html', data)
 
 
 def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[Dict]]:
@@ -97,31 +100,11 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     return course, data
 
 
-def course_ajax(request, slug):
-    """Produces solely the inner frame of the course page.
-
-    The inner frame and some additional data is wrapped into the JSON response
-    to be put in place by JS. This allows to only load a part of the page.
-    """
-    course, data = course_view_data(request, slug)
-    if course is None:
-        raise Http404
-    rendered_html = render_to_string('courses/course_info.html', data, request)
-    return JsonResponse({
-        'courseHtml': rendered_html,
-        'courseName': course.name,
-    })
-
-
 def course_view(request, slug):
     course, data = course_view_data(request, slug)
     if course is None:
         raise Http404
-    data.update({
-            'courses_json': list_courses_in_semester(course.semester),
-            'filters_json': CourseInstance.prepare_filter_data(
-                CourseInstance.objects.filter(semester=course.semester)),
-        })
+    data.update(prepare_courses_list_data(course.semester))
     return render(request, 'courses/course.html', data)
 
 
@@ -166,8 +149,6 @@ def group_view(request, group_id):
         elif record.status == RecordStatus.QUEUED:
             students_in_queue.append(record.student)
     data = {
-        'semester': group.course.semester,
-        'courses': CourseInstance.objects.filter(semester=group.course.semester).order_by('name'),
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
         'guaranteed_spots': guaranteed_spots_rules,
@@ -179,6 +160,7 @@ def group_view(request, group_id):
         'mailto_group_bcc': mailto(request.user, students_in_group, bcc=True),
         'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
     }
+    data.update(prepare_courses_list_data(group.course.semester))
     return render(request, 'courses/group.html', data)
 
 

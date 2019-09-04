@@ -118,9 +118,9 @@ class CourseInformation(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'type': self.course_type_id,
-            'suggested_for_first_year': self.recommended_for_first_year,
-            'teacher': self.owner_id,
+            'courseType': self.course_type_id,
+            'recommendedForFirstYear': self.recommended_for_first_year,
+            'owner': self.owner_id,
             'effects': [effect.pk for effect in self.effects.all()],
             'tags': [tag.pk for tag in self.tags.all()],
         }
