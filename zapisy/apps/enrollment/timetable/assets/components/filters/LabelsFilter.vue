@@ -36,6 +36,8 @@ export default Vue.extend({
         filterKey: String,
         allLabels: Object as () => KVDict,
         title: String,
+        // CSS class to apply to the badge when it's on.
+        onClass: String,
     },
     computed: {
         allLabelKeys: function() {
@@ -76,7 +78,7 @@ export default Vue.extend({
         <a href="#"
             v-for="l in allLabelKeys"
             class="badge"
-            v-bind:class="[selected[l] ? 'badge-info' : 'badge-secondary']"
+            v-bind:class="[selected[l] ? onClass : 'badge-secondary']"
             @click.prevent="toggle(l)"
         >
             {{ allLabels[l] }}
