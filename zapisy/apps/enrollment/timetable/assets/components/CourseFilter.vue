@@ -13,14 +13,17 @@ export default Vue.extend({
         TextFilter,
         LabelsFilter,
         SelectFilter,
-        CheckFilter,
+        CheckFilter
     },
     data: function() {
         return {
             allEffects: {},
             allTags: {},
             allOwners: [] as [number, string][],
-            allTypes: {}
+            allTypes: {},
+
+            // The filters are going to be collapsed by default.
+            collapsed: true
         };
     },
     created: function() {
@@ -43,10 +46,10 @@ export default Vue.extend({
 </script>
 
 <template>
-    <div class="card">
-        <div class="card-body">
+    <div class="card bg-light">
+        <div class="card-body" v-bind:class="{ collapsed: collapsed }">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md">
                     <TextFilter
                         filterKey="name-filter"
                         property="name"
@@ -60,14 +63,14 @@ export default Vue.extend({
                         :allLabels="allTags"
                     />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md">
                     <SelectFilter
                         filterKey="type-filter"
                         property="courseType"
                         :options="allTypes"
                         placeholder="Rodzaj przedmiotu"
                     />
-                    <hr>
+                    <hr />
                     <LabelsFilter
                         title="Efekty kształcenia"
                         filterKey="effects-filter"
@@ -75,14 +78,14 @@ export default Vue.extend({
                         :allLabels="allEffects"
                     />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md">
                     <SelectFilter
                         filterKey="owner-filter"
                         property="owner"
                         :options="allOwners"
                         placeholder="Opiekun przedmiotu"
                     />
-                    <hr>
+                    <hr />
                     <CheckFilter
                         filterKey="freshmen-filter"
                         property="recommendedForFirstYear"
@@ -91,5 +94,41 @@ export default Vue.extend({
                 </div>
             </div>
         </div>
+        <div class="card-footer p-1 text-center">
+            <a href="#" @click.prevent="collapsed = !collapsed">zwiń / rozwiń</a>
+        </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.collapsed {
+    overflow-y: hidden;
+    height: 120px;
+
+    // Blurs over the bottom of filter card.
+    &:after {
+        position: absolute;
+        display: block;
+        // Height of the card footer.
+        bottom: 30px;
+        left: 0;
+        height: 50%;
+        width: 100%;
+        content: "";
+        // Bootstrap light colour.
+        background: linear-gradient(to top,
+            rgba(248,249,250, 1) 0%, 
+            rgba(248,249,250, 0) 100%
+        );
+        pointer-events: none; /* so the text is still selectable */
+    }
+}
+
+// Follows the Bootstrap 4 media query breakpoint.
+@media (max-width: 767px) {
+    .col-md + .col-md {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 1em;
+    }
+}
+</style>
