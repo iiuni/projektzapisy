@@ -3,10 +3,8 @@ import json
 from typing import Tuple, Optional, Dict, List
 
 from django.contrib.auth.decorators import login_required
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
-from django.template.loader import render_to_string
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
