@@ -52,7 +52,7 @@ export default Vue.extend({
 </script>
 
 <template>
-    <div class="input-group">
+    <div class="input-group mb-2">
         <input class="form-control" type="text" 
             v-model="pattern" :placeholder="placeholder">
         <div class="input-group-append">

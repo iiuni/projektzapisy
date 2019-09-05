@@ -50,7 +50,7 @@ export default Vue.extend({
 </script>
 
 <template>
-    <div class="input-group">
+    <div class="input-group mb-2">
         <select class="custom-select" v-model="selected">
             <option selected :value="undefined">-- {{ placeholder }} --</option>
             <option v-for="[k, o] of options" :value="k">

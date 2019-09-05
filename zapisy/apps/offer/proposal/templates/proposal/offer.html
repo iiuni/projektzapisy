@@ -15,6 +15,9 @@
 
 
 {% block top-content %}
+<script id="courses-data" type="application/json">{{ proposals|safe }}</script>
+<script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
+<div id="course-filter"></div>
 {% endblock %}
 
 {% block bread %}
@@ -33,21 +36,7 @@
         <a href="{% url 'proposal-form' %}" class="btn btn-success btn-block">Dodaj nową propozycję przedmiotu</a>
     {% endif %}
 
-    <ul id="proposal-list" class="proposal-list mt-3">
-        {% for course in proposals %}
-            <li id="listItem-proposal-{{ course.id }}" class="{{ course.status|status_label }}">
-                <a href="{% url 'offer-page' course.slug %}">{{ course.name }}</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-
-    <ul id="proposal-legend" class="text-muted">
-        <li class="in_vote">Przedmiot poddany pod głosowanie w tym cyklu.</li>
-        <li class="in_offer">Przedmiot w ofercie ale nie w tym cyklu.</li>
-        <li class="withdrawn">Przedmiot wycofany z oferty (zarchiwizowany).</li>
-    </ul>
-    {% render_bundle 'proposal-proposal-list-colors' %}
+    <div id="course-list"></div>
 {% endblock %}
 
 
@@ -57,4 +46,8 @@
     {% else %}
         <div class="alert alert-primary">Wybierz przedmiot z listy.</div>
     {% endif %}
+{% endblock %}
+
+{% block rendered_bundles %}
+    {% render_bundle 'proposal-course-list' %}
 {% endblock %}
