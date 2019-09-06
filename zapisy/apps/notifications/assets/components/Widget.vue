@@ -103,14 +103,15 @@ export default class NotificationsComponent extends Vue{
                 <div v-for="elem in n_list" :key="elem.key" class="toast mb-1 show">
                     <div class="toast-header">
                         <strong class="mr-auto"></strong>
-                        <small class="text-muted">{{ elem.issued_on|Moment }}</small>
+                        <small class="text-muted mx-2">{{ elem.issued_on|Moment }}</small>
                         <button type="button" class="close" @click="deleteOne(elem.key)">
                             &times;
                         </button>
                     </div>
-                    <div class="toast-body">
-                        <a :href="elem.target" class="text-body" v-html="elem.description"></a>
-                    </div>
+                    <a :href="elem.target" class="toast-link">
+                        <div class="toast-body text-body"
+                        v-html="elem.description"></div>
+                    </a>
                 </div>
             </form>
             <form>
@@ -142,6 +143,13 @@ export default class NotificationsComponent extends Vue{
     for tag <a> in .dropdown-menu  */
 .specialdropdown::after{
     content: none;
+}
+
+a.toast-link:hover {
+    text-decoration: none;
+    .toast-body {
+        background-color: var(--light);
+    }
 }
 
 .place-for-notifications{
