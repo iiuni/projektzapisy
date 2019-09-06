@@ -109,6 +109,7 @@ export default class NotificationsComponent extends Vue{
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div v-if="n_counter" @click="getNotifications()">
                 <i class="fas fa-bell fa-lg"></i>
+                <span class="counter-badge">{{ n_counter }}</span>
             </div>
             <div v-else>
                <i class="far fa-bell fa-lg"></i>
@@ -143,8 +144,7 @@ export default class NotificationsComponent extends Vue{
 </div>
 </template>
 
-<style>
-
+<style lang="scss" scoped>
 /*  Modification of the bootstrap class .dropdown-menu
     for display notifications widget correctly.  */
 #notification-dropdown .dropdown-menu{
@@ -162,6 +162,25 @@ export default class NotificationsComponent extends Vue{
 .place-for-notifications{
     max-height: 395px;
     overflow-y: auto;
+}
+
+.counter-badge {
+    background-color: var(--pink);
+    border-radius: 2px;
+    color: white;
+    font-weight: bold;
+    
+    padding: 1px 3px;
+
+    // Bootstrap breakpoint at which the navbar is fully expanded.
+    @media (min-width: 992px) {
+        font-size: 10px;
+
+        position: absolute; /* Position the badge within the relatively positioned button */
+        top: 2px;
+        right: 2px;
+    }
+    margin-left: .25em;
 }
 
 </style>
