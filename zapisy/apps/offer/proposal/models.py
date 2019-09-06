@@ -145,6 +145,9 @@ class Proposal(CourseInformation):
         copy.level = None
         copy.year = None
 
+        # Resets the status back to default.
+        copy.status = ProposalStatus.DRAFT
+
         copy.name = "Klon: " + copy.name
         if copy.name_en:
             copy.name_en = "Clone: " + copy.name_en
