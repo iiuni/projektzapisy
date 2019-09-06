@@ -11,7 +11,6 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News
-from apps.news.views import all_news
 from apps.notifications.api import notify_user, notify_selected_users
 from apps.notifications.custom_signals import teacher_changed, student_pulled, student_not_pulled
 from apps.notifications.templates import NotificationType
@@ -134,9 +133,18 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
 
-    records = list(Employee.get_actives()) + list(Student.objects.filter(status=0))
-    users = {element.user for element in records}
-    target = reverse(all_news)
+    # Do not notify about hidden news.
+    if news.category == '-':
+        return
+
+    records = list(Employee.get_actives().select_related('user')) + list(
+        Student.objects.filter(status=0).select_related('user'))
+    users = [element.user for element in records]
+    target = reverse('news-one', args=[news.id])
 
     notify_selected_users(
-        users, Notification(get_id(), get_time(), NotificationType.NEWS_HAS_BEEN_ADDED, {}, target))
+        users,
+        Notification(get_id(), get_time(), NotificationType.NEWS_HAS_BEEN_ADDED, {
+            'title': news.title,
+            'contents': news.body
+        }, target))

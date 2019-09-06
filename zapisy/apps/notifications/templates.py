@@ -29,5 +29,6 @@ mapping = {
     'Nastąpiła zmiana prowadzacego w grupie przedmiotu "{course_name}", do której jesteś w kolejce. '
     'Typ grupy to {type}, a nowy prowadzący to {teacher}.',
     NotificationType.NEWS_HAS_BEEN_ADDED:
-    'Dodano nową wiadomość w aktualnościach.',
+    "Dodano nową wiadomość w aktualnościach: {title}\n"
+    "{contents}",
 }

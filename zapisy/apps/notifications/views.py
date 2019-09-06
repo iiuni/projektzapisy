@@ -21,12 +21,16 @@ from libs.ajax_messages import AjaxFailureMessage
 
 @login_required
 def get_notifications(request):
+    def trunc(text):
+        """Cuts text at 100 characters and ads dots if it was indeed longer."""
+        return text[:100] + (text[100:] and '...')
+
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     repo = get_notifications_repository()
     notifications = [{
         'id': notification.id,
-        'description': render_description(notification.description_id,
-                                          notification.description_args),
+        'description': trunc(
+            render_description(notification.description_id, notification.description_args)),
         'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
         'target': notification.target,
     } for notification in repo.get_all_for_user(request.user)]

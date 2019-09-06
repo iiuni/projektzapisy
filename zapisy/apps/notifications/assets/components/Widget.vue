@@ -109,7 +109,7 @@ export default class NotificationsComponent extends Vue{
                         </button>
                     </div>
                     <div class="toast-body">
-                        <a :href="elem.target" class="text-body">{{ elem.description }}</a>
+                        <a :href="elem.target" class="text-body" v-html="elem.description"></a>
                     </div>
                 </div>
             </form>
