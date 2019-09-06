@@ -7,10 +7,7 @@
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
-import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell"
-import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell"
 library.add(faExternalLinkAlt);
-library.add(fasBell, farBell);
 
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();
