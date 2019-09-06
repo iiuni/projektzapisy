@@ -1,28 +1,22 @@
 from datetime import datetime
 
-import json
-from django.core.serializers.json import DjangoJSONEncoder
-
-from django.shortcuts import render
 from django.contrib import messages
-from django.shortcuts import redirect
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
-from apps.notifications.repositories import get_notifications_repository, RedisNotificationsRepository
+from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
 from apps.users import views
 from apps.users.models import BaseUser
-from libs.ajax_messages import AjaxFailureMessage
 
 
 @login_required
 def get_notifications(request):
     def trunc(text):
-        """Cuts text at 200 characters and ads dots if it was indeed longer."""
+        """Cuts text at 200 characters and adds dots if it was indeed longer."""
         return text[:200] + (text[200:] and '...')
 
     DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'

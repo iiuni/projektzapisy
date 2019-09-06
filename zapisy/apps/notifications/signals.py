@@ -78,9 +78,10 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
                              NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
                              {'course_name': course_name}, target))
 
-        records = Record.objects.filter(
-            group__in=course_groups, status=RecordStatus.ENROLLED).select_related(
-                'student', 'student__user')
+        enrolled_or_queued = [RecordStatus.ENROLLED, RecordStatus.QUEUED]
+        records = Record.objects.filter(group__in=course_groups,
+                                        status__in=enrolled_or_queued).select_related(
+                                            'student', 'student__user')
         users = {element.student.user for element in records}
         notify_selected_users(
             users,
@@ -137,7 +138,7 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
     if news.category == '-':
         return
 
-    records = list(Employee.get_actives().select_related('user')) + list(
+    records = set(Employee.get_actives().select_related('user')) | set(
         Student.objects.filter(status=0).select_related('user'))
     users = [element.user for element in records]
     target = reverse('news-one', args=[news.id])
