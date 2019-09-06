@@ -7,7 +7,6 @@ from . import views
 app_name = "notifications"
 urlpatterns = [
     path('get', views.get_notifications, name='get_notifications'),
-    path('count', views.get_counter, name='get_counter'),
     path('delete', views.delete_one, name='delete-one-notification'),
     path('delete/all', views.delete_all, name='delete-all-notifications'),
     path('preferences/save', views.preferences_save, name='preferences-save'),

@@ -33,18 +33,10 @@ interface ServerResponseCount {
 })
 export default class NotificationsComponent extends Vue{
 
-    n_counter: number|null = null;
     n_list: NotificationsDict = {};
 
-    getCount(): Promise<number> {
-        return axios.get('/notifications/count')
-        .then((result: ServerResponseCount) => {
-            return result.data
-        })
-    }
-
-    async updateCounter(): Promise<void>{
-        this.n_counter = await this.getCount();
+    get n_counter(): number {
+        return Object.keys(this.n_list).length;
     }
 
     getNotifications(): Promise<void> {
@@ -60,8 +52,7 @@ export default class NotificationsComponent extends Vue{
 
         return axios.post('/notifications/delete/all')
         .then((request: ServerResponseDict) => {
-            this.n_list = request.data
-            this.updateCounter();
+            this.n_list = request.data;
         })
     }
 
@@ -81,21 +72,13 @@ export default class NotificationsComponent extends Vue{
                 'Content-Type': 'multipart/form-data',
             }
         }).then((request: ServerResponseDict) => {
-            this.n_list = request.data
-            this.updateCounter();
+            this.n_list = request.data;
         })
     }
 
-    refresh(): void{
-        if(this.n_counter){}
-        else{
-            this.updateCounter();
-        }
-    }
-
     async created() {
-        await this.updateCounter()
-        setInterval(this.refresh, 2000);
+        this.getNotifications();
+        setInterval(this.getNotifications, 30000);
     }
 
 }
@@ -107,7 +90,7 @@ export default class NotificationsComponent extends Vue{
     <li id="notification-dropdown" class="nav-item dropdown">
         <a class="nav-link dropdown-toggle specialdropdown ml-1" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <div v-if="n_counter" @click="getNotifications()">
+            <div v-if="n_counter !== 0">
                 <i class="fas fa-bell fa-lg"></i>
                 <span class="counter-badge">{{ n_counter }}</span>
             </div>

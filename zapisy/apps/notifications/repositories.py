@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
 
-from django.conf import settings
 from django.contrib.auth.models import User
 import redis
 
@@ -33,6 +32,10 @@ class NotificationsRepository(ABC):
 
     @abstractmethod
     def save(self, user: User, notification: Notification) -> None:
+        pass
+
+    @abstractmethod
+    def remove_all(self, user: User) -> None:
         pass
 
     @abstractmethod
@@ -87,6 +90,10 @@ class RedisNotificationsRepository(NotificationsRepository):
             self._generate_unsent_key_for_user(user),
             self.serializer.serialize(notification))
 
+    def remove_all(self, user: User) -> None:
+        self.redis_client.delete(self._generate_unsent_key_for_user(user))
+        self.redis_client.delete(self._generate_sent_key_for_user(user))
+
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         self.removed_count = 0
 
@@ -107,6 +114,7 @@ class RedisNotificationsRepository(NotificationsRepository):
                 self.redis_client.srem(
                     key, self.serializer.serialize(notification))
                 self.removed_count += 1
+        return self.removed_count
 
     def remove_one_with_id_issued_on(self, user: User, ID: str, point_in_time: datetime) -> int:
         self.removed_count = 0
@@ -127,6 +135,7 @@ class RedisNotificationsRepository(NotificationsRepository):
                 self.redis_client.srem(key,
                                        self.serializer.serialize(notification))
                 self.removed_count += 1
+        return self.removed_count
 
     def _generate_unsent_key_for_user(self, user: User) -> str:
         return f'notifications:unsent#{user.id}'
