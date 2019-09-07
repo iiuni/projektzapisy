@@ -1,14 +1,13 @@
-{% load i18n %}
-<h3>{% trans "Konsultacje prowadzących" %}:</h3>
+<h3>Konsultacje prowadzących:</h3>
 <br>
 
 {% if teachers %}
-    <table class="table table-striped consultations">
+    <table class="table table-striped table-bordered text-center">
         <thead>
         <tr>
-            <td scope="col">{% trans "Imię i nazwisko" %}</td>
-            <td scope="col"> {% trans "Pokój" %}</td>
-            <td scope="col">{% trans "Konsultacje" %}</td>
+            <th scope="col">Imię i nazwisko</th>
+            <th scope="col">Pokój</th>
+            <th scope="col">Konsultacje</th>
         </tr>
         </thead>
         <tbody>
@@ -24,5 +23,5 @@
     </table>
     <br>
 {% else %}
-    {% trans "Brak informacji" %}.
+    Brak informacji.
 {% endif %}

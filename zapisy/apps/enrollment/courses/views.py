@@ -45,7 +45,7 @@ def courses_list(request, semester_id: Optional[int] = None):
         semester = Semester.objects.get(pk=semester_id)
     data = prepare_courses_list_data(semester)
     return render(
-        request, 'courses/courses_list.html', data)
+        request, 'courses/courses.html', data)
 
 
 def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[Dict]]:
@@ -103,7 +103,7 @@ def course_view(request, slug):
     if course is None:
         raise Http404
     data.update(prepare_courses_list_data(course.semester))
-    return render(request, 'courses/course.html', data)
+    return render(request, 'courses/courses.html', data)
 
 
 def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:

@@ -1,0 +1,39 @@
+{% extends "courses/base.html" %}
+
+{% block main-subtitle %}
+    {% if course %}
+        {{ course }}
+    {% else %}
+        Przedmioty
+    {% endif %}
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item">
+        <a href="{% url "main-page" %}">Strona główna</a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <a href="{% url "course-list" %}">Przedmioty</a>
+    </li>
+
+    <li class="breadcrumb-item active">
+        {{ course }}
+    </li>
+{% endblock %}
+
+
+{% block enrollment_menu_courses %} class="active"{% endblock %}
+
+{% block top-content %}
+    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
+    <div id="course-filter"></div>
+{% endblock top-content %}
+
+{% block content %}
+    {% if course %}
+        {% include "courses/course_info.html" with course=course %}
+    {% else %}
+        <div class="alert alert-primary" role="alert">Wybierz przedmiot z listy</div>
+    {% endif %}
+{% endblock %}

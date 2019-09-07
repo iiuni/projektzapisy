@@ -1,0 +1,106 @@
+{% load course_types %}
+
+<div class="table-responsive tutorial">
+    <h3>{{ class_type|decode_class_type_plural  }}</h3>
+    <table class="table table-bordered text-center">
+        <thead class="thead-dark">
+            <tr>
+                <th>Prowadzący</th>
+                <th scope="col">Termin zajęć</th>
+                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" scope="col">Limit</th>
+                <th title="Liczba aktualnie zapisanych osób" scope="col">Zapisani</th>
+                <th title="Liczba osób oczekujących na zapis" scope="col">Kolejka</th>
+                {% if course.is_enrollment_on %}
+                    <th scope="col"></th>
+                    <th scope="col">Priorytet</th>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    {# Link to the group page #}
+                    <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in class_groups %}
+                <tr {% if group.is_enrolled %} class="table-active" title="Jesteś zapisany/a do tej grupy" {% endif %}>
+                    <td >
+                        {% if group.teacher %}
+                            <a href="{% url 'employee-profile' group.teacher.user.id %}" class="person">
+                                {{ group.teacher.user.get_full_name }}
+                            </a>
+                        {% else %}
+                            (nieznany prowadzący)
+                        {% endif %}
+                        {% if group.extra %}
+                            <br/><span class="small">{{ group.get_extra_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for term in group.term.all %}
+                            <span>{{ term }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ group.limit }}
+                        {% for gs in group.guaranteed_spots.all %}
+                            + 
+                            <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                                {{ gs.limit }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ group.num_enrolled }}</td>
+                    <td>{{ group.num_enqueued }}</td>
+                    {% if course.is_enrollment_on %}
+                        <td>
+                            {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
+                            <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                    <div>
+                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                        <button type="submit" class="btn btn-success btn-sm success setEnrolledButton"
+                                        onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
+                                        Zapisz
+                                    </button>
+                                    </div>
+                                </form>
+                                {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
+                                <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                    <div>
+                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm danger setEnrolledButton"
+                                        onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
+                                        Wypisz
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td class="priority ">
+                            {% if group.can_enqueue and group.is_enqueued %}
+                            <form action="{% url 'records-set-priority' %}" method="post">{% csrf_token %}
+                                <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                <select name="priority" onchange="this.form.submit()">
+                                    {% for s in "0123456789" %}
+                                        <option {% if forloop.counter == group.priority %} selected {% endif %}
+                                                value="{{ forloop.counter }}">
+                                            {{ forloop.counter }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    {% if user.student or user.employee or user.is_staff %}
+                        <td>
+                            <a href="{% url 'group-view' group.pk %}">lista</a>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>UWAGA!</strong>
+            Wyższa liczba oznacza wyższy priorytet, po zapisaniu do grupy zostajemy usunięci z kolejek o niższym priorytecie.
+        </p>
+    </div>
