@@ -368,6 +368,8 @@ const webpackConfig: webpack.Configuration = {
         alias: {
             vue$: "vue/dist/vue.runtime.esm.js",
             vuex$: "vuex/dist/vuex.esm.js",
+            // Allow absolute imports from other apps.
+            "@": path.resolve(ASSET_DEF_SEARCH_DIR),
         },
     },
     resolveLoader: {

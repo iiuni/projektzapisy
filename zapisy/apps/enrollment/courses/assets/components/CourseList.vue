@@ -3,7 +3,7 @@ import axios from "axios";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 
-import { CourseInfo } from "../../../timetable/assets/store/courses";
+import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
 export default Vue.extend({
     data() {

@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 import CourseList from "./components/CourseList.vue";
 import CourseFilter from "./components/CourseFilter.vue";
-import filters from "../../../enrollment/timetable/assets/store/filters"
+import filters from "@/enrollment/timetable/assets/store/filters"
 
 Vue.use(Vuex);
 

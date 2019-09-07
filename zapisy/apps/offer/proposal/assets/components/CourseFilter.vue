@@ -2,14 +2,11 @@
 import { cloneDeep, sortBy, toPairs } from "lodash";
 import Vue from "vue";
 
-import TextFilter from "../../../../enrollment/timetable/assets/components/filters/TextFilter.vue";
-import LabelsFilter from "../../../../enrollment/timetable/assets/components/filters/LabelsFilter.vue";
-import SelectFilter from "../../../../enrollment/timetable/assets/components/filters/SelectFilter.vue";
-import CheckFilter from "../../../../enrollment/timetable/assets/components/filters/CheckFilter.vue";
-import {
-    FilterDataJSON,
-    KVDict
-} from "../../../../enrollment/timetable/assets/models";
+import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
+import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
+import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
+import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
+import { FilterDataJSON, KVDict } from "@/enrollment/timetable/assets/models";
 
 export default Vue.extend({
     components: {
