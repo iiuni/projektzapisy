@@ -120,13 +120,15 @@ class Command(BaseCommand):
             return None
         ce = None
         try:
-            ce = Proposal.objects.get(name__iexact=name,
-                                      status=ProposalStatus.IN_VOTE)
+            ce = Proposal.objects.get(
+                name__iexact=name, status__in=[ProposalStatus.IN_OFFER,
+                                               ProposalStatus.IN_VOTE])
         except Proposal.DoesNotExist:
             self.stdout.write(
                 self.style.ERROR(">Couldn't find course proposal for {}".format(name))
             )
         except Proposal.MultipleObjectsReturned:
+            # Prefer proposals IN_VOTE to those IN_OFFER.
             ces = Proposal.objects.filter(
                 name__iexact=name, status__in=[ProposalStatus.IN_OFFER,
                                                ProposalStatus.IN_VOTE]).order_by('-status', '-id')
