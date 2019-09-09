@@ -2,7 +2,7 @@ from rest_framework import viewsets, pagination
 from rest_framework.permissions import IsAdminUser
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models import Course, CourseEntity, Group, Semester
+from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
@@ -25,23 +25,15 @@ class SemesterViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.SemesterSerializer
 
 
-class CourseEntityViewSet(viewsets.ModelViewSet):
-    """Allows modifying CourseEntity `usos_kod` field."""
-    http_method_names = ['patch']
-    permission_classes = (IsAdminUser,)
-    queryset = CourseEntity.objects.select_related('type')
-    serializer_class = serializers.CourseEntitySerializer
-
-
 class CourseViewSet(viewsets.ModelViewSet):
     """Lists all courses.
 
     To only show courses in a given semester, query:
         /api/v1/?semester={semester_id}
     """
-    http_method_names = ['get']
+    http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
-    queryset = Course.objects.select_related('entity', 'entity__type', 'semester')
+    queryset = CourseInstance.objects.select_related('course_type', 'semester').order_by('id')
     filter_fields = ['semester']
     serializer_class = serializers.CourseSerializer
     pagination_class = StandardResultsSetPagination
@@ -50,8 +42,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
-    queryset = Group.objects.select_related('course', 'course__entity', 'course__entity__type',
-                                            'course__semester', 'teacher', 'teacher__user')
+    queryset = Group.objects.select_related('course', 'course__semester', 'teacher',
+                                            'teacher__user')
     filter_fields = ['course__semester']
     serializer_class = serializers.GroupSerializer
     pagination_class = StandardResultsSetPagination
@@ -67,8 +59,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 class TermViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
-    queryset = Term.objects.select_related('group', 'group__course',
-                                           'group__course__semester').prefetch_related('classrooms')
+    queryset = Term.objects.select_related('group').prefetch_related('classrooms')
     filter_fields = ['group__course__semester']
     serializer_class = serializers.TermSerializer
     pagination_class = StandardResultsSetPagination
@@ -138,6 +129,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     serializer_class = serializers.SingleVoteSerializer
+    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
     def get_queryset(self):

@@ -62,11 +62,6 @@
                     <li {% block offer_active %}{% endblock %} class="nav-item">
                         <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
                     </li>
-                    {% if perms.courses.view_stats %}
-                    <li {% block statistics_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'statistics:main' %}" class="nav-link">Statystyki</a>
-                    </li>
-                    {% endif %}
                     <li {% block events_active %}{% endblock %} class="nav-item">
                         <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
                     </li>
@@ -200,7 +195,7 @@
     {% endif %}
     <div class="container sidebar-right" id="main-content-container">
         <nav aria-label="breadcrumb" role="navigation">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb d-print-none">
                 {% block bread %}
                 {% endblock %}
             </ol>

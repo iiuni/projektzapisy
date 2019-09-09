@@ -6,8 +6,9 @@ from zapisy import common
 
 from apps.enrollment.courses.models.semester import Freeday, ChangedDay, Semester
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother
-from apps.enrollment.courses.tests.factories import GroupFactory
-from apps.users.tests.factories import StudentFactory
+from apps.offer.proposal.tests.factories import ProposalFactory
+
+from ..models import CourseInstance
 
 
 class FreedayTestCase(TestCase):
@@ -114,3 +115,20 @@ class SemesterTestCase(TestCase):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
         sundays_added = winter_semester.get_all_added_days_of_week(common.SUNDAY)
         self.assertTrue(sundays_added)
+
+
+class CourseInstanceTestCase(TestCase):
+    def test_create_course_from_proposal(self):
+        """Tests creating a course instance from the proposal."""
+        semester = SemesterObjectMother.winter_semester_2015_16()
+        semester.save()
+        proposal = ProposalFactory()
+
+        course = CourseInstance.create_proposal_instance(proposal, semester)
+
+        self.assertEqual(proposal.name, course.name)
+        self.assertEqual(proposal.owner, course.owner)
+        self.assertEqual(proposal, course.offer)
+        self.assertEqual(semester, course.semester)
+        self.assertNotEqual(proposal.id, course.id)
+        self.assertNotEqual(proposal.created, course.created)

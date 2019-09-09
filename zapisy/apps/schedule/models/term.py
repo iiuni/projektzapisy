@@ -4,10 +4,9 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db import models
-from django.db.models.query import EmptyQuerySet
+from django.dispatch import receiver
 
 from .event import Event
-from .specialreservation import SpecialReservation
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.enrollment.courses.models.semester import Semester
@@ -148,18 +147,9 @@ class Term(models.Model):
 
         @return: Term QuerySet
         """
-        return cls.objects.filter(
-            event__type__in=[
-                '0',
-                '1']).order_by(
-            'day',
-            'event__course__entity__name',
-            'room') .select_related(
-                'event',
-                'room',
-                'event__course',
-                'event__course__entity',
-            'event__course__semester')
+        return cls.objects.filter(event__type__in=['0', '1']).order_by(
+            'day', 'event__course__name', 'room').select_related('event', 'room', 'event__course',
+                                                                 'event__course__semester')
 
     @classmethod
     def get_terms_for_dates(cls, dates, classroom, start_time=None, end_time=None):
@@ -222,3 +212,55 @@ class Term(models.Model):
 
     def __str__(self):
         return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
+
+
+@receiver(models.signals.pre_delete, sender=CourseTerm)
+@receiver(models.signals.pre_save, sender=CourseTerm)
+@receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
+def delete_course_terms(**kwargs):
+    """Deletes the Term when a corresponding CourseTerm is deleted or modified.
+
+    This will be triggered before the modifications are saved, and the function
+    below will be triggered on the modified instance.
+    """
+    instance: CourseTerm = kwargs['instance']
+    if not kwargs.get('action', 'pre_save').startswith('pre_'):
+        # We are in a post_save action of m2m_changed signal receiver.
+        # The function below is handling that.
+        return
+    if not instance.pk:
+        return
+    instance = CourseTerm.objects.get(pk=instance.pk)
+    dates = instance.group.course.semester.get_all_days_of_week(instance.dayOfWeek)
+    matching_terms = Term.objects.filter(event__group=instance.group,
+                                         day__in=dates,
+                                         start=instance.start_time,
+                                         end=instance.end_time,
+                                         room__in=instance.classrooms.all())
+    matching_terms.delete()
+
+
+@receiver(models.signals.post_save, sender=CourseTerm)
+@receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
+def create_course_terms(**kwargs):
+    """Creates matching Terms when a new CourseTerm is created."""
+    if not kwargs.get('action', 'post_save').startswith('post_'):
+        # We are in a post_save action of m2m_changed signal receiver.
+        # The function above is handling that.
+        return
+    instance: CourseTerm = kwargs['instance']
+    dates = instance.group.course.semester.get_all_days_of_week(instance.dayOfWeek)
+    event, _ = Event.objects.get_or_create(group=instance.group,
+                                           course=instance.group.course,
+                                           title=instance.group.course.get_short_name(),
+                                           type=Event.TYPE_CLASS,
+                                           visible=True,
+                                           status=Event.STATUS_ACCEPTED,
+                                           author=instance.group.teacher.user)
+    for day in dates:
+        for room in instance.classrooms.all():
+            Term.objects.create(event=event,
+                                day=day,
+                                start=instance.start_time,
+                                end=instance.end_time,
+                                room=room)

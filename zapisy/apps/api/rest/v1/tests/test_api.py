@@ -3,9 +3,7 @@ import json
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.api.rest.v1.views import SingleVoteViewSet, SystemStateViewSet
-from apps.enrollment.courses.tests.factories import (CourseFactory, CourseEntityFactory,
-                                                     GroupFactory, SemesterFactory)
+from apps.enrollment.courses.tests.factories import (CourseInstanceFactory, SemesterFactory)
 from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
@@ -38,7 +36,7 @@ class VoteSystemTests(TestCase):
         self.employee = EmployeeFactory()
 
         self.semester = SemesterFactory()
-        self.course_instance = CourseFactory(entity=proposals[1].entity, semester=self.semester)
+        self.course_instance = CourseInstanceFactory(offer=proposals[1], semester=self.semester)
 
         self.staff_member = UserFactory(is_staff=True)
 
@@ -88,18 +86,18 @@ class VoteSystemTests(TestCase):
         client.force_authenticate(user=self.staff_member)
         response = client.get('/api/v1/votes/', {'state': self.state2.pk}, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 3)
-        self.assertDictEqual(response.data[0], {
+        self.assertEqual(len(response.data['results']), 3)
+        self.assertDictEqual(response.data['results'][0], {
             'student': self.students[1].pk,
             'course_name': "Pranie",
             'vote_points': 1
         })
-        self.assertDictEqual(response.data[1], {
+        self.assertDictEqual(response.data['results'][1], {
             'student': self.students[0].pk,
             'course_name': "Zmywanie",
             'vote_points': 3
         })
-        self.assertDictEqual(response.data[2], {
+        self.assertDictEqual(response.data['results'][2], {
             'student': self.students[1].pk,
             'course_name': "Zmywanie",
             'vote_points': 2
@@ -131,27 +129,27 @@ class VoteSystemTests(TestCase):
         self.semester.refresh_from_db()
         self.assertEqual(self.semester.usos_kod, 'Nowy Kod USOS')
 
-    def test_can_set_courseentity_usos_kod(self):
+    def test_can_set_course_usos_kod(self):
         """Tests course endpoint.
 
         Checks that the user is able to set/modify the `usos_kod` field of a
-        CourseEntity object.
+        CourseInstance object.
         """
         client = APIClient()
         client.force_authenticate(user=self.staff_member)
 
         response = client.get(f'/api/v1/courses/?semester={self.semester.pk}')
         self.assertEqual(response.data['count'], 1)
-        entity_dict = response.data['results'][0]['entity']
-        self.assertEqual(entity_dict['name'], self.course_instance.entity.name)
-        self.assertEqual(entity_dict['usos_kod'], '')
+        course_dict = response.data['results'][0]
+        self.assertEqual(course_dict['name'], self.course_instance.name)
+        self.assertEqual(course_dict['usos_kod'], '')
 
-        response = client.patch(f'/api/v1/courseentities/{self.course_instance.entity_id}/', {
+        response = client.patch(f'/api/v1/courses/{self.course_instance.id}/', {
             'usos_kod': '12-SM-ZMYWANIE',
         })
         self.assertEqual(response.status_code, 200)
-        self.course_instance.entity.refresh_from_db()
-        self.assertEqual(self.course_instance.entity.usos_kod, '12-SM-ZMYWANIE')
+        self.course_instance.refresh_from_db()
+        self.assertEqual(self.course_instance.usos_kod, '12-SM-ZMYWANIE')
 
     def test_set_employee_consultations_permissions(self):
         """Tests employee endpoint permissions.

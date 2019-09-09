@@ -12,7 +12,7 @@ from django.shortcuts import Http404, HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from apps.enrollment.courses.models import Course, Group, Semester, StudentPointsView
+from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
@@ -40,7 +40,8 @@ def build_group_list(groups: List[Group]):
         group_dict.update({
             'course': {
                 'url': reverse('course-page', args=(group.course.slug, )),
-                'entity': model_to_dict(group.course.entity, fields=['name', 'shortName']),
+                'name': group.course.name,
+                'shortName': group.course.short_name,
             },
             'type': decode_class_type_singular(group.type),
             'url': reverse('group-view', args=(group.pk, )),
@@ -68,8 +69,7 @@ def list_courses_in_semester(semester: Semester):
 
     This list will be used in prototype.
     """
-    courses = Course.objects.filter(semester=semester).select_related('entity').values(
-        'id', 'entity__name')
+    courses = CourseInstance.objects.filter(semester=semester).values('id', 'name')
     for course in courses:
         course.update({
             'url': reverse('prototype-get-course', args=(course['id'], )),
@@ -84,20 +84,16 @@ def student_timetable_data(student: Student):
     records = Record.objects.filter(
         student=student, group__course__semester=semester, status=RecordStatus.ENROLLED
     ).select_related(
-        'group__teacher', 'group__teacher__user', 'group__course', 'group__course__entity'
+        'group__teacher', 'group__teacher__user', 'group__course'
     ).prefetch_related('group__term', 'group__term__classrooms')
     groups = [r.group for r in records]
     group_dicts = build_group_list(groups)
 
-    points_for_courseentities = StudentPointsView.points_for_entities(
-        student, [g.course.entity_id for g in groups])
-
-    for group in groups:
-        group.course.points = points_for_courseentities[group.course.entity_id]
+    points_for_courses = {r.group.course.id: r.group.course.points for r in records}
 
     data = {
         'groups': groups,
-        'sum_points': sum(points_for_courseentities.values()),
+        'sum_points': sum(points_for_courses.values()),
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
     return data
@@ -107,7 +103,7 @@ def employee_timetable_data(employee: Employee):
     """Collects the timetable data for an employee."""
     semester = Semester.objects.get_next()
     groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
-        'teacher', 'teacher__user', 'course', 'course__entity').prefetch_related(
+        'teacher', 'teacher__user', 'course').prefetch_related(
             'term', 'term__classrooms')
     group_dicts = build_group_list(groups)
     data = {
@@ -142,8 +138,7 @@ def my_prototype(request):
     records = Record.objects.filter(
         student=student, group__course__semester=semester
     ).exclude(status=RecordStatus.REMOVED).select_related(
-        'group__teacher', 'group__teacher__user', 'group__course', 'group__course__semester',
-        'group__course__entity'
+        'group__teacher', 'group__teacher__user', 'group__course', 'group__course__semester'
     ).prefetch_related('group__term', 'group__term__classrooms')
     pinned = Pin.student_pins_in_semester(student, semester)
     pinned = list(pinned)
@@ -214,7 +209,7 @@ def prototype_action(request, group_id):
             # enqueued in that). We hence send him the information about these
             # groups.
             groups = Group.objects.filter(pk__in=group_ids).select_related(
-                'teacher', 'teacher__user', 'course', 'course__semester', 'course__entity'
+                'teacher', 'teacher__user', 'course', 'course__semester'
             ).prefetch_related('term', 'term__classrooms')
             for group in groups:
                 group.is_enqueued = True
@@ -237,9 +232,9 @@ def prototype_action(request, group_id):
 def prototype_get_course(request, course_id):
     """Retrieves the annotated groups of a single course."""
     student = request.user.student
-    course = Course.objects.get(pk=course_id)
+    course = CourseInstance.objects.get(pk=course_id)
     groups = course.groups.exclude(extra='hidden').select_related(
-        'course', 'course__entity', 'teacher', 'course__semester', 'teacher__user'
+        'course', 'teacher', 'course__semester', 'teacher__user'
     ).prefetch_related('term', 'term__classrooms')
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)
     can_dequeue_dict = Record.can_dequeue_groups(student, groups)
@@ -280,7 +275,7 @@ def prototype_update_groups(request):
     groups_all = groups_from_ids | groups_enrolled_or_enqueued
     groups = groups_all.annotate(num_enrolled=num_enrolled).annotate(
         is_enrolled=is_enrolled).annotate(is_enqueued=is_enqueued).select_related(
-            'course', 'course__entity', 'teacher', 'course__semester',
+            'course', 'teacher', 'course__semester',
             'teacher__user').prefetch_related('term', 'term__classrooms')
 
     can_enqueue_dict = Record.can_enqueue_groups(student, groups)

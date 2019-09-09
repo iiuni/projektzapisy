@@ -15,7 +15,6 @@ from apps.users.models import Employee
 from .course_type import Type as CourseType
 from .effects import Effects
 from .tag import Tag
-from .course import CourseEntity
 
 
 class Language(choicesenum.ChoicesEnum):
@@ -41,6 +40,7 @@ class CourseInformation(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.PROTECT)
     recommended_for_first_year = models.BooleanField(
         "przedmiot polecany dla pierwszego roku", default=False)
+    points = models.PositiveSmallIntegerField("ECTS", default=6)
 
     has_exam = models.BooleanField("przedmiot z egzaminem", default=True)
 
@@ -70,18 +70,13 @@ class CourseInformation(models.Model):
     major = models.CharField("kierunek studiów", max_length=100, blank=True)
     level = models.CharField("poziom studiów", max_length=100, blank=True)
     year = models.CharField("rok studiów", max_length=50, blank=True)
+    discipline = models.CharField("dyscyplina", max_length=100, default="Informatyka")
 
     tags = models.ManyToManyField(Tag, verbose_name="tagi", blank=True)
     effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia", blank=True)
 
     created = models.DateTimeField("Data utworzenia", auto_now_add=True)
     modified = models.DateTimeField("Data modyfikacji", auto_now=True)
-
-    entity = models.OneToOneField(
-        CourseEntity,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name="tymczasowe pole ułatwiające migrację")
 
     def save(self, *args, **kwargs):
         """Overrides standard Django `save` function."""
@@ -96,9 +91,8 @@ class CourseInformation(models.Model):
     def __copy__(self) -> 'CourseInformation':
         """Returns a (shallow) copy of the CourseInformation object.
 
-        All fields will be copied with exception of 'slug', 'usos_kod',
-        'entity'. Names will be prepended with an indicator that the object is a
-        clone.
+        All fields will be copied with exception of 'slug', 'usos_kod'. Names
+        will be prepended with an indicator that the object is a clone.
 
         The returned object is not saved in the database.
 
@@ -115,6 +109,24 @@ class CourseInformation(models.Model):
         # Clear some fields.
         copy.slug = None
         copy.usos_kod = None
-        copy.entity = None
 
         return copy
+
+    def __json__(self):
+        """Returns a JSON-serializable dict with al course information."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'short_name': self.get_short_name(),
+            'slug': self.slug,
+            'type': self.course_type_id,
+            'english': self.language == Language.ENGLISH,
+            'exam': self.has_exam,
+            'suggested_for_first_year': self.recommended_for_first_year,
+            'teacher': self.owner_id,
+            'effects': [effect.pk for effect in self.effects.all()],
+            'tags': [tag.pk for tag in self.tags.all()],
+        }
+
+    def get_short_name(self):
+        return self.short_name or self.name

@@ -1,6 +1,6 @@
 {% load render_bundle from webpack_loader %}
 
-<table class="table table-bordered table-md-responsive" id="table-info">
+<table class="table table-bordered table-md-responsive d-print-none" id="table-info">
     <colgroup>
         <col class="table-info-type"></col>
     </colgroup>
@@ -45,14 +45,12 @@
             <th scope="row">Rodzaj</th>
             <td>{{ course.course_type }}</td>
         </tr>
-        {% if course.entity %}
         <tr>
             <th><abbr title="European Credit Transfer System">ECTS</abbr></th>
             <td>
-                {{ course.entity.get_points }}
+                {{ course.points }}
             </td>
         </tr>
-        {% endif %}
         <tr>
             <th scope="row">Polecany dla I roku</th>
             <td>{{ course.recommended_for_first_year|yesno|capfirst }}</td>
@@ -61,12 +59,12 @@
             <th scope="row">Egzamin</th>
             <td>{{ course.has_exam|yesno|capfirst }}</td>
         </tr>
-        {% if course.entity and course.entity.get_all_tags_with_weights %}
+        {% if course.tags.all %}
         <tr>
             <th scope="row">Tagi</th>
             <td>
-                {% for tag in course.entity.get_all_tags_with_weights %}
-                    <span class="badge badge-success mx-1">{{ tag.tag }}{% if tag.weight %} — {{ tag.weight }}%</span>{% endif %}
+                {% for tag in course.tags.all %}
+                    <span class="badge badge-success mx-1">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -84,44 +82,31 @@
     </tbody>
 </table>
 
-<div class="description">
+<div class="description d-print-none">
     <h3>Opis przedmiotu:</h3>
     <div class="markdown">{{ course.description.strip|default:"Brak" }}</div>
 </div>
 
-{% if request.user.is_authenticated %}
-    <a class="btn btn-sm btn-outline-dark d-print-none" data-toggle="collapse"  href="#syllabus"
-    role="button" aria-expanded="false" aria-controls="syllabus">
-    Sylabus
-    </a>
+{% if request.user.is_authenticated %}	
+    <a class="d-print-none" data-toggle="collapse"  href="#syllabus"	
+    role="button" aria-expanded="false" aria-controls="syllabus">	
+        Sylabus	
+    </a>	
     <div class="collapse mt-3 d-print-block" id="syllabus">
-        <h3>Metody kształcenia</h3>
-        <div class="markdown">{{ course.teaching_methods.strip|default:"—" }}</div>
-        
-        <h3>Wymagania wstępne</h3>
-        <div class="markdown">{{ course.preconditions.strip|default:"—" }}</div>
-
-        <h3>Cele przedmiotu</h3>
-        <div class="markdown">{{ course.objectives.strip|default:"—" }}</div>
-
-        <h3>Treści programowe</h3>
-        <div class="markdown">{{ course.contents.strip|default:"—" }}</div>
-
-        <h3>Zakładane efekty kształcenia</h3>
-        <div class="markdown">{{ course.teaching_effects.strip|default:"—" }}</div>
-
-        <h3>Literatura obowiązkowa i zalecana</h3>
-        <div class="markdown">{{ course.literature.strip|default:"—" }}</div>
-
-        <h3>Metody weryfikacji zakładanych efektów kształcenia</h3>
-        <div class="markdown">{{ course.verification_methods.strip|default:"—" }}</div>
-
-        <h3>Warunki i forma zaliczenia</h3>
-        <div class="markdown">{{ course.passing_means.strip|default:"—" }}</div>
-
-        <h3>Nakład pracy studenta</h3>
-        <div class="markdown">{{ course.student_labour.strip|default:"—" }}</div>
+        <a class="btn btn-sm btn-light float-right my-2 d-print-none" href="#" id="print">
+            <i class="fa fa-print"></i>
+            Drukuj
+        </a>
+        {% include 'proposal/syllabus.html' %}
     </div>
 {% endif %}
+
+<script type="text/javascript">
+    var printLink = document.getElementById("print");
+    printLink.onclick = function(e) {
+        window.print(); 
+        e.preventDefault(); 
+    }
+</script>
 
 {% render_bundle 'proposal-render-markdown' %}

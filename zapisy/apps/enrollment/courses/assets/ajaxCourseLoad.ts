@@ -14,7 +14,6 @@ import { scrollUpToElementIfWindowBelow } from "common/utils";
 let isLoadingCourse: boolean = false;
 type CourseInfo = {
 	courseName: string,
-	courseEditLink: string,
 	courseHtml: string,
 };
 
@@ -113,22 +112,10 @@ function setPageTitle(courseName: string) {
 // on the right; they both need to be updated
 function updateCourseNameAndEditLink(courseInfo: CourseInfo) {
 	// The little arrow before the course name above the filters
-	const arrowElem = document.getElementById("enr-course-arrow");
-	if (arrowElem) {
-		arrowElem.classList.remove("hidden");
-	}
-
 	const courseNameElem = document.getElementById("enr-course-name");
 	if (courseNameElem) {
 		courseNameElem.innerText = courseInfo.courseName;
 		courseNameElem.classList.remove("hidden");
-	}
-
-	const courseEditLink = document.getElementById("enr-course-edit-link");
-	// It might not exist, only admins see that link
-	if (courseEditLink) {
-		courseEditLink.setAttribute("href", courseInfo.courseEditLink);
-		courseEditLink.classList.remove("hidden");
 	}
 }
 

@@ -1,6 +1,7 @@
 {% extends "courses/base.html" %}
 {% load i18n %}
 {% load compressed %}
+{% load render_bundle from webpack_loader %}
 
 {% block main-subtitle %}{% trans "Przedmioty" %}{% endblock %}
 
@@ -19,15 +20,9 @@
         <a href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>
     </li>
 
-    <li class="breadcrumb-item active hidden" id="enr-course-arrow">
-        <span class="hidden" id="enr-course-name">{{ course.name }}</span>
+    <li class="breadcrumb-item active hidden" id="enr-course-name">
+        {{ course.name }}
     </li>
-
-    {% if user.is_staff %}
-        <li class="breadcrumb-item">
-            <a id="enr-course-edit-link" href="" class="hidden">{% trans "Edytuj przedmiot" %}</a>
-        </li>
-    {% endif %}
 {% endblock %}
 
 {% block top-content %}
@@ -40,4 +35,7 @@
 <div class="alert alert-primary" role="alert">
     {% trans "Wybierz przedmiot z listy" %}
 </div>
+
+{% render_bundle 'proposal-render-markdown' %}
+
 {% endblock %}

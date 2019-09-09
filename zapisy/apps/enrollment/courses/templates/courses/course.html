@@ -16,16 +16,9 @@
         <a href="{% url "course-list" %}">{% trans "Przedmioty" %}</a>
     </li>
 
-    <li class="breadcrumb-item active" id="enr-course-arrow">
-        <span id="enr-course-name">{{ course.name }}</span>
+    <li class="breadcrumb-item active" id="enr-course-name">
+        {{ course.name }}
     </li>
-
-    {% if user.is_staff %}
-    <a class="text-info mx-2" id="enr-course-edit-link" href="{% url 'admin:courses_course_change' course.pk %}">
-        ({% trans "edytuj przedmiot" %})
-    </a>
-    {% endif %}
-    
 {% endblock %}
 
 

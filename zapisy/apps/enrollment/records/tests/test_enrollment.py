@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group, StudentPointsView, Course
+from apps.enrollment.courses.models import Semester, Group
 from apps.users.models import Student
 
 
@@ -227,7 +227,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
         self.assertEqual(
-            StudentPointsView.student_points_in_semester(self.bolek, self.semester), 35)
+            Record.student_points_in_semester(self.bolek, self.semester), 35)
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 5)):
             # He should be able to join the queue.
@@ -247,7 +247,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.knitting_lecture_group,
                 status=RecordStatus.REMOVED).exists())
         self.assertEqual(
-            StudentPointsView.student_points_in_semester(self.bolek, self.semester), 35)
+            Record.student_points_in_semester(self.bolek, self.semester), 35)
 
     def test_higher_priority_1(self):
         """Both exercise groups are occupied by Bolek and Lolek. Tola will

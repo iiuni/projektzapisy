@@ -9,17 +9,23 @@
     semester_beginning: 2018-10-3
     semester_ending: 2090-12-31
 
-- model: courses.courseentity
+- model: courses.type
+  pk: 1
+  fields: {}
+
+- model: courses.courseinformation
   pk: 1
   fields:
     name: Algorytmy i Struktury Danych
-    created: 1970-01-01
-    edited: 1970-01-01
+    course_type_id: 1
+    owner_id: 2
+    slug: algo
+    created: 1970-01-01 00:00:00
+    modified: 1970-01-01 00:00:00
 
-- model: courses.course
-  pk: 1
+- model: courses.courseinstance
   fields:
-    entity: 1
+    courseinformation_ptr: 1
     semester: 1
 
 - model: courses.group

@@ -10,7 +10,8 @@ from typing import Optional
 from crispy_forms import helper, layout
 from django import forms
 
-from apps.enrollment.courses.models import CourseEntity
+from apps.enrollment.courses.models import CourseInstance
+
 from .models import Proposal, ProposalStatus
 
 
@@ -21,7 +22,7 @@ class EditProposalForm(forms.ModelForm):
     using this form. It will take care to keep the current instance of the
     course up to date with the proposal.
     """
-    ects = forms.IntegerField(
+    points = forms.IntegerField(
         max_value=15,
         label="ECTS",
         required=False,
@@ -89,10 +90,6 @@ class EditProposalForm(forms.ModelForm):
                 val = inspect.cleandoc(val)
             self.fields[k].initial = val
 
-        # Fill the ects field with value from entity.
-        if self.instance and self.instance.entity:
-            self.fields['ects'].initial = self.instance.entity.get_points()
-
         # Limits status choices available to the user.
         self.fields['status'].choices = self.status_choices()
 
@@ -155,15 +152,16 @@ class EditProposalForm(forms.ModelForm):
         if commit:
             instance.save()
 
-            # Creates entity with default ECTS value, if one does not exist.
-            if instance.entity is None:
-                entity = CourseEntity.objects.create(
-                    name="Tymczasowe entity do migracji",
-                    deleted=True)
-                entity.pointsofcourseentities_set.create(
-                    type_of_point_id=1,
-                    value=self.instance.course_type.default_ects)
-                instance.entity = entity
+            # If the course is taught now, also update the current CourseInstance.
+            course = CourseInstance.get_current_instance(instance)
+            if course is not None:
+                for field in self.changed_data:
+                    course.__dict__[field] = self.cleaned_data[field]
+                course.save()
+
+            if self.fields['points'] is None:
+                # Populates default ECTS value.
+                instance.points = self.instance.course_type.default_ects
                 instance.save()
 
         return instance
@@ -186,6 +184,7 @@ class EditProposalForm(forms.ModelForm):
             'hours_exercise_lab',
             'hours_seminar',
             'hours_recap',
+            'points',
             'status',
             'teaching_methods',
             'preconditions',
@@ -325,7 +324,7 @@ class ProposalFormHelper(helper.FormHelper):
                 Column('hours_recap', css_class='col-md-2'),
                 css_class='align-items-end',
             ), FormRow(
-                Column('ects'),
+                Column('points'),
                 Column('status'),
             )),
         CollapsableFieldset(

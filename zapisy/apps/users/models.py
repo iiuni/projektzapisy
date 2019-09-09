@@ -11,15 +11,6 @@ from django.core.validators import MaxLengthValidator
 
 from apps.users.exceptions import NonUserException
 
-# The TYPE_CHECKING constant is always False at runtime, so the import won't be evaluated,
-# but mypy (and other type-checking tools) will evaluate the contents of that block.
-# It protects us from circular imports.
-
-if TYPE_CHECKING:
-    from apps.enrollment.courses.models.semester import Semester
-    from apps.enrollment.courses.models.course import Course
-    from apps.offer.preferences.models import Preference
-
 logger = logging.getLogger()
 
 EMPLOYEE_STATUS_CHOICES = [(0, 'aktywny'), (1, 'nieaktywny')]
@@ -135,9 +126,8 @@ class Employee(BaseUser):
 
     @staticmethod
     def get_actives() -> QuerySet:
-        return Employee.objects.filter(user__is_active=True).order_by('user__last_name', 'user__first_name'). extra(
-            where=["(SELECT COUNT(*) FROM courses_courseentity WHERE courses_courseentity.status > 0 AND NOT courses_courseentity.deleted AND courses_courseentity.owner_id=users_employee.id)>0"]
-        )
+        return Employee.objects.filter(user__is_active=True).order_by('user__last_name',
+                                                                      'user__first_name')
 
     @staticmethod
     def get_list(begin: str ='All') -> QuerySet:
@@ -294,10 +284,6 @@ class Program(models.Model):
         Program of student studies
     """
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
-    type_of_points = models.ForeignKey(
-        'courses.PointTypes',
-        verbose_name='rodzaj punktów',
-        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name: str = 'Program studiów'

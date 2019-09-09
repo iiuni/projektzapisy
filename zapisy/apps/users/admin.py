@@ -76,14 +76,7 @@ class StudentAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super(StudentAdmin, self).get_queryset(request)
-        return qs.select_related('program', 'program__type_of_points', 'user')
-
-
-class ProgramAdmin(admin.ModelAdmin):
-
-    def get_queryset(self, request: HttpRequest) -> QuerySet:
-        qs = super(ProgramAdmin, self).get_queryset(request)
-        return qs.select_related('type_of_points')
+        return qs.select_related('program', 'user')
 
 
 class EmployeeAdmin(admin.ModelAdmin):
@@ -128,4 +121,4 @@ admin.site.register(User, UserAdmin)
 
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(Program, ProgramAdmin)
+admin.site.register(Program)

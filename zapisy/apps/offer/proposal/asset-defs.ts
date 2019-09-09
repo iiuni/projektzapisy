@@ -4,7 +4,7 @@ export default {
         "fill-placeholders": ["fill-placeholders.ts"],
         "proposal-list-colors": ["proposal-list-colors.scss"],
         "render-markdown": [
-            "render-markdown.js",
+            "render-markdown.ts",
             "render-markdown.scss",
         ],
     },

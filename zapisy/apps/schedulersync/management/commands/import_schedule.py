@@ -121,14 +121,15 @@ class Command(BaseCommand):
         ce = None
         try:
             ce = Proposal.objects.get(name__iexact=name,
-                                      status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                                      status=ProposalStatus.IN_VOTE)
         except Proposal.DoesNotExist:
             self.stdout.write(
                 self.style.ERROR(">Couldn't find course proposal for {}".format(name))
             )
         except Proposal.MultipleObjectsReturned:
-            ces = Proposal.objects.filter(name__iexact=name,
-                                          status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).order_by('-id')
+            ces = Proposal.objects.filter(
+                name__iexact=name, status__in=[ProposalStatus.IN_OFFER,
+                                               ProposalStatus.IN_VOTE]).order_by('-status', '-id')
             if self.verbosity >= 1:
                 self.stdout.write(
                     self.style.WARNING('Multiple course proposals. Took first among:'))

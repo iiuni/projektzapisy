@@ -11,7 +11,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 
 export interface CourseShell {
     id: number;
-    entity__name: string;
+    name: string;
     url: string;
     groups?: Array<number>;
 }
@@ -27,7 +27,7 @@ const state: State = {
 
 const getters = {
     courses(state: State): Array<CourseShell> {
-        return sortBy(values(state.courses), "entity__name");
+        return sortBy(values(state.courses), "name");
     },
     selection(state: State) {
         return state.selection;

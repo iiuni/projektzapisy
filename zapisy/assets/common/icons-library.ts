@@ -9,5 +9,8 @@ import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 library.add(faExternalLinkAlt);
 
+import { faPrint } from "@fortawesome/free-solid-svg-icons/faPrint";
+library.add(faPrint);
+
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();

@@ -197,8 +197,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'zapisy.urls'
 
 INSTALLED_APPS = (
-    'modeltranslation',  # needs to be before django.contrib.admin
-
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -246,8 +244,6 @@ INSTALLED_APPS = (
     'webpack_loader',
 )
 
-MODELTRANSLATION_FALLBACK_LANGUAGES = ('pl',)
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'django_cas_ng.backends.CASBackend',
@@ -287,8 +283,6 @@ ECTS_FINAL_LIMIT = 45
 
 VOTE_LIMIT = 60
 
-# MSc Computer Science Program will have id=1 in database table users_program.
-M_PROGRAM = 1
 LETURE_TYPE = '1'
 QUEUE_PRIORITY_LIMIT = 5
 

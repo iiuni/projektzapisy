@@ -30,7 +30,7 @@ class Pin(models.Model):
         """Returns the groups that student has pinned in the semester."""
         pins = cls.objects.filter(
             group__course__semester_id=semester.pk, student_id=student.pk).select_related(
-                'group__course', 'group__course__entity', 'group__teacher', 'group__teacher__user')
+                'group__course', 'group__teacher', 'group__teacher__user')
         return map(lambda p: p.group, pins)
 
 

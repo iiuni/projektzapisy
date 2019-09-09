@@ -23,10 +23,6 @@
   fields:
     user: 10
 
-- model: courses.PointTypes
-  pk: 1
-  fields:
-    name: ECTS
 - model: courses.Type
   pk: 1
   fields:
@@ -85,17 +81,12 @@
     time: 2011-09-26T13:00:00+02:00
 
 # There will be three courses.
-- model: courses.CourseEntity
-  pk: 1
-  fields:
-    shortName: 'Szydełkowanie'
-    created: 2011-08-31T12:30:12+02:00
-    edited: 2011-08-31T12:30:12+02:00
 - model: courses.CourseInformation
   pk: 1
   fields:
-    entity: 1
+    name: 'Szydełkowanie'
     course_type: 1
+    points: 5
     owner: 10
     slug: 'szydekowanie'
     created: 2011-08-31T12:30:12+02:00
@@ -103,36 +94,26 @@
 - model: proposal.Proposal
   fields:
     courseinformation_ptr_id: 1
-- model: courses.PointsOfCourseEntities
+- model: courses.CourseInstance
   fields:
-    type_of_point_id: 1  # ECTS
-    entity: 1
-    value: 5
-- model: courses.Course
-  pk: 1
-  fields:
-    entity_id: 1
-    semester_id: 1
+    courseinformation_ptr_id: 1
+    offer: 1
+    semester: 1
 - model: courses.Group
   pk: 11
   fields:
-    course_id: 1
+    course: 1
     type: '1'  # Lecture
     limit: 1
 
 # 'Mycie naczyń' is a special course. Recording is only open in the middle of
 # semester.
-- model: courses.CourseEntity
-  pk: 2
-  fields:
-    shortName: 'Mycie naczyń'
-    created: 2011-11-13T14:32:24+02:00
-    edited: 2011-11-13T14:32:24+02:00
 - model: courses.CourseInformation
   pk: 2
   fields:
-    entity: 2
+    name: 'Mycie naczyń'
     course_type: 1
+    points: 5
     owner: 10
     slug: 'mycie-naczy'
     created: 2011-11-13T14:32:24+02:00
@@ -140,76 +121,60 @@
 - model: proposal.Proposal
   fields:
     courseinformation_ptr_id: 2
-- model: courses.PointsOfCourseEntities
+- model: courses.CourseInstance
   fields:
-    type_of_point_id: 1  # ECTS
-    entity: 2
-    value: 5
-- model: courses.Course
-  pk: 2
-  fields:
-    entity_id: 2
-    semester_id: 1
+    courseinformation_ptr_id: 2
+    offer: 2
+    semester: 1
     records_start: 2011-12-04T00:00:00+01:00
     records_end: 2011-12-06T13:00:00+01:00
 - model: courses.Group
   pk: 21
   fields:
-    course_id: 2
+    course: 2
     type: '6'  # Seminar
     limit: 1
 - model: courses.Group
   pk: 22
   fields:
-    course_id: 2
+    course: 2
     type: '6'  # Seminar
     limit: 1
 
-
-- model: courses.CourseEntity
-  pk: 3
-  fields:
-    shortName: 'Gotowanie'
-    created: 2011-08-27T12:32:41+02:00
-    edited: 2011-08-31T12:33:18+02:00
 - model: courses.CourseInformation
   pk: 3
   fields:
-    entity: 3
+    name: 'Gotowanie'
     course_type: 1
+    points: 35
     owner: 10
     slug: 'gotowanie'
     created: 2011-08-27T12:32:41+02:00
     modified: 2011-08-31T12:33:18+02:00
 - model: proposal.Proposal
   fields:
-    courseinformation_ptr_id: 3
-- model: courses.PointsOfCourseEntities
+    courseinformation_ptr: 3
+- model: courses.CourseInstance
   fields:
-    type_of_point_id: 1  # ECTS
-    entity: 3
-    value: 35
-- model: courses.Course
-  pk: 3
-  fields:
-    entity_id: 3
-    semester_id: 1
+    courseinformation_ptr: 3
+    offer: 3
+    semester: 1
 - model: courses.Group
   pk: 31
   fields:
-    course_id: 3
+    course: 3
     type: '1'  # Lecture
     limit: 3
 - model: courses.Group
   pk: 32
   fields:
-    course_id: 3
+    course: 3
     type: '2'  # Exercises
     limit: 1
 - model: courses.Group
   pk: 33
   fields:
-    course_id: 3
+    course: 3
     type: '2'  # Exercises
     limit: 1
 

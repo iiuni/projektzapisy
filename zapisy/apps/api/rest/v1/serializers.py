@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models import CourseEntity, Course, Group, Semester
+from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
@@ -23,37 +23,23 @@ class SemesterSerializer(serializers.ModelSerializer):
         return obj.get_name()
 
 
-class CourseEntitySerializer(serializers.ModelSerializer):
-    """Serializer for CourseEntity
-
-    When serializing multiple objects, it is important to use
-    `select_related('type')`.
-    """
-    type_short_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CourseEntity
-        fields = ('id', 'name', 'type_short_name', 'usos_kod')
-        read_only_fields = ('id', 'name', 'type_short_name')
-
-    def get_type_short_name(self, obj):
-        if obj.type is None:
-            return None
-        return obj.type.short_name
-
-
 class CourseSerializer(serializers.ModelSerializer):
-    """Serializer for Course.
+    """Serializer for CourseInstance class.
 
-    When serializing multiple objects, it is important to use
-    `select_related('entity', 'entity__type')`.
+    For performance reasons use `select_related('course_type')` in the queryset.
     """
-    entity = CourseEntitySerializer(read_only=True)
+    course_type = serializers.SerializerMethodField()
+    usos_kod = serializers.CharField(max_length=20, read_only=False)
 
     class Meta:
-        model = Course
-        fields = ('id', 'entity', 'semester')
-        read_only_fields = ('id', 'entity', 'semester')
+        model = CourseInstance
+        fields = ('id', 'name', 'semester', 'course_type', 'usos_kod')
+        read_only_fields = ('id', 'name', 'semester')
+
+    def get_course_type(self, obj):
+        if obj.course_type is None:
+            return None
+        return obj.course_type.short_name
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
@@ -141,7 +127,7 @@ class GroupSerializer(serializers.ModelSerializer):
     """Serializes a Group instance.
 
     When serializing multiple objects, they should be queried with
-    `select_related('course', 'course__entity', 'teacher', 'teacher__user')`.
+    `select_related('course', 'teacher', 'teacher__user')`.
     """
     course = CourseSerializer(read_only=True)
     teacher = EmployeeSerializer(read_only=True)
@@ -162,9 +148,8 @@ class ShallowGroupSerializer(serializers.ModelSerializer):
 class TermSerializer(serializers.ModelSerializer):
     """Serializes a Term instance.
 
-    When serializing multiple objects, query them with `select_related('group',
-    'group__course', 'group__course__entity', 'group__teacher',
-    'group__teacher__user').prefetch_related('classrooms')`.
+    When serializing multiple objects, query them with
+    `select_related('group').prefetch_related('classrooms')`.
     """
     group = ShallowGroupSerializer(read_only=True)
     classrooms = ClassroomSerializer(read_only=True, many=True)

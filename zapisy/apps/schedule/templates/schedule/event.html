@@ -75,11 +75,10 @@
 
     <form action="{% url 'events:interested' event.id %}" method="POST">
         <div class="alert alert-info d-flex" style="padding: 0px;" role="alert">
-            <div class="p-2"><span class="d-inline-block align-middle h-100"></span>
-                <span class="d-inline-block align-middle">
-                Obserwowane wydarzenia pojawią się w Twoim planie. Będziesz otrzymywać również powiadomienia
-                o nowych wiadomościach w wydarzeniu.
-            </span></div>
+            <div class="p-2">
+                    Obserwowane wydarzenia pojawią się w Twoim planie. Będziesz otrzymywać również powiadomienia
+                    o nowych wiadomościach w wydarzeniu.
+            </div>
             <div class="ml-auto p-2">
                 {% csrf_token %}
                 {% if user in event.interested.all %}

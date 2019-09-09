@@ -4,7 +4,7 @@ from django import test
 from django.contrib.contenttypes.models import ContentType
 from freezegun import freeze_time
 
-from apps.enrollment.courses.tests.factories import CourseFactory, SemesterFactory
+from apps.enrollment.courses.tests.factories import CourseInstanceFactory, SemesterFactory
 from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.tests.factories import StudentFactory
@@ -71,8 +71,8 @@ class VoteFormsetTest(test.TestCase):
         ])
 
         # Some of the courses will be opened in the winter semester.
-        CourseFactory(semester=cls.state.semester_winter, entity=cls.proposals[0].entity)
-        CourseFactory(semester=cls.state.semester_winter, entity=cls.proposals[1].entity)
+        CourseInstanceFactory(semester=cls.state.semester_winter, offer=cls.proposals[0])
+        CourseInstanceFactory(semester=cls.state.semester_winter, offer=cls.proposals[1])
 
     @freeze_time(date(2011, 5, 15))
     def test_no_form_when_voting_closed(self):
@@ -140,7 +140,7 @@ class VoteFormsetTest(test.TestCase):
         # This number is a bit artificial — we just care that it is a constant.
         # I have inspected the queries and they look ok, so this is just
         # supposed to test that no one breaks performance in the future.
-        with self.assertNumQueries(16):
+        with self.assertNumQueries(14):
             response = c.get('/vote/vote/')
         self.assertContains(response, '<select', count=6)
 
@@ -149,7 +149,7 @@ class VoteFormsetTest(test.TestCase):
 
         # Number of queries should not change when we add one more proposal.
         ProposalFactory(status=ProposalStatus.IN_VOTE)
-        with self.assertNumQueries(16):
+        with self.assertNumQueries(14):
             response = c.get('/vote/vote/')
         self.assertContains(response, '<select', count=7)
 

@@ -1,7 +1,6 @@
 from django import test
 
 from apps.enrollment.courses.models.course_type import Type as CourseType
-from apps.enrollment.courses.models.points import PointTypes
 from apps.offer.proposal.forms import EditProposalForm
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.users.tests.factories import EmployeeFactory
@@ -22,9 +21,6 @@ class LifecycleTest(test.TestCase):
             short_name="I2.Z",
             default_ects=6,
         )
-
-        # This will go away with entire PointTypes model.
-        PointTypes.objects.create(id=1, name='ECTS')
 
     def test_employee_can_create_draft(self):
         """Tests that the employee can create an (almost empty) draft proposal.

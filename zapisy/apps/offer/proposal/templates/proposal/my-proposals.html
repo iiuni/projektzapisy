@@ -28,7 +28,7 @@
 {% block all-content %}
     {% regroup proposals_list|dictsort:"status" by get_status_display as statuses %}
     {% with active_status=proposal.status|default:1 %}
-    <div class="jumbotron">
+    <div class="jumbotron d-print-none">
         <a href="{% url 'proposal-form' %}" class="btn btn-success float-md-right mb-3">Dodaj nową propozycję przedmiotu</a>
         <dl>
             {% for status, proposals in statuses %}

@@ -8,7 +8,7 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 
-.markdown {
+.markdown-rendered {
     // Description contents will be slightly indented and visually separated
     // from the headers.
     margin: map-get($spacers, 2) 0 map-get($spacers, 4) map-get($spacers, 2);

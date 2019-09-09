@@ -17,19 +17,6 @@ from apps.users.tests.factories import StudentFactory, EmployeeFactory
 class MailsToStudentsLinkTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        sql_calls = [
-            """
-                CREATE TABLE courses_studentpointsview (
-                    value smallint,
-                    student_id integer,
-                    entity_id integer
-                );
-            """
-        ]
-
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
 
         cls.MSG_HEADER = 'Wyślij wiadomość do studentów'
         regular_user = StudentFactory()
@@ -43,15 +30,6 @@ class MailsToStudentsLinkTestCase(TestCase):
         from apps.enrollment.courses.tests.factories import SemesterFactory
         summer_semester = SemesterFactory(type=Semester.TYPE_SUMMER)
         summer_semester.full_clean()
-
-    @classmethod
-    def tearDownTestData(cls) -> None:
-        sql_calls = [
-            "DROP TABLE courses_studentpointsview;",
-        ]
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
 
     def test_mailto_link_not_exists_regular_user(self):
         self.client.force_login(self.regular_user)
@@ -67,20 +45,6 @@ class MailsToStudentsLinkTestCase(TestCase):
 class MyProfileSemesterInfoTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        sql_calls = [
-            """
-                CREATE TABLE courses_studentpointsview (
-                    value smallint,
-                    student_id integer,
-                    entity_id integer
-                );
-            """
-        ]
-
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
-
         s = StudentFactory()
         s.matricula = str(randint(100000, 200000))
         cls.student_user = s.user
@@ -97,16 +61,6 @@ class MyProfileSemesterInfoTestCase(TestCase):
         )
         cls.semester.full_clean()
         cls.semester.save()
-
-    @classmethod
-    def tearDownTestData(cls) -> None:
-        sql_calls = [
-            "DROP TABLE courses_studentpointsview;",
-        ]
-        for sql_call in sql_calls:
-            cursor = connection.cursor()
-            cursor.execute(sql_call)
-            connection.commit()
 
     def test_my_profile_contains_records_closing_time(self) -> None:
         self.semester.records_ending = datetime.now() + timedelta(days=10)

@@ -8,7 +8,7 @@ from typing import Iterable
 from django.db import models, transaction
 from django.urls import reverse
 
-from apps.enrollment.courses.models.course import Course
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
 
@@ -47,7 +47,7 @@ GROUP_EXTRA_CHOICES = [('', ''),
 class Group(models.Model):
     """group for course"""
     course = models.ForeignKey(
-        Course,
+        CourseInstance,
         verbose_name='przedmiot',
         related_name='groups',
         on_delete=models.CASCADE)
@@ -129,12 +129,12 @@ class Group(models.Model):
         app_label = 'courses'
 
     def __str__(self):
-        return "%s: %s - %s" % (str(self.course.entity.get_short_name()),
+        return "%s: %s - %s" % (str(self.course.get_short_name()),
                                 str(self.get_type_display()),
                                 str(self.get_teacher_full_name()))
 
     def long_print(self):
-        return "%s: %s - %s" % (str(self.course.entity.name),
+        return "%s: %s - %s" % (str(self.course.name),
                                 str(self.get_type_display()),
                                 str(self.get_teacher_full_name()))
 

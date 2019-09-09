@@ -91,14 +91,13 @@ export class Teacher {
     constructor(public name: string, public id: number, public url: string) { }
 }
 
-export class CourseEntity {
-    constructor(public name: string, public shortName: string) { }
-}
-
 // Course is defined in apps/enrollment/courses/models/course.py.
 export class Course {
-    constructor(public entity: CourseEntity, public url: string) { }
-
+    constructor(
+        public name: string,
+        public shortName: string,
+        public url: string
+    ) {}
 }
 
 // GroupJSON is used to cast JSON into it and translate it into proper Group
@@ -177,7 +176,7 @@ export class Group {
         if (!this.isHidden) {
             return false;
         }
-        if (this.canEnqueue || this.isEnqueued || this.isEnrolled 
+        if (this.canEnqueue || this.isEnqueued || this.isEnrolled
             || this.isPinned) {
             return false;
         }

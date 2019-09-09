@@ -24,7 +24,7 @@ from apps.grade.poll.exceptions import NoTitleException, NoPollException, \
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
-from apps.enrollment.courses.models.course import Course, CourseEntity
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.users.models import Program
 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -219,13 +219,13 @@ def getGroups(request, template):
         kwargs['course__semester'] = template['semester']
 
     if template['course']:
-        kwargs['course__entity'] = template['course']
+        kwargs['course'] = template['course']
 
     if template['type']:
         kwargs['type'] = template['type']
 
     if 'exam' in template and template['exam']:
-        kwargs['course__entity__exam'] = True
+        kwargs['course__exam'] = True
 
     return Group.objects.filter(**kwargs)
 
@@ -483,7 +483,7 @@ def make_template_variables(request):
 
     course = int(request.POST.get('course', 0))
     if course > 0:
-        course = CourseEntity.objects.get(pk=course)
+        course = CourseInstance.objects.get(pk=course)
     elif not course:
         course = None
     else:
@@ -759,7 +759,7 @@ def prepare_data_for_create_template(request, group_id=0):
         data['groups'] = Group.objects.filter(
             type=group.type, course=group.course).order_by('teacher')
 
-    data['courses'] = CourseEntity.objects.all()
+    data['courses'] = CourseInstance.objects.all()
 
     data['studies_types'] = Program.objects.all()
     data['sections'] = Section.objects.filter(deleted=False)
@@ -776,13 +776,13 @@ def get_courses_for_user(request, semester):
             not an employee.
     """
     user = request.user
+    employee = user.employee
     if user.is_staff:
-        return Course.objects.filter(semester=semester).order_by('entity__name')
+        return CourseInstance.objects.filter(semester=semester).order_by('name')
     else:
-        courses = Group.objects.filter(course__semester=semester, teacher=user.employee)\
-            .values_list('course__pk', flat=True)
-        return Course.objects.filter(Q(semester=semester), Q(
-            entity__owner=user.employee) | Q(pk__in=courses)).order_by('name')
+        return CourseInstance.objects.filter(
+            Q(semester=semester),
+            Q(owner=employee) | Q(groups__teacher=employee)).distinct().order_by('name')
 
 
 def get_groups_for_user(request, type, course):
@@ -792,14 +792,11 @@ def get_groups_for_user(request, type, course):
         Employee.DoesNotExist: If the user in the request is not an employee.
     """
     user = request.user
-    sub = Course.objects.filter(pk=course, entity__owner=user.employee)
-    if user.is_staff or sub:
-        return Group.objects.filter(type=type, course=course).order_by('teacher')
+    if user.is_staff or course.owner == user.employee:
+        return Group.objects.filter(type=type, course_id=course).order_by('teacher')
     else:
         return Group.objects.filter(
-            type=type,
-            course=course,
-            teacher=user.employee).order_by('teacher')
+            type=type, course_id=course, teacher=user.employee).order_by('teacher')
 
 
 def make_pages(pages, page_number):
