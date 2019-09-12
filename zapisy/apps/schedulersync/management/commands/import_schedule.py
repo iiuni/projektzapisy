@@ -19,10 +19,6 @@ from apps.schedulersync.models import TermSyncData
 
 URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
 
-SLACK_WEBHOOK_URL = (
-    'https://hooks.slack.com/services/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'
-)
-
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
 # e (repetytorium), o (projekt), t (tutoring), m (proseminarium)
@@ -426,8 +422,10 @@ class Command(BaseCommand):
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.prepare_slack_message()
         }
+        secrets_env = self.get_secrets_env()
+        slack_webhook_url = secrets_env.str('SLACK_WEBHOOK_URL')
         response = requests.post(
-            SLACK_WEBHOOK_URL, data=json.dumps(slack_data),
+            slack_webhook_url, data=json.dumps(slack_data),
             headers={'Content-Type': 'application/json'}
         )
         if response.status_code != 200:
