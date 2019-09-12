@@ -10,8 +10,6 @@ from apps.notifications.utils import render_description
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.users.models import BaseUser
 
-THROTTLE_SECONDS = 30
-
 
 @job('dispatch-notifications')
 def dispatch_notifications_task(user):
@@ -36,7 +34,7 @@ def dispatch_notifications_task(user):
     for pn in pending_notifications:
         # User controls in account settings
         # what notifications will be send
-        if not getattr(model, pn.description_id):
+        if not getattr(model, pn.description_id, None):
             continue
 
         ctx = {
@@ -57,4 +55,4 @@ def dispatch_notifications_task(user):
     for pn in pending_notifications:
         repo.mark_as_sent(user, pn)
 
-    time.sleep(THROTTLE_SECONDS)
+    time.sleep(settings.EMAIL_THROTTLE_SECONDS)

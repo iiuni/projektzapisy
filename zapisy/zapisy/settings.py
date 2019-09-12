@@ -24,6 +24,7 @@ EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
 EMAIL_PORT = env.int('EMAIL_PORT', default=25)
 SERVER_EMAIL = env.str('SERVER_EMAIL', default='root@localhost')
+EMAIL_THROTTLE_SECONDS = env.int('EMAIL_THROTTLE_SECONDS', default=0)
 
 # django-environ doesn't support nested arrays, but decoding json objects works fine
 ARRAY_VALS = env.json('ARRAY_VALS', {})
