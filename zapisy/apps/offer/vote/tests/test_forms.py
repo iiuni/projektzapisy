@@ -73,6 +73,7 @@ class VoteFormsetTest(test.TestCase):
         # Some of the courses will be opened in the winter semester.
         CourseInstanceFactory(semester=cls.state.semester_winter, offer=cls.proposals[0])
         CourseInstanceFactory(semester=cls.state.semester_winter, offer=cls.proposals[1])
+        CourseInstanceFactory(semester=cls.state.semester_winter, offer=cls.proposals[6])
 
     @freeze_time(date(2011, 5, 15))
     def test_no_form_when_voting_closed(self):
@@ -157,7 +158,9 @@ class VoteFormsetTest(test.TestCase):
     def test_correction_form_correct(self):
         formset = prepare_vote_formset(self.state, self.student2)
         formset_ids = [f.instance.proposal_id for f in formset]
-        courses_in_winter_proposal_ids = [self.proposals[0].id, self.proposals[1].id]
+        courses_in_winter_proposal_ids = [
+            self.proposals[0].id, self.proposals[1].id, self.proposals[6].id
+        ]
         self.assertListEqual(formset_ids, courses_in_winter_proposal_ids)
 
     @freeze_time(date(2011, 9, 10))
@@ -166,7 +169,7 @@ class VoteFormsetTest(test.TestCase):
         # winter proposals. He must not be allowed to spend 6 points in winter
         # correction.
         formset = prepare_vote_formset(self.state, self.student2)
-        data = self.formset_data(formset, 'correction', 3, 3)
+        data = self.formset_data(formset, 'correction', 3, 3, 2)
         formset = prepare_vote_formset(self.state, self.student2, data)
         self.assertFalse(formset.is_valid())
 
@@ -187,4 +190,4 @@ class VoteFormsetTest(test.TestCase):
 
         votes_in_semester = SingleVote.objects.filter(
             state=self.state, student=self.student2).in_semester(self.state.semester_winter)
-        self.assertQuerysetEqual(votes_in_semester, [3, 2], transform=lambda sv: sv.val)
+        self.assertQuerysetEqual(votes_in_semester, [3, 2, 2], transform=lambda sv: sv.val)

@@ -76,11 +76,11 @@ class SingleVote(models.Model):
         Only votes for proposals that aren't free are counted. The purpose is to
         set the limit for correction.
         """
-        agg_dict = SingleVote.objects.filter(student=student,
-                                             state=state,
-                                             proposal__semester=semester,
-                                             proposal__course_type__free_in_vote=False).aggregate(
-                                                 models.Sum('value'))
+        agg_dict = SingleVote.objects.filter(
+            student=student,
+            state=state,
+            proposal__semester__in=[semester, SemesterChoices.UNASSIGNED],
+            proposal__course_type__free_in_vote=False).aggregate(models.Sum('value'))
         return agg_dict.get('value__sum')
 
     @staticmethod
