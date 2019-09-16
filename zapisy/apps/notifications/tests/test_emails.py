@@ -1,6 +1,7 @@
 from django.core import mail
 from django.template.loader import render_to_string
 from django.test import TestCase, override_settings
+from django.utils.html import strip_tags
 
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.tests.factories import GroupFactory
@@ -29,5 +30,5 @@ class NotificationsEmailTestCase(TestCase):
             f'Dzień dobry, {teacher.user.first_name}',
         }
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].body, render_to_string('notifications/email_base.html',
-                                                               ctx))
+        self.assertEqual(mail.outbox[0].body,
+                         strip_tags(render_to_string('notifications/email_base.html', ctx)))
