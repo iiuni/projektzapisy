@@ -18,7 +18,7 @@ from apps.users.models import BaseUser, Student
 
 def prepare_courses_list_data(semester: Semester):
     """Returns a dict used by course list and filter in various views."""
-    qs = CourseInstance.objects.filter(semester=semester)
+    qs = CourseInstance.objects.filter(semester=semester).order_by('name')
     courses = []
     for course in qs.prefetch_related('effects', 'tags'):
         course_dict = course.__json__()

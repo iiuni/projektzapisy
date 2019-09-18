@@ -32,18 +32,20 @@
 
 
 {% block content %}
-    <h2>
-        {{ group.course }}
+    <header class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>{{ group.course }}</h1>
+            <h4>{{group.get_type_display}}: {{group.get_teacher_full_name}}</h4>
+            <h6>{% for term in group.term.all %}{{ term }}{% endfor %}</h6>
+        </div>
         {% if user.is_staff %}
             <a class="btn btn-outline-info btn-sm mx-2" 
             href="{% url 'admin:courses_group_change' group.pk %}">
                 Edytuj
             </a>
         {% endif %}
-    </h2>
+    </header>
 
-    <h4>{{group.get_type_display}}: {{group.get_teacher_full_name}}</h4>
-    <h6>{% for term in group.term.all %}{{ term }}{% endfor %}</h6>
 
     <hr>
 

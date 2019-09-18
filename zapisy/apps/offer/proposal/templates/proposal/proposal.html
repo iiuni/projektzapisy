@@ -1,20 +1,22 @@
 {% load proposal_status %}
 
-<h2 class="d-print-none">{{course.name}}
-{% if user.is_staff or course.owner == user.employee %}
-    <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
-    {% if course.status|status_label == "draft" %}
-        <a class="btn btn-sm btn-outline-danger mx-1" 
-          href="{% url 'proposal-delete' course.slug %}"
-          onclick="return confirm('Na pewno usunąć propozycję?');">
-            Usuń szkic
-        </a>
-    {% endif %}
-{% endif %}
-{% if user.employee %}
-    <a class="btn btn-sm btn-outline-secondary mx-1" href="{% url 'proposal-clone' course.slug %}">Sklonuj</a>
-{% endif %}
-
-</h2>
+<div class="d-flex justify-content-between align-items-center d-print-none">
+    <h1>{{course.name}}</h1>
+    <div class="btn-group" role="group">
+        {% if user.is_staff or course.owner == user.employee %}
+            <a class="btn btn-sm btn-outline-info" href="{% url 'proposal-edit' course.slug %}">Edytuj</a>
+            {% if course.status|status_label == "draft" %}
+                <a class="btn btn-sm btn-outline-danger" 
+                href="{% url 'proposal-delete' course.slug %}"
+                onclick="return confirm('Na pewno usunąć propozycję?');">
+                    Usuń szkic
+                </a>
+            {% endif %}
+        {% endif %}
+        {% if user.employee %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'proposal-clone' course.slug %}">Sklonuj</a>
+        {% endif %}
+    </div>
+</div>
 
 {% include 'proposal/proposal_info.html' with course=course %}

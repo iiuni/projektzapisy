@@ -1,14 +1,16 @@
 {% load render_bundle from webpack_loader %}
 
-<h2>
-    {{ course.name }}
-    {% if user.is_staff or course.owner == user.employee %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="d-inline-block">
+        {{ course.name }}
+        <small class="text-muted">{{ course.semester.get_short_name }}</small>
+    </h1>
+    {% if user.is_staff or course.owner == request.user.employee %}
         {% if course.semester.is_current_semester %}
-            <a class="btn btn-sm btn-outline-info mx-1" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+            <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
         {% endif %}
     {% endif %}
-</h2>
-<h5>{{ course.semester.get_short_name }}</h5>
+</div>
 
 <table class="table table-bordered table-md-responsive" id="table-info">
     <colgroup>
@@ -66,7 +68,7 @@
             <th scope="row">Tagi</th>
             <td>
                 {% for tag in course.tags.all %}
-                    <span class="badge badge-success mx-1">{{ tag }}</span>
+                    <span class="badge badge-success mr-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -76,7 +78,7 @@
             <th>Grupy efektów kształcenia</th>
             <td>
                 {% for effect in course.effects.all %}
-                    <span class="badge badge-info">{{ effect }}</span>
+                    <span class="badge badge-info mr-2">{{ effect }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -94,7 +96,7 @@
 </table>
 
 <div class="description">
-    <h3>Opis przedmiotu:</h3>
+    <h2>Opis przedmiotu:</h2>
     <div class="markdown">{{ course.description|default:"Brak" }}</div>
 </div>
 
