@@ -1,23 +1,34 @@
-from mailer.models import Message
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.records.models import Record
-from apps.users.models import Employee, Student
+from apps.users.models import Student
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mass_mail
+
+studentsfile = 'h.txt'
+from_address = 'zapisy@cs.uni.wroc.pl'
+subject = '[Zapisy] Hasło do pracowni komputerowych'
 
 
 def run():
-    students = Student.objects.filter(status=0)
-    current_semester = Semester.get_current_semester()
-    counter = 0
-    for student in students:
-        address = student.user.email
-        ids = Record.get_student_records_ids(student, current_semester)
-        if (address and len(ids['enrolled']) > 0) or address == 'lewymati@wp.pl':
-            body = "Witaj, \n\ninformujemy, że jutro kończy się ocena zajęć. Przypominamy, że udział w ocenie zajęć daje bonus 24h do otwarcia zapisów w następnym roku akademickim.\n\nZespół zapisy.ii.uni.wroc.pl\n\n---\nWiadomość została wygenerowana automatycznie, prosimy na nią nie odpowiadać."
-            subject = '[Zapisy] Przypomnienie o ocenie zajęć'
-            counter += 1
-            Message.objects.create(
-                to_address=address,
-                from_address='zapisy@cs.uni.wroc.pl',
-                subject=subject,
-                message_body=body)
-    print(counter)
+    file = open(studentsfile)
+    messages = []
+    for line in file:
+        line = line.strip()
+        matricula, password = line.split(' ')
+        try:
+            student = Student.objects.get(matricula=matricula)
+        except ObjectDoesNotExist:
+            print(matricula, password)
+        else:
+            first_name = student.user.first_name
+            to_address = student.user.email
+            body = f"""Witaj {first_name},
+
+przypisano Ci hasło początkowe do systemów w pracowniach komputerowych:
+
+{password}
+
+Zespół zapisy.ii.uni.wroc.pl
+---
+Wiadomość wygenerowana automatycznie, prosimy na nią nie odpowiadać."""
+            messages.append((subject, body, from_address, [to_address]))
+    delivered_count = send_mass_mail(messages, fail_silently=False)
+    print(delivered_count)
