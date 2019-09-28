@@ -118,14 +118,17 @@ colgroup col.table-info-type  {
 
 .od-news-item {
   margin: 2rem 0;
-  padding: 5em;
+  padding: 4rem;
   color: white;
   background: var(--secondary);    
 
   .od-news-date {
     color: var(--light);
     font-style: italic;
-    float: right;
+    display: block;
+    @media (min-width: 992px) {
+      float: right;
+    }
   }
 
   .od-news-author {
