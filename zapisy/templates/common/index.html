@@ -10,23 +10,20 @@
 
 {% block all-content %}
 
-    <div class="jumbotron jumbotron-fluid shadow-sm p-4">
-        <div class="container">
-            <h2 class="display-2">Aktualności</h2>
-            <div class="container">
-                {% for news in recent_news %}
-                <div class="od-news-item p-2">
-                    <h3>{{ news.title }}</h3>
-                    <span>{{ news.date|date:"l, d.m.Y - G:i" }}
-                        &mdash; {{ news.author.get_full_name }}</span>
-                    <div class="my-3">{{ news.body|safe }}</div>
-                </div>
-                {% endfor %}
-                <div class="row justify-content-end">
-                    <a class="float-right btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
-                </div>
-            </div>
+    
+    <h1 class="display-1">Aktualności</h1>
+    {% for news in recent_news %}
+    <div class="od-news-item">
+        <h3 class="display-3">{{ news.title }}</h3>
+        <div>
+            <span class="od-news-date">{{ news.date|date:"l, d.m.Y - G:i" }}</span>
+            <span class="od-news-author">{{ news.author.get_full_name }}</span>
         </div>
+        <div class="my-3">{{ news.body|safe }}</div>
+    </div>
+    {% endfor %}
+    <div class="row justify-content-end px-3">
+        <a class="float-right btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
     </div>
     
     <div class="row align-items-end">

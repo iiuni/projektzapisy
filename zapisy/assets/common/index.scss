@@ -115,3 +115,32 @@ colgroup col.table-info-type  {
   padding-left: .25em;
   color: var(--red);
 }
+
+.od-news-item {
+  margin: 2rem 0;
+  padding: 5em;
+  color: white;
+  background: var(--secondary);    
+
+  .od-news-date {
+    color: var(--light);
+    font-style: italic;
+    float: right;
+  }
+
+  .od-news-author {
+    font-style: italic;
+    font-variant: small-caps;
+    font-size: 120%;
+  }
+
+  a {
+    text-decoration: underline;
+    color: white;
+  }
+
+  &:hover {
+    transform: scale(1.05, 1.05);
+    transition: transform 250ms;
+  }
+}
