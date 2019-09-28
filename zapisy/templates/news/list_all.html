@@ -20,8 +20,8 @@
 
 <h1 class="display-1 p-2">Aktualności</h1>
 
-<div class="row p-2 m-2">
-    <div class="col-10 col-md-10 col-lg-8">
+<div class="row">
+    <div class="col-auto mr-auto">
         <form class="input-group">
             <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
                     value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
@@ -30,17 +30,20 @@
             </div>
         </form>
         {% if query %}
-            <p class="mx-auto font-weight-bolder m-2">Wyniki wyszukiwania dla 
-                <mark class="px-2 text-monospace">{{ query|lower }}</mark>
-                <a class="btn btn-sm btn-danger ml-2" href="{% url 'news-all' %}">wyczyść filtr</a>
+            <p class="mx-auto font-weight-bolder m-2">
+                <span class="align-middle">
+                    Wyniki wyszukiwania dla 
+                    <mark class="px-2 text-monospace">{{ query|lower }}</mark>
+                </span>
+                <a class="btn btn-sm btn-danger" href="{% url 'news-all' %}">wyczyść filtr</a>
             </p>
         
         {% endif %}
         
     </div>
     {% if not query %}
-    <div class="col-2 offset-lg-3 col-lg-1">
-        <a href="/feeds/news/" title="Aktualności RSS" class="btn btn-default">
+    <div class="col-auto">
+        <a href="/feeds/news/" title="Aktualności RSS">
             <img src="{% static "images/rss.png" %}" alt="RSS" />
         </a>
     </div>
