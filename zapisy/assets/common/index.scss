@@ -116,14 +116,14 @@ colgroup col.table-info-type  {
   color: var(--red);
 }
 
+// News items on the main page and the news page.
 .od-news-item {
   margin: 2rem 0;
   padding: 4rem;
-  color: white;
-  background: var(--secondary);    
+  background: var(--light);
 
   .od-news-date {
-    color: var(--light);
+    color: var(--dark);
     font-style: italic;
     display: block;
     @media (min-width: 992px) {
@@ -139,11 +139,11 @@ colgroup col.table-info-type  {
 
   a {
     text-decoration: underline;
-    color: white;
   }
 
+  // The news pops out slightly on hover.
   &:hover {
-    transform: scale(1.05, 1.05);
+    transform: scale(1.01, 1.01);
     transition: transform 250ms;
   }
 }
