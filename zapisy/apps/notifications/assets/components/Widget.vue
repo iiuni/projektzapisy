@@ -1,89 +1,84 @@
 <script lang="ts">
+import axios from "axios";
+import moment from "moment";
 import Vue from "vue";
 import Component from "vue-class-component";
-import axios, { AxiosProxyConfig, AxiosPromise } from 'axios';
-import moment from 'moment'
+import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 
-interface Notifications {
-    id: string;
-    description: string;
-    issued_on: string;
-    target: string;
+class Notification {
+    constructor(
+        public id: string,
+        public description: string,
+        public issuedOn: string,
+        public target: string,
+    ) {}
 }
 
-interface NotificationsDict {
-    [key: string]: Notifications;
-}
-
-interface ServerResponseDict {
-    data: NotificationsDict;
-}
-
-interface ServerResponseCount {
-    data: number;
-}
-
+// Defines a parser that validates and parses Notifications from JSON.
+const notifications: ParseFn<Notification> = (x: any) => new Notification(
+    fromMap(x, 'id', aString),
+    fromMap(x, 'description', aString),
+    fromMap(x, 'issued_on', aString),
+    fromMap(x, 'target', aString),
+)
+const notificationsArray = anArrayContaining(notifications);
 
 @Component({
     filters: {
         Moment: function(str: string) {
-    	    return moment(str).locale('pl').fromNow();
+    	    return moment(str).locale("pl").fromNow();
         }
     }
 })
-export default class NotificationsComponent extends Vue{
-
-    n_list: NotificationsDict = {};
+export default class NotificationsComponent extends Vue {
+    n_list: Notification[] = [];
 
     get n_counter(): number {
-        return Object.keys(this.n_list).length;
+        return this.n_list.length;
     }
 
-    getNotifications(): Promise<void> {
-        return axios.get('/notifications/get')
-        .then((result: ServerResponseDict) => {
-            this.n_list = result.data
-        })
+    getNotifications() {
+        return axios
+            .get("/notifications/get")
+            .then(r => parse(notificationsArray)(r.data))
+            .then(t => { this.n_list = t });
     }
 
     deleteAll(): Promise<void> {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-        return axios.post('/notifications/delete/all')
-        .then((request: ServerResponseDict) => {
-            this.n_list = request.data;
-        })
+        return axios
+            .post("/notifications/delete/all")
+            .then(r => parse(notificationsArray)(r.data))
+            .then(t => { this.n_list = t });
     }
 
     deleteOne(i: number): Promise<void> {
-        axios.defaults.xsrfCookieName = 'csrftoken';
-        axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-        var FormBody = new FormData();
-        FormBody.append('issued_on', this.n_list[i].issued_on);
-        FormBody.append('id', this.n_list[i].id);
+        let formBody = new FormData();
+        formBody.append("issued_on", this.n_list[i].issuedOn);
+        formBody.append("id", this.n_list[i].id);
 
-       return axios.request({
-            method: 'post',
-            url: '/notifications/delete',
-            data: FormBody,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
-        }).then((request: ServerResponseDict) => {
-            this.n_list = request.data;
-        })
+        return axios
+            .post("/notifications/delete", {
+                data: formBody,
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                },
+            })
+            .then(r => parse(notificationsArray)(r.data))
+            .then(t => { this.n_list = t });
     }
 
     async created() {
         this.getNotifications();
         setInterval(this.getNotifications, 30000);
     }
-
 }
 </script>
-
 
 <template>
 <div>
@@ -100,7 +95,7 @@ export default class NotificationsComponent extends Vue{
         </a>
         <div class="dropdown-menu dropdown-menu-right">
             <form class="p-1 place-for-notifications">
-                <div v-for="elem in n_list" :key="elem.key" class="toast mb-1 show">
+                <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
                     <div class="toast-header">
                         <strong class="mr-auto"></strong>
                         <small class="text-muted mx-2">{{ elem.issued_on|Moment }}</small>
@@ -124,14 +119,13 @@ export default class NotificationsComponent extends Vue{
             </form>
         </div>
     </li>
-
 </div>
 </template>
 
 <style lang="scss" scoped>
-/*  Modification of the bootstrap class .dropdown-menu
-    for display notifications widget correctly.  */
-#notification-dropdown .dropdown-menu{
+// Modifies the bootstrap class .dropdown-menu display notifications widget
+// correctly.
+#notification-dropdown .dropdown-menu {
     @media (min-width: 992px) {
         min-width: 350px;
     }
@@ -139,9 +133,8 @@ export default class NotificationsComponent extends Vue{
     right: -160px;
 }
 
-/*  Hide arrow, what is default
-    for tag <a> in .dropdown-menu  */
-.specialdropdown::after{
+// Hide arrow, displayed by default for tag <a> in .dropdown-menu.
+.specialdropdown::after {
     content: none;
 }
 
@@ -152,7 +145,7 @@ a.toast-link:hover {
     }
 }
 
-.place-for-notifications{
+.place-for-notifications {
     max-height: 395px;
     overflow-y: auto;
 }
@@ -162,18 +155,17 @@ a.toast-link:hover {
     border-radius: 2px;
     color: white;
     font-weight: bold;
-    
+
     padding: 1px 3px;
 
     // Bootstrap breakpoint at which the navbar is fully expanded.
     @media (min-width: 992px) {
         font-size: 10px;
 
-        position: absolute; /* Position the badge within the relatively positioned button */
+        position: absolute; // Position the badge within the relatively positioned button.
         top: 2px;
         right: 2px;
     }
-    margin-left: .25em;
+    margin-left: 0.25em;
 }
-
 </style>

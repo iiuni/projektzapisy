@@ -30,9 +30,6 @@ def get_notifications(request):
     } for notification in repo.get_all_for_user(request.user)]
     notifications.sort(key=lambda x: x['issued_on'], reverse=True)
 
-    for (i, d) in enumerate(notifications):
-        d.update({'key': i})
-
     return JsonResponse(notifications, safe=False)
 
 
