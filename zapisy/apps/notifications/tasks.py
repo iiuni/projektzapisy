@@ -47,11 +47,9 @@ def dispatch_notifications_task(user):
         }
 
         message_contents = render_to_string('notifications/email_base.html', ctx)
-        contents_no_tags = strip_tags(message_contents)
-        contents_stripped = "\n".join(line.strip() for line in contents_no_tags.splitlines())
         messages.append((
             'Wiadomość od Systemu Zapisów IIUWr',
-            contents_stripped,
+            strip_tags(message_contents),
             settings.MASS_MAIL_FROM,
             [user.email],
         ))

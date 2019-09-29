@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <body>
-        {{ greeting }},<br>
-        <br>
-        {{ content|safe }}
-        <br><br>
-        Zespół zapisy.ii.uni.wroc.pl<br>
-        <br>
-        ---<br>
-        Jeśli nie chcesz otrzymywać więcej powiadomień tego typu, zaktualizuj opcje w swoim profilu (https://zapisy.ii.uni.wroc.pl{% url 'my-profile' %}).<br>
-    </body>
-</html>
+{{ greeting }},
+
+{{ content|safe }}
+
+Zespół zapisy.ii.uni.wroc.pl
+
+---
+Jeśli nie chcesz otrzymywać więcej powiadomień tego typu, zaktualizuj opcje 
+w swoim profilu (https://zapisy.ii.uni.wroc.pl{% url 'my-profile' %}).
