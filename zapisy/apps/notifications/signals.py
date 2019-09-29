@@ -128,6 +128,10 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news = kwargs['instance']
 
+    # Do not notify about modified news.
+    if not kwargs['created']:
+        return
+
     # Do not notify about hidden news.
     if news.category == '-':
         return
