@@ -14,11 +14,11 @@ def run():
     ]
     course_groups = Group.objects.filter(course__slug__in=course_slugs)
     roles = AuthGroup.objects.filter(name__in=turns)
-    Record.objects.filter(group__in=course_groups,status=RecordStatus.QUEUED).delete()
+    Record.objects.filter(group__in=course_groups, status=RecordStatus.QUEUED).delete()
     for gr in course_groups:
         limit = gr.limit
-        for gs in GuaranteedSpots.objects.filter(group=gr,role__in=roles):
+        for gs in GuaranteedSpots.objects.filter(group=gr, role__in=roles):
             limit = limit + gs.limit
-        GuaranteedSpots.objects.filter(group=gr,role__in=roles).delete()
+        GuaranteedSpots.objects.filter(group=gr, role__in=roles).delete()
         gr.limit = limit
         gr.save()
