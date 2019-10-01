@@ -25,7 +25,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM:
-    vb.memory = "1024"
+    vb.memory = "4096"
     # The folder "node_modules" will live somewhere else and only be mounted
     # in /vagrant/zapisy to avoid the issue with symlinks on Windows.
     config.vm.provision "shell", inline: <<-SHELL

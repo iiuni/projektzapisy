@@ -31,7 +31,6 @@ LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
 EMPLOYEE_MAP = {
     'PLISOWSKI': '258497',
     'PRATIKGHOSAL': '268909',
-    'AHOFFMANN': 'NN',
     'AMORAWIEC': 'NN',
     'AMALINOWSKI': 'NN',
     'ARACZYNSKI': 'NN',
@@ -42,15 +41,15 @@ EMPLOYEE_MAP = {
     'JDYMARA': 'NN',
     'JDZIUBANSKI': 'NN',
     'LNEWELSKI': 'NN',
-    'MDROFISZYN': 'NN',
     'MPREISNER': 'NN',
     'PKOWALSKI': 'NN',
     'RSZWARC': 'NN',
     'SCYGAN': 'NN',
     'TELSNER': 'NN',
     'TRZEPECKI': 'NN',
-    'WHEBISCH': 'NN',
-    'NN1': 'NN'
+    '5323': 'PAWEL.LASKOS-GRABOWSKI',
+    'NN1': 'NN',
+    'IM': 'NN',
 }
 
 COURSES_MAP = {
@@ -90,7 +89,8 @@ COURSES_DONT_IMPORT = [
     'RÓWNANIA RÓŻNICZKOWE 1',
     'RÓWNANIA RÓŻNICZKOWE 1R',
     'TEORIA PRAWDOPODOBIEŃSTWA 1',
-    'TOPOLOGIA']
+    'TOPOLOGIA',
+    'INSTYTUT MATEMATYCZNY']
 
 
 class Command(BaseCommand):

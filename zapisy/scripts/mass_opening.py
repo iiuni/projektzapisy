@@ -8,9 +8,9 @@ from apps.users.models import Student
 def run():
     turns = ['tura1', 'tura2', 'tura3']
     opening_times = {
-        'tura1': datetime.datetime(2019, 10, 1, 13, 30),
-        'tura2': datetime.datetime(2019, 10, 1, 14, 0),
-        'tura3': datetime.datetime(2019, 10, 1, 14, 30),
+        'tura1': datetime.datetime(2019, 10, 1, 14, 0),
+        'tura2': datetime.datetime(2019, 10, 1, 14, 30),
+        'tura3': datetime.datetime(2019, 10, 1, 15, 0),
     }
 
     course_slugs = [
