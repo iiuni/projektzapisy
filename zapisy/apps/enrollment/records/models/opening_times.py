@@ -246,7 +246,8 @@ class GroupOpeningTimes(models.Model):
             T0Times.objects.filter(semester_id=group.course.semester_id).values_list(
                 "student_id", "time"))
         # We also need votes for the course.
-        votes = SingleVote.objects.meaningful().in_semester(semester=group.course.semester).filter(proposal=group.course.offer)
+        votes = SingleVote.objects.meaningful().in_semester(semester=group.course.semester).filter(
+            proposal=group.course.offer)
         opening_time_objects: List['GroupOpeningTimes'] = []
         single_vote: SingleVote
         for single_vote in votes:
