@@ -1,4 +1,4 @@
-from datetime import datetime
+import json
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect, JsonResponse
@@ -75,13 +75,11 @@ def delete_all(request):
 @require_POST
 def delete_one(request):
     """Removes one notification"""
-    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
-
-    issued_on = request.POST.get('issued_on')
-    issued_on = datetime.strptime(issued_on, DATE_TIME_FORMAT)
-    ID = request.POST.get('id')
+    # Axios sends POST data in json rather than _Form-Encoded_.
+    data = json.loads(request.body.decode('utf-8'))
+    uuid = data.get('uuid')
 
     repo = get_notifications_repository()
-    repo.remove_one_with_id_issued_on(request.user, ID, issued_on)
+    repo.remove_one_with_id(request.user, uuid)
 
     return get_notifications(request)

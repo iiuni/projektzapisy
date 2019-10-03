@@ -58,16 +58,9 @@ export default class NotificationsComponent extends Vue {
         axios.defaults.xsrfCookieName = "csrftoken";
         axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-        let formBody = new FormData();
-        formBody.append("issued_on", this.n_list[i].issuedOn);
-        formBody.append("id", this.n_list[i].id);
-
         return axios
             .post("/notifications/delete", {
-                data: formBody,
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
+                uuid: i,
             })
             .then(r => parse(notificationsArray)(r.data))
             .then(t => { this.n_list = t });
@@ -98,8 +91,8 @@ export default class NotificationsComponent extends Vue {
                 <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
                     <div class="toast-header">
                         <strong class="mr-auto"></strong>
-                        <small class="text-muted mx-2">{{ elem.issued_on|Moment }}</small>
-                        <button type="button" class="close" @click="deleteOne(elem.key)">
+                        <small class="text-muted mx-2">{{ elem.issuedOn|Moment }}</small>
+                        <button type="button" class="close" @click="deleteOne(elem.id)">
                             &times;
                         </button>
                     </div>
