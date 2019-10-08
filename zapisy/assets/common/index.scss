@@ -29,6 +29,16 @@ a {
   cursor: pointer;
 }
 
+@media print {
+  // Some browsers do not handle printing layouts with flexbox. This should be
+  // fixed in Bootstrap.
+  // https://github.com/twbs/bootstrap/issues/26781
+  .row,
+  .form-row {
+    display: block;
+  }
+}
+
 .right {
   float: right;
 }
