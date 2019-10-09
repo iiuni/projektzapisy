@@ -1,21 +1,30 @@
 <template>
-  <div class="form-row no-gutter">
-    <textarea class="textarea form-control text-monospace"
-        :class="{'is-invalid': is_invalid, 'col-md-6': active}"
+  <div>
+    <nav>
+      <div class="nav nav-tabs" role="tablist">
+        <a class="nav-item nav-link active" data-toggle="tab" role="tab" :href="`#editor-${id}`">Edytor</a>
+        <a class="nav-item nav-link" data-toggle="tab" role="tab" :href="`#preview-${id}`">Podgląd</a>
+      </div>
+    </nav>
+    <div class="tab-content">
+      <div class="tab-pane fade show active py-2" role="tabpanel" :id="`editor-${id}`">
+        <textarea class="textarea form-control text-monospace bg-light"
+        :class="{'is-invalid': is_invalid}"
         rows="10" :value="input" :name="name"
-        @input="update" @focusin="active = true" @focusout="active = false"></textarea>
-    <div class="border rounded-lg col-md-6 overflow-hidden" v-if="active">
-    <small class="text-muted m-2">Podgląd:</small>
-    <div class="preview p-3" v-html="compiledMarkdown"></div>
+        @input="update"></textarea>
+      </div>
+      <div class="tab-pane fade" role="tabpanel" :id="`preview-${id}`">
+        <div class="preview p-3 border border-top-0 rounded-bottom" v-html="compiledMarkdown"></div>
+      </div>
     </div>
-      
+
     <slot></slot>
   </div>
 </template>
 
 <script>
 import marked from "marked";
-import { debounce } from "lodash";
+import { debounce, uniqueId } from "lodash";
 
 export default {
   props: {
@@ -33,7 +42,7 @@ export default {
   data: function() {
     return {
       input: this.value ? this.value : "",
-      active: false,
+      id: uniqueId('mde-'),
     };
   },
   computed: {
@@ -48,3 +57,10 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.nav-link {
+  font-size: smaller;
+  padding: .25em .5em;
+}
+</style>
