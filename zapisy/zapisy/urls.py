@@ -5,7 +5,6 @@ from django_cas_ng import views as cas_views
 
 import apps.news.views
 from apps.api.rest.v1.urls import router as api_router_v1
-from apps.feeds import LatestNews
 from apps.users import views as users_views
 
 admin.autodiscover()
@@ -24,7 +23,6 @@ urlpatterns = [
     url(r'^users/', include('apps.users.urls')),
 
     url(r'^grade/', include('apps.grade.urls')),
-    url(r'^feeds/news/$', LatestNews()),
     url(r'^s/(?P<query>.*)/$', users_views.students_list, name='users-list-search'),
     url(r'^e/(?P<query>.*)/$', users_views.employees_list, name='users-list-search'),
 

@@ -32,22 +32,15 @@
         {% if query %}
             <p class="mx-auto font-weight-bolder m-2">
                 <span class="align-middle">
-                    Wyniki wyszukiwania dla 
+                    Wyniki wyszukiwania dla
                     <mark class="px-2 text-monospace">{{ query|lower }}</mark>
                 </span>
                 <a class="btn btn-sm btn-danger" href="{% url 'news-all' %}">wyczyść filtr</a>
             </p>
-        
+
         {% endif %}
-        
+
     </div>
-    {% if not query %}
-    <div class="col-auto">
-        <a href="/feeds/news/" title="Aktualności RSS">
-            <img src="{% static "images/rss.png" %}" alt="RSS" />
-        </a>
-    </div>
-    {% endif %}
 
 </div>
 
