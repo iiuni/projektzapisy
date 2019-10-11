@@ -1,23 +1,20 @@
 <template>
   <div>
-    <nav>
-      <div class="nav nav-tabs" role="tablist">
-        <a class="nav-item nav-link active" data-toggle="tab" role="tab" :href="`#editor-${id}`">Edytor</a>
-        <a class="nav-item nav-link" data-toggle="tab" role="tab" :href="`#preview-${id}`">Podgląd</a>
-      </div>
-    </nav>
-    <div class="tab-content">
-      <div class="tab-pane fade show active py-2" role="tabpanel" :id="`editor-${id}`">
-        <textarea class="textarea form-control text-monospace bg-light"
-        :class="{'is-invalid': is_invalid}"
-        rows="10" :value="input" :name="name"
-        @input="update"></textarea>
-      </div>
-      <div class="tab-pane fade" role="tabpanel" :id="`preview-${id}`">
-        <div class="preview p-3 border border-top-0 rounded-bottom" v-html="compiledMarkdown"></div>
+    <div class="md-editor-wrapper">
+      <textarea
+          :class="{'is-invalid': is_invalid}"
+          rows="10" :value="input" :name="name"
+          @input="update"></textarea>
+      <div class="preview">
+        <span v-html="compiledMarkdown"></span>
+        <a
+         class="doc-link"
+         href="https://guides.github.com/features/mastering-markdown/#examples"
+         target="_blank">
+          <font-awesome-icon :icon="['fab', 'markdown']" />
+        </a>
       </div>
     </div>
-
     <slot></slot>
   </div>
 </template>
@@ -42,7 +39,6 @@ export default {
   data: function() {
     return {
       input: this.value ? this.value : "",
-      id: uniqueId('mde-'),
     };
   },
   computed: {
@@ -59,8 +55,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.nav-link {
-  font-size: smaller;
-  padding: .25em .5em;
+.md-editor-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  textarea {
+    border: none;
+    background: #f8f9fa;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+
+    @media (min-width: 768px) {
+      width: calc(50% - .25em);
+    }
+    padding: 1em;
+  }
+
+  .preview {
+    @media (min-width: 768px) {
+      width: calc(50% - .25em);
+    }
+    position: relative;
+    padding: 1em;
+
+    .doc-link {
+      color: black;
+      position: absolute;
+      bottom: .25em;
+      right: .5em;
+    }
+  }
 }
 </style>
