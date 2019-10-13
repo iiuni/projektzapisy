@@ -128,24 +128,37 @@ def group_view(request, group_id):
         ).prefetch_related('term', 'term__classroom').get(id=group_id)
     except Group.DoesNotExist:
         raise Http404
+    
+    order = Func(
+    'student__user__last_name',
+    function='pl_PL',
+    template='lower(%(expressions)s) COLLATE "%(function)s"')
 
-    records = Record.objects.filter(
-        group_id=group_id).exclude(status=RecordStatus.REMOVED).select_related(
+    records_group = Record.objects.filter(
+        group_id=group_id, status=RecordStatus.ENROLLED).select_related(
+            'student', 'student__user', 'student__program',
+            'student__consent').prefetch_related('student__user__groups').order_by(order)
+    
+    records_queue = Record.objects.filter(
+        group_id=group_id, status=RecordStatus.QUEUED).select_related(
             'student', 'student__user', 'student__program',
             'student__consent').prefetch_related('student__user__groups').order_by('created')
-
+    
     guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
 
     students_in_group = []
     students_in_queue = []
+    
     record: Record
-    for record in records:
+    for record in records_group:
         record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
             role.name for role in record.student.user.groups.all())
-        if record.status == RecordStatus.ENROLLED:
-            students_in_group.append(record.student)
-        elif record.status == RecordStatus.QUEUED:
-            students_in_queue.append(record.student)
+        students_in_group.append(record.student)
+    for record in records_queue:
+        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+            role.name for role in record.student.user.groups.all())
+        students_in_queue.append(record.student)
+    
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
