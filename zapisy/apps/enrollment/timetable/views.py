@@ -103,7 +103,7 @@ def student_timetable_data(student: Student):
     data = {
         'groups': groups,
         'sum_points': sum(points_for_courses.values()),
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'groups_dicts': group_dicts,
     }
     return data
 
@@ -116,7 +116,7 @@ def employee_timetable_data(employee: Employee):
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
     group_dicts = build_group_list(groups)
     data = {
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'groups_dicts': group_dicts,
     }
     return data
 
