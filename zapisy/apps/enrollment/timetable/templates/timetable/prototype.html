@@ -27,9 +27,9 @@
 
 {% block content %}
     <div class="row" id="timetable"></div>
-    <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
-    <script id="courses-list" type="application/json">{{ courses_json|safe }}</script>
-    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
+    {{ groups_json|json_script:"timetable-data" }}
+    {{ courses_json|json_script:"courses-list" }}
+    {{ filters_json|json_script:"filters-data" }}
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
 
     <div class="mt-3 border-top pt-3">
