@@ -41,6 +41,15 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% if request.user.is_staff or request.user.employee %}
+                <div class="d-print-none">
+                    <h5>Wyślij wiadomość do głosujących</h5>
+                    <ul>
+                        <li><a href="mailto:{{ mailto_voters }}">udostępniając adresy mailowe studentów</a></li>
+                        <li><a href="mailto:{{ mailto_voters_bcc }}">ukrywając adresy mailowe studentów</a></li>
+                    </ul>
+                </div>
+            {% endif %}
         {% else %}
             <div class="alert alert-warning">Nikt nie zagłosował na ten przedmiot.</div>
         {% endif %}
