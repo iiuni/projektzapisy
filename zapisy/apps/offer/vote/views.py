@@ -126,10 +126,7 @@ def proposal_vote_summary(request, slug):
 
     total = votes.aggregate(total=models.Sum('true_val')).get('total', 0)
 
-    voters = []
-
-    for vote in votes:
-        voters.append(vote.student)
+    voters = [vote.student for vote in votes]
 
     return render(request, 'vote/proposal_summary.html', {
         'proposal': proposal,
