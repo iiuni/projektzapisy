@@ -135,11 +135,11 @@ def group_view(request, group_id):
         function='pl_PL',
         template='(%(expressions)s) COLLATE "%(function)s"')
 
-    """ 
+    """
         ORDER BY will sort records depending on the database locale (collation).
         We can either make sure that database uses the locale we need or
-        ask for proper collation in sql queries. 
-        
+        ask for proper collation in sql queries.
+
         In this case, we simply ask our database (through Django) to run a query:
         SELECT ... FROM ...
         .
