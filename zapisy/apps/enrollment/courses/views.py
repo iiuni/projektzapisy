@@ -133,7 +133,22 @@ def group_view(request, group_id):
     order = Func(
         'student__user__last_name',
         function='pl_PL',
-        template='lower(%(expressions)s) COLLATE "%(function)s"')
+        template='(%(expressions)s) COLLATE "%(function)s"')
+
+    """ 
+        ORDER BY will sort records depending on the database locale (collation).
+        We can either make sure that database uses the locale we need or
+        ask for proper collation in sql queries. 
+        
+        In this case, we simply ask our database (through Django) to run a query:
+        SELECT ... FROM ...
+        .
+        .
+        .
+        ORDER BY student__user__last_name COLLATE pl_PL
+
+        It will work in any database supporting COLLATE (both PostgreSQL and MySQL do).
+    """
 
     records_group = Record.objects.filter(
         group_id=group_id, status=RecordStatus.ENROLLED).select_related(
@@ -150,15 +165,15 @@ def group_view(request, group_id):
     students_in_group = []
     students_in_queue = []
 
-    record: Record
-    for record in records_group:
-        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
-            role.name for role in record.student.user.groups.all())
-        students_in_group.append(record.student)
-    for record in records_queue:
-        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
-            role.name for role in record.student.user.groups.all())
-        students_in_queue.append(record.student)
+    def handle_records(records, student_list):
+        record: Record
+        for record in records:
+            record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+                role.name for role in record.student.user.groups.all())
+            student_list.append(record.student)
+
+    handle_records(records_group, students_in_group)
+    handle_records(records_queue, students_in_queue)
 
     data = {
         'students_in_group': students_in_group,
