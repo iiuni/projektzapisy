@@ -162,18 +162,17 @@ def group_view(request, group_id):
 
     guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
 
-    students_in_group = []
-    students_in_queue = []
-
-    def handle_records(records, student_list):
+    def collect_students(records) -> List[Student]:
         record: Record
+        student_list = []
         for record in records:
             record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
                 role.name for role in record.student.user.groups.all())
             student_list.append(record.student)
+        return student_list
 
-    handle_records(records_group, students_in_group)
-    handle_records(records_queue, students_in_queue)
+    students_in_group = collect_students(records_group)
+    students_in_queue = collect_students(records_queue)
 
     data = {
         'students_in_group': students_in_group,
