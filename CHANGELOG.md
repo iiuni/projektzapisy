@@ -1,5 +1,42 @@
 # projektzapisy Changelog
 
+# Version 3.6.19
+
+* Link to issue tracker replaced with Github (#680)
+* Small interface changes
+* Re-write of offer/vote application (#678)
+* Re-write of offer/preferences application (#686)
+
+# Version 29.4.19
+
+* New model for course Proposal and base model for Course info (#669)
+
+# Version 25.4.19
+
+* CSS library updated to Bootstrap 4 across entire system (#603)
+* CAS server redirection back to the system after log-out (#655)
+* Attaching security-related (mainly XSS) headers (#552)
+* Upgrade of some Python dependencies, including Django (to v2.1) (#666)
+
+# Version 12.2.19
+
+* New opening times computation (#500).
+* New ECTS course values computation (#501).
+* New enrollment/queues logic (#502).
+* New timetable and prototype (#503).
+
+# Version 31.1.19
+
+* REST API for students votes in offer is introduced to make exporting votes to scheduler easier.
+* Bug in key-generation is fixed, that was probably introduced by upgrading Django to 2.0.
+
+# Version 5.12.18
+
+* Ubuntu upgraded to 18.04.
+* Major changes in users app. We have groups now. UserProfile and ExtendedUser are gone (#444).
+* Webpack/Yarn is used for compiling and bundling assets (JS/TS/CSS).
+* Django is updated to version 2.0.
+
 # Version 10.06.18
 
 * added consent for students
