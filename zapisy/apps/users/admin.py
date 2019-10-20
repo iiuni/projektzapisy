@@ -64,7 +64,7 @@ class StudentAdmin(admin.ModelAdmin):
         (None, {'fields': ['user', 'matricula', 'status']}),
         ('Studia', {'fields': ['numeryczna_l', 'dyskretna_l', 'program', 'semestr', 'ects']}),
         ('Zapisy', {'fields': ['records_opening_bonus_minutes', 'block']}),
-        ('Inne', {'fields': ['receive_mass_mail_enrollment', 'receive_mass_mail_offer', 'receive_mass_mail_grade', 'last_news_view'], 'classes': ['collapse']}),
+        ('Inne', {'fields': ['last_news_view'], 'classes': ['collapse']}),
     ]
     search_fields = ('user__first_name', 'user__last_name', 'matricula')
     list_filter = ('program', 'status', 'semestr')
@@ -84,11 +84,9 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     search_fields = ('user__first_name', 'user__last_name', 'user__username')
     fieldsets = [
-        (None, {
-            'fields': [
-                'user', 'status', 'homepage', 'room', 'consultations']}), ('Ogłoszenia mailowe', {
-                    'fields': [
-                        'receive_mass_mail_enrollment', 'receive_mass_mail_offer'], 'classes': ['collapse']}), ]
+        (None,
+         {'fields': ['user', 'status', 'homepage', 'room', 'consultations']})
+    ]
     ordering = ['user__last_name', 'user__first_name']
     list_display_links = ('get_full_name',)
 
