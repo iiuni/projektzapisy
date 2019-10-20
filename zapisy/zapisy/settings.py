@@ -3,6 +3,7 @@ import logging
 import environ
 from django.contrib.messages import constants as messages
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env()
@@ -235,6 +236,7 @@ INSTALLED_APPS = (
     'apps.grade.ticket_create',
     'apps.email_change',
     'apps.schedulersync',
+    'apps.theses.apps.ThesesConfig',
     'django_extensions',
     'django_filters',
     'bootstrap_pagination',

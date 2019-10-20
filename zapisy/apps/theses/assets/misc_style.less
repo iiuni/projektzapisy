@@ -1,0 +1,43 @@
+/* Miscellaneous app styles */
+
+// reset annoying Bootstrap styles
+input, textarea {
+    height: auto;
+}
+table {
+    width: auto;
+    margin-bottom: auto;
+}
+table th, table td {
+    padding: 0px;
+    line-height: auto;
+    border-bottom: 0px;
+}
+input, textarea, label {
+    width: auto;
+}
+select {
+    padding: 0px;
+}
+label {
+    padding-top: 0px;
+}
+
+select option:disabled {
+    color: lightgray;
+}
+
+// bootstrap applies box-sizing: border-box to all elements,
+// this breaks the header column sizes in the theses table
+// since the styles for the table were written by the library author
+// with the default behavior in mind, it's safer to restore it
+.ReactVirtualized__Table * {
+    box-sizing: content-box;
+}
+
+pre {
+    display: inline;
+    padding: 0px;
+    margin: 0px;
+    font-size: inherit;
+}

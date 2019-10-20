@@ -68,7 +68,7 @@
                                     <div class="hidden-answers w-100">
                                         {% for ans in ans_data.2 %}
                                         <blockquote class="blockquote border-bottom p-3">
-                                            <pre {% if last_visit < ans.time %}class="text-info"{% endif %}>{{ ans.content }}</pre>
+                                            <span {% if last_visit < ans.time %}class="text-info"{% endif %}>{{ ans.content }}</span>
                                         </blockquote>
                                         {% endfor %}
                                     </div>

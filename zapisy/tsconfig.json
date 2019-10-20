@@ -3,7 +3,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "sourceMap": true,
-    "target": "es6",
+    "target": "esnext",
     "alwaysStrict": true,
     "strictNullChecks": true,
     "strict": true,
@@ -11,11 +11,8 @@
     "module": "esnext",
     "baseUrl": "./assets",
     "noUnusedParameters": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./webpack_resources/typings"
-    ],
-    "types":[
+    "noUnusedLocals": true,
+    "types": [
       "jquery",
       "lodash",
       "bootstrap",
@@ -30,5 +27,6 @@
     // Config files are compiled separately, see tsconfig.webpack-config
     "./webpack_resources/webpack-utils.ts",
     "./webpack_resources/webpack.config.ts",
+    "./compiled_assets",
   ]
 }

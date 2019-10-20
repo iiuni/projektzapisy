@@ -12,5 +12,11 @@ library.add(faExternalLinkAlt);
 import { faPrint } from "@fortawesome/free-solid-svg-icons/faPrint";
 library.add(faPrint);
 
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+library.add(faPlus);
+
+import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
+library.add(faMinus);
+
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();

@@ -4,6 +4,7 @@ from django.db import models
 from django.shortcuts import redirect, render, get_object_or_404
 
 from apps.enrollment.courses.models import Semester
+from apps.enrollment.utils import mailto
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.decorators import student_required
@@ -125,8 +126,12 @@ def proposal_vote_summary(request, slug):
 
     total = votes.aggregate(total=models.Sum('true_val')).get('total', 0)
 
+    voters = [vote.student for vote in votes]
+
     return render(request, 'vote/proposal_summary.html', {
         'proposal': proposal,
         'votes': votes,
         'total': total,
+        'mailto_voters': mailto(request.user, voters, bcc=False),
+        'mailto_voters_bcc': mailto(request.user, voters, bcc=True)
     })

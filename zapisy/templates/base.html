@@ -8,7 +8,7 @@
 {% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
-<html lang="pl" class="h-100">
+<html lang="pl">
 
 <head>
     <meta charset="utf-8">
@@ -41,7 +41,7 @@
     
 </head>
 
-<body class="d-flex flex-column h-100">
+<body>
     <div class="container-fluid p-0 d-print-none">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -63,6 +63,11 @@
                     <li {% block events_active %}{% endblock %} class="nav-item">
                         <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
                     </li>
+                    {% if user.is_authenticated %}
+                    <li {% block theses_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
+                    </li>
+                    {% endif %}
                 </ul>
             {% if user.is_authenticated %}
                 <div class="navbar-nav ml-auto">
@@ -226,7 +231,7 @@
     </div>
     {% block rendered_bundles %}
     {% endblock %}
-    <footer class="mt-auto d-print-none">
+    <footer class="d-print-none">
         <div class="container-fluid">
             <div class="container">
                 <p>

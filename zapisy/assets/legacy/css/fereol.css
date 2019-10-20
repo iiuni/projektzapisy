@@ -10,7 +10,7 @@ a {
   float: left;
 }
 
-div.header {
+#logo_container {
   background: #00709e;
  /* Old browsers */
   height: 96px;

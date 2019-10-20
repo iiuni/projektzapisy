@@ -5,16 +5,25 @@
             "browsers": ["last 2 versions", "ie >= 10"]
           },
           "modules": false
-        }]
+        }],
+        // Stage 2 polyfills and syntactical transformations
+        // see https://stackoverflow.com/a/37252259/1928235
+        "babel-preset-stage-2"
     ],
     "plugins": [
       "transform-runtime",
       "babel-plugin-transform-object-rest-spread",
+      // This gives us Lodash treeshaking: only the functionality actually
+      // used by our code is placed in the output bundle, as opposed to
+      // the entire Lodash library
       ["transform-imports", {
         "lodash": {
           "transform": "lodash/${member}",
           "preventFullImport": true
         }
-      }]
+      }],
+      // Needed to use React in .jsx files; .tsx files are transformed
+      // by the TypeScript compiler
+      "transform-react-jsx"
     ]
 }

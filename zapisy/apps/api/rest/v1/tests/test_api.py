@@ -87,21 +87,21 @@ class VoteSystemTests(TestCase):
         response = client.get('/api/v1/votes/', {'state': self.state2.pk}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['results']), 3)
-        self.assertDictEqual(response.data['results'][0], {
-            'student': self.students[1].pk,
-            'course_name': "Pranie",
-            'vote_points': 1
-        })
-        self.assertDictEqual(response.data['results'][1], {
-            'student': self.students[0].pk,
-            'course_name': "Zmywanie",
-            'vote_points': 3
-        })
-        self.assertDictEqual(response.data['results'][2], {
-            'student': self.students[1].pk,
-            'course_name': "Zmywanie",
-            'vote_points': 2
-        })
+        self.assertCountEqual(response.data['results'], [
+            {
+                'student': self.students[1].pk,
+                'course_name': "Pranie",
+                'vote_points': 1
+            }, {
+                'student': self.students[0].pk,
+                'course_name': "Zmywanie",
+                'vote_points': 3
+            }, {
+                'student': self.students[1].pk,
+                'course_name': "Zmywanie",
+                'vote_points': 2
+            }
+        ])
 
     def test_can_set_semester_usos_kod(self):
         """Tests semester endpoint.

@@ -12,11 +12,8 @@
       }
     ],
     "new-parens": false,
-    "max-line-length": [true, 80],
     "trailing-comma": false,
-    "variable-name": [
-      true,
-      "check-format"
-    ]
+    "max-line-length": [true, 105],
+    "prefer-const": true
   }
 }

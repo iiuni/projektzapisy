@@ -35,7 +35,13 @@
     <header class="d-flex justify-content-between align-items-center">
         <div>
             <h1>{{ group.course }}</h1>
-            <h4>{{group.get_type_display}}: {{group.get_teacher_full_name}}</h4>
+            <h4>{{group.get_type_display}}:
+                    {% if group.teacher %}
+                        <a href="{% url 'employee-profile' group.teacher.user_id %}"
+                        class="person">{{group.get_teacher_full_name}}</a>
+                    {% else %}
+                        (nieznany prowadzący)
+                    {% endif %}</h4>
             <h6>{% for term in group.term.all %}{{ term }}{% endfor %}</h6>
         </div>
         {% if user.is_staff %}

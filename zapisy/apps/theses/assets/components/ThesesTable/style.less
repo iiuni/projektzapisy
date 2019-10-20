@@ -1,0 +1,71 @@
+/*
+    Custom styles for the theses table component and its contents
+*/
+
+.ReactVirtualized__Table {
+    color: black;
+}
+
+// Decent looking table headers
+.ReactVirtualized__Table__headerRow {
+    background-color: #d8d8d8;
+    padding-right: 0px !important;
+    border-bottom: 1px solid black;
+    text-align: center;
+    font-weight: bold;
+    text-transform: none;
+}
+
+// Column separators
+.ReactVirtualized__Table__headerColumn:not(:first-child),
+.ReactVirtualized__Table__rowColumn:not(:first-child) {
+    border-left: 1px solid black;
+    padding-left: 5px;
+    outline: none;
+}
+
+// All cells should have set height and vertical align
+.ReactVirtualized__Table__headerColumn,
+.ReactVirtualized__Table__rowColumn {
+    height: 100%;
+    display: flex; 
+    align-items: center;
+}
+
+.table_text_cell {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    white-space: normal;
+}
+
+// All headers & the reservation column want horizontal centering
+.ReactVirtualized__Table__headerColumn, .reservation_cell {
+    justify-content: center;
+}
+
+.ReactVirtualized__Table__row:hover {
+    cursor: pointer;
+    background-color: #EDEDED;
+}
+
+// Get rid of the bluish outline around table elements in WebKit browsers
+.ReactVirtualized__Table__row, .ReactVirtualized__Table__Grid {
+    outline: none;
+}
+
+// For some bizarre reason Gecko insists on making the first column
+// (but not the header cell) one px wider; other engines don't do this
+// force a margin smaller by one px to correct this
+@-moz-document url-prefix() {
+    .reservation_cell {
+        margin-right: 9px !important;
+    }
+}
+
+.alternating_color_odd {
+    background-color: #f4f4f4;
+}
+
+.active_row {
+    font-weight: bold;
+}
