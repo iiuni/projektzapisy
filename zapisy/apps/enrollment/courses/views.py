@@ -136,10 +136,10 @@ def group_view(request, group_id):
     #
     # In this case, we simply ask our database (through Django) to run a query:
     # SELECT ... FROM ...
-    #  . 
-    #  .  
+    #  .
+    #  .
     # ORDER BY student__user__last_name COLLATE pl_PL
-    # 
+    #
     # It will work in any database supporting COLLATE (both PostgreSQL and MySQL
     # do) however the locale specification may differ.
     order = Func(
