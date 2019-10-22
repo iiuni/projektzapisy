@@ -130,25 +130,22 @@ def group_view(request, group_id):
     except Group.DoesNotExist:
         raise Http404
 
+    # ORDER BY will sort records depending on the database locale (collation).
+    # We can either make sure that database uses the locale we need or ask for
+    # proper collation in sql queries.
+    #
+    # In this case, we simply ask our database (through Django) to run a query:
+    # SELECT ... FROM ...
+    #  . 
+    #  .  
+    # ORDER BY student__user__last_name COLLATE pl_PL
+    # 
+    # It will work in any database supporting COLLATE (both PostgreSQL and MySQL
+    # do) however the locale specification may differ.
     order = Func(
         'student__user__last_name',
         function='pl_PL',
         template='(%(expressions)s) COLLATE "%(function)s"')
-
-    """
-        ORDER BY will sort records depending on the database locale (collation).
-        We can either make sure that database uses the locale we need or
-        ask for proper collation in sql queries.
-
-        In this case, we simply ask our database (through Django) to run a query:
-        SELECT ... FROM ...
-        .
-        .
-        .
-        ORDER BY student__user__last_name COLLATE pl_PL
-
-        It will work in any database supporting COLLATE (both PostgreSQL and MySQL do).
-    """
 
     records_group = Record.objects.filter(
         group_id=group_id, status=RecordStatus.ENROLLED).select_related(
