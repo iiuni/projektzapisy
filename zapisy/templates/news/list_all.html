@@ -2,7 +2,8 @@
 
 {% load static %}
 {% load fereol_common %}
-{% load compressed %}
+{% load render_bundle from webpack_loader %}
+
 {% block main-subtitle %}Aktualności{% endblock %}
 
 {% block content-class %}narrow{% endblock %}
@@ -55,7 +56,9 @@
                     <span class="od-news-date">{{ news.date|date:"l, d.m.Y · G:i" }}</span>
                     <span class="od-news-author">{{ news.author.get_full_name }}</span>
                 </div>
-                <div class="my-3">{{ news.body|safe }}</div>
+                <div class="my-3">
+                    <div class="markdown">{{ news.body|safe }}</div>
+                </div>
             </div>
             {% endfor %}
         {% else %}
@@ -87,5 +90,7 @@
         </div>
     </div>
 </div>
+
+{% render_bundle 'proposal-render-markdown' %}
 
 {% endblock %}
