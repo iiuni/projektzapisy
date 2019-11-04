@@ -65,11 +65,11 @@ class BaseUser(models.Model):
 
     @staticmethod
     def is_student(user: User) -> bool:
-        return is_user_in_group(user, 'students')
+        return hasattr(user, 'student')
 
     @staticmethod
     def is_employee(user: User) -> bool:
-        return is_user_in_group(user, 'employees')
+        return hasattr(user, 'employee')
 
     @staticmethod
     def is_external_contractor(user: User) -> bool:
