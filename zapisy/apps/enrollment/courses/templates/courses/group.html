@@ -69,7 +69,7 @@
         </p>
 
         {% if students_in_group %}
-            {% include "courses/students_list.html" with students=students_in_group %}
+            {% include "courses/students_list.html" with students=students_in_group|dictsort:"user.last_name" %}
             
             {% if request.user.is_staff or request.user.employee %}
             <div class="d-print-none">

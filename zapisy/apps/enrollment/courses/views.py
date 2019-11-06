@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.db.models import F, Func
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
@@ -130,47 +129,23 @@ def group_view(request, group_id):
     except Group.DoesNotExist:
         raise Http404
 
-    # ORDER BY will sort records depending on the database locale (collation).
-    # We can either make sure that database uses the locale we need or ask for
-    # proper collation in sql queries.
-    #
-    # In this case, we simply ask our database (through Django) to run a query:
-    # SELECT ... FROM ...
-    #  .
-    #  .
-    # ORDER BY student__user__last_name COLLATE pl_PL
-    #
-    # It will work in any database supporting COLLATE (both PostgreSQL and MySQL
-    # do) however the locale specification may differ.
-    order = Func(
-        'student__user__last_name',
-        function='pl_PL',
-        template='(%(expressions)s) COLLATE "%(function)s"')
-
-    records_group = Record.objects.filter(
-        group_id=group_id, status=RecordStatus.ENROLLED).select_related(
-            'student', 'student__user', 'student__program',
-            'student__consent').prefetch_related('student__user__groups').order_by(order)
-
-    records_queue = Record.objects.filter(
-        group_id=group_id, status=RecordStatus.QUEUED).select_related(
+    records = Record.objects.filter(
+        group_id=group_id).exclude(status=RecordStatus.REMOVED).select_related(
             'student', 'student__user', 'student__program',
             'student__consent').prefetch_related('student__user__groups').order_by('created')
 
     guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
 
-    def collect_students(records) -> List[Student]:
-        record: Record
-        student_list = []
-        for record in records:
-            record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
-                role.name for role in record.student.user.groups.all())
-            student_list.append(record.student)
-        return student_list
-
-    students_in_group = collect_students(records_group)
-    students_in_queue = collect_students(records_queue)
-
+    students_in_group = []
+    students_in_queue = []
+    record: Record
+    for record in records:
+        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+            role.name for role in record.student.user.groups.all())
+        if record.status == RecordStatus.ENROLLED:
+            students_in_group.append(record.student)
+        elif record.status == RecordStatus.QUEUED:
+            students_in_queue.append(record.student)
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
