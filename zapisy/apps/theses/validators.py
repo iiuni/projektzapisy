@@ -23,7 +23,7 @@ def validate_master_rejecter(value: Optional[int]):
     if value is not None:
         try:
             person = Employee.objects.get(pk=value)
-            if not is_theses_board_member(person):
+            if not is_theses_board_member(person.user):
                 raise ValidationError(
                     f'{person} nie jest członkiem komisji prac dyplomowych. Skład komisji ' +
                     "definiować można w zakładce Użytkownicy -> Grupy -> Komisja prac dyplomowych."
