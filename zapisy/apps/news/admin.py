@@ -16,3 +16,6 @@ class NewsAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }
+
+    def get_changeform_initial_data(self, request):
+        return {'author': request.user}
