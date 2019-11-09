@@ -97,8 +97,7 @@ export default class NotificationsComponent extends Vue {
                         </button>
                     </div>
                     <a :href="elem.target" class="toast-link">
-                        <div class="toast-body text-body"
-                        v-html="elem.description"></div>
+                        <div class="toast-body text-body">{{ elem.description }}</div>
                     </a>
                 </div>
             </form>
@@ -136,6 +135,10 @@ a.toast-link:hover {
     .toast-body {
         background-color: var(--light);
     }
+}
+
+.toast-body {
+    white-space: pre-wrap;
 }
 
 .place-for-notifications {
