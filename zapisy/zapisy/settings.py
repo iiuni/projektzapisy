@@ -153,28 +153,21 @@ USE_I18N = True
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = env.str('SECRET_KEY', default='N3MUBVRQXkhuqzsZ8QMepRaZwHDXwhp4rTcVQF5bmckB2c293V')
 
-TEMPLATE_LOADERS_TO_USE = [
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-]
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
         ],
         'OPTIONS': {
-            "debug": env.bool('TEMPLATE_DEBUG'),
+            'debug': env.bool('TEMPLATE_DEBUG'),
             'context_processors': [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
                 'apps.users.context_processors.roles',
             ],
-            'loaders': TEMPLATE_LOADERS_TO_USE
-            if DEBUG else
-            [('django.template.loaders.cached.Loader', TEMPLATE_LOADERS_TO_USE)]
         },
     },
 ]

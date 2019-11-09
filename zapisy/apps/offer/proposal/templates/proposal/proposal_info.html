@@ -1,4 +1,5 @@
 {% load render_bundle from webpack_loader %}
+{% load filters %}
 
 <table class="table table-bordered table-md-responsive d-print-none" id="table-info">
     <colgroup>
@@ -84,7 +85,7 @@
 
 <div class="description d-print-none">
     <h2>Opis przedmiotu:</h2>
-    <div class="markdown">{{ course.description.strip|default:"Brak" }}</div>
+    {{ course.description.strip|default:"Brak"|markdown }}
 </div>
 
 {% if request.user.is_authenticated %}	
@@ -109,4 +110,4 @@
     }
 </script>
 
-{% render_bundle 'proposal-render-markdown' %}
+{% render_bundle 'render-markdown' %}

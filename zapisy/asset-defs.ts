@@ -16,6 +16,10 @@ export default {
             "common/cookieconsent/display-cookieconsent.ts",
             "common/icons-library.ts",
         ],
+        "render-markdown": [
+            "common/render-markdown.ts",
+            "common/render-markdown.scss",
+        ],
         "fullcalendar": [
             "common/fullcalendar.ts"
         ],

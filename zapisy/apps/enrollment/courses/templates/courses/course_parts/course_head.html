@@ -1,4 +1,5 @@
 {% load render_bundle from webpack_loader %}
+{% load filters %}
 
 <div class="d-flex justify-content-between align-items-center">
     <h1 class="d-inline-block">
@@ -97,7 +98,7 @@
 
 <div class="description">
     <h2>Opis przedmiotu:</h2>
-    <div class="markdown">{{ course.description|default:"Brak" }}</div>
+    {{ course.description|default:"Brak"|markdown }}
 </div>
 
-{% render_bundle 'proposal-render-markdown' %}
+{% render_bundle 'render-markdown' %}

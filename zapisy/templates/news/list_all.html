@@ -3,6 +3,7 @@
 {% load static %}
 {% load fereol_common %}
 {% load render_bundle from webpack_loader %}
+{% load filters %}
 
 {% block main-subtitle %}Aktualności{% endblock %}
 
@@ -57,7 +58,7 @@
                     <span class="od-news-author">{{ news.author.get_full_name }}</span>
                 </div>
                 <div class="my-3">
-                    <div class="markdown">{{ news.body|safe }}</div>
+                    <div>{{ news.body|markdown }}</div>
                 </div>
             </div>
             {% endfor %}
@@ -91,6 +92,5 @@
     </div>
 </div>
 
-{% render_bundle 'proposal-render-markdown' %}
-
+{% render_bundle 'render-markdown' %}
 {% endblock %}
