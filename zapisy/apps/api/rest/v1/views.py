@@ -19,9 +19,15 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
+    """Lists all courses.
+
+    To only show visible semesters, query:
+        /api/v1/?visible=true
+    """
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = Semester.objects.order_by('-semester_beginning')
+    filter_fields = ['visible']
     serializer_class = serializers.SemesterSerializer
 
 

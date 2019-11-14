@@ -16,8 +16,8 @@ class SemesterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Semester
-        fields = ('id', 'display_name', 'usos_kod')
-        read_only_fields = ('id', 'display_name')
+        fields = ('id', 'display_name', 'year', 'type', 'usos_kod')
+        read_only_fields = ('id', 'display_name', 'year', 'type')
 
     def get_display_name(self, obj):
         return obj.get_name()
