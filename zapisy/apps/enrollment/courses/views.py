@@ -73,8 +73,10 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
     student_status_groups = Record.is_recorded_in_groups(student, groups)
-    student_can_enqueue = Record.can_enqueue_groups(student, course.groups.all())
-    student_can_dequeue = Record.can_dequeue_groups(student, course.groups.all())
+    student_can_enqueue = Record.can_enqueue_groups(
+        student, course.groups.all())
+    student_can_dequeue = Record.can_dequeue_groups(
+        student, course.groups.all())
 
     for group in groups:
         group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
@@ -111,7 +113,8 @@ def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
     and surnames in the given group.
     """
     is_user_proper_employee = (
-        BaseUser.is_employee(user) and not BaseUser.is_external_contractor(user)
+        BaseUser.is_employee(
+            user) and not BaseUser.is_external_contractor(user)
     )
     is_user_group_teacher = user == group.teacher.user
     return is_user_proper_employee or is_user_group_teacher
@@ -129,23 +132,30 @@ def group_view(request, group_id):
     except Group.DoesNotExist:
         raise Http404
 
-    records = Record.objects.filter(
-        group_id=group_id).exclude(status=RecordStatus.REMOVED).select_related(
+    records_in_group = Record.objects.filter(
+        group_id=group_id, status=RecordStatus.ENROLLED).select_related(
+            'student', 'student__user', 'student__program',
+            'student__consent').prefetch_related('student__user__groups').order_by('student__user__last_name', 'student__user__first_name')
+
+    records_in_queue = Record.objects.filter(
+        group_id=group_id, status=RecordStatus.QUEUED).select_related(
             'student', 'student__user', 'student__program',
             'student__consent').prefetch_related('student__user__groups').order_by('created')
 
     guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
 
-    students_in_group = []
-    students_in_queue = []
-    record: Record
-    for record in records:
-        record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
-            role.name for role in record.student.user.groups.all())
-        if record.status == RecordStatus.ENROLLED:
-            students_in_group.append(record.student)
-        elif record.status == RecordStatus.QUEUED:
-            students_in_queue.append(record.student)
+    def collect_students(records) -> List[Student]:
+        record: Record
+        student_list = []
+        for record in records:
+            record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+                role.name for role in record.student.user.groups.all())
+            student_list.append(record.student)
+        return student_list
+
+    students_in_group = collect_students(records_in_group)
+    students_in_queue = collect_students(records_in_queue)
+
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
