@@ -30,6 +30,11 @@ class SpecialReservationForm(forms.ModelForm):
 class SpecialReservationAdmin(admin.ModelAdmin):
     form = SpecialReservationForm
 
+    list_display = ('semester', 'title', 'classroom', 'dayOfWeek', 'start_time', 'end_time')
+    list_filter = ('semester', )
+    search_fields = ('title', )
+    ordering = ('semester', 'dayOfWeek')
+
     def save_model(self, request, obj, form, change):
         instance = form.save(commit=False)
         instance.save(author_id=request.user.id)
