@@ -30,7 +30,7 @@ class SpecialReservationForm(forms.ModelForm):
 class SpecialReservationAdmin(admin.ModelAdmin):
     form = SpecialReservationForm
 
-    list_display = ('semester', 'title', 'classroom', 'dayOfWeek', 'start_time', 'end_time')
+    list_display = ('title', 'classroom', 'dayOfWeek', 'start_time', 'end_time', 'semester')
     list_filter = ('semester', )
     search_fields = ('title', )
     ordering = ('semester', 'dayOfWeek')
