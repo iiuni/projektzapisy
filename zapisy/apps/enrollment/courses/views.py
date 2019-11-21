@@ -135,7 +135,8 @@ def group_view(request, group_id):
     records_in_group = Record.objects.filter(
         group_id=group_id, status=RecordStatus.ENROLLED).select_related(
             'student', 'student__user', 'student__program',
-            'student__consent').prefetch_related('student__user__groups').order_by('student__user__last_name', 'student__user__first_name')
+            'student__consent').prefetch_related('student__user__groups').order_by(
+                'student__user__last_name', 'student__user__first_name')
 
     records_in_queue = Record.objects.filter(
         group_id=group_id, status=RecordStatus.QUEUED).select_related(
