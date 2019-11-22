@@ -2,6 +2,7 @@
     <div>
         <div class="md-editor-wrapper">
             <textarea
+                class="text-monospace form-control bg-light"
                 :class="{ 'is-invalid': is_invalid }"
                 rows="10"
                 :value="input"
@@ -79,13 +80,10 @@ export default {
     border-radius: 0.25rem;
 
     textarea {
-        border: none;
-        background: #f8f9fa;
-        font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
-            Courier New, monospace;
-
         @media (min-width: 768px) {
             width: calc(50% - 0.25em);
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
         }
         padding: 1em;
     }
