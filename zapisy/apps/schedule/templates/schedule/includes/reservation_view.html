@@ -1,9 +1,15 @@
 <table class="table border">
     <tbody>
         <tr>
-            <th class="text-light bg-info"">Tytuł</th>
+            <th class="text-light bg-info">Tytuł</th>
             <td colspan="3">
-                {% if event.course %}<a href="">{{ event.course.name }}</a>{% else %}<a href="">{{ event.title }}</a>{% endif %}
+                <a href="{% url 'events:show' event.id %}">
+                    {% if event.course %}
+                        {{ event.course.name }}
+                    {% else %}
+                        {{ event.title }}
+                </a>
+                {% endif %}
             </td>
         </tr>
         <tr>
@@ -47,16 +53,6 @@
                     </tr>
                     {% endfor %}
                 </table>
-            </td>
-        </tr>
-        <tr>
-            <th class="text-light bg-info">Akcje</th>
-            <td colspan="3">
-                <div class="right">
-                    <span><a href="{% url 'events:show' event.id %}">
-                        <button class="btn btn-info">Zobacz</button>
-                    </a></span>
-                </div>
             </td>
         </tr>
     </tbody>
