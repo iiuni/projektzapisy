@@ -12,7 +12,6 @@ var scroll = function(id) {
 
 // wyczyść formularz dodawania terminu
 var resetAddTermForm = function() {
-    $('#hiddenroom').val('');
     $('#inputplace').val('');
     $('#addterm').text('Dodaj termin');
 };
