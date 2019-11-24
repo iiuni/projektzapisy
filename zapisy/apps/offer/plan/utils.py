@@ -13,8 +13,7 @@ from apps.enrollment.courses.models.group import Group
 from functools import reduce
 from typing import List, Tuple
 
-# import gspread
-# from oauth2client.service_account import ServiceAccountCredentials
+#import pygsheets
 
 
 def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
@@ -144,12 +143,15 @@ def get_votes(years: int):
     courses_data = {}
     # Get rid of courses that existed in previous years, but weren't in this year's vote
     for vote in votes:
-        if vote['proposal__name'] and vote['proposal__name'] + ' (lato)' and vote['proposal__name'] + ' (zima)' not in courses_data:
+        if vote['proposal__name'] not in courses_data:
             if current_year == vote['state__year']:
                 if vote['proposal__semester'] == 'u':
-                    courses_data[vote['proposal__name'] + ' (lato)'] = {}
-                    courses_data[vote['proposal__name'] + ' (zima)'] = {}
-                courses_data[vote['proposal__name']] = {}
+                    if vote['proposal__name'] + ' (lato)' not in courses_data:
+                        courses_data[vote['proposal__name'] + ' (lato)'] = {}
+                    if vote['proposal__name'] + ' (zima)' not in courses_data:
+                        courses_data[vote['proposal__name'] + ' (zima)'] = {}
+                else:
+                    courses_data[vote['proposal__name']] = {}
             else:
                 continue
         data = {'total': vote['total'], 'votes': vote['votes'], 'count_max': vote['count_max'],
@@ -214,37 +216,48 @@ def get_year_list(years):
 
 """ Not ready yet
 def votes_to_sheets(votes, states):
-    scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
-             "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        'apps/offer/plan/creds.json', scope)
-    client = gspread.authorize(creds)
-    sheet = client.open('ZapisyTest').sheet1
+    file = open('text.txt', 'w')
+    for vote in votes:
+        file.write(str(votes[vote]) + '\n')
+    file.close()
+    gc = pygsheets.authorize(service_file='creds.json')
+
+    try:
+        sheet = gc.open('ZapisyTest').sheet1
+    except pygsheets.SpreadsheetNotFound:
+        sheet = gc.create('ZapisyTest').sheet1
+
     sheet.clear()
-    row_head = ["Nazwa przedmiotu"]
-    row_head2 = ["Głosy", "Głosujący",
-                 "Za 3", "Typ", "Semestr", "Wykładowca", "Zapisani", ""]
+    row_head = [["Nazwa przedmiotu"]]
+    row_head2 = [["Głosy"], ["Głosujący"],
+                 ["Za 3"], ["Typ"], ["Semestr"], ["Wykładowca"], ["Zapisani"], [""]]
+
+    width = len(states) * len(row_head2) + len(row_head)
+
     for (i, state) in enumerate(states):
-        sheet.update_cell(1, i*len(row_head2) + 2, state.year)
+        sheet.update_value((1, i*len(row_head2) + 2), state.year)
         row_head.extend(row_head2)
-    sheet.insert_row(row_head, 2)
+
+    sheet.update_col(1, row_head, 1)
+
+    current_year = SystemState.get_current_state().year
     row_course = []
     for key, value in votes.items():
-        row_course.append(key)
+        current_row = []
+        current_row.append(key)
         for state in states:
             year = state.year
             if year in value:
                 for k2, v2 in value[year].items():
                     if k2 == 'enrolled':
-                        row_course.append(str(value[year][k2]))
-                    elif k2 != 'proposal':
-                        row_course.append(value[year][k2])
+                        current_row.append(str(value[year][k2]))
+                    elif k2 != 'proposal' and k2 != 'name':
+                        current_row.append(value[year][k2])
             else:
-                row_course.extend(["", "", "", "", "", "", ""])
-            row_course.append("")
-        del row_course[-1]
-    cell_list = sheet.range('A3:X' + str(len(votes)))
-    for (i, cell) in enumerate(cell_list):
-        cell.value = row_course[i]
-    sheet.update_cells(cell_list)
+                current_row.extend(["", "", "", "", "", "", ""])
+            current_row.append("")
+        row_course.append(current_row)
+    length = len(row_course)
+    sheet.update_values(crange='A3:Y' + str(length + 2),
+                        values=row_course)
 """
