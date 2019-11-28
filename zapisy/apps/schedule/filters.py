@@ -3,6 +3,9 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
 
+BOOLEAN_CHOICES = [(True, "Tak"),
+                   (False, "Nie")]
+
 
 class EventFilter(django_filters.FilterSet):
     type = django_filters.ChoiceFilter(choices=Event.TYPES,
@@ -11,7 +14,7 @@ class EventFilter(django_filters.FilterSet):
     status = django_filters.ChoiceFilter(choices=Event.STATUSES,
                                          label='Status',
                                          empty_label="Dowolny")
-    visible = django_filters.ChoiceFilter(choices=Event.BOOLEAN_CHOICES,
+    visible = django_filters.ChoiceFilter(choices=BOOLEAN_CHOICES,
                                           empty_label="Dowolne")
 
     class Meta:

@@ -28,9 +28,6 @@ class Event(models.Model):
                 (STATUS_ACCEPTED, 'Zaakceptowane'),
                 (STATUS_REJECTED, 'Odrzucone')]
 
-    BOOLEAN_CHOICES = [(True, "Tak"),
-                       (False, "Nie")]
-
     TYPES = [(TYPE_EXAM, 'Egzamin'),
              (TYPE_TEST, 'Kolokwium'),
              (TYPE_GENERIC, 'Wydarzenie'),
