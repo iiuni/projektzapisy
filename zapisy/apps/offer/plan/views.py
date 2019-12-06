@@ -22,8 +22,9 @@ def plan_create(request):
             # First value is the name of course
             # Second value is the semester when the course is planned to be
             # Third value says if this course is proposed
-            courses.append([key, value[current_year]['semester'], propose(value)])
-                
+            courses.append(
+                [key, value[current_year]['semester'], propose(value)])
+
         context = {'courses_proposal': courses}
         return render(request, 'plan/create-plan.html', context)
     else:
