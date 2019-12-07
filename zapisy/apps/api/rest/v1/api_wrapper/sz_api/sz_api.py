@@ -1,53 +1,57 @@
 import requests
+from typing import Iterator
 import urllib.parse
-import typing
-import json
+from pprint import pprint
+
+from .models import (Semester, User, Student)
 
 
 class ZapisyApi:
 
-    def __init__(self, token, base_url):
+    def __init__(self, token: str, api_url: str):
         self.token = token
-        self.base_url = base_url
+        self.redirect_map = self._get_redirect_map("http://testserver/api/v1/semesters/")
 
-    def get_semesters(self, visible=None):
-        return map(Semester.from_json, self._handle_request(
-            path="/api/v1/semesters/",
-            params={"visible": visible}
-        ))
+    def _get_redirect_map(self, api_url: str) -> dict:
+        return self._handle_request(api_url)
 
-    def _handle_request(self, path, params):
+    def _get_semesters(self) -> Iterator[Semester]:
+        """
+        Gets an iterator over Semester objects
+        """
+        return self._get_deserialized_data(Semester)
+
+    def get_students(self) -> Iterator[Student]:
+        """
+        Gets an iterator over Student objects
+        """
+        return self._get_deserialised_data(Student)
+
+    def _get_deserialized_data(self, model_class, params=None):
+        if model_class.is_paginated:
+            data_gen = self._get_paginated_data(model_class, params)
+        else:
+            data_gen = self._get_unpaginated_data(model_class, params)
+        yield from map(model_class.from_dict, data_gen)
+
+    def _get_paginated_data(self, model_class, params=None):
+        response = self._handle_request(
+            self.redirect_map[model_class.redirect_key], params)
+        yield from iter(response["results"])
+
+        while response["next"] is not None:
+            response = self._handle_request(response["next"], params)
+            yield from iter(response["results"])
+
+    def _get_unpaginated_data(self, model_class, params=None):
+        yield from iter(self._handle_request(
+            self.redirect_map[model_class.redirect_key], params))
+
+    def _handle_request(self, path, params=None):
         resp = requests.get(
-            urllib.parse.urljoin(self.base_url, path),
+            path,
             headers={"Authorization": self.token},
             params=params
         )
         resp.raise_for_status()
         return resp.json()
-
-class Model:
-    @classmethod
-    def from_json(cls, json):
-        dict_ = json.loads(json)
-        cls._from_dict(dict_)
-
-    @classmethod
-    def _from_dict(cls, dict_):
-        return cls(**dict_)
-
-    def _to_json(self):
-        return json.dumps(self.__dict__)
-
-
-class Semester(Model):
-    def __init__(self,
-                 id: int,
-                 display_name: str,
-                 year: str,
-                 type: str):
-        self.id = id
-        self.display_name = display_name
-        self.year = year
-        self.type = type
-
-
