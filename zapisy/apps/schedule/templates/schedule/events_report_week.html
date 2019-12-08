@@ -30,6 +30,9 @@
 {% block reporttitle %}Raport tygodniowy{% endblock %}
 
 {% block reportformview %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        Raport tygodniowy generowany jest na obecny tydzień
+    </div>
     <form action="{% url 'events:events_report_week' %}" method="post" id="reportForm">
         {% csrf_token %}
         {{ form.non_field_errors }}

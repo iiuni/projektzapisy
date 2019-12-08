@@ -322,7 +322,6 @@ def events_report(request):
 @permission_required('schedule.manage_events')
 def events_report_date(request):
     from .forms import ReportFormDate
-    print(request)
     if request.method == 'POST':
         form = ReportFormDate(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
@@ -331,7 +330,8 @@ def events_report_date(request):
             beg_date = form.cleaned_data["beg_date"]
             end_date = form.cleaned_data["end_date"]
             rooms = form.cleaned_data["rooms"]
-            return events_raport_date_pdf(request, beg_date, end_date, rooms)
+            report_type = 'date'
+            return events_raport_type_pdf(request, beg_date, end_date, rooms, report_type)
     else:
         form = ReportFormDate()
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
@@ -344,6 +344,8 @@ def events_report_date(request):
 @permission_required('schedule.manage_events')
 def events_report_week(request):
     from .forms import ReportFormWeek
+    from apps.enrollment.courses.models.semester import Semester
+
     if request.method == 'POST':
         form = ReportFormWeek(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
@@ -351,7 +353,12 @@ def events_report_week(request):
 
         if form.is_valid():
             rooms = form.cleaned_data["rooms"]
-            return events_raport_week_pdf(request, rooms)
+            curr_date = datetime.date.today()
+            beg_date = curr_date - datetime.timedelta(days=curr_date.weekday())
+            end_date = beg_date + datetime.timedelta(days=6)
+            report_type = 'week'
+            semester = Semester.get_current_semester()
+            return events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, semester)
     else:
         form = ReportFormWeek()
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
@@ -362,8 +369,7 @@ def events_report_week(request):
 
 @login_required
 @permission_required('schedule.manage_events')
-def events_raport_date_pdf(request, beg_date, end_date, rooms):
-
+def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, semester=None):
     events = []
     # we are using this function for sorting
     for room in rooms:
@@ -378,54 +384,16 @@ def events_raport_date_pdf(request, beg_date, end_date, rooms):
             room=room,
             event__status=Event.STATUS_ACCEPTED,
         ).order_by('day', 'start')))
-
     context = {
         'beg_date': beg_date,
         'end_date': end_date,
         'events': events,
         'pagesize': 'A4',
+        'semester': semester,
         'report': True
     }
-    template = get_template('schedule/events_report_date_pdf.html')
-    html = template.render(context)
 
-    response = HttpResponse(html)
-    return response
-
-
-@login_required
-@permission_required('schedule.manage_events')
-def events_raport_week_pdf(request, rooms):
-    from apps.enrollment.courses.models.semester import Semester
-
-    events = []
-    # we are using this function for sorting
-    for room in rooms:
-        try:
-            cr = Classroom.objects.get(id=room)
-        except ObjectDoesNotExist:
-            raise Http404
-        # probably not safe
-        curr_date = datetime.date.today()
-        beg_date = curr_date - datetime.timedelta(days=curr_date.weekday())
-        end_date = beg_date + datetime.timedelta(days=6)
-        events.append((cr, Term.objects.filter(
-            day__gte=beg_date,
-            day__lte=end_date,
-            room=room,
-            event__status=Event.STATUS_ACCEPTED,
-        ).order_by('day', 'start')))
-
-    curr_sem = Semester.get_current_semester()
-    context = {
-        'beg_date': beg_date,
-        'end_date': end_date,
-        'events': events,
-        'semester': curr_sem,
-        'pagesize': 'A4',
-        'report': True
-    }
-    template = get_template('schedule/events_report_week_pdf.html')
+    template = get_template('schedule/events_report_' + report_type + '_pdf.html')
     html = template.render(context)
 
     response = HttpResponse(html)
