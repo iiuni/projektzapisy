@@ -29,7 +29,7 @@
 
 {% block all-content %}
     <h2>Raport</h2>
-    <form action="{% url 'events:events_report' %}" method="post">
+    <form action="{% url 'events:events_report' %}" method="post" id="reportForm">
 
         {% csrf_token %}
         {{ form.non_field_errors }}

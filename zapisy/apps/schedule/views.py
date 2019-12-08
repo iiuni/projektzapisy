@@ -361,11 +361,6 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
 
     template = get_template('schedule/events_report_pdf.html')
     html = template.render(context)
-    result = io.BytesIO()
 
-    pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
-
-    response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=raport.pdf'
-
+    response = HttpResponse(html)
     return response
