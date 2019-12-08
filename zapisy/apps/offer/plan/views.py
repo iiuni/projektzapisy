@@ -2,10 +2,11 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from apps.users.models import BaseUser
 from django.urls import reverse
 
-from apps.offer.plan.sheets import create_sheets_service
+from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet
 from apps.offer.plan.utils import get_votes
 
-WYNIKI_GLOSOWANIA_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
+VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
+
 
 def plan_view(request):
     if request.user.is_superuser or BaseUser.is_employee(request.user):
@@ -15,9 +16,10 @@ def plan_view(request):
 
 
 def plan_create(request):
-    sh = create_sheets_service(WYNIKI_GLOSOWANIA_SPREADSHEET_ID)
     if request.user.is_superuser:
         courses_proposal = get_votes(1)
+        sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+        update_voting_results_sheet(sheet, courses_proposal)
         courses = []
         for key, value in courses_proposal.items():
             for k, v in value.items():
@@ -26,7 +28,10 @@ def plan_create(request):
                 # Third value says if this course is proposed
                 courses.append([key, v['semester'], False])
 
-        context = {'courses_proposal': courses}
+        context = {
+            'courses_proposal': courses,
+            'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID
+        }
         return render(request, 'plan/create-plan.html', context)
     else:
         return HttpResponse(status=403)

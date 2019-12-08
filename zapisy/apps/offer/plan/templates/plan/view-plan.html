@@ -1,4 +1,7 @@
 {% extends "offer/base.html" %}
 {% block content %}
-<h2>Przydział zajęć</h2>
+<div class="d-flex">
+    <h2>Przydział zajęć</h2>
+    <a href="{% url 'plan-create' %}" class="btn btn-primary">Kreator planu</a>
+</div>
 {% endblock %}

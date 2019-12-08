@@ -1,8 +1,8 @@
 {% extends "offer/base.html" %}
 {% block content %}
 <h2>Stwórz przydział zajęć</h2>
-<a href="" class="d-block mb-1 mt-5">>> Wyniki głosowania - arkusz Google</a>
-<a href="" class="d-block mb-5">>> Proponowany przydział zajęć - arkusz Google</a>
+<a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-5">>> Wyniki głosowania - arkusz Google</a>
+<a href="" target="_blank" class="d-block mb-5">>> Proponowany przydział zajęć - arkusz Google</a>
 
 <h4>Przedmioty na następny rok:</h4>
 <p class="lead">Proponowane przedmioty są już zaznaczone. Aby je usunąć lub dodać inne prosimy zaznaczyć/odznaczyć checkboxy.</p>
@@ -62,9 +62,9 @@
             </table>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty </button>
+    <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty</button>
 </form>
 
-<a href="" class="d-block mt-4">>> Proponowany przydział zajęć - arkusz Google</a>
+<a href="" target="_blank" class="d-block mt-4">>> Proponowany przydział zajęć - arkusz Google</a>
 
 {% endblock %}
