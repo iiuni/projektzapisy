@@ -1,6 +1,6 @@
 from datetime import date
 from django.db import models
-from django.db.models import Sum, Q, Count, Value
+from django.db.models import Sum, Q, Count, Value, Avg
 from django.db.models.functions import Concat
 
 from apps.offer.vote.models.single_vote import SingleVote, SingleVoteQuerySet
@@ -13,7 +13,30 @@ from apps.enrollment.courses.models.group import Group
 from functools import reduce
 from typing import List, Tuple
 
-#import pygsheets
+
+def propose(vote):
+    # A simple function to propose, whether the course should be taught in upcoming year
+    current_year = SystemState.get_current_state().year
+    proposal = Proposal.objects.get(id=vote[current_year]['proposal'])
+    avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
+        total=Sum('value')).aggregate(Avg('total'))
+    previous_avg = 0
+    years = 0
+    percentage = 0.8
+
+    for year, values in vote.items():
+        if not year == current_year:
+            years += 1
+            previous_avg = values['total']
+    if proposal.course_type.obligatory:
+        return True
+    if proposal.recommended_for_first_year:
+        return True
+    if vote[current_year]['total'] >= avg['total__avg']:
+        return True
+    if years > 0 and vote[current_year]['total'] >= percentage * (previous_avg / years):
+        return True
+    return False
 
 
 def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
@@ -132,6 +155,7 @@ def get_votes(years: int):
     # | 'count_max'                      | int    | number of votes for this proposal with value = max_vote_value              |
     # | 'votes'                          | int    | number of students that voted for this course                              |
     # | 'teacher'                        | string | lecturer/teacher of this course                                            |
+    # | 'name'                           | string | true course name
 
     votes = SingleVote.objects.filter(
         reduce(lambda x, y: x | y, [Q(state__year=year.year) for year in states])).values(
@@ -212,52 +236,3 @@ def get_year_list(years):
             break
         states.append(state)
     return states
-
-
-""" Not ready yet
-def votes_to_sheets(votes, states):
-    file = open('text.txt', 'w')
-    for vote in votes:
-        file.write(str(votes[vote]) + '\n')
-    file.close()
-    gc = pygsheets.authorize(service_file='creds.json')
-
-    try:
-        sheet = gc.open('ZapisyTest').sheet1
-    except pygsheets.SpreadsheetNotFound:
-        sheet = gc.create('ZapisyTest').sheet1
-
-    sheet.clear()
-    row_head = [["Nazwa przedmiotu"]]
-    row_head2 = [["Głosy"], ["Głosujący"],
-                 ["Za 3"], ["Typ"], ["Semestr"], ["Wykładowca"], ["Zapisani"], [""]]
-
-    width = len(states) * len(row_head2) + len(row_head)
-
-    for (i, state) in enumerate(states):
-        sheet.update_value((1, i*len(row_head2) + 2), state.year)
-        row_head.extend(row_head2)
-
-    sheet.update_col(1, row_head, 1)
-
-    current_year = SystemState.get_current_state().year
-    row_course = []
-    for key, value in votes.items():
-        current_row = []
-        current_row.append(key)
-        for state in states:
-            year = state.year
-            if year in value:
-                for k2, v2 in value[year].items():
-                    if k2 == 'enrolled':
-                        current_row.append(str(value[year][k2]))
-                    elif k2 != 'proposal' and k2 != 'name':
-                        current_row.append(value[year][k2])
-            else:
-                current_row.extend(["", "", "", "", "", "", ""])
-            current_row.append("")
-        row_course.append(current_row)
-    length = len(row_course)
-    sheet.update_values(crange='A3:Y' + str(length + 2),
-                        values=row_course)
-"""
