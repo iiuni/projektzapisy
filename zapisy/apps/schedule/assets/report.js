@@ -1,23 +1,28 @@
 import "jquery";
 import "print-this";
+import "./report.css";
 const $ = jQuery;
 
 
 $(document).ready(() => {
-	$('#select_all_button').click((event) => {
-		$('#id_rooms option').prop('selected', true);    
-	});
+    // zaznacz wszystkie sale do raportu
+    $('#select-all-button').click((event) => {
+        $('#id_rooms option').prop('selected', true);    
+    });
 
-	$('#reportForm').submit(function() { // catch the form's submit event
-        $.ajax({ // create an AJAX call...
-            data: $(this).serialize(), // get the form data
-            type: $(this).attr('method'), // GET or POST
-            url: $(this).attr('action'), // the file to call
-            success: function(response) { // on success..
-                var data = $.parseHTML( response );
+    // przygotuj raport do wydruku
+    $('#reportForm').submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            success: function(response) {
                 $(response).printThis();
             }
         });
         return false;
     });
+
+    $('#id_rooms').addClass('form-control');
+
 });

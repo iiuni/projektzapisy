@@ -11,7 +11,7 @@ from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 import operator
-from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.classroom import Classroom, floors
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
 from apps.schedule.filters import EventFilter, ExamFilter
@@ -315,26 +315,54 @@ class MyScheduleAjaxView(FullCalendarView):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report(request):
-    from .forms import ReportForm
+    return TemplateResponse(request, 'schedule/events_report.html', locals())
+
+
+@login_required
+@permission_required('schedule.manage_events')
+def events_report_date(request):
+    from .forms import ReportFormDate
+    print(request)
     if request.method == 'POST':
-        form = ReportForm(request.POST)
+        form = ReportFormDate(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
                                         for x in Classroom.get_in_institute(reservation=True)]
         if form.is_valid():
             beg_date = form.cleaned_data["beg_date"]
             end_date = form.cleaned_data["end_date"]
             rooms = form.cleaned_data["rooms"]
-            return events_raport_pdf(request, beg_date, end_date, rooms)
+            return events_raport_date_pdf(request, beg_date, end_date, rooms)
     else:
-        form = ReportForm()
-        form.fields["rooms"].choices = [(x.pk, x.number)
-                                        for x in Classroom.get_in_institute(reservation=True)]
-    return TemplateResponse(request, 'schedule/events_report.html', locals())
+        form = ReportFormDate()
+        form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
+        for room in Classroom.get_in_institute(reservation=True):
+            form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
+    return TemplateResponse(request, 'schedule/events_report_date.html', locals())
 
 
 @login_required
 @permission_required('schedule.manage_events')
-def events_raport_pdf(request, beg_date, end_date, rooms):
+def events_report_week(request):
+    from .forms import ReportFormWeek
+    if request.method == 'POST':
+        form = ReportFormWeek(request.POST)
+        form.fields["rooms"].choices = [(x.pk, x.number)
+                                        for x in Classroom.get_in_institute(reservation=True)]
+
+        if form.is_valid():
+            rooms = form.cleaned_data["rooms"]
+            return events_raport_week_pdf(request, rooms)
+    else:
+        form = ReportFormWeek()
+        form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
+        for room in Classroom.get_in_institute(reservation=True):
+            form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
+    return TemplateResponse(request, 'schedule/events_report_week.html', locals())
+
+
+@login_required
+@permission_required('schedule.manage_events')
+def events_raport_date_pdf(request, beg_date, end_date, rooms):
 
     events = []
     # we are using this function for sorting
@@ -358,8 +386,45 @@ def events_raport_pdf(request, beg_date, end_date, rooms):
         'pagesize': 'A4',
         'report': True
     }
+    template = get_template('schedule/events_report_date_pdf.html')
+    html = template.render(context)
 
-    template = get_template('schedule/events_report_pdf.html')
+    response = HttpResponse(html)
+    return response
+
+
+@login_required
+@permission_required('schedule.manage_events')
+def events_raport_week_pdf(request, rooms):
+    from apps.enrollment.courses.models.semester import Semester
+
+    events = []
+    # we are using this function for sorting
+    for room in rooms:
+        try:
+            cr = Classroom.objects.get(id=room)
+        except ObjectDoesNotExist:
+            raise Http404
+        # probably not safe
+        beg_date = datetime.date(2019, 11, 18)
+        end_date = datetime.date(2019, 11, 24)
+        events.append((cr, Term.objects.filter(
+            day__gte=beg_date,
+            day__lte=end_date,
+            room=room,
+            event__status=Event.STATUS_ACCEPTED,
+        ).order_by('day', 'start')))
+
+    curr_sem = Semester.get_current_semester()
+    context = {
+        'beg_date': beg_date,
+        'end_date': end_date,
+        'events': events,
+        'semester': curr_sem,
+        'pagesize': 'A4',
+        'report': True
+    }
+    template = get_template('schedule/events_report_week_pdf.html')
     html = template.render(context)
 
     response = HttpResponse(html)

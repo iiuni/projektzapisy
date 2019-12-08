@@ -1,0 +1,7 @@
+#id_rooms {
+    height: 4cm;
+}
+
+#id_rooms option:hover {
+    background-color: #DCDCDC;
+}

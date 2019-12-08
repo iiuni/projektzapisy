@@ -6,14 +6,10 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     </head>
     <style>
-        @font-face { font-family: Helvetica; src: url("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf");}
         html {
             font-family: Helvetica, sans-serif;
             font-size: 8pt;
             }
-        th { font-size: 12px;}
-        table { border: 1px #000000 solid;}
-        td, th { text-align: left; padding-top: 3px; padding-left: 3px;}
     </style>
     <body>
     <h1>{% trans "Raport sal" %}</h1>
@@ -23,7 +19,7 @@
     {% for room, terms_list in events %}
       <h3>{% trans "Sala" %}: {{ room.number }}</h3>
       {% if terms_list %}
-        <table>
+        <table class="table table-sm">
           <thead>
             <tr>
               <td>{% trans "Godziny" %}</td>
@@ -32,9 +28,12 @@
             </tr>
           </thead>
           <tbody>
+            <col width="25%">
+            <col width="50%">
+            <col width="25%">
             {% for term in terms_list %}
             <tr>
-              <td>{{term.day|date:"Y-m-d"}} {{term.start}} - {{term.end}}</td>
+              <td>{{term.day}} {{term.start}} - {{term.end}}</td>
               {% with term.event.title.strip as evt_title %}
                 <td>
                 {% if evt_title|length > 0 %}

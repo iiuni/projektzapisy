@@ -105,7 +105,7 @@ class DecisionForm(forms.ModelForm):
         fields = ('status',)
 
 
-class ReportForm(forms.Form):
+class ReportFormDate(forms.Form):
     today = date.today().isoformat()
     beg_date = forms.DateField(
         label='Od:',
@@ -121,6 +121,11 @@ class ReportForm(forms.Form):
                 'type': 'date',
                 'class': 'form-control',
                 'value': today}))
+    rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
+
+
+class ReportFormWeek(forms.Form):
+    today = date.today().isoformat()
     rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
 
 
