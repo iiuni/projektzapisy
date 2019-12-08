@@ -406,8 +406,9 @@ def events_raport_week_pdf(request, rooms):
         except ObjectDoesNotExist:
             raise Http404
         # probably not safe
-        beg_date = datetime.date(2019, 11, 18)
-        end_date = datetime.date(2019, 11, 24)
+        curr_date = datetime.date.today()
+        beg_date = curr_date - datetime.timedelta(days=curr_date.weekday())
+        end_date = beg_date + datetime.timedelta(days=6)
         events.append((cr, Term.objects.filter(
             day__gte=beg_date,
             day__lte=end_date,
