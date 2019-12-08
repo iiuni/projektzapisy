@@ -6,6 +6,9 @@ export default {
       "classroom-chooser": [
          "classroomchooser.js",
       ],
+      "report": [
+         "report.js",
+      ],
    },
    rawfiles: [
    ],

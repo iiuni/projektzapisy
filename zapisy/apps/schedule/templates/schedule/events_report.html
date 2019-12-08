@@ -24,6 +24,7 @@
 }]
     </script>
     {% render_bundle "filtered-select-multiple-converter" %}
+    {% render_bundle "schedule-report" %}
 {% endblock %}
 
 {% block all-content %}
@@ -40,6 +41,7 @@
             <div id="selector-widget" class="p-1 flex-fill mb-2">
             {{ form.rooms }}
             {{ form.rooms.errors }}
+            <input type="button" id="select_all_button" class="btn btn-info" value="Zaznacz wszystkie">
             </div>
         </div>
 
