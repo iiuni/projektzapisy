@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load schedule_filters %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//PL">
 
@@ -58,7 +59,7 @@
         {% if terms_list %}
           <ul>
             {% for term in terms_list %}
-              <li>{{term.day|date:'D'}} {{term.start|time:'G'}}-{{term.end|time:'G'}}
+              <li>{{term.day|date:'w'|number_to_weekday}} {{term.start|time:'G'}}-{{term.end|time:'G'}}
                 {% with term.event.title.strip as evt_title %}
                     {% if evt_title|length > 0 %}
                       {{ evt_title|upper }}
