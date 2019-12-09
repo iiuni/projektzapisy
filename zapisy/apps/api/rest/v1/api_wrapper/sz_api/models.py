@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 
 
 class Model:
@@ -23,7 +22,7 @@ class Model:
 class Semester(Model):
 
     redirect_key = "semesters"
-    is_paginated = True
+    is_paginated = False
 
     def __init__(self, id, display_name, year, type, usos_kod):
         self.id = id
@@ -44,7 +43,7 @@ class User(Model):
 
 class Student(Model):
 
-    api_path_key = "students"
+    redirect_key = "students"
     is_paginated = True
 
     def __init__(self, id, matricula, ects, status, user: dict, usos_id):
