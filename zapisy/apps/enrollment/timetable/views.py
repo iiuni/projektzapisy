@@ -22,6 +22,7 @@ from apps.users.decorators import student_required
 from apps.users.models import Employee, Student
 from apps.users.roles import Roles
 
+
 def build_group_list(groups: List[Group]):
     """Builds a serializable object containing relevant information about groups
 
