@@ -247,20 +247,6 @@ def change_interested(request, event_id):
 
 
 @login_required
-@permission_required('schedule.manage_events')
-def statistics(request):
-    from apps.enrollment.courses.models import CourseInstance
-    from apps.enrollment.courses.models.semester import Semester
-
-    semester_id = request.GET.get('semester_id', None)
-    semester = Semester.get_by_id_or_default(semester_id)
-
-    exams = CourseInstance.objects.filter(semester=semester, has_exam=True)
-
-    return TemplateResponse(request, 'schedule/statistics.html', locals())
-
-
-@login_required
 def ajax_get_terms(request, year, month, day):
     from apps.enrollment.courses.models.classroom import Classroom
 
