@@ -13,7 +13,6 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.message import EventMessage, EventModerationMessage
 from apps.schedule.models.term import Term
-from apps.users.models import BaseUser
 
 
 class TermForm(forms.ModelForm):
@@ -57,12 +56,12 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(data, **kwargs)
         if not self.instance.pk:
             self.instance.author = user
-        if BaseUser.is_employee(user):
+        if user.employee:
             self.fields['type'].choices = Event.TYPES_FOR_TEACHER
         else:
             self.fields['type'].choices = Event.TYPES_FOR_STUDENT
 
-        if not BaseUser.is_employee(user):
+        if not user.employee:
             self.fields['course'].queryset = CourseInstance.objects.none()
         else:
             semester = Semester.get_current_semester()

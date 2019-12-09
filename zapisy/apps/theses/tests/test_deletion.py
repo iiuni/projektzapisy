@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
 from rest_framework import status
 from django.urls import reverse
 
-from apps.users.models import Employee, BaseUser
+from apps.users.models import Employee
+from apps.users.roles import Roles
 from ..models import ThesisStatus
 from ..permissions import EMPLOYEE_DELETABLE_STATUSES
 from ..enums import NOT_READY_STATUSES
@@ -19,11 +21,11 @@ class ThesesDeletionTestCase(ThesesBaseTestCase):
         self.login_as(deleter)
         return self.client.delete(f'{reverse("theses:theses-list")}{self.thesis.pk}/')
 
-    def _test_cannot_delete(self, person: BaseUser):
+    def _test_cannot_delete(self, person: User):
         response = self.delete_thesis(person)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def _test_can_delete(self, person: BaseUser):
+    def _test_can_delete(self, person: User):
         response = self.delete_thesis(person)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 

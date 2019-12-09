@@ -10,7 +10,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student
 
 
 class PollType(ChoicesEnum):
@@ -197,7 +197,7 @@ class Poll(models.Model):
             current_semester = Semester.get_current_semester()
 
         is_superuser = user.is_superuser
-        is_employee = BaseUser.is_employee(user)
+        is_employee = user.employee
 
         if not is_superuser and not is_employee:
             return Poll.objects.none()

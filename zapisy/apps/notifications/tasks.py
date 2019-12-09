@@ -9,7 +9,7 @@ from django_rq import job
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
-from apps.users.models import BaseUser
+from apps.users.roles import Roles
 
 
 @job('dispatch-notifications')
@@ -21,9 +21,9 @@ def dispatch_notifications_task(user):
     the work queue to send emails. This rate limiting is introduced for Gmail to
     accept our queries.
     """
-    if BaseUser.is_employee(user):
+    if Roles.is_employee(user):
         model, created = NotificationPreferencesTeacher.objects.get_or_create(user=user)
-    elif BaseUser.is_student(user):
+    elif Roles.is_student(user):
         model, created = NotificationPreferencesStudent.objects.get_or_create(user=user)
     else:
         return

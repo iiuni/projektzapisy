@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
 from rest_framework import status
 from django.urls import reverse
 
-from apps.users.models import Employee, BaseUser
+from apps.users.models import Employee
+from apps.users.roles import Roles
 from ..models import ThesisStatus
 from .utils import random_title, random_kind, random_reserved_until
 from .base import ThesesBaseTestCase
@@ -75,7 +77,7 @@ class ThesesAdditionTestCase(ThesesBaseTestCase):
         self.ensure_user_cannot_add_thesis_with_empty_title(board_member)
         self.ensure_user_cannot_add_thesis_with_empty_title(self.get_admin())
 
-    def ensure_409_with_user(self, user: BaseUser):
+    def ensure_409_with_user(self, user: User):
         title = random_title()
         thesis = self.make_thesis(title=title)
         # Padding at each end should be trimmed, so this is still a dupe
@@ -87,14 +89,14 @@ class ThesesAdditionTestCase(ThesesBaseTestCase):
     def test_no_one_can_add_thesis_with_duplicate_title(self):
         self.run_test_with_privileged_users(self.ensure_409_with_user)
 
-    def ensure_cannot_add_invalid_kind_as_user(self, user: BaseUser):
+    def ensure_cannot_add_invalid_kind_as_user(self, user: User):
         response = self.add_thesis(user, kind=123)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_add_invalid_kind(self):
         self.run_test_with_privileged_users(self.ensure_cannot_add_invalid_kind_as_user)
 
-    def ensure_cannot_add_invalid_status_as_user(self, user: BaseUser):
+    def ensure_cannot_add_invalid_status_as_user(self, user: User):
         response = self.add_thesis(user, status=123)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

@@ -10,7 +10,7 @@ from apps.notifications.models import NotificationPreferencesStudent, Notificati
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
 from apps.users import views
-from apps.users.models import BaseUser
+from apps.users.roles import Roles
 
 
 @login_required
@@ -49,7 +49,7 @@ def preferences_save(request):
 
 def create_form(request):
     """It is not a view itself, just factory for preferences and preferences_save"""
-    if BaseUser.is_employee(request.user):
+    if Roles.is_employee(request.user):
         instance, created = NotificationPreferencesTeacher.objects.get_or_create(user=request.user)
         if request.method == 'POST':
             return PreferencesFormTeacher(request.POST, instance=instance)

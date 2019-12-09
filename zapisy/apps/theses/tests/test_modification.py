@@ -1,9 +1,10 @@
 import random
 
+from django.contrib.auth.models import User
 from rest_framework import status
 from django.urls import reverse
 
-from apps.users.models import Employee, BaseUser
+from apps.users.models import Employee
 
 from ..models import (
     ThesisStatus, ThesisVote,
@@ -135,7 +136,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         modified_thesis = self.get_modified_thesis()
         self.assertEqual(modified_thesis["title"], new_title)
 
-    def _try_modify_archived_as(self, user: BaseUser):
+    def _try_modify_archived_as(self, user: User):
         self.thesis.status = ThesisStatus.DEFENDED.value
         self.thesis.save()
         self.login_as(user)
@@ -216,7 +217,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         response = self.update_thesis_with_data(**kwargs)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def ensure_user_cannot_cast_invalid_vote(self, user: BaseUser):
+    def ensure_user_cannot_cast_invalid_vote(self, user: User):
         self.login_as(user)
         self._ensure_update_fails_with_400(votes="blah")
         self._ensure_update_fails_with_400(votes={user.pk: "blah"})
@@ -289,7 +290,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
             response = self.cast_vote_as(voter, random_definite_vote())
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def _vote_then_change_title_as_user(self, user: BaseUser):
+    def _vote_then_change_title_as_user(self, user: User):
         self.cast_vote_as(self.get_random_board_member(), accepting_vote())
         self.reject_thesis_once(self.get_random_board_member())
         self.login_as(user)
@@ -330,7 +331,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         response = self.cast_vote_as(temp_board_member, rejecting_vote())
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def ensure_cannot_modify_thesis_duplicate_title_as_user(self, user: BaseUser):
+    def ensure_cannot_modify_thesis_duplicate_title_as_user(self, user: User):
         other_thesis = self.make_thesis()
         padded_title = f'\n\t   {other_thesis.title}   \t\t\n       '
         self.login_as(user)
@@ -356,7 +357,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         response = self.update_thesis_with_data(status=ThesisStatus.RETURNED_FOR_CORRECTIONS.value)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def ensure_cannot_set_invalid_status_as_user(self, user: BaseUser):
+    def ensure_cannot_set_invalid_status_as_user(self, user: User):
         self.login_as(user)
         response = self.update_thesis_with_data(status=123)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -365,7 +366,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         self.run_test_with_board_members(self.ensure_cannot_set_invalid_status_as_user)
         self.ensure_cannot_set_invalid_status_as_user(self.advisor)
 
-    def ensure_cannot_set_invalid_kind_as_user(self, user: BaseUser):
+    def ensure_cannot_set_invalid_kind_as_user(self, user: User):
         self.login_as(user)
         response = self.update_thesis_with_data(kind=123)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -374,7 +375,7 @@ class ThesesModificationTestCase(ThesesBaseTestCase):
         self.run_test_with_board_members(self.ensure_cannot_set_invalid_kind_as_user)
         self.ensure_cannot_set_invalid_kind_as_user(self.advisor)
 
-    def ensure_cannot_exceed_students_limit_as_user(self, user: BaseUser):
+    def ensure_cannot_exceed_students_limit_as_user(self, user: User):
         self.login_as(user)
         num_students = MAX_STUDENTS_PER_THESIS + random.randint(1, 5)
         new_student_ids = list(map(lambda s: s.pk, self.get_random_students(num_students)))

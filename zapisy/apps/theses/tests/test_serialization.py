@@ -1,6 +1,8 @@
 import random
 
-from apps.users.models import BaseUser
+from django.contrib.auth.models import User
+
+from apps.users.roles import Roles
 
 from ..models import ThesisStatus
 from .base import ThesesBaseTestCase
@@ -42,7 +44,7 @@ class ThesesSerializationTestCase(ThesesBaseTestCase):
                 )
             )
 
-    def _get_thesis_with_votes(self, user: BaseUser):
+    def _get_thesis_with_votes(self, user: User):
         board_members = self.get_board_members(random.randint(2, 5))
         temp_board_member = self.get_random_emp()
         # Also add a vote by a previous board member to check that too
@@ -56,7 +58,7 @@ class ThesesSerializationTestCase(ThesesBaseTestCase):
         thesis = self.get_serialized_thesis()
         return thesis, votes
 
-    def _test_no_votes_for(self, user: BaseUser):
+    def _test_no_votes_for(self, user: User):
         thesis, _ = self._get_thesis_with_votes(user)
         self.assertNotIn("votes", thesis)
 
@@ -66,7 +68,7 @@ class ThesesSerializationTestCase(ThesesBaseTestCase):
     def test_vote_counts_for_emp(self):
         self._test_no_votes_for(self.get_random_emp())
 
-    def _test_vote_details_for(self, user: BaseUser):
+    def _test_vote_details_for(self, user: User):
         thesis, votes = self._get_thesis_with_votes(user)
         self.assertIn("votes", thesis)
         votes_dict = thesis["votes"]

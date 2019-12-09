@@ -90,15 +90,7 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
-                                <a href="{% url 'news-all' %}"
-                                   class="unread nav-link">Aktualności ({{ user.student.get_number_of_news }})</a>
-                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
-                                <a href="{% url 'news-all' %}"
-                                   class="unread nav-link">Aktualności ({{ user.employee.get_number_of_news }})</a>
-                            {% else %}
                                 <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
-                            {% endif %}
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'help' %}" class="nav-link">Pomoc</a>

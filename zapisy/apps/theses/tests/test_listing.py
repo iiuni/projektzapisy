@@ -1,9 +1,9 @@
 from typing import Optional
 
+from django.contrib.auth.models import User
 from rest_framework import status
 from django.urls import reverse
 
-from apps.users.models import BaseUser
 from ..models import ThesisStatus
 from ..enums import NOT_READY_STATUSES
 from .base import ThesesBaseTestCase, PAGE_SIZE
@@ -30,7 +30,7 @@ class ThesesListingTestCase(ThesesBaseTestCase):
         self.assertTrue(isinstance(results, list))
         self.assertEqual(len(results), PAGE_SIZE if expected_len is None else expected_len)
 
-    def _test_user_can_list_theses(self, user: BaseUser, expected_len: Optional[int]=None):
+    def _test_user_can_list_theses(self, user: User, expected_len: Optional[int]=None):
         self.login_as(user)
         response = self.get_response_with_data()
         self.assertEqual(response.status_code, status.HTTP_200_OK)

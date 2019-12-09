@@ -33,7 +33,8 @@ from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
+from apps.users.models import Employee, Student, PersonalDataConsent
+from apps.users.roles import Roles
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
 from libs.ajax_messages import AjaxSuccessMessage
@@ -59,7 +60,7 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
         raise Http404
 
     # We will not show the student profile if he decides to hide it.
-    if not BaseUser.is_employee(request.user) and not student.consent_granted():
+    if not Roles.is_employee(request.user) and not student.consent_granted():
         return HttpResponseRedirect(reverse('students-list'))
 
     semester = Semester.objects.get_next()
@@ -86,7 +87,7 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
         return render(request, 'users/student_profile_contents.html', data)
 
     active_students = Student.get_list(
-        begin='All', restrict_list_consent=not BaseUser.is_employee(request.user))
+        begin='All', restrict_list_consent=not Roles.is_employee(request.user))
     data.update({
         'students': active_students,
         'char': "All",
@@ -223,7 +224,7 @@ def my_profile(request):
         'semester': semester,
     }
 
-    if BaseUser.is_employee(request.user):
+    if Roles.is_employee(request.user):
         data.update({
             'consultations': request.user.employee.consultations,
             'room': request.user.employee.room,
@@ -231,7 +232,7 @@ def my_profile(request):
             'title': request.user.employee.title,
         })
 
-    if semester and BaseUser.is_student(request.user):
+    if semester and Roles.is_student(request.user):
         student: Student = request.user.student
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
@@ -304,7 +305,7 @@ def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
 @login_required
 @external_contractor_forbidden
 def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
-    students = Student.get_list(begin, not BaseUser.is_employee(request.user))
+    students = Student.get_list(begin, not Roles.is_employee(request.user))
 
     if request.is_ajax():
         students = prepare_ajax_students_list(students)
@@ -397,14 +398,14 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
     cal.add('calname').value = "{} - schedule".format(user.get_full_name())
     cal.add('method').value = 'PUBLISH'
 
-    if BaseUser.is_student(user):
+    if Roles.is_student(user):
         student = user.student
         records = Record.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk,
             status=RecordStatus.ENROLLED
         ).select_related('group', 'group__course')
         groups = [r.group for r in records]
-    elif BaseUser.is_employee(user):
+    elif Roles.is_employee(user):
         groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
     else:
         raise InvalidUserException()

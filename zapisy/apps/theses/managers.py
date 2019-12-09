@@ -9,7 +9,7 @@ from django.db.models import Value, When, Case, BooleanField, QuerySet, Q
 from django.db.models.functions import Concat, Lower
 from django.db.models.expressions import RawSQL
 
-from apps.users.models import BaseUser
+from apps.users.roles import Roles
 from .enums import (
     ThesisKind, ThesisStatus, ThesisTypeFilter, ThesisVote,
     ENGINEERS_KINDS, BACHELORS_KINDS, BACHELORS_OR_ENGINEERS_KINDS,
@@ -69,7 +69,7 @@ class APIQueryset(models.QuerySet):
         on the type of the user
         """
         # Students should not see theses that are not "ready" yet
-        if BaseUser.is_student(user):
+        if Roles.is_student(user):
             return self.exclude(status__in=NOT_READY_STATUSES)
         return self
 
@@ -80,9 +80,9 @@ class APIQueryset(models.QuerySet):
         return self.filter(_advisor_name__icontains=advisor)
 
     def filter_only_mine(self: QuerySet, user: User):
-        if BaseUser.is_student(user):
+        if Roles.is_student(user):
             return self.filter(students__in=[user.student])
-        elif BaseUser.is_employee(user):
+        elif Roles.is_employee(user):
             return self.filter(Q(advisor=user.employee) | Q(supporting_advisor=user.employee))
         # this is an error situation, one of the conditions above should have caught it
         return self

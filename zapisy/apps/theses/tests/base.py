@@ -4,9 +4,10 @@ from typing import Callable, List
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
-from apps.users.models import Employee, Student, BaseUser
+from apps.users.models import Employee, Student
+from apps.users.roles import Roles
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 from ..models import (
     Thesis, ThesisVote, ThesisStatus, VoteToProcess,
@@ -168,7 +169,7 @@ class ThesesBaseTestCase(APITestCase):
             voters.append(voter)
         return voters
 
-    def login_as(self, user: BaseUser):
+    def login_as(self, user: User):
         """Login as the specified user"""
         self.client.login(username=user.user.username, password="test")
 

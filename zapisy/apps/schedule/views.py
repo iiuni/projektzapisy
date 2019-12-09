@@ -23,7 +23,6 @@ from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
     EventModerationMessageForm, EventMessageForm, ConflictsForm
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
-from apps.users.models import BaseUser
 from .forms import DoorChartForm, TableReportForm
 from itertools import groupby
 from .models.message import EventModerationMessage
@@ -290,10 +289,10 @@ class MyScheduleAjaxView(FullCalendarView):
 
         query = []
 
-        if BaseUser.is_student(self.request.user):
+        if self.request.user.student:
             query.append(Q(record__student=self.request.user.student) & Q(record__status='1'))
 
-        if BaseUser.is_employee(self.request.user):
+        if self.request.user.employee:
             query.append(Q(teacher=self.request.user.employee))
 
         queryset = super(MyScheduleAjaxView, self).get_queryset()
