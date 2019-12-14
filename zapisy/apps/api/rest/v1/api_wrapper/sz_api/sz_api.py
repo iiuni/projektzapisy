@@ -1,20 +1,34 @@
 import requests
 from typing import Iterator, Optional
 
-from .models import (Semester, Student)
+from .models import (Semester, Student,
+                     Employee, CourseInstance)
 
 
 class ZapisyApi:
+    """Wrapper for github.com/iiuni/projektzapisy rest api.
 
-    def __init__(self, token: str, api_url: str):
+    Initializer of ZapisyApi object takes:
+        User token used for authenticating requests.
+        Optional url pointing to projektzapisy.
+
+    Example of use:
+        from sz_api import ZapisyApi
+        api = ZapisyApi('Token valid_key')
+        print(list(api.get_semesters()))
+    """
+
+    def __init__(self, token: str,
+                 api_url: str = "https://zapisy.ii.uni.wroc.pl/api/v1/"):
         self.token = token
         self.redirect_map = self._get_redirect_map(api_url)
 
     def _get_redirect_map(self, api_url: str) -> dict:
         return self._handle_request(api_url)
 
-    def get_semesters(self,
-                      visible: Optional[bool] = None) -> Iterator[Semester]:
+    def get_semesters(
+        self, visible: Optional[bool] = None
+    ) -> Iterator[Semester]:
         """
         Gets an iterator over Semester objects.
 
@@ -27,6 +41,21 @@ class ZapisyApi:
         Gets an iterator over Student objects
         """
         return self._get_deserialized_data(Student)
+
+    def get_employees(self) -> Iterator[Employee]:
+        """
+        Gets an iterator over Employee objects
+        """
+        return self._get_deserialized_data(Employee)
+
+    def get_courses(
+        self, semester_id: Optional[int] = None
+    ) -> Iterator[CourseInstance]:
+        """
+        Gets an iterator over Employee objects
+        """
+        return self._get_deserialized_data(
+            CourseInstance, params={"semester_id": semester_id})
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:

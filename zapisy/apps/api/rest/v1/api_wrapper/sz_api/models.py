@@ -33,6 +33,9 @@ class Semester(Model):
 
 
 class User(Model):
+    """
+    This model is used as nested object in some of other models.
+    """
 
     def __init__(self, id, username, first_name, last_name):
         self.id = id
@@ -46,10 +49,44 @@ class Student(Model):
     redirect_key = "students"
     is_paginated = True
 
-    def __init__(self, id, matricula, ects, status, user: dict, usos_id):
+    def __init__(self, id, matricula, ects,
+                 status, user: dict, usos_id):
         self.id = id
         self.matricula = matricula
         self.ects = ects
         self.status = status
         self.user = User.from_dict(user)
         self.usos_id = usos_id
+
+
+class Employee(Model):
+    redirect_key = "employees"
+    is_paginated = False
+
+    def __init__(self, id, user: dict, consultations,
+                 homepage, room, title, usos_id):
+        self.id = id
+        self.user = User.from_dict(user)
+        self.consultations = consultations
+        self.homepage = homepage
+        self.room = room
+        self.title = title
+        self.usos_id = usos_id
+
+
+class CourseInstance(Model):
+    redirect_key = "courses"
+    is_paginated = True
+
+    def __init__(self, id, name, short_name,
+                 points, has_exam, description,
+                 semester, course_type, usos_kod):
+        self.id = id
+        self.name = name
+        self.short_name = short_name
+        self.points = points
+        self.has_exam = has_exam
+        self.description = description
+        self.semester = semester
+        self.course_type = course_type
+        self.usos_kod = usos_kod

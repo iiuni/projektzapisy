@@ -33,8 +33,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseInstance
-        fields = ('id', 'name', 'semester', 'course_type', 'usos_kod')
-        read_only_fields = ('id', 'name', 'semester')
+        fields = ('id', 'name', 'short_name', 'points', 'has_exam',
+                  'description', 'semester', 'course_type', 'usos_kod')
+        read_only_fields = ('id', 'name', 'short_name', 'points', 'has_exam',
+                            'description', 'semester', 'course_type')
 
     def get_course_type(self, obj):
         if obj.course_type is None:
