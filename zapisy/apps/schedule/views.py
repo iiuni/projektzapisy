@@ -156,11 +156,9 @@ def decision(request, event_id):
     from .models.message import EventModerationMessage
 
     event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
-
     form = DecisionForm(request.POST, instance=event)
-
     event_status = event.status
-    
+
     if event.ignore_conflicts():
         messages.warning(request, 'Akceptacja wydarzenia spowoduje powstanie konfliktów')
 
@@ -191,10 +189,7 @@ def event(request, event_id):
 
     event = Event.get_event_or_404(event_id, request.user)
     moderation_messages = EventModerationMessage.get_event_messages(event)
-    moderation_form = EventModerationMessageForm()
     event_messages = EventMessage.get_event_messages(event)
-    messages_form = EventMessageForm()
-    decision_form = DecisionForm(instance=event)
 
     return TemplateResponse(request, 'schedule/event.html', locals())
 

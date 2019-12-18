@@ -149,7 +149,7 @@ class Event(models.Model):
         for term in terms:
             if term.get_conflicted():
                 conflicts += 1
-                term.ignore_conflicts=True
+                term.ignore_conflicts = True
                 term.save()
         return conflicts
 
