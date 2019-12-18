@@ -136,6 +136,23 @@ class Event(models.Model):
             term.delete()
         self.delete()
 
+    def ignore_conflicts(self):
+        """
+        Ignore all conflicts in events terms
+        Return number of conflicts
+
+        @return: Integer
+        """
+        from .term import Term
+        terms = Term.objects.filter(event=self)
+        conflicts = 0
+        for term in terms:
+            if term.get_conflicted():
+                conflicts += 1
+                term.ignore_conflicts=True
+                term.save()
+        return conflicts
+
     def _user_can_see_or_404(self, user):
         """
 

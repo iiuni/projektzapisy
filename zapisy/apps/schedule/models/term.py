@@ -32,7 +32,7 @@ class Term(models.Model):
         on_delete=models.CASCADE,
         related_name='event_terms')
     place = models.CharField(max_length=255, null=True, blank=True, verbose_name='Miejsce')
-    ignore_conflicts = False
+    ignore_conflicts = models.BooleanField(default=False)
 
     def validate_against_event_terms(self):
         assert(self.room is not None)

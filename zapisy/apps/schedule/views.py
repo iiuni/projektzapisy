@@ -151,6 +151,7 @@ def history(request):
 
 @login_required
 @require_POST
+@permission_required('schedule.manage_events')
 def decision(request, event_id):
     from .models.message import EventModerationMessage
 
@@ -159,6 +160,9 @@ def decision(request, event_id):
     form = DecisionForm(request.POST, instance=event)
 
     event_status = event.status
+    
+    if event.ignore_conflicts():
+        messages.warning(request, 'Akceptacja wydarzenia spowoduje powstanie konfliktów')
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
@@ -172,6 +176,8 @@ def decision(request, event_id):
             msg.event = event_obj
             msg.save()
             messages.success(request, 'Status wydarzenia został zmieniony')
+    else:
+        messages.error(request, form.non_field_errors())
 
     return redirect(reverse('events:show', args=[str(event.id)]))
 
