@@ -1,5 +1,4 @@
 import "jquery";
-import "print-this";
 import "./report.css";
 const $ = jQuery;
 
@@ -17,10 +16,15 @@ $(document).ready(() => {
             type: $(this).attr('method'),
             url: $(this).attr('action'),
             success: function(response) {
-                $(response).printThis();
+                $('#report-preview').html(response);
             }
         });
         return false;
+    });
+
+    //Wydrukuj zawartość strony
+    $('#print').click((event) => {
+        window.print();  
     });
 
     $('#id_rooms').addClass('form-control');

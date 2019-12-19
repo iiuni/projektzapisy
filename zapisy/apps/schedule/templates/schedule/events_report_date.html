@@ -37,7 +37,7 @@
             {{ hidden }}
         {% endfor %}
 
-        <div class="mb-4">
+        <div class="mb-4 d-print-none">
             <div id="selector-widget" class="p-1 flex-fill w-100 mt-3">
             {{ form.rooms }}
             {{ form.rooms.errors }}
@@ -45,7 +45,7 @@
             <input type="button" id="select-all-button" class="btn btn-outline-dark ml-2" value="Zaznacz wszystkie">
         </div>
 
-        <div class="input-group mb-4">
+        <div class="input-group mb-4 d-print-none">
             <div class="input-group-prepend">
                 <label class="input-group-text">{{ form.beg_date.label }}</label>
             </div>
@@ -56,8 +56,25 @@
             {{ form.end_date }}
         </div>
 
-        <div class="input-group">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-block btn-lg">
+        <div class="input-group d-print-none">
+            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
         </div>
     </form>
+
+    {% if request.user.is_authenticated %}  
+        <a class="btn btn-info mt-2 d-print-none" data-toggle="collapse"  href="#report-file"    
+        role="button" aria-expanded="false" aria-controls="report-preview">   
+            Podgląd 
+        </a>
+        <a class="btn btn-light mt-2 d-print-none" href="#" id="print">
+            <i class="fa fa-print"></i>
+            Drukuj
+        </a>
+        <div class="collapse mt-3 d-print-block" id="report-file">
+            <div id="report-preview">
+                {% include 'schedule/events_report_date_pdf.html' %}
+            </div>
+        </div>
+    {% endif %}
+    
 {% endblock %}
