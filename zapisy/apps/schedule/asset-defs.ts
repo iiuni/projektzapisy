@@ -8,6 +8,7 @@ export default {
       ],
       "report": [
          "report.js",
+         "report.css",
       ],
    },
    rawfiles: [

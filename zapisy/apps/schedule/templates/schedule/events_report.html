@@ -11,21 +11,6 @@
     <li class="breadcrumb-item active" aria-current="page">Raport</li>
 {% endblock %}
 
-{% block js %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
-    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
-    {% compressed_js 'proposal_edit' %}
-        <script id="filtered-select-multiple-data" type="application/json">
-[{
-   "id": "#selector-widget",
-   "size": 15,
-   "txtAvailable": "Sale",
-   "txtChosen": "Wybrane"
-}]
-    </script>
-    {% render_bundle "filtered-select-multiple-converter" %}
-{% endblock %}
-
 {% block content %}
 <h2 class="d-print-none">{% block reporttitle %}Raport{% endblock %}</h2>
 {% block reportformview %}

@@ -1,5 +1,4 @@
 import "jquery";
-import "./report.css";
 const $ = jQuery;
 
 

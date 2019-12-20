@@ -1,4 +1,3 @@
-{% load i18n %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//PL">
 
 <html xmlns:pdf="">
@@ -11,19 +10,19 @@
             }
     </style>
     <body>
-    <h1>{% trans "Raport sal" %}</h1>
+    <h1>Raport sal</h1>
 
-    <h2>{% trans "Zakres" %}: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
+    <h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
 
     {% for room, terms_list in events %}
-      <h3>{% trans "Sala" %}: {{ room.number }}</h3>
+      <h3>Sala: {{ room.number }}</h3>
       {% if terms_list %}
         <table class="table table-sm">
           <thead>
             <tr>
-              <td>{% trans "Godziny" %}</td>
-              <td>{% trans "Wydarzenie" %}</td>
-              <td>{% trans "Autor" %}</td>
+              <td>Godziny</td>
+              <td>Wydarzenie</td>
+              <td>Autor</td>
             </tr>
           </thead>
           <tbody>
@@ -48,7 +47,7 @@
           </tbody>
         </table>
       {% else %}
-        <p>{% trans "Brak wydarzeń w tej sali." %}</p>
+        <p>Brak wydarzeń w tej sali.</p>
       {% endif %}
     {% endfor %}
 

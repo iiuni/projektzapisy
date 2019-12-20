@@ -337,7 +337,11 @@ def events_report_date(request):
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
         for room in Classroom.get_in_institute(reservation=True):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
-    return TemplateResponse(request, 'schedule/events_report_date.html', locals())
+    context = {
+        'form': form,
+        'request': request
+    }
+    return TemplateResponse(request, 'schedule/events_report_date.html', context)
 
 
 @login_required
@@ -364,7 +368,11 @@ def events_report_week(request):
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
         for room in Classroom.get_in_institute(reservation=True):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
-    return TemplateResponse(request, 'schedule/events_report_week.html', locals())
+    context = {
+        'form': form,
+        'request': request
+    }
+    return TemplateResponse(request, 'schedule/events_report_week.html', context)
 
 
 @login_required
