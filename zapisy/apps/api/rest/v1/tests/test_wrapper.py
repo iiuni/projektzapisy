@@ -5,18 +5,28 @@ from rest_framework.test import APILiveServerTestCase
 from rest_framework.test import RequestsClient
 from rest_framework.authtoken.models import Token
 
-from apps.enrollment.courses.tests.factories import SemesterFactory
+from apps.enrollment.courses.tests.factories import (SemesterFactory,
+                                                     CourseInstanceFactory)
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 
 
-# @patch('apps.api.rest.v1.api_wrapper.sz_api.sz_api.requests',
-#        new=RequestsClient())
 class WrapperTests(APILiveServerTestCase):
+    """E2E tests for ZapisyApi wrapper
+
+    First to check when these tests fail:
+        models in api_wrapper.sz_api.models.py should be up to date
+        and reflect serializers in serializers.py and corresponding
+        django models. So if you have changed some django model and seeing
+        below tests failing, it may be the case.
+
+    """
 
     def setUp(self):
+        # we ca't use patch decorador
+        # because it wouldn't patch inside of setUp method.
         patcher = patch(
             'apps.api.rest.v1.api_wrapper.sz_api.sz_api.requests',
             new=RequestsClient())
@@ -30,9 +40,19 @@ class WrapperTests(APILiveServerTestCase):
 
     def test_semester(self):
         semester = SemesterFactory()
-        result = list(self.wrapper.get_semesters())
+        result = list(self.wrapper.semesters())
         self.assertEqual(len(result), 1)
         res_semester = result[0]
+        self.assertEqual(res_semester.id, semester.id)
+        self.assertEqual(res_semester.display_name, semester.get_name())
+        self.assertEqual(res_semester.year, semester.year)
+        self.assertEqual(res_semester.type, semester.type)
+        self.assertEqual(res_semester.usos_kod, semester.usos_kod)
+
+    def test_single_record(self):
+        semester = SemesterFactory()
+        res_semester = self.wrapper.semester(semester.id)
+
         self.assertEqual(res_semester.id, semester.id)
         self.assertEqual(res_semester.display_name, semester.get_name())
         self.assertEqual(res_semester.year, semester.year)
@@ -43,7 +63,7 @@ class WrapperTests(APILiveServerTestCase):
         student1, student2 = StudentFactory(), StudentFactory()
         student1.save()
         student2.save()
-        result = list(self.wrapper.get_students())
+        result = list(self.wrapper.students())
         self.assertEqual(len(result), 2)
         res_student = result[0]
 
@@ -59,12 +79,12 @@ class WrapperTests(APILiveServerTestCase):
 
     def test_pagination(self):
         StudentFactory.create_batch(210)
-        result = list(self.wrapper.get_students())
+        result = list(self.wrapper.students())
         self.assertEqual(len(result), 210)
 
     def test_employee(self):
         employee = EmployeeFactory()
-        [res_employee] = list(self.wrapper.get_employees())
+        [res_employee] = list(self.wrapper.employees())
 
         self.assertEqual(employee.id, res_employee.id)
         self.assertEqual(employee.consultations, res_employee.consultations)
@@ -72,3 +92,31 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(employee.room, res_employee.room)
         self.assertEqual(employee.title, res_employee.title)
         self.assertEqual(employee.usos_id, res_employee.usos_id)
+
+    def test_course(self):
+        course = CourseInstanceFactory()
+        [res_course] = list(self.wrapper.courses())
+
+        self.assertEqual(res_course.id, course.id)
+        self.assertEqual(res_course.name, course.name)
+        self.assertEqual(res_course.short_name, course.short_name)
+        self.assertEqual(res_course.points, course.points)
+        self.assertEqual(res_course.has_exam, course.has_exam)
+        self.assertEqual(res_course.description, course.description)
+        self.assertEqual(res_course.semester, course.semester.id)
+        self.assertEqual(res_course.course_type, course.course_type.short_name)
+        self.assertEqual(res_course.usos_kod, course.usos_kod)
+
+    def test_declared_fields(self, fields, res_obj, orig_obj):
+        """
+        test if given fields are equal in res_obj and orig_obj,
+
+        it only works when api fields matches django fields
+        for example, it won't work for
+            self.assertEqual(res_course.course_type,
+                             course.course_type.short_name)
+        """
+        for field in fields:
+            self.assertEqual(
+                getattr(res_obj, field),
+                getattr(orig_obj, field))

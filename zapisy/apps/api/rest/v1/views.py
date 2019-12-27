@@ -107,6 +107,7 @@ class DesiderataViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Desiderata.objects.all()
     serializer_class = serializers.DesiderataSerializer
+    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
@@ -115,6 +116,7 @@ class DesiderataOtherViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = DesiderataOther.objects.all()
     serializer_class = serializers.DesiderataOtherSerializer
+    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
@@ -123,6 +125,7 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = SpecialReservation.objects.all()
     serializer_class = serializers.SpecialReservationSerializer
+    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
