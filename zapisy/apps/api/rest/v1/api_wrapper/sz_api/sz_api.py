@@ -33,7 +33,7 @@ class ZapisyApi:
         self.redirect_map = self._get_redirect_map(api_url)
 
     def _get_redirect_map(self, api_url: str) -> dict:
-        return self._handle_request(api_url)
+        return self._handle_get_request(api_url)
 
     def save(self, obj: Model):
         self._handle_patch_request(
@@ -116,26 +116,26 @@ class ZapisyApi:
         yield from map(model_class.from_dict, data_gen)
 
     def _get_paginated_data(self, model_class, params):
-        response = self._handle_request(
+        response = self._handle_get_request(
             self.redirect_map[model_class.redirect_key], params)
         yield from iter(response["results"])
 
         while response["next"] is not None:
-            response = self._handle_request(response["next"], params)
+            response = self._handle_get_request(response["next"], params)
             yield from iter(response["results"])
 
     def _get_unpaginated_data(self, model_class, params):
-        yield from iter(self._handle_request(
+        yield from iter(self._handle_get_request(
             self.redirect_map[model_class.redirect_key], params))
 
     def _get_single_record(self, model_class, id):
         return model_class.from_dict(
-            self._handle_request(
+            self._handle_get_request(
                 urljoin(self.redirect_map[model_class.redirect_key], str(id))
             )
         )
 
-    def _handle_request(self, path, params=None):
+    def _handle_get_request(self, path, params=None):
         """send GET request to api and return json response
 
         Raises:
