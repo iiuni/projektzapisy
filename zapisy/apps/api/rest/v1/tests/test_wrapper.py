@@ -1,3 +1,4 @@
+from datetime import datetime
 
 from unittest.mock import patch
 
@@ -49,6 +50,19 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_semester.year, semester.year)
         self.assertEqual(res_semester.type, semester.type)
         self.assertEqual(res_semester.usos_kod, semester.usos_kod)
+
+    def test_current_semester(self):
+        semester = SemesterFactory(semester_beginning=datetime.now().date(),
+                                   semester_ending=datetime.now().date())
+        res_semester = self.wrapper.current_semester()
+
+        self.assertEqual(res_semester.id, semester.id)
+
+    def test_current_semester_None(self):
+        SemesterFactory()
+        res_semester = self.wrapper.current_semester()
+
+        self.assertEqual(res_semester, None)
 
     def test_single_record(self):
         semester = SemesterFactory()

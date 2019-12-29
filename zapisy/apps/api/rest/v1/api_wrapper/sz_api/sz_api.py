@@ -1,3 +1,4 @@
+import json
 import requests
 from urllib.parse import urljoin
 from typing import Iterator, Optional
@@ -54,6 +55,12 @@ class ZapisyApi:
         returns Semester with given id
         """
         return self._get_single_record(Semester, id)
+
+    def current_semester(self) -> Optional[Semester]:
+        """
+        if exist, it returns current semester. otherwise return None
+        """
+        return self._action(Semester, "current")
 
     def students(self) -> Iterator[Student]:
         """
@@ -126,12 +133,22 @@ class ZapisyApi:
         yield from iter(self._handle_get_request(
             self.redirect_map[model_class.redirect_key], params))
 
-    def _get_single_record(self, model_class, id):
+    def _get_single_record(self, model_class, name):
         return model_class.from_dict(
             self._handle_get_request(
-                urljoin(self.redirect_map[model_class.redirect_key], str(id))
+                urljoin(self.redirect_map[model_class.redirect_key], str(name))
             )
         )
+
+    def _action(self, model_class, name):
+        resp = self._handle_get_request(
+            urljoin(self.redirect_map[model_class.redirect_key], str(name))
+        )
+
+        if resp is not None:
+            return model_class.from_dict(resp)
+        else:
+            return resp
 
     def _handle_get_request(self, path, params=None):
         """send GET request to api and return json response
@@ -149,7 +166,10 @@ class ZapisyApi:
             params={k: v for k, v in params.items() if v is not None}
         )
         resp.raise_for_status()
-        return resp.json()
+        try:
+            return resp.json()
+        except json.decoder.JSONDecodeError:
+            return None
 
     def _handle_patch_request(self, path, data: dict):
         """send PATCH request to api

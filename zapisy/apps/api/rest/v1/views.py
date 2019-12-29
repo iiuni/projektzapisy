@@ -1,5 +1,6 @@
-from rest_framework import viewsets, pagination
+from rest_framework import viewsets, pagination, response
 from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import action
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -29,6 +30,15 @@ class SemesterViewSet(viewsets.ModelViewSet):
     queryset = Semester.objects.order_by('-semester_beginning')
     filter_fields = ['visible']
     serializer_class = serializers.SemesterSerializer
+
+    @action(detail=False)
+    def current(self, request):
+        semester = Semester.get_current_semester()
+        if semester:
+            return response.Response(
+                serializers.SemesterSerializer(semester).data)
+        else:
+            return response.Response()
 
 
 class CourseViewSet(viewsets.ModelViewSet):
