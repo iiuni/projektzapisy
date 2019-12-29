@@ -6,7 +6,8 @@ from rest_framework.test import RequestsClient
 from rest_framework.authtoken.models import Token
 
 from apps.enrollment.courses.tests.factories import (SemesterFactory,
-                                                     CourseInstanceFactory)
+                                                     CourseInstanceFactory,
+                                                     ClassroomFactory)
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
@@ -77,6 +78,18 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_student.user.last_name, student1.user.last_name)
         self.assertEqual(res_student.usos_id, student1.usos_id)
 
+    def test_save_student(self):
+        student = StudentFactory()
+        [res_student] = list(self.wrapper.students())
+        self.assertEqual(res_student.id, student.id)
+        res_student.usos_id = 666
+        self.wrapper.save(res_student)
+
+        [changed_student] = list(self.wrapper.students())
+
+        self.assertEqual(changed_student.status, student.status)
+        self.assertEqual(changed_student.usos_id, 666)
+
     def test_pagination(self):
         StudentFactory.create_batch(210)
         result = list(self.wrapper.students())
@@ -107,7 +120,18 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_course.course_type, course.course_type.short_name)
         self.assertEqual(res_course.usos_kod, course.usos_kod)
 
-    def test_declared_fields(self, fields, res_obj, orig_obj):
+    def test_classroom(self):
+        classroom = ClassroomFactory()
+        [res_classroom] = list(self.wrapper.classrooms())
+
+        self.assert_declared_fields(
+            ('id', 'type', 'description', 'number', 'order', 'building',
+             'capacity', 'floor', 'can_reserve', 'slug', 'usos_id'),
+            res_classroom,
+            classroom
+        )
+
+    def assert_declared_fields(self, fields, res_obj, orig_obj):
         """
         test if given fields are equal in res_obj and orig_obj,
 

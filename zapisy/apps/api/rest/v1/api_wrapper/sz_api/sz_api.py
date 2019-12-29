@@ -2,9 +2,11 @@ import requests
 from urllib.parse import urljoin
 from typing import Iterator, Optional
 
+from pprint import pprint
+
 from .models import (Semester, Student,
                      Employee, CourseInstance,
-                     Classroom)
+                     Classroom, Model)
 
 
 class ZapisyApi:
@@ -32,6 +34,12 @@ class ZapisyApi:
 
     def _get_redirect_map(self, api_url: str) -> dict:
         return self._handle_request(api_url)
+
+    def save(self, obj: Model):
+        self._handle_patch_request(
+            urljoin(self.redirect_map[obj.redirect_key], str(obj.id)),
+            data=obj.to_dict()
+        )
 
     def semesters(
         self, visible: Optional[bool] = None
@@ -144,3 +152,16 @@ class ZapisyApi:
         )
         resp.raise_for_status()
         return resp.json()
+
+    def _handle_patch_request(self, path, data: dict):
+        """send PATCH request to api
+
+        Raises:
+            requests.exceptions.RequestException
+        """
+        resp = requests.patch(
+            path + "/",  # DRF requires trailing slash for patch method
+            data=data,
+            headers={"Authorization": self.token}
+        )
+        resp.raise_for_status()

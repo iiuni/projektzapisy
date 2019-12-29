@@ -26,8 +26,15 @@ class Model:
     def from_dict(cls, dict_):
         return cls(**dict_)
 
-    def _to_json(self):
-        return json.dumps(self.__dict__)
+    def to_dict(self):
+        """Convert model to dict recursively"""
+        data = {}
+        for key, value in self.__dict__.items():
+            try:
+                data[key] = value.to_dict()
+            except AttributeError:
+                data[key] = value
+        return data
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
