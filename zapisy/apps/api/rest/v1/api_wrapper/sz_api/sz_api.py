@@ -2,8 +2,6 @@ import requests
 from urllib.parse import urljoin
 from typing import Iterator, Optional
 
-from pprint import pprint
-
 from .models import (Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Model)
