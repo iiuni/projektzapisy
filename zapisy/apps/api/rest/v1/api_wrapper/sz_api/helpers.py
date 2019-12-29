@@ -7,7 +7,9 @@ def auto_assign(func):
     sig = signature(func)
     for name, param in sig.parameters.items():
         if param.kind in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD):
-            raise RuntimeError('Unable to auto assign if *args or **kwargs in signature.')
+            raise RuntimeError(
+                'Unable to auto assign if *args or **kwargs in signature.')
+
     # Wrapper:
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
