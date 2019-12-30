@@ -5,7 +5,8 @@ from typing import Iterator, Optional
 
 from .models import (Semester, Student,
                      Employee, CourseInstance,
-                     Classroom, Model)
+                     Classroom, Group,
+                     Model)
 
 
 class ZapisyApi:
@@ -43,75 +44,66 @@ class ZapisyApi:
     def semesters(
         self, visible: Optional[bool] = None
     ) -> Iterator[Semester]:
-        """
-        returns iterator over Semester objects.
+        """Returns iterator over Semester objects.
 
-        if visible parameter is provided, filters results by its value
+        If visible parameter is provided, filters results by its value
         """
         return self._get_deserialized_data(Semester, {"visible": visible})
 
     def semester(self, id: int) -> Semester:
-        """
-        returns Semester with given id
-        """
+        """Returns Semester with given id"""
         return self._get_single_record(Semester, id)
 
     def current_semester(self) -> Optional[Semester]:
-        """
-        if exist, it returns current semester. otherwise return None
-        """
+        """If exist, it returns current semester. otherwise return None"""
         return self._action(Semester, "current")
 
     def students(self) -> Iterator[Student]:
-        """
-        Gets an iterator over Student objects
-        """
+        """Gets an iterator over Student objects"""
         return self._get_deserialized_data(Student)
 
     def student(self, id: int) -> Student:
-        """
-        returns Student with given id
-        """
+        """Returns Student with given id"""
         return self._get_single_record(Student, id)
 
     def employees(self) -> Iterator[Employee]:
-        """
-        Gets an iterator over Employee objects
-        """
+        """Gets an iterator over Employee objects"""
         return self._get_deserialized_data(Employee)
 
     def employee(self, id: int) -> Employee:
-        """
-        returns Employee with given id
-        """
+        """returns Employee with given id"""
         return self._get_single_record(Employee, id)
 
     def courses(
         self, semester_id: Optional[int] = None
     ) -> Iterator[CourseInstance]:
-        """
-        Gets an iterator over courses
-        """
+        """Gets an iterator over courses"""
         return self._get_deserialized_data(
             CourseInstance, params={"semester_id": semester_id})
 
     def course(self, id: int) -> CourseInstance:
-        """
-        returns course with given id
-        """
+        """returns course with given id"""
         return self._get_single_record(CourseInstance, id)
 
     def classrooms(self) -> Iterator[Classroom]:
-        """
-        Returns an iterator over classrooms
-        """
+        """Returns an iterator over classrooms"""
         return self._get_deserialized_data(Classroom)
 
     def classroom(self, id: int) -> Classroom:
-        """
-        Returns classroom with given id
-        """
+        """Returns classroom with given id"""
         return self._get_single_record(Classroom, id)
+
+    def groups(self, course_id: Optional[int] = None) -> Iterator[Group]:
+        """Gets an iterator over groups
+
+        If course parameter is provided, filters results by its value
+        """
+        return self._get_deserialized_data(
+            Group, params={"course_id": course_id})
+
+    def group(self, id: int) -> Group:
+        """Returns group with given id"""
+        return self._get_single_record(Group, id)
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:

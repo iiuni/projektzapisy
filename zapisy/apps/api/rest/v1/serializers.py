@@ -134,10 +134,21 @@ class GroupSerializer(serializers.ModelSerializer):
     course = CourseSerializer(read_only=True)
     teacher = EmployeeSerializer(read_only=True)
 
+    human_readable_type = serializers.SerializerMethodField()
+    teacher_full_name = serializers.SerializerMethodField()
+
+    def get_human_readable_type(self, group_model):
+        return group_model.human_readable_type()
+
+    def get_teacher_full_name(seld, group_model):
+        return group_model.get_teacher_full_name()
+
     class Meta:
         model = Group
-        fields = ('id', 'type', 'course', 'teacher', 'limit', 'usos_nr')
-        read_only_fields = ('id', 'type', 'course', 'teacher', 'limit')
+        fields = ('id', 'type', 'course', 'teacher', 'limit', 'human_readable_type',
+                  'teacher_full_name', 'export_usos', 'usos_nr')
+        read_only_fields = ('id', 'type', 'course', 'teacher', 'limit',
+                            'human_readable_type', 'teacher_full_name')
 
 
 class ShallowGroupSerializer(serializers.ModelSerializer):

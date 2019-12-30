@@ -97,8 +97,10 @@ class Group(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, type, course, teacher, limit, usos_nr):
-        pass
+    def __init__(self, id, type, course, teacher, limit, human_readable_type,
+                 teacher_full_name, export_usos, usos_nr):
+        self.course = CourseInstance.from_dict(course)
+        self.teacher = Employee.from_dict(teacher)
 
 
 class Record(Model):

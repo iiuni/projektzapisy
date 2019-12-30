@@ -85,7 +85,7 @@ class GroupFactory(DjangoModelFactory):
         model = Group
 
     course = factory.SubFactory(CourseInstanceFactory)
-    type = 2
+    type = '2'
     limit = 10
     teacher = factory.SubFactory(EmployeeFactory)
 

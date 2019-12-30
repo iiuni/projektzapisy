@@ -8,7 +8,8 @@ from rest_framework.authtoken.models import Token
 
 from apps.enrollment.courses.tests.factories import (SemesterFactory,
                                                      CourseInstanceFactory,
-                                                     ClassroomFactory)
+                                                     ClassroomFactory,
+                                                     GroupFactory)
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
@@ -145,16 +146,32 @@ class WrapperTests(APILiveServerTestCase):
             classroom
         )
 
-    def assert_declared_fields(self, fields, res_obj, orig_obj):
-        """
-        test if given fields are equal in res_obj and orig_obj,
+    def test_group(self):
+        group = GroupFactory()
+        [res_group] = list(self.wrapper.groups())
 
-        it only works when api fields matches django fields
-        for example, it won't work for
-            self.assertEqual(res_course.course_type,
-                             course.course_type.short_name)
+        self.assert_declared_fields(
+            ('id', 'type', 'course.id', 'teacher.id',
+             'limit', 'export_usos', 'usos_nr'),
+            res_group,
+            group
+        )
+        self.assertEqual(res_group.human_readable_type,
+                         group.human_readable_type())
+        self.assertEqual(res_group.teacher_full_name,
+                         group.get_teacher_full_name())
+
+    def assert_declared_fields(self, fields, res_obj, expected_obj):
+        """test if given fields are equal in res_obj and orig_obj.
+
+        It can test nested objects:
+            for example, one can pass fields =
+                ('normal_field', 'nested_model.normal_field')
         """
         for field in fields:
-            self.assertEqual(
-                getattr(res_obj, field),
-                getattr(orig_obj, field))
+            for attr in field.split("."):
+                val = getattr(res_obj, attr)
+                expected_val = getattr(expected_obj, attr)
+
+            self.assertEqual(val, expected_val,
+                             msg=f"field name: {field}")
