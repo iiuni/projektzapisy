@@ -6,7 +6,7 @@ from typing import Iterator, Optional
 from .models import (Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Group,
-                     Model)
+                     Term, Model)
 
 
 class ZapisyApi:
@@ -104,6 +104,18 @@ class ZapisyApi:
     def group(self, id: int) -> Group:
         """Returns group with given id"""
         return self._get_single_record(Group, id)
+
+    def terms(self, semester_id: Optional[int] = None) -> Iterator[Term]:
+        """Gets an iterator over groups
+
+        If semester_id parameter is provided, filters results by its value
+        """
+        return self._get_deserialized_data(
+            Term, params={"group__course__semester": semester_id})
+
+    def term(self, id: int) -> Term:
+        """Returns term with given id"""
+        return self._get_single_record(Term, id)
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:

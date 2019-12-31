@@ -164,8 +164,6 @@ class TermSerializer(serializers.ModelSerializer):
     When serializing multiple objects, query them with
     `select_related('group').prefetch_related('classrooms')`.
     """
-    group = ShallowGroupSerializer(read_only=True)
-    classrooms = ClassroomSerializer(read_only=True, many=True)
 
     class Meta:
         model = Term

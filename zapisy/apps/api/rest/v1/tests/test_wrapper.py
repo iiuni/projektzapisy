@@ -9,10 +9,12 @@ from rest_framework.authtoken.models import Token
 from apps.enrollment.courses.tests.factories import (SemesterFactory,
                                                      CourseInstanceFactory,
                                                      ClassroomFactory,
-                                                     GroupFactory)
+                                                     GroupFactory,
+                                                     TermFactory)
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
+# from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 
 
@@ -160,6 +162,21 @@ class WrapperTests(APILiveServerTestCase):
                          group.human_readable_type())
         self.assertEqual(res_group.teacher_full_name,
                          group.get_teacher_full_name())
+
+    def test_term(self):
+        term = TermFactory()
+        [res_term] = list(self.wrapper.terms())
+
+        self.assert_declared_fields(
+            ('id', 'dayOfWeek', 'group.id', 'usos_id'),
+            res_term,
+            term
+        )
+
+        self.assertEqual(
+            res_term.start_time, term.start_time.isoformat())
+        self.assertEqual(
+            res_term.end_time, term.end_time.isoformat())
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """test if given fields are equal in res_obj and orig_obj.

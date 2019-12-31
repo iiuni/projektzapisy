@@ -3,6 +3,25 @@ import functools
 
 
 def auto_assign(func):
+    """
+    Assign values to instace variables automatically
+    based on function signature.
+
+    Example:
+        # without auto_assign
+        class User:
+            def __init__(self, name, surname, ...):
+                self.name = name
+                self.surname = surname
+                ...
+
+        # with auto_assign
+        class User:
+            @auto_assign
+            def __init__(self, name, surname, ...):
+                pass
+
+    """
     # Signature:
     sig = signature(func)
     for name, param in sig.parameters.items():

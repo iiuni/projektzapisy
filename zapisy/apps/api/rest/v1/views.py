@@ -75,7 +75,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 class TermViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
-    queryset = Term.objects.select_related('group').prefetch_related('classrooms')
+    queryset = Term.objects.select_related('group').prefetch_related('classrooms').order_by('id')
     filter_fields = ['group__course__semester']
     serializer_class = serializers.TermSerializer
     pagination_class = StandardResultsSetPagination
