@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sz_api",
-    version="0.0.1",
+    version="1.0.0",
     author="Mariusz Bielecki",
     author_email="maniekb12@gmail.com",
     description="API wrapper for https://zapisy.ii.uni.wroc.pl/api/v1",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/iiuni/sz_api",
+    url="https://github.com/iiuni/projektzapisy/",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
