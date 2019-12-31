@@ -6,7 +6,8 @@ from typing import Iterator, Optional
 from .models import (Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Group,
-                     Term, Model)
+                     Term, Record, RecordStatus,
+                     Model)
 
 
 class ZapisyApi:
@@ -116,6 +117,21 @@ class ZapisyApi:
     def term(self, id: int) -> Term:
         """Returns term with given id"""
         return self._get_single_record(Term, id)
+
+    def records(
+        self,
+        status: RecordStatus = RecordStatus.UNDEFINED
+    ) -> Iterator[Record]:
+        """Gets an iterator over records
+
+        If status parameter is provided, filters results by its value
+        """
+        return self._get_deserialized_data(
+            Record, params={"status": status.value})
+
+    def record(self, id: int) -> Record:
+        """Returns term with given id"""
+        return self._get_single_record(Record, id)
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:

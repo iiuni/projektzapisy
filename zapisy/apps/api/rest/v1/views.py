@@ -84,9 +84,10 @@ class TermViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
-    queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
+    queryset = Record.objects.select_related(
         'group', 'group__course', 'group__course__semester', 'student', 'student__user')
-    filter_fields = ['group__course__semester']
+    # TODO czemu po dodaniu 'group' pobieranie wyników totalnie zwalnia?
+    filter_fields = ['group__course__semester', 'status']
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
 

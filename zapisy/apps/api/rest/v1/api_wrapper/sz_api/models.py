@@ -1,5 +1,7 @@
 from .helpers import auto_assign
 
+from choicesenum import ChoicesEnum
+
 
 class Model:
 
@@ -103,12 +105,20 @@ class Group(Model):
         self.teacher = Employee.from_dict(teacher)
 
 
+class RecordStatus(ChoicesEnum):
+    """RecordStatus describes a lifetime of a record."""
+    UNDEFINED = None
+    QUEUED = '0'
+    ENROLLED = '1'
+    REMOVED = '2'
+
+
 class Record(Model):
     redirect_key = "records"
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, group, student):
+    def __init__(self, id, status, group, student):
         pass
 
 

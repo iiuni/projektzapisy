@@ -6,11 +6,13 @@ from rest_framework.test import APILiveServerTestCase
 from rest_framework.test import RequestsClient
 from rest_framework.authtoken.models import Token
 
+from apps.enrollment.records.models import Record
 from apps.enrollment.courses.tests.factories import (SemesterFactory,
                                                      CourseInstanceFactory,
                                                      ClassroomFactory,
                                                      GroupFactory,
                                                      TermFactory)
+from apps.enrollment.records.tests.factories import RecordFactory
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
@@ -177,6 +179,13 @@ class WrapperTests(APILiveServerTestCase):
             res_term.start_time, term.start_time.isoformat())
         self.assertEqual(
             res_term.end_time, term.end_time.isoformat())
+
+    def test_record(self):
+        record = RecordFactory()
+
+        res_record = self.wrapper.record(record.id)
+
+        self.assertEqual(res_record.status, record.status)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """test if given fields are equal in res_obj and orig_obj.

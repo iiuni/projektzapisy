@@ -174,7 +174,8 @@ class TermSerializer(serializers.ModelSerializer):
 class RecordSerializer(serializers.ModelSerializer):
     group = ShallowGroupSerializer(read_only=True)
     student = StudentSerializer(read_only=True)
+    status = serializers.CharField(max_length=1)
 
     class Meta:
         model = Record
-        fields = ('id', 'group', 'student')
+        fields = ('id', 'status', 'group', 'student')
