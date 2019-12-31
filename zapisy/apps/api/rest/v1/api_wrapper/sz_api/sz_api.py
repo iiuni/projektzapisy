@@ -7,7 +7,9 @@ from .models import (Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Group,
                      Term, Record, RecordStatus,
-                     Model)
+                     Desiderata, DesiderataOther,
+                     SpecialReservation, SystemState,
+                     SingleVote, Model)
 
 
 class ZapisyApi:
@@ -97,7 +99,7 @@ class ZapisyApi:
     def groups(self, course_id: Optional[int] = None) -> Iterator[Group]:
         """Gets an iterator over groups
 
-        If course parameter is provided, filters results by its value
+        If `course` parameter is provided, filters results by its value
         """
         return self._get_deserialized_data(
             Group, params={"course_id": course_id})
@@ -109,7 +111,7 @@ class ZapisyApi:
     def terms(self, semester_id: Optional[int] = None) -> Iterator[Term]:
         """Gets an iterator over groups
 
-        If semester_id parameter is provided, filters results by its value
+        If `semester_id` parameter is provided, filters results by its value
         """
         return self._get_deserialized_data(
             Term, params={"group__course__semester": semester_id})
@@ -124,7 +126,7 @@ class ZapisyApi:
     ) -> Iterator[Record]:
         """Gets an iterator over records
 
-        If status parameter is provided, filters results by its value
+        If `status` parameter is provided, filters results by its value
         """
         return self._get_deserialized_data(
             Record, params={"status": status.value})
@@ -132,6 +134,69 @@ class ZapisyApi:
     def record(self, id: int) -> Record:
         """Returns term with given id"""
         return self._get_single_record(Record, id)
+
+    def desideratas(
+        self, filters: Optional[dict] = None
+    ) -> Iterator[Desiderata]:
+        """Gets an iterator over desideratas.
+
+        Filtering by any field is possible by passing it in `filters` dict
+        """
+        return self._get_deserialized_data(Desiderata, params=filters)
+
+    def desiderata(self, id: int) -> Desiderata:
+        """Returns desiderata with given id"""
+        return self._get_single_record(Desiderata, id)
+
+    def desiderata_others(
+        self, filters: Optional[dict] = None
+    ) -> Iterator[DesiderataOther]:
+        """Gets an iterator over DesiderataOther objects.
+
+        Filtering by any field is possible by passing it in `filters` dict
+        """
+        return self._get_deserialized_data(DesiderataOther, params=filters)
+
+    def desiderata_other(self, id: int) -> DesiderataOther:
+        """Returns DesiderataOther object with given id"""
+        return self._get_single_record(DesiderataOther, id)
+
+    def special_reservations(
+        self, filters: Optional[dict] = None
+    ) -> Iterator[SpecialReservation]:
+        """Gets an iterator over SpecialReservation objects.
+
+        Filtering by any field is possible by passing it in `filters` dict
+        """
+        return self._get_deserialized_data(SpecialReservation, params=filters)
+
+    def special_reservation(self, id: int) -> SpecialReservation:
+        """Returns desiderata with given id"""
+        return self._get_single_record(SpecialReservation, id)
+
+    def single_votes(
+        self, filters: Optional[dict] = None
+    ) -> Iterator[SingleVote]:
+        """Gets an iterator over SingleVote objects.
+        Votes with value = 0 are ignored.
+
+        Filtering by any field is possible by passing it in `filters` dict.
+        Filtering by `state` (SystemState) is also possible.
+        """
+        return self._get_deserialized_data(SingleVote, params=filters)
+
+    def systemstates(
+        self, filters: Optional[dict] = None
+    ) -> Iterator[SystemState]:
+        """Gets an iterator over SystemState objects.
+
+        Filtering by any field is possible by passing it in `filters` dict.
+        """
+        return self._get_deserialized_data(SystemState, params=filters)
+
+    def systemstate(self, id: int) -> SystemState:
+        """Returns SystemState object with given id"""
+        return self._get_single_record(SystemState, id)
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:

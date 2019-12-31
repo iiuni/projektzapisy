@@ -6,13 +6,15 @@ from rest_framework.test import APILiveServerTestCase
 from rest_framework.test import RequestsClient
 from rest_framework.authtoken.models import Token
 
-from apps.enrollment.records.models import Record
 from apps.enrollment.courses.tests.factories import (SemesterFactory,
                                                      CourseInstanceFactory,
                                                      ClassroomFactory,
                                                      GroupFactory,
                                                      TermFactory)
 from apps.enrollment.records.tests.factories import RecordFactory
+from apps.enrollment.records.models.records import RecordStatus
+from apps.offer.proposal.tests.factories import ProposalFactory
+from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
@@ -184,8 +186,38 @@ class WrapperTests(APILiveServerTestCase):
         record = RecordFactory()
 
         res_record = self.wrapper.record(record.id)
-
         self.assertEqual(res_record.status, record.status)
+
+        filtered = list(self.wrapper.records(RecordStatus.REMOVED))
+        self.assertEqual(len(filtered), 0)
+
+    def test_single_vote_systemstate(self):
+        state1 = SystemState(year="2010/11")
+        state1.save()
+        state2 = SystemState(year="2018/19")
+        state2.save()
+        students = [StudentFactory(), StudentFactory()]
+        proposals = [ProposalFactory(name="Pranie"), ProposalFactory(name="Zmywanie")]
+        SingleVote.objects.bulk_create([
+            SingleVote(state=state1, student=students[0], proposal=proposals[0], value=2),
+            SingleVote(state=state1, student=students[1], proposal=proposals[0], value=0),
+            SingleVote(state=state1, student=students[0], proposal=proposals[1], value=3),
+            SingleVote(state=state1, student=students[1], proposal=proposals[1], value=1),
+            SingleVote(state=state2, student=students[0], proposal=proposals[0], value=0),
+            SingleVote(
+                state=state2, student=students[1], proposal=proposals[0], value=0, correction=1),
+            SingleVote(state=state2, student=students[0], proposal=proposals[1], value=3),
+            SingleVote(
+                state=state2, student=students[1], proposal=proposals[1], value=1, correction=2),
+        ])
+
+        self.assertEqual(len(list(self.wrapper.systemstates())), 2)
+        res_state2 = self.wrapper.systemstate(state2.id)
+        self.assertEqual(res_state2.state_name, str(state2))
+        # zero-value votes are ignored
+        self.assertEqual(len(list(self.wrapper.single_votes({"state": state1.id}))), 3)
+        # one of votes have value = 0, but correction = 1
+        self.assertEqual(len(list(self.wrapper.single_votes({"value": 0}))), 1)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """test if given fields are equal in res_obj and orig_obj.

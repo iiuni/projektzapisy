@@ -85,8 +85,9 @@ class RecordViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     queryset = Record.objects.select_related(
-        'group', 'group__course', 'group__course__semester', 'student', 'student__user')
-    # TODO czemu po dodaniu 'group' pobieranie wyników totalnie zwalnia?
+        'group', 'group__course', 'group__course__semester', 'student', 'student__user'
+    ).order_by('id')
+    # TODO czemu po dodaniu 'group' do filtrów pobieranie wyników totalnie zwalnia?
     filter_fields = ['group__course__semester', 'status']
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
