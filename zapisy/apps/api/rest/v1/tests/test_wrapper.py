@@ -18,6 +18,7 @@ from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
+from apps.users.models import UsosData
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 
@@ -218,6 +219,12 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(len(list(self.wrapper.single_votes({"state": state1.id}))), 3)
         # one of votes have value = 0, but correction = 1
         self.assertEqual(len(list(self.wrapper.single_votes({"value": 0}))), 1)
+
+    def test_post_usos_data(self):
+        content = "\n".join("test" for _ in range(200))
+        self.wrapper.post_usos_data(content)
+        data = UsosData.objects.get(pk=1)
+        self.assertEqual(content, data.content)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """test if given fields are equal in res_obj and orig_obj.

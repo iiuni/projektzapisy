@@ -198,6 +198,11 @@ class ZapisyApi:
         """Returns SystemState object with given id"""
         return self._get_single_record(SystemState, id)
 
+    def post_usos_data(self, content: str):
+        """Sends usos students data to database for migrating purposes"""
+        self._handle_post_request(
+            self.redirect_map["usos"], {"content": content})
+
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:
             data_gen = self._get_paginated_data(model_class, params)
@@ -257,13 +262,28 @@ class ZapisyApi:
             return None
 
     def _handle_patch_request(self, path, data: dict):
-        """send PATCH request to api
+        self._handle_upload_request("patch", path, data)
+
+    def _handle_post_request(self, path, data: dict):
+        self._handle_upload_request("post", path, data)
+
+    def _handle_upload_request(self, method, path, data: dict):
+        """send PATCH or POST request to api
 
         Raises:
             requests.exceptions.RequestException
+            ValueError
         """
-        resp = requests.patch(
-            path + "/",  # DRF requires trailing slash for patch method
+        if method == 'patch':
+            func = requests.patch
+        elif method == 'post':
+            func = requests.post
+        else:
+            raise ValueError()
+
+        resp = func(
+            # DRF requires trailing slash for patch method
+            path if path.endswith("/") else path + "/",
             data=data,
             headers={"Authorization": self.token}
         )

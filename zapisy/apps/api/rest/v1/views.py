@@ -9,7 +9,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, UsosData
 
 from apps.api.rest.v1 import serializers
 
@@ -170,3 +170,12 @@ class SystemStateViewSet(viewsets.ModelViewSet):
     queryset = SystemState.objects.all()
     serializer_class = serializers.SystemStateSerializer
     filter_fields = '__all__'
+
+
+class UsosDataViewSet(viewsets.ModelViewSet):
+    """Get all vote system states"""
+
+    http_method_names = ['post']
+    permission_classes = (IsAdminUser,)
+    queryset = UsosData.objects.all()
+    serializer_class = serializers.UsosDataSerializer
