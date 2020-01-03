@@ -1,11 +1,17 @@
 {% extends "offer/base.html" %}
 {% block content %}
-<h2>Stwórz przydział zajęć</h2>
-<a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-5">>> Wyniki głosowania - arkusz Google</a>
-<a href="" target="_blank" class="d-block mb-5">>> Proponowany przydział zajęć - arkusz Google</a>
+<h1>Stwórz przydział zajęć</h1>
+<a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">>> Wyniki głosowania - arkusz Google</a>
+<a href="https://docs.google.com/spreadsheets/d/{{ plan_proposal_sheet_id }}" target="_blank" class="d-block mb-5">>> Proponowany przydział zajęć - arkusz Google</a>
+
+<p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
+<a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
 
 <h4>Przedmioty na następny rok:</h4>
-<p class="lead">Proponowane przedmioty są już zaznaczone. Aby je usunąć lub dodać inne prosimy zaznaczyć/odznaczyć checkboxy.</p>
+<p class="lead">
+    Proponowane przedmioty są już zaznaczone. Aby je usunąć lub dodać inne prosimy zaznaczyć/odznaczyć checkboxy.
+    <br>(Aby wygenerować arkusz trzeba najpierw zaakceptować przedmioty)
+</p>
 
 
 <form class="mt-5" action="{% url 'plan-vote' %}" method="post">
@@ -25,9 +31,9 @@
                         {% if semester == 'z' %}
                             <tr>
                                 {% if is_set %}
-                                    <th scope="row"><input type="checkbox" checked></th>
+                                    <th scope="row"><input type="checkbox" name="{{ course }}" checked></th>
                                 {% else %}
-                                    <th scope="row"><input type="checkbox"></th>
+                                    <th scope="row"><input type="checkbox" name="{{ course }}"></th>
                                 {% endif %}
                                 <td>{{ course }}</td>
                             </tr>
@@ -50,9 +56,9 @@
                         {% if semester == 'l' %}
                             <tr>
                                 {% if is_set %}
-                                    <th scope="row"><input type="checkbox" checked></th>
+                                    <th scope="row"><input type="checkbox" name="{{ course }}" checked></th>
                                 {% else %}
-                                    <th scope="row"><input type="checkbox"></th>
+                                    <th scope="row"><input type="checkbox" name="{{ course }}"></th>
                                 {% endif %}
                                 <td>{{ course }}</td>
                             </tr>
@@ -64,7 +70,4 @@
     </div>
     <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty</button>
 </form>
-
-<a href="" target="_blank" class="d-block mt-4">>> Proponowany przydział zajęć - arkusz Google</a>
-
 {% endblock %}

@@ -7,6 +7,7 @@ from apps.offer.plan.sheets import create_sheets_service, update_voting_results_
 from apps.offer.plan.utils import get_votes, propose
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
+PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
 
 
 def plan_view(request):
@@ -19,8 +20,6 @@ def plan_view(request):
 def plan_create(request):
     if request.user.is_superuser:
         courses_proposal = get_votes(3)
-        sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
-        update_voting_results_sheet(sheet, courses_proposal)
         courses = []
         current_year = SystemState.get_current_state().year
         for key, value in courses_proposal.items():
@@ -33,7 +32,8 @@ def plan_create(request):
 
         context = {
             'courses_proposal': courses,
-            'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID
+            'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID,
+            'plan_proposal_sheet_id': PLAN_PROPOSAL_SPREADSHEET_ID
         }
         return render(request, 'plan/create-plan.html', context)
     else:
@@ -41,4 +41,18 @@ def plan_create(request):
 
 
 def plan_vote(request):
+    if request.method == 'POST':
+        courses = []
+        for course in request.POST:
+            if course != 'csrfmiddlewaretoken':
+                courses.append(course)
+        courses.sort()
+        # sheet = create_sheets_service(PLAN_PROPOSAL_SPREADSHEET_ID)
+    return HttpResponseRedirect(reverse('plan-create'))
+
+
+def plan_create_voting_sheet(request):
+    voting = get_votes(3)
+    sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+    update_voting_results_sheet(sheet, voting)
     return HttpResponseRedirect(reverse('plan-create'))

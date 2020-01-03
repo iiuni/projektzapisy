@@ -1,5 +1,7 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import datetime
+from apps.offer.vote.models.system_state import SystemState
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -13,35 +15,117 @@ def create_sheets_service(id):
 
 
 def votes_to_sheets_format(votes):
+    values = create_voting_results_sheet_layout(votes)
+
+    for value in votes.values():
+        latest_year = list(value.values())[0]
+        row = []
+        years = []
+        year = 365
+        current_year_str = SystemState.get_current_state().year
+        current_year = datetime.datetime.strptime(current_year_str, '%Y/%y')
+        val = list(value.values())
+
+        for key in value.keys():
+            years.append(datetime.datetime.strptime(key, '%Y/%y'))
+
+        if len(years) == 3:
+            for val in value.values():
+                create_annual_part_of_row(row, val)
+        elif len(years) == 2:
+            if current_year == years[0]:
+                if (current_year - years[1]).days > year:
+                    create_annual_part_of_row(row, val[0])
+                    create_annual_part_of_row(row)
+                    create_annual_part_of_row(row, val[1])
+                else:
+                    create_annual_part_of_row(row, val[0])
+                    create_annual_part_of_row(row, val[1])
+                    create_annual_part_of_row(row)
+            else:
+                create_annual_part_of_row(row)
+                create_annual_part_of_row(row, val[0])
+                create_annual_part_of_row(row, val[1])
+        elif len(years) == 1:
+            if current_year == years[0]:
+                create_annual_part_of_row(row, val[0])
+                create_annual_part_of_row(row)
+                create_annual_part_of_row(row)
+            elif (current_year - years[0]).days > year:
+                create_annual_part_of_row(row)
+                create_annual_part_of_row(row)
+                create_annual_part_of_row(row, val[0])
+            else:
+                create_annual_part_of_row(row)
+                create_annual_part_of_row(row, val[0])
+                create_annual_part_of_row(row)
+
+        row.insert(0, latest_year['semester'])
+        row.insert(0, latest_year['type'])
+        row.insert(0, latest_year['name'])
+        values.append(row)
+
+    return values
+
+
+# Argument does_exist tells if this annual position exists
+# if does_exist is False then fill with blanks -> ''
+def create_annual_part_of_row(row, value={}):
+    if len(value) > 0:
+        took_place = True if value['enrolled'] else False
+        number_of_enrolled_students = value['enrolled'] if value['enrolled'] else ''
+
+        row.insert(0, number_of_enrolled_students)
+        row.insert(0, took_place)
+        row.insert(0, value['count_max'])
+        row.insert(0, value['votes'])
+        row.insert(0, value['total'])
+    else:
+        for i in range(5):
+            row.insert(0, '')
+
+
+def create_voting_results_sheet_layout(votes):
+    years = list(list(votes.values())[0].keys())
     values = [
+        [],
         [
-            'name',
-            'votes',
-            'total',
-            'count max',
-            'type',
-            'teacher',
-            'proposal',
-            'semester',
-            'enrolled'
+            'Nazwa',
+            'Typ kursu',
+            'Semestr',
         ]
     ]
 
-    for key, value in votes.items():
-        for ke, val in value.items():
-            row = [val['name'], val['votes']]
-            for k, v in val.items():
-                if k != 'name' and k != 'votes':
-                    row.append(v)
-            values.append(row)
+    for i in range(3):
+        if i == 0:
+            for j in range(3):
+                values[0].append('')
+        else:
+            for j in range(4):
+                values[0].append('')
+        values[0].append(years[2 - i])
+
+    block = [
+        'Głosów',
+        'Głosujących',
+        'Za 3pkt',
+        'Był prowadzony',
+        'Zapisanych',
+    ]
+
+    for i in range(3):
+        for j in range(5):
+            values[1].append(block[j])
 
     return values
 
 
 def update_voting_results_sheet(sheet, votes):
     data = votes_to_sheets_format(votes)
+
+    sheet.sheet1.clear()
     sheet.values_update(
-        range='A:I',
+        range='A:R',
         params={
             'valueInputOption': 'USER_ENTERED'
         },
