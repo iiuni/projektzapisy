@@ -15,7 +15,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.group import Group
 from apps.offer.proposal.models import Proposal, ProposalStatus
-from apps.schedulersync.models import TermSyncData
+from apps.schedulersync.models import TermSyncData, EmployeeMap, CourseMap
 import collections
 
 # The mapping between group types in scheduler and enrollment system
@@ -30,42 +30,27 @@ LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
 EMPLOYEE_MAP = {
     'PLISOWSKI': '258497',
     'PRATIKGHOSAL': '268909',
-    #   'AMORAWIEC': 'NN',
-    'AMORAWIEC': '540',  # added
-    #   'AMALINOWSKI': 'NN',
-    'AMALINOWSKI': '540',  # added
-    #   'ARACZYNSKI': 'NN',
-    'ARACZYNSKI': '540',  # added
-    #   'EDAMEK': 'NN',
-    'EDAMEK': '540',  # added
-    #   'FINGO': 'NN',
-    'FINGO': '540',  # added
-    #   'GKARCH': 'NN',
-    'GKARCH': '540',  # added
-    #   'GPLEBANEK': 'NN',
-    'GPLEBANEK': '540',  # added
-    #   'JDYMARA': 'NN',
-    'JDYMARA': '540',  # added
-    #   'JDZIUBANSKI': 'NN',
-    'JDZIUBANSKI': '540',  # added
-    #   'LNEWELSKI': 'NN',
-    'LNEWELSKI': '540',  # added
-    #   'MPREISNER': 'NN',
-    'MPREISNER': '540',  # added
-    #   'PKOWALSKI': 'NN',
-    'PKOWALSKI': '540',  # added
-    #   'RSZWARC': 'NN',
-    'RSZWARC': '540',  # added
-    #   'SCYGAN': 'NN',
-    'SCYGAN': '540',  # added
-    #    'TELSNER': 'NN',
-    'TELSNER': '540',  # added
-    'TRZEPECKI': 'NN',
-    '5323': 'PAWEL.LASKOS-GRABOWSKI',
-    'NN1': 'NN',
-    'IM': 'NN',
-    'MKOWALCZYKIEWICZ': '540',  # added
-    'AKISIELEWICZ': '540'  # added
+    'AMORAWIEC': 'Nn',
+    'AMALINOWSKI': 'Nn',
+    'ARACZYNSKI': 'Nn',
+    'EDAMEK': 'Nn',
+    'FINGO': 'Nn',
+    'GKARCH': 'Nn',
+    'GPLEBANEK': 'Nn',
+    'JDYMARA': 'Nn',
+    'JDZIUBANSKI': 'Nn',
+    'LNEWELSKI': 'Nn',
+    'MPREISNER': 'Nn',
+    'PKOWALSKI': 'Nn',
+    'RSZWARC': 'Nn',
+    'SCYGAN': 'Nn',
+    'TELSNER': 'Nn',
+    'TRZEPECKI': 'Nn',
+    '5323': 'pawel.laskos-grabowski', # changed
+    'NN1': 'Nn',
+    'IM': 'Nn',
+    'MKOWALCZYKIEWICZ': 'Nn',  # added
+    'AKISIELEWICZ': 'Nn'  # added
 }
 
 COURSES_MAP = {
@@ -90,22 +75,38 @@ COURSES_MAP = {
     'SEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI': 'PROSEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI',
     'SEMINARIUM: INŻYNIERIA OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
     'SEMINARIUM: LOGIKI OPISOWE, DEDUKCYJNE BAZY DANYCH I REPREZENTACJA WIEDZY': 'METODY PROGRAMOWANIA',  # added
-    'TESTOWANIE OPROGRAMOWANIA': 'PRAKTYKA ZAWODOWA - PIĘĆ TYGODNI',  # added
+    'TESTOWANIE OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
     'ANALIZA DANYCH I WARIANCJI': 'METODY PROGRAMOWANIA',  # added
-    'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',  # added
-    'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'PRAKTYKA ZAWODOWA - CZTERY TYGODNIE',  # added
-    'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'PRAKTYKA ZAWODOWA - PIĘĆ TYGODNI',  # added
-    'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI',  # added
+    'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
+    'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
+    'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'METODY PROGRAMOWANIA',  # added
+    'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'METODY PROGRAMOWANIA',  # added
     'ALGEBRA I': 'METODY PROGRAMOWANIA',  # added
     'ALGEBRA LINIOWA 2': 'METODY PROGRAMOWANIA',  # added
     'ALGEBRA LINIOWA 2R': 'METODY PROGRAMOWANIA',  # added
     'ANALIZA MATEMATYCZNA II': 'METODY PROGRAMOWANIA',  # added
-    'TOPOLOGIA': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',  # added
-    'RÓWNANIA RÓŻNICZKOWE 1': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI',  # added
+    'TOPOLOGIA': 'METODY PROGRAMOWANIA',  # added
+    'RÓWNANIA RÓŻNICZKOWE 1': 'METODY PROGRAMOWANIA',  # added
     'RÓWNANIA RÓŻNICZKOWE 1R': 'METODY PROGRAMOWANIA',  # added
-    'TEORIA PRAWDOPODOBIEŃSTWA 1': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',  # added
+    'TEORIA PRAWDOPODOBIEŃSTWA 1': 'METODY PROGRAMOWANIA',  # added
     'FUNKCJE ANALITYCZNE 1': 'METODY PROGRAMOWANIA',  # added
-    'SEMINARIUM: TEORIA KATEGORII W JĘZYKACH PROGRAMOWANIA': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',  # added
+    'SEMINARIUM: TEORIA KATEGORII W JĘZYKACH PROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
+    'ANALIZA MATEMATYCZNA I' : 'dont import',
+    'ANALIZA MATEMATYCZNA II' : 'dont import',
+    'ANALIZA MATEMATYCZNA III' : 'dont import',
+    'ALGEBRA 1' : 'dont import',
+    #    'ALGEBRA I',
+    'ALGEBRA II' : 'dont import',
+    'ALGEBRA LINIOWA 1R' : 'dont import',
+    'ALGEBRA LINIOWA 2' : 'dont import',
+    'ALGEBRA LINIOWA 2R' : 'dont import',
+    'MIARA I CAŁKA' : 'dont import',
+    'FUNKCJE ANALITYCZNE 1' : 'dont import',
+    'RÓWNANIA RÓŻNICZKOWE 1' : 'dont import',
+    'RÓWNANIA RÓŻNICZKOWE 1R' : 'dont import',
+    'TEORIA PRAWDOPODOBIEŃSTWA 1' : 'dont import',
+    'TOPOLOGIA' : 'dont import',
+    'INSTYTUT MATEMATYCZNY' : 'dont import',
 }
 
 COURSES_DONT_IMPORT = [
@@ -129,10 +130,11 @@ COURSES_DONT_IMPORT = [
 
 class SchedulerData:
     """ All useful data laid out from Scheduler API, list and tuples of SchedulerAPIGroup,
-        SchedulerAPITerm, SchedulerAPIResult"""
+        SchedulerAPITerm, SchedulerAPIResult, SchedulerAPIEmployee"""
     groups = []
     terms = {}
     results = {}
+    teachers = {}
 
 
 # id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
@@ -144,6 +146,8 @@ SchedulerAPITerm = collections.namedtuple(
 
 # strings in terms list are id's of SchedulerAPITerm tuples
 SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
+
+SchedulerAPITeacher = collections.namedtuple('Teacher', ['first_name', 'last_name'])
 
 
 class GroupData:
@@ -162,7 +166,7 @@ class TermData:
     start_time = time
     end_time = time
     group = None
-    classrooms = []
+    classrooms = set()
 
 
 class Command(BaseCommand):
@@ -172,9 +176,10 @@ class Command(BaseCommand):
             unless update or create are set to False """
         try:
             # return corespodning term from SZ database to scheduler group id
+            # Sprawdź, czy to zapytanie powoduje, że później nie ma dodatkowych zapytań dzięki select_related i prefetch
             sync_data_object = TermSyncData.objects.select_related(
                 'term', 'term__group').prefetch_related('term__classrooms').get(
-                         scheduler_id=group_data.scheduler_id, term__group__course__semester=self.semester)
+                scheduler_id=group_data.scheduler_id, term__group__course__semester=self.semester)
 
             # sync_data_object = TermSyncData.objects.get(
             #     scheduler_id=group_data.scheduler_id, term__group__course__semester=self.semester).select_related(
@@ -203,10 +208,10 @@ class Command(BaseCommand):
                     term.end_time, term_data.end_time)))
                 term.end_time = term_data.end_time
 
-            if term.classrooms != term_data.classrooms:
+            if set(term.classrooms.all()) != term_data.classrooms:
                 changed = True
                 self.stdout.write(self.style.WARNING('term can update classrooms from {} to {}'.format(
-                    term.classrooms, term_data.classrooms)))
+                    set(term.classrooms.all()), term_data.classrooms)))
                 if update:
                     term.classrooms.set(term_data.classrooms)
 
@@ -247,10 +252,11 @@ class Command(BaseCommand):
                 # The lecture always has a single group but possibly many terms
                 if group_data.type == 1:
                     group = Group.objects.get_or_create(course=group_data.course, teacher=group_data.teacher,
-                                                      type=group_data.type, limit=group_data.limit)[0]
+                                                        type=group_data.type, limit=group_data.limit)[0]
                 else:
                     group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
-                                                        type=group_data.type, limit=group_data.limit)
+                                                 type=group_data.type, limit=group_data.limit)
+
 
                 term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
                                            end_time=term_data.end_time, group=group)
@@ -292,12 +298,13 @@ class Command(BaseCommand):
                     hour = term.end_hour
             return time(hour=hour)
 
-        def get_classrooms(rooms: 'List[str]') -> 'List[Classroom]':
+        def get_classrooms(rooms: 'List[str]') -> 'Set[Classroom]':
             """ returns list of Classroom objects from SZ databse looking at room number """
-            classrooms = []
+            classrooms = set()
+            # Czy sprawdzanie czy sala istnieje w instytucie jest potrzebna?
             for room in rooms:
                 try:
-                    classrooms.append(Classroom.objects.get(number=room))
+                    classrooms.add(Classroom.objects.get(number=room))
                 except Classroom.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR("Couldn't find classroom for {}".format(room))
@@ -330,20 +337,30 @@ class Command(BaseCommand):
 
         def get_proposal(self, course_name: 'str') -> 'Proposal':
             """ return Proposal object from SZ database"""
-            course_name = course_name.upper()
-            if course_name in COURSES_MAP:
-                course_name = COURSES_MAP[course_name]
+            # __iexact
             prop = None
             try:
                 prop = Proposal.objects.get(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE])
             except Proposal.DoesNotExist:
-                self.stdout.write(
-                    self.style.ERROR(">Couldn't find course proposal for {}".format(course_name))
-                )
+                while(True):
+                    self.stdout.write(
+                        self.style.WARNING(">Couldn't find course proposal for {}".format(course_name)))
+                    self.stdout.write(
+                        'Please enter proper course name. You will be asked again if course name cannot be found.')
+                    new_course_name = input('Course name:')
+                    if Proposal.objects.filter(name__iexact=new_course_name).count():
+                        CourseMap.objects.create(scheduler_course=course_name.upper(), course=new_course_name.upper())
+                        # na wypadek, gdyby nowa nazwa kursu miała kilka propozycji przedmiotu
+                        return get_proposal(self, new_course_name)
+                    else:
+                        EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username='Nn')
+                        break
+
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
+                # Czy może kolejność na odwrót, lub wyrzucić błąd?
                 props = Proposal.objects.filter(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE]).order_by('-status', '-id')
@@ -351,7 +368,7 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.WARNING('Multiple course proposals. Took first among:'))
                 for prop in props:
-                    self.stdout.write(self.style.WARNING('  {}'.format(str(prop))))
+                    self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop,prop.status)))
                 self.stdout.write('')
                 prop = props[0]
             return prop
@@ -365,64 +382,40 @@ class Command(BaseCommand):
             except CourseInstance.DoesNotExist:
                 if create_courses:
                     course = CourseInstance.create_proposal_instance(proposal, self.semester)
-                    self.created_courses += 1
+                   # self.created_courses += 1
 
             if course is None:
-                if proposal is None:
-                    raise CommandError(
-                        f'Proposal is None. Check your input file.')
-                else:
-                    raise CommandError(
-                        f'Course {proposal.name} does not exist! Check your input file.')
+                raise CommandError(
+                    f'Course {proposal.name} does not exist and create_courses = False. Check your input file.')
             return course
 
-        def get_employee(self, name: 'str') -> 'Employee':
-            """ Tries to match employee name in scheduler to the employee user in the enrollment system.
+        def get_employee(self, username: 'str') -> 'Employee':
 
-            First, it replaces name using handy mapping to fix eventual typos
-            The order of checks is the following:
-            1) the name is integer -> then this corresponds to employee_id in the enrollment system
-            2) the name is equal to the login
-            3) the name is a 3 letter shortcut of first and last name
-            4) the name is a first letter of a first name and a last name
-
-            If more employees are matched or the employee does not exists,
-            the function will fail with an error
-            """
-            name = name.upper()
-            if name in EMPLOYEE_MAP:
-                print(name)     # added
-                name = EMPLOYEE_MAP[name]
-            try:
-                int(name)
-                emps = Employee.objects.filter(id=name)
-            except ValueError:
-                if name == 'NN':
-                    emps = Employee.objects.filter(user__first_name='Nieznany')
-                elif Employee.objects.filter(user__username__iexact=name).exists():
-                    emps = Employee.objects.filter(user__username__iexact=name)
-                elif len(name) == 3:
-                    emps = Employee.objects.filter(user__first_name__istartswith=name[0],
-                                                   user__last_name__istartswith=name[1:3],
-                                                   status=0)
-                else:
-                    emps = Employee.objects.filter(user__first_name__istartswith=name[0],
-                                                   user__last_name__istartswith=name[1:],
-                                                   status=0)
-            if not emps:
-                emps = Employee.objects.filter(user__username__istartswith=name)
-            if len(emps) == 1:
-                return emps[0]
-            elif len(emps) > 1:
-                self.stdout.write(self.style.ERROR('Multiple employee matches for {}. Choices are:'
-                                                   .format(name)))
-                for e in emps:
-                    self.stdout.write(self.style.ERROR(' -{}'.format(e.user.get_full_name())))
+            #Odkomentuj i zakomentuj resztę, by dodać maskę z początku skryptu do bazy danych do EmployeeMap
+            emp = Employee.objects.filter(user__username=username)
+            if emp.count():
+                return emp[0]
             else:
-                raise CommandError('Employee {} does not exists! Fix your input file.'.format(name))
-
-            return None
-
+                map = EmployeeMap.objects.filter(scheduler_username=username)
+                if map.count():
+                    return Employee.objects.get(user__username=map[0].employee_username)
+                else:
+                    SZ_username = username.upper()
+                    SZ_username = EMPLOYEE_MAP[SZ_username]
+                    EmployeeMap.objects.create(scheduler_username=username, employee_username=SZ_username)
+                    return Employee.objects.get(user__username=SZ_username)
+            """
+            emp = Employee.objects.filter(user__username=username)
+            if emp.count():
+                return emp[0]
+            else:
+                map = EmployeeMap.objects.filter(scheduler_username=username)
+                if map.count():
+                    return Employee.objects.get(user__username=map[0].employee_username)
+                else:
+                    raise Employee.DoesNotExist(username)
+                
+            """
         scheduler_course = scheduler_data.groups[group_id].course
         scheduler_teacher = scheduler_data.groups[group_id].teacher
         scheduler_group_type = scheduler_data.groups[group_id].group_type
@@ -430,7 +423,7 @@ class Command(BaseCommand):
         group_data = GroupData()
         proposal = get_proposal(self, course_name=scheduler_course)
         group_data.course = get_course(self, proposal, create_courses=False)
-        group_data.teacher = get_employee(self, name=scheduler_teacher)
+        group_data.teacher = get_employee(self, username=scheduler_teacher)
         group_data.type = get_group_type(group_type=scheduler_group_type)
         group_data.limit = get_limit(group_type=group_data.type)
         group_data.scheduler_id = scheduler_data.groups[group_id].id
@@ -443,7 +436,7 @@ class Command(BaseCommand):
             client = requests.session()
             client.get(url_login)
             cookie = client.cookies['csrftoken']
-            login_data = {'username': 'kkasprzyk', 'password': '0GA6bAFb5GZgrzLH',
+            login_data = {'username': os.environ['scheduler_login'], 'password': os.environ['scheduler_password'],
                           'csrfmiddlewaretoken': cookie}
             client.post(url_login, data=login_data)
             return client
@@ -484,6 +477,15 @@ class Command(BaseCommand):
                     day, start_hour, end_hour)
             return data
 
+        def get_teachers_data(teachers: 'List[str, Dict]') -> 'Dict[str, str]':
+            """ Lays out (first_name, last_name) data coming from scheduler """
+            data = {}
+            for teacher in teachers:
+                first_name = teacher['extra']['first_name']
+                last_name = teacher['extra']['last_name']
+                data[teacher['id']] = SchedulerAPITeacher(first_name, last_name)
+            return data
+
         client = get_logged_client()
         response = client.get(
             'http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/')
@@ -491,26 +493,32 @@ class Command(BaseCommand):
         response = client.get(
             'http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/')
         api_task = response.json()
-
-        api_groups = api_config['groups']
-        api_terms = api_config['terms']
-        api_results = api_task['timetable']['results']
-
         scheduler_data = SchedulerData()
-        scheduler_data.results = get_results_data(api_results)
-        scheduler_data.groups = get_groups_data(api_groups)
-        scheduler_data.terms = get_terms_data(api_terms)
-
+        scheduler_data.groups = get_groups_data(api_config['groups'])
+        scheduler_data.terms = get_terms_data(api_config['terms'])
+        scheduler_data.teachers = get_teachers_data(api_config['teachers'])
+        scheduler_data.results = get_results_data(api_task['timetable']['results'])
         return scheduler_data
 
-    def check_if_import(self, course_name: 'str') -> 'bool':
-        course_name = course_name.upper()
-        if course_name in COURSES_MAP:
-            course_name = COURSES_MAP[course_name]
-        if course_name in COURSES_DONT_IMPORT:
-            return False
-        else:
-            return True
+    def save_proper_username(self, teachers: 'Dict[str, str]', scheduler_username: 'str'):
+        """Get username from script user and add that username to EmployeeMap"""
+        first_name, last_name = teachers[scheduler_username]
+        while True:
+            self.stdout.write(self.style.WARNING(
+                'Employee with username \'{}\' not found'.format(scheduler_username)))
+            self.stdout.write(
+                'First name: {}, last name: {}\n'
+                'Please enter proper username. You will be asked again if username cannot be found.\n'
+                'Leave it blank (press enter) to set \'nieznany prowadzący\''.format(first_name, last_name))
+            new_username = input('Username:')
+            if new_username:
+                if Employee.objects.filter(user__username=new_username).count():
+                    EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username=new_username)
+                    break
+                self.stdout.write(self.style.WARNING('\nUsername \'{}\' still not found'.format(new_username)))
+            else:
+                EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username='Nn')
+                break
 
     def handle(self, *args, **options):
         # potem zmień semestr by było ustawiane jako argument do komendy skryptu
@@ -519,39 +527,27 @@ class Command(BaseCommand):
         # pętla od zera do len(scheduler_data.groups), tak samo jak są ustawione klucze podstawowe w schedulerze
         for group_id in range(len(scheduler_data.groups)):
             scheduler_course = scheduler_data.groups[group_id].course
-            if self.check_if_import(scheduler_course):
+            map = CourseMap.objects.filter(scheduler_course=scheduler_course)
+            if map.count():
+                if map[0].course == 'dont import':
+                    continue
+                else:
+                    scheduler_course = map[0].course
+
+
+            # do testów, usuń potem. Pamiętaj, że zmieniasz litery na duże i bez iexact nie zadziała skrypt
+            new_course_name = scheduler_course.upper()
+            if new_course_name in COURSES_MAP:
+                new_course_name = COURSES_MAP[new_course_name]
+                CourseMap.objects.get_or_create(scheduler_course=scheduler_course.upper(), course=new_course_name)
+                if new_course_name == 'dont import':
+                    continue
+
+            scheduler_data.groups[group_id] = scheduler_data.groups[group_id]._replace(course=new_course_name)
+            try:
                 group_data = self.get_group_data(group_id, scheduler_data)
-                term_data = self.get_term_data(group_data.scheduler_id, scheduler_data)
-                self.create_or_update_group_and_term(group_data, term_data, True, True)
-            else:
-                continue
-
-        # for group in Duplicates:
-        #     try:
-        #         gr = Group.objects.get(course=group.course, teacher=group.teacher,
-        #                                type=group.type, limit=group.limit)
-        #         print("grupa, która wcześniej miała duplikat: ", gr)
-        #     except Group.MultipleObjectsReturned:
-        #         self.stdout.write(self.style.WARNING('course = {}, teacher = {}, type = {} limit = {},'
-        #                                              'multiple objects returned'.format(group.course,
-        #                                                                                 group.teacher,
-        #                                                                                 group.type,
-        #                                                                                 group.limit)))
-        #         print("prop info=", group.course.offer.name)
-        #         res = Group.objects.filter(course=group.course, teacher=group.teacher,
-        #                                    type=group.type, limit=group.limit)
-        #         for dup in res:
-        #             print("klucz podstawowy dupliaku grupy ", dup, " to: ", dup.pk)
-
-        # # print(scheduler_data.config_groups[10])
-        # # print(type(scheduler_data.config_terms[109].day))
-        # # print(scheduler_data.task_results[109].terms[0])
-        # # print(type(scheduler_data.task_results[10].rooms[0]))
-        #
-        # print("group data:")
-        # for attr in vars(group_data):
-        #     print("%s = %r" % (attr, getattr(group_data, attr)))
-        #
-        # print("tern data:")
-        # for attr in vars(term_data):
-        #     print("%s = %r" % (attr, getattr(term_data, attr)))
+            except Employee.DoesNotExist as err:
+                self.save_proper_username(scheduler_data.teachers, err.args[0])
+                group_data = self.get_group_data(group_id, scheduler_data)
+            term_data = self.get_term_data(group_data.scheduler_id, scheduler_data)
+            self.create_or_update_group_and_term(group_data, term_data, True, True)

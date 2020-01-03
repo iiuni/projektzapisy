@@ -11,3 +11,28 @@ class TermSyncData(models.Model):
         verbose_name = 'Obiekt synchronizacji terminów grup'
         verbose_name_plural = 'Obiekty synchronizacji terminów grup'
         app_label = 'schedulersync'
+
+
+class EmployeeMap(models.Model):
+    """Map employee name from scheduler API, can set to unknown employee"""
+    scheduler_username = models.CharField(unique=True, max_length=150, blank=False)
+    employee_username = models.CharField(default='Nn', max_length=150, blank=False)
+
+    class Meta:
+        verbose_name = "Mapa pracowników"
+        verbose_name_plural = "Mapy pracowników"
+
+    def __str__(self):
+        return self.scheduler_username
+
+class CourseMap(models.Model):
+    """Map course name from scheduler API, can set to not import that course"""
+    scheduler_course = models.CharField(unique=True, max_length=100, blank=False)
+    course = models.CharField(max_length=100, blank=False)
+
+    class Meta:
+        verbose_name = "Mapa przedmiotów"
+        verbose_name_plural = "Mapy przedmiotów"
+
+    def __str__(self):
+        return self.scheduler_course
