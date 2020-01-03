@@ -15,7 +15,8 @@ from typing import List, Tuple
 
 
 def propose(vote):
-    # A simple function to propose, whether the course should be taught in upcoming year
+    # A simple function to propose, whether the course should be taught in upcoming year.
+    # As an argument, it takes a single dictionary entry from get_votes function.
     current_year = SystemState.get_current_state().year
     proposal = Proposal.objects.get(id=vote[current_year]['proposal'])
     avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
@@ -85,7 +86,9 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                 course_info = [('course', course),
                                ('semester', proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
-                               ('code', group.teacher.user.username), ('type', group.human_readable_type()), ('hours', hours[group.human_readable_type()])]
+                               ('code', group.teacher.user.username),
+                               ('type', group.human_readable_type()),
+                               ('hours', hours[group.human_readable_type()])]
                 groups.append(course_info)
         else:
             course_info = [('course', course), ('semester', proposal_info.semester),
@@ -119,8 +122,8 @@ def get_votes(years: int):
     # Return value: Dict[str, Dict[str, Dict[...]]]
     # Each dictionary entry describes a various data about course in a single year, whether it was already taught or is still
     # voted upon.
-    # This dictionary is indexed by course's name, and each entry is another dictionary.
-    # That dictionary is indexed by course's year, and each entry is dictionary with such fields:
+    # First dictionary is indexed by course's name, and each entry is another dictionary.
+    # Second dictionary is indexed by course's year, and each entry is dictionary with such fields:
     # | field name                       | type   | desc                                                                       |
     # --------------------------------------------------------------------------------------------------------------------------
     # | 'semester'                       | string | course's semester (either z, meaning winter, or l, meaning summer)         |
@@ -162,7 +165,8 @@ def get_votes(years: int):
             'proposal__name', 'state__year', 'proposal__semester', 'proposal', 'proposal__course_type__name').annotate(
                 total=Sum('value'), count_max=Count('value', filter=Q(value=max_vote_value)),
                 votes=Count('proposal__name'),
-                teacher=Concat('proposal__owner__user__first_name', Value(' '), 'proposal__owner__user__last_name')).order_by('proposal__name', '-state__year')
+                teacher=Concat('proposal__owner__user__first_name', Value(' '),
+                               'proposal__owner__user__last_name')).order_by('proposal__name', '-state__year')
 
     courses_data = {}
     # Get rid of courses that existed in previous years, but weren't in this year's vote
@@ -179,7 +183,8 @@ def get_votes(years: int):
             else:
                 continue
         data = {'total': vote['total'], 'votes': vote['votes'], 'count_max': vote['count_max'],
-                'type': vote['proposal__course_type__name'], 'teacher': vote['teacher'], 'proposal': vote['proposal'], 'name': vote['proposal__name']}
+                'type': vote['proposal__course_type__name'], 'teacher': vote['teacher'],
+                'proposal': vote['proposal'], 'name': vote['proposal__name']}
 
         if vote['proposal__semester'] == 'u':
             data['semester'] = 'l'
@@ -191,8 +196,8 @@ def get_votes(years: int):
                          ' (zima)'][vote['state__year']] = dict(data)
         else:
             data['semester'] = vote['proposal__semester']
-            courses_data[vote['proposal__name']
-                         ][vote['state__year']] = dict(data)
+            courses_data[vote['proposal__name']][
+                vote['state__year']] = dict(data)
 
     # Rearrange data and if course existed in previous years count how many students were enrolled
     for course in courses_data.values():
