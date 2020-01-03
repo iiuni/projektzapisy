@@ -3,8 +3,8 @@ from apps.users.models import BaseUser
 from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 
-from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet
-from apps.offer.plan.utils import get_votes, propose
+from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet
+from apps.offer.plan.utils import get_votes, propose, get_subjects_data
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
 PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
@@ -42,12 +42,22 @@ def plan_create(request):
 
 def plan_vote(request):
     if request.method == 'POST':
-        courses = []
+        picked_courses = []
         for course in request.POST:
             if course != 'csrfmiddlewaretoken':
-                courses.append(course)
-        courses.sort()
-        # sheet = create_sheets_service(PLAN_PROPOSAL_SPREADSHEET_ID)
+                picked_courses.append(course)
+        picked_courses.sort()
+        all_courses = get_votes(1)
+        picked_courses_accurate_info = []
+        current_year = SystemState.get_current_state().year
+        for key, value in all_courses.items():
+            if key in picked_courses:
+                subject = (key, value[current_year]['semester'], value[current_year]['proposal'])
+                picked_courses_accurate_info.append(subject)
+
+        sheet = create_sheets_service(PLAN_PROPOSAL_SPREADSHEET_ID)
+        proposal = get_subjects_data(picked_courses_accurate_info, 3)
+        update_plan_proposal_sheet(sheet, proposal)
     return HttpResponseRedirect(reverse('plan-create'))
 
 

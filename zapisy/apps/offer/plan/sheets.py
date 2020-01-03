@@ -7,12 +7,16 @@ from apps.offer.vote.models.system_state import SystemState
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-def create_sheets_service(id):
+def create_sheets_service(sheet_id):
     credentials = ServiceAccountCredentials.from_json_keyfile_name('apps/offer/plan/Credentials.json', SCOPES)
     gc = gspread.authorize(credentials)
-    sh = gc.open_by_key(id)
+    sh = gc.open_by_key(sheet_id)
     return sh
 
+
+##################################################
+# BEGIN VOTING RESULT SHEET LOGIC
+##################################################
 
 def votes_to_sheets_format(votes):
     values = create_voting_results_sheet_layout(votes)
@@ -31,34 +35,34 @@ def votes_to_sheets_format(votes):
 
         if len(years) == 3:
             for val in value.values():
-                create_annual_part_of_row(row, val)
+                voting_sheet_create_annual_part_of_row(row, val)
         elif len(years) == 2:
             if current_year == years[0]:
                 if (current_year - years[1]).days > year:
-                    create_annual_part_of_row(row, val[0])
-                    create_annual_part_of_row(row)
-                    create_annual_part_of_row(row, val[1])
+                    voting_sheet_create_annual_part_of_row(row, val[0])
+                    voting_sheet_create_annual_part_of_row(row)
+                    voting_sheet_create_annual_part_of_row(row, val[1])
                 else:
-                    create_annual_part_of_row(row, val[0])
-                    create_annual_part_of_row(row, val[1])
-                    create_annual_part_of_row(row)
+                    voting_sheet_create_annual_part_of_row(row, val[0])
+                    voting_sheet_create_annual_part_of_row(row, val[1])
+                    voting_sheet_create_annual_part_of_row(row)
             else:
-                create_annual_part_of_row(row)
-                create_annual_part_of_row(row, val[0])
-                create_annual_part_of_row(row, val[1])
+                voting_sheet_create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row, val[0])
+                voting_sheet_create_annual_part_of_row(row, val[1])
         elif len(years) == 1:
             if current_year == years[0]:
-                create_annual_part_of_row(row, val[0])
-                create_annual_part_of_row(row)
-                create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row, val[0])
+                voting_sheet_create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row)
             elif (current_year - years[0]).days > year:
-                create_annual_part_of_row(row)
-                create_annual_part_of_row(row)
-                create_annual_part_of_row(row, val[0])
+                voting_sheet_create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row, val[0])
             else:
-                create_annual_part_of_row(row)
-                create_annual_part_of_row(row, val[0])
-                create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row)
+                voting_sheet_create_annual_part_of_row(row, val[0])
+                voting_sheet_create_annual_part_of_row(row)
 
         row.insert(0, latest_year['semester'])
         row.insert(0, latest_year['type'])
@@ -70,7 +74,7 @@ def votes_to_sheets_format(votes):
 
 # Argument does_exist tells if this annual position exists
 # if does_exist is False then fill with blanks -> ''
-def create_annual_part_of_row(row, value={}):
+def voting_sheet_create_annual_part_of_row(row, value={}):
     if len(value) > 0:
         took_place = True if value['enrolled'] else False
         number_of_enrolled_students = value['enrolled'] if value['enrolled'] else ''
@@ -133,3 +137,63 @@ def update_voting_results_sheet(sheet, votes):
             'values': data
         }
     )
+
+
+##################################################
+# END VOTING RESULT SHEET LOGIC
+##################################################
+
+##################################################
+# BEGIN PLAN PROPOSAL SHEET LOGIC
+##################################################
+
+def proposal_to_sheets_format(proposal):
+    data = [
+        [
+            'Lp',
+            'Przedmiot',
+            'Forma zajęć',
+            'Semestr',
+            'h/semestr',
+            'Przydział',
+            'Kod prowadzącego',
+        ]
+    ]
+
+    lp = 0
+    prev_name = ''
+    for value in proposal:
+        if value[0][1] != prev_name:
+            lp += 1
+        prev_name = value[0][1]
+
+        row = [
+            lp,
+            value[0][1],  # course
+            value[4][1],  # type
+            value[1][1],  # semester
+            value[5][1],  # hours
+            value[2][1],  # teacher
+            value[3][1],  # code
+        ]
+
+        data.append(row)
+    return data
+
+
+def update_plan_proposal_sheet(sheet, proposal):
+    data = proposal_to_sheets_format(proposal)
+    sheet.sheet1.clear()
+    sheet.values_update(
+        range='A:G',
+        params={
+            'valueInputOption': 'USER_ENTERED'
+        },
+        body={
+            'values': data
+        }
+    )
+
+##################################################
+# END PLAN PROPOSAL SHEET LOGIC
+##################################################
