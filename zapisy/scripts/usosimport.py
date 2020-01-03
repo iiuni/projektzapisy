@@ -1,9 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Group
-from apps.users.models import Student, Program
+from apps.users.models import Student, Program, UsosData
 import random
+import io
 
-IMPORT_FILE = 'importusos_17_18_zima.csv'
 DEBUG = True
 
 
@@ -135,5 +135,6 @@ def process(line):
 def run():
     if not DEBUG:
         deactivate_all()
-    file = open(IMPORT_FILE)
+    students_data = UsosData.objects.order_by("-id")[0]
+    file = io.StringIO(students_data.content)
     import_ects(file)
