@@ -46,7 +46,7 @@ EMPLOYEE_MAP = {
     'SCYGAN': 'Nn',
     'TELSNER': 'Nn',
     'TRZEPECKI': 'Nn',
-    '5323': 'pawel.laskos-grabowski', # changed
+    '5323': 'pawel.laskos-grabowski',  # changed
     'NN1': 'Nn',
     'IM': 'Nn',
     'MKOWALCZYKIEWICZ': 'Nn',  # added
@@ -73,40 +73,33 @@ COURSES_MAP = {
     'PRAKTYKA ZAWODOWA 6 TYGODNI': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI',
     'KURS 1/2: ODZYSKIWANIE DANYCH': 'KURS-½: ODZYSKIWANIE DANYCH',
     'SEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI': 'PROSEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI',
-    'SEMINARIUM: INŻYNIERIA OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
-    'SEMINARIUM: LOGIKI OPISOWE, DEDUKCYJNE BAZY DANYCH I REPREZENTACJA WIEDZY': 'METODY PROGRAMOWANIA',  # added
-    'TESTOWANIE OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
+    'SEMINARIUM: INŻYNIERIA OPROGRAMOWANIA': 'dont import',  # added
+    'SEMINARIUM: LOGIKI OPISOWE, DEDUKCYJNE BAZY DANYCH I REPREZENTACJA WIEDZY': 'Seminarium badawcze: Logika i Bazy Danych',
+    # added
+    # 'TESTOWANIE OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
     'ANALIZA DANYCH I WARIANCJI': 'METODY PROGRAMOWANIA',  # added
     'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
     'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
     'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'METODY PROGRAMOWANIA',  # added
     'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'METODY PROGRAMOWANIA',  # added
     'ALGEBRA I': 'METODY PROGRAMOWANIA',  # added
-    'ALGEBRA LINIOWA 2': 'METODY PROGRAMOWANIA',  # added
-    'ALGEBRA LINIOWA 2R': 'METODY PROGRAMOWANIA',  # added
-    'ANALIZA MATEMATYCZNA II': 'METODY PROGRAMOWANIA',  # added
-    'TOPOLOGIA': 'METODY PROGRAMOWANIA',  # added
-    'RÓWNANIA RÓŻNICZKOWE 1': 'METODY PROGRAMOWANIA',  # added
-    'RÓWNANIA RÓŻNICZKOWE 1R': 'METODY PROGRAMOWANIA',  # added
-    'TEORIA PRAWDOPODOBIEŃSTWA 1': 'METODY PROGRAMOWANIA',  # added
-    'FUNKCJE ANALITYCZNE 1': 'METODY PROGRAMOWANIA',  # added
     'SEMINARIUM: TEORIA KATEGORII W JĘZYKACH PROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
-    'ANALIZA MATEMATYCZNA I' : 'dont import',
-    'ANALIZA MATEMATYCZNA II' : 'dont import',
-    'ANALIZA MATEMATYCZNA III' : 'dont import',
-    'ALGEBRA 1' : 'dont import',
+    'ANALIZA MATEMATYCZNA I': 'dont import',
+    'ANALIZA MATEMATYCZNA II': 'dont import',
+    'ANALIZA MATEMATYCZNA III': 'dont import',
+    'ALGEBRA 1': 'dont import',
     #    'ALGEBRA I',
-    'ALGEBRA II' : 'dont import',
-    'ALGEBRA LINIOWA 1R' : 'dont import',
-    'ALGEBRA LINIOWA 2' : 'dont import',
-    'ALGEBRA LINIOWA 2R' : 'dont import',
-    'MIARA I CAŁKA' : 'dont import',
-    'FUNKCJE ANALITYCZNE 1' : 'dont import',
-    'RÓWNANIA RÓŻNICZKOWE 1' : 'dont import',
-    'RÓWNANIA RÓŻNICZKOWE 1R' : 'dont import',
-    'TEORIA PRAWDOPODOBIEŃSTWA 1' : 'dont import',
-    'TOPOLOGIA' : 'dont import',
-    'INSTYTUT MATEMATYCZNY' : 'dont import',
+    'ALGEBRA II': 'dont import',
+    'ALGEBRA LINIOWA 1R': 'dont import',
+    'ALGEBRA LINIOWA 2': 'dont import',
+    'ALGEBRA LINIOWA 2R': 'dont import',
+    'MIARA I CAŁKA': 'dont import',
+    'FUNKCJE ANALITYCZNE 1': 'dont import',
+    'RÓWNANIA RÓŻNICZKOWE 1': 'dont import',
+    'RÓWNANIA RÓŻNICZKOWE 1R': 'dont import',
+    'TEORIA PRAWDOPODOBIEŃSTWA 1': 'dont import',
+    'TOPOLOGIA': 'dont import',
+    'INSTYTUT MATEMATYCZNY': 'dont import',
 }
 
 COURSES_DONT_IMPORT = [
@@ -139,7 +132,7 @@ class SchedulerData:
 
 # id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
 SchedulerAPIGroup = collections.namedtuple(
-    'Group', ['id', 'teacher', 'course', 'group_type'])
+    'Group', ['id', 'teacher', 'course', 'group_type', 'limit'])
 
 SchedulerAPITerm = collections.namedtuple(
     'Term', ['day', 'start_hour', 'end_hour'])
@@ -190,53 +183,51 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING('messages from create_or_update after term found, term: {}, group: {}'
                                                  .format(term, term.group)))
 
+            if term.group.course != group_data.course:
+                raise CommandError(
+                    f'Term \'{term}\' with group \'{term.group}\' changed course from \'{term.group.course}\''
+                    f' to \'{group_data.course}\'\nPlease enter this change in django admin')
+
+            if term.group.type != group_data.type:
+                raise CommandError(
+                    f'Term \'{term}\' with group \'{term.group}\' changed group typr from \'{term.group.type}\''
+                    f' to \'{group_data.type}\'\nPlease enter this change in django admin')
+
             if term.dayOfWeek != term_data.dayOfWeek:
                 changed = True
-                self.stdout.write(self.style.WARNING('term can update dayOfWeek from {} to {}'.format(
-                    term.dayOfWeek, term_data.dayOfWeek)))
+                self.stdout.write('term can update dayOfWeek from {} to {}'.format(
+                    term.dayOfWeek, term_data.dayOfWeek))
                 term.dayOfWeek = term_data.dayOfWeek
 
             if term.start_time != term_data.start_time:
                 changed = True
-                self.stdout.write(self.style.WARNING('term can update start_time from {} to {}'.format(
-                    term.start_time, term_data.start_time)))
+                self.stdout.write('term can update start_time from {} to {}'.format(
+                    term.start_time, term_data.start_time))
                 term.start_time = term_data.start_time
 
             if term.end_time != term_data.end_time:
                 changed = True
-                self.stdout.write(self.style.WARNING('term can update end_time from {} to {}'.format(
-                    term.end_time, term_data.end_time)))
+                self.stdout.write('term can update end_time from {} to {}'.format(
+                    term.end_time, term_data.end_time))
                 term.end_time = term_data.end_time
 
             if set(term.classrooms.all()) != term_data.classrooms:
                 changed = True
-                self.stdout.write(self.style.WARNING('term can update classrooms from {} to {}'.format(
-                    set(term.classrooms.all()), term_data.classrooms)))
+                self.stdout.write('term can update classrooms from {} to {}'.format(
+                    set(term.classrooms.all()), term_data.classrooms))
                 if update:
                     term.classrooms.set(term_data.classrooms)
 
-            if term.group.course != group_data.course:
-                changed = True
-                self.stdout.write(self.style.WARNING('group can update course from {} to {}'.format(
-                    term.group.course, group_data.course)))
-                term.group.course = group_data.course
-
             if term.group.teacher != group_data.teacher:
                 changed = True
-                self.stdout.write(self.style.WARNING('group can update teacher from {} to {}'.format(
-                    term.group.teacher, group_data.teacher)))
+                self.stdout.write('group can update teacher from {} to {}'.format(
+                    term.group.teacher, group_data.teacher))
                 term.group.teacher = group_data.teacher
-
-            if term.group.type != group_data.type:
-                changed = True
-                self.stdout.write(self.style.WARNING('group can update type from {} to {}'.format(
-                    term.group.type, group_data.type)))
-                term.group.type = group_data.type
 
             if term.group.limit != group_data.limit:
                 changed = True
-                self.stdout.write(self.style.WARNING('group can update limit from {} to {}'.format(
-                    term.group.limit, group_data.limit)))
+                self.stdout.write('group can update limit from {} to {}'.format(
+                    term.group.limit, group_data.limit))
                 term.group.limit = group_data.limit
 
             if update and changed:
@@ -256,7 +247,6 @@ class Command(BaseCommand):
                 else:
                     group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
                                                  type=group_data.type, limit=group_data.limit)
-
 
                 term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
                                            end_time=term_data.end_time, group=group)
@@ -331,32 +321,58 @@ class Command(BaseCommand):
             """ map scheduler group type to SZ group type"""
             return GROUP_TYPES[group_type]
 
-        def get_limit(group_type: 'str') -> 'int':
-            """ get limit of course type by looking at SZ group type"""
-            return LIMITS[group_type]
-
-        def get_proposal(self, course_name: 'str') -> 'Proposal':
+        def get_proposal(course_name: 'str') -> 'Proposal or None':
             """ return Proposal object from SZ database"""
-            # __iexact
+            map = CourseMap.objects.filter(scheduler_course__iexact=course_name)
+            if map.count():
+                if map[0].course == 'dont import':
+                    return None
+                else:
+                    course_name = map[0].course
             prop = None
             try:
                 prop = Proposal.objects.get(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE])
             except Proposal.DoesNotExist:
-                while(True):
+                if Proposal.objects.filter(name__iexact=course_name).count():
                     self.stdout.write(
-                        self.style.WARNING(">Couldn't find course proposal for {}".format(course_name)))
-                    self.stdout.write(
-                        'Please enter proper course name. You will be asked again if course name cannot be found.')
-                    new_course_name = input('Course name:')
-                    if Proposal.objects.filter(name__iexact=new_course_name).count():
-                        CourseMap.objects.create(scheduler_course=course_name.upper(), course=new_course_name.upper())
-                        # na wypadek, gdyby nowa nazwa kursu miała kilka propozycji przedmiotu
-                        return get_proposal(self, new_course_name)
+                        self.style.WARNING(">Proposal '{}' exists, but proposal status is not IN_OFFER or IN_VOTE".
+                                           format(course_name)))
+                    self.stdout.write("Leave blank (press enter) to set this course to not import in future and "
+                                      "continue script \nType 'quit' or anything else to quit script \n")
+                    decision = input("course name:")
+                    if not decision:
+                        CourseMap.objects.create(scheduler_course=course_name.upper(), course='dont import')
+                        self.stdout.write(self.style.SUCCESS(
+                            ">Course '{}' is set to not import. Continue script..".format(course_name)))
+                        return None
                     else:
-                        EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username='Nn')
-                        break
+                        self.stdout.write('You can make changes in django admin. Exiting script..')
+                        exit()
+                while True:
+                    self.stdout.write(self.style.WARNING(">Couldn't find proposal course for '{}'".format(course_name)))
+                    self.stdout.write("Please enter proper course name to add map to this course and continue script\n"
+                        "Leave blank (press enter) to set this course to not import in future and contiue script\n"
+                        "Type 'quit' to quit script. You will be asked again if course name cannot be found.")
+                    new_course_name = input('>Course name (Capitalization does not matter):')
+                    if not new_course_name:
+                        CourseMap.objects.create(scheduler_course=course_name.upper(), course='dont import')
+                        self.stdout.write(self.style.SUCCESS(
+                            ">Course '{}' is set to not import. Continue script..".format(course_name)))
+                        return None
+                    elif new_course_name=='quit':
+                        self.stdout.write('You can make changes in django admin. Exiting script..')
+                        exit()
+                    elif Proposal.objects.filter(name__iexact=new_course_name).count():
+                        CourseMap.objects.create(scheduler_course=course_name.upper(), course=new_course_name.upper())
+                        self.stdout.write(self.style.SUCCESS(
+                            ">Course '{}' is set to {}. Continue script..".format(course_name, new_course_name)))
+                        # na wypadek, gdyby nowa nazwa kursu miała kilka propozycji przedmiotu
+                        return get_proposal(new_course_name)
+                    else:
+                        self.stdout.write(self.style.WARNING(">Proposal course '{}' still not found\n".
+                                                             format(new_course_name)))
 
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
@@ -366,14 +382,14 @@ class Command(BaseCommand):
                                                           ProposalStatus.IN_VOTE]).order_by('-status', '-id')
                 #            if self.verbosity >= 1:
                 self.stdout.write(
-                    self.style.WARNING('Multiple course proposals. Took first among:'))
+                    self.style.WARNING('>Multiple course proposals. Took first among:'))
                 for prop in props:
-                    self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop,prop.status)))
+                    self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop, prop.status)))
                 self.stdout.write('')
                 prop = props[0]
             return prop
 
-        def get_course(self, proposal: 'Proposal', create_courses=False) -> 'CourseInstance':
+        def get_course(proposal: 'Proposal', create_courses=False) -> 'CourseInstance':
             """ return CourseInstance object from SZ database"""
             course = None
             try:
@@ -382,50 +398,65 @@ class Command(BaseCommand):
             except CourseInstance.DoesNotExist:
                 if create_courses:
                     course = CourseInstance.create_proposal_instance(proposal, self.semester)
-                   # self.created_courses += 1
+                    self.stdout.write(self.style.SUCCESS(">Course instance '{}' created\n".format(proposal.name)))
+                # self.created_courses += 1
 
             if course is None:
                 raise CommandError(
-                    f'Course {proposal.name} does not exist and create_courses = False. Check your input file.')
+                    f'Course instance {proposal.name} does not exist and create_courses=False.\nCourse instance can be'
+                    f'created with Proposal with this course name if create_courses=True.')
             return course
 
-        def get_employee(self, username: 'str') -> 'Employee':
+        def get_employee(username: 'str', teachers: 'Dict[str, str]') -> 'Employee':
+            emp = Employee.objects.filter(user__username=username)
+            if emp.count():
+                return emp[0]
+            else:
+                map = EmployeeMap.objects.filter(scheduler_username=username)
+                if map.count():
+                    return Employee.objects.get(user__username=map[0].employee_username)
+                else:
+                    first_name, last_name = teachers[username]
+                    while True:
+                        self.stdout.write(self.style.WARNING(
+                            ">Employee with username '{}' not found".format(username)))
+                        self.stdout.write(
+                            "First name: {}, last name: {}\n"
+                            "Please enter proper username. You will be asked again if username cannot be found.\n"
+                            "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
+                                format(first_name, last_name))
+                        new_username = input('Username:')
+                        if not new_username:
+                            EmployeeMap.objects.create(scheduler_username=username, employee_username='Nn')
+                            self.stdout.write(self.style.SUCCESS(
+                                ">Employee '{}' is set to 'nieznany prowadzacy. Continue script..'\n".format(username)))
+                            return Employee.objects.get(user__username='Nn')
+                        elif new_username == 'quit':
+                            self.stdout.write('You can make changes in django admin. Exiting script..')
+                            exit()
+                        else:
+                            new_emp = Employee.objects.filter(user__username=new_username)
+                            if new_emp.count():
+                                EmployeeMap.objects.create(scheduler_username=username, employee_username=new_username)
+                                self.stdout.write(self.style.SUCCESS(
+                                    ">Employee '{}' is set to '{}'. Continue script..".format(username, new_username)))
+                                return new_emp[0]
+                            self.stdout.write(
+                                self.style.WARNING(">Username '{}' still not found\n".format(new_username)))
 
-            #Odkomentuj i zakomentuj resztę, by dodać maskę z początku skryptu do bazy danych do EmployeeMap
-            emp = Employee.objects.filter(user__username=username)
-            if emp.count():
-                return emp[0]
-            else:
-                map = EmployeeMap.objects.filter(scheduler_username=username)
-                if map.count():
-                    return Employee.objects.get(user__username=map[0].employee_username)
-                else:
-                    SZ_username = username.upper()
-                    SZ_username = EMPLOYEE_MAP[SZ_username]
-                    EmployeeMap.objects.create(scheduler_username=username, employee_username=SZ_username)
-                    return Employee.objects.get(user__username=SZ_username)
-            """
-            emp = Employee.objects.filter(user__username=username)
-            if emp.count():
-                return emp[0]
-            else:
-                map = EmployeeMap.objects.filter(scheduler_username=username)
-                if map.count():
-                    return Employee.objects.get(user__username=map[0].employee_username)
-                else:
-                    raise Employee.DoesNotExist(username)
-                
-            """
+
         scheduler_course = scheduler_data.groups[group_id].course
         scheduler_teacher = scheduler_data.groups[group_id].teacher
         scheduler_group_type = scheduler_data.groups[group_id].group_type
 
         group_data = GroupData()
-        proposal = get_proposal(self, course_name=scheduler_course)
-        group_data.course = get_course(self, proposal, create_courses=False)
-        group_data.teacher = get_employee(self, username=scheduler_teacher)
+        proposal = get_proposal(course_name=scheduler_course)
+        if proposal is None:
+            return group_data
+        group_data.course = get_course(proposal, create_courses=False)
+        group_data.teacher = get_employee(username=scheduler_teacher, teachers=scheduler_data.teachers)
         group_data.type = get_group_type(group_type=scheduler_group_type)
-        group_data.limit = get_limit(group_type=group_data.type)
+        group_data.limit = scheduler_data.groups[group_id].limit
         group_data.scheduler_id = scheduler_data.groups[group_id].id
         return group_data
 
@@ -463,7 +494,8 @@ class Command(BaseCommand):
                 teacher = rec['teachers'][0]
                 course = rec['extra']['course']
                 group_type = rec['extra']['group_type']
-                data.append(SchedulerAPIGroup(id, teacher, course, group_type))
+                limit = rec['students_num']
+                data.append(SchedulerAPIGroup(id, teacher, course, group_type, limit))
             return data
 
         def get_terms_data(terms: 'List[int, int, Dict, Dict]') -> 'Dict[int, int, int, int, int]':
@@ -500,40 +532,27 @@ class Command(BaseCommand):
         scheduler_data.results = get_results_data(api_task['timetable']['results'])
         return scheduler_data
 
-    def save_proper_username(self, teachers: 'Dict[str, str]', scheduler_username: 'str'):
-        """Get username from script user and add that username to EmployeeMap"""
-        first_name, last_name = teachers[scheduler_username]
-        while True:
-            self.stdout.write(self.style.WARNING(
-                'Employee with username \'{}\' not found'.format(scheduler_username)))
-            self.stdout.write(
-                'First name: {}, last name: {}\n'
-                'Please enter proper username. You will be asked again if username cannot be found.\n'
-                'Leave it blank (press enter) to set \'nieznany prowadzący\''.format(first_name, last_name))
-            new_username = input('Username:')
-            if new_username:
-                if Employee.objects.filter(user__username=new_username).count():
-                    EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username=new_username)
-                    break
-                self.stdout.write(self.style.WARNING('\nUsername \'{}\' still not found'.format(new_username)))
-            else:
-                EmployeeMap.objects.create(scheduler_username=scheduler_username, employee_username='Nn')
-                break
-
     def handle(self, *args, **options):
         # potem zmień semestr by było ustawiane jako argument do komendy skryptu
         self.semester = Semester.objects.get(year="2018/19", type='l')
         scheduler_data = self.get_scheduler_data()
         # pętla od zera do len(scheduler_data.groups), tak samo jak są ustawione klucze podstawowe w schedulerze
         for group_id in range(len(scheduler_data.groups)):
+            group_data = self.get_group_data(group_id, scheduler_data)
+            if group_data.course is None:
+                continue
+            term_data = self.get_term_data(group_data.scheduler_id, scheduler_data)
+            self.create_or_update_group_and_term(group_data, term_data, True, True)
+
+        """
+        for group_id in range(len(scheduler_data.groups)):
             scheduler_course = scheduler_data.groups[group_id].course
-            map = CourseMap.objects.filter(scheduler_course=scheduler_course)
+            map = CourseMap.objects.filter(scheduler_course__iexact=scheduler_course)
             if map.count():
                 if map[0].course == 'dont import':
                     continue
                 else:
                     scheduler_course = map[0].course
-
 
             # do testów, usuń potem. Pamiętaj, że zmieniasz litery na duże i bez iexact nie zadziała skrypt
             new_course_name = scheduler_course.upper()
@@ -551,3 +570,5 @@ class Command(BaseCommand):
                 group_data = self.get_group_data(group_id, scheduler_data)
             term_data = self.get_term_data(group_data.scheduler_id, scheduler_data)
             self.create_or_update_group_and_term(group_data, term_data, True, True)
+            
+            """
