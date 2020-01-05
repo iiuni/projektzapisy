@@ -2,7 +2,9 @@
 {% block content %}
 <h1>Stwórz przydział zajęć</h1>
 <a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">>> Wyniki głosowania - arkusz Google</a>
-<a href="https://docs.google.com/spreadsheets/d/{{ plan_proposal_sheet_id }}" target="_blank" class="d-block mb-5">>> Proponowany przydział zajęć - arkusz Google</a>
+<a href="https://docs.google.com/spreadsheets/d/{{ plan_proposal_sheet_id }}" target="_blank" class="d-block mb-1">>> Proponowany przydział zajęć - arkusz Google</a>
+<a href="https://docs.google.com/spreadsheets/d/{{ employees_sheet_id }}" target="_blank" class="d-block mb-1">>> Pracownicy - arkusz Google</a>
+<a href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank" class="d-block mb-5">>> Przydział zajęć - arkusz Google</a>
 
 <p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
 <a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
