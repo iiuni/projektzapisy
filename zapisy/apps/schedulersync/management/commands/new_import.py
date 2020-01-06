@@ -27,101 +27,6 @@ GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
 DAYS_OF_WEEK = {'1': 'poniedziałek', '2': 'wtorek', '3': 'środa',
                 '4': 'czwartek', '5': 'piątek', '6': 'sobota', '7': 'niedziela'}
 
-# The default limits for group types
-LIMITS = {'1': 300, '9': 300, '2': 20, '3': 15, '5': 18, '6': 15, '10': 15}
-
-EMPLOYEE_MAP = {
-    'PLISOWSKI': '258497',
-    'PRATIKGHOSAL': '268909',
-    'AMORAWIEC': 'Nn',
-    'AMALINOWSKI': 'Nn',
-    'ARACZYNSKI': 'Nn',
-    'EDAMEK': 'Nn',
-    'FINGO': 'Nn',
-    'GKARCH': 'Nn',
-    'GPLEBANEK': 'Nn',
-    'JDYMARA': 'Nn',
-    'JDZIUBANSKI': 'Nn',
-    'LNEWELSKI': 'Nn',
-    'MPREISNER': 'Nn',
-    'PKOWALSKI': 'Nn',
-    'RSZWARC': 'Nn',
-    'SCYGAN': 'Nn',
-    'TELSNER': 'Nn',
-    'TRZEPECKI': 'Nn',
-    '5323': 'pawel.laskos-grabowski',  # changed
-    'NN1': 'Nn',
-    'IM': 'Nn',
-    'MKOWALCZYKIEWICZ': 'Nn',  # added
-    'AKISIELEWICZ': 'Nn'  # added
-}
-
-COURSES_MAP = {
-    'MATEMATYKA DYSKRETNA L': 'MATEMATYKA DYSKRETNA (L)',
-    'MATEMATYKA DYSKRETNA M': 'MATEMATYKA DYSKRETNA (M)',
-    'OCHRONA WŁASNOŚCI INTELEKTUALNEJ (ZIMA)': 'OCHRONA WŁASNOŚCI INTELEKTUALNEJ',
-    'PROJEKT DYPLOMOWY (ZIMA)': 'PROJEKT DYPLOMOWY',
-    'PROJEKT: BUDOWA I ROZWÓJ ANALOGU ŁAZIKA MARSJAŃSKIEGO (ZIMA)': 'PROJEKT: BUDOWA I ROZWÓJ ANALOGU ŁAZIKA MARSJAŃSKIEGO',
-    'PROJEKT: ROZWÓJ SCHEDULERA (ZIMA)': 'PROJEKT: ROZWÓJ SCHEDULERA',
-    'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW (ZIMA)': 'PROJEKT: ROZWÓJ SYSTEMU ZAPISÓW',
-    'TUTORING DATA SCIENCE (ZIMA)': 'MENTORING FOR DATA SCIENCE',
-    'TUTORING INFORMATYKA (ZIMA)': 'TUTORING',
-    'TUTORING ISIM (ZIMA)': 'TUTORING ISIM',
-    'ANALIZA NUMERYCZNA L': 'ANALIZA NUMERYCZNA (L)',
-    'ANALIZA NUMERYCZNA M': 'ANALIZA NUMERYCZNA (M)',
-    'INNOVATIVE PROJECTS BY NOKIA (ZIMA)': 'INNOVATIVE PROJECTS BY NOKIA',
-    'PRAKTYKA ZAWODOWA 3 TYGODNIE': 'PRAKTYKA ZAWODOWA - TRZY TYGODNIE',
-    'PRAKTYKA ZAWODOWA 4 TYGODNIE': 'PRAKTYKA ZAWODOWA - CZTERY TYGODNIE',
-    'PRAKTYKA ZAWODOWA 5 TYGODNI': 'PRAKTYKA ZAWODOWA - PIĘĆ TYGODNI',
-    'PRAKTYKA ZAWODOWA 6 TYGODNI': 'PRAKTYKA ZAWODOWA - SZEŚĆ TYGODNI',
-    'KURS 1/2: ODZYSKIWANIE DANYCH': 'KURS-½: ODZYSKIWANIE DANYCH',
-    'SEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI': 'PROSEMINARIUM: BEZPIECZEŃSTWO I OCHRONA INFORMACJI',
-    'SEMINARIUM: INŻYNIERIA OPROGRAMOWANIA': 'dont import',  # added
-    'SEMINARIUM: LOGIKI OPISOWE, DEDUKCYJNE BAZY DANYCH I REPREZENTACJA WIEDZY': 'Seminarium badawcze: Logika i Bazy Danych',
-    # added
-    # 'TESTOWANIE OPROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
-    'ANALIZA DANYCH I WARIANCJI': 'METODY PROGRAMOWANIA',  # added
-    'PRAKTYKA ZAWODOWA - 3 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
-    'PRAKTYKA ZAWODOWA - 4 TYGODNIE': 'METODY PROGRAMOWANIA',  # added
-    'PRAKTYKA ZAWODOWA - 5 TYGODNI': 'METODY PROGRAMOWANIA',  # added
-    'PRAKTYKA ZAWODOWA - 6 TYGODNI': 'METODY PROGRAMOWANIA',  # added
-    'ALGEBRA I': 'METODY PROGRAMOWANIA',  # added
-    'SEMINARIUM: TEORIA KATEGORII W JĘZYKACH PROGRAMOWANIA': 'METODY PROGRAMOWANIA',  # added
-    'ANALIZA MATEMATYCZNA I': 'dont import',
-    'ANALIZA MATEMATYCZNA II': 'dont import',
-    'ANALIZA MATEMATYCZNA III': 'dont import',
-    'ALGEBRA 1': 'dont import',
-    #    'ALGEBRA I',
-    'ALGEBRA II': 'dont import',
-    'ALGEBRA LINIOWA 1R': 'dont import',
-    'ALGEBRA LINIOWA 2': 'dont import',
-    'ALGEBRA LINIOWA 2R': 'dont import',
-    'MIARA I CAŁKA': 'dont import',
-    'FUNKCJE ANALITYCZNE 1': 'dont import',
-    'RÓWNANIA RÓŻNICZKOWE 1': 'dont import',
-    'RÓWNANIA RÓŻNICZKOWE 1R': 'dont import',
-    'TEORIA PRAWDOPODOBIEŃSTWA 1': 'dont import',
-    'TOPOLOGIA': 'dont import',
-    'INSTYTUT MATEMATYCZNY': 'dont import',
-}
-
-COURSES_DONT_IMPORT = [
-    'ANALIZA MATEMATYCZNA I',
-    'ANALIZA MATEMATYCZNA II',
-    'ANALIZA MATEMATYCZNA III',
-    'ALGEBRA 1',
-    #    'ALGEBRA I',
-    'ALGEBRA II',
-    'ALGEBRA LINIOWA 1R',
-    'ALGEBRA LINIOWA 2',
-    'ALGEBRA LINIOWA 2R',
-    'MIARA I CAŁKA',
-    'FUNKCJE ANALITYCZNE 1',
-    'RÓWNANIA RÓŻNICZKOWE 1',
-    'RÓWNANIA RÓŻNICZKOWE 1R',
-    'TEORIA PRAWDOPODOBIEŃSTWA 1',
-    'TOPOLOGIA',
-    'INSTYTUT MATEMATYCZNY']
 
 class Info:
     """Stores information which objects to delete and what to write to Slack and at the end of script"""
@@ -136,7 +41,9 @@ class Info:
     used_map_employees = []
     used_scheduler_ids = []
 
-SlackUpdate = collections.namedtuple('Update',['name', 'old', 'new'])
+
+SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
+
 
 class SchedulerData:
     """ All useful data laid out from Scheduler API, list and tuples of SchedulerAPIGroup,
@@ -146,12 +53,14 @@ class SchedulerData:
     results = {}
     teachers = {}
 
+
 # id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
 SchedulerAPIGroup = collections.namedtuple('Group', ['id', 'teacher', 'course', 'group_type', 'limit'])
 # strings in terms list are id's of SchedulerAPITerm tuples
 SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
 SchedulerAPITerm = collections.namedtuple('Term', ['day', 'start_hour', 'end_hour'])
 SchedulerAPITeacher = collections.namedtuple('Teacher', ['first_name', 'last_name'])
+
 
 class GroupData:
     """ Single group object data to save to SZ ( System Zapisów ) database"""
@@ -161,6 +70,7 @@ class GroupData:
     type = str
     limit = int
 
+
 class TermData:
     """ Single term object data to save to SZ ( System Zapisów ) database"""
     dayOfWeek = str
@@ -169,10 +79,11 @@ class TermData:
     group = None
     classrooms = set()
 
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('--create_courses', action='store_true',  help='creates course instance from proposal'
-                                                                           ' and creates new terms and groups')
+        parser.add_argument('--create_courses', action='store_true', help='creates course instance from proposal'
+                                                                          ' and creates new terms and groups')
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
@@ -204,22 +115,23 @@ class Command(BaseCommand):
 
             if term.dayOfWeek != term_data.dayOfWeek:
                 changed = True
-                diffs.append(SlackUpdate('day of week', DAYS_OF_WEEK[term.dayOfWeek], DAYS_OF_WEEK[term_data.dayOfWeek]))
+                diffs.append(
+                    SlackUpdate('day of week', DAYS_OF_WEEK[term.dayOfWeek], DAYS_OF_WEEK[term_data.dayOfWeek]))
                 term.dayOfWeek = term_data.dayOfWeek
 
             if term.start_time != term_data.start_time:
                 changed = True
-                diffs.append(SlackUpdate('start time',term.start_time, term_data.start_time))
+                diffs.append(SlackUpdate('start time', term.start_time, term_data.start_time))
                 term.start_time = term_data.start_time
 
             if term.end_time != term_data.end_time:
                 changed = True
-                diffs.append(SlackUpdate('end time',term.end_time, term_data.end_time))
+                diffs.append(SlackUpdate('end time', term.end_time, term_data.end_time))
                 term.end_time = term_data.end_time
 
             if set(term.classrooms.all()) != term_data.classrooms:
                 changed = True
-                diffs.append(SlackUpdate('classrooms',term.classrooms.all(), term_data.classrooms))
+                diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))
                 if not dry_run:
                     term.classrooms.set(term_data.classrooms)
 
@@ -274,10 +186,10 @@ class Command(BaseCommand):
                                                         type=group_data.type, limit=group_data.limit)[0]
                 else:
                     group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
-                                                    type=group_data.type, limit=group_data.limit)
+                                                 type=group_data.type, limit=group_data.limit)
 
                 term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                                            end_time=term_data.end_time, group=group)
+                                           end_time=term_data.end_time, group=group)
 
                 term.classrooms.set(term_data.classrooms)
                 term.save()
@@ -354,10 +266,10 @@ class Command(BaseCommand):
                     return None
                 else:
                     course_name = map[0].course
-            prop = None
             try:
                 prop = Proposal.objects.get(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                return prop
             except Proposal.DoesNotExist:
                 if Proposal.objects.filter(name__iexact=course_name).count():
                     self.stdout.write(
@@ -379,8 +291,8 @@ class Command(BaseCommand):
                 while True:
                     self.stdout.write(self.style.WARNING(">Couldn't find proposal course for '{}'".format(course_name)))
                     self.stdout.write("Please enter proper course name to add map to this course and continue script.\n"
-                        "Leave blank (press enter) to set this course to not import in future and contiue script.\n"
-                        "Type 'quit' to quit script. You will be asked again if course name cannot be found.")
+                                      "Leave blank (press enter) to set this course to not import in future and contiue script.\n"
+                                      "Type 'quit' to quit script. You will be asked again if course name cannot be found.")
                     new_course_name = input('Course name (Capitalization does not matter):')
                     if not new_course_name:
                         if not dry_run:
@@ -389,7 +301,7 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.SUCCESS(
                             ">Course '{}' was set to not import. Continue script..\n".format(course_name)))
                         return None
-                    elif new_course_name=='quit':
+                    elif new_course_name == 'quit':
                         self.stdout.write('You can make changes in django admin. Exiting script..')
                         exit()
                     elif Proposal.objects.filter(name__iexact=new_course_name).count():
@@ -436,8 +348,9 @@ class Command(BaseCommand):
                                           " group can be missing due to lack of this course.".format(proposal.name))
                 else:
                     self.stdout.write(self.style.WARNING('>Course instance {} does not exist and create_courses=False\n'
-                    '>Course instance could be created with this course name if create_courses flag was set\n'
-                                            '>Course will not be imported. Continue script..'.format(proposal.name)))
+                                                         '>Course instance could be created with this course name if create_courses flag was set\n '
+                                                         '>Course will not be imported. Continue script..'.format(
+                        proposal.name)))
                 self.stdout.write('')
             return course
 
@@ -459,7 +372,7 @@ class Command(BaseCommand):
                             "First name: {}, last name: {}\n"
                             "Please enter proper username. You will be asked again if username cannot be found.\n"
                             "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
-                                format(first_name, last_name))
+                            format(first_name, last_name))
                         new_username = input('Username:')
                         if not new_username:
                             if not dry_run:
@@ -476,14 +389,14 @@ class Command(BaseCommand):
                             if new_emp.count():
                                 if not dry_run:
                                     map = EmployeeMap.objects.create(scheduler_username=username,
-                                                                    employee_username=new_username)
+                                                                     employee_username=new_username)
                                     self.info.used_map_employees.append(map.pk)
                                 self.stdout.write(self.style.SUCCESS(
-                                ">Employee '{}' was set to '{}'. Continue script..\n".format(username, new_username)))
+                                    ">Employee '{}' was set to '{}'. Continue script..\n".format(username,
+                                                                                                 new_username)))
                                 return new_emp[0]
                             self.stdout.write(
                                 self.style.WARNING(">Username '{}' still not found\n".format(new_username)))
-
 
         scheduler_course = scheduler_data.groups[group_id].course
         scheduler_teacher = scheduler_data.groups[group_id].teacher
@@ -610,7 +523,7 @@ class Command(BaseCommand):
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.prepare_slack_message()
         }
-       # secrets_env = self.get_secrets_env()
+        secrets_env = self.get_secrets_env()
         slack_webhook_url = secrets_env.str('SLACK_WEBHOOK_URL')
         response = requests.post(
             slack_webhook_url, data=json.dumps(slack_data),
@@ -641,7 +554,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.NOTICE('Term {} for group {} removed'.
                                                     format(sync_data_object.term, sync_data_object.term.group)))
                 self.info.all_deletions.append((str(sync_data_object.term),
-                                           str(sync_data_object.term.group)))
+                                                str(sync_data_object.term.group)))
                 if not dry_run:
                     sync_data_object.term.delete()
                     sync_data_object.delete()
@@ -678,7 +591,7 @@ class Command(BaseCommand):
         if delete_courses_flag:
             self.remove_unused_maps_terms_groups(dry_run_flag)
         if write_to_slack_flag:
-            prep = self.write_to_slack()
+            self.write_to_slack()
         self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
                                              'Moreover {} courses were already there.'
                                              .format(self.info.created_courses, self.info.used_courses)))
