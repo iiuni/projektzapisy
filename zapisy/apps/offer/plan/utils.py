@@ -8,7 +8,7 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.enrollment.records.models.records import Record, RecordStatus
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
 
 from functools import reduce
 from typing import List, Tuple
@@ -71,49 +71,48 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
     # Prepares data necessary to create csv.
     for course, data in course_data.items():
         proposal_info = Proposal.objects.get(id=data['id'])
-        course_type = proposal_info.course_type
         if data['instance']:
             previous_groups = Group.objects.filter(course=data['instance'][0])
             for group in previous_groups:
-                hours = {'Wykład': proposal_info.hours_lecture,
-                         'Ćwiczenia': proposal_info.hours_exercise,
-                         'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab,
-                         'Repetytorium': proposal_info.hours_recap,
-                         'Seminarium': proposal_info.hours_seminar,
-                         'Pracownia': proposal_info.hours_lab,
-                         'Projekt': None}
+                hours = {'Wykład': proposal_info.hours_lecture if proposal_info.hours_lecture else 30,
+                         'Ćwiczenia': proposal_info.hours_exercise if proposal_info.hours_exercise else 30,
+                         'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab if proposal_info.hours_exercise_lab else 30,
+                         'Repetytorium': proposal_info.hours_recap if proposal_info.hours_recap else 30,
+                         'Seminarium': proposal_info.hours_seminar if proposal_info.hours_seminar else 30,
+                         'Pracownia': proposal_info.hours_lab if proposal_info.hours_lab else 30
+                         }
 
                 course_info = [('course', course),
                                ('semester', proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
                                ('code', group.teacher.user.username),
                                ('type', group.human_readable_type()),
-                               ('hours', hours[group.human_readable_type()])]
+                               ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else 0]
                 groups.append(course_info)
         else:
             course_info = [('course', course), ('semester', proposal_info.semester),
                            ('teacher', proposal_info.owner.get_full_name()), ('code', proposal_info.owner.user.username)]
-            if course_type.have_lecture:
+            if proposal_info.hours_lecture:
                 groups.append(
                     course_info + [('type', 'Wykład'), ('hours', proposal_info.hours_lecture)])
-            if course_type.have_tutorial_lab:
+            if proposal_info.hours_exercise_lab:
                 groups.append(
                     course_info + [('type', 'Ćwiczenio-pracownia'), ('hours', proposal_info.hours_exercise_lab)])
-            if course_type.have_seminar:
+            if proposal_info.hours_seminar:
                 groups.append(
                     course_info + [('type', 'Seminarium'), ('hours', proposal_info.hours_seminar)])
-            if course_type.have_tutorial:
+            if proposal_info.hours_exercise:
                 groups.append(
                     course_info + [('type', 'Ćwiczenia'), ('hours', proposal_info.hours_exercise)])
-            if course_type.have_lab:
+            if proposal_info.hours_lab:
                 groups.append(
                     course_info + [('type', 'Pracownia'), ('hours', proposal_info.hours_lab)])
-            if course_type.have_review_lecture:
+            if proposal_info.hours_recap:
                 groups.append(
                     course_info + [('type', 'Repetytorium'), ('hours', proposal_info.hours_recap)])
-            if course_type.have_project:
-                groups.append(
-                    course_info + [('type', 'Projekt'), ('hours', None)])
+    file = open('text.txt', 'w')
+    for g in groups:
+        file.write(str(g) + '\n')
     return groups
 
 
