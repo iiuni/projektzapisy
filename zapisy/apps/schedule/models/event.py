@@ -136,22 +136,23 @@ class Event(models.Model):
             term.delete()
         self.delete()
 
-    def ignore_conflicts(self):
+    def get_conflicted(self, ignore_conflicts=False):
         """
-        Ignore all conflicts in events terms
-        Return number of conflicts
+        Return all conflicted events.
 
-        @return: Integer
+        @param ignore_conflicts: Boolean
+        @return: List of events
         """
-        from .term import Term
-        terms = Term.objects.filter(event=self)
-        conflicts = 0
+        terms = self.term_set.all()
+        event_conflicts = set()
         for term in terms:
-            if term.get_conflicted():
-                conflicts += 1
+            term_conflicts = term.get_conflicted()
+            for conflict in term_conflicts:
+                event_conflicts.add(conflict.event)
+            if ignore_conflicts:
                 term.ignore_conflicts = True
                 term.save()
-        return conflicts
+        return list(event_conflicts)
 
     def _user_can_see_or_404(self, user):
         """

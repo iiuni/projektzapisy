@@ -20,6 +20,7 @@ from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
 from apps.users.models import BaseUser
+from .models.message import EventModerationMessage
 
 from xhtml2pdf import pisa
 import io
@@ -153,27 +154,26 @@ def history(request):
 @require_POST
 @permission_required('schedule.manage_events')
 def decision(request, event_id):
-    from .models.message import EventModerationMessage
-
     event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
     form = DecisionForm(request.POST, instance=event)
     event_status = event.status
-
-    if event.ignore_conflicts():
-        messages.warning(request, 'Akceptacja wydarzenia spowoduje powstanie konfliktów')
+    conflicts = event.get_conflicted(ignore_conflicts=True)
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
-            messages.error(request, 'Status wydarzenia nie został zmieniony')
+            messages.error(request, "Status wydarzenia nie został zmieniony")
         else:
             event_obj = form.save()
             msg = EventModerationMessage()
             msg.author = request.user
-            msg.message = 'Status wydarzenia został zmieniony na ' + \
+            msg.message = "Status wydarzenia został zmieniony na " + \
                 str(event_obj.get_status_display())
             msg.event = event_obj
             msg.save()
-            messages.success(request, 'Status wydarzenia został zmieniony')
+            messages.success(request, "Status wydarzenia został zmieniony")
+            if event_obj.status == Event.STATUS_ACCEPTED:
+                for conflict in conflicts:
+                    messages.warning(request, "Powstał konflikt: " + conflict.title)
     else:
         messages.error(request, form.non_field_errors())
 
