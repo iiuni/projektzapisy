@@ -1,4 +1,6 @@
 from django.db import models
+from apps.users.models import Employee
+from apps.enrollment.courses.models import CourseInstance
 
 
 class TermSyncData(models.Model):
@@ -15,8 +17,8 @@ class TermSyncData(models.Model):
 
 class EmployeeMap(models.Model):
     """Map employee name from scheduler API, can set to unknown employee"""
-    scheduler_username = models.CharField(unique=True, max_length=150, blank=False)
-    employee_username = models.CharField(default='Nn', max_length=150, blank=False)
+    scheduler_username = models.CharField(unique=True, max_length=150, blank=False, verbose_name='username schedulera')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name='pracownik')
 
     class Meta:
         verbose_name = "Mapa pracowników"
@@ -27,8 +29,9 @@ class EmployeeMap(models.Model):
 
 class CourseMap(models.Model):
     """Map course name from scheduler API, can set to not import that course"""
-    scheduler_course = models.CharField(unique=True, max_length=100, blank=False)
-    course = models.CharField(max_length=100, blank=False)
+    scheduler_course = models.CharField(unique=True, max_length=100, blank=False, verbose_name='nazwa kursu schedulera')
+    course = models.ForeignKey(CourseInstance, on_delete=models.CASCADE, default=None, blank=True, null=True,
+                               verbose_name='kurs')
 
     class Meta:
         verbose_name = "Mapa przedmiotów"

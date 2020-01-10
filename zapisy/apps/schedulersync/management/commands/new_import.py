@@ -1,3 +1,5 @@
+"""opis skryptu"""
+
 from datetime import time
 import json
 import os
@@ -82,16 +84,13 @@ class TermData:
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('--create_courses', action='store_true', help='creates course instance from proposal'
-                                                                          ' and creates new terms and groups')
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
         parser.add_argument('--delete_groups', action='store_true', help='delete unused terms, groups, employees maps'
                                                                          ' and courses maps')
 
-    def create_or_update_group_and_term(self, group_data: 'GroupData', term_data: 'TermData',
-                                        create_couses=False, dry_run=False):
+    def create_or_update_group_and_term(self, group_data: 'GroupData', term_data: 'TermData'):
         """ Check if group already exists in database, then create or update that group. Does the same for term,
             unless update or create are set to False """
         try:
@@ -132,8 +131,7 @@ class Command(BaseCommand):
             if set(term.classrooms.all()) != term_data.classrooms:
                 changed = True
                 diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))
-                if not dry_run:
-                    term.classrooms.set(term_data.classrooms)
+                term.classrooms.set(term_data.classrooms)
 
             if term.group.teacher != group_data.teacher:
                 changed = True
@@ -146,6 +144,8 @@ class Command(BaseCommand):
                 term.group.limit = group_data.limit
 
             if changed:
+                term.save()
+                term.group.save()
                 self.stdout.write(self.style.SUCCESS('term: {} with group {} changes:'.format(term, term.group)))
                 for diff in diffs:
                     self.stdout.write('  {}: '.format(diff[0]), ending='')
@@ -154,50 +154,25 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS(str(diff[2])))
                 self.info.all_updates.append((term, diffs))
                 self.info.updated_terms += 1
-                if not dry_run:
-                    term.save()
-                    term.group.save()
                 self.stdout.write('')
         except TermSyncData.DoesNotExist:
-            if not create_couses:
-                return
-            elif dry_run:
-                group = Group(course=group_data.course, teacher=group_data.teacher,
-                              type=group_data.type, limit=group_data.limit)
-                term = Term(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                            end_time=term_data.end_time, group=group)
-                self.info.all_creations.append(term)
-                self.info.used_scheduler_ids.append(group_data.scheduler_id)
-                self.info.created_terms += 1
-                # cant set classrooms to term without saving term, so do work around for pretty printing
-                classrooms = term_data.classrooms
-                if len(classrooms) > 0:
-                    classrooms = ', '.join((x.number for x in classrooms))
-                else:
-                    classrooms = ''
-                term = "%s %s-%s (s. %s)" % (
-                    term.get_dayOfWeek_display_short(), term.start_time.strftime("%H:%M"),
-                    term.end_time.strftime("%H:%M"), classrooms)
-                self.stdout.write(self.style.SUCCESS('term: {} with group {} created\n'.format(term, group)))
+            # The lecture always has a single group but possibly many terms
+            if group_data.type == 1:
+                group = Group.objects.get_or_create(course=group_data.course, teacher=group_data.teacher,
+                                                      type=group_data.type, limit=group_data.limit)[0]
             else:
-                # The lecture always has a single group but possibly many terms
-                if group_data.type == 1:
-                    group = Group.objects.get_or_create(course=group_data.course, teacher=group_data.teacher,
-                                                        type=group_data.type, limit=group_data.limit)[0]
-                else:
-                    group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
-                                                 type=group_data.type, limit=group_data.limit)
+                 group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
+                                              type=group_data.type, limit=group_data.limit)
 
-                term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                                           end_time=term_data.end_time, group=group)
+            term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
+                                        end_time=term_data.end_time, group=group)
 
-                term.classrooms.set(term_data.classrooms)
-                term.save()
-                TermSyncData.objects.create(term=term, scheduler_id=group_data.scheduler_id)
-                self.info.used_scheduler_ids.append(group_data.scheduler_id)
-                self.info.created_terms += 1
-                self.info.all_creations.append(term)
-                self.stdout.write(self.style.SUCCESS('term: {} with group {} created\n'.format(term, group)))
+            term.classrooms.set(term_data.classrooms)
+            TermSyncData.objects.create(term=term, scheduler_id=group_data.scheduler_id)
+            self.info.used_scheduler_ids.append(group_data.scheduler_id)
+            self.info.created_terms += 1
+            self.info.all_creations.append(term)
+            self.stdout.write(self.style.SUCCESS('term: {} with group {} created\n'.format(term, group)))
 
     def get_term_data(self, scheduler_id: 'int',
                       scheduler_data: 'SchedulerData') -> 'TermData[str, time, time, None, List[Classroom]]':
@@ -249,112 +224,86 @@ class Command(BaseCommand):
         term_data.classrooms = get_classrooms(scheduler_rooms)
         return term_data
 
-    def get_group_data(self, group_id: 'int', scheduler_data: 'SchedulerData',
-                       create_courses=False, dry_run=False) -> 'GroupData[CourseInstance, Employee, str, int]':
+    def get_group_data(self, group_id: 'int',
+                       scheduler_data: 'SchedulerData') -> 'GroupData[CourseInstance, Employee, str, int]':
         """ Fill GroupData object with data necessary to save group to SZ database"""
 
         def get_group_type(group_type: 'str') -> 'str':
             """ map scheduler group type to SZ group type"""
             return GROUP_TYPES[group_type]
 
-        def get_proposal(course_name: 'str', dry_run=False) -> 'Proposal or None':
-            """ return Proposal object from SZ database"""
+        def get_proposal(course_name: 'str') -> '(Proposal or None, bool)':
+            """ return tuple of Proposal object from SZ database or None if course is set to not import. Second return
+                True if CourseInstance with entered name should be mapped or False in opposite"""
             map = CourseMap.objects.filter(scheduler_course__iexact=course_name)
             if map.count():
                 self.info.used_map_courses.append(map[0].pk)
-                if map[0].course == 'dont import':
-                    return None
+                if map[0].course is None:
+                    return (None, False)
                 else:
-                    course_name = map[0].course
+                    return (map[0].course.offer, False)
             try:
                 prop = Proposal.objects.get(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
-                return prop
+                return (prop, False)
             except Proposal.DoesNotExist:
-                if Proposal.objects.filter(name__iexact=course_name).count():
-                    self.stdout.write(
-                        self.style.WARNING(">Proposal '{}' exists, but proposal status is not IN_OFFER or IN_VOTE".
-                                           format(course_name)))
-                    self.stdout.write("Leave blank (press enter) to set this course to not import in future and "
-                                      "continue script \nType 'quit' or anything else to quit script")
-                    decision = input("Decision:")
-                    if not decision:
-                        if not dry_run:
-                            map = CourseMap.objects.create(scheduler_course=course_name.upper(), course='dont import')
-                            self.info.used_map_courses.append(map.pk)
-                        self.stdout.write(self.style.SUCCESS(
-                            ">Course '{}' was set to not import. Continue script..\n".format(course_name)))
-                        return None
-                    else:
-                        self.stdout.write('You can make changes in django admin. Exiting script..')
-                        exit()
                 while True:
-                    self.stdout.write(self.style.WARNING(">Couldn't find proposal course for '{}'".format(course_name)))
-                    self.stdout.write("Please enter proper course name to add map to this course and continue script.\n"
-                                      "Leave blank (press enter) to set this course to not import in future and contiue script.\n"
-                                      "Type 'quit' to quit script. You will be asked again if course name cannot be found.")
-                    new_course_name = input('Course name (Capitalization does not matter):')
+                    self.stdout.write(self.style.WARNING(">Couldn't find proposal for '{}' "
+                                                         "which status is IN_OFFER or IN_VOTE".format(course_name)))
+                    self.stdout.write("Please enter proper proposal name, so course instance could be found or created"
+                                      " with this proposal \nLeave blank (press enter) to set this name to not import"
+                                      " (CourseMap) and continue script. \nType 'quit' to quit script."
+                                      " You will be asked again if course name cannot be found.")
+                    new_course_name = input('Course name (Capitalization does not matter): ')
                     if not new_course_name:
-                        if not dry_run:
-                            map = CourseMap.objects.create(scheduler_course=course_name.upper(), course='dont import')
-                            self.info.used_map_courses.append(map.pk)
+                        map = CourseMap.objects.create(scheduler_course=course_name.upper(), course=None)
+                        self.info.used_map_courses.append(map.pk)
                         self.stdout.write(self.style.SUCCESS(
-                            ">Course '{}' was set to not import. Continue script..\n".format(course_name)))
-                        return None
+                            ">Course '{}' was set to not import (CourseMap). Continue script..\n".format(course_name)))
+                        return (None, False)
                     elif new_course_name == 'quit':
-                        self.stdout.write('You can make changes in django admin. Exiting script..')
+                        self.stdout.write('Exiting script..')
                         exit()
-                    elif Proposal.objects.filter(name__iexact=new_course_name).count():
-                        if not dry_run:
-                            CourseMap.objects.create(scheduler_course=course_name.upper(),
-                                                     course=new_course_name.upper())
-                            self.info.used_map_courses.append(map.pk)
-                        self.stdout.write(self.style.SUCCESS(
-                            ">Course '{}' was set to {}. Continue script..\n".format(course_name, new_course_name)))
-                        # recursion in case Proposal.MultipleObjectsReturned with new course name
-                        return get_proposal(new_course_name)
                     else:
-                        self.stdout.write(self.style.WARNING(">Proposal course '{}' still not found\n".
-                                                             format(new_course_name)))
+                        prop = Proposal.objects.filter(name__iexact=new_course_name,
+                                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                        if prop.count():
+                            # recursion in case Proposal.MultipleObjectsReturned with new course name
+                            prop, bool_dont_matter = get_proposal(new_course_name)
+                            return (prop, True)
 
+                    self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which status is"
+                                                             " IN_OFFER or IN_VOTE\n".format(new_course_name)))
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
-                # Czy może kolejność na odwrót, lub wyrzucić błąd?
                 props = Proposal.objects.filter(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE]).order_by('-status', '-id')
                 self.stdout.write(self.style.WARNING('>Multiple course proposals. Took first among:'))
                 for prop in props:
                     self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop, prop.status)))
-                self.stdout.write('')
+                self.stdout.write("Leave blank (press enter) to contiue script."
+                                  " Type 'quit' or anything else to quit script.")
+                decision = input("Decision: ")
+                if decision:
+                    self.stdout.write('Exiting script..')
+                    exit()
                 prop = props[0]
-            return prop
+                return (prop, False)
 
-        def get_course(proposal: 'Proposal', create_courses=False, dry_run=False) -> 'CourseInstance':
+        def get_course(proposal: 'Proposal') -> 'CourseInstance':
             """ return CourseInstance object from SZ database"""
             course = None
             try:
                 course = CourseInstance.objects.get(semester=self.semester, offer=proposal)
                 self.info.used_courses += 1
             except CourseInstance.DoesNotExist:
-                if create_courses:
-                    self.info.created_courses += 1
-                    self.stdout.write(self.style.SUCCESS(">Course instance '{}' created".format(proposal.name)))
-                    if not dry_run:
-                        course = CourseInstance.create_proposal_instance(proposal, self.semester)
-                    else:
-                        self.stdout.write("If dry_run flag was not set course instance '{}' would be created. \n"
-                                          "Therefore some messages from creating or updating corresponding term with"
-                                          " group can be missing due to lack of this course.".format(proposal.name))
-                else:
-                    self.stdout.write(self.style.WARNING('>Course instance {} does not exist and create_courses=False\n'
-                                                         '>Course instance could be created with this course name if create_courses flag was set\n '
-                                                         '>Course will not be imported. Continue script..'.format(
-                        proposal.name)))
-                self.stdout.write('')
+                course = CourseInstance.create_proposal_instance(proposal, self.semester)
+                self.info.created_courses += 1
+                self.stdout.write(self.style.SUCCESS(">Course instance '{}' created\n".format(proposal.name)))
             return course
 
-        def get_employee(username: 'str', teachers: 'Dict[str, str]', dry_run=False) -> 'Employee':
+        def get_employee(username: 'str', teachers: 'Dict[str, str]') -> 'Employee':
             emp = Employee.objects.filter(user__username=username)
             if emp.count():
                 return emp[0]
@@ -362,7 +311,7 @@ class Command(BaseCommand):
                 map = EmployeeMap.objects.filter(scheduler_username=username)
                 if map.count():
                     self.info.used_map_employees.append(map[0].pk)
-                    return Employee.objects.get(user__username=map[0].employee_username)
+                    return map[0].employee
                 else:
                     first_name, last_name = teachers[username]
                     while True:
@@ -373,27 +322,24 @@ class Command(BaseCommand):
                             "Please enter proper username. You will be asked again if username cannot be found.\n"
                             "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
                             format(first_name, last_name))
-                        new_username = input('Username:')
+                        new_username = input('Username: ')
                         if not new_username:
-                            if not dry_run:
-                                map = EmployeeMap.objects.create(scheduler_username=username, employee_username='Nn')
-                                self.info.used_map_employees.append(map.pk)
-                            self.stdout.write(self.style.SUCCESS(
-                                ">Employee '{}' was set to 'nieznany prowadzacy. Continue script..\n".format(username)))
-                            return Employee.objects.get(user__username='Nn')
+                            nieznany = Employee.objects.get(user__username='Nn')
+                            map = EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
+                            self.info.used_map_employees.append(map.pk)
+                            self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to 'nieznany prowadzacy."
+                                                                 " Continue script..\n".format(username)))
+                            return nieznany
                         elif new_username == 'quit':
-                            self.stdout.write('You can make changes in django admin. Exiting script..')
+                            self.stdout.write('Exiting script..')
                             exit()
                         else:
                             new_emp = Employee.objects.filter(user__username=new_username)
                             if new_emp.count():
-                                if not dry_run:
-                                    map = EmployeeMap.objects.create(scheduler_username=username,
-                                                                     employee_username=new_username)
-                                    self.info.used_map_employees.append(map.pk)
-                                self.stdout.write(self.style.SUCCESS(
-                                    ">Employee '{}' was set to '{}'. Continue script..\n".format(username,
-                                                                                                 new_username)))
+                                map = EmployeeMap.objects.create(scheduler_username=username, employee=new_emp[0])
+                                self.info.used_map_employees.append(map.pk)
+                                self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to '{}'. Continue"
+                                                                     " script..\n".format(username, new_username)))
                                 return new_emp[0]
                             self.stdout.write(
                                 self.style.WARNING(">Username '{}' still not found\n".format(new_username)))
@@ -403,13 +349,15 @@ class Command(BaseCommand):
         scheduler_group_type = scheduler_data.groups[group_id].group_type
 
         group_data = GroupData()
-        proposal = get_proposal(scheduler_course, dry_run)
+        proposal, add_map = get_proposal(scheduler_course)
         if proposal is None:
             return group_data
-        group_data.course = get_course(proposal, create_courses, dry_run)
-        if group_data.course is None:
-            return group_data
-        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers, dry_run)
+        group_data.course = get_course(proposal)
+        if add_map:
+            map = CourseMap.objects.create(scheduler_course=scheduler_course.upper(), course=group_data.course)
+            self.info.used_map_courses.append(map.pk)
+            self.stdout.write(self.style.SUCCESS(">Course instance '{}' mapped (CourseMap)".format(group_data.course)))
+        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers)
         group_data.type = get_group_type(scheduler_group_type)
         group_data.limit = scheduler_data.groups[group_id].limit
         group_data.scheduler_id = scheduler_data.groups[group_id].id
@@ -535,16 +483,15 @@ class Command(BaseCommand):
                 % (response.status_code, response.text)
             )
 
-    def remove_unused_maps_terms_groups(self, dry_run=False):
-        if not dry_run:
-            maps = CourseMap.objects.all()
-            for map in maps:
-                if map.pk not in self.info.used_map_courses:
-                    map.delete()
-            maps = EmployeeMap.objects.all()
-            for map in maps:
-                if map.pk not in self.info.used_map_employees:
-                    map.delete()
+    def remove_unused_maps_terms_groups(self):
+        maps = CourseMap.objects.all()
+        for map in maps:
+            if map.pk not in self.info.used_map_courses:
+                map.delete()
+        maps = EmployeeMap.objects.all()
+        for map in maps:
+            if map.pk not in self.info.used_map_employees:
+                map.delete()
 
         groups_to_remove = set()
         sync_data_objects = TermSyncData.objects.filter(term__group__course__semester=self.semester)
@@ -555,41 +502,24 @@ class Command(BaseCommand):
                                                     format(sync_data_object.term, sync_data_object.term.group)))
                 self.info.all_deletions.append((str(sync_data_object.term),
                                                 str(sync_data_object.term.group)))
-                if not dry_run:
-                    sync_data_object.term.delete()
-                    sync_data_object.delete()
-        if not dry_run:
-            for group in groups_to_remove:
-                if not Term.objects.filter(group=group):
-                    group.delete()
+                sync_data_object.term.delete()
+                sync_data_object.delete()
+        for group in groups_to_remove:
+            if not Term.objects.filter(group=group):
+                group.delete()
 
-    def __init__(self):
-        super().__init__()
-        self.semester = Semester.objects.get(year="2018/19", type='l')
-        self.info = Info()
-
-    def handle(self, *args, **options):
-        # potem zmień semestr by było ustawiane jako argument do komendy skryptu
-        create_courses_flag = options['create_courses']
-        delete_courses_flag = options['delete_groups']
-        dry_run_flag = options['dry_run']
-        write_to_slack_flag = options['slack']
-        if dry_run_flag:
-            self.stdout.write('Dry run is on. Nothing will be saved or deleted. All messages are informational.\n'
-                              'It is possible to see same missing courses and employees warnings.\n'
-                              'That happens because courses and employees maps aren\'t saved for later ones.\n\n')
+    def import_from_api(self, delete_courses_flag, write_to_slack_flag):
         scheduler_data = self.get_scheduler_data()
-
         for group_id in range(len(scheduler_data.groups)):
-            group_data = self.get_group_data(group_id, scheduler_data, create_courses_flag, dry_run_flag)
-            # course is mapped to not import or course not found and create_courses=False
+            group_data = self.get_group_data(group_id, scheduler_data)
+            # course is mapped to not import
             if group_data.course is None:
                 continue
             term_data = self.get_term_data(group_data.scheduler_id, scheduler_data)
-            self.create_or_update_group_and_term(group_data, term_data, create_courses_flag, dry_run_flag)
+            self.create_or_update_group_and_term(group_data, term_data)
 
         if delete_courses_flag:
-            self.remove_unused_maps_terms_groups(dry_run_flag)
+            self.remove_unused_maps_terms_groups()
         if write_to_slack_flag:
             self.write_to_slack()
         self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
@@ -597,5 +527,20 @@ class Command(BaseCommand):
                                              .format(self.info.created_courses, self.info.used_courses)))
         self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
                                              .format(self.info.created_terms, self.info.updated_terms)))
+
+    def handle(self, *args, **options):
+        # potem zmień semestr by było ustawiane jako argument do komendy skryptu
+        self.semester = Semester.objects.get(year="2018/19", type='l')
+        self.info = Info()
+        delete_courses_flag = options['delete_groups']
+        dry_run_flag = options['dry_run']
+        write_to_slack_flag = options['slack']
+
         if dry_run_flag:
+            self.stdout.write('Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n')
+            with transaction.atomic():
+                self.import_from_api(delete_courses_flag, write_to_slack_flag)
+                transaction.set_rollback(True)
             self.stdout.write('\nDry run was on. Nothing was saved or deleted. All messages were informational.')
+        else:
+            self.import_from_api(delete_courses_flag, write_to_slack_flag)
