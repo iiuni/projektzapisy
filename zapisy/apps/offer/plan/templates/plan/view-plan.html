@@ -14,16 +14,20 @@
         <h4 class="winter-semester">Semestr zimowy</h4>
         <div>
             {% for course in winter %}
-                <div class="mt-2">
+                <div>
                     <div class="bg-primary">
-                        <h6 class="text-light p-2">{{ course.course }}</h6>
+                        <h6 class="text-light p-2 mb-0">{{ course.course }}</h6>
                     </div>
-                    <div class="ml-2">
+                    <div class="p-2" style="background: #E5E5E5">
                         {% if course.w %}
                             <div>
                                 <p class="d-inline">wykład ({{ course.w.weekly }}h/tydzień): </p>
                                 {% for teacher in course.w.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -84,11 +88,11 @@
         <h4 class="summer-semester">Semestr letni</h4>
         <div>
             {% for course in summer %}
-                <div class="mt-2">
+                <div>
                     <div class="bg-primary">
-                        <h6 class="text-light p-2">{{ course.course }}</h6>
+                        <h6 class="text-light p-2 mb-0">{{ course.course }}</h6>
                     </div>
-                    <div class="ml-2">
+                    <div class="p-2" style="background: #E5E5E5">
                         {% if course.w %}
                             <div>
                                 <p class="d-inline">wykład ({{ course.w.weekly }}h/tydzień): </p>
