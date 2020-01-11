@@ -241,3 +241,137 @@ def get_year_list(years):
             break
         states.append(state)
     return states
+
+
+# prepares assignment data to be displayed in template
+def prepare_assignments_data(data: List[List]):
+    final = []
+    length = len(data)
+    lp = data[0][0]
+    # boilerplate for record, a list of those is our return type
+    record = {
+        'course': '',
+        'w': {
+            'weekly': '',
+            'teachers': []
+        },
+        'rep': {
+            'weekly': '',
+            'teachers': []
+        },
+        'ćw': {
+            'weekly': '',
+            'teachers': []
+        },
+        'prac': {
+            'weekly': '',
+            'teachers': []
+        },
+        'ćw_prac': {
+            'weekly': '',
+            'teachers': []
+        },
+        'sem': {
+            'weekly': '',
+            'teachers': []
+        },
+        'admin': {
+            'weekly': '',
+            'teachers': []
+        }
+    }
+    for value in data:
+        if value[0] == lp:
+            record = process_value(record, value)
+            if value == data[length - 1]:
+                record = clean_up(record)
+                final.append(record)
+        else:
+            lp += 1
+            record = clean_up(record)
+            final.append(record)
+            record = {
+                'course': '',
+                'w': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'rep': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'ćw': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'prac': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'ćw_prac': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'sem': {
+                    'weekly': '',
+                    'teachers': []
+                },
+                'admin': {
+                    'weekly': '',
+                    'teachers': []
+                }
+            }
+            record = process_value(record, value)
+            if value == data[length - 1]:
+                record = clean_up(record)
+                final.append(record)
+
+    return final
+
+
+def process_value(record: dict, value: List):
+    record['course'] = value[1]
+    if value[3] == 'w':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'rep':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'ćw':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'prac':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'ćw_prac':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'sem':
+        record = process_data_row(record, value, value[3])
+    elif value[3] == 'admin':
+        record = process_data_row(record, value, value[3])
+
+    return record
+
+
+def process_data_row(record: dict, value: List, class_type: str):
+    record[class_type]['weekly'] = value[5]
+    record[class_type]['teachers'].append({
+        'name': value[-3],
+        'code': value[-2],
+    })
+    return record
+
+
+def clean_up(record: dict):
+    if record['w']['weekly'] == '':
+        record.pop('w')
+    if record['rep']['weekly'] == '':
+        record.pop('rep')
+    if record['ćw']['weekly'] == '':
+        record.pop('ćw')
+    if record['prac']['weekly'] == '':
+        record.pop('prac')
+    if record['ćw_prac']['weekly'] == '':
+        record.pop('ćw_prac')
+    if record['sem']['weekly'] == '':
+        record.pop('sem')
+    if record['admin']['weekly'] == '':
+        record.pop('admin')
+
+    return record

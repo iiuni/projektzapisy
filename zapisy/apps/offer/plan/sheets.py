@@ -18,6 +18,7 @@ def create_sheets_service(sheet_id):
 # BEGIN VOTING RESULT SHEET LOGIC
 ##################################################
 
+
 def votes_to_sheets_format(votes):
     values = create_voting_results_sheet_layout(votes)
 
@@ -147,6 +148,7 @@ def update_voting_results_sheet(sheet, votes):
 # BEGIN PLAN PROPOSAL SHEET LOGIC
 ##################################################
 
+
 def proposal_to_sheets_format(proposal):
     data = [
         [
@@ -196,4 +198,16 @@ def update_plan_proposal_sheet(sheet, proposal):
 
 ##################################################
 # END PLAN PROPOSAL SHEET LOGIC
+##################################################
+
+##################################################
+# START READING ASSIGNMENTS SHEET LOGIC
+##################################################
+
+
+def read_entire_sheet(sheet):
+    return sheet.sheet1.get_all_values()
+
+##################################################
+# END READING ASSIGNMENTS SHEET LOGIC
 ##################################################

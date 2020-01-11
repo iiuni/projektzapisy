@@ -7,4 +7,6 @@ urlpatterns = [
     path('create/vote', views.plan_vote, name='plan-vote'),
     # create voting results sheet
     path('create/sheet', views.plan_create_voting_sheet, name='plan-create-voting-sheet'),
+    # generate plan html at /plan
+    path('create/plan', views.generate_plan_html, name='generate-plan-html'),
 ]

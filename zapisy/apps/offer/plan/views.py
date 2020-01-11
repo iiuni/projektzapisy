@@ -3,8 +3,9 @@ from apps.users.models import BaseUser
 from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 
-from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet
-from apps.offer.plan.utils import get_votes, propose, get_subjects_data
+from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, \
+    read_entire_sheet
+from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
 PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
@@ -14,7 +15,32 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 def plan_view(request):
     if request.user.is_superuser or BaseUser.is_employee(request.user):
-        return render(request, 'plan/view-plan.html')
+        assignments = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+        employees = create_sheets_service(EMPLOYEES_SPREADSHEET_ID)
+        assignments_data = read_entire_sheet(assignments)
+        assignments_winter = []
+        assignments_summer = []
+
+        for value in assignments_data:
+            if value[9] == 'z' and value[-1] == 'TRUE':
+                value[0] = int(value[0])
+                assignments_winter.append(value)
+            elif value[9] == 'l' and value[-1] == 'TRUE':
+                value[0] = int(value[0])
+                assignments_summer.append(value)
+
+        is_empty = False if assignments_winter and assignments_summer else True
+
+        if not is_empty:
+            assignments_winter = prepare_assignments_data(assignments_winter)
+            assignments_summer = prepare_assignments_data(assignments_summer)
+
+        context = {
+            'is_empty': is_empty,
+            'winter': assignments_winter,
+            'summer': assignments_summer
+        }
+        return render(request, 'plan/view-plan.html', context)
     else:
         return HttpResponse(status=403)
 
@@ -70,3 +96,7 @@ def plan_create_voting_sheet(request):
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     update_voting_results_sheet(sheet, voting)
     return HttpResponseRedirect(reverse('plan-create'))
+
+
+def generate_plan_html(request):
+    return HttpResponseRedirect(reverse('plan-view'))
