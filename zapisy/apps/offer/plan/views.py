@@ -15,13 +15,14 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 def plan_view(request):
     if request.user.is_superuser or BaseUser.is_employee(request.user):
-        assignments = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-        employees = create_sheets_service(EMPLOYEES_SPREADSHEET_ID)
-        assignments_data = read_entire_sheet(assignments)
+        employees = read_entire_sheet(create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
+        assignments = read_entire_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
         assignments_winter = []
         assignments_summer = []
 
-        for value in assignments_data:
+        print(employees)
+
+        for value in assignments:
             if value[9] == 'z' and value[-1] == 'TRUE':
                 value[0] = int(value[0])
                 assignments_winter.append(value)

@@ -35,7 +35,11 @@
                             <div>
                                 <p class="d-inline">repetytorium ({{ course.rep.weekly }}h/tydzień): </p>
                                 {% for teacher in course.rep.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -43,7 +47,11 @@
                             <div>
                                 <p class="d-inline">ćwiczenia ({{ course.ćw.weekly }}h/tydzień): </p>
                                 {% for teacher in course.ćw.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -51,7 +59,11 @@
                             <div>
                                 <p class="d-inline">pracownia ({{ course.prac.weekly }}h/tydzień): </p>
                                 {% for teacher in course.prac.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -59,7 +71,11 @@
                             <div>
                                 <p class="d-inline">ćwiczenia+pracownia ({{ course.ćw_prac.weekly }}h/tydzień): </p>
                                 {% for teacher in course.ćw_prac.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -67,7 +83,11 @@
                             <div>
                                 <p class="d-inline">seminarium ({{ course.sem.weekly }}h/tydzień): </p>
                                 {% for teacher in course.sem.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -75,7 +95,11 @@
                             <div>
                                 <p class="d-inline">admin ({{ course.admin.weekly }}h/tydzień): </p>
                                 {% for teacher in course.admin.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                   {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -97,7 +121,11 @@
                             <div>
                                 <p class="d-inline">wykład ({{ course.w.weekly }}h/tydzień): </p>
                                 {% for teacher in course.w.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -105,7 +133,11 @@
                             <div>
                                 <p class="d-inline">repetytorium ({{ course.rep.weekly }}h/tydzień): </p>
                                 {% for teacher in course.rep.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -113,7 +145,11 @@
                             <div>
                                 <p class="d-inline">ćwiczenia ({{ course.ćw.weekly }}h/tydzień): </p>
                                 {% for teacher in course.ćw.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -121,7 +157,11 @@
                             <div>
                                 <p class="d-inline">pracownia ({{ course.prac.weekly }}h/tydzień): </p>
                                 {% for teacher in course.prac.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -129,7 +169,11 @@
                             <div>
                                 <p class="d-inline">ćwiczenia+pracownia ({{ course.ćw_prac.weekly }}h/tydzień): </p>
                                 {% for teacher in course.ćw_prac.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -137,7 +181,11 @@
                             <div>
                                 <p class="d-inline">seminarium ({{ course.sem.weekly }}h/tydzień): </p>
                                 {% for teacher in course.sem.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -145,7 +193,11 @@
                             <div>
                                 <p class="d-inline">admin ({{ course.admin.weekly }}h/tydzień): </p>
                                 {% for teacher in course.admin.teachers %}
-                                    <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a>,
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a>,
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -153,6 +205,11 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+</div>
+<div>
+    <h3 class="assignment-courses mb-3">Przydział według prowadzących</h3>
+    <div class="mb-3">
     </div>
 </div>
 {% else %}
