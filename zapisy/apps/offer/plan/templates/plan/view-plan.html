@@ -6,7 +6,6 @@
     <h2>Przydział zajęć</h2>
     <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
 </div>
-
 {% if not is_empty %}
 <div>
     <h3 class="assignment-courses mb-3">Przydział według przedmiotów</h3>
@@ -15,7 +14,7 @@
         <div>
             {% for course in winter %}
                 <div>
-                    <div class="bg-primary">
+                    <div class="bg-primary" id="{{course.id}}">
                         <h6 class="text-light p-2 mb-0">{{ course.course }}</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
@@ -208,8 +207,102 @@
     </div>
 </div>
 <div>
-    <h3 class="assignment-courses mb-3">Przydział według prowadzących</h3>
+    <h3 class="assignment-courses mb-3">Przydział według pracowników</h3>
     <div class="mb-3">
+        <h4 class="winter-semester">Pracownicy</h4>
+        <div>
+            {% for employee, employee_data in employees.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_winter %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_summer %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <h4 class="winter-semester">Doktoranci</h4>
+        <div>
+            {% for employee, employee_data in phds.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_winter %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_summer %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <h4 class="winter-semester">Spoza wydziału</h4>
+        <div>
+            {% for employee, employee_data in others.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_winter %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in employee_data.courses_summer %}
+                                    <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% else %}

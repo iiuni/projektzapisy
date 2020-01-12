@@ -249,6 +249,7 @@ def prepare_assignments_data(data: List[List]):
     lp = data[0][0]
     # boilerplate for record, a list of those is our return type
     record = {
+        'id': 0,
         'course': '',
         'w': {
             'weekly': '',
@@ -330,6 +331,7 @@ def prepare_assignments_data(data: List[List]):
 
 def process_value(record: dict, value: List):
     record['course'] = value[1]
+    record['id'] = value[0]
     if value[3] == 'w':
         record = process_data_row(record, value, value[3])
     elif value[3] == 'rep':

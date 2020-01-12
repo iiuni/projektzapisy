@@ -15,20 +15,67 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 def plan_view(request):
     if request.user.is_superuser or BaseUser.is_employee(request.user):
-        employees = read_entire_sheet(create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
-        assignments = read_entire_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+        employees = read_entire_sheet(
+            create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
+        assignments = read_entire_sheet(
+            create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
         assignments_winter = []
         assignments_summer = []
+        employee = {}
+        phd = {}
+        others = {}
 
-        print(employees)
+        for value in employees:
+            if value[4] != '' and value[0] != 'pensum':
+                data = {'name': value[2] + ' ' + value[3],
+                        'pensum': value[0],
+                        'balance': value[13],
+                        'weekly_winter': 0,
+                        'weekly_summer': 0,
+                        'courses_winter': [],
+                        'courses_summer': []
+                        }
+                if value[1] == 'prac':
+                    employee[value[4]] = dict(data)
+                elif value[1] == 'doktorant':
+                    phd[value[4]] = dict(data)
+                else:
+                    others[value[4]] = dict(data)
 
         for value in assignments:
             if value[9] == 'z' and value[-1] == 'TRUE':
                 value[0] = int(value[0])
                 assignments_winter.append(value)
+
+                code = value[11]
+                data = {'name': value[1], 'weekly': value[5],
+                        'type': value[2], 'other': value[6], 'id': value[0]}
+                if code in employee:
+                    employee[code]['weekly_winter'] += int(value[5])
+                    employee[code]['courses_winter'].append(data)
+                elif code in phd:
+                    phd[code]['weekly_winter'] += int(value[5])
+                    phd[code]['courses_winter'].append(data)
+                elif code in others:
+                    others[code]['weekly_winter'] += int(value[5])
+                    others[code]['courses_winter'].append(data)
+
             elif value[9] == 'l' and value[-1] == 'TRUE':
                 value[0] = int(value[0])
                 assignments_summer.append(value)
+
+                code = value[11]
+                data = {'name': value[1], 'weekly': value[5],
+                        'type': value[2], 'other': value[6], 'id': value[5]}
+                if code in employee:
+                    employee[code]['weekly_summer'] += int(value[5])
+                    employee[code]['courses_summer'].append(data)
+                elif code in phd:
+                    phd[code]['weekly_summer'] += int(value[5])
+                    phd[code]['courses_summer'].append(data)
+                elif code in others:
+                    others[code]['weekly_summer'] += int(value[5])
+                    others[code]['courses_summer'].append(data)
 
         is_empty = False if assignments_winter and assignments_summer else True
 
@@ -36,10 +83,14 @@ def plan_view(request):
             assignments_winter = prepare_assignments_data(assignments_winter)
             assignments_summer = prepare_assignments_data(assignments_summer)
 
+        print(employee)
         context = {
             'is_empty': is_empty,
             'winter': assignments_winter,
-            'summer': assignments_summer
+            'summer': assignments_summer,
+            'employees': employee,
+            'phds': phd,
+            'others': others
         }
         return render(request, 'plan/view-plan.html', context)
     else:
@@ -83,7 +134,8 @@ def plan_vote(request):
         current_year = SystemState.get_current_state().year
         for key, value in all_courses.items():
             if key in picked_courses:
-                subject = (key, value[current_year]['semester'], value[current_year]['proposal'])
+                subject = (key, value[current_year]['semester'],
+                           value[current_year]['proposal'])
                 picked_courses_accurate_info.append(subject)
 
         sheet = create_sheets_service(PLAN_PROPOSAL_SPREADSHEET_ID)
