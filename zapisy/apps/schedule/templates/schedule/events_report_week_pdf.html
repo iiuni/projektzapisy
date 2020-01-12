@@ -1,83 +1,73 @@
 {% load schedule_filters %}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//PL">
 
-<html xmlns:pdf="">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    </head>
-    <style>
-        #room_terms_id {
-          font-size: 6.3mm;
-        }
-        @page {
-          margin: 0.5cm 2cm 2cm 2cm;
-        }
-        @media print {
-          footer {page-break-after: always;}
-        }
-        header {
-          min-height: 4cm;
-          text-align: bottom;
-          position: relative;
-          margin-bottom: 1cm;
-        }
-        ul {
-          list-style-type: none;
-          padding: 0;
-        }
-        header #logo_id {
-          position: absolute;
-          bottom: 0cm;
-          right: 1cm;
-          height: 121.8px;
-          width: 280px;
-        }
-        header #semester_id {
-          position: absolute;
-          bottom: 0cm;
-          left: 1cm;
-          font-size: 5.7mm;
-        }
-        h3 {
-          margin-bottom: 1cm;
-          font-size: 6.6mm;
-          font-weight: bold;
-        }
+<style>
+    #room_terms_id {
+      font-size: 6.3mm;
+    }
+    @page {
+      margin: 0.5cm 2cm 2cm 2cm;
+    }
+    @media print {
+      footer {page-break-after: always;}
+    }
+    header {
+      min-height: 4cm;
+      text-align: bottom;
+      position: relative;
+      margin-bottom: 1cm;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    header #logo_id {
+      position: absolute;
+      bottom: 0cm;
+      right: 1cm;
+      height: 121.8px;
+      width: 280px;
+    }
+    header #semester_id {
+      position: absolute;
+      bottom: 0cm;
+      left: 1cm;
+      font-size: 5.7mm;
+    }
+    h3 {
+      margin-bottom: 1cm;
+      font-size: 6.6mm;
+      font-weight: bold;
+    }
+</style>
 
-    </style>
-    <body>
-
-    {% for room, terms_list in events %}
-      <header>
-        <img src="/static/images/report_logo.jpg" id="logo_id" alt="uwrlogo" align="right">
-        <div id="semester_id">semestr {{ semester.get_type_display }} r. ak. {{ semester.year }}</div>
-      </header>
-      <div id="room_terms_id">
-        <h3>{{ room.number }}</h3>
-        {% if terms_list %}
-          <ul>
-            {% for term in terms_list %}
-              <li>{{term.day|date:'w'|number_to_weekday}} {{term.start|time:'G'}}-{{term.end|time:'G'}}
-                {% with term.event.title.strip as evt_title %}
-                    {% if evt_title|length > 0 %}
-                      {{ evt_title|upper }}
-                    {% else %}
-                      &lt;brak nazwy&gt;
-                    {% endif %}
-                  {% endwith %}
-                  {% with term.event.group.human_readable_type as evt_type %}
-                    {% if evt_type|length > 0 %}
-                      ({{ evt_type|lower }})
-                    {% endif %}
-                  {% endwith %}
-                  {{term.event.author.get_full_name|upper}}
-              </li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-        <footer></footer>
-      {% endfor %} 
-
-    </body>
-</html>
+{% for room, terms_list in events %}
+  <header>
+    <img src="/static/images/report_logo.jpg" id="logo_id" alt="uwrlogo" align="right">
+    <div id="semester_id">semestr {{ semester.get_type_display }} r. ak. {{ semester.year }}</div>
+  </header>
+  <div id="room_terms_id">
+    <h3>{{ room.number }}</h3>
+    {% if terms_list %}
+      <ul>
+        {% for term in terms_list %}
+          <li>{{term.day|date:'w'|number_to_weekday}} {{term.start|time:'G'}}-{{term.end|time:'G'}}
+            {% with term.event.title.strip as evt_title %}
+                {% if evt_title|length > 0 %}
+                  {{ evt_title|upper }}
+                {% else %}
+                  &lt;brak nazwy&gt;
+                {% endif %}
+              {% endwith %}
+              {% with term.event.group.human_readable_type as evt_type %}
+                {% if evt_type|length > 0 %}
+                  ({{ evt_type|lower }})
+                {% endif %}
+              {% endwith %}
+              {{term.event.author.get_full_name|upper}}
+          </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    <footer></footer>
+{% endfor %} 

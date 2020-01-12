@@ -24,8 +24,8 @@
 {% block sidebar %}
   <nav id="navbar-rooms" class="navbar navbar-light">
       <nav class="nav nav-pills flex-column">
-        <a class=" nav-link ml-3 my-1 bg-light" href="/events/report/week">Raport tygodniowy</a>
-        <a class=" nav-link ml-3 my-1 bg-light" href="/events/report/date">Raport od-do</a>
+        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_week' %}">Raport tygodniowy</a>
+        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_date' %}">Raport od-do</a>
       </nav>
   </nav>
 {% endblock %}

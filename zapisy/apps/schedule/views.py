@@ -315,7 +315,7 @@ class MyScheduleAjaxView(FullCalendarView):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report(request):
-    return TemplateResponse(request, 'schedule/events_report.html', locals())
+    return TemplateResponse(request, 'schedule/events_report.html', {})
 
 
 @login_required

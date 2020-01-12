@@ -22,7 +22,7 @@ $(document).ready(() => {
     });
 
     //Wydrukuj zawartość strony
-    $('#print').click((event) => {
+    $('.print-report').click((event) => {
         window.print();  
     });
 
