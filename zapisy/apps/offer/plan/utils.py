@@ -110,9 +110,6 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
             if proposal_info.hours_recap:
                 groups.append(
                     course_info + [('type', 'Repetytorium'), ('hours', proposal_info.hours_recap)])
-    file = open('text.txt', 'w')
-    for g in groups:
-        file.write(str(g) + '\n')
     return groups
 
 
