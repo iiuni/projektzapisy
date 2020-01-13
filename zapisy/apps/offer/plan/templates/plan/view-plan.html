@@ -112,7 +112,7 @@
         <div>
             {% for course in summer %}
                 <div>
-                    <div class="bg-primary">
+                    <div class="bg-primary" id="{{course.id}}">
                         <h6 class="text-light p-2 mb-0">{{ course.course }}</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
@@ -211,26 +211,26 @@
     <div class="mb-3">
         <h4 class="winter-semester">Pracownicy</h4>
         <div>
-            {% for employee, employee_data in employees.items %}
+            {% for staff, staff_data in staff.items %}
                 <div>
-                    <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{staff}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_winter %}
+                                {% for course in staff_data.courses_winter %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}
                         </div>
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_summer %}
+                                {% for course in staff_data.courses_summer %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}
@@ -243,26 +243,26 @@
     <div class="mb-3">
         <h4 class="winter-semester">Doktoranci</h4>
         <div>
-            {% for employee, employee_data in phds.items %}
+            {% for staff, staff_data in phds.items %}
                 <div>
-                    <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{staff}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_winter %}
+                                {% for course in staff_data.courses_winter %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}
                         </div>
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_summer %}
+                                {% for course in staff_data.courses_summer %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}
@@ -275,26 +275,26 @@
     <div class="mb-3">
         <h4 class="winter-semester">Spoza wydziału</h4>
         <div>
-            {% for employee, employee_data in others.items %}
+            {% for staff, staff_data in others.items %}
                 <div>
-                    <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ employee_data.name }}({{ employee }}), pensum: {{ employee_data.pensum}}, bilans: {{employee_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{staff}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr zimowy ({{employee_data.weekly_winter}}h/tydzień)</h8>
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_winter %}
+                                {% for course in staff_data.courses_winter %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}
                         </div>
                         <div class="p-2" style="background: #b3ccff">
-                            <h8>Semestr letni ({{employee_data.weekly_summer}}h/tydzień)</h8>
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
                         </div>
                         <div class="p-2" style="background: #E5E5E5">
-                                {% for course in employee_data.courses_summer %}
+                                {% for course in staff_data.courses_summer %}
                                     <a href="#{{course.id}}">{{course.name}}</a>, {{course.type}} ({{course.weekly}}h{% if course.other %}/{{course.other}}{% endif %})
                                     <br>
                                 {% endfor %}

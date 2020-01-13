@@ -292,6 +292,7 @@ def prepare_assignments_data(data: List[List]):
             final.append(record)
             record = {
                 'course': '',
+                'id': 0,
                 'w': {
                     'weekly': '',
                     'teachers': []
@@ -376,3 +377,26 @@ def clean_up(record: dict):
         record.pop('admin')
 
     return record
+
+
+def prepare_employees_data(employees: List):
+    staff = {}
+    phds = {}
+    others = {}
+    for value in employees:
+        if value[4] != '' and value[0] != 'pensum':
+            data = {'name': value[2] + ' ' + value[3],
+                    'pensum': value[0],
+                    'balance': value[13] if value[13] else value[11],
+                    'weekly_winter': 0,
+                    'weekly_summer': 0,
+                    'courses_winter': [],
+                    'courses_summer': []
+                    }
+            if value[1] == 'prac':
+                staff[value[4]] = data
+            elif value[1] == 'doktorant':
+                phds[value[4]] = data
+            else:
+                others[value[4]] = data
+    return staff, phds, others

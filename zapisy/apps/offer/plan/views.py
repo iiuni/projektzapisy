@@ -5,7 +5,7 @@ from apps.offer.vote.models.system_state import SystemState
 
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, \
     read_entire_sheet
-from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data
+from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
 PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
@@ -21,41 +21,27 @@ def plan_view(request):
             create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
         assignments_winter = []
         assignments_summer = []
-        employee = {}
-        phd = {}
+        staff = {}
+        phds = {}
         others = {}
 
-        for value in employees:
-            if value[4] != '' and value[0] != 'pensum':
-                data = {'name': value[2] + ' ' + value[3],
-                        'pensum': value[0],
-                        'balance': value[13],
-                        'weekly_winter': 0,
-                        'weekly_summer': 0,
-                        'courses_winter': [],
-                        'courses_summer': []
-                        }
-                if value[1] == 'prac':
-                    employee[value[4]] = dict(data)
-                elif value[1] == 'doktorant':
-                    phd[value[4]] = dict(data)
-                else:
-                    others[value[4]] = dict(data)
+        staff, phds, others = prepare_employees_data(employees)
 
         for value in assignments:
+            code = value[11]
+            data = {'name': value[1], 'weekly': value[5],
+                    'type': value[2], 'other': value[6], 'id': value[0]}
+
             if value[9] == 'z' and value[-1] == 'TRUE':
                 value[0] = int(value[0])
                 assignments_winter.append(value)
 
-                code = value[11]
-                data = {'name': value[1], 'weekly': value[5],
-                        'type': value[2], 'other': value[6], 'id': value[0]}
-                if code in employee:
-                    employee[code]['weekly_winter'] += int(value[5])
-                    employee[code]['courses_winter'].append(data)
-                elif code in phd:
-                    phd[code]['weekly_winter'] += int(value[5])
-                    phd[code]['courses_winter'].append(data)
+                if code in staff:
+                    staff[code]['weekly_winter'] += int(value[5])
+                    staff[code]['courses_winter'].append(data)
+                elif code in phds:
+                    phds[code]['weekly_winter'] += int(value[5])
+                    phds[code]['courses_winter'].append(data)
                 elif code in others:
                     others[code]['weekly_winter'] += int(value[5])
                     others[code]['courses_winter'].append(data)
@@ -64,15 +50,12 @@ def plan_view(request):
                 value[0] = int(value[0])
                 assignments_summer.append(value)
 
-                code = value[11]
-                data = {'name': value[1], 'weekly': value[5],
-                        'type': value[2], 'other': value[6], 'id': value[5]}
-                if code in employee:
-                    employee[code]['weekly_summer'] += int(value[5])
-                    employee[code]['courses_summer'].append(data)
-                elif code in phd:
-                    phd[code]['weekly_summer'] += int(value[5])
-                    phd[code]['courses_summer'].append(data)
+                if code in staff:
+                    staff[code]['weekly_summer'] += int(value[5])
+                    staff[code]['courses_summer'].append(data)
+                elif code in phds:
+                    phds[code]['weekly_summer'] += int(value[5])
+                    phds[code]['courses_summer'].append(data)
                 elif code in others:
                     others[code]['weekly_summer'] += int(value[5])
                     others[code]['courses_summer'].append(data)
@@ -83,13 +66,12 @@ def plan_view(request):
             assignments_winter = prepare_assignments_data(assignments_winter)
             assignments_summer = prepare_assignments_data(assignments_summer)
 
-        print(employee)
         context = {
             'is_empty': is_empty,
             'winter': assignments_winter,
             'summer': assignments_summer,
-            'employees': employee,
-            'phds': phd,
+            'staff': staff,
+            'phds': phds,
             'others': others
         }
         return render(request, 'plan/view-plan.html', context)
