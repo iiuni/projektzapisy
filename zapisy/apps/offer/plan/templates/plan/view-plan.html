@@ -4,12 +4,37 @@
 {% block content %}
 <div class="d-flex justify-content-between mb-5">
     <h2>Przydział zajęć</h2>
-    <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
+    {% if request.user.is_superuser %}
+        <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
+    {% endif %}
 </div>
 {% if not is_empty %}
+
 <div>
+    <h3 class="assignment-courses mb-3">Skocz do:</h3>
+    <div>
+        <div class="p-2" style="background: #E5E5E5">
+            <a href="#subjects">Przydział według przedmiotów</a>
+            <div class="p-2" style="background: #E5E5E5">
+                <a href="#winter">Semestr zimowy</a><br>
+                <a href="#summer">Semestr letni</a>
+            </div>
+            <a href="#employees">Przydział według pracowników</a>
+            <div class="p-2" style="background: #E5E5E5">
+                <a href="#staff">Pracownicy</a><br>
+                <a href="#phds">Doktoranci</a><br>
+                <a href="#others">Spoza wydziału</a>
+            </div>
+            <a href="#under">Osoby niedociążone</a><br>
+            <a href="#over">Osoby przeciążone</a><br>
+            <a href="#stats">Statystyka</a>
+        </div>
+    </div>                     
+</div>
+    
+<div id="subjects">
     <h3 class="assignment-courses mb-3">Przydział według przedmiotów</h3>
-    <div class="mb-3">
+    <div class="mb-3" id="winter">
         <h4 class="winter-semester">Semestr zimowy</h4>
         <div>
             {% for course in winter %}
@@ -107,7 +132,7 @@
             {% endfor %}
         </div>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="summer">
         <h4 class="summer-semester">Semestr letni</h4>
         <div>
             {% for course in summer %}
@@ -206,15 +231,15 @@
         </div>
     </div>
 </div>
-<div>
+<div id="employees">
     <h3 class="assignment-courses mb-3">Przydział według pracowników</h3>
-    <div class="mb-3">
+    <div class="mb-3" id="staff">
         <h4 class="winter-semester">Pracownicy</h4>
         <div>
-            {% for staff, staff_data in staff.items %}
+            {% for employee, staff_data in staff.items %}
                 <div>
-                    <div class="bg-primary" id="{{staff}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
@@ -240,13 +265,13 @@
             {% endfor %}
         </div>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="phds">
         <h4 class="winter-semester">Doktoranci</h4>
         <div>
-            {% for staff, staff_data in phds.items %}
+            {% for employee, staff_data in phds.items %}
                 <div>
-                    <div class="bg-primary" id="{{staff}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
@@ -272,13 +297,13 @@
             {% endfor %}
         </div>
     </div>
-    <div class="mb-3">
+    <div class="mb-3" id="others">
         <h4 class="winter-semester">Spoza wydziału</h4>
         <div>
-            {% for staff, staff_data in others.items %}
+            {% for employee, staff_data in others.items %}
                 <div>
-                    <div class="bg-primary" id="{{staff}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ staff }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
@@ -305,6 +330,78 @@
         </div>
     </div>
 </div>
+<div id="under">
+    <h3 class="assignment-courses mb-3">Osoby niedociążone</h3>
+    <div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for employee, staff_data in staff.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in phds.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in others.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="over">
+    <h3 class="assignment-courses mb-3">Osoby przeciążone</h3>
+    <div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for employee, staff_data in staff.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in phds.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in others.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="stats">
+    <h3 class="assignment-courses mb-3">Statystyka</h3>
+    <div>
+    <div class="bg-primary">
+        <h6 class="text-light p-2 mb-0">Suma pensów pracowników: {{ pensum }}h<br>
+        Liczba zaplanowanych godzin: {{ hours_summer|add:hours_winter }}h<br>
+        Bilans: {{balance}}h (dodatni oznacza nadmiar godzin) </h6>
+    </div>
+    <div class="p-2" style="background: #E5E5E5">
+        <div class="p-2" style="background: #b3ccff">
+            <h8>w semestrze zimowym {{ hours_winter }}h, w tym:</h8>
+        </div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for stat in stats_winter %}
+                {{stat.type}}: {{stat.hours}}h<br>
+            {% endfor %}
+        </div>
+        <div class="p-2" style="background: #b3ccff">
+            <h8>w semestrze letnim {{ hours_summer }}h, w tym:</h8>
+        </div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for stat in stats_summer %}
+                {{stat.type}}: {{stat.hours}}h<br>
+            {% endfor %}
+        </div>
+    </div>                     
+</div>
+
 {% else %}
 <h3>Brak danych do wyświetlenia</h3>
 {% endif %}

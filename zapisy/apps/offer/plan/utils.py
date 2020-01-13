@@ -383,11 +383,14 @@ def prepare_employees_data(employees: List):
     staff = {}
     phds = {}
     others = {}
+    pensum = 0
     for value in employees:
         if value[4] != '' and value[0] != 'pensum':
+            pensum += int(value[0])
+
             data = {'name': value[2] + ' ' + value[3],
                     'pensum': value[0],
-                    'balance': value[13] if value[13] else value[11],
+                    'balance': float(value[13]) if value[13] else float(value[11]),
                     'weekly_winter': 0,
                     'weekly_summer': 0,
                     'courses_winter': [],
@@ -399,4 +402,16 @@ def prepare_employees_data(employees: List):
                 phds[value[4]] = data
             else:
                 others[value[4]] = data
-    return staff, phds, others
+    return staff, phds, others, pensum
+
+
+def make_stats_record(stats: List):
+    types = {'w': 'wykład',
+             'ćw': 'ćwiczenia',
+             'ćw+prac': 'ćwiczenia+pracownia',
+             'prac': 'pracownia',
+             'sem': 'seminarium',
+             'rep': 'repetytorium',
+             'admin': 'sekretarz'
+             }
+    return {'type': types[stats[1]], 'hours': stats[2]}

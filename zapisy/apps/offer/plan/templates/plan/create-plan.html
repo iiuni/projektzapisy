@@ -9,6 +9,11 @@
 
 <p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
 <a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
+<p class="lead">Aby wygenerować html dla pracówników kliknij guzik pod spodem:</p>
+<a href="{% url 'generate-plan-html' %}" class="btn btn-primary btn-lg mb-5">Generuj html</a>
+<p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
+<a href="{% url 'generate-scheduler-file' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
+<a href="{% url 'generate-scheduler-file' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
 
 <h4>Przedmioty na następny rok:</h4>
 <p class="lead">
