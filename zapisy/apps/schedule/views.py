@@ -12,6 +12,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 import operator
 from apps.enrollment.courses.models.classroom import Classroom, floors
+from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
 from apps.schedule.filters import EventFilter, ExamFilter
@@ -20,6 +21,7 @@ from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
 from apps.users.models import BaseUser
+from .forms import ReportFormDate, ReportFormWeek
 
 from xhtml2pdf import pisa
 import io
@@ -321,7 +323,6 @@ def events_report(request):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report_date(request):
-    from .forms import ReportFormDate
     if request.method == 'POST':
         form = ReportFormDate(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
@@ -338,8 +339,7 @@ def events_report_date(request):
         for room in Classroom.get_in_institute(reservation=True):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
     context = {
-        'form': form,
-        'request': request
+        'form': form
     }
     return TemplateResponse(request, 'schedule/events_report_date.html', context)
 
@@ -347,9 +347,6 @@ def events_report_date(request):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report_week(request):
-    from .forms import ReportFormWeek
-    from apps.enrollment.courses.models.semester import Semester
-
     if request.method == 'POST':
         form = ReportFormWeek(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
@@ -369,8 +366,7 @@ def events_report_week(request):
         for room in Classroom.get_in_institute(reservation=True):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
     context = {
-        'form': form,
-        'request': request
+        'form': form
     }
     return TemplateResponse(request, 'schedule/events_report_week.html', context)
 
@@ -396,9 +392,7 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
         'beg_date': beg_date,
         'end_date': end_date,
         'events': events,
-        'pagesize': 'A4',
-        'semester': semester,
-        'report': True
+        'semester': semester
     }
 
     template = get_template('schedule/events_report_' + report_type + '_pdf.html')
