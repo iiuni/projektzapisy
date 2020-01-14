@@ -157,7 +157,9 @@ def decision(request, event_id):
     event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
     form = DecisionForm(request.POST, instance=event)
     event_status = event.status
-    conflicts = event.get_conflicted(ignore_conflicts=True)
+    conflicts = event.get_conflicted()
+    if conflicts:
+        event.term_set.update(ignore_conflicts=True)
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
