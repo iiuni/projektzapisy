@@ -1,4 +1,30 @@
-"""opis skryptu"""
+"""
+    Skrypt służy do pobierania danych z Schedulera do aktualizowania danych Systemu Zapisów.
+    Wymaga zmiennych systemowych: SLACK_WEBHOOK_URL, SCHEDULER_USERNAME, SCHEDULER_PASSWORD
+    Wymagane argumenty to linki do api schedulera. Pierwszy do api/config, drugi do api/task. Trzeci argument to
+    klucz podstawowy semestru. Jest on opcjonalny. Niepodanie go spowoduje uruchomienie z aktualnym semestrem.
+    Przy pierwszym użyciu w semestrze nie należy używać flagi --slack. Gdyż napisanie do Slacka tak dużej ilości
+    nowych powiadomień o zmianach, spowoduje błąd przy pisaniu do Slacka.
+
+    Flaga --slack wysyła powiadomienia o zmianach w termach, grupach, kursach, propozycjach przedmiotu,
+        mapach pracowników i kursów. Zmiany także obejmują usuwanie i tworzenie nowych obiektów.
+    Flaga --delete_groups usuwa nieużyte termy wraz z grupami, mapy pracowników, mapy kursów w danym semestrze.
+        Powinna zawsze być użyta. Jednak jeśli z jakiś względów nie chce się jej użyć, to można pominąć przy
+        ręcznym uruchamianiu.
+    Flaga --auto_mode sprawia, że skrypt wykona się bez interakcji. Nieznalezione kursy, pracownicy zostaną zmapowane
+        by nie importować ich w przyszłości i nie zostaną zimportowane. Gdy flaga --slack jest użyta, odpowiednie
+        powiadomienia zostaną wysłane do Slacka o podjętych decyzjach zmapowania.
+    Flaga --dry_run sprawia, że wszystkie zmiany w bazie danych zostaną cofnięte na koniec skryptu. W szczególności
+        zmiany zostaną cofnięte, gdy wystąpi jakiś błąd w trakcie wykonania skryptu lub zostanie celowo wcześniej
+        zakończony. Można bezpiecznie użyć w ramach testów.
+    Instrukcja użycia flag:
+    Pierwsze uruchomienia / ręczne uruchomienia: bez --slack, bez --auto_mode, powinno się użyć --delete_groups,
+                                                --dry_run dowolnie do testowania - zalecane przy pierwszym użyciu
+    W trakcie semestru / automatyczne uruchomienia: zawsze --slack, zawsze --auto_mode, zawsze --delete_groups,
+                                                    nigdy --dry_run
+    Przykładowe użycie: python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
+        http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --delete_groups
+"""
 
 from datetime import time
 import json
@@ -42,6 +68,9 @@ class Info:
     used_map_courses = []
     used_map_employees = []
     used_scheduler_ids = []
+    multiple_proposals = []
+    maps_added = []
+    maps_deleted = []
 
 
 SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
@@ -89,6 +118,9 @@ class Command(BaseCommand):
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
         parser.add_argument('--delete_groups', action='store_true', help='delete unused terms, groups, employees maps'
                                                                          ' and courses maps')
+        parser.add_argument('--auto_mode', action='store_true', help='script will not need keyboard interaction. Use'
+                            ' this during semester, after first use. All not recognized courses and employees will'
+                            ' not be imported automaticly and corespodning Slack messages will be send')
 
     def create_or_update_group_and_term(self, group_data: 'GroupData', term_data: 'TermData'):
         """ Check if group already exists in database, then create or update that group. Does the same for term,
@@ -109,7 +141,7 @@ class Command(BaseCommand):
 
             if term.group.type != group_data.type:
                 raise CommandError(
-                    f'Term \'{term}\' with group \'{term.group}\' changed group typr from \'{term.group.type}\''
+                    f'Term \'{term}\' with group \'{term.group}\' changed group typ3 from \'{term.group.type}\''
                     f' to \'{group_data.type}\'\nPlease enter this change in django admin')
 
             if term.dayOfWeek != term_data.dayOfWeek:
@@ -224,15 +256,15 @@ class Command(BaseCommand):
         term_data.classrooms = get_classrooms(scheduler_rooms)
         return term_data
 
-    def get_group_data(self, group_id: 'int',
-                       scheduler_data: 'SchedulerData') -> 'GroupData[CourseInstance, Employee, str, int]':
+    def get_group_data(self, group_id: 'int', scheduler_data: 'SchedulerData',
+                       auto_mode: False) -> 'GroupData[CourseInstance, Employee, str, int]':
         """ Fill GroupData object with data necessary to save group to SZ database"""
 
         def get_group_type(group_type: 'str') -> 'str':
             """ map scheduler group type to SZ group type"""
             return GROUP_TYPES[group_type]
 
-        def get_proposal(course_name: 'str') -> '(Proposal or None, bool)':
+        def get_proposal(course_name: 'str', auto_mode: False) -> '(Proposal or None, bool)':
             """ return tuple of Proposal object from SZ database or None if course is set to not import. Second return
                 True if CourseInstance with entered name should be mapped or False in opposite"""
             map = CourseMap.objects.filter(scheduler_course__iexact=course_name)
@@ -247,49 +279,62 @@ class Command(BaseCommand):
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
                 return (prop, False)
             except Proposal.DoesNotExist:
-                while True:
-                    self.stdout.write(self.style.WARNING(">Couldn't find proposal for '{}' "
-                                                         "which status is IN_OFFER or IN_VOTE".format(course_name)))
-                    self.stdout.write("Please enter proper proposal name, so course instance could be found or created"
-                                      " with this proposal \nLeave blank (press enter) to set this name to not import"
-                                      " (CourseMap) and continue script. \nType 'quit' to quit script."
-                                      " You will be asked again if course name cannot be found.")
-                    new_course_name = input('Course name (Capitalization does not matter): ')
-                    if not new_course_name:
-                        map = CourseMap.objects.create(scheduler_course=course_name.upper(), course=None)
-                        self.info.used_map_courses.append(map.pk)
-                        self.stdout.write(self.style.SUCCESS(
-                            ">Course '{}' was set to not import (CourseMap). Continue script..\n".format(course_name)))
-                        return (None, False)
-                    elif new_course_name == 'quit':
-                        self.stdout.write('Exiting script..')
-                        exit()
-                    else:
-                        prop = Proposal.objects.filter(name__iexact=new_course_name,
-                                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
-                        if prop.count():
-                            # recursion in case Proposal.MultipleObjectsReturned with new course name
-                            prop, bool_dont_matter = get_proposal(new_course_name)
-                            return (prop, True)
-
-                    self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which status is"
-                                                             " IN_OFFER or IN_VOTE\n".format(new_course_name)))
+                if auto_mode:
+                    map = CourseMap.objects.create(scheduler_course=course_name.upper(), course=None)
+                    self.info.used_map_courses.append(map.pk)
+                    self.info.maps_added.append((course_name, "None (don't import)"))
+                    return (None, False)
+                else:
+                    while True:
+                        self.stdout.write(self.style.WARNING(">Couldn't find proposal for '{}' which status is"
+                                                             " IN_OFFER or IN_VOTE".format(course_name)))
+                        self.stdout.write("Please enter proper proposal name, so course instance could be found or"
+                                          " created with this proposal \nLeave blank (press enter) to set this name to"
+                                          " not import (CourseMap) and continue script. \nType 'quit' to quit script."
+                                          " You will be asked again if course name cannot be found.")
+                        new_course_name = input('Course name (Capitalization does not matter): ')
+                        if not new_course_name:
+                            map = CourseMap.objects.create(scheduler_course=course_name.upper(), course=None)
+                            self.info.used_map_courses.append(map.pk)
+                            self.info.maps_added.append((course_name, "None (don't import)"))
+                            self.stdout.write(self.style.SUCCESS(">Course '{}' was set to not import (CourseMap)."
+                                                                 " Continue script..\n".format(course_name)))
+                            return (None, False)
+                        elif new_course_name == 'quit':
+                            self.stdout.write('Exiting script..')
+                            exit()
+                        else:
+                            prop = Proposal.objects.filter(name__iexact=new_course_name,
+                                                    status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                            if prop.count():
+                                # recursion in case Proposal.MultipleObjectsReturned with new course name
+                                prop, bool_dont_matter = get_proposal(new_course_name, auto_mode)
+                                return (prop, True)
+                            else:
+                                self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which"
+                                                        " status is IN_OFFER or IN_VOTE\n".format(new_course_name)))
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
                 props = Proposal.objects.filter(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE]).order_by('-status', '-id')
-                self.stdout.write(self.style.WARNING('>Multiple course proposals. Took first among:'))
-                for prop in props:
-                    self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop, prop.status)))
-                self.stdout.write("Leave blank (press enter) to contiue script."
-                                  " Type 'quit' or anything else to quit script.")
-                decision = input("Decision: ")
-                if decision:
-                    self.stdout.write('Exiting script..')
-                    exit()
-                prop = props[0]
-                return (prop, False)
+                if auto_mode:
+                    prop = props[0]
+                    self.info.multiple_proposals.append(str(prop))
+                    return (prop, False)
+                else:
+                    self.stdout.write(self.style.WARNING('>Multiple course proposals. Took first among:'))
+                    for prop in props:
+                        self.stdout.write(self.style.WARNING('  {}, status = {}'.format(prop, prop.status)))
+                    self.stdout.write("Leave blank (press enter) to contiue script."
+                                      " Type 'quit' or anything else to quit script.")
+                    decision = input("Decision: ")
+                    if decision:
+                        self.stdout.write('Exiting script..')
+                        exit()
+                    prop = props[0]
+                    self.info.multiple_proposals.append(str(prop))
+                    return (prop, False)
 
         def get_course(proposal: 'Proposal') -> 'CourseInstance':
             """ return CourseInstance object from SZ database"""
@@ -303,7 +348,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(">Course instance '{}' created\n".format(proposal.name)))
             return course
 
-        def get_employee(username: 'str', teachers: 'Dict[str, str]') -> 'Employee':
+        def get_employee(username: 'str', teachers: 'Dict[str, str]', auto_mode: False) -> 'Employee':
             emp = Employee.objects.filter(user__username=username)
             if emp.count():
                 return emp[0]
@@ -313,51 +358,62 @@ class Command(BaseCommand):
                     self.info.used_map_employees.append(map[0].pk)
                     return map[0].employee
                 else:
-                    first_name, last_name = teachers[username]
-                    while True:
-                        self.stdout.write(self.style.WARNING(
-                            ">Employee with username '{}' not found".format(username)))
-                        self.stdout.write(
-                            "First name: {}, last name: {}\n"
-                            "Please enter proper username. You will be asked again if username cannot be found.\n"
-                            "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
-                            format(first_name, last_name))
-                        new_username = input('Username: ')
-                        if not new_username:
-                            nieznany = Employee.objects.get(user__username='Nn')
-                            map = EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
-                            self.info.used_map_employees.append(map.pk)
-                            self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to 'nieznany prowadzacy."
-                                                                 " Continue script..\n".format(username)))
-                            return nieznany
-                        elif new_username == 'quit':
-                            self.stdout.write('Exiting script..')
-                            exit()
-                        else:
-                            new_emp = Employee.objects.filter(user__username=new_username)
-                            if new_emp.count():
-                                map = EmployeeMap.objects.create(scheduler_username=username, employee=new_emp[0])
-                                self.info.used_map_employees.append(map.pk)
-                                self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to '{}'. Continue"
-                                                                     " script..\n".format(username, new_username)))
-                                return new_emp[0]
+                    if auto_mode:
+                        nieznany = Employee.objects.get(user__username='Nn')
+                        map = EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
+                        self.info.used_map_employees.append(map.pk)
+                        self.info.maps_added.append((username, str(nieznany)))
+                        return nieznany
+                    else:
+                        first_name, last_name = teachers[username]
+                        while True:
+                            self.stdout.write(self.style.WARNING(
+                                ">Employee with username '{}' not found".format(username)))
                             self.stdout.write(
-                                self.style.WARNING(">Username '{}' still not found\n".format(new_username)))
+                                "First name: {}, last name: {}\n"
+                                "Please enter proper username. You will be asked again if username cannot be found.\n"
+                                "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
+                                format(first_name, last_name))
+                            new_username = input('Username: ')
+                            if not new_username:
+                                nieznany = Employee.objects.get(user__username='Nn')
+                                map = EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
+                                self.info.used_map_employees.append(map.pk)
+                                self.info.maps_added.append((username, str(nieznany)))
+                                self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to 'nieznany prowadzacy."
+                                                                     " Continue script..\n".format(username)))
+                                return nieznany
+                            elif new_username == 'quit':
+                                self.stdout.write('Exiting script..')
+                                exit()
+                            else:
+                                new_emp = Employee.objects.filter(user__username=new_username)
+                                if new_emp.count():
+                                    map = EmployeeMap.objects.create(scheduler_username=username, employee=new_emp[0])
+                                    self.info.used_map_employees.append(map.pk)
+                                    self.info.maps_added.append((username, str(new_emp[0])))
+                                    self.stdout.write(self.style.SUCCESS(">Employee '{}' was set to '{}'. Continue"
+                                                                         " script..\n".format(username, new_username)))
+                                    return new_emp[0]
+                                else:
+                                    self.stdout.write(self.style.WARNING(
+                                        ">Username '{}' still not found\n".format(new_username)))
 
         scheduler_course = scheduler_data.groups[group_id].course
         scheduler_teacher = scheduler_data.groups[group_id].teacher
         scheduler_group_type = scheduler_data.groups[group_id].group_type
 
         group_data = GroupData()
-        proposal, add_map = get_proposal(scheduler_course)
+        proposal, add_map = get_proposal(scheduler_course, auto_mode)
         if proposal is None:
             return group_data
         group_data.course = get_course(proposal)
         if add_map:
             map = CourseMap.objects.create(scheduler_course=scheduler_course.upper(), course=group_data.course)
             self.info.used_map_courses.append(map.pk)
+            self.info.maps_added.append((scheduler_course, str(group_data.course)))
             self.stdout.write(self.style.SUCCESS(">Course instance '{}' mapped (CourseMap)".format(group_data.course)))
-        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers)
+        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers, auto_mode)
         group_data.type = get_group_type(scheduler_group_type)
         group_data.limit = scheduler_data.groups[group_id].limit
         group_data.scheduler_id = scheduler_data.groups[group_id].id
@@ -464,6 +520,27 @@ class Command(BaseCommand):
                 "text": "group: {}\nterm: {}".format(group_str, term_str)
             }
             attachments.append(attachment)
+        for scheduler_data_str, map_str in self.info.maps_added:
+            attachment = {
+                "color": "good",
+                "title": "Added map:",
+                "text": "{} mapped to {}".format(scheduler_data_str, map_str)
+            }
+            attachments.append(attachment)
+        for scheduler_data_str, map_str in self.info.maps_deleted:
+            attachment = {
+                "color": "danger",
+                "title": "Deleted map:",
+                "text": "map {} -> {} deleted".format(scheduler_data_str, map_str)
+            }
+            attachments.append(attachment)
+        for prop_str in self.info.multiple_proposals:
+            attachment = {
+                "color": "warning",
+                "title": "Multiple proposals:",
+                "text": "proposal {} has multiple instances with different status".format(prop_str)
+            }
+            attachments.append(attachment)
         return attachments
 
     def write_to_slack(self):
@@ -471,8 +548,7 @@ class Command(BaseCommand):
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.prepare_slack_message()
         }
-        secrets_env = self.get_secrets_env()
-        slack_webhook_url = secrets_env.str('SLACK_WEBHOOK_URL')
+        slack_webhook_url = os.environ['slack_url']
         response = requests.post(
             slack_webhook_url, data=json.dumps(slack_data),
             headers={'Content-Type': 'application/json'}
@@ -486,11 +562,15 @@ class Command(BaseCommand):
     def remove_unused_maps_terms_groups(self):
         maps = CourseMap.objects.all()
         for map in maps:
-            if map.pk not in self.info.used_map_courses:
+            if map.pk not in self.info.used_map_courses and map.course.semester == self.semester:
+                self.info.maps_deleted.append((str(map), str(map.course)))
+                self.stdout.write(self.style.NOTICE('Course map {} -> {} removed'.format(str(map), map.course)))
                 map.delete()
         maps = EmployeeMap.objects.all()
         for map in maps:
             if map.pk not in self.info.used_map_employees:
+                self.info.maps_deleted.append((str(map), str(map.employee)))
+                self.stdout.write(self.style.NOTICE('Employee map {} -> {} removed'.format(str(map), map.employee)))
                 map.delete()
 
         groups_to_remove = set()
@@ -508,10 +588,10 @@ class Command(BaseCommand):
             if not Term.objects.filter(group=group):
                 group.delete()
 
-    def import_from_api(self, delete_courses_flag, write_to_slack_flag):
+    def import_from_api(self, delete_courses_flag, write_to_slack_flag, auto_mode_flag):
         scheduler_data = self.get_scheduler_data()
         for group_id in range(len(scheduler_data.groups)):
-            group_data = self.get_group_data(group_id, scheduler_data)
+            group_data = self.get_group_data(group_id, scheduler_data, auto_mode_flag)
             # course is mapped to not import
             if group_data.course is None:
                 continue
@@ -535,12 +615,13 @@ class Command(BaseCommand):
         delete_courses_flag = options['delete_groups']
         dry_run_flag = options['dry_run']
         write_to_slack_flag = options['slack']
+        auto_mode_flag = options['auto_mode']
 
         if dry_run_flag:
             self.stdout.write('Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n')
             with transaction.atomic():
-                self.import_from_api(delete_courses_flag, write_to_slack_flag)
+                self.import_from_api(delete_courses_flag, write_to_slack_flag, auto_mode_flag)
                 transaction.set_rollback(True)
             self.stdout.write('\nDry run was on. Nothing was saved or deleted. All messages were informational.')
         else:
-            self.import_from_api(delete_courses_flag, write_to_slack_flag)
+            self.import_from_api(delete_courses_flag, write_to_slack_flag, auto_mode_flag)
