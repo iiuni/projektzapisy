@@ -495,7 +495,8 @@ class Command(BaseCommand):
         scheduler_data.results = get_results_data(api_task['timetable']['results'])
         return scheduler_data
 
-    def prepare_slack_message(self):
+    def prepare_slack_message(self) -> 'List[Dict]':
+        """Returns attachments with information about all changes during script."""
         attachments = []
         for term in self.info.all_creations:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
@@ -548,6 +549,7 @@ class Command(BaseCommand):
         return attachments
 
     def write_to_slack(self):
+        """Gets attachments with information about all changes during script. Writes to Slack"""
         slack_data = {
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.prepare_slack_message()
@@ -565,6 +567,7 @@ class Command(BaseCommand):
             )
 
     def remove_unused_maps_terms_groups(self):
+        """Deletes unused course and employee maps, terms and groups"""
         maps = CourseMap.objects.all()
         for map in maps:
             if map.pk not in self.info.used_map_courses and map.course.semester == self.semester:
@@ -594,6 +597,7 @@ class Command(BaseCommand):
                 group.delete()
 
     def import_from_api(self, delete_courses_flag, write_to_slack_flag, auto_mode_flag):
+        """This function makes all the work in script. Gets scheduler data and makes changes in System Zapisow"""
         scheduler_data = self.get_scheduler_data()
         for group_id in range(len(scheduler_data.groups)):
             group_data = self.get_group_data(group_id, scheduler_data, auto_mode_flag)
@@ -623,7 +627,7 @@ class Command(BaseCommand):
         return env
 
     def handle(self, *args, **options):
-        # potem zmień semestr by było ustawiane jako argument do komendy skryptu
+        """This function runs first. Sets flags and run import_from_api function"""
         self.semester = (Semester.objects.get_next() if options['semester'] == 0
                          else Semester.objects.get(pk=int(options['semester'])))
         self.url_assignments = options['url_assignments']
