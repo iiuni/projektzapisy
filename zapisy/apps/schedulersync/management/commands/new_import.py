@@ -27,14 +27,10 @@
 """
 
 from datetime import time
-import json
-import os
-
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import environ
-import requests
+import json, os, environ, requests, collections
 
 from apps.users.models import Employee
 from apps.enrollment.courses.models.classroom import Classroom
@@ -44,7 +40,9 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.courses.models.group import Group
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import TermSyncData, EmployeeMap, CourseMap
-import collections
+
+
+URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
 
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
@@ -113,6 +111,12 @@ class TermData:
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument('url_assignments', help='Should look like this: '
+                                                    '/scheduler/api/config/2017-18-lato3-2/')
+        parser.add_argument('url_schedule', help='Should look like this: '
+                                                 'http://scheduler.gtch.eu/scheduler/api/task/'
+                                                 '07164b02-de37-4ddc-b81b-ddedab533fec/')
+        parser.add_argument('-semester', type=int, default=0)
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
@@ -422,13 +426,15 @@ class Command(BaseCommand):
     def get_scheduler_data(self) -> 'Scheduler_data[List[SchedulerAPIGroup], \
                                     Dict[SchedulerAPITerm], Dict[SchedulerAPIResult]]':
         def get_logged_client():
-            url_login = 'http://scheduler.gtch.eu/admin/login/'
             client = requests.session()
-            client.get(url_login)
+            client.get(URL_LOGIN)
             cookie = client.cookies['csrftoken']
-            login_data = {'username': os.environ['scheduler_login'], 'password': os.environ['scheduler_password'],
+            secrets_env = self.get_secrets_env()
+            scheduler_username = secrets_env.str('SCHEDULER_USERNAME')
+            scheduler_password = secrets_env.str('SCHEDULER_PASSWORD')
+            login_data = {'username': scheduler_username, 'password': scheduler_password,
                           'csrfmiddlewaretoken': cookie}
-            client.post(url_login, data=login_data)
+            client.post(URL_LOGIN, data=login_data)
             return client
 
         def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerApiResult]':
@@ -478,11 +484,9 @@ class Command(BaseCommand):
             return data
 
         client = get_logged_client()
-        response = client.get(
-            'http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/')
+        response = client.get(self.url_assignments)
         api_config = response.json()
-        response = client.get(
-            'http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/')
+        response = client.get(self.url_schedule)
         api_task = response.json()
         scheduler_data = SchedulerData()
         scheduler_data.groups = get_groups_data(api_config['groups'])
@@ -548,7 +552,8 @@ class Command(BaseCommand):
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.prepare_slack_message()
         }
-        slack_webhook_url = os.environ['slack_url']
+        secrets_env = self.get_secrets_env()
+        slack_webhook_url = secrets_env.str('SLACK_WEBHOOK_URL')
         response = requests.post(
             slack_webhook_url, data=json.dumps(slack_data),
             headers={'Content-Type': 'application/json'}
@@ -608,9 +613,21 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
                                              .format(self.info.created_terms, self.info.updated_terms)))
 
+    def get_secrets_env(self):
+        env = environ.Env()
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+                                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+        self.stdout.write(BASE_DIR)
+        self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        return env
+
     def handle(self, *args, **options):
         # potem zmień semestr by było ustawiane jako argument do komendy skryptu
-        self.semester = Semester.objects.get(year="2018/19", type='l')
+        self.semester = (Semester.objects.get_next() if options['semester'] == 0
+                         else Semester.objects.get(pk=int(options['semester'])))
+        self.url_assignments = options['url_assignments']
+        self.url_schedule = options['url_schedule']
         self.info = Info()
         delete_courses_flag = options['delete_groups']
         dry_run_flag = options['dry_run']
