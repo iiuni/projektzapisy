@@ -406,8 +406,10 @@
     </div>                     
 </div>
 <script>
-    let elems = document.querySelectorAll('.type_of_course_row');
-    elems.forEach(elem => elem.removeChild(elem.lastElementChild))
+    var elems = document.querySelectorAll('.type_of_course_row');
+    elems.forEach(function(elem){
+        elem.removeChild(elem.lastElementChild)
+    })
 
 </script>
 {% else %}
