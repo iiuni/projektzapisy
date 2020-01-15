@@ -18,7 +18,10 @@ def create_sheets_service(sheet_id):
 # BEGIN VOTING RESULT SHEET LOGIC
 ##################################################
 
-
+# votes is return type of function get_votes
+# this functions prepare data to be in a sheet format
+# this function returns list with voting data for every course List[List}
+# and sheet header
 def votes_to_sheets_format(votes):
     values = create_voting_results_sheet_layout(votes)
 
@@ -73,8 +76,8 @@ def votes_to_sheets_format(votes):
     return values
 
 
-# Argument does_exist tells if this annual position exists
-# if does_exist is False then fill with blanks -> ''
+# arg row is a one year voting data for one course
+# arg value is dict of values that should be filled
 def voting_sheet_create_annual_part_of_row(row, value={}):
     if len(value) > 0:
         took_place = True if value['enrolled'] else False
@@ -90,6 +93,7 @@ def voting_sheet_create_annual_part_of_row(row, value={}):
             row.insert(0, '')
 
 
+# votes is return type of function get_votes
 def create_voting_results_sheet_layout(votes):
     years = list(list(votes.values())[0].keys())
     values = [
@@ -125,6 +129,8 @@ def create_voting_results_sheet_layout(votes):
     return values
 
 
+# votes is return type of function get_votes
+# arg sheet is sheet object returns by function create_sheets_service
 def update_voting_results_sheet(sheet, votes):
     data = votes_to_sheets_format(votes)
 
@@ -148,7 +154,7 @@ def update_voting_results_sheet(sheet, votes):
 # BEGIN PLAN PROPOSAL SHEET LOGIC
 ##################################################
 
-
+# votes is return type of function get_subjects_data
 def proposal_to_sheets_format(proposal):
     data = [
         [
@@ -183,6 +189,8 @@ def proposal_to_sheets_format(proposal):
     return data
 
 
+# votes is return type of function get_subjects_data
+# arg sheet is sheet object returns by function create_sheets_service
 def update_plan_proposal_sheet(sheet, proposal):
     data = proposal_to_sheets_format(proposal)
     sheet.sheet1.clear()
@@ -205,6 +213,7 @@ def update_plan_proposal_sheet(sheet, proposal):
 ##################################################
 
 
+# arg sheet is sheet object returns by function create_sheets_service
 def read_entire_sheet(sheet):
     return sheet.sheet1.get_all_values()
 

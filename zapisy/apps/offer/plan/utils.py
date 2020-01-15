@@ -240,6 +240,7 @@ def get_year_list(years):
 
 
 # prepares assignment data to be displayed in template
+# return type is a list of records boilerplate(look up)
 def prepare_assignments_data(data: List[List]):
     final = []
     length = len(data)
@@ -279,46 +280,54 @@ def prepare_assignments_data(data: List[List]):
     }
     for value in data:
         if value[0] == lp:
+            if value[-1] == 'FALSE':
+                continue
+
             record = process_value(record, value)
+            # check if it's last elem in list
             if value == data[length - 1]:
                 record = clean_up(record)
                 final.append(record)
         else:
             lp += 1
-            record = clean_up(record)
-            final.append(record)
-            record = {
-                'course': '',
-                'id': 0,
-                'w': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'rep': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'ćw': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'prac': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'ćw_prac': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'sem': {
-                    'weekly': '',
-                    'teachers': []
-                },
-                'admin': {
-                    'weekly': '',
-                    'teachers': []
+            if record['course'] != '':
+                record = clean_up(record)
+                final.append(record)
+                record = {
+                    'course': '',
+                    'id': 0,
+                    'w': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'rep': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'ćw': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'prac': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'ćw_prac': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'sem': {
+                        'weekly': '',
+                        'teachers': []
+                    },
+                    'admin': {
+                        'weekly': '',
+                        'teachers': []
+                    }
                 }
-            }
+            if value[-1] == 'FALSE':
+                continue
+
             record = process_value(record, value)
             if value == data[length - 1]:
                 record = clean_up(record)
@@ -327,6 +336,8 @@ def prepare_assignments_data(data: List[List]):
     return final
 
 
+# this function interprets a single line form sheet
+# return type is a record boilerplate(look up)
 def process_value(record: dict, value: List):
     record['course'] = value[1]
     record['id'] = value[0]
@@ -338,8 +349,8 @@ def process_value(record: dict, value: List):
         record = process_data_row(record, value, value[3])
     elif value[3] == 'prac':
         record = process_data_row(record, value, value[3])
-    elif value[3] == 'ćw_prac':
-        record = process_data_row(record, value, value[3])
+    elif value[3] == 'ćw+prac':
+        record = process_data_row(record, value, 'ćw_prac')
     elif value[3] == 'sem':
         record = process_data_row(record, value, value[3])
     elif value[3] == 'admin':
@@ -348,6 +359,7 @@ def process_value(record: dict, value: List):
     return record
 
 
+# return type is a record boilerplate(look up)
 def process_data_row(record: dict, value: List, class_type: str):
     record[class_type]['weekly'] = value[5]
     record[class_type]['teachers'].append({
@@ -357,6 +369,8 @@ def process_data_row(record: dict, value: List, class_type: str):
     return record
 
 
+# this function removes empty elements from dict
+# return type is a record boilerplate(look up) without some values
 def clean_up(record: dict):
     if record['w']['weekly'] == '':
         record.pop('w')

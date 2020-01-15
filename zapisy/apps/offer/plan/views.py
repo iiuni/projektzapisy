@@ -3,11 +3,10 @@ from apps.users.models import BaseUser
 from django.urls import reverse
 from django.template.loader import render_to_string
 from apps.offer.vote.models.system_state import SystemState
-
-from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, \
-    read_entire_sheet
+from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record
 import os.path
+
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
 PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
 CLASS_ASSIGNMENT_SPREADSHEET_ID = '1jy195Cvfly7SJ1BI_-eBDjB4tx706ra35GCdFqmGDVM'
@@ -38,7 +37,8 @@ def generate_plan_html(request):
             data = {'name': value[1], 'weekly': value[5],
                     'type': value[2], 'other': value[6], 'id': value[0]}
 
-            if value[9] == 'z' and value[-1] == 'TRUE':
+            # divide courses for summer and winter semester
+            if value[9] == 'z':
                 value[0] = int(value[0])
                 assignments_winter.append(value)
 
@@ -53,7 +53,7 @@ def generate_plan_html(request):
                     others[code]['weekly_winter'] += int(value[5])
                     others[code]['courses_winter'].append(data)
 
-            elif value[9] == 'l' and value[-1] == 'TRUE':
+            elif value[9] == 'l':
                 value[0] = int(value[0])
                 assignments_summer.append(value)
 
@@ -98,7 +98,7 @@ def generate_plan_html(request):
             'apps/offer/plan/templates/plan/view-plan-raw.html', 'w+')
         static_file.write(form)
         static_file.close()
-    return HttpResponseRedirect(reverse('plan-create'))
+    return HttpResponseRedirect(reverse('plan-view'))
 
 
 def plan_create(request):
