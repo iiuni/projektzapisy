@@ -8,8 +8,6 @@ urlpatterns = [
     # create voting results sheet
     path('create/sheet', views.plan_create_voting_sheet,
          name='plan-create-voting-sheet'),
-    # generate plan html at /plan
-    path('create/plan', views.generate_plan_html, name='generate-plan-html'),
     # generate scheduler file
     path('create/scheduler/<slug:slug>', views.generate_scheduler_file,
          name='generate-scheduler-file'),

@@ -155,6 +155,8 @@ def update_voting_results_sheet(sheet, votes):
 ##################################################
 
 # votes is return type of function get_subjects_data
+# function returns a list of lists
+# each inner list is a row in sheet
 def proposal_to_sheets_format(proposal):
     data = [
         [

@@ -13,8 +13,8 @@ CLASS_ASSIGNMENT_SPREADSHEET_ID = '1jy195Cvfly7SJ1BI_-eBDjB4tx706ra35GCdFqmGDVM'
 EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 
-def generate_plan_html(request):
-    if request.user.is_superuser:
+def plan_view(request):
+    if request.user.is_superuser or BaseUser.is_employee(request.user):
         employees = read_entire_sheet(
             create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
         assignments = read_entire_sheet(
@@ -93,12 +93,10 @@ def generate_plan_html(request):
             'stats_summer': stats_summer,
             'balance': hours_summer + hours_winter - pensum
         }
-        form = render_to_string('plan/view-plan.html', context, request)
-        static_file = open(
-            'apps/offer/plan/templates/plan/view-plan-raw.html', 'w+')
-        static_file.write(form)
-        static_file.close()
-    return HttpResponseRedirect(reverse('plan-view'))
+
+        return render(request, 'plan/view-plan.html', context)
+    else:
+        return HttpResponse(status=403)
 
 
 def plan_create(request):
@@ -153,16 +151,6 @@ def plan_create_voting_sheet(request):
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     update_voting_results_sheet(sheet, voting)
     return HttpResponseRedirect(reverse('plan-create'))
-
-
-def plan_view(request):
-    if request.user.is_superuser or BaseUser.is_employee(request.user):
-        if os.path.exists('apps/offer/plan/templates/plan/view-plan-raw.html'):
-            return render(request, 'plan/view-plan-raw.html')
-        else:
-            return render(request, 'plan/view-plan.html', {'is_empty': True})
-    else:
-        return HttpResponse(status=403)
 
 
 def generate_scheduler_file(request, slug):
