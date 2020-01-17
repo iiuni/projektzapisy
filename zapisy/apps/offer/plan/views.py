@@ -1,7 +1,6 @@
 from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from apps.users.models import BaseUser
 from django.urls import reverse
-from django.template.loader import render_to_string
 from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record
