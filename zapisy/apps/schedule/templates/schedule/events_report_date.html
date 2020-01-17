@@ -44,17 +44,6 @@
             <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
         </div>
     </form>
-
-    {% if request.user.is_authenticated %}  
-        <div class='mb-5 d-print-none'>
-            <a class="btn btn-light mt-2 print-report float-right">
-                <i class="fa fa-print"></i>
-                Drukuj
-            </a>
-        </div>
-        <div class="d-print-block" id="report-preview"></div>
-    {% endif %}
-    
 {% endblock %}
 
 {% block rendered_bundles %}

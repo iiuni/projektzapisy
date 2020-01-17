@@ -395,8 +395,4 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
         'semester': semester
     }
 
-    template = get_template('schedule/events_report_' + report_type + '_pdf.html')
-    html = template.render(context)
-
-    response = HttpResponse(html)
-    return response
+    return TemplateResponse(request, 'schedule/events_report_' + report_type + '_pdf.html', context)

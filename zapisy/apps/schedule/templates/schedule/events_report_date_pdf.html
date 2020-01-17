@@ -1,47 +1,69 @@
+{% extends 'schedule/events_report.html' %}
+{% load render_bundle from webpack_loader %}
 
-<style>
-    html {
-        font-size: 12pt;
-        }
-</style>
+{% block events_report %} class="active"{% endblock %}
 
+{% block bread %}
+    <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Raport</li>
+{% endblock %}
 
-<h1>Raport sal</h1>
-<h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
+{% block reporttitle %}{% endblock %}
 
-{% for room, terms_list in events %}
-  <h3>Sala: {{ room.number }}</h3>
-  {% if terms_list %}
-    <table class="table table-sm">
-      <thead>
-        <tr>
-          <td>Godziny</td>
-          <td>Wydarzenie</td>
-          <td>Autor</td>
-        </tr>
-      </thead>
-      <tbody>
-        <col width="25%">
-        <col width="50%">
-        <col width="25%">
-        {% for term in terms_list %}
-        <tr>
-          <td>{{term.day}} {{term.start}} - {{term.end}}</td>
-          {% with term.event.title.strip as evt_title %}
-            <td>
-            {% if evt_title|length > 0 %}
-              {{ evt_title }}
-            {% else %}
-              &lt;brak nazwy&gt;
-            {% endif %}
-            </td>
-          {% endwith %}
-          <td>{{term.event.author.get_full_name}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>Brak wydarzeń w tej sali.</p>
-  {% endif %}
-{% endfor %}
+{% block reportformview %}
+  <div class='mb-5 d-print-none'>
+      <a class="btn btn-light print-report float-right">
+          <i class="fa fa-print"></i>
+          Drukuj
+      </a>
+  </div>
+  <style>
+      html {
+          font-size: 12pt;
+          }
+  </style>
+  <h1>Raport sal</h1>
+  <h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
+
+  {% for room, terms_list in events %}
+    <h3>Sala: {{ room.number }}</h3>
+    {% if terms_list %}
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <td>Godziny</td>
+            <td>Wydarzenie</td>
+            <td>Autor</td>
+          </tr>
+        </thead>
+        <tbody>
+          <col width="25%">
+          <col width="50%">
+          <col width="25%">
+          {% for term in terms_list %}
+          <tr>
+            <td>{{term.day}} {{term.start}} - {{term.end}}</td>
+            {% with term.event.title.strip as evt_title %}
+              <td>
+              {% if evt_title|length > 0 %}
+                {{ evt_title }}
+              {% else %}
+                &lt;brak nazwy&gt;
+              {% endif %}
+              </td>
+            {% endwith %}
+            <td>{{term.event.author.get_full_name}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Brak wydarzeń w tej sali.</p>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+
+{% block rendered_bundles %}
+    {% render_bundle "schedule-report" %}
+{% endblock %}

@@ -8,19 +8,6 @@ $(document).ready(() => {
         $('#id_rooms option').prop('selected', true);    
     });
 
-    // przygotuj raport do wydruku
-    $('#reportForm').submit(function() {
-        $.ajax({
-            data: $(this).serialize(),
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            success: function(response) {
-                $('#report-preview').html(response);
-            }
-        });
-        return false;
-    });
-
     //Wydrukuj zawartość strony
     $('.print-report').click((event) => {
         window.print();  
