@@ -21,8 +21,8 @@
   </div>
   <style>
       html {
-          font-size: 12pt;
-          }
+        font-size: 12pt;
+      }
   </style>
   <h1>Raport sal</h1>
   <h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
@@ -33,15 +33,12 @@
       <table class="table table-sm">
         <thead>
           <tr>
-            <td>Godziny</td>
-            <td>Wydarzenie</td>
-            <td>Autor</td>
+            <th style="width: 25%">Godziny</th>
+            <th style="width: 55%">Wydarzenie</th>
+            <th style="width: 20%">Autor</th>
           </tr>
         </thead>
         <tbody>
-          <col width="25%">
-          <col width="50%">
-          <col width="25%">
           {% for term in terms_list %}
           <tr>
             <td>{{term.day}} {{term.start}} - {{term.end}}</td>
