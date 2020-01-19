@@ -1,8 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User
-from apps.users.models import Student, Program, UserProfile
+from django.contrib.auth.models import User, Group
+from apps.users.models import Student, Program
 import random
-from sets import Set
 
 IMPORT_FILE = 'importusos_17_18_zima.csv'
 DEBUG = True
@@ -47,15 +46,17 @@ def random_pass():
 
 
 def create_user(indeks, imie, nazwisko, mail):
+    students = Group.objects.get(name='students')
     user = User.objects.create_user(username=indeks, email=mail, password=random_pass())
     user.first_name = imie
     user.last_name = nazwisko
     user.save()
+    students.user_set.add(user)
+    students.save()
     s = Student.objects.create(user=user, matricula=indeks)
     s.semestr = 1
     s.program = Program.objects.get(id=4)
     s.save()
-    up = UserProfile.objects.create(user=user, is_student=True)
     return s
 
 
@@ -95,13 +96,11 @@ def process(line):
             return
 
     student.status = 0
-    student.isim = False
 
     if program == 'INF-K-S1':
         student.program = Program.objects.get(name='Informatyka, dzienne I stopnia')
     elif program == 'ISIM-K-S1':
-        student.program = Program.objects.get(name='Informatyka, dzienne I stopnia')
-        student.isim = True
+        student.program = Program.objects.get(name='ISIM, dzienne I stopnia')
     elif program == 'INF-K-2S1':
         student.program = Program.objects.get(name='Informatyka, dzienne I stopnia inżynierskie')
     elif program == 'INF-K-S2':
