@@ -1,7 +1,5 @@
 from .helpers import auto_assign
 
-from choicesenum import ChoicesEnum
-
 
 class Model:
     """Base class representing Django models without database access.

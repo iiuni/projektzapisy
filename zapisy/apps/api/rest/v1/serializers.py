@@ -177,4 +177,3 @@ class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = ('id', 'status', 'group', 'student')
-

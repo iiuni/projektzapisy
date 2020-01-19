@@ -91,6 +91,7 @@ class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
 
+
 class EmployeeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
