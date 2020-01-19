@@ -27,6 +27,7 @@ class EmployeeMap(models.Model):
     def __str__(self):
         return self.scheduler_username
 
+
 class CourseMap(models.Model):
     """Map course name from scheduler API, can set to not import that course"""
     scheduler_course = models.CharField(unique=True, max_length=100, blank=False, verbose_name='nazwa kursu schedulera')

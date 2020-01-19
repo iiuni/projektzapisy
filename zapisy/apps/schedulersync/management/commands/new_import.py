@@ -25,22 +25,22 @@
     Przykładowe użycie: python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
         http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --delete_groups
 """
-
+import collections
+import environ
+import json
+import os
+import requests
 from datetime import time
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-
-import json, os, environ, requests, collections
-
-from apps.users.models import Employee
-from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseInstance
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.group import Group
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import TermSyncData, EmployeeMap, CourseMap
-
+from apps.users.models import Employee
 
 URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
 
@@ -123,8 +123,8 @@ class Command(BaseCommand):
         parser.add_argument('--delete_groups', action='store_true', help='delete unused terms, groups, employees maps'
                                                                          ' and courses maps')
         parser.add_argument('--auto_mode', action='store_true', help='script will not need keyboard interaction. Use'
-                            ' this during semester, after first use. All not recognized courses and employees will'
-                            ' not be imported automaticly and corespodning Slack messages will be send')
+                                                                     ' this during semester, after first use. All not recognized courses and employees will'
+                                                                     ' not be imported automaticly and corespodning Slack messages will be send')
 
     def create_or_update_group_and_term(self, group_data: 'GroupData', term_data: 'TermData'):
         """ Check if group already exists in database, then create or update that group. Does the same for term,
@@ -195,13 +195,13 @@ class Command(BaseCommand):
             # The lecture always has a single group but possibly many terms
             if group_data.type == 1:
                 group = Group.objects.get_or_create(course=group_data.course, teacher=group_data.teacher,
-                                                      type=group_data.type, limit=group_data.limit)[0]
+                                                    type=group_data.type, limit=group_data.limit)[0]
             else:
-                 group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
-                                              type=group_data.type, limit=group_data.limit)
+                group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
+                                             type=group_data.type, limit=group_data.limit)
 
             term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                                        end_time=term_data.end_time, group=group)
+                                       end_time=term_data.end_time, group=group)
 
             term.classrooms.set(term_data.classrooms)
             TermSyncData.objects.create(term=term, scheduler_id=group_data.scheduler_id)
@@ -308,15 +308,16 @@ class Command(BaseCommand):
                             self.stdout.write('Exiting script..')
                             exit()
                         else:
-                            prop = Proposal.objects.filter(name__iexact=new_course_name,
-                                                    status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                            prop = Proposal.objects.filter(name__iexact=new_course_name, status__in=
+                                                           [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
                             if prop.count():
                                 # recursion in case Proposal.MultipleObjectsReturned with new course name
                                 prop, bool_dont_matter = get_proposal(new_course_name, auto_mode)
                                 return (prop, True)
                             else:
                                 self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which"
-                                                        " status is IN_OFFER or IN_VOTE\n".format(new_course_name)))
+                                                                     " status is IN_OFFER or IN_VOTE\n".format(
+                                    new_course_name)))
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
                 props = Proposal.objects.filter(
@@ -377,7 +378,7 @@ class Command(BaseCommand):
                                 "First name: {}, last name: {}\n"
                                 "Please enter proper username. You will be asked again if username cannot be found.\n"
                                 "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
-                                format(first_name, last_name))
+                                    format(first_name, last_name))
                             new_username = input('Username: ')
                             if not new_username:
                                 nieznany = Employee.objects.get(user__username='Nn')
@@ -620,7 +621,7 @@ class Command(BaseCommand):
     def get_secrets_env(self):
         env = environ.Env()
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
-                                   os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
         self.stdout.write(BASE_DIR)
         self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
