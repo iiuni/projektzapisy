@@ -12,13 +12,11 @@ from apps.enrollment.courses.tests.factories import (SemesterFactory,
                                                      GroupFactory,
                                                      TermFactory)
 from apps.enrollment.records.tests.factories import RecordFactory
-from apps.enrollment.records.models.records import RecordStatus
 from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
-from apps.users.models import UsosData
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 
@@ -49,6 +47,10 @@ class WrapperTests(APILiveServerTestCase):
             "Token " + token.key, "http://testserver/api/v1/")
 
     def test_semester(self):
+        """Tests semester handling.
+
+        Create Semester model and assert it with Semester returned by wrapper
+        """
         semester = SemesterFactory()
         result = list(self.wrapper.semesters())
         self.assertEqual(len(result), 1)
@@ -60,6 +62,11 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_semester.usos_kod, semester.usos_kod)
 
     def test_current_semester(self):
+        """Tests current semester handling.
+
+        Create Semester modelwith current date
+        and assert it with result from wrapper
+        """
         semester = SemesterFactory(semester_beginning=datetime.now().date(),
                                    semester_ending=datetime.now().date())
         res_semester = self.wrapper.current_semester()
@@ -67,12 +74,22 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_semester.id, semester.id)
 
     def test_current_semester_None(self):
+        """Tests current semester handling.
+
+        Create Semester model that is no current
+        and check if result from wrapper is None.
+        """
         SemesterFactory()
         res_semester = self.wrapper.current_semester()
 
         self.assertEqual(res_semester, None)
 
     def test_single_record(self):
+        """Tests wrapper method that returns single objects instead of iterator.
+
+        Create Semester model and assert it with Semester returned by wrapper
+        """
+
         semester = SemesterFactory()
         res_semester = self.wrapper.semester(semester.id)
 
@@ -83,6 +100,11 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_semester.usos_kod, semester.usos_kod)
 
     def test_student(self):
+        """Tests student handling.
+
+        Create Student model and assert it with Student returned by wrapper.
+        """
+
         student1, student2 = StudentFactory(), StudentFactory()
         student1.save()
         student2.save()
@@ -101,6 +123,11 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_student.usos_id, student1.usos_id)
 
     def test_save_student(self):
+        """Tests save feature.
+
+        Create Student, get it by wrapper, change it and save it.
+        """
+
         student = StudentFactory()
         [res_student] = list(self.wrapper.students())
         self.assertEqual(res_student.id, student.id)
@@ -113,11 +140,16 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(changed_student.usos_id, 666)
 
     def test_pagination(self):
+        """Tests pagination handling."""
         StudentFactory.create_batch(210)
         result = list(self.wrapper.students())
         self.assertEqual(len(result), 210)
 
     def test_employee(self):
+        """Tests employee handling.
+
+        Create employee model and assert it with employee returned by wrapper.
+        """
         employee = EmployeeFactory()
         [res_employee] = list(self.wrapper.employees())
 
@@ -129,6 +161,10 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(employee.usos_id, res_employee.usos_id)
 
     def test_course(self):
+        """Tests course handling.
+
+        Create CourseInstance model and assert it with CourseInstance returned by wrapper.
+        """
         course = CourseInstanceFactory()
         [res_course] = list(self.wrapper.courses())
 
@@ -143,6 +179,10 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_course.usos_kod, course.usos_kod)
 
     def test_classroom(self):
+        """Tests classroom handling.
+
+        Create Classroom model and assert it with Classroom returned by wrapper.
+        """
         classroom = ClassroomFactory()
         [res_classroom] = list(self.wrapper.classrooms())
 
@@ -154,6 +194,10 @@ class WrapperTests(APILiveServerTestCase):
         )
 
     def test_group(self):
+        """Tests group handling.
+
+        Create Group model and assert it with Group returned by wrapper.
+        """
         group = GroupFactory()
         [res_group] = list(self.wrapper.groups())
 
@@ -169,6 +213,10 @@ class WrapperTests(APILiveServerTestCase):
                          group.get_teacher_full_name())
 
     def test_term(self):
+        """Tests term handling.
+
+        Create Term model and assert it with Term returned by wrapper.
+        """
         term = TermFactory()
         [res_term] = list(self.wrapper.terms())
 
@@ -184,15 +232,22 @@ class WrapperTests(APILiveServerTestCase):
             res_term.end_time, term.end_time.isoformat())
 
     def test_record(self):
+        """Tests record handling.
+
+        Create Record model and assert it with Record returned by wrapper.
+        """
         record = RecordFactory()
 
         res_record = self.wrapper.record(record.id)
         self.assertEqual(res_record.status, record.status)
-
-        filtered = list(self.wrapper.records(RecordStatus.REMOVED))
-        self.assertEqual(len(filtered), 0)
+        self.assertEqual(res_record.student, record.student.id)
+        self.assertEqual(res_record.group, record.group.id)
 
     def test_single_vote_systemstate(self):
+        """Tests votes handling.
+
+        Create SingleVote model and assert it with SingleVote returned by wrapper.
+        """
         state1 = SystemState(year="2010/11")
         state1.save()
         state2 = SystemState(year="2018/19")
@@ -220,14 +275,8 @@ class WrapperTests(APILiveServerTestCase):
         # one of votes have value = 0, but correction = 1
         self.assertEqual(len(list(self.wrapper.single_votes({"value": 0}))), 1)
 
-    def test_post_usos_data(self):
-        content = "\n".join("test" for _ in range(200))
-        self.wrapper.post_usos_data(content)
-        data = UsosData.objects.get(pk=1)
-        self.assertEqual(content, data.content)
-
     def assert_declared_fields(self, fields, res_obj, expected_obj):
-        """test if given fields are equal in res_obj and orig_obj.
+        """Tests if given fields are equal in res_obj and orig_obj.
 
         It can test nested objects:
             for example, one can pass fields =

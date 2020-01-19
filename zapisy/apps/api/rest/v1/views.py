@@ -9,7 +9,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SystemState, SingleVote
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student, UsosData
+from apps.users.models import Employee, Student
 
 from apps.api.rest.v1 import serializers
 
@@ -84,14 +84,12 @@ class TermViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
-    queryset = Record.objects.select_related(
-        'group', 'group__course', 'group__course__semester', 'student', 'student__user'
-    ).order_by('id')
-    # TODO czemu po dodaniu 'group' do filtrów pobieranie wyników totalnie zwalnia?
-    filter_fields = ['group__course__semester', 'status']
+    queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
+        'group', 'group__course', 'group__course__semester',
+        'student', 'student__user').order_by('id')
+    filter_fields = ['group__course__semester']
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
-
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
@@ -119,7 +117,6 @@ class DesiderataViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Desiderata.objects.all()
     serializer_class = serializers.DesiderataSerializer
-    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
@@ -128,7 +125,6 @@ class DesiderataOtherViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = DesiderataOther.objects.all()
     serializer_class = serializers.DesiderataOtherSerializer
-    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
@@ -137,7 +133,6 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = SpecialReservation.objects.all()
     serializer_class = serializers.SpecialReservationSerializer
-    pagination_class = StandardResultsSetPagination
     filter_fields = '__all__'
 
 
@@ -170,12 +165,3 @@ class SystemStateViewSet(viewsets.ModelViewSet):
     queryset = SystemState.objects.all()
     serializer_class = serializers.SystemStateSerializer
     filter_fields = '__all__'
-
-
-class UsosDataViewSet(viewsets.ModelViewSet):
-    """Get all vote system states"""
-
-    http_method_names = ['post']
-    permission_classes = (IsAdminUser,)
-    queryset = UsosData.objects.all()
-    serializer_class = serializers.UsosDataSerializer

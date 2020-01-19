@@ -6,7 +6,7 @@ from typing import Iterator, Optional
 from .models import (Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Group,
-                     Term, Record, RecordStatus,
+                     Term, Record,
                      Desiderata, DesiderataOther,
                      SpecialReservation, SystemState,
                      SingleVote, Model)
@@ -22,7 +22,15 @@ class ZapisyApi:
     Example of use:
         from sz_api import ZapisyApi
         api = ZapisyApi(token='Token valid_key')
-        print(list(api.semesters()))
+        for semester in api.semesters():
+            semester.usos_kod = 123
+            api.save(semester)
+
+    Data retrieved from API is defined by models in model.py,
+    wrapper can also save some data with save method.
+    Not every field can be saved, wrapper will throw HTTPError
+    if REST API rejects request. You can use apps/api/rest/v1/serializers.py
+    in projektzapisy as additional reference.
 
     public methods raise:
         ValueError for error in decoding api response
@@ -122,14 +130,10 @@ class ZapisyApi:
 
     def records(
         self,
-        status: RecordStatus = RecordStatus.UNDEFINED
     ) -> Iterator[Record]:
-        """Gets an iterator over records
-
-        If `status` parameter is provided, filters results by its value
+        """Gets an iterator over enrolled records
         """
-        return self._get_deserialized_data(
-            Record, params={"status": status.value})
+        return self._get_deserialized_data(Record)
 
     def record(self, id: int) -> Record:
         """Returns term with given id"""
@@ -241,7 +245,7 @@ class ZapisyApi:
             return resp
 
     def _handle_get_request(self, path, params=None):
-        """send GET request to api and return json response
+        """sends GET request to api and return json response
 
         Raises:
             sz_api.ApiError for error in decoding response
@@ -268,7 +272,7 @@ class ZapisyApi:
         self._handle_upload_request("post", path, data)
 
     def _handle_upload_request(self, method, path, data: dict):
-        """send PATCH or POST request to api
+        """sends PATCH or POST request to api
 
         Raises:
             requests.exceptions.RequestException

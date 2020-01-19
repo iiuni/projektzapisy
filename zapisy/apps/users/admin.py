@@ -8,8 +8,7 @@ import csv
 from apps.users.models import (
     Employee,
     Student,
-    Program,
-    UsosData)
+    Program)
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
 
@@ -121,4 +120,3 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Program)
-admin.site.register(UsosData)

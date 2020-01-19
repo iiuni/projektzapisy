@@ -4,6 +4,10 @@ from choicesenum import ChoicesEnum
 
 
 class Model:
+    """Base class representing Django models without database access.
+
+    Models in this file reflect serializers in apps/api/rest/v1/serializers.py (projektzapisy).
+    """
 
     @classmethod
     def from_dict(cls, dict_):
@@ -13,7 +17,7 @@ class Model:
             raise ModelInitalizationError()
 
     def to_dict(self):
-        """Convert model to dict recursively"""
+        """Converts model to dict recursively"""
         data = {}
         for key, value in self.__dict__.items():
             try:
@@ -105,14 +109,6 @@ class Group(Model):
         self.teacher = Employee.from_dict(teacher)
 
 
-class RecordStatus(ChoicesEnum):
-    """RecordStatus describes a lifetime of a record."""
-    UNDEFINED = None
-    QUEUED = '0'
-    ENROLLED = '1'
-    REMOVED = '2'
-
-
 class Record(Model):
     redirect_key = "records"
     is_paginated = True
@@ -124,7 +120,7 @@ class Record(Model):
 
 class Desiderata(Model):
     redirect_key = "desideratas"
-    is_paginated = True
+    is_paginated = False
 
     @auto_assign
     def __init__(self, id, day, hour, employee, semester):
@@ -133,7 +129,7 @@ class Desiderata(Model):
 
 class DesiderataOther(Model):
     redirect_key = "desiderata-others"
-    is_paginated = True
+    is_paginated = False
 
     @auto_assign
     def __init__(self, id, comment, employee, semester):
@@ -142,7 +138,7 @@ class DesiderataOther(Model):
 
 class SpecialReservation(Model):
     redirect_key = "special-reservation"
-    is_paginated = True
+    is_paginated = False
 
     @auto_assign
     def __init__(self, id, title, DayOfWeek, start_time,

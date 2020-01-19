@@ -298,14 +298,3 @@ class PersonalDataConsent(models.Model):
 
     def __str__(self):
         return f"{self.student.get_full_name()}: {self.granted}"
-
-
-class UsosData(models.Model):
-    """Students data exported from USOS as csv file.
-    """
-    content = models.TextField()
-    creation_time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = 'Dane studentów wyeksportowane z usosa'
-        verbose_name_plural = 'Dane studentów wyeksportowane z usosa'

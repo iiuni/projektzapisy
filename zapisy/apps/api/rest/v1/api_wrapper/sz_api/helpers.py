@@ -3,8 +3,7 @@ import functools
 
 
 def auto_assign(func):
-    """
-    Assign values to instace variables automatically
+    """Assigns values to instance variables automatically
     based on function signature.
 
     Example:

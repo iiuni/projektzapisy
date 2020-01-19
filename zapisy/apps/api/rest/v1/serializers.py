@@ -8,7 +8,7 @@ from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student, UsosData
+from apps.users.models import Employee, Student
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -172,16 +172,9 @@ class TermSerializer(serializers.ModelSerializer):
 
 
 class RecordSerializer(serializers.ModelSerializer):
-    group = ShallowGroupSerializer(read_only=True)
-    student = StudentSerializer(read_only=True)
     status = serializers.CharField(max_length=1)
 
     class Meta:
         model = Record
         fields = ('id', 'status', 'group', 'student')
 
-
-class UsosDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UsosData
-        fields = ('content',)
