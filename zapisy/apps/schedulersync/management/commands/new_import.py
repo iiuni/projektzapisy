@@ -308,16 +308,16 @@ class Command(BaseCommand):
                             self.stdout.write('Exiting script..')
                             exit()
                         else:
-                            prop = Proposal.objects.filter(name__iexact=new_course_name, status__in=
-                                                           [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
+                            prop = Proposal.objects.filter(name__iexact=new_course_name,
+                                                           status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
                             if prop.count():
                                 # recursion in case Proposal.MultipleObjectsReturned with new course name
                                 prop, bool_dont_matter = get_proposal(new_course_name, auto_mode)
                                 return (prop, True)
                             else:
                                 self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which"
-                                                                     " status is IN_OFFER or IN_VOTE\n".format(
-                                    new_course_name)))
+                                                                     " status is IN_OFFER or IN_VOTE\n".
+                                                                     format(new_course_name)))
             except Proposal.MultipleObjectsReturned:
                 # Prefer proposals IN_VOTE to those IN_OFFER.
                 props = Proposal.objects.filter(
@@ -378,7 +378,7 @@ class Command(BaseCommand):
                                 "First name: {}, last name: {}\n"
                                 "Please enter proper username. You will be asked again if username cannot be found.\n"
                                 "Leave it blank (press enter) to set 'nieznany prowadzący'. Type 'quit' to quit script".
-                                    format(first_name, last_name))
+                                format(first_name, last_name))
                             new_username = input('Username: ')
                             if not new_username:
                                 nieznany = Employee.objects.get(user__username='Nn')
