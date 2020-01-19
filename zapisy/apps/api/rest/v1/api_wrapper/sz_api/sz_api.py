@@ -202,11 +202,6 @@ class ZapisyApi:
         """Returns SystemState object with given id"""
         return self._get_single_record(SystemState, id)
 
-    def post_usos_data(self, content: str):
-        """Sends usos students data to database for migrating purposes"""
-        self._handle_post_request(
-            self.redirect_map["usos"], {"content": content})
-
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:
             data_gen = self._get_paginated_data(model_class, params)
