@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
+from django.db.models import QuerySet
 from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.views import LoginView
@@ -32,7 +33,8 @@ from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
-from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list, prepare_users_list
+from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list, prepare_students_list, \
+    prepare_employee_list
 from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
@@ -91,7 +93,7 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     data.update({
         'students': active_students,
         'char': "All",
-        'json_students': json.dumps(prepare_users_list(active_students))
+        'json_users': json.dumps(prepare_students_list(active_students))
     })
     return render(request, 'users/student_profile.html', data)
 
@@ -133,9 +135,12 @@ def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
         e.short_old = (e.user.first_name[:2] +
                        e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
 
+    employees = Employee.get_list(begin="All")
+
     data.update({
         'employees': active_teachers,
         'char': "All",
+        'json_users': json.dumps(prepare_employee_list(employees)),
     })
     return render(request, 'users/employee_profile.html', data)
 
@@ -280,7 +285,8 @@ def employees_list(request: HttpRequest, begin: str='All', query: Optional[str]=
         data = {
             "employees": employees,
             "char": begin,
-            "query": query
+            "query": query,
+            'json_users': json.dumps(prepare_employee_list(employees)),
         }
 
     return render(request, 'users/employees_list.html', data)
@@ -318,7 +324,7 @@ def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=N
             "query": query,
             'mailto_group': mailto(request.user, students),
             'mailto_group_bcc': mailto(request.user, students, True),
-            'json_students': json.dumps(prepare_users_list(students))
+            'json_users': json.dumps(prepare_students_list(students)),
         }
         return render(request, 'users/students_list.html', data)
 

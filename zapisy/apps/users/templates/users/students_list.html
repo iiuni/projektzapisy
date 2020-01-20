@@ -11,7 +11,6 @@
   <li class="breadcrumb-item active" aria-current="page">Studenci</li>
 {% endblock %}
 
-
 {% block enrollment_menu_students %} class="active"{% endblock %}
 
 {% block top-content %}
@@ -28,8 +27,10 @@
 
 
 {% block sidebar %}
-    <div id="student-json-container" data="{{ json_students }}" style="display:none;"></div>
-<div id="main-sidebar">
+    <div id="user-list-json-container" data="{{ json_users }}" style="display:none;"></div>
+    <div id="user-link" data="{%  url 'student-profile' %}" style="display:none;"></div>
+<div id="main-sidebar" class="col-lg">
+    <h3>Lista studentów</h3>
     <div id="student-list"></div>
 </div>
 {% endblock %}

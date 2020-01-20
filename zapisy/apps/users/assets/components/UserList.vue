@@ -1,9 +1,8 @@
 <template>
-	<div id="students-list">
-		<h3>Lista studentów</h3>
-		<ul class="students">
-			<li v-for="student in students" v-if="matchChar(student) && match(student)" class="mb-1">
-				<a v-bind:href="getUrlAddress(student.id)">{{student.first_name + " " + student.last_name}}</a>
+	<div id="user-list">
+		<ul>
+			<li v-for="user in users" v-if="matchChar(user) && match(user)" class="mb-1">
+				<a v-bind:href="getUrlAddress(user.id)">{{`${user.first_name} ${user.last_name}`}}</a>
 			</li>
 		</ul>
 	</div>
@@ -13,16 +12,31 @@
 <script>
 	import { EventBus } from './event-bus.js';
     export default {
-		name: "StudentList",
+		name: "UserList",
 		data: function () {
 			return {
 				filter_phrase: '',
 				filter_button: '',
-				students: [],
+				users: [],
+				userLinkUrl: '',
 			}
 		},
-		beforeMount: function() {
-			this.students = JSON.parse(document.getElementById('student-json-container').getAttribute('data') || '{}');
+		beforeMount: function () {
+			let rawUsers = JSON.parse(document.getElementById('user-list-json-container').getAttribute(
+					'data') || '{}');
+			this.users = Object.values(rawUsers);
+
+			console.log(this.users);
+			this.users = this.users.sort(function (a, b) {
+					if (a.last_name > b.last_name) {
+						return 1
+					} else if (a.last_name < b.last_name) {
+						return -1
+					} else {
+						return 0
+					}
+				});
+			this.userLinkUrl = document.getElementById('user-link').getAttribute('data');
 		},
 		mounted: function () {
 			EventBus.$on('user-char-filter', value => {
@@ -34,27 +48,33 @@
 			});
 		},
 		methods: {
-			match: function(student) {
-				let first_name = student.first_name.toLowerCase();
-				let last_name = student.last_name.toLowerCase();
-				let phrase = this.filter_phrase.toLowerCase();
+			match: function (user) {
 
-				return first_name.startsWith(phrase) || last_name.startsWith(phrase);
+				let firstName = user.first_name.toLowerCase();
+				let lastName = user.last_name.toLowerCase();
+				let emailAddress = user.email;
+				let album = "";
+				if (user.hasOwnProperty('album')) {
+					album = user.album;
+				}
+				let phrase = this.filter_phrase.toLowerCase().trim();
+
+				return firstName.startsWith(phrase) || lastName.startsWith(phrase) ||
+						album.startsWith(phrase) || emailAddress.startsWith(phrase);
 			},
-			matchChar: function(student) {
-				let first_name = student.first_name.toLowerCase();
-				let last_name = student.last_name.toLowerCase();
+			matchChar: function (user) {
+				let first_name = user.first_name.toLowerCase();
+				let last_name = user.last_name.toLowerCase();
 				let button = this.filter_button.toLowerCase();
 
-				if (button != 'wszyscy')
-				{
+				if (button != 'wszyscy') {
 					return first_name.startsWith(button) || last_name.startsWith(button);
 				}
 				return true;
 			},
-			getUrlAddress: function(id) {
-				return '/users/profile/student/' + id
-			}
+			getUrlAddress: function (id) {
+				return this.userLinkUrl + id
+			},
 		}
 	}
 </script>
