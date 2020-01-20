@@ -1,7 +1,6 @@
 from django.urls import reverse
 from django.db.models import QuerySet
 from typing import List, Dict, Union, Any
-from rest_framework.request import Request
 
 
 def prepare_ajax_students_list(students: QuerySet) -> List[Dict[str, Union[str, Any]]]:
@@ -20,3 +19,13 @@ def prepare_ajax_employee_list(employees: QuerySet) -> List[Dict[str, Union[str,
              'link': reverse('employee-profile', args=[e.user.id]),
              'short_old': e.user.first_name[:2] + e.user.last_name[:2],
              'short_new': e.user.first_name[:1] + e.user.last_name[:2]} for e in employees]
+
+
+def prepare_users_list(users: QuerySet) -> dict:
+    user_data = {}
+    for user in users:
+        user_data.update({user.pk: {"last_name": user.user.last_name,
+                                    "first_name": user.user.first_name,
+                                    "id": user.user.id,
+                                    }})
+    return user_data

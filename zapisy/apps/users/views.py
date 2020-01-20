@@ -32,8 +32,8 @@ from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
-from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
-from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
+from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list, prepare_users_list
+from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
 from libs.ajax_messages import AjaxSuccessMessage
@@ -80,6 +80,7 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     data = {
         'student': student,
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+
     }
 
     if request.is_ajax():
@@ -90,6 +91,7 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     data.update({
         'students': active_students,
         'char': "All",
+        'json_students': json.dumps(prepare_users_list(active_students))
     })
     return render(request, 'users/student_profile.html', data)
 
@@ -315,7 +317,8 @@ def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=N
             "char": begin,
             "query": query,
             'mailto_group': mailto(request.user, students),
-            'mailto_group_bcc': mailto(request.user, students, True)
+            'mailto_group_bcc': mailto(request.user, students, True),
+            'json_students': json.dumps(prepare_users_list(students))
         }
         return render(request, 'users/students_list.html', data)
 
