@@ -1,5 +1,4 @@
 {% extends 'schedule/base.html' %}
-{% load render_bundle from webpack_loader %}
 
 {% block scedule_events %} class="active"{% endblock %}
 
@@ -192,13 +191,16 @@
                             <legend class="col-form-label col-sm-2 pt-0">Decyzja</legend>
                         </div>
                         <div class="col">
-                            <input type="hidden" id="decision" name="status" value={{event.status}}> 
                             {% if event.get_conflicted %}
-                                <button type="button" id="accept_button" class="btn btn-warning">Zaakceptuj ignorując konflikty</button>
+                                <button type="submit" value='1' name="status" class="btn btn-warning" {% if event.status == '1' %}disabled{% endif %}>
+                                    Zaakceptuj ignorując konflikty
+                                </button>
                             {% else %}
-                                <button type="button" id="accept_button"  class="btn btn-success">Akcecptuj</button>
+                                <button type="submit" value='1' name="status" class="btn btn-success" {% if event.status == '1' %}disabled{% endif %}>
+                                    Akceptuj
+                                </button>
                             {% endif %}
-                            <button type="button" id="reject_button" class="btn btn-danger">Odrzuć</button>
+                            <button type="submit" value='2' name="status" class="btn btn-danger" {% if event.status == '2' %}disabled{% endif %}>Odrzuć</button>
                             <small class="form-text text-muted">
                                 Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
                             </small>
@@ -258,8 +260,4 @@
         <button type="submit" class="btn btn-success">Wyślij</button>
     </form>
 {% endif %}
-{% endblock %}
-
-{% block rendered_bundles %}
-    {% render_bundle "schedule-event" %}
 {% endblock %}
