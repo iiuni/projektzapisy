@@ -1,12 +1,11 @@
 <template>
 	<div id="user-list">
-		<ul>
-			<li v-for="user in users" v-if="matchChar(user) && match(user)" class="mb-1">
+		<ul class="list-group">
+			<li v-for="user in users" v-if="matchChar(user) && match(user)" class="user-list-link mb-1">
 				<a v-bind:href="getUrlAddress(user.id)">{{`${user.first_name} ${user.last_name}`}}</a>
 			</li>
 		</ul>
 	</div>
-
 </template>
 
 <script>
@@ -26,7 +25,6 @@
 					'data') || '{}');
 			this.users = Object.values(rawUsers);
 
-			console.log(this.users);
 			this.users = this.users.sort(function (a, b) {
 					if (a.last_name > b.last_name) {
 						return 1
@@ -78,3 +76,10 @@
 		}
 	}
 </script>
+
+<style>
+	.user-list-link {
+		margin-left: 40px;
+		margin-right: 20px;
+	}
+</style>

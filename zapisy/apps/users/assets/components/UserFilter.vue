@@ -1,12 +1,12 @@
 <template>
     <div>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush border border-default">
             <li class="list-group-item bg-light">
                 <fieldset class="small-fieldset">
                     <div class="filter row" id="enr-StudentsList-top-bar">
-                        <label for="student_name" class="label label-default">Filtrowanie:&nbsp</label>
-                        <div class="main-filter-input">
-                            <input class="form-control" id="student_name" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
+                        <label for="user-name" class="label label-default">Filtrowanie:&nbsp</label>
+                        <div id="user-name">
+                            <input class="form-control" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
                         </div>
                     </div>
                 </fieldset>
@@ -62,12 +62,17 @@ import { EventBus } from './event-bus';
         padding-left: 0.40rem;
     }
     .label {
-        padding-top: 0.40rem;
-        padding-right: 0.20rem;
-        padding-bottom: 0.20rem;
-        padding-left: 0.40rem;
+        padding-top: 0.75rem;
+        padding-right: 0.375rem;
+        padding-bottom: 0.375rem;
+        padding-left: 0.75rem;
     }
     #user-list-menu {
         padding-left: 0.40rem;
     }
+    #user-name {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
 </style>
