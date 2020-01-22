@@ -74,12 +74,12 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
         if data['instance']:
             previous_groups = Group.objects.filter(course=data['instance'][0])
             for group in previous_groups:
-                hours = {'Wykład': proposal_info.hours_lecture if proposal_info.hours_lecture else 30,
-                         'Ćwiczenia': proposal_info.hours_exercise if proposal_info.hours_exercise else 30,
-                         'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab if proposal_info.hours_exercise_lab else 30,
-                         'Repetytorium': proposal_info.hours_recap if proposal_info.hours_recap else 30,
-                         'Seminarium': proposal_info.hours_seminar if proposal_info.hours_seminar else 30,
-                         'Pracownia': proposal_info.hours_lab if proposal_info.hours_lab else 30
+                hours = {'Wykład': proposal_info.hours_lecture,
+                         'Ćwiczenia': proposal_info.hours_exercise,
+                         'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab,
+                         'Repetytorium': proposal_info.hours_recap,
+                         'Seminarium': proposal_info.hours_seminar,
+                         'Pracownia': proposal_info.hours_lab
                          }
 
                 course_info = [('course', course),

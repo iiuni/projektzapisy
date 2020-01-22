@@ -1,7 +1,17 @@
 {% extends "offer/base.html" %}
+{% block main-subtitle %}Kreator przydziałów{% endblock %}
 {% block offer_menu_plan %} class="active"{% endblock %}
 {% block content %}
 <h1>Stwórz przydział zajęć</h1>
+<h3>Instrukcja:</h3>
+<ol>
+    <li>Wygeneruj arkusz z wynikami głosowania.</li>
+    <li>Na jego podstawie wybierz przedmioty z listy i wygeneruj arkusz z proponowanym przydziałem zajęć.</li>
+    <li>W razie potrzeby, dokonaj zmian w arkuszu z pracownikami.</li>
+    <li>Wypełnij arkusz z przydziałem zajęć. Każdy dodany przedmiot powinien mieć unikalny numer 'Lp', zaś grupy należące do tego samego przedmiotu powinny mieć ten sam numer.
+        Pamiętaj też o uzupełnieniu pól statystyk.
+    </li>
+</ol>
 <a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">>> Wyniki głosowania - arkusz Google</a>
 <a href="https://docs.google.com/spreadsheets/d/{{ plan_proposal_sheet_id }}" target="_blank" class="d-block mb-1">>> Proponowany przydział zajęć - arkusz Google</a>
 <a href="https://docs.google.com/spreadsheets/d/{{ employees_sheet_id }}" target="_blank" class="d-block mb-1">>> Pracownicy - arkusz Google</a>

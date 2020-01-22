@@ -1,4 +1,5 @@
 {% extends "offer/base.html" %}
+{% block main-subtitle %}Planowanie{% endblock %}
 {% block offer_menu_plan %} class="active"{% endblock %}
 
 {% block content %}
@@ -243,7 +244,7 @@
             {% for employee, staff_data in staff.items %}
                 <div>
                     <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
@@ -275,7 +276,7 @@
             {% for employee, staff_data in phds.items %}
                 <div>
                     <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
@@ -307,7 +308,7 @@
             {% for employee, staff_data in others.items %}
                 <div>
                     <div class="bg-primary" id="{{employee}}">
-                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }}({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
                     </div>
                     <div class="p-2" style="background: #E5E5E5">
                         <div class="p-2" style="background: #b3ccff">
