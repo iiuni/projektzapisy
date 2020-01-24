@@ -139,7 +139,7 @@ class Event(models.Model):
         self.delete()
 
     def get_conflicted(self) -> List['Event']:
-        """ Returns all conflicted events. """
+        """Returns all conflicting events."""
         terms = self.term_set.all()
         event_conflicts = set()
         for term in terms:
