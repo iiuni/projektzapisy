@@ -1,4 +1,8 @@
+from django.db import transaction
+
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group as AuthGroup
+
 from rest_framework import serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
@@ -8,7 +12,7 @@ from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, Program
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -56,7 +60,10 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+        extra_kwargs = {
+            'username': {'validators': []},
+        }
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -68,13 +75,45 @@ class EmployeeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user', 'consultations', 'homepage', 'room')
 
 
+class ProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = '__all__'
+        extra_kwargs = {
+            'name': {'validators': []},
+        }
+
+
 class StudentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer()
+    program = ProgramSerializer()
 
     class Meta:
         model = Student
-        fields = ('id', 'usos_id', 'matricula', 'ects', 'status', 'user')
-        read_only_fields = ('id', 'matricula', 'user')
+        fields = ('id', 'usos_id', 'matricula', 'ects', 'status', 'user', 'program',
+                  'semestr', 'algorytmy_l', 'numeryczna_l', 'dyskretna_l')
+
+    @transaction.atomic
+    def create(self, validated_data):
+        students = AuthGroup.objects.get(name='students')
+        user_data = validated_data.pop('user')
+        program_data = validated_data.pop('program')
+        user = User.objects.create_user(**user_data)
+        program = Program.objects.get(name=program_data['name'])
+        students.user_set.add(user)
+        students.save()
+        student = Student.objects.create(
+            user=user, program=program, **validated_data)
+        return student
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        # user field shouldn't be changed
+        validated_data.pop('user', None)
+        program_data = validated_data.pop('program', None)
+        if program_data is not None:
+            instance.program = Program.objects.get(name=program_data['name'])
+        return super().update(instance, validated_data)
 
 
 class DesiderataSerializer(serializers.ModelSerializer):

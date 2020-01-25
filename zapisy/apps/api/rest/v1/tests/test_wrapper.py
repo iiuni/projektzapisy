@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Group as AuthGroup
+
 from datetime import datetime
 
 from unittest.mock import patch
@@ -17,6 +19,8 @@ from apps.offer.vote.models import SystemState, SingleVote
 from apps.users.tests.factories import (StudentFactory,
                                         UserFactory,
                                         EmployeeFactory)
+from apps.users.models import Program
+
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 
@@ -274,6 +278,20 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(len(list(self.wrapper.single_votes({"state": state1.id}))), 3)
         # one of votes have value = 0, but correction = 1
         self.assertEqual(len(list(self.wrapper.single_votes({"value": 0}))), 1)
+
+    def test_create_student(self):
+        AuthGroup.objects.create(name="students")
+        Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
+
+        student_id = self.wrapper.create_student(
+            420, 666, "John", "Doe", "doe@awesome.mail",
+            0, "Informatyka, dzienne I stopnia inżynierskie",
+            1, False, False, False)
+        student = self.wrapper.student(student_id)
+        self.assertEqual(student.usos_id, 420)
+        self.assertEqual(student.user.email, "doe@awesome.mail")
+        self.assertEqual(student.program.name,  "Informatyka, dzienne I stopnia inżynierskie")
+        self.assertEqual(student.semestr,  1)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """Tests if given fields are equal in res_obj and orig_obj.

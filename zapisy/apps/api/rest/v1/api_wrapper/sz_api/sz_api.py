@@ -3,7 +3,8 @@ import requests
 from urllib.parse import urljoin
 from typing import Iterator, Optional
 
-from .models import (Semester, Student,
+from .models import (User, Program,
+                     Semester, Student,
                      Employee, CourseInstance,
                      Classroom, Group,
                      Term, Record,
@@ -202,6 +203,18 @@ class ZapisyApi:
         """Returns SystemState object with given id"""
         return self._get_single_record(SystemState, id)
 
+    def create_student(self, usos_id, indeks, first_name, last_name, email,
+                       ects, program_name, semestr, algorytmy_l,
+                       numeryczna_l, dyskretna_l) -> int:
+        """Creates new student in systemzapisy."""
+        student = Student(
+            None, usos_id, indeks, ects, 0,
+            User(None, str(indeks), first_name, last_name, email),
+            Program(None, program_name), semestr, algorytmy_l,
+            numeryczna_l, dyskretna_l)
+        return self._handle_post_request(
+            self.redirect_map[Student.redirect_key], student.to_dict())
+
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:
             data_gen = self._get_paginated_data(model_class, params)
@@ -264,7 +277,7 @@ class ZapisyApi:
         self._handle_upload_request("patch", path, data)
 
     def _handle_post_request(self, path, data: dict):
-        self._handle_upload_request("post", path, data)
+        return self._handle_upload_request("post", path, data)
 
     def _handle_upload_request(self, method, path, data: dict):
         """sends PATCH or POST request to api
@@ -283,7 +296,11 @@ class ZapisyApi:
         resp = func(
             # DRF requires trailing slash for patch method
             path if path.endswith("/") else path + "/",
-            data=data,
+            json=data,
             headers={"Authorization": self.token}
         )
         resp.raise_for_status()
+        try:
+            return resp.json()['id']
+        except json.decoder.JSONDecodeError:
+            return None

@@ -8,16 +8,20 @@ class Model:
     """
 
     @classmethod
-    def from_dict(cls, dict_):
+    def from_dict(cls, obj):
+        if type(obj) == cls or obj is None:
+            return obj
         try:
-            return cls(**dict_)
+            return cls(**obj)
         except TypeError:
-            raise ModelInitalizationError()
+            raise ModelInitalizationError(f"{cls.__name__}")
 
     def to_dict(self):
         """Converts model to dict recursively"""
         data = {}
         for key, value in self.__dict__.items():
+            if value is None:
+                continue
             try:
                 data[key] = value.to_dict()
             except AttributeError:
@@ -46,12 +50,21 @@ class Semester(Model):
         pass
 
 
+class Program(Model):
+    """
+    This model is used as nested object in some of other models
+    """
+    @auto_assign
+    def __init__(self, id, name):
+        pass
+
+
 class User(Model):
     """
     This model is used as nested object in some of other models.
     """
     @auto_assign
-    def __init__(self, id, username, first_name, last_name):
+    def __init__(self, id, username, first_name, last_name, email):
         pass
 
 
@@ -61,9 +74,11 @@ class Student(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, matricula, ects,
-                 status, user: dict, usos_id):
+    def __init__(self, id, usos_id, matricula, ects, status,
+                 user: dict, program: dict, semestr, algorytmy_l,
+                 numeryczna_l, dyskretna_l):
         self.user = User.from_dict(user)
+        self.program = Program.from_dict(program)
 
 
 class Employee(Model):

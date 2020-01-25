@@ -105,7 +105,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     To only list active students query:
         /api/v1/students/?status=0.
     """
-    http_method_names = ['get', 'patch']
+    http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
     queryset = Student.objects.select_related('user')
     serializer_class = serializers.StudentSerializer
