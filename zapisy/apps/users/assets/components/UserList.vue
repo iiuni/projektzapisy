@@ -1,7 +1,7 @@
 <template>
 	<div id="user-list">
 		<ul class="list-group">
-			<li v-for="user in users" v-if="matchChar(user) && match(user)" class="user-list-link mb-1">
+			<li v-for="user in users" v-if="matchChar(user) && matchInput(user)" class="user-list-link mb-1">
 				<a v-bind:href="getUrlAddress(user.id)">{{`${user.first_name} ${user.last_name}`}}</a>
 			</li>
 		</ul>
@@ -46,7 +46,11 @@
 			});
 		},
 		methods: {
-			match: function (user) {
+			matchInput: function (user) {
+				// Remove trailing/leading whitespaces from input
+				let phrase = this.filter_phrase.toLowerCase().trim();
+
+				const regex = /\s+/;
 
 				let firstName = user.first_name.toLowerCase();
 				let lastName = user.last_name.toLowerCase();
@@ -55,10 +59,17 @@
 				if (user.hasOwnProperty('album')) {
 					album = user.album;
 				}
-				let phrase = this.filter_phrase.toLowerCase().trim();
 
-				return firstName.startsWith(phrase) || lastName.startsWith(phrase) ||
-						album.startsWith(phrase) || emailAddress.startsWith(phrase);
+				// Check if input has 2 words separated with whitespaces or is single word/phrase
+				if (phrase.match(regex) != null) {
+					let names = phrase.split(regex);
+					return (firstName.startsWith(names[0]) && lastName.startsWith(names[1])) ||
+							(firstName.startsWith(names[1]) && lastName.startsWith(names[0]));
+				}
+				else {
+					return firstName.startsWith(phrase) || lastName.startsWith(phrase) ||
+							album.startsWith(phrase) || emailAddress.startsWith(phrase);
+				}
 			},
 			matchChar: function (user) {
 				let first_name = user.first_name.toLowerCase();
