@@ -9,7 +9,7 @@
         <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
     {% endif %}
 </div>
-{% if not is_empty %}
+{% if not error and not is_empty %}
 <div>
     <h3 class="assignment-courses mb-3">Idź do:</h3>
     <div class="pt-4 pb-4 pl-5" style="background: #E5E5E5">
@@ -411,6 +411,8 @@
         elem.removeChild(elem.lastElementChild)
     })
 </script>
+{% elif error %}
+<h3>Wystąpił błąd. Spróbuj ponownie później</h3>
 {% else %}
 <h3>Brak danych do wyświetlenia</h3>
 {% endif %}

@@ -14,10 +14,13 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 
 def plan_view(request):
+    year = SystemState.get_current_state().year
     employees = read_entire_sheet(
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    if not employees or not assignments:
+        return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
     assignments_winter = []
     assignments_summer = []
     staff = {}
@@ -35,12 +38,10 @@ def plan_view(request):
         code = value[11]
         data = {'name': value[1], 'weekly': value[5],
                 'type': value[2], 'other': value[6], 'id': value[0]}
-
         # divide courses for summer and winter semester
         if value[9] == 'z':
             value[0] = int(value[0])
             assignments_winter.append(value)
-
             hours_winter += int(value[7])
             if code in staff:
                 staff[code]['weekly_winter'] += int(value[5])
@@ -74,12 +75,12 @@ def plan_view(request):
 
         is_empty = False if assignments_winter and assignments_summer else True
 
-        if not is_empty:
-            assignments_winter = prepare_assignments_data(assignments_winter)
-            assignments_summer = prepare_assignments_data(assignments_summer)
-
+    if not is_empty:
+        assignments_winter = prepare_assignments_data(assignments_winter)
+        assignments_summer = prepare_assignments_data(assignments_summer)
         context = {
-            'year': SystemState.get_current_state().year,
+            'error': False,
+            'year': year,
             'is_empty': is_empty,
             'winter': assignments_winter,
             'summer': assignments_summer,
@@ -93,10 +94,9 @@ def plan_view(request):
             'stats_summer': stats_summer,
             'balance': hours_summer + hours_winter - pensum
         }
-
         return render(request, 'plan/view-plan.html', context)
     else:
-        return HttpResponse(status=403)
+        return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False,  'year': year})
 
 
 def plan_create(request):

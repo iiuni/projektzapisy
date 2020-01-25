@@ -8,7 +8,8 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
 def create_sheets_service(sheet_id):
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('apps/offer/plan/Credentials.json', SCOPES)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        'apps/offer/plan/Credentials.json', SCOPES)
     gc = gspread.authorize(credentials)
     sh = gc.open_by_key(sheet_id)
     return sh
@@ -133,7 +134,6 @@ def create_voting_results_sheet_layout(votes):
 # arg sheet is sheet object returns by function create_sheets_service
 def update_voting_results_sheet(sheet, votes):
     data = votes_to_sheets_format(votes)
-
     sheet.sheet1.clear()
     sheet.values_update(
         range='A:R',
@@ -217,8 +217,12 @@ def update_plan_proposal_sheet(sheet, proposal):
 
 # arg sheet is sheet object returns by function create_sheets_service
 def read_entire_sheet(sheet):
-    return sheet.sheet1.get_all_values()
-
+    try:
+        sh = sheet.sheet1.get_all_values()
+    except gspread.exceptions.APIError:
+        print("????\n")
+        return False
+    return sh
 ##################################################
 # END READING ASSIGNMENTS SHEET LOGIC
 ##################################################
