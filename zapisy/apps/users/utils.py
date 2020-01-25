@@ -25,11 +25,11 @@ def prepare_students_list(students: QuerySet) -> dict:
     students_data = {}
     for student in students:
         students_data.update({student.pk: {"last_name": student.user.last_name,
-                                    "first_name": student.user.first_name,
-                                    "id": student.user.id,
-                                    "album": student.matricula,
-                                    "email": student.user.email
-                                    }})
+                                           "first_name": student.user.first_name,
+                                           "id": student.user.id,
+                                           "album": student.matricula,
+                                           "email": student.user.email
+                                           }})
     return students_data
 
 
