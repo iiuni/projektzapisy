@@ -290,8 +290,8 @@ class WrapperTests(APILiveServerTestCase):
         student = self.wrapper.student(student_id)
         self.assertEqual(student.usos_id, 420)
         self.assertEqual(student.user.email, "doe@awesome.mail")
-        self.assertEqual(student.program.name,  "Informatyka, dzienne I stopnia inżynierskie")
-        self.assertEqual(student.semestr,  1)
+        self.assertEqual(student.program.name, "Informatyka, dzienne I stopnia inżynierskie")
+        self.assertEqual(student.semestr, 1)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """Tests if given fields are equal in res_obj and orig_obj.
