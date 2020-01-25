@@ -4,13 +4,12 @@
 
 {% block content %}
 <div class="d-flex justify-content-between mb-5">
-    <h2>Przydział zajęć</h2>
+    <h2>Przydział zajęć {{ year }}</h2>
     {% if request.user.is_superuser %}
         <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
     {% endif %}
 </div>
 {% if not is_empty %}
-
 <div>
     <h3 class="assignment-courses mb-3">Idź do:</h3>
     <div class="pt-4 pb-4 pl-5" style="background: #E5E5E5">

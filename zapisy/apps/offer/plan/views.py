@@ -4,7 +4,8 @@ from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record
-import os.path
+from django.http import JsonResponse
+
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
 PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
@@ -13,64 +14,63 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 
 def plan_view(request):
-    if request.user.is_superuser or BaseUser.is_employee(request.user):
-        employees = read_entire_sheet(
-            create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
-        assignments = read_entire_sheet(
-            create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
-        assignments_winter = []
-        assignments_summer = []
-        staff = {}
-        phds = {}
-        others = {}
-        pensum = 0
-        hours_summer = 0
-        hours_winter = 0
-        stats_summer = []
-        stats_winter = []
+    employees = read_entire_sheet(
+        create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
+    assignments = read_entire_sheet(
+        create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    assignments_winter = []
+    assignments_summer = []
+    staff = {}
+    phds = {}
+    others = {}
+    pensum = 0
+    hours_summer = 0
+    hours_winter = 0
+    stats_summer = []
+    stats_winter = []
 
-        staff, phds, others, pensum = prepare_employees_data(employees)
+    staff, phds, others, pensum = prepare_employees_data(employees)
 
-        for value in assignments:
-            code = value[11]
-            data = {'name': value[1], 'weekly': value[5],
-                    'type': value[2], 'other': value[6], 'id': value[0]}
+    for value in assignments:
+        code = value[11]
+        data = {'name': value[1], 'weekly': value[5],
+                'type': value[2], 'other': value[6], 'id': value[0]}
 
-            # divide courses for summer and winter semester
-            if value[9] == 'z':
-                value[0] = int(value[0])
-                assignments_winter.append(value)
+        # divide courses for summer and winter semester
+        if value[9] == 'z':
+            value[0] = int(value[0])
+            assignments_winter.append(value)
 
-                hours_winter += int(value[7])
-                if code in staff:
-                    staff[code]['weekly_winter'] += int(value[5])
-                    staff[code]['courses_winter'].append(data)
-                elif code in phds:
-                    phds[code]['weekly_winter'] += int(value[5])
-                    phds[code]['courses_winter'].append(data)
-                elif code in others:
-                    others[code]['weekly_winter'] += int(value[5])
-                    others[code]['courses_winter'].append(data)
+            hours_winter += int(value[7])
+            if code in staff:
+                staff[code]['weekly_winter'] += int(value[5])
+                staff[code]['courses_winter'].append(data)
+            elif code in phds:
+                phds[code]['weekly_winter'] += int(value[5])
+                phds[code]['courses_winter'].append(data)
+            elif code in others:
+                others[code]['weekly_winter'] += int(value[5])
+                others[code]['courses_winter'].append(data)
 
-            elif value[9] == 'l':
-                value[0] = int(value[0])
-                assignments_summer.append(value)
+        elif value[9] == 'l':
+            value[0] = int(value[0])
+            assignments_summer.append(value)
 
-                hours_summer += int(value[7])
-                if code in staff:
-                    staff[code]['weekly_summer'] += int(value[5])
-                    staff[code]['courses_summer'].append(data)
-                elif code in phds:
-                    phds[code]['weekly_summer'] += int(value[5])
-                    phds[code]['courses_summer'].append(data)
-                elif code in others:
-                    others[code]['weekly_summer'] += int(value[5])
-                    others[code]['courses_summer'].append(data)
+            hours_summer += int(value[7])
+            if code in staff:
+                staff[code]['weekly_summer'] += int(value[5])
+                staff[code]['courses_summer'].append(data)
+            elif code in phds:
+                phds[code]['weekly_summer'] += int(value[5])
+                phds[code]['courses_summer'].append(data)
+            elif code in others:
+                others[code]['weekly_summer'] += int(value[5])
+                others[code]['courses_summer'].append(data)
 
-            elif value[0] == 'z':
-                stats_winter.append(make_stats_record(value))
-            elif value[0] == 'l':
-                stats_summer.append(make_stats_record(value))
+        elif value[0] == 'z':
+            stats_winter.append(make_stats_record(value))
+        elif value[0] == 'l':
+            stats_summer.append(make_stats_record(value))
 
         is_empty = False if assignments_winter and assignments_summer else True
 
@@ -79,6 +79,7 @@ def plan_view(request):
             assignments_summer = prepare_assignments_data(assignments_summer)
 
         context = {
+            'year': SystemState.get_current_state().year,
             'is_empty': is_empty,
             'winter': assignments_winter,
             'summer': assignments_summer,
@@ -159,7 +160,7 @@ def generate_scheduler_file(request, slug):
             create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
         assignments = read_entire_sheet(
             create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
-        content = ""
+        content = []
         semester = ""
         if slug == 'zima':
             semester = 'z'
@@ -170,25 +171,23 @@ def generate_scheduler_file(request, slug):
 
         for employee in employees:
             if employee[4] != '' and employee[0] != 'pensum':
-                content += "o|" + \
-                    employee[5] + "|" + employee[2] + "|" + \
-                    employee[7] + "|" + employee[3] + "|" + employee[0] + "|\n"
-
+                content.append(
+                    {'type': 'employee', 'id': employee[5], 'first_name': employee[2],
+                     'last_name': employee[3], 'pensum': employee[0]})
         index = 1
         lp = False
         for assigment in assignments:
-            if lp and assigment[9] == semester:
-                content += "1|" + \
-                    str(index) + "|" + assigment[1] + \
-                    "|" + assigment[3] + "|" + assigment[5] + \
-                    '|' + assigment[11] + "|\n"
+            if lp and assigment[9] == semester and assigment[12] == 'TRUE':
+                content.append(
+                    {'type': 'course', 'semester': semester, 'id': index, 'course_name': assigment[1],
+                     'group_type': assigment[3], 'hours': assigment[5], 'teacher_id': assigment[11]})
                 index += 1
             if assigment[0] == "Lp":
                 lp = True
 
-        response = HttpResponse(content, content_type='text/plain')
+        response = JsonResponse(content, safe=False)
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + slug + str(current_year) + ".txt")
+            "przydzial" + "_" + slug + "_" + str(current_year) + ".json")
         return response
     else:
         return HttpResponse(status=403)

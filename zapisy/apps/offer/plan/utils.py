@@ -87,7 +87,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                                ('teacher', group.teacher.get_full_name()),
                                ('code', group.teacher.user.username),
                                ('type', group.human_readable_type()),
-                               ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else 0]
+                               ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else ('hours', 0)]
                 groups.append(course_info)
         else:
             course_info = [('course', course), ('semester', proposal_info.semester),
