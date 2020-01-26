@@ -298,7 +298,6 @@ def prepare_assignments_data(data: List[List]):
             record = process_value(record, value)
             # check if it's last elem in list
             if value == data[length - 1]:
-                print(record)
                 record = clean_up(record)
                 final.append(record)
         else:
@@ -418,14 +417,14 @@ def prepare_employees_data(employees: List):
                     'weekly_summer': 0,
                     'courses_winter': [],
                     'courses_summer': [],
-                    'id': value[4]
+                    'id': value[5]
                     }
             if value[1] == 'prac':
-                staff[value[5]] = data
+                staff[value[4]] = data
             elif value[1] == 'doktorant':
-                phds[value[5]] = data
+                phds[value[4]] = data
             else:
-                others[value[5]] = data
+                others[value[4]] = data
     return staff, phds, others, pensum
 
 
