@@ -92,7 +92,8 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                                ('semester', semester if semester else proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
                                ('code', group.teacher.user.username),
-                               ('type', group.human_readable_type()),
+                               ('type', group.human_readable_type(
+                               ) if group.human_readable_type() != 'Projekt' else 'Pracownia'),
                                ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else ('hours', 0)]
                 groups.append(course_info)
         else:
@@ -297,6 +298,7 @@ def prepare_assignments_data(data: List[List]):
             record = process_value(record, value)
             # check if it's last elem in list
             if value == data[length - 1]:
+                print(record)
                 record = clean_up(record)
                 final.append(record)
         else:
@@ -343,7 +345,6 @@ def prepare_assignments_data(data: List[List]):
             if value == data[length - 1]:
                 record = clean_up(record)
                 final.append(record)
-
     return final
 
 
@@ -416,14 +417,15 @@ def prepare_employees_data(employees: List):
                     'weekly_winter': 0,
                     'weekly_summer': 0,
                     'courses_winter': [],
-                    'courses_summer': []
+                    'courses_summer': [],
+                    'id': value[4]
                     }
             if value[1] == 'prac':
-                staff[value[4]] = data
+                staff[value[5]] = data
             elif value[1] == 'doktorant':
-                phds[value[4]] = data
+                phds[value[5]] = data
             else:
-                others[value[4]] = data
+                others[value[5]] = data
     return staff, phds, others, pensum
 
 
@@ -470,26 +472,26 @@ def sort_subject_groups_by_type(semester: List[List]):
 # function returns a List[List]
 def sort_by_type(group: List[List]):
     sorted_group = []
-    main_types = ['Wykład', 'Repetytorium', 'Ćwiczenia', 'Pracownia']
 
     for item in group:
-        if item[4][1] == main_types[0]:
+        if item[4][1] == 'Wykład':
             sorted_group.append(item)
+            group.remove(item)
 
     for item in group:
-        if item[4][1] == main_types[1]:
+        if item[4][1] == 'Repetytorium':
             sorted_group.append(item)
+            group.remove(item)
 
     for item in group:
-        if item[4][1] == main_types[2]:
+        if item[4][1] == 'Ćwiczenia':
             sorted_group.append(item)
+            group.remove(item)
 
     for item in group:
-        if item[4][1] == main_types[3]:
+        if item[4][1] == 'Pracownia':
             sorted_group.append(item)
+            group.remove(item)
 
-    for item in group:
-        if item[4][1] not in main_types:
-            sorted_group.append(item)
-
+    sorted_group += group
     return sorted_group

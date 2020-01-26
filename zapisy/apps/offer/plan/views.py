@@ -53,13 +53,16 @@ def plan_view(request):
             assignments_winter.append(value)
             hours_winter += int(value[7])
             if code in staff:
-                staff[code]['weekly_winter'] += int(value[5])
+                if value[5]:
+                    staff[code]['weekly_winter'] += int(value[5])
                 staff[code]['courses_winter'].append(data)
             elif code in phds:
-                phds[code]['weekly_winter'] += int(value[5])
+                if value[5]:
+                    phds[code]['weekly_winter'] += int(value[5])
                 phds[code]['courses_winter'].append(data)
             elif code in others:
-                others[code]['weekly_winter'] += int(value[5])
+                if value[5]:
+                    others[code]['weekly_winter'] += int(value[5])
                 others[code]['courses_winter'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_winter[lecture_type] += hours
@@ -70,14 +73,16 @@ def plan_view(request):
 
             hours_summer += int(value[7])
             if code in staff:
-                staff[code]['weekly_summer'] += int(value[5])
+                if value[5]:
+                    staff[code]['weekly_summer'] += int(value[5])
                 staff[code]['courses_summer'].append(data)
             elif code in phds:
-                if int(value[5]):
+                if value[5]:
                     phds[code]['weekly_summer'] += int(value[5])
-                    phds[code]['courses_summer'].append(data)
+                phds[code]['courses_summer'].append(data)
             elif code in others:
-                others[code]['weekly_summer'] += int(value[5])
+                if value[5]:
+                    others[code]['weekly_summer'] += int(value[5])
                 others[code]['courses_summer'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_summer[lecture_type] += hours
@@ -86,6 +91,7 @@ def plan_view(request):
 
     if not is_empty:
         assignments_winter = prepare_assignments_data(assignments_winter)
+        # print(assignments_winter)
         assignments_summer = prepare_assignments_data(assignments_summer)
         context = {
             'error': False,

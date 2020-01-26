@@ -196,7 +196,7 @@ def proposal_to_sheets_format(proposal):
             value[1][1],                        # semestr
             value[2][1],                        # przydział
             value[3][1],                        # kod prowadzącego
-            'Fałsz'                             # potwierdzony
+            'TRUE'                             # potwierdzony
         ]
 
         data.append(row)
