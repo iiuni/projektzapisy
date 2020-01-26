@@ -74,6 +74,12 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
         if data['instance']:
             previous_groups = Group.objects.filter(course=data['instance'][0])
             for group in previous_groups:
+                semester = ''
+                if course.endswith('(lato)'):
+                    semester = 'l'
+                elif course.endswith('(zima)'):
+                    semester = 'z'
+
                 hours = {'Wykład': proposal_info.hours_lecture,
                          'Ćwiczenia': proposal_info.hours_exercise,
                          'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab,
@@ -83,7 +89,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                          }
 
                 course_info = [('course', course),
-                               ('semester', proposal_info.semester),
+                               ('semester', semester if semester else proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
                                ('code', group.teacher.user.username),
                                ('type', group.human_readable_type()),

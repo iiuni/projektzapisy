@@ -84,7 +84,6 @@ def plan_view(request):
 
         is_empty = False if assignments_winter and assignments_summer else True
 
-    print(stats_winter)
     if not is_empty:
         assignments_winter = prepare_assignments_data(assignments_winter)
         assignments_summer = prepare_assignments_data(assignments_summer)
