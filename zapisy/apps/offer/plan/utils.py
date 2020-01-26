@@ -298,7 +298,6 @@ def prepare_assignments_data(data: List[List]):
             record = process_value(record, value)
             # check if it's last elem in list
             if value == data[length - 1]:
-                print(record)
                 record = clean_up(record)
                 final.append(record)
         else:
@@ -472,26 +471,26 @@ def sort_subject_groups_by_type(semester: List[List]):
 # function returns a List[List]
 def sort_by_type(group: List[List]):
     sorted_group = []
+    main_type = ['Wykład', 'Repetytorium', 'Ćwiczenia', 'Pracownia']
 
     for item in group:
-        if item[4][1] == 'Wykład':
+        if item[4][1] == main_type[0]:
             sorted_group.append(item)
-            group.remove(item)
 
     for item in group:
-        if item[4][1] == 'Repetytorium':
+        if item[4][1] == main_type[1]:
             sorted_group.append(item)
-            group.remove(item)
 
     for item in group:
-        if item[4][1] == 'Ćwiczenia':
+        if item[4][1] == main_type[2]:
             sorted_group.append(item)
-            group.remove(item)
 
     for item in group:
-        if item[4][1] == 'Pracownia':
+        if item[4][1] == main_type[3]:
             sorted_group.append(item)
-            group.remove(item)
 
-    sorted_group += group
+    for item in group:
+        if item[4][1] not in main_type:
+            sorted_group.append(item)
+
     return sorted_group

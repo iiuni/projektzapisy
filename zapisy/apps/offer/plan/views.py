@@ -18,6 +18,7 @@ def plan_view(request):
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+
     if employees is None or assignments is None:
         return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
     assignments_winter = []
@@ -87,12 +88,14 @@ def plan_view(request):
             lecture_type, hours = make_stats_record(value)
             stats_summer[lecture_type] += hours
 
-        is_empty = False if assignments_winter and assignments_summer else True
+    is_empty = False if assignments_winter and assignments_summer else True
 
     if not is_empty:
         assignments_winter = prepare_assignments_data(assignments_winter)
-        # print(assignments_winter)
         assignments_summer = prepare_assignments_data(assignments_summer)
+
+        is_empty = False if assignments_winter and assignments_summer else True
+        print(staff)
         context = {
             'error': False,
             'year': year,
