@@ -56,15 +56,18 @@ def plan_view(request):
             if code in staff:
                 if value[5]:
                     staff[code]['weekly_winter'] += int(value[5])
-                staff[code]['courses_winter'].append(data)
+                if value[-1] != 'FALSE':
+                    staff[code]['courses_winter'].append(data)
             elif code in phds:
                 if value[5]:
                     phds[code]['weekly_winter'] += int(value[5])
-                phds[code]['courses_winter'].append(data)
+                if value[-1] != 'FALSE':
+                    phds[code]['courses_winter'].append(data)
             elif code in others:
                 if value[5]:
                     others[code]['weekly_winter'] += int(value[5])
-                others[code]['courses_winter'].append(data)
+                if value[-1] != 'FALSE':
+                    others[code]['courses_winter'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_winter[lecture_type] += hours
 
@@ -76,15 +79,18 @@ def plan_view(request):
             if code in staff:
                 if value[5]:
                     staff[code]['weekly_summer'] += int(value[5])
-                staff[code]['courses_summer'].append(data)
+                if value[-1] != 'FALSE':
+                    staff[code]['courses_summer'].append(data)
             elif code in phds:
                 if value[5]:
                     phds[code]['weekly_summer'] += int(value[5])
-                phds[code]['courses_summer'].append(data)
+                if value[-1] != 'FALSE':
+                    phds[code]['courses_summer'].append(data)
             elif code in others:
                 if value[5]:
                     others[code]['weekly_summer'] += int(value[5])
-                others[code]['courses_summer'].append(data)
+                if value[-1] != 'FALSE':
+                    others[code]['courses_summer'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_summer[lecture_type] += hours
 
