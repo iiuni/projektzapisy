@@ -101,7 +101,7 @@ def plan_view(request):
         assignments_summer = prepare_assignments_data(assignments_summer)
 
         is_empty = False if assignments_winter and assignments_summer else True
-        print(staff)
+
         context = {
             'error': False,
             'year': year,
