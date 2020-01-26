@@ -249,7 +249,7 @@ def read_entire_sheet(sheet):
     try:
         sh = sheet.sheet1.get_all_values()
     except gspread.exceptions.APIError:
-        return None
+        return []
     return sh
 ##################################################
 # END READING ASSIGNMENTS SHEET LOGIC
