@@ -96,7 +96,12 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                                ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else ('hours', 0)]
                 groups.append(course_info)
         else:
-            course_info = [('course', course), ('semester', proposal_info.semester),
+            semester = ''
+            if course.endswith('(lato)'):
+                semester = 'l'
+            elif course.endswith('(zima)'):
+                semester = 'z'
+            course_info = [('course', course), ('semester', semester if semester else proposal_info.semester),
                            ('teacher', proposal_info.owner.get_full_name()), ('code', proposal_info.owner.user.username)]
             if proposal_info.hours_lecture:
                 groups.append(

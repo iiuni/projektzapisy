@@ -18,7 +18,7 @@ def plan_view(request):
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
-    if not employees or not assignments:
+    if employees is None or assignments is None:
         return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
     assignments_winter = []
     assignments_summer = []
