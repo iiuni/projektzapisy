@@ -29,8 +29,18 @@ def plan_view(request):
     pensum = 0
     hours_summer = 0
     hours_winter = 0
-    stats_summer = []
-    stats_winter = []
+
+    def make_stats_dict():
+        return {'wykład': 0,
+                'ćwiczenia': 0,
+                'ćwiczenia+pracownia': 0,
+                'pracownia': 0,
+                'seminarium': 0,
+                'repetytorium': 0,
+                'sekretarz': 0}
+
+    stats_summer = make_stats_dict()
+    stats_winter = make_stats_dict()
 
     staff, phds, others, pensum = prepare_employees_data(employees)
 
@@ -52,6 +62,8 @@ def plan_view(request):
             elif code in others:
                 others[code]['weekly_winter'] += int(value[5])
                 others[code]['courses_winter'].append(data)
+            lecture_type, hours = make_stats_record(value)
+            stats_winter[lecture_type] += hours
 
         elif value[9] == 'l':
             value[0] = int(value[0])
@@ -67,14 +79,12 @@ def plan_view(request):
             elif code in others:
                 others[code]['weekly_summer'] += int(value[5])
                 others[code]['courses_summer'].append(data)
-
-        elif value[0] == 'z':
-            stats_winter.append(make_stats_record(value))
-        elif value[0] == 'l':
-            stats_summer.append(make_stats_record(value))
+            lecture_type, hours = make_stats_record(value)
+            stats_summer[lecture_type] += hours
 
         is_empty = False if assignments_winter and assignments_summer else True
 
+    print(stats_winter)
     if not is_empty:
         assignments_winter = prepare_assignments_data(assignments_winter)
         assignments_summer = prepare_assignments_data(assignments_summer)

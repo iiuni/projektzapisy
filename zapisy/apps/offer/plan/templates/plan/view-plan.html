@@ -391,16 +391,16 @@
             <h8>w semestrze zimowym {{ hours_winter }}h, w tym:</h8>
         </div>
         <div class="p-2" style="background: #E5E5E5">
-            {% for stat in stats_winter %}
-                {{stat.type}}: {{stat.hours}}h<br>
+            {% for type, stat in stats_winter.items %}
+                {{type}}: {{stat}}h<br>
             {% endfor %}
         </div>
         <div class="p-2" style="background: #b3ccff">
             <h8>w semestrze letnim {{ hours_summer }}h, w tym:</h8>
         </div>
         <div class="p-2" style="background: #E5E5E5">
-            {% for stat in stats_summer %}
-                {{stat.type}}: {{stat.hours}}h<br>
+            {% for type, stat in stats_summer.items %}
+                {{type}}: {{stat}}h<br>
             {% endfor %}
         </div>
     </div>                     

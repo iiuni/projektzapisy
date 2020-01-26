@@ -425,4 +425,4 @@ def make_stats_record(stats: List):
              'rep': 'repetytorium',
              'admin': 'sekretarz'
              }
-    return {'type': types[stats[1]], 'hours': stats[2]}
+    return types[stats[3]], float(stats[7])
