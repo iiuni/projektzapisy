@@ -426,3 +426,59 @@ def make_stats_record(stats: List):
              'admin': 'sekretarz'
              }
     return types[stats[3]], float(stats[7])
+
+
+# this function divides semester into subject's groups
+# and sorts them by type(wyk, rep, ćw, prac, itd...)
+# function returns a List[List]
+def sort_subject_groups_by_type(semester: List[List]):
+    sorted_semester = []
+
+    group = []
+    last_name = semester[0][0][1]
+    i = 1
+    for val in semester:
+        if val[0][1] == last_name:
+            group.append(val)
+            if i == len(semester):
+                group = sort_by_type(group)
+                sorted_semester += group
+        else:
+            last_name = val[0][1]
+            group = sort_by_type(group)
+            sorted_semester += group
+            group = [val]
+            if i == len(semester):
+                sorted_semester += group
+        i += 1
+
+    return sorted_semester
+
+
+# this function sorts subject's groups by type
+# function returns a List[List]
+def sort_by_type(group: List[List]):
+    sorted_group = []
+
+    for item in group:
+        if item[4][1] == 'Wykład':
+            sorted_group.append(item)
+            group.remove(item)
+
+    for item in group:
+        if item[4][1] == 'Repetytorium':
+            sorted_group.append(item)
+            group.remove(item)
+
+    for item in group:
+        if item[4][1] == 'Ćwiczenia':
+            sorted_group.append(item)
+            group.remove(item)
+
+    for item in group:
+        if item[4][1] == 'Pracownia':
+            sorted_group.append(item)
+            group.remove(item)
+
+    sorted_group += group
+    return sorted_group

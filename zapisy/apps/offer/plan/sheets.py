@@ -163,10 +163,16 @@ def proposal_to_sheets_format(proposal):
             'Lp',
             'Przedmiot',
             'Forma zajęć',
-            'Semestr',
+            'Skrót f.z.',
+            'Niestandardowa liczba godzin/semestr',
+            'h/tydzień',
+            'Przelicznik',
             'h/semestr',
+            'Do pensum',
+            'Semestr',
             'Przydział',
             'Kod prowadzącego',
+            'Potwierdzone'
         ]
     ]
 
@@ -179,16 +185,39 @@ def proposal_to_sheets_format(proposal):
 
         row = [
             lp,
-            value[0][1],  # course
-            value[4][1],  # type
-            value[1][1],  # semester
-            value[5][1],  # hours
-            value[2][1],  # teacher
-            value[3][1],  # code
+            value[0][1],                        # nazwa kursu
+            value[4][1],                        # typ kursu
+            get_short_type_name(value[4][1]),   # skrót typu
+            '',                                 # niestangardowa liczba godzin/semestr
+            '',                                 # h/tydzień
+            '',                                 # przelicznik
+            value[5][1],                        # h/semestr
+            '',                                 # do pensum
+            value[1][1],                        # semestr
+            value[2][1],                        # przydział
+            value[3][1],                        # kod prowadzącego
+            'Fałsz'                             # potwierdzony
         ]
 
         data.append(row)
     return data
+
+
+def get_short_type_name(type_name: str):
+    if type_name == 'Wykład':
+        return 'w'
+    elif type_name == 'Repetytorium':
+        return 'rep'
+    elif type_name == 'Ćwiczenia':
+        return 'ćw'
+    elif type_name == 'Pracownia':
+        return 'prac'
+    elif type_name == 'Ćwiczenio-pracownia':
+        return 'ćw+prac'
+    elif type_name == 'Seminarium':
+        return 'sem'
+    elif type_name == 'Admin' or type_name == 'admin':
+        return 'admin'
 
 
 # votes is return type of function get_subjects_data
@@ -197,7 +226,7 @@ def update_plan_proposal_sheet(sheet, proposal):
     data = proposal_to_sheets_format(proposal)
     sheet.sheet1.clear()
     sheet.values_update(
-        range='A:G',
+        range='A:M',
         params={
             'valueInputOption': 'USER_ENTERED'
         },

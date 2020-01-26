@@ -3,12 +3,11 @@ from apps.users.models import BaseUser
 from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
-from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record
+from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type
 from django.http import JsonResponse
 
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
-PLAN_PROPOSAL_SPREADSHEET_ID = '17fDGtuZVUZlUztXqtBn1tuOqkZjCTPJUb14p5YQrnck'
 CLASS_ASSIGNMENT_SPREADSHEET_ID = '1jy195Cvfly7SJ1BI_-eBDjB4tx706ra35GCdFqmGDVM'
 EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
@@ -84,7 +83,6 @@ def plan_view(request):
 
         is_empty = False if assignments_winter and assignments_summer else True
 
-    print(stats_winter)
     if not is_empty:
         assignments_winter = prepare_assignments_data(assignments_winter)
         assignments_summer = prepare_assignments_data(assignments_summer)
@@ -125,7 +123,6 @@ def plan_create(request):
         context = {
             'courses_proposal': courses,
             'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID,
-            'plan_proposal_sheet_id': PLAN_PROPOSAL_SPREADSHEET_ID,
             'class_assignment_sheet_id': CLASS_ASSIGNMENT_SPREADSHEET_ID,
             'employees_sheet_id': EMPLOYEES_SPREADSHEET_ID
         }
@@ -142,16 +139,26 @@ def plan_vote(request):
                 picked_courses.append(course)
         picked_courses.sort()
         all_courses = get_votes(1)
-        picked_courses_accurate_info = []
+        picked_courses_accurate_info_z = []
+        picked_courses_accurate_info_l = []
         current_year = SystemState.get_current_state().year
         for key, value in all_courses.items():
             if key in picked_courses:
                 subject = (key, value[current_year]['semester'],
                            value[current_year]['proposal'])
-                picked_courses_accurate_info.append(subject)
+                if value[current_year]['semester'] == 'z':
+                    picked_courses_accurate_info_z.append(subject)
+                else:
+                    picked_courses_accurate_info_l.append(subject)
 
-        sheet = create_sheets_service(PLAN_PROPOSAL_SPREADSHEET_ID)
-        proposal = get_subjects_data(picked_courses_accurate_info, 3)
+        sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+        proposal_z = get_subjects_data(picked_courses_accurate_info_z, 3)
+        proposal_l = get_subjects_data(picked_courses_accurate_info_l, 3)
+
+        proposal_z = sort_subject_groups_by_type(proposal_z)
+        proposal_l = sort_subject_groups_by_type(proposal_l)
+        proposal = proposal_z + proposal_l
+
         update_plan_proposal_sheet(sheet, proposal)
     return HttpResponseRedirect(reverse('plan-create'))
 
