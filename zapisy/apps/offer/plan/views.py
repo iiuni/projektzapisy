@@ -73,8 +73,9 @@ def plan_view(request):
                 staff[code]['weekly_summer'] += int(value[5])
                 staff[code]['courses_summer'].append(data)
             elif code in phds:
-                phds[code]['weekly_summer'] += int(value[5])
-                phds[code]['courses_summer'].append(data)
+                if int(value[5]):
+                    phds[code]['weekly_summer'] += int(value[5])
+                    phds[code]['courses_summer'].append(data)
             elif code in others:
                 others[code]['weekly_summer'] += int(value[5])
                 others[code]['courses_summer'].append(data)
