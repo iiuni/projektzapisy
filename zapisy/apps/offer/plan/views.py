@@ -106,7 +106,7 @@ def plan_view(request):
         }
         return render(request, 'plan/view-plan.html', context)
     else:
-        return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False,  'year': year})
+        return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False, 'year': year})
 
 
 def plan_create(request):
