@@ -404,6 +404,7 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
 
     return TemplateResponse(request, 'schedule/events_report_' + report_type + '_pdf.html', context)
 
+
 @login_required
 @permission_required('schedule.manage_events')
 def events_raport_course(request, rooms, semester):
