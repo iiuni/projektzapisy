@@ -127,6 +127,9 @@ class ReportFormDate(forms.Form):
 class ReportFormWeek(forms.Form):
     today = date.today().isoformat()
     rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
+    weeks = forms.CharField(
+        max_length=10,
+        widget=forms.Select())
 
 
 class ConflictsForm(forms.Form):

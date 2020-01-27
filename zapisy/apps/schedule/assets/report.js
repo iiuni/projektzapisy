@@ -14,5 +14,6 @@ $(document).ready(() => {
     });
 
     $('#id_rooms').addClass('form-control');
+    $('#id_weeks').addClass('form-control');
 
 });

@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 import operator
 from apps.enrollment.courses.models.classroom import Classroom, floors
 from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
 from apps.schedule.filters import EventFilter, ExamFilter
@@ -347,27 +348,33 @@ def events_report_date(request):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report_week(request):
+    semester = Semester.get_current_semester()
     if request.method == 'POST':
         form = ReportFormWeek(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
                                         for x in Classroom.get_in_institute(reservation=True)]
-
         if form.is_valid():
             rooms = form.cleaned_data["rooms"]
-            curr_date = datetime.date.today()
-            beg_date = curr_date - datetime.timedelta(days=curr_date.weekday())
+            week = form.cleaned_data["weeks"]
+            if week == 'courseterm':
+                return events_raport_course(request, rooms, semester)
+            beg_date = datetime.datetime.strptime(week, "%Y-%m-%d")
             end_date = beg_date + datetime.timedelta(days=6)
             report_type = 'week'
-            semester = Semester.get_current_semester()
             return events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, semester)
     else:
         form = ReportFormWeek()
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
         for room in Classroom.get_in_institute(reservation=True):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
+
+    weeks = [(week[0], f"{week[0]} - {week[1]}") for week in semester.get_all_weeks()]
+    weeks.insert(0, ('courseterm', "Generuj z planu zajęć"))
+    form.fields["weeks"].widget.choices = weeks
     context = {
         'form': form
     }
+
     return TemplateResponse(request, 'schedule/events_report_week.html', context)
 
 
@@ -396,3 +403,25 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
     }
 
     return TemplateResponse(request, 'schedule/events_report_' + report_type + '_pdf.html', context)
+
+@login_required
+@permission_required('schedule.manage_events')
+def events_raport_course(request, rooms, semester):
+    events = []
+    # we are using this function for sorting
+    for room in rooms:
+        try:
+            cr = Classroom.objects.get(id=room)
+        except ObjectDoesNotExist:
+            raise Http404
+        # probably not safe
+        events.append((cr, CourseTerm.objects.filter(
+            group__course__semester=semester,
+            classrooms=cr,
+        ).order_by('dayOfWeek', 'start_time')))
+    context = {
+        'events': events,
+        'semester': semester
+    }
+
+    return TemplateResponse(request, 'schedule/events_report_courses.html', context)
