@@ -23,6 +23,7 @@ from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
 from apps.users.models import BaseUser
 from .forms import ReportFormDate, ReportFormWeek
+from .models.message import EventModerationMessage
 
 from xhtml2pdf import pisa
 import io
@@ -154,27 +155,32 @@ def history(request):
 
 @login_required
 @require_POST
+@permission_required('schedule.manage_events')
 def decision(request, event_id):
-    from .models.message import EventModerationMessage
-
     event = Event.get_event_for_moderation_only_or_404(event_id, request.user)
-
     form = DecisionForm(request.POST, instance=event)
-
     event_status = event.status
+    conflicts = event.get_conflicted()
+    if conflicts:
+        event.term_set.update(ignore_conflicts=True)
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
-            messages.error(request, 'Status wydarzenia nie został zmieniony')
+            messages.error(request, "Status wydarzenia nie został zmieniony")
         else:
             event_obj = form.save()
             msg = EventModerationMessage()
             msg.author = request.user
-            msg.message = 'Status wydarzenia został zmieniony na ' + \
+            msg.message = "Status wydarzenia został zmieniony na " + \
                 str(event_obj.get_status_display())
             msg.event = event_obj
             msg.save()
-            messages.success(request, 'Status wydarzenia został zmieniony')
+            messages.success(request, "Status wydarzenia został zmieniony")
+            if event_obj.status == Event.STATUS_ACCEPTED:
+                for conflict in conflicts:
+                    messages.warning(request, "Powstał konflikt: " + conflict.title)
+    else:
+        messages.error(request, form.non_field_errors())
 
     return redirect(reverse('events:show', args=[str(event.id)]))
 
@@ -188,10 +194,7 @@ def event(request, event_id):
 
     event = Event.get_event_or_404(event_id, request.user)
     moderation_messages = EventModerationMessage.get_event_messages(event)
-    moderation_form = EventModerationMessageForm()
     event_messages = EventMessage.get_event_messages(event)
-    messages_form = EventMessageForm()
-    decision_form = DecisionForm(instance=event)
 
     return TemplateResponse(request, 'schedule/event.html', locals())
 
@@ -247,20 +250,6 @@ def change_interested(request, event_id):
         messages.success(request, 'Obserwujesz wydarzenie')
 
     return redirect(event)
-
-
-@login_required
-@permission_required('schedule.manage_events')
-def statistics(request):
-    from apps.enrollment.courses.models import CourseInstance
-    from apps.enrollment.courses.models.semester import Semester
-
-    semester_id = request.GET.get('semester_id', None)
-    semester = Semester.get_by_id_or_default(semester_id)
-
-    exams = CourseInstance.objects.filter(semester=semester, has_exam=True)
-
-    return TemplateResponse(request, 'schedule/statistics.html', locals())
 
 
 @login_required
