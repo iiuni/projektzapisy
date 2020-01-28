@@ -9,11 +9,8 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
-from apps.offer.plan.sheets import create_sheets_service, read_entire_sheet
 from functools import reduce
 from typing import List, Tuple
-
-EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 
 def propose(vote):
@@ -60,7 +57,6 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
     # | type      | group type (lecture, lab etc.)         |
     # | hours     | hours allocated for this type of class |
 
-    employees = read_entire_sheet(create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
     course_data = {}
     states = get_year_list(years)
 
@@ -91,18 +87,10 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                          'Pracownia': proposal_info.hours_lab
                          }
 
-                code_sz = group.teacher.user.username
-                code = code_sz
-
-                for employee in employees:
-                    if code_sz in employee:
-                        code = employee[4]
-                        break
-
                 course_info = [('course', course),
                                ('semester', semester if semester else proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
-                               ('code', code),
+                               ('code', group.teacher.user.username),
                                ('type', group.human_readable_type(
                                ) if group.human_readable_type() != 'Projekt' else 'Pracownia'),
                                ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else ('hours', 0)]
@@ -431,11 +419,11 @@ def prepare_employees_data(employees: List):
                     'id': value[5]
                     }
             if value[1] == 'prac':
-                staff[value[4]] = data
+                staff[value[5]] = data
             elif value[1] == 'doktorant':
-                phds[value[4]] = data
+                phds[value[5]] = data
             else:
-                others[value[4]] = data
+                others[value[5]] = data
     return staff, phds, others, pensum
 
 

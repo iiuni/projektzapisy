@@ -48,6 +48,7 @@ def plan_view(request):
         code = value[11]
         data = {'name': value[1], 'weekly': value[5],
                 'type': value[2], 'other': value[6], 'id': value[0]}
+
         # divide courses for summer and winter semester
         if value[9] == 'z':
             value[0] = int(value[0])
