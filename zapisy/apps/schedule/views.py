@@ -332,8 +332,7 @@ def events_report_date(request):
             beg_date = form.cleaned_data["beg_date"]
             end_date = form.cleaned_data["end_date"]
             rooms = form.cleaned_data["rooms"]
-            report_type = 'date'
-            return events_raport_type_pdf(request, beg_date, end_date, rooms, report_type)
+            return events_raport_type_pdf(request, beg_date, end_date, rooms, 'date')
     else:
         form = ReportFormDate()
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
@@ -360,8 +359,7 @@ def events_report_week(request):
                 return events_raport_course(request, rooms, semester)
             beg_date = datetime.datetime.strptime(week, "%Y-%m-%d")
             end_date = beg_date + datetime.timedelta(days=6)
-            report_type = 'week'
-            return events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, semester)
+            return events_raport_type_pdf(request, beg_date, end_date, rooms, 'week', semester)
     else:
         form = ReportFormWeek()
         form.fields["rooms"].choices = [(floor[1], []) for floor in floors]
@@ -402,7 +400,7 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
         'semester': semester
     }
 
-    return TemplateResponse(request, 'schedule/events_report_' + report_type + '_pdf.html', context)
+    return TemplateResponse(request, 'schedule/report_' + report_type + '.html', context)
 
 
 @login_required
@@ -425,4 +423,4 @@ def events_raport_course(request, rooms, semester):
         'semester': semester
     }
 
-    return TemplateResponse(request, 'schedule/events_report_courses.html', context)
+    return TemplateResponse(request, 'schedule/report_week_courses.html', context)
