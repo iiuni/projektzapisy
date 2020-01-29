@@ -9,7 +9,22 @@
     <li>Na jego podstawie wybierz przedmioty z listy i wygeneruj arkusz z proponowanym przydziałem zajęć.</li>
     <li>W razie potrzeby, dokonaj zmian w arkuszu z pracownikami.</li>
     <li>Wypełnij arkusz z przydziałem zajęć. Każdy dodany przedmiot powinien mieć unikalny numer 'Lp', zaś grupy należące do tego samego przedmiotu powinny mieć ten sam numer.
-        Statystyki generują się automatycznie.
+        Statystyki generują się automatycznie. Kolumna "Potwierdzone" powinna mieć wartość "TRUE" lub "FALSE". Przy dodawaniu nowych przedmiotów, pamiętaj o zachowaniu
+        posortowanego porządku.
+    </li>
+    <li>
+        Jeżeli do jednej grupy przypisany jest więcej niż jeden prowadzący, należy każdy wpis oznaczyć jednakową liczbą w kolumnie
+        "Wielu prowadzących". <br>
+        Przykład:<br>
+        Niech wykład z Metod Programowania prowadząc trzej nauczyciele. Każdy wpis z wykładem powinien być oznaczony tą samą liczbą w kolumnie "Wielu prowadzących",
+        np.<br>
+        |Metody Programowania|Wykład|...|(kod prowadzącego)|2|<br>
+        Ważne, aby liczba ta była unikalna w kontekście danego przedmiotu. To znaczy, jeżeli np. dodatkowo dwóch prowadzących zostaje przypisanych do jednej grupy
+        ćwiczeniowej z Metod Programowania, należy te wpisy oznaczyć inną liczbą, np. <br>
+        |Metody Programowania|Ćwiczenia|...|(kod prowadzącego)|3|.<br>
+        W przypadku innych przedmiotów, liczby te mogą się powtarzać. Gdyby dodatkowo do jednej pracownii Rozwoju schedulera przypisano dwóch nauczycieli, można ten wpis opisać
+        np. tak: <br>
+        |Projekt: Rozwój schedulera|...|(kod prowadzącego)|2|
     </li>
 </ol>
 <a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">>> Wyniki głosowania - arkusz Google</a>
@@ -19,8 +34,11 @@
 <p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
 <a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
 <p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
-<a href="{% url 'generate-scheduler-file' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
+<a href="{% url 'generate-scheduler-file-json' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
+<a href="{% url 'generate-scheduler-file-json' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
+<p class="lead">Aby wygenerować dane z pliku do schedulera w formacie csv kliknij guzik pod spodem:</p>
+<a href="{% url 'generate-scheduler-file-csv' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
+<a href="{% url 'generate-scheduler-file-csv' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
 
 <h4>Przedmioty na następny rok:</h4>
 <p class="lead">

@@ -9,7 +9,8 @@ urlpatterns = [
     path('create/sheet', views.plan_create_voting_sheet,
          name='plan-create-voting-sheet'),
     # generate scheduler file
-    path('create/scheduler/<slug:slug>', views.generate_scheduler_file,
-         name='generate-scheduler-file'),
-
+    path('create/scheduler/<slug:slug>/json', views.generate_scheduler_file_json,
+         name='generate-scheduler-file-json'),
+    path('create/scheduler/<slug:slug>/csv', views.generate_scheduler_file_csv,
+         name='generate-scheduler-file-csv'),
 ]

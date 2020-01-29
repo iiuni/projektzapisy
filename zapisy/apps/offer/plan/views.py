@@ -5,7 +5,11 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from apps.offer.proposal.models import Proposal, ProposalStatus
+from django.core.exceptions import ObjectDoesNotExist
+import json
+import csv
 
 
 VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
@@ -199,7 +203,7 @@ def plan_create_voting_sheet(request):
     return HttpResponseRedirect(reverse('plan-create'))
 
 
-def generate_scheduler_file(request, slug):
+def generate_scheduler_file(request, slug, format):
     if request.user.is_superuser:
         current_year = SystemState.get_current_state().year
         employees = read_entire_sheet(
@@ -221,19 +225,30 @@ def generate_scheduler_file(request, slug):
 
         for employee in employees:
             if employee[4] != '' and employee[0] != 'pensum':
-                content.append(
-                    {'type': 'employee', 'id': employee[5], 'first_name': employee[2],
-                     'last_name': employee[3], 'pensum': float(employee[0])})
+                if format == 'json':
+                    content.append(
+                        {'type': 'employee', 'id': employee[5], 'first_name': employee[2],
+                         'last_name': employee[3], 'pensum': float(employee[0])})
+                elif format == 'csv':
+                    content.append(
+                        ['employee', employee[5], employee[2], employee[3], float(employee[0])])
         index = 1
         lp = False
-        votes = get_votes(1)
         for assignment in assignments:
             if lp and assignment[9] == semester and assignment[12] != 'FALSE':
                 id = -1
+                course_id = -1
                 if assignment[2].lower() not in groups:
                     continue
-                if assignment[1] not in votes:
+                try:
+                    proposal = Proposal.objects.filter(name=assignment[1])
+                    for p in proposal:
+                        if p.status != ProposalStatus.WITHDRAWN:
+                            course_id = p.id
+                            break
+                except Proposal.ObjectDoesNotExist:
                     course_id = -1
+
                 if assignment[-1]:
                     if assignment[1] in multiple_teachers and assignment[-1] in multiple_teachers[assignment[1]]:
                         id = multiple_teachers[assignment[1]][assignment[-1]]
@@ -244,17 +259,44 @@ def generate_scheduler_file(request, slug):
                                           ][assignment[-1]] = index
                 else:
                     id = index
-                course_id = votes[assignment[1]][current_year]['proposal']
-                content.append(
-                    {'type': 'course', 'semester': semester, 'course_id': course_id, 'course_name': assignment[1], 'id': id,
-                     'group_type': int(groups[assignment[2].lower()]), 'hours': int(assignment[5]), 'teacher_id': assignment[11]})
+                if format == 'json':
+                    content.append(
+                        {'type': 'course', 'semester': semester, 'course_id': course_id, 'course_name': assignment[1], 'id': id,
+                         'group_type': int(groups[assignment[2].lower()]), 'hours': int(assignment[5]), 'teacher_id': assignment[11]})
+                elif format == 'csv':
+                    content.append(['course', semester, course_id, assignment[1], id, int(
+                        groups[assignment[2].lower()]), int(assignment[5]), assignment[11]])
                 index += 1
             if assignment[0] == "Lp":
                 lp = True
 
-        response = JsonResponse(content, safe=False)
-        response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + "_" + slug + "_" + str(current_year) + ".json")
-        return response
+        if format == 'json':
+            response = JsonResponse(content, safe=False)
+            response['Content-Disposition'] = 'attachment; filename={0}'.format(
+                "przydzial" + "_" + slug + "_" + str(current_year) + ".json")
+            return response
+        elif format == 'csv':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename={0}'.format(
+                "przydzial" + "_" + slug + "_" + str(current_year) + ".csv")
+            writer = csv.writer(response)
+            writer.writerow(['Typ', 'ID', 'Imię', 'Nazwisko', 'Pensum'])
+            reached_courses = False
+            for c in content:
+                if c[0] != 'employee' and not reached_courses:
+                    writer.writerow([''])
+                    writer.writerow(
+                        ['Typ', 'Semestr', 'ID kursu', 'Nazwa kursu', 'ID grupy', 'Typ grupy', 'Godziny', 'ID nauczyciela'])
+                    reached_courses = True
+                writer.writerow(c)
+            return response
     else:
         return HttpResponse(status=403)
+
+
+def generate_scheduler_file_json(request, slug):
+    return generate_scheduler_file(request, slug, 'json')
+
+
+def generate_scheduler_file_csv(request, slug):
+    return generate_scheduler_file(request, slug, 'csv')
