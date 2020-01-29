@@ -21,7 +21,7 @@ def create_sheets_service(sheet_id):
 
 # votes is return type of function get_votes
 # this functions prepare data to be in a sheet format
-# this function returns list with voting data for every course List[List}
+# this function returns list with voting data for every course List[List]
 # and sheet header
 def votes_to_sheets_format(votes):
     values = create_voting_results_sheet_layout(votes)
@@ -172,7 +172,8 @@ def proposal_to_sheets_format(proposal):
             'Semestr',
             'Przydział',
             'Kod prowadzącego',
-            'Potwierdzone'
+            'Potwierdzone',
+            'Wielu prowadzących'
         ]
     ]
 
@@ -196,7 +197,8 @@ def proposal_to_sheets_format(proposal):
             value[1][1],                        # semestr
             value[2][1],                        # przydział
             value[3][1],                        # kod prowadzącego
-            'FALSE'                             # potwierdzony
+            'FALSE',                            # potwierdzony
+            ''                                  # wielu prowadzących
         ]
 
         data.append(row)
@@ -216,7 +218,7 @@ def get_short_type_name(type_name: str):
         return 'ćw+prac'
     elif type_name == 'Seminarium':
         return 'sem'
-    elif type_name == 'Admin' or type_name == 'admin':
+    elif type_name.lower() == 'admin':
         return 'admin'
 
 
@@ -226,7 +228,7 @@ def update_plan_proposal_sheet(sheet, proposal):
     data = proposal_to_sheets_format(proposal)
     sheet.sheet1.clear()
     sheet.values_update(
-        range='A:M',
+        range='A:N',
         params={
             'valueInputOption': 'USER_ENTERED'
         },

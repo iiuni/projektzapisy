@@ -291,7 +291,7 @@ def prepare_assignments_data(data: List[List]):
     }
     for value in data:
         if value[0] == lp:
-            if value[-1] == 'FALSE':
+            if value[-2] == 'FALSE':
                 continue
 
             record = process_value(record, value)
@@ -336,7 +336,7 @@ def prepare_assignments_data(data: List[List]):
                         'teachers': []
                     }
                 }
-            if value[-1] == 'FALSE':
+            if value[-2] == 'FALSE':
                 continue
 
             record = process_value(record, value)

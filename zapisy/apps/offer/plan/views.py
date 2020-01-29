@@ -4,6 +4,7 @@ from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type
+from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from django.http import JsonResponse
 
 
@@ -50,29 +51,26 @@ def plan_view(request):
                 'type': value[2], 'other': value[6], 'id': value[0]}
 
         # divide courses for summer and winter semester
-        if value[9] == 'z':
+        if value[9] == 'z' and value[-2] != 'FALSE':
             value[0] = int(value[0])
             assignments_winter.append(value)
             hours_winter += int(value[7])
             if code in staff:
                 if value[5]:
                     staff[code]['weekly_winter'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    staff[code]['courses_winter'].append(data)
+                staff[code]['courses_winter'].append(data)
             elif code in phds:
                 if value[5]:
                     phds[code]['weekly_winter'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    phds[code]['courses_winter'].append(data)
+                phds[code]['courses_winter'].append(data)
             elif code in others:
                 if value[5]:
                     others[code]['weekly_winter'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    others[code]['courses_winter'].append(data)
+                others[code]['courses_winter'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_winter[lecture_type] += hours
 
-        elif value[9] == 'l':
+        elif value[9] == 'l' and value[-2] != 'FALSE':
             value[0] = int(value[0])
             assignments_summer.append(value)
 
@@ -80,18 +78,15 @@ def plan_view(request):
             if code in staff:
                 if value[5]:
                     staff[code]['weekly_summer'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    staff[code]['courses_summer'].append(data)
+                staff[code]['courses_summer'].append(data)
             elif code in phds:
                 if value[5]:
                     phds[code]['weekly_summer'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    phds[code]['courses_summer'].append(data)
+                phds[code]['courses_summer'].append(data)
             elif code in others:
                 if value[5]:
                     others[code]['weekly_summer'] += int(value[5])
-                if value[-1] != 'FALSE':
-                    others[code]['courses_summer'].append(data)
+                others[code]['courses_summer'].append(data)
             lecture_type, hours = make_stats_record(value)
             stats_summer[lecture_type] += hours
 
@@ -213,27 +208,48 @@ def generate_scheduler_file(request, slug):
             create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
         content = []
         semester = ""
+        multiple_teachers = {}
         if slug == 'zima':
             semester = 'z'
         elif slug == 'lato':
             semester = 'l'
         else:
             return HttpResponse(status=404)
+        groups = {}
+        for group in GROUP_TYPE_CHOICES:
+            groups[group[1]] = group[0]
 
         for employee in employees:
             if employee[4] != '' and employee[0] != 'pensum':
                 content.append(
                     {'type': 'employee', 'id': employee[5], 'first_name': employee[2],
-                     'last_name': employee[3], 'pensum': employee[0]})
+                     'last_name': employee[3], 'pensum': float(employee[0])})
         index = 1
         lp = False
-        for assigment in assignments:
-            if lp and assigment[9] == semester and assigment[12] == 'TRUE':
+        votes = get_votes(1)
+        for assignment in assignments:
+            if lp and assignment[9] == semester and assignment[12] != 'FALSE':
+                id = -1
+                if assignment[2].lower() not in groups:
+                    continue
+                if assignment[1] not in votes:
+                    course_id = -1
+                if assignment[-1]:
+                    if assignment[1] in multiple_teachers and assignment[-1] in multiple_teachers[assignment[1]]:
+                        id = multiple_teachers[assignment[1]][assignment[-1]]
+                    else:
+                        id = index
+                        multiple_teachers[assignment[1]] = {}
+                        multiple_teachers[assignment[1]
+                                          ][assignment[-1]] = index
+                else:
+                    id = index
+                course_id = votes[assignment[1]][current_year]['proposal']
                 content.append(
-                    {'type': 'course', 'semester': semester, 'id': index, 'course_name': assigment[1],
-                     'group_type': assigment[3], 'hours': assigment[5], 'teacher_id': assigment[11]})
+                    {'type': 'course', 'semester': semester, 'course_id': course_id, 'course_name': assignment[1], 'id': id,
+                     'group_type': int(groups[assignment[2].lower()]), 'hours': int(assignment[5]), 'teacher_id': assignment[11]})
                 index += 1
-            if assigment[0] == "Lp":
+            if assignment[0] == "Lp":
                 lp = True
 
         response = JsonResponse(content, safe=False)
