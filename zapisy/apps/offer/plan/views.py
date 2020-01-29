@@ -5,7 +5,7 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
 from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from django.core.exceptions import ObjectDoesNotExist
 import json
