@@ -1,50 +1,56 @@
-"""
-    Skrypt służy do pobierania danych z Schedulera do aktualizowania danych Systemu Zapisów.
-    Wymaga zmiennych systemowych: SLACK_WEBHOOK_URL, SCHEDULER_USERNAME, SCHEDULER_PASSWORD
-    Wymagane argumenty to linki do api schedulera. Pierwszy do api/config, drugi do api/task. Trzeci argument to
-    klucz podstawowy semestru. Jest on opcjonalny. Niepodanie go spowoduje uruchomienie z aktualnym semestrem.
-    Przy pierwszym użyciu w semestrze nie należy używać flagi --slack. Gdyż napisanie do Slacka tak dużej ilości
-    nowych powiadomień o zmianach, spowoduje błąd przy pisaniu do Slacka.
+"""The script is used to fetch data from the Scheduler.
 
-    Flaga --slack wysyła powiadomienia o zmianach w termach, grupach, kursach, propozycjach przedmiotu,
-        mapach pracowników i kursów. Zmiany także obejmują usuwanie i tworzenie nowych obiektów.
-    Flaga --delete_groups usuwa nieużyte termy wraz z grupami, mapy pracowników, mapy kursów w danym semestrze.
-        Powinna zawsze być użyta. Jednak jeśli z jakiś względów nie chce się jej użyć, to można pominąć przy
-        ręcznym uruchamianiu.
-    Flaga --auto_mode sprawia, że skrypt wykona się bez interakcji. Nieznalezione kursy, pracownicy zostaną zmapowane
-        by nie importować ich w przyszłości i nie zostaną zimportowane. Gdy flaga --slack jest użyta, odpowiednie
-        powiadomienia zostaną wysłane do Slacka o podjętych decyzjach zmapowania.
-    Flaga --dry_run sprawia, że wszystkie zmiany w bazie danych zostaną cofnięte na koniec skryptu. W szczególności
-        zmiany zostaną cofnięte, gdy wystąpi jakiś błąd w trakcie wykonania skryptu lub zostanie celowo wcześniej
-        zakończony. Można bezpiecznie użyć w ramach testów.
-    Instrukcja użycia flag:
-    Pierwsze uruchomienia / ręczne uruchomienia: bez --slack, bez --auto_mode, powinno się użyć --delete_groups,
-                                                --dry_run dowolnie do testowania - zalecane przy pierwszym użyciu
-    W trakcie semestru / automatyczne uruchomienia: zawsze --slack, zawsze --auto_mode, zawsze --delete_groups,
-                                                    nigdy --dry_run
-    Przykładowe użycie: python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
-        http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --delete_groups
+ Requires system variables: SLACK_WEBHOOK_URL, SCHEDULER_USERNAME, SCHEDULER_PASSWORD
+ Required arguments are links to the api scheduler.
+ First to api/config, second to api/task.
+ The third argument is semester primary key. It is optional.
+ Lack of third argument will result in running with the current semester.
+ When using for the first time in a new semester, do not use the --slack flag,
+ because writing to Slack so much notifications will cause an error.
+
+ The --slack flag sends notifications about changes in terms, groups, courses,
+    proposals, employee maps and courses. Changes also include deleting
+    and creating new objects.
+ The --delete_groups flag removes unused terms with groups, employee maps,
+    course maps in a given semester. It should always be used. However,
+    if for some reason you do not want to use it, you can skip during manually usage.
+ The --auto_mode flag causes the script to execute without interaction.
+    Not found courses, employees will be mapped to not to import them in the future
+    and they will not be imported. When the --slack flag is used, appropriate
+    notifications will be sent to Slack about the mappings.
+ The --dry_run flag causes all changes to the database to be undone at the end
+    of the script. The changes will be undone if an error occurs during
+    the script execution or it is exited before end.
+    It can be safely used for testing.
+
+ Instructions for using flags:
+    First use / manual: no --slack, no --auto_mode, you should use --delete_groups,
+        --dry_run freely for testing - recommended on first use
+    During the semester / automatic: always --slack, always --auto_mode,
+        always --delete_groups, never --dry_run
+ Example usage: python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
+    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --delete_groups
 """
 
-from datetime import time
+import collections
 import json
 import os
+from datetime import time
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 import environ
 import requests
-
-from apps.users.models import Employee
-from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseInstance
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.courses.models.group import Group
 from apps.offer.proposal.models import Proposal, ProposalStatus
-from apps.schedulersync.models import TermSyncData, EmployeeMap, CourseMap
-import collections
+from apps.schedulersync.models import CourseMap, EmployeeMap, TermSyncData
+from apps.users.models import Employee
+
 
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
@@ -56,21 +62,20 @@ DAYS_OF_WEEK = {'1': 'poniedziałek', '2': 'wtorek', '3': 'środa',
                 '4': 'czwartek', '5': 'piątek', '6': 'sobota', '7': 'niedziela'}
 
 
-class Info:
+class Summary:
     """Stores information which objects to delete and what to write to Slack and at the end of script"""
-    created_terms = 0
-    updated_terms = 0
-    created_courses = 0
-    used_courses = 0
-    all_updates = []
-    all_creations = []
-    all_deletions = []
-    used_map_courses = []
-    used_map_employees = []
-    used_scheduler_ids = []
-    multiple_proposals = []
-    maps_added = []
-    maps_deleted = []
+    def __init__(self):
+        self.created_courses = 0
+        self.used_courses = 0
+        self.updated_terms = []
+        self.created_terms = []
+        self.deleted_terms = []
+        self.used_map_courses = []
+        self.used_map_employees = []
+        self.used_scheduler_ids = []
+        self.multiple_proposals = []
+        self.maps_added = []
+        self.maps_deleted = []
 
 
 SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
@@ -79,10 +84,11 @@ SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
 class SchedulerData:
     """ All useful data laid out from Scheduler API, list and tuples of SchedulerAPIGroup,
         SchedulerAPITerm, SchedulerAPIResult, SchedulerAPIEmployee"""
-    groups = []
-    terms = {}
-    results = {}
-    teachers = {}
+    def __init__(self):
+        self.groups = []
+        self.terms = {}
+        self.results = {}
+        self.teachers = {}
 
 
 # id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
@@ -95,20 +101,22 @@ SchedulerAPITeacher = collections.namedtuple('Teacher', ['first_name', 'last_nam
 
 class GroupData:
     """ Single group object data to save to SZ ( System Zapisów ) database"""
-    scheduler_id = int
-    course = None
-    teacher = None
-    type = str
-    limit = int
+    def __init__(self):
+        self.scheduler_id = int
+        self.course = None
+        self.teacher = None
+        self.type = str
+        self.limit = int
 
 
 class TermData:
     """ Single term object data to save to SZ ( System Zapisów ) database"""
-    dayOfWeek = str
-    start_time = time
-    end_time = time
-    group = None
-    classrooms = set()
+    def __init__(self):
+        self.dayOfWeek = str
+        self.start_time = time
+        self.end_time = time
+        self.group = None
+        self.classrooms = set()
 
 
 class Command(BaseCommand):
@@ -118,9 +126,8 @@ class Command(BaseCommand):
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
         parser.add_argument('--delete_groups', action='store_true', help='delete unused terms, groups, employees maps'
                                                                          ' and courses maps')
-        parser.add_argument('--auto_mode', action='store_true', help='script will not need keyboard interaction. Use'
-                            ' this during semester, after first use. All not recognized courses and employees will'
-                            ' not be imported automaticly and corespodning Slack messages will be send')
+        parser.add_argument('--interactive', action='store_true', help='script will need keyboard interaction. Use'
+                            ' this during first use in semester.')
 
     def create_or_update_group_and_term(self, group_data: 'GroupData', term_data: 'TermData'):
         """ Check if group already exists in database, then create or update that group. Does the same for term,
@@ -132,7 +139,6 @@ class Command(BaseCommand):
 
             self.info.used_scheduler_ids.append(sync_data_object.scheduler_id)
             diffs = []
-            changed = False
             term = sync_data_object.term
             if term.group.course != group_data.course:
                 raise CommandError(
@@ -141,73 +147,59 @@ class Command(BaseCommand):
 
             if term.group.type != group_data.type:
                 raise CommandError(
-                    f'Term \'{term}\' with group \'{term.group}\' changed group typ3 from \'{term.group.type}\''
+                    f'Term \'{term}\' with group \'{term.group}\' changed group type from \'{term.group.type}\''
                     f' to \'{group_data.type}\'\nPlease enter this change in django admin')
 
-            if term.dayOfWeek != term_data.dayOfWeek:
-                changed = True
-                diffs.append(
-                    SlackUpdate('day of week', DAYS_OF_WEEK[term.dayOfWeek], DAYS_OF_WEEK[term_data.dayOfWeek]))
-                term.dayOfWeek = term_data.dayOfWeek
+            def prop_updater(a, b, props):
+                """Updates selected fields of a with b.
+                 Both objects must have the fields specified in `props` defined.
+                Returns:
+                        List of SlackUpdate objects describing the updates.
+                """
+                diffs = []
+                for prop in props:
+                    term_val = getattr(a, prop)
+                    sched_val = getattr(b, prop)
+                    if term_val != sched_val:
+                        diffs.append(SlackUpdate(prop, term_val, sched_val))
+                        setattr(a, prop, sched_val)
+                return diffs
 
-            if term.start_time != term_data.start_time:
-                changed = True
-                diffs.append(SlackUpdate('start time', term.start_time, term_data.start_time))
-                term.start_time = term_data.start_time
-
-            if term.end_time != term_data.end_time:
-                changed = True
-                diffs.append(SlackUpdate('end time', term.end_time, term_data.end_time))
-                term.end_time = term_data.end_time
+            diffs.extend(prop_updater(term, term_data, ['dayOfWeek', 'start_time', 'end_time']))
+            diffs.extend(prop_updater(term.group, group_data, ['teacher', 'limit']))
 
             if set(term.classrooms.all()) != term_data.classrooms:
-                changed = True
                 diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))
                 term.classrooms.set(term_data.classrooms)
 
-            if term.group.teacher != group_data.teacher:
-                changed = True
-                diffs.append(SlackUpdate('teacher', term.group.teacher, group_data.teacher))
-                term.group.teacher = group_data.teacher
-
-            if term.group.limit != group_data.limit:
-                changed = True
-                diffs.append(SlackUpdate('group limit', term.group.limit, group_data.limit))
-                term.group.limit = group_data.limit
-
-            if changed:
+            if diffs:
                 term.save()
                 term.group.save()
                 self.stdout.write(self.style.SUCCESS('term: {} with group {} changes:'.format(term, term.group)))
                 for diff in diffs:
-                    self.stdout.write('  {}: '.format(diff[0]), ending='')
-                    self.stdout.write(self.style.NOTICE(str(diff[1])), ending='')
+                    self.stdout.write('  {}: '.format(diff.name), ending='')
+                    self.stdout.write(self.style.NOTICE(str(diff.old)), ending='')
                     self.stdout.write(' -> ', ending='')
-                    self.stdout.write(self.style.SUCCESS(str(diff[2])))
-                self.info.all_updates.append((term, diffs))
-                self.info.updated_terms += 1
+                    self.stdout.write(self.style.SUCCESS(str(diff.new)))
+                self.info.updated_terms.append((term, diffs))
                 self.stdout.write('')
         except TermSyncData.DoesNotExist:
             # The lecture always has a single group but possibly many terms
             if group_data.type == 1:
                 group = Group.objects.get_or_create(course=group_data.course, teacher=group_data.teacher,
-                                                      type=group_data.type, limit=group_data.limit)[0]
+                                                    type=group_data.type, limit=group_data.limit)[0]
             else:
-                 group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
-                                              type=group_data.type, limit=group_data.limit)
-
+                group = Group.objects.create(course=group_data.course, teacher=group_data.teacher,
+                                             type=group_data.type, limit=group_data.limit)
             term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                                        end_time=term_data.end_time, group=group)
-
+                                       end_time=term_data.end_time, group=group)
             term.classrooms.set(term_data.classrooms)
             TermSyncData.objects.create(term=term, scheduler_id=group_data.scheduler_id)
             self.info.used_scheduler_ids.append(group_data.scheduler_id)
-            self.info.created_terms += 1
-            self.info.all_creations.append(term)
+            self.info.created_terms.append(term)
             self.stdout.write(self.style.SUCCESS('term: {} with group {} created\n'.format(term, group)))
 
-    def get_term_data(self, scheduler_id: 'int',
-                      scheduler_data: 'SchedulerData') -> 'TermData[str, time, time, None, List[Classroom]]':
+    def get_term_data(self, scheduler_id: int, scheduler_data: 'SchedulerData') -> TermData:
         """ Fill TermData object with data necessary to save group to SZ database, but without group,
             because it refers to group object saved in SZ database """
 
@@ -217,32 +209,18 @@ class Command(BaseCommand):
             return str(day + 1)
 
         def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
-            """ returns most early hour from list of SchedulerAPITerm data, which
-            containins data about time of current group"""
-            hour = 24
-            for term in scheduler_terms:
-                if term.start_hour < hour:
-                    hour = term.start_hour
+            """ Returns earliest starting time among the SchedulerAPITerms."""
+            hour = min(term.start_hour for term in scheduler_terms)
             return time(hour=hour)
 
         def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
-            """ returns most late hour from list of SchedulerAPITerm data, which
-            containins data about time of current group"""
-            hour = 0
-            for term in scheduler_terms:
-                if term.end_hour > hour:
-                    hour = term.end_hour
+            """ Returns latest starting time among the SchedulerAPITerms."""
+            hour = max(term.end_hour for term in scheduler_terms)
             return time(hour=hour)
 
         def get_classrooms(rooms: 'List[str]') -> 'Set[Classroom]':
-            """ returns list of Classroom objects from SZ databse looking at room number """
-            classrooms = set()
-            for room in rooms:
-                try:
-                    classrooms.add(Classroom.objects.get(number=room))
-                except Classroom.DoesNotExist:
-                    raise CommandError(f"Couldn't find classroom for {room}")
-            return classrooms
+            """ Finds Classroom objects from with given room numbers. """
+            return set(Classroom.objects.filter(number__in=rooms))
 
         scheduler_rooms = scheduler_data.results[scheduler_id].rooms
         scheduler_terms = []
@@ -256,15 +234,14 @@ class Command(BaseCommand):
         term_data.classrooms = get_classrooms(scheduler_rooms)
         return term_data
 
-    def get_group_data(self, group_id: 'int', scheduler_data: 'SchedulerData',
-                       auto_mode: False) -> 'GroupData[CourseInstance, Employee, str, int]':
+    def get_group_data(self, group_id: int, scheduler_data: SchedulerData, interactive: bool = False) -> GroupData:
         """ Fill GroupData object with data necessary to save group to SZ database"""
 
         def get_group_type(group_type: 'str') -> 'str':
             """ map scheduler group type to SZ group type"""
             return GROUP_TYPES[group_type]
 
-        def get_proposal(course_name: 'str', auto_mode: False) -> '(Proposal or None, bool)':
+        def get_proposal(course_name: str, auto_mode: bool = False) -> 'Tuple[Optional[Proposal], bool]':
             """ return tuple of Proposal object from SZ database or None if course is set to not import. Second return
                 True if CourseInstance with entered name should be mapped or False in opposite"""
             map = CourseMap.objects.filter(scheduler_course__iexact=course_name)
@@ -279,7 +256,7 @@ class Command(BaseCommand):
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
                 return (prop, False)
             except Proposal.DoesNotExist:
-                if auto_mode:
+                if not interactive:
                     map = CourseMap.objects.create(scheduler_course=course_name.upper(), course=None)
                     self.info.used_map_courses.append(map.pk)
                     self.info.maps_added.append((course_name, "None (don't import)"))
@@ -308,7 +285,7 @@ class Command(BaseCommand):
                                                     status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE])
                             if prop.count():
                                 # recursion in case Proposal.MultipleObjectsReturned with new course name
-                                prop, bool_dont_matter = get_proposal(new_course_name, auto_mode)
+                                prop, bool_dont_matter = get_proposal(new_course_name, interactive)
                                 return (prop, True)
                             else:
                                 self.stdout.write(self.style.WARNING(">Still could't find proposal course '{}' which"
@@ -318,7 +295,7 @@ class Command(BaseCommand):
                 props = Proposal.objects.filter(
                     name__iexact=course_name, status__in=[ProposalStatus.IN_OFFER,
                                                           ProposalStatus.IN_VOTE]).order_by('-status', '-id')
-                if auto_mode:
+                if not interactive:
                     prop = props[0]
                     self.info.multiple_proposals.append(str(prop))
                     return (prop, False)
@@ -348,7 +325,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(">Course instance '{}' created\n".format(proposal.name)))
             return course
 
-        def get_employee(username: 'str', teachers: 'Dict[str, str]', auto_mode: False) -> 'Employee':
+        def get_employee(username: 'str', teachers: 'Dict[str, str]', interactive: False) -> 'Employee':
             emp = Employee.objects.filter(user__username=username)
             if emp.count():
                 return emp[0]
@@ -358,7 +335,7 @@ class Command(BaseCommand):
                     self.info.used_map_employees.append(map[0].pk)
                     return map[0].employee
                 else:
-                    if auto_mode:
+                    if not interactive:
                         nieznany = Employee.objects.get(user__username='Nn')
                         map = EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
                         self.info.used_map_employees.append(map.pk)
@@ -404,7 +381,7 @@ class Command(BaseCommand):
         scheduler_group_type = scheduler_data.groups[group_id].group_type
 
         group_data = GroupData()
-        proposal, add_map = get_proposal(scheduler_course, auto_mode)
+        proposal, add_map = get_proposal(scheduler_course, interactive)
         if proposal is None:
             return group_data
         group_data.course = get_course(proposal)
@@ -413,7 +390,7 @@ class Command(BaseCommand):
             self.info.used_map_courses.append(map.pk)
             self.info.maps_added.append((scheduler_course, str(group_data.course)))
             self.stdout.write(self.style.SUCCESS(">Course instance '{}' mapped (CourseMap)".format(group_data.course)))
-        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers, auto_mode)
+        group_data.teacher = get_employee(scheduler_teacher, scheduler_data.teachers, interactive)
         group_data.type = get_group_type(scheduler_group_type)
         group_data.limit = scheduler_data.groups[group_id].limit
         group_data.scheduler_id = scheduler_data.groups[group_id].id
@@ -493,7 +470,7 @@ class Command(BaseCommand):
 
     def prepare_slack_message(self):
         attachments = []
-        for term in self.info.all_creations:
+        for term in self.info.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 term.dayOfWeek, term.start_time, term.end_time, term.group.teacher
             )
@@ -503,7 +480,7 @@ class Command(BaseCommand):
                 "text": text
             }
             attachments.append(attachment)
-        for term, diffs in self.info.all_updates:
+        for term, diffs in self.info.updated_terms:
             text = ""
             for diff in diffs:
                 text = text + "{}: {}->{}\n".format(diff[0], diff[1], diff[2])
@@ -513,7 +490,7 @@ class Command(BaseCommand):
                 "text": text
             }
             attachments.append(attachment)
-        for term_str, group_str in self.info.all_deletions:
+        for term_str, group_str in self.info.deleted_terms:
             attachment = {
                 "color": "danger",
                 "title": "Deleted a term:",
@@ -580,7 +557,7 @@ class Command(BaseCommand):
                 groups_to_remove.add(sync_data_object.term.group)
                 self.stdout.write(self.style.NOTICE('Term {} for group {} removed'.
                                                     format(sync_data_object.term, sync_data_object.term.group)))
-                self.info.all_deletions.append((str(sync_data_object.term),
+                self.info.deleted_terms.append((str(sync_data_object.term),
                                                 str(sync_data_object.term.group)))
                 sync_data_object.term.delete()
                 sync_data_object.delete()
@@ -588,10 +565,10 @@ class Command(BaseCommand):
             if not Term.objects.filter(group=group):
                 group.delete()
 
-    def import_from_api(self, delete_courses_flag, write_to_slack_flag, auto_mode_flag):
+    def import_from_api(self, delete_courses_flag, write_to_slack_flag, interactive_flag):
         scheduler_data = self.get_scheduler_data()
         for group_id in range(len(scheduler_data.groups)):
-            group_data = self.get_group_data(group_id, scheduler_data, auto_mode_flag)
+            group_data = self.get_group_data(group_id, scheduler_data, interactive_flag)
             # course is mapped to not import
             if group_data.course is None:
                 continue
@@ -606,22 +583,22 @@ class Command(BaseCommand):
                                              'Moreover {} courses were already there.'
                                              .format(self.info.created_courses, self.info.used_courses)))
         self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
-                                             .format(self.info.created_terms, self.info.updated_terms)))
+                                             .format(len(self.info.created_terms), len(self.info.updated_terms))))
 
     def handle(self, *args, **options):
         # potem zmień semestr by było ustawiane jako argument do komendy skryptu
         self.semester = Semester.objects.get(year="2018/19", type='l')
-        self.info = Info()
+        self.info = Summary()
         delete_courses_flag = options['delete_groups']
         dry_run_flag = options['dry_run']
         write_to_slack_flag = options['slack']
-        auto_mode_flag = options['auto_mode']
+        interactive_flag = options['interactive']
 
         if dry_run_flag:
             self.stdout.write('Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n')
             with transaction.atomic():
-                self.import_from_api(delete_courses_flag, write_to_slack_flag, auto_mode_flag)
+                self.import_from_api(delete_courses_flag, write_to_slack_flag, interactive_flag)
                 transaction.set_rollback(True)
             self.stdout.write('\nDry run was on. Nothing was saved or deleted. All messages were informational.')
         else:
-            self.import_from_api(delete_courses_flag, write_to_slack_flag, auto_mode_flag)
+            self.import_from_api(delete_courses_flag, write_to_slack_flag, interactive_flag)
