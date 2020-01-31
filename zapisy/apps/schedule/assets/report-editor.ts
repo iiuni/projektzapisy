@@ -1,5 +1,7 @@
 import ContentTools from "ContentTools";
 
+// CoffeScript function for subclassing. Blatantly copied from ContentTools
+// build.
 const __hasProp = {}.hasOwnProperty;
 const __extends = function(child, parent) {
     for (var key in parent) {
@@ -15,6 +17,8 @@ const __extends = function(child, parent) {
 };
 
 window.addEventListener("load", function() {
+    // We add three more tools to the ContentTools editor.
+    // Strike allows to strikethrough the text.
     ContentTools.Tools.Strike = (function(_super) {
         __extends(Strike, _super);
 
@@ -29,6 +33,7 @@ window.addEventListener("load", function() {
         return Strike;
     })(ContentTools.Tools.Bold);
 
+    // Red colours the text red. We introduce a tag <red> for this.
     ContentTools.Tools.Red = (function(_super) {
         __extends(Red, _super);
 
@@ -43,6 +48,7 @@ window.addEventListener("load", function() {
         return Red;
     })(ContentTools.Tools.Bold);
 
+    // Green colours the text green.
     ContentTools.Tools.Green = (function(_super) {
         __extends(Green, _super);
 
@@ -57,15 +63,7 @@ window.addEventListener("load", function() {
         return Green;
     })(ContentTools.Tools.Bold);
 
-    ContentTools.DEFAULT_TOOLS = [["bold", "strike", "red", "green"], ["undo", "redo"]];
-
-    ContentTools.StylePalette.add([
-        new ContentTools.Style("Definition", "definition", ["p"]),
-        new ContentTools.Style("Note", "note", ["p"]),
-        new ContentTools.Style("Vertical header", "v-head", ["table"])
-    ]);
-    ContentTools.Tools.Heading.tagName = "h1";
-    ContentTools.Tools.Subheading.tagName = "h2";
+    ContentTools.DEFAULT_TOOLS = [["bold", "strike", "red", "green", "undo", "redo"]];
 
     const editor = ContentTools.EditorApp.get();
     editor.init("[data-editable]", "data-name");
