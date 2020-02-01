@@ -254,8 +254,8 @@ class Semester(models.Model):
         return [x.day for x in added_days]
 
     def get_all_weeks(self) -> List[Tuple[datetime, datetime]]:
-        """
-        Returns list of all weeks in semester.
+        """Returns list of all weeks in semester.
+
         Each tuple contains first and last day of the week.
         """
         week_start = self.semester_beginning - timedelta(days=self.semester_beginning.weekday())

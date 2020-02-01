@@ -10,7 +10,7 @@ def number_to_weekday(value: str):
     types_dict = {
         '1': "pn",
         '2': "wt",
-        '3': "sr",
+        '3': "śr",
         '4': "czw",
         '5': "pt",
         '6': "so",
