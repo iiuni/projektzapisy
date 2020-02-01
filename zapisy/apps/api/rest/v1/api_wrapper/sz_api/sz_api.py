@@ -53,160 +53,166 @@ class ZapisyApi:
             data=obj.to_dict()
         )
 
-    def semesters(
-        self, visible: Optional[bool] = None
-    ) -> Iterator[Semester]:
-        """Returns iterator over Semester objects.
-
-        If visible parameter is provided, filters results by its value
-        """
-        return self._get_deserialized_data(Semester, {"visible": visible})
+    def semesters(self) -> Iterator[Semester]:
+        """Returns an iterator over Semester objects."""
+        return self._get_deserialized_data(Semester)
 
     def semester(self, id: int) -> Semester:
-        """Returns Semester with given id"""
+        """Returns Semester with a given id."""
         return self._get_single_record(Semester, id)
 
     def current_semester(self) -> Optional[Semester]:
-        """If exist, it returns current semester. otherwise return None"""
+        """Returns current semester or None."""
         return self._action(Semester, "current")
 
     def students(self) -> Iterator[Student]:
-        """Gets an iterator over Student objects"""
+        """Returns an iterator over Student objects."""
         return self._get_deserialized_data(Student)
 
     def student(self, id: int) -> Student:
-        """Returns Student with given id"""
+        """Returns Student with a given id."""
         return self._get_single_record(Student, id)
 
     def employees(self) -> Iterator[Employee]:
-        """Gets an iterator over Employee objects"""
+        """Returns an iterator over Employee objects."""
         return self._get_deserialized_data(Employee)
 
     def employee(self, id: int) -> Employee:
-        """returns Employee with given id"""
+        """returns Employee with a given id."""
         return self._get_single_record(Employee, id)
 
     def courses(
         self, semester_id: Optional[int] = None
     ) -> Iterator[CourseInstance]:
-        """Gets an iterator over courses"""
+        """Returns an iterator over courses.
+
+        Args:
+            semester_id: Only courses for the semester are listed if provided.
+        """
         return self._get_deserialized_data(
             CourseInstance, params={"semester_id": semester_id})
 
     def course(self, id: int) -> CourseInstance:
-        """returns course with given id"""
+        """Returns course with a given id."""
         return self._get_single_record(CourseInstance, id)
 
     def classrooms(self) -> Iterator[Classroom]:
-        """Returns an iterator over classrooms"""
+        """Returns an iterator over classrooms."""
         return self._get_deserialized_data(Classroom)
 
     def classroom(self, id: int) -> Classroom:
-        """Returns classroom with given id"""
+        """Returns classroom with a given id."""
         return self._get_single_record(Classroom, id)
 
     def groups(self, course_id: Optional[int] = None) -> Iterator[Group]:
-        """Gets an iterator over groups
+        """Returns an iterator over course groups.
 
-        If `course` parameter is provided, filters results by its value
+        If `course` parameter is provided, only lists groups for this course.
         """
         return self._get_deserialized_data(
             Group, params={"course_id": course_id})
 
     def group(self, id: int) -> Group:
-        """Returns group with given id"""
+        """Returns group with a given id."""
         return self._get_single_record(Group, id)
 
     def terms(self, semester_id: Optional[int] = None) -> Iterator[Term]:
-        """Gets an iterator over groups
+        """Returns an iterator over group terms.
 
-        If `semester_id` parameter is provided, filters results by its value
+        Term represents a single meeting between the teacher and the students
+        in a week. A group may have multiple terms, typically this happens
+        only for lecture groups.
+        Args:
+            semester_id: If provided, only terms in the semester are listed.
         """
         return self._get_deserialized_data(
             Term, params={"group__course__semester": semester_id})
 
     def term(self, id: int) -> Term:
-        """Returns term with given id"""
+        """Returns term with a given id"""
         return self._get_single_record(Term, id)
 
     def records(
         self,
     ) -> Iterator[Record]:
-        """Gets an iterator over enrolled records
-        """
+        """Lists enrolment records."""
         return self._get_deserialized_data(Record)
 
     def record(self, id: int) -> Record:
-        """Returns term with given id"""
+        """Returns the Record with a given id"""
         return self._get_single_record(Record, id)
 
     def desideratas(
         self, filters: Optional[dict] = None
     ) -> Iterator[Desiderata]:
-        """Gets an iterator over desideratas.
+        """Lists Employees' desideratas.
 
-        Filtering by any field is possible by passing it in `filters` dict
+        Desiderata is a teacher's statement of willingness to teach at certain
+        hours of the week. Filtering by any field is possible by passing it in
+        `filters` dict.
         """
         return self._get_deserialized_data(Desiderata, params=filters)
 
     def desiderata(self, id: int) -> Desiderata:
-        """Returns desiderata with given id"""
+        """Returns desiderata with a given id."""
         return self._get_single_record(Desiderata, id)
 
     def desiderata_others(
         self, filters: Optional[dict] = None
     ) -> Iterator[DesiderataOther]:
-        """Gets an iterator over DesiderataOther objects.
+        """Lists DesiderataOther objects.
 
-        Filtering by any field is possible by passing it in `filters` dict
+        DesiderataOther plays a similar role to that of Desiderata, except it
+        is a written statement rather than structured. Filtering by any field
+        is possible by passing it in `filters` dict.
         """
         return self._get_deserialized_data(DesiderataOther, params=filters)
 
     def desiderata_other(self, id: int) -> DesiderataOther:
-        """Returns DesiderataOther object with given id"""
+        """Returns DesiderataOther object with a given id."""
         return self._get_single_record(DesiderataOther, id)
 
     def special_reservations(
         self, filters: Optional[dict] = None
     ) -> Iterator[SpecialReservation]:
-        """Gets an iterator over SpecialReservation objects.
+        """Lists SpecialReservation objects.
 
-        Filtering by any field is possible by passing it in `filters` dict
+        SpecialReservation is a way to book a room for a semester. Filtering
+        by any field is possible by passing it in `filters` dict.
         """
         return self._get_deserialized_data(SpecialReservation, params=filters)
 
     def special_reservation(self, id: int) -> SpecialReservation:
-        """Returns desiderata with given id"""
+        """Returns SpecialReservation object with a given id."""
         return self._get_single_record(SpecialReservation, id)
 
     def single_votes(
         self, filters: Optional[dict] = None
     ) -> Iterator[SingleVote]:
-        """Gets an iterator over SingleVote objects.
-        Votes with value = 0 are ignored.
+        """Iterates over SingleVote objects.
 
-        Filtering by any field is possible by passing it in `filters` dict.
-        Filtering by `state` (SystemState) is also possible.
+        Votes with value = 0 are ignored. Filtering by `state` (academic
+        year) is recommended. Filtering by any other field is possible.
         """
         return self._get_deserialized_data(SingleVote, params=filters)
 
     def systemstates(
         self, filters: Optional[dict] = None
     ) -> Iterator[SystemState]:
-        """Gets an iterator over SystemState objects.
+        """Lists SystemState objects.
 
         Filtering by any field is possible by passing it in `filters` dict.
         """
         return self._get_deserialized_data(SystemState, params=filters)
 
     def systemstate(self, id: int) -> SystemState:
-        """Returns SystemState object with given id"""
+        """Returns the SystemState object with a given id"""
         return self._get_single_record(SystemState, id)
 
     def create_student(self, usos_id, indeks, first_name, last_name, email,
                        ects, program_name, semestr, algorytmy_l,
                        numeryczna_l, dyskretna_l) -> int:
-        """Creates new student in systemzapisy."""
+        """Adds new student in the Enrolment System."""
         student = Student(
             None, usos_id, indeks, ects, 0,
             User(None, str(indeks), first_name, last_name, email),
@@ -253,10 +259,10 @@ class ZapisyApi:
             return resp
 
     def _handle_get_request(self, path, params=None):
-        """sends GET request to api and return json response
+        """Sends GET request to API and returns json response.
 
         Raises:
-            sz_api.ApiError for error in decoding response
+            sz_api.ApiError: When response decoding fails.
             requests.exceptions.RequestException
         """
         params = dict() if params is None else params
@@ -280,7 +286,7 @@ class ZapisyApi:
         return self._handle_upload_request("post", path, data)
 
     def _handle_upload_request(self, method, path, data: dict):
-        """sends PATCH or POST request to api
+        """Sends PATCH or POST request to API.
 
         Raises:
             requests.exceptions.RequestException

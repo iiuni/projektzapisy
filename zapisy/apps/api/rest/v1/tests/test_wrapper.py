@@ -243,7 +243,6 @@ class WrapperTests(APILiveServerTestCase):
         record = RecordFactory()
 
         res_record = self.wrapper.record(record.id)
-        self.assertEqual(res_record.status, record.status)
         self.assertEqual(res_record.student, record.student.id)
         self.assertEqual(res_record.group, record.group.id)
 

@@ -33,10 +33,7 @@ class Model:
 
 
 class ModelInitalizationError(Exception):
-    """
-    Thrown when Model couldn't be initialized from dict
-    due to lack of declared fields
-    """
+    """Raised when Model initialization fails due to missing fields."""
     pass
 
 
@@ -51,8 +48,9 @@ class Semester(Model):
 
 
 class Program(Model):
-    """
-    This model is used as nested object in some of other models
+    """Represents the study programme in the Enrolment System.
+
+    This model is used as nested object in another model (Student).
     """
     @auto_assign
     def __init__(self, id, name):
@@ -60,8 +58,9 @@ class Program(Model):
 
 
 class User(Model):
-    """
-    This model is used as nested object in some of other models.
+    """Represents user in the Enrollment System.
+
+    This model is used as nested object in some of other models (Student, Employee).
     """
     @auto_assign
     def __init__(self, id, username, first_name, last_name, email):
@@ -69,7 +68,6 @@ class User(Model):
 
 
 class Student(Model):
-
     redirect_key = "students"
     is_paginated = True
 
@@ -127,7 +125,7 @@ class Record(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, status, group, student):
+    def __init__(self, id, group, student):
         pass
 
 

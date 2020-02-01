@@ -108,7 +108,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # user field shouldn't be changed
+        # User field shouldn't be changed.
         validated_data.pop('user', None)
         program_data = validated_data.pop('program', None)
         if program_data is not None:
@@ -179,7 +179,7 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_human_readable_type(self, group_model):
         return group_model.human_readable_type()
 
-    def get_teacher_full_name(seld, group_model):
+    def get_teacher_full_name(self, group_model):
         return group_model.get_teacher_full_name()
 
     class Meta:
@@ -211,8 +211,7 @@ class TermSerializer(serializers.ModelSerializer):
 
 
 class RecordSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(max_length=1)
 
     class Meta:
         model = Record
-        fields = ('id', 'status', 'group', 'student')
+        fields = ('id', 'group', 'student')

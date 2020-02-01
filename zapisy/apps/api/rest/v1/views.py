@@ -60,7 +60,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Group.objects.select_related('course', 'course__semester', 'teacher',
                                             'teacher__user').order_by('id')
-    filter_fields = ['course__semester', 'course']
+    filter_fields = ['course__semester']
     serializer_class = serializers.GroupSerializer
     pagination_class = StandardResultsSetPagination
 
