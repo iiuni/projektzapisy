@@ -1,6 +1,6 @@
 from django.db import models
 from apps.users.models import Employee
-from apps.enrollment.courses.models import CourseInstance
+from apps.offer.proposal.models import Proposal
 
 
 class TermSyncData(models.Model):
@@ -27,11 +27,12 @@ class EmployeeMap(models.Model):
     def __str__(self):
         return self.scheduler_username
 
+
 class CourseMap(models.Model):
     """Map course name from scheduler API, can set to not import that course"""
     scheduler_course = models.CharField(unique=True, max_length=100, blank=False, verbose_name='nazwa kursu schedulera')
-    course = models.ForeignKey(CourseInstance, on_delete=models.CASCADE, default=None, blank=True, null=True,
-                               verbose_name='kurs')
+    proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, default=None, blank=True, null=True,
+                                 verbose_name='propozycja przedmiotu')
 
     class Meta:
         verbose_name = "Mapa przedmiotów"
