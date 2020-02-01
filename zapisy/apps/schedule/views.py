@@ -380,17 +380,11 @@ def events_report_week(request):
 @permission_required('schedule.manage_events')
 def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, semester=None):
     events = []
-    # we are using this function for sorting
     for room in rooms:
-        try:
-            cr = Classroom.objects.get(id=room)
-        except ObjectDoesNotExist:
-            raise Http404
-        # probably not safe
-        events.append((cr, Term.objects.filter(
+        events.append((Classroom.get_by_id(room).number, Term.objects.filter(
             day__gte=beg_date,
             day__lte=end_date,
-            room=room,
+            room__id=room,
             event__status=Event.STATUS_ACCEPTED,
         ).order_by('day', 'start')))
     context = {
@@ -407,16 +401,10 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
 @permission_required('schedule.manage_events')
 def events_raport_course(request, rooms, semester):
     events = []
-    # we are using this function for sorting
     for room in rooms:
-        try:
-            cr = Classroom.objects.get(id=room)
-        except ObjectDoesNotExist:
-            raise Http404
-        # probably not safe
-        events.append((cr, CourseTerm.objects.filter(
+        events.append((Classroom.get_by_id(room).number, CourseTerm.objects.filter(
             group__course__semester=semester,
-            classrooms=cr,
+            classrooms__id=room,
         ).order_by('dayOfWeek', 'start_time')))
     context = {
         'events': events,

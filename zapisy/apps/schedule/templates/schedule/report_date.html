@@ -28,7 +28,7 @@
   <h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
 
   {% for room, terms_list in events %}
-    <h3>Sala: {{ room.number }}</h3>
+    <h3>Sala: {{ room }}</h3>
     {% if terms_list %}
       <table class="table table-sm">
         <thead>
