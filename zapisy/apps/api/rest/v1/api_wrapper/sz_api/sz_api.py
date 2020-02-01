@@ -139,7 +139,7 @@ class ZapisyApi:
         return self._get_deserialized_data(Record)
 
     def record(self, id: int) -> Record:
-        """Returns the Record with a given id"""
+        """Returns the Record with a given id."""
         return self._get_single_record(Record, id)
 
     def desideratas(
