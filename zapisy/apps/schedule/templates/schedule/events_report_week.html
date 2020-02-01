@@ -8,16 +8,13 @@
 {% block bread %}
     <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
     <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'events:events_report' %}">Raport</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Raport tygodniowy</li>
+    <li class="breadcrumb-item"><a href="{% url 'events:events_report' %}">Raporty</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Wydruki na sale</li>
 {% endblock %}
 
-{% block reporttitle %}Raport tygodniowy{% endblock %}
+{% block reporttitle %}Wydruki na sale{% endblock %}
 
 {% block reportformview %}
-    <div class="alert alert-info alert-dismissible fade show d-print-none" role="alert">
-        Raport tygodniowy generowany jest na obecny tydzień
-    </div>
     <form action="{% url 'events:events_report_week' %}" method="post" id="reportForm">
         {% csrf_token %}
         {{ form.non_field_errors }}

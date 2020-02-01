@@ -8,11 +8,11 @@
 {% block bread %}
     <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
     <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Raport</li>
+    <li class="breadcrumb-item active" aria-current="page">Raporty</li>
 {% endblock %}
 
 {% block content %}
-<h2 class="d-print-none">{% block reporttitle %}Raport{% endblock %}</h2>
+<h2 class="d-print-none">{% block reporttitle %}Raporty{% endblock %}</h2>
 {% block reportformview %}
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         Wybierz typ raportu
@@ -24,8 +24,8 @@
 {% block sidebar %}
   <nav id="navbar-rooms" class="navbar navbar-light">
       <nav class="nav nav-pills flex-column">
-        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_week' %}">Raport tygodniowy</a>
-        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_date' %}">Raport od-do</a>
+        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_week' %}">Wydruki na sale</a>
+        <a class=" nav-link ml-3 my-1 bg-light" href="{% url 'events:events_report_date' %}">Raport sal z datą</a>
       </nav>
   </nav>
 {% endblock %}
