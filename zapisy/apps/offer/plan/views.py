@@ -18,109 +18,112 @@ EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
 
 
 def plan_view(request):
-    year = SystemState.get_current_state().year
-    employees = read_entire_sheet(
-        create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
-    assignments = read_entire_sheet(
-        create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    if request.user.is_superuser or BaseUser.is_employee(request.user):
+        year = SystemState.get_current_state().year
+        employees = read_entire_sheet(
+            create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
+        assignments = read_entire_sheet(
+            create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
 
-    if employees is None or assignments is None:
-        return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
-    assignments_winter = []
-    assignments_summer = []
-    staff = {}
-    phds = {}
-    others = {}
-    pensum = 0
-    hours_summer = 0
-    hours_winter = 0
+        if employees is None or assignments is None:
+            return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
+        assignments_winter = []
+        assignments_summer = []
+        staff = {}
+        phds = {}
+        others = {}
+        pensum = 0
+        hours_summer = 0
+        hours_winter = 0
 
-    def make_stats_dict():
-        return {'wykład': 0,
-                'ćwiczenia': 0,
-                'ćwiczenia+pracownia': 0,
-                'pracownia': 0,
-                'seminarium': 0,
-                'repetytorium': 0,
-                'sekretarz': 0}
+        def make_stats_dict():
+            return {'wykład': 0,
+                    'ćwiczenia': 0,
+                    'ćwiczenia+pracownia': 0,
+                    'pracownia': 0,
+                    'seminarium': 0,
+                    'repetytorium': 0,
+                    'sekretarz': 0}
 
-    stats_summer = make_stats_dict()
-    stats_winter = make_stats_dict()
+        stats_summer = make_stats_dict()
+        stats_winter = make_stats_dict()
 
-    staff, phds, others, pensum = prepare_employees_data(employees)
+        staff, phds, others, pensum = prepare_employees_data(employees)
 
-    for value in assignments:
-        code = value[11]
-        data = {'name': value[1], 'weekly': value[5],
-                'type': value[2], 'other': value[6], 'id': value[0]}
+        for value in assignments:
+            code = value[11]
+            data = {'name': value[1], 'weekly': value[5],
+                    'type': value[2], 'other': value[6], 'id': value[0]}
 
-        # divide courses for summer and winter semester
-        if value[9] == 'z' and value[-2] != 'FALSE':
-            value[0] = int(value[0])
-            assignments_winter.append(value)
-            hours_winter += int(value[7])
-            if code in staff:
-                if value[5]:
-                    staff[code]['weekly_winter'] += int(value[5])
-                staff[code]['courses_winter'].append(data)
-            elif code in phds:
-                if value[5]:
-                    phds[code]['weekly_winter'] += int(value[5])
-                phds[code]['courses_winter'].append(data)
-            elif code in others:
-                if value[5]:
-                    others[code]['weekly_winter'] += int(value[5])
-                others[code]['courses_winter'].append(data)
-            lecture_type, hours = make_stats_record(value)
-            stats_winter[lecture_type] += hours
+            # divide courses for summer and winter semester
+            if value[9] == 'z' and value[-2] != 'FALSE':
+                value[0] = int(value[0])
+                assignments_winter.append(value)
+                hours_winter += int(value[7])
+                if code in staff:
+                    if value[5]:
+                        staff[code]['weekly_winter'] += int(value[5])
+                    staff[code]['courses_winter'].append(data)
+                elif code in phds:
+                    if value[5]:
+                        phds[code]['weekly_winter'] += int(value[5])
+                    phds[code]['courses_winter'].append(data)
+                elif code in others:
+                    if value[5]:
+                        others[code]['weekly_winter'] += int(value[5])
+                    others[code]['courses_winter'].append(data)
+                lecture_type, hours = make_stats_record(value)
+                stats_winter[lecture_type] += hours
 
-        elif value[9] == 'l' and value[-2] != 'FALSE':
-            value[0] = int(value[0])
-            assignments_summer.append(value)
+            elif value[9] == 'l' and value[-2] != 'FALSE':
+                value[0] = int(value[0])
+                assignments_summer.append(value)
 
-            hours_summer += int(value[7])
-            if code in staff:
-                if value[5]:
-                    staff[code]['weekly_summer'] += int(value[5])
-                staff[code]['courses_summer'].append(data)
-            elif code in phds:
-                if value[5]:
-                    phds[code]['weekly_summer'] += int(value[5])
-                phds[code]['courses_summer'].append(data)
-            elif code in others:
-                if value[5]:
-                    others[code]['weekly_summer'] += int(value[5])
-                others[code]['courses_summer'].append(data)
-            lecture_type, hours = make_stats_record(value)
-            stats_summer[lecture_type] += hours
-
-    is_empty = False if assignments_winter and assignments_summer else True
-
-    if not is_empty:
-        assignments_winter = prepare_assignments_data(assignments_winter)
-        assignments_summer = prepare_assignments_data(assignments_summer)
+                hours_summer += int(value[7])
+                if code in staff:
+                    if value[5]:
+                        staff[code]['weekly_summer'] += int(value[5])
+                    staff[code]['courses_summer'].append(data)
+                elif code in phds:
+                    if value[5]:
+                        phds[code]['weekly_summer'] += int(value[5])
+                    phds[code]['courses_summer'].append(data)
+                elif code in others:
+                    if value[5]:
+                        others[code]['weekly_summer'] += int(value[5])
+                    others[code]['courses_summer'].append(data)
+                lecture_type, hours = make_stats_record(value)
+                stats_summer[lecture_type] += hours
 
         is_empty = False if assignments_winter and assignments_summer else True
 
-        context = {
-            'error': False,
-            'year': year,
-            'is_empty': is_empty,
-            'winter': assignments_winter,
-            'summer': assignments_summer,
-            'staff': staff,
-            'phds': phds,
-            'others': others,
-            'hours_summer': hours_summer,
-            'hours_winter': hours_winter,
-            'pensum': pensum,
-            'stats_winter': stats_winter,
-            'stats_summer': stats_summer,
-            'balance': hours_summer + hours_winter - pensum
-        }
-        return render(request, 'plan/view-plan.html', context)
+        if not is_empty:
+            assignments_winter = prepare_assignments_data(assignments_winter)
+            assignments_summer = prepare_assignments_data(assignments_summer)
+
+            is_empty = False if assignments_winter and assignments_summer else True
+
+            context = {
+                'error': False,
+                'year': year,
+                'is_empty': is_empty,
+                'winter': assignments_winter,
+                'summer': assignments_summer,
+                'staff': staff,
+                'phds': phds,
+                'others': others,
+                'hours_summer': hours_summer,
+                'hours_winter': hours_winter,
+                'pensum': pensum,
+                'stats_winter': stats_winter,
+                'stats_summer': stats_summer,
+                'balance': hours_summer + hours_winter - pensum
+            }
+            return render(request, 'plan/view-plan.html', context)
+        else:
+            return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False, 'year': year})
     else:
-        return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False, 'year': year})
+        return HttpResponse(status=403)
 
 
 def plan_create(request):
