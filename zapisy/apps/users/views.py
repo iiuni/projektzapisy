@@ -33,7 +33,6 @@ from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
-from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
@@ -77,31 +76,23 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
         g.is_enrolled = g.pk in viewer_groups
 
     group_dicts = build_group_list(groups)
+
+    students_queryset = Student.get_list(
+        begin='All', restrict_list_consent=not BaseUser.is_employee(request.user))
+    students = {}
+    for student_from_queryset in students_queryset:
+        students.update({student_from_queryset.pk: {"last_name": student_from_queryset.user.last_name,
+                                                    "first_name": student_from_queryset.user.first_name,
+                                                    "id": student_from_queryset.user.id,
+                                                    "album": student_from_queryset.matricula,
+                                                    "email": student_from_queryset.user.email
+                                                    }})
     data = {
         'student': student,
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
-
-    }
-
-    if request.is_ajax():
-        return render(request, 'users/student_profile_contents.html', data)
-
-    active_students = Student.get_list(
-        begin='All', restrict_list_consent=not BaseUser.is_employee(request.user))
-    students_data = {}
-    for student in active_students:
-        students_data.update({student.pk: {"last_name": student.user.last_name,
-                                           "first_name": student.user.first_name,
-                                           "id": student.user.id,
-                                           "album": student.matricula,
-                                           "email": student.user.email
-                                           }})
-
-    data.update({
-        'students': active_students,
+        'students': students,
         'char': "All",
-        'users': students_data
-    })
+    }
     return render(request, 'users/student_profile.html', data)
 
 
@@ -125,37 +116,22 @@ def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
 
     group_dicts = build_group_list(groups)
 
+    employees_queryset = Employee.get_list(begin="All")
+    employees = {}
+    for employee_from_queryset in employees_queryset:
+        employees.update({employee_from_queryset.pk: {"last_name": employee_from_queryset.user.last_name,
+                                                      "first_name": employee_from_queryset.user.first_name,
+                                                      "id": employee_from_queryset.user.id,
+                                                      "email": employee_from_queryset.user.email
+                                                      }})
     data = {
         'employee': employee,
+        "employees_dict": employees,
         'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'employees': employees_queryset,
+        'char': "All",
     }
 
-    if request.is_ajax():
-        return render(request, 'users/employee_profile_contents.html', data)
-
-    current_groups = Group.objects.filter(course__semester_id=semester.pk).select_related(
-        'teacher', 'teacher__user').distinct('teacher')
-    active_teachers = map(lambda g: g.teacher, current_groups)
-    for e in active_teachers:
-        e.short_new = (e.user.first_name[:1] +
-                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
-        e.short_old = (e.user.first_name[:2] +
-                       e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
-
-    employees = Employee.get_list(begin="All")
-    employees_data = {}
-    for employee in employees:
-        employees_data.update({employee.pk: {"last_name": employee.user.last_name,
-                                             "first_name": employee.user.first_name,
-                                             "id": employee.user.id,
-                                             "email": employee.user.email
-                                             }})
-
-    data.update({
-        'employees': active_teachers,
-        'char': "All",
-        'users': employees_data,
-    })
     return render(request, 'users/employee_profile.html', data)
 
 
@@ -289,25 +265,21 @@ def my_profile(request):
 
 
 def employees_list(request: HttpRequest, begin: str = 'All', query: Optional[str] = None) -> HttpResponse:
-    employees = Employee.get_list(begin)
+    employees_queryset = Employee.get_list(begin)
 
-    if request.is_ajax():
-        employees = prepare_ajax_employee_list(employees)
-        return AjaxSuccessMessage(message="ok", data=employees)
-    else:
-        employees_data = {}
-        for employee in employees:
-            employees_data.update({employee.pk: {"last_name": employee.user.last_name,
-                                                 "first_name": employee.user.first_name,
-                                                 "id": employee.user.id,
-                                                 "email": employee.user.email
-                                                 }})
-        data = {
-            "employees": employees,
-            "char": begin,
-            "query": query,
-            'users': employees_data,
-        }
+    employees = {}
+    for employee_from_queryset in employees_queryset:
+        employees.update({employee_from_queryset.pk: {"last_name": employee_from_queryset.user.last_name,
+                                                      "first_name": employee_from_queryset.user.first_name,
+                                                      "id": employee_from_queryset.user.id,
+                                                      "email": employee_from_queryset.user.email
+                                                      }})
+    data = {
+        "employees": employees_queryset,
+        "employees_dict": employees,
+        "char": begin,
+        "query": query,
+    }
 
     return render(request, 'users/employees_list.html', data)
 
@@ -317,43 +289,33 @@ def consultations_list(request: HttpRequest, begin: str = 'A') -> HttpResponse:
     semester = Semester.get_current_semester()
     employees = Group.teacher_in_present(employees, semester)
 
-    if request.is_ajax():
-        employees = prepare_ajax_employee_list(employees)
-        return AjaxSuccessMessage(message="ok", data=employees)
-    else:
-        data = {
-            "employees": employees,
-            "char": begin
-        }
-        return render(request, 'users/consultations_list.html', data)
+    data = {
+        "employees": employees,
+        "char": begin
+    }
+    return render(request, 'users/consultations_list.html', data)
 
 
 @login_required
 @external_contractor_forbidden
 def students_list(request: HttpRequest, begin: str = 'All', query: Optional[str] = None) -> HttpResponse:
-    students = Student.get_list(begin, not BaseUser.is_employee(request.user))
-
-    if request.is_ajax():
-        students = prepare_ajax_students_list(students)
-        return AjaxSuccessMessage(message="ok", data=students)
-    else:
-        student_data = {}
-        for student in students:
-            student_data.update({student.pk: {"last_name": student.user.last_name,
-                                       "first_name": student.user.first_name,
-                                       "id": student.user.id,
-                                       "album": student.matricula,
-                                       "email": student.user.email
-                                       }})
-        data = {
-            "students": students,
-            "char": begin,
-            "query": query,
-            'mailto_group': mailto(request.user, students),
-            'mailto_group_bcc': mailto(request.user, students, True),
-            'users': student_data,
-        }
-        return render(request, 'users/students_list.html', data)
+    students_queryset = Student.get_list(begin, not BaseUser.is_employee(request.user))
+    students = {}
+    for student_from_queryset in students_queryset:
+        students.update({student_from_queryset.pk: {"last_name": student_from_queryset.user.last_name,
+                                                    "first_name": student_from_queryset.user.first_name,
+                                                    "id": student_from_queryset.user.id,
+                                                    "album": student_from_queryset.matricula,
+                                                    "email": student_from_queryset.user.email
+                                                    }})
+    data = {
+        "students": students,
+        "char": begin,
+        "query": query,
+        'mailto_group': mailto(request.user, students_queryset),
+        'mailto_group_bcc': mailto(request.user, students_queryset, True),
+    }
+    return render(request, 'users/students_list.html', data)
 
 
 @login_required

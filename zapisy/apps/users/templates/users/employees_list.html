@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {{ users|json_script:"user-list-json-script" }}
+    {{ employees_dict|json_script:"user-list-json-script" }}
     <div id="user-link" data="{%  url 'employee-profile' %}" style="display:none;"></div>
 
     <div id="main-sidebar" class="col-lg">
