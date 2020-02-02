@@ -11,6 +11,7 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
+
 # System Zapisow term data
 SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 'type', 'limit',
                                          'dayOfWeek', 'start_time', 'end_time', 'classrooms'])
