@@ -3,7 +3,6 @@ from rest_framework import status
 from django.urls import reverse
 
 from apps.users.models import Employee
-from apps.users.roles import Roles
 from ..models import ThesisStatus
 from ..permissions import EMPLOYEE_DELETABLE_STATUSES
 from ..enums import NOT_READY_STATUSES

@@ -14,6 +14,18 @@ EMPLOYEE_STATUS_CHOICES = [(0, 'aktywny'), (1, 'nieaktywny')]
 ISIM_PROGRAM_NAME = 'ISIM, dzienne I stopnia'
 
 
+def is_student(user: User) -> bool:
+    return hasattr(user, 'student_ptr')
+
+
+def is_employee(user: User) -> bool:
+    return hasattr(user, 'employee_ptr')
+
+
+def is_external_contractor(user: User) -> bool:
+    return is_user_in_group(user, 'external_contractors')
+
+
 def is_user_in_group(user: User, group_name: str) -> bool:
     return user.groups.filter(name=group_name).exists() if user else False
 

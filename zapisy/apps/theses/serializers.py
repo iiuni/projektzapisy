@@ -12,7 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.auth.models import User
 
 from apps.users.models import Employee, Student
-from apps.users.roles import Roles
 from .models import (
     Thesis, ThesisStatus, MAX_THESIS_TITLE_LEN,
     VotesToProcess, VoteToProcess,
@@ -330,16 +329,16 @@ class CurrentUserSerializer(serializers.ModelSerializer):
             return ThesisUserType.ADMIN
         elif is_theses_regular_employee(user):
             return ThesisUserType.REGULAR_EMPLOYEE
-        elif Roles.is_student(user):
+        elif user.student:
             return ThesisUserType.STUDENT
         # We're generally not expecting this to happen
         return ThesisUserType.NONE
 
     @staticmethod
     def _to_base_person(user: User):
-        if Roles.is_employee(user):
+        if user.employee:
             return user.employee
-        elif Roles.is_student(user):
+        elif user.student:
             return user.student
         raise exceptions.NotFound()
 

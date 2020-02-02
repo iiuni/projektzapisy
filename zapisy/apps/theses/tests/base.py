@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.contrib.auth.models import Group, User
 
 from apps.users.models import Employee, Student
-from apps.users.roles import Roles
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 from ..models import (
     Thesis, ThesisVote, ThesisStatus, VoteToProcess,

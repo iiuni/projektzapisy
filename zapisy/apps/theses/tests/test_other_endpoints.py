@@ -6,7 +6,6 @@ from rest_framework import status
 from django.urls import reverse
 
 from apps.users.models import Employee
-from apps.users.roles import Roles
 from ..users import get_theses_user_full_name
 from ..enums import ThesisUserType
 from .base import ThesesBaseTestCase

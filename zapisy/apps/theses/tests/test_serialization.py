@@ -2,8 +2,6 @@ import random
 
 from django.contrib.auth.models import User
 
-from apps.users.roles import Roles
-
 from ..models import ThesisStatus
 from .base import ThesesBaseTestCase
 from .utils import random_definite_vote, exactly_one

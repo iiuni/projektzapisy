@@ -3,7 +3,6 @@ from rest_framework import status
 from django.urls import reverse
 
 from apps.users.models import Employee
-from apps.users.roles import Roles
 from ..models import ThesisStatus
 from .utils import random_title, random_kind, random_reserved_until
 from .base import ThesesBaseTestCase

@@ -10,7 +10,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 
 from apps.users.models import Student, Employee
-from apps.users.roles import Roles
 from .models import Thesis, get_num_ungraded_for_emp
 from . import serializers
 from .drf_permission_classes import ThesisPermissions
@@ -86,7 +85,7 @@ class ThesesViewSet(viewsets.ModelViewSet):
         user = self.request.user
         result["user"] = user
         result["is_staff"] = is_thesis_staff(user)
-        result["is_employee"] = Roles.is_employee(user)
+        result["is_employee"] = user.employee
         return result
 
     @staticmethod

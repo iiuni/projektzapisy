@@ -5,7 +5,6 @@ from typing import Optional
 
 from django.contrib.auth.models import User
 from apps.users.models import Employee
-from apps.users.roles import Roles
 
 from .enums import UNVOTEABLE_STATUSES
 from .models import Thesis, ThesisStatus
@@ -29,7 +28,7 @@ def can_add_thesis(user: User) -> bool:
 
 def is_owner_of_thesis(user: User, thesis: Thesis) -> bool:
     """Is the specified user the advisor of the specified thesis?"""
-    return Roles.is_employee(user) and thesis.advisor == user.employee
+    return user.employee and thesis.advisor == user.employee
 
 
 EMPLOYEE_DELETABLE_STATUSES = (
@@ -99,7 +98,7 @@ def can_set_advisor(user: User, advisor: Optional[Employee]) -> bool:
     Only called if the user is permitted to modify the thesis in general
     (that is, `can_modify_thesis` returns True)
     """
-    return is_thesis_staff(user) or (Roles.is_employee(user) and user.employee == advisor)
+    return is_thesis_staff(user) or (user.employee and user.employee == advisor)
 
 
 def can_cast_vote_as_user(caster: User, user: User) -> bool:

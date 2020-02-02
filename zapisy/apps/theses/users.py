@@ -3,7 +3,6 @@ on users of the theses system"""
 
 from django.contrib.auth.models import User
 from apps.users.models import Employee, is_user_in_group
-from apps.users.roles import Roles
 from .system_settings import get_master_rejecter
 
 THESIS_BOARD_GROUP_NAME = "Komisja prac dyplomowych"
@@ -39,7 +38,7 @@ def is_theses_regular_employee(user: User):
     Those have permissions to create theses and can be set as advisors,
     but otherwise have no administrative privileges
     """
-    return Roles.is_employee(user) and not user.is_staff
+    return user.employee and not user.is_staff
 
 
 def get_theses_board():
