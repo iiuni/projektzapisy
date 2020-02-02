@@ -150,9 +150,14 @@ class Poll(models.Model):
         :param semester: if no semester is given, assumes a current one.
         :returns: a list of all available polls for a given student.
         """
+        if not student.is_active:
+            return []
+
         current_semester = semester
         if current_semester is None:
             current_semester = Semester.get_current_semester()
+        if not current_semester.is_grade_active:
+            return []
 
         polls = []
         poll_for_semester = Poll.objects.filter(semester=current_semester).first()
