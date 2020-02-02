@@ -7,6 +7,7 @@ from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.db.models import QuerySet
 
+
 logger = logging.getLogger()
 
 EMPLOYEE_STATUS_CHOICES = [(0, 'aktywny'), (1, 'nieaktywny')]
@@ -18,11 +19,10 @@ def is_user_in_group(user: User, group_name: str) -> bool:
 
 
 class Employee(models.Model):
-
     user = models.OneToOneField(
         User,
         verbose_name="Użytkownik",
-        related_name='employee',
+        related_name='employee_ptr',
         on_delete=models.CASCADE)
     consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, validators=[MaxLengthValidator(4200)])
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
@@ -101,7 +101,7 @@ class Student(models.Model):
     user = models.OneToOneField(
         User,
         verbose_name="Użytkownik",
-        related_name='student',
+        related_name='student_ptr',
         on_delete=models.CASCADE)
     matricula = models.CharField(
         max_length=20,
