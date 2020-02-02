@@ -23,7 +23,7 @@ from apps.users.models import BaseUser
 
 
 class TicketsEntry(TemplateView):
-    template_name = 'grade/poll/tickets_enter.html'
+    template_name = 'poll/tickets_enter.html'
 
     def get(self, request):
         """Displays a basic but sufficient form for entering tickets."""
@@ -82,7 +82,7 @@ class TicketsEntry(TemplateView):
 class SubmissionEntry(UpdateView):
     """Allows the user to update and view his submission(s)."""
 
-    template_name = 'grade/poll/submission.html'
+    template_name = 'poll/submission.html'
     model = Submission
     slug_field = 'submissions'
     form_class = SubmissionEntryForm
@@ -180,7 +180,7 @@ class SubmissionEntry(UpdateView):
 class PollResults(TemplateView):
     """Displays results for all archived and submitted submissions."""
 
-    template_name = 'grade/poll/results.html'
+    template_name = 'poll/results.html'
 
     @staticmethod
     def __get_counter_for_categories(polls):
@@ -275,7 +275,7 @@ class PollResults(TemplateView):
 class GradeDetails(TemplateView):
     """Displays details and rules about how the grade is set up."""
 
-    template_name = 'grade/main.html'
+    template_name = 'poll/main.html'
 
     def get(self, request):
         is_grade_active = check_grade_status()

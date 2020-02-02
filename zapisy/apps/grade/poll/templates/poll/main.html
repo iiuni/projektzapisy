@@ -8,7 +8,7 @@
 {% block nav-grade-main %}active{% endblock %}
 
 {% block bread %}
-{% include 'grade/poll/_breadcrumbs.html' %}
+{% include 'grade/_breadcrumbs.html' %}
 <li class="breadcrumb-item active" aria-current="page">Zasady oceny</li>
 {% endblock %}
 
@@ -37,10 +37,10 @@
       Udział nagradzany jest <strong>24 godzinnym bonusem</strong> do otwarcia zapisów w kolejnym roku akademickim.
     </p>
     <p>
-      Anonimowość zapewniona jest dzięki protokołowi ślepych podpisów. Klucze można pobrać w serwisie po zalogowaniu lub
-      używając <a style="display: inline; font-size: 100%; color: #0069d6; font-variant: normal; text-shadow: none;"
-        href="{% static "tickets/grade-client.py" %}">przykładowego klienta</a>. W komentarzach zawarte są
-      szczegóły implementacyjne.
+      Anonimowość zapewniona jest dzięki <em>protokołowi ślepych podpisów</em>.
+      Klucze można pobrać w serwisie po zalogowaniu lub używając 
+      <a href="{% static "tickets/grade-client.py" %}">przykładowego klienta</a>. W
+      komentarzach zawarte są szczegóły implementacyjne.
     </p>
     <h3>Cały proces jest przeprowadzony w następujący sposób:</h3>
     <p>
@@ -50,14 +50,14 @@
       <li>
         <h4>Przygotowanie</h4>
         <p>
-          Serwer posiada klucze RSA:
+          Serwer posiada dla każdej ankiety klucze RSA:
         </p>
         <p>
           \((e, n)\) &mdash; klucz publiczny ankiety,<br />
           \((d, n)\) &mdash; klucz prywatny ankiety.
         </p>
         <p>
-          Klient będzie potrzebował klucza publicznego ankiety do zaślepiania i odślepiania kluczy do głosowania.
+          Student będzie potrzebował klucza publicznego ankiety do zaślepiania i odślepiania kluczy do głosowania.
         </p>
         <p>
           O kluczu do głosowania można myśleć jako o karcie do głosowania, a zaślepianiu i odślepianiu jak o wkładaniu i
@@ -67,7 +67,7 @@
       <li>
         <h4>Tworzenie kart</h4>
         <p>
-          Karta to liczba o tylu samo bitach co \(n\):
+          Karta to liczba o nie większa od \(n\):
         </p>
         <p>
           \(m\) &mdash; karta,<br />
@@ -93,7 +93,7 @@
       <li>
         <h4>Podpisanie</h4>
         <p>
-          Karta w kopercie jest wysłana do podpisu, pomimo że serwer wie od kogo dostał koperte, to nie zna karty \(m\).
+          Karta w kopercie jest wysłana do podpisu, pomimo że serwer wie od kogo dostał kopertę, to nie zna karty \(m\).
           Podpisuje wykonując następującą operację:
         </p>
         \[s \coloneqq {t}^{d} \bmod n \text{.}\]

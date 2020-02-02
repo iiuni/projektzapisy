@@ -65,7 +65,7 @@ def tickets_generate(request):
         'polls': polls,
         'is_grade_active': is_grade_active,
     }
-    return render(request, 'tickets/tickets_generate.html', data)
+    return render(request, 'ticket_create/tickets_generate.html', data)
 
 
 @student_required
