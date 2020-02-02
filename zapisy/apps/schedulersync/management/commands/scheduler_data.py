@@ -4,7 +4,6 @@
     and courses to map in seperate dict and set."""
 
 import collections
-import os
 from datetime import time
 
 import requests
@@ -30,9 +29,11 @@ SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 't
 
 
 class SchedulerData:
-    def __init__(self, api_config_url, api_task_url):
+    def __init__(self, api_config_url, api_task_url, scheduler_username, scheduler_password):
         self.api_config_url = api_config_url
         self.api_task_url = api_task_url
+        self.scheduler_username = scheduler_username
+        self.scheduler_password = scheduler_password
         self.terms = []
         self.teachers = {}
         self.courses = set()
@@ -85,7 +86,7 @@ class SchedulerData:
             client = requests.session()
             client.get(URL_LOGIN)
             cookie = client.cookies['csrftoken']
-            login_data = {'username': os.environ['scheduler_login'], 'password': os.environ['scheduler_password'],
+            login_data = {'username': self.scheduler_username, 'password': self.scheduler_password,
                           'csrfmiddlewaretoken': cookie}
             client.post(URL_LOGIN, data=login_data)
             return client

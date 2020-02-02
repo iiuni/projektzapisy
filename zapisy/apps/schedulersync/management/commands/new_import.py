@@ -37,10 +37,12 @@
 """
 
 import collections
+import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+import environ
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
@@ -77,6 +79,12 @@ SchedulerAPITeacher = collections.namedtuple('Teacher', ['first_name', 'last_nam
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument('api_config_url', help='Should look like this: '
+                                                   '/scheduler/api/config/2017-18-lato3-2/')
+        parser.add_argument('api_task_url', help='Should look like this: '
+                                                 'http://scheduler.gtch.eu/scheduler/api/task/'
+                                                 '07164b02-de37-4ddc-b81b-ddedab533fec/')
+        parser.add_argument('-semester', type=int, default=0)
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
@@ -171,23 +179,30 @@ class Command(BaseCommand):
             if not Term.objects.filter(group=group):
                 group.delete()
 
+    def get_secrets_env(self):
+        env = environ.Env()
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+        self.stdout.write(BASE_DIR)
+        self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
+        return env
+
     def import_from_api(self, dont_delete_terms_flag, write_to_slack_flag, interactive_flag):
-        scheduler_data = SchedulerData('http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/',
-                                       'http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491'
-                                       '-82a0-f8e43e7be918/')
+        secrets_env = self.get_secrets_env()
+        scheduler_data = SchedulerData(self.api_config_url, self.api_task_url, secrets_env.str('SCHEDULER_USERNAME'),
+                                       secrets_env.str('SCHEDULER_PASSWORD'))
         scheduler_data.get_scheduler_data()
         scheduler_mapper = SchedulerMapper(interactive_flag, self.summary, self.semester)
         scheduler_mapper.map_scheduler_data(scheduler_data)
         for term in scheduler_data.terms:
-            if term.course is None:
-                continue
-            else:
+            if term.course is not None:
                 self.create_or_update_group_and_term(term)
 
         if not dont_delete_terms_flag:
             self.remove_unused_terms_groups()
         if write_to_slack_flag:
-            slack = Slack()
+            slack = Slack(secrets_env.str('SLACK_WEBHOOK_URL'))
             slack.prepare_slack_message(self.summary)
             slack.write_to_slack()
         self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
@@ -197,8 +212,10 @@ class Command(BaseCommand):
                                              .format(len(self.summary.created_terms), len(self.summary.updated_terms))))
 
     def handle(self, *args, **options):
-        # potem zmień semestr by było ustawiane jako argument do komendy skryptu
-        self.semester = Semester.objects.get(year="2018/19", type='l')
+        self.semester = (Semester.objects.get_next() if options['semester'] == 0
+                         else Semester.objects.get(pk=int(options['semester'])))
+        self.api_config_url = options['api_config_url']
+        self.api_task_url = options['api_task_url']
         self.summary = Summary()
         dont_delete_terms_flag = options['dont_delete_terms']
         dry_run_flag = options['dry_run']

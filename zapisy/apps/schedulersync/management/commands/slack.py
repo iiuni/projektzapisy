@@ -1,14 +1,14 @@
 """Object prepares attachments to send to Slack. Then sends all collected attachments"""
 
 import json
-import os
 
 import requests
 
 
 class Slack:
-    def __init__(self):
+    def __init__(self, slack_webhook_url):
         self.attachments = []
+        self.slack_webhook_url = slack_webhook_url
 
     def add_attachment(self, color, title, text):
         attachment = {
@@ -47,9 +47,8 @@ class Slack:
             'text': "The following groups were updated in fereol (scheduler's sync):",
             'attachments': self.attachments
         }
-        slack_webhook_url = os.environ['slack_url']
         response = requests.post(
-            slack_webhook_url, data=json.dumps(slack_data),
+            self.slack_webhook_url, data=json.dumps(slack_data),
             headers={'Content-Type': 'application/json'}
         )
         if response.status_code != 200:
