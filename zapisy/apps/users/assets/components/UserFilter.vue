@@ -4,8 +4,8 @@
             <li class="list-group-item bg-light">
                 <fieldset class="small-fieldset">
                     <div class="filter row" id="enr-StudentsList-top-bar">
-                        <label for="user-name" class="label label-default">Filtrowanie:&nbsp</label>
-                        <div id="user-name">
+                        <label for="user-name" class="label label-default p-2">Filtrowanie:&nbsp</label>
+                        <div id="user-name" class="mt-1 mb-1">
                             <input class="form-control" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
                         </div>
                     </div>
@@ -15,64 +15,42 @@
             <div id="user-alpha-list">
                 <ul id="user-list-menu">
                     <li v-for="char in chars" class="charFilter">
-        				<button class="btn btn-link" v-on:click="emitCharFilter(char)" >{{char}}</button>
+        				<button class="btn btn-link p-1" v-on:click="emitCharFilter(char)" >{{char}}</button>
                     </li>
                 </ul>
             </div>
-        </li>
+            </li>
         </ul>
     </div>
 </template>
 
 
 <script lang="ts">
-import Vue from "vue";
 import { EventBus } from './event-bus';
 
-    export default Vue.extend({
-        data: function() {
-            return {
-                input_value: "",
-                chars: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'Ł', 'M', 'N', 'O',
-                'P', 'R', 'S', 'T', 'U', 'W', 'Y', 'Z', 'Wszyscy']
+export default {
+    data: function() {
+        return {
+            input_value: "",
+            chars: ['A', 'B', 'C', 'Ć', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'Ł', 'M', 'N', 'Ń', 'O', 'Q',
+                    'P', 'R', 'S', 'Ś', 'T', 'U', 'W', 'X', 'Y', 'Z', 'Ż', 'Ź', 'Wszyscy']
             }
         },
-        name: "StudentFilter",
-        methods: {
-            emitInputFilter: function(event) {
-                this.input_value = event.target.value;
-                EventBus.$emit('user-input-filter', event.target.value);
-            },
-            emitCharFilter: function(char) {
-                EventBus.$emit('user-char-filter', char);
-            }
+    name: "StudentFilter",
+    methods: {
+        emitInputFilter: function(event) {
+            this.input_value = event.target.value;
+            EventBus.$emit('user-input-filter', event.target.value);
+        },
+        emitCharFilter: function(char) {
+            EventBus.$emit('user-char-filter', char);
         }
-    });
-
+    }
+};
 </script>
 
 <style>
     .charFilter {
         display: inline;
     }
-    .btn {
-        padding-top: 0.40rem;
-        padding-right: 0.20rem;
-        padding-bottom: 0.20rem;
-        padding-left: 0.40rem;
-    }
-    .label {
-        padding-top: 0.75rem;
-        padding-right: 0.375rem;
-        padding-bottom: 0.375rem;
-        padding-left: 0.75rem;
-    }
-    #user-list-menu {
-        padding-left: 0.40rem;
-    }
-    #user-name {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-
 </style>

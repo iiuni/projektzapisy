@@ -7,85 +7,84 @@
 		</ul>
 	</div>
 </template>
+<script lang="ts">
+import { EventBus } from './event-bus';
 
-<script>
-	import { EventBus } from './event-bus.js';
-    export default {
-		name: "UserList",
-		data: function () {
-			return {
-				filter_phrase: '',
-				filter_button: '',
-				users: [],
-				userLinkUrl: '',
-			}
-		},
-		beforeMount: function () {
-			let rawUsers = JSON.parse(document.getElementById('user-list-json-container').getAttribute(
-					'data') || '{}');
-			this.users = Object.values(rawUsers);
-
-			this.users = this.users.sort(function (a, b) {
-					if (a.last_name > b.last_name) {
-						return 1
-					} else if (a.last_name < b.last_name) {
-						return -1
-					} else {
-						return 0
-					}
-				});
-			this.userLinkUrl = document.getElementById('user-link').getAttribute('data');
-		},
-		mounted: function () {
-			EventBus.$on('user-char-filter', value => {
-				this.filter_button = value
-			});
-
-			EventBus.$on('user-input-filter', value => {
-				this.filter_phrase = value
-			});
-		},
-		methods: {
-			matchInput: function (user) {
-				// Remove trailing/leading whitespaces from input
-				let phrase = this.filter_phrase.toLowerCase().trim();
-
-				const regex = /\s+/;
-
-				let firstName = user.first_name.toLowerCase();
-				let lastName = user.last_name.toLowerCase();
-				let emailAddress = user.email;
-				let album = "";
-				if (user.hasOwnProperty('album')) {
-					album = user.album;
-				}
-
-				// Check if input has 2 words separated with whitespaces or is single word/phrase
-				if (phrase.match(regex) != null) {
-					let names = phrase.split(regex);
-					return (firstName.startsWith(names[0]) && lastName.startsWith(names[1])) ||
-							(firstName.startsWith(names[1]) && lastName.startsWith(names[0]));
-				}
-				else {
-					return firstName.startsWith(phrase) || lastName.startsWith(phrase) ||
-							album.startsWith(phrase) || emailAddress.startsWith(phrase);
-				}
-			},
-			matchChar: function (user) {
-				let first_name = user.first_name.toLowerCase();
-				let last_name = user.last_name.toLowerCase();
-				let button = this.filter_button.toLowerCase();
-
-				if (button != 'wszyscy') {
-					return first_name.startsWith(button) || last_name.startsWith(button);
-				}
-				return true;
-			},
-			getUrlAddress: function (id) {
-				return this.userLinkUrl + id
-			},
+export default {
+	name: "UserList",
+	data: function () {
+		return {
+			filter_phrase: '',
+			filter_button: '',
+			users: [],
+			userLinkUrl: '',
 		}
+	},
+	beforeMount: function () {
+		let rawUsers = JSON.parse(document.getElementById('user-list-json-container').getAttribute(
+					'data') || '{}');
+		this.users = Object.values(rawUsers);
+
+		this.users = this.users.sort(function (a, b) {
+			if (a.last_name > b.last_name) {
+				return 1
+			} else if (a.last_name < b.last_name) {
+				return -1
+			} else {
+				return 0
+			}
+		});
+		this.userLinkUrl = document.getElementById('user-link').getAttribute('data');
+	},
+	mounted: function () {
+		EventBus.$on('user-char-filter', value => {
+			this.filter_button = value
+		});
+		EventBus.$on('user-input-filter', value => {
+			this.filter_phrase = value
+		});
+	},
+	methods: {
+		matchInput: function (user) {
+			// Remove trailing/leading whitespaces from input
+			let phrase = this.filter_phrase.toLowerCase().trim();
+
+			const regex = /\s+/;
+
+			let firstName = user.first_name.toLowerCase();
+			let lastName = user.last_name.toLowerCase();
+			let emailAddress = user.email;
+			let album = "";
+			if (user.hasOwnProperty('album')) {
+				album = user.album;
+			}
+			let words = phrase.split(regex);
+
+			let isPhraseMatch = true;
+
+			words.forEach(function (word) {
+				if (!(firstName.startsWith(word) || lastName.startsWith(word)) &&
+						(!(album.startsWith(word))) && (!(emailAddress.startsWith(word)))) {
+					isPhraseMatch = false;
+				}
+			});
+			return isPhraseMatch;
+		},
+		matchChar: function (user) {
+			let first_name = user.first_name.toLowerCase();
+			let last_name = user.last_name.toLowerCase();
+			let button = this.filter_button.toLowerCase();
+
+			if (button != 'wszyscy') {
+				return first_name.startsWith(button) || last_name.startsWith(button);
+			}
+			return true;
+		},
+		getUrlAddress: function (id) {
+			return this.userLinkUrl + id
+		},
 	}
+}
 </script>
 
 <style>
