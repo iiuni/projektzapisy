@@ -29,6 +29,8 @@ def create_poll_for_group(sender: Group, instance: Group, created: bool, **kwarg
 @receiver(post_save, sender=CourseInstance)
 def create_poll_for_course(sender: CourseInstance, instance: CourseInstance, created: bool, **kwargs):
     if created:
+        if not instance.has_exam:
+            return
         new_poll = Poll(group=None, course=instance, semester=None)
         new_poll.save()
 

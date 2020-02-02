@@ -146,7 +146,7 @@ class TicketCreate:
         polls = res.json()
         return {poll['poll_info']['id']: PollData(poll) for poll in polls}
 
-    def get_signed_tickets(self, polls: Dict[int, PollData]):
+    def get_blinded_tickets_for_signing(self, polls: Dict[int, PollData]):
         """Second step of the protocol, after generating tickets, sends them,
         blinded, to the server for signing.
         """
@@ -165,7 +165,7 @@ class TicketCreate:
         """Main function."""
         self.login()
         polls = self.get_polls()
-        signing_request = self.get_signed_tickets(polls)
+        signing_request = self.get_blinded_tickets_for_signing(polls)
         res = self._post('/grade/ticket/sign-tickets', json=signing_request).json()
         tickets_for_user = {
             'tickets': []

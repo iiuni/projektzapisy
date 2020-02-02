@@ -156,6 +156,8 @@ class Poll(models.Model):
         current_semester = semester
         if current_semester is None:
             current_semester = Semester.get_current_semester()
+        if current_semester is None:
+            return []
         if not current_semester.is_grade_active:
             return []
 
