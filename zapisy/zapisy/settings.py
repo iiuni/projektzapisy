@@ -226,7 +226,7 @@ INSTALLED_APPS = (
     'apps.schedule',
     # 'debug_toolbar',
     'apps.grade.poll',
-    'apps.grade.tickets',
+    'apps.grade.ticket_create',
     'apps.email_change',
     'apps.schedulersync',
     'apps.theses.apps.ThesesConfig',

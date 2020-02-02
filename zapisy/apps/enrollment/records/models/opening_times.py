@@ -14,7 +14,7 @@ from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.users.models import Program, Student
-from apps.grade.tickets.models.generated_ticket import GeneratedTicket
+from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 
 
@@ -70,17 +70,11 @@ class T0Times(models.Model):
             created: List[cls] = []
             # For each student_id we want to know, how many times he has
             # generated grading tickets in the last two semesters.
-            semesters = Semester.objects.filter(id__in=[
-                semester.first_grade_semester,
-                semester.second_grade_semester])
-            students = Student.get_active_students()
-            generated_tickets: Dict[int, int] = dict()
-            for student in students:
-                count = 0
-                for sem in semesters:
-                    if GeneratedTicket.student_graded(student, sem):
-                        count += 1
-                generated_tickets[student.id] = count
+            generated_tickets: Dict[int, int] = dict(
+                StudentGraded.objects.filter(semester_id__in=[
+                    semester.first_grade_semester_id, semester.second_grade_semester_id
+                ]).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
+                    "student_id", "num_tickets"))
 
             student: Student
             for student in Student.get_active_students():

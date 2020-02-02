@@ -4,7 +4,6 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
 from apps.grade.poll.models import Poll
-from apps.grade.tickets.models.used_ticket import UsedTicket
 
 
 class RSAKeys(models.Model):
@@ -17,7 +16,7 @@ class RSAKeys(models.Model):
     class Meta:
         verbose_name = 'klucze RSA'
         verbose_name_plural = 'klucze RSA'
-        app_label = 'tickets'
+        app_label = 'ticket_create'
 
     def __str__(self):
         return f'Klucze RSA: {self.poll}'
@@ -63,21 +62,16 @@ class RSAKeys(models.Model):
 
         valid_polls = []
         error_polls = []
-        used_polls = []
 
         for poll, tickets in zip(polls, tickets_list):
             keys = RSAKeys.objects.get(poll=poll)
             ticket = int(tickets['ticket'].encode())
             signed_ticket = int(tickets['signature'].encode())
-            if UsedTicket.was_ticket_used(poll, ticket, signed_ticket):
-                used_polls.append(poll)
-            elif keys.verify_ticket(signed_ticket, ticket):
+            if keys.verify_ticket(signed_ticket, ticket):
                 valid_polls.append((tickets['ticket'], poll))
-                used_ticket = UsedTicket(poll=poll, ticket=ticket, signed_ticket=signed_ticket)
-                used_ticket.save()
             else:
                 error_polls.append(poll)
-        return valid_polls, error_polls, used_polls
+        return valid_polls, error_polls
 
     def sign_ticket(self, ticket):
         ticket = int(ticket.encode())

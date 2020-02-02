@@ -100,17 +100,13 @@ class TicketCreate:
     def get_polls(self) -> Dict[int, PollData]:
         """First step of the protocol, query the server for polls metadata(name, type, id)
         and public keys.
-
         Returns:
             Dict with id as a key, and as a value, data received from the server,
             wrapped in PollData class.
         """
         res = self._post('/grade/ticket/get-poll-data')
         polls = res.json()
-        return {
-            poll['poll_info']['id']: PollData(poll)
-            for poll in polls['poll_data']
-        }
+        return {poll['poll_info']['id']: PollData(poll) for poll in polls}
 
     def get_signed_tickets(self, polls: Dict[int, PollData]):
         """Second step of the protocol, after generating tickets, sends them,

@@ -119,7 +119,7 @@ async function getPollDataFromServer(): Promise<PollDataDict> {
     let pollDataDict: PollDataDict = {};
 
     let polls = await axiosInstance.post('/get-poll-data');
-    for (let poll of polls.data.poll_data) {
+    for (let poll of polls.data) {
         let pubKey = new PublicKey(poll.key.n, poll.key.e);
         let pollData = new PollData(pubKey, poll.poll_info.name, poll.poll_info.type, poll.poll_info.id);
 
@@ -147,35 +147,29 @@ async function getSignedTicketsFromServer(pollDataDict: PollDataDict) {
     return signedTickets;
 }
 
-export default async function generateTicketsMain(): Promise<[string, string[]]> {
+export default async function generateTicketsMain(): Promise<string> {
     let pollDataDict = await getPollDataFromServer();
     let signedTickets = await getSignedTicketsFromServer(pollDataDict);
-    let errors: string[] = new Array();
 
     let ticketsForUser: { [tickets: string]: TicketForUser[] } = {
         tickets: new Array(),
     };
 
     for (let signedTicket of signedTickets.data) {
-        if (signedTicket.status === 'ERROR') {
-            errors.push(signedTicket.message)
-        }
-        else {
-            let pollData = pollDataDict[signedTicket.id];
-            let blindedSignature = bigInt(signedTicket.signature);
-            let ticket = pollData.ticket!;
-            let unblindedSignature = pollData.pubKey.unblind(blindedSignature, ticket.r);
-            let ticketForUser: TicketForUser = {
-                name: pollData.name,
-                type: pollData.type,
-                id: pollData.id,
-                ticket: ticket.m.toString(),
-                signature: unblindedSignature.toString(),
-            };
+        let pollData = pollDataDict[signedTicket.id];
+        let blindedSignature = bigInt(signedTicket.signature);
+        let ticket = pollData.ticket!;
+        let unblindedSignature = pollData.pubKey.unblind(blindedSignature, ticket.r);
+        let ticketForUser: TicketForUser = {
+            name: pollData.name,
+            type: pollData.type,
+            id: pollData.id,
+            ticket: ticket.m.toString(),
+            signature: unblindedSignature.toString(),
+        };
 
-            ticketsForUser.tickets.push(ticketForUser);
-        }
+        ticketsForUser.tickets.push(ticketForUser);
     }
 
-    return [JSON.stringify(ticketsForUser, null, 2), errors];
+    return JSON.stringify(ticketsForUser, null, 2);
 }

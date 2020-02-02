@@ -30,7 +30,7 @@ from apps.enrollment.timetable.views import build_group_list
 from apps.enrollment.utils import mailto
 from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
-from apps.grade.tickets.models.generated_ticket import GeneratedTicket
+from apps.grade.ticket_create.models.student_graded import StudentGraded
 
 from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, BaseUser, PersonalDataConsent
@@ -248,10 +248,9 @@ def my_profile(request):
             t0_time = t0_time_obj.get().time
         except T0Times.DoesNotExist:
             t0_time = None
-        semesters = Semester.objects.all()
-        grade_info = [semester for semester in semesters
-                      if GeneratedTicket.student_graded(request.user.student, semester)]
-        semesters_participated_in_grade = [x for x in grade_info]
+        grade_info = StudentGraded.objects.filter(
+            student=student).select_related('semester').order_by('-semester__records_opening')
+        semesters_participated_in_grade = [x.semester for x in grade_info]
         current_semester_ects = Record.student_points_in_semester(student, semester)
         data.update({
             't0_time': t0_time,

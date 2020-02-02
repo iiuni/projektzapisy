@@ -15,7 +15,7 @@
 
 {% block all-content %}
 <div id="mainPage-container">
-  {% render_bundle "tickets-katex" %}
+  {% render_bundle "ticket_create-katex" %}
   {% if is_grade_active %}
   {% if not user.employee and not user.is_superuser %}
   <div class="alert alert-info" role="alert">

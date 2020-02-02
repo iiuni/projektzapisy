@@ -2,8 +2,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import generateTicketsMain from "./ticketsgenerate";
-import axios from "axios";
-
 
 @Component
 export default class TicketsGenerator extends Vue {
@@ -12,20 +10,17 @@ export default class TicketsGenerator extends Vue {
   loading: boolean = false;
   exception: boolean = false;
   errors: string[] = new Array();
-
   async generateTicketsOnClick() {
     this.loading = true;
     try {
-      [this.tickets, this.errors] = await generateTicketsMain();
-    }
-    catch(e) {
+      this.tickets = await generateTicketsMain();
+    } catch (e) {
       this.errors = [e.response.data];
       this.exception = true;
     }
     this.loading = false;
     this.ticketGenerationFinished = true;
   }
-
   copyTickets() {
     let ticketsTextArea = this.$refs["tickets-textarea"] as HTMLInputElement;
     ticketsTextArea.select();
@@ -42,7 +37,10 @@ export default class TicketsGenerator extends Vue {
       v-if="!ticketGenerationFinished"
       @click="generateTicketsOnClick"
       :disabled="loading"
-    ><span v-if="loading" class="spinner-border spinner-border-sm"></span>Pobierz klucze</button>
+    >
+      <span v-if="loading" class="spinner-border spinner-border-sm mr-1"></span
+      >Pobierz klucze
+    </button>
     <div v-if="ticketGenerationFinished">
       <div id="grade-tickets-save-form">
         <div v-if="!exception">
@@ -51,13 +49,13 @@ export default class TicketsGenerator extends Vue {
             Zapisz je w bezpiecznym miejscu -
             <strong>nie ma powrotu do tego ekranu</strong>.
           </h3>
-          <br>
+          <br />
           <div class="text-center">
             <button id="copy-keys" class="btn btn-primary" @click="copyTickets">
               Skopiuj
             </button>
           </div>
-          <br>
+          <br />
           <textarea
             ref="tickets-textarea"
             id="tickets"
@@ -66,7 +64,7 @@ export default class TicketsGenerator extends Vue {
             style="width:1000px; height:400px"
           ></textarea>
         </div>
-        <div class="alert alert-danger" v-for="msg in errors" :key="msg.id" >
+        <div class="alert alert-danger" v-for="msg in errors" :key="msg.id">
           Błąd: {{ msg }}
         </div>
       </div>
@@ -80,7 +78,6 @@ export default class TicketsGenerator extends Vue {
 	border: 1px solid #cccccc;
 	background: #FFF5B3;
 	font-size: 14px;
-
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;

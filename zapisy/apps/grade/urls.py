@@ -10,5 +10,5 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("", poll_views.GradeDetails.as_view(), name="grade-main"),
     path("poll/", include("apps.grade.poll.urls")),
-    path("ticket/", include("apps.grade.tickets.urls")),
+    path("ticket/", include("apps.grade.ticket_create.urls")),
 ]
