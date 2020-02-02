@@ -253,11 +253,14 @@ class Schema(models.Model):
     """
 
     questions = JSONField(default=dict)
-    type = models.CharField(choices=PollType.choices(), max_length=80)
+    type = models.SmallIntegerField("Kategoria", choices=PollType.choices())
 
     class Meta:
         verbose_name = 'szablon'
         verbose_name_plural = 'szablony'
+
+    def __str__(self):
+        return self.get_type_display()
 
     @classmethod
     def get_schema_from_file(cls, poll_type: PollType, schema_path: str = None):
