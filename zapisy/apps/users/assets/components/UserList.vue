@@ -74,7 +74,7 @@ export default {
 			let button = this.filter_button.toLowerCase();
 
 			if (button != 'wszyscy') {
-				return first_name.startsWith(button) || last_name.startsWith(button);
+				return last_name.startsWith(button);
 			}
 			return true;
 		},
