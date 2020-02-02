@@ -1,10 +1,7 @@
 import Vue from "vue";
-import Vuex from "vuex";
 
 import UserFilter from "./components/UserFilter.vue";
 import UserList from "./components/UserList.vue";
-
-Vue.use(Vuex);
 
 if (document.getElementById("student-filter") !== null) {
     new Vue({
@@ -25,7 +22,6 @@ if (document.getElementById("employee-filter") !== null) {
     });
 }
 if (document.getElementById("employee-list") !== null) {
-
     new Vue({
         el: "#employee-list",
         render: h => h(UserList)

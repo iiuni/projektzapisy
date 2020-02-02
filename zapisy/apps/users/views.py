@@ -33,14 +33,12 @@ from apps.notifications.views import create_form
 from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
-from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list, prepare_students_list, \
-    prepare_employee_list
+from apps.users.utils import prepare_ajax_students_list, prepare_ajax_employee_list
 from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
 from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
 from apps.users.exceptions import InvalidUserException
 from libs.ajax_messages import AjaxSuccessMessage
 from mailer.models import Message
-
 
 logger = logging.getLogger()
 
@@ -69,8 +67,8 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     records = Record.objects.filter(
         student=student,
         group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
-            'group__teacher', 'group__teacher__user', 'group__course').prefetch_related(
-                'group__term', 'group__term__classrooms')
+        'group__teacher', 'group__teacher__user', 'group__course').prefetch_related(
+        'group__term', 'group__term__classrooms')
     groups = [r.group for r in records]
 
     # Highlight groups shared with the viewer in green.
@@ -90,10 +88,19 @@ def student_profile(request: HttpRequest, user_id: int) -> HttpResponse:
 
     active_students = Student.get_list(
         begin='All', restrict_list_consent=not BaseUser.is_employee(request.user))
+    students_data = {}
+    for student in active_students:
+        students_data.update({student.pk: {"last_name": student.user.last_name,
+                                           "first_name": student.user.first_name,
+                                           "id": student.user.id,
+                                           "album": student.matricula,
+                                           "email": student.user.email
+                                           }})
+
     data.update({
         'students': active_students,
         'char': "All",
-        'json_users': json.dumps(prepare_students_list(active_students))
+        'users': students_data
     })
     return render(request, 'users/student_profile.html', data)
 
@@ -108,7 +115,7 @@ def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     semester = Semester.objects.get_next()
     groups = Group.objects.filter(
         course__semester_id=semester.pk, teacher=employee).select_related(
-            'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
+        'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
     groups = list(groups)
 
     # Highlight groups shared with the viewer in green.
@@ -136,11 +143,18 @@ def employee_profile(request: HttpRequest, user_id: int) -> HttpResponse:
                        e.user.last_name[:2]) if e.user.first_name and e.user.last_name else None
 
     employees = Employee.get_list(begin="All")
+    employees_data = {}
+    for employee in employees:
+        employees_data.update({employee.pk: {"last_name": employee.user.last_name,
+                                             "first_name": employee.user.first_name,
+                                             "id": employee.user.id,
+                                             "email": employee.user.email
+                                             }})
 
     data.update({
         'employees': active_teachers,
         'char': "All",
-        'json_users': json.dumps(prepare_employee_list(employees)),
+        'users': employees_data,
     })
     return render(request, 'users/employee_profile.html', data)
 
@@ -242,8 +256,8 @@ def my_profile(request):
         student: Student = request.user.student
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
-                'group', 'group__course', 'group__teacher',
-                'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
+            'group', 'group__course', 'group__teacher',
+            'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
         groups_times = []
         got: GroupOpeningTimes
         for got in groups_opening_times:
@@ -274,26 +288,31 @@ def my_profile(request):
     return render(request, 'users/my_profile.html', data)
 
 
-def employees_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
-
+def employees_list(request: HttpRequest, begin: str = 'All', query: Optional[str] = None) -> HttpResponse:
     employees = Employee.get_list(begin)
 
     if request.is_ajax():
         employees = prepare_ajax_employee_list(employees)
         return AjaxSuccessMessage(message="ok", data=employees)
     else:
+        employees_data = {}
+        for employee in employees:
+            employees_data.update({employee.pk: {"last_name": employee.user.last_name,
+                                                 "first_name": employee.user.first_name,
+                                                 "id": employee.user.id,
+                                                 "email": employee.user.email
+                                                 }})
         data = {
             "employees": employees,
             "char": begin,
             "query": query,
-            'json_users': json.dumps(prepare_employee_list(employees)),
+            'users': employees_data,
         }
 
     return render(request, 'users/employees_list.html', data)
 
 
-def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
-
+def consultations_list(request: HttpRequest, begin: str = 'A') -> HttpResponse:
     employees = Employee.get_list('All')
     semester = Semester.get_current_semester()
     employees = Group.teacher_in_present(employees, semester)
@@ -311,20 +330,28 @@ def consultations_list(request: HttpRequest, begin: str='A') -> HttpResponse:
 
 @login_required
 @external_contractor_forbidden
-def students_list(request: HttpRequest, begin: str='All', query: Optional[str]=None) -> HttpResponse:
+def students_list(request: HttpRequest, begin: str = 'All', query: Optional[str] = None) -> HttpResponse:
     students = Student.get_list(begin, not BaseUser.is_employee(request.user))
 
     if request.is_ajax():
         students = prepare_ajax_students_list(students)
         return AjaxSuccessMessage(message="ok", data=students)
     else:
+        student_data = {}
+        for student in students:
+            student_data.update({student.pk: {"last_name": student.user.last_name,
+                                       "first_name": student.user.first_name,
+                                       "id": student.user.id,
+                                       "album": student.matricula,
+                                       "email": student.user.email
+                                       }})
         data = {
             "students": students,
             "char": begin,
             "query": query,
             'mailto_group': mailto(request.user, students),
             'mailto_group_bcc': mailto(request.user, students, True),
-            'json_users': json.dumps(prepare_students_list(students)),
+            'users': student_data,
         }
         return render(request, 'users/students_list.html', data)
 
@@ -432,10 +459,10 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
             event.add('summary').value = "{} - {}".format(course_name, group_type)
             if term.room:
                 event.add('location').value = 'sala ' + term.room.number \
-                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
+                                              + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
 
             event.add('description').value = 'prowadzący: ' \
-                + group.get_teacher_full_name()
+                                             + group.get_teacher_full_name()
             event.add('dtstart').value = start_datetime
             event.add('dtend').value = end_datetime
 

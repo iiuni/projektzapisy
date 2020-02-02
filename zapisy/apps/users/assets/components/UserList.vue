@@ -21,10 +21,8 @@ export default {
 		}
 	},
 	beforeMount: function () {
-		let rawUsers = JSON.parse(document.getElementById('user-list-json-container').getAttribute(
-					'data') || '{}');
+		let rawUsers = JSON.parse(document.getElementById('user-list-json-script').textContent);
 		this.users = Object.values(rawUsers);
-
 		this.users = this.users.sort(function (a, b) {
 			if (a.last_name > b.last_name) {
 				return 1
