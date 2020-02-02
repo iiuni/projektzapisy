@@ -13,9 +13,9 @@ from functools import reduce
 from typing import List, Tuple
 
 
+# A simple function to propose, whether the course should be taught in upcoming year.
+# As an argument, it takes a single dictionary entry from get_votes function.
 def propose(vote):
-    # A simple function to propose, whether the course should be taught in upcoming year.
-    # As an argument, it takes a single dictionary entry from get_votes function.
     current_year = SystemState.get_current_state().year
     proposal = Proposal.objects.get(id=vote[current_year]['proposal'])
     avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
@@ -91,8 +91,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
                                ('semester', semester if semester else proposal_info.semester),
                                ('teacher', group.teacher.get_full_name()),
                                ('code', group.teacher.user.username),
-                               ('type', group.human_readable_type(
-                               ) if group.human_readable_type() != 'Projekt' else 'Pracownia'),
+                               ('type', group.human_readable_type()),
                                ('hours', hours[group.human_readable_type()]) if group.human_readable_type() in hours else ('hours', 0)]
                 groups.append(course_info)
         else:
@@ -218,15 +217,15 @@ def get_votes(years: int):
     return courses_data
 
 
+# Counts students in groups
 def count_students_in_groups(groups: List[Group]) -> int:
-    # Counts students in groups
     students = Record.objects.filter(
         reduce(lambda x, y: x | y, [Q(group=group)for group in groups]), status=RecordStatus.ENROLLED).distinct().count()
     return students
 
 
+# Counts students enrolled for a course
 def count_students_in_course(courses: CourseInstance) -> int:
-    # Counts students enrolled for a course
     enrolled = 0
     for course in courses:
         groups = Group.objects.filter(
@@ -239,7 +238,8 @@ def count_students_in_course(courses: CourseInstance) -> int:
     return enrolled
 
 
-def get_year_list(years):
+# gets a list of a number (equal to years) of latest SystemState objects created
+def get_year_list(years: int):
     states_all = SystemState.objects.all().order_by('-year')
     states = []
 
@@ -399,6 +399,9 @@ def clean_up(record: dict):
 
     return record
 
+# prepares data about employee to put into html
+# arg employees is data loaded from employees Google sheet
+
 
 def prepare_employees_data(employees: List):
     staff = {}
@@ -415,8 +418,7 @@ def prepare_employees_data(employees: List):
                     'weekly_winter': 0,
                     'weekly_summer': 0,
                     'courses_winter': [],
-                    'courses_summer': [],
-                    'id': value[5]
+                    'courses_summer': []
                     }
             if value[1] == 'prac':
                 staff[value[5]] = data
@@ -425,6 +427,9 @@ def prepare_employees_data(employees: List):
             else:
                 others[value[5]] = data
     return staff, phds, others, pensum
+
+# arg stats is a single row from assigments sheet
+# this function extracts important data from that row, used to generate statistics
 
 
 def make_stats_record(stats: List):

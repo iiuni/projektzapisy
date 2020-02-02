@@ -95,13 +95,17 @@ def plan_view(request):
                 lecture_type, hours = make_stats_record(value)
                 stats_summer[lecture_type] += hours
 
-        is_empty = False if assignments_winter and assignments_summer else True
+        is_empty = False if assignments_winter or assignments_summer else True
 
         if not is_empty:
-            assignments_winter = prepare_assignments_data(assignments_winter)
-            assignments_summer = prepare_assignments_data(assignments_summer)
+            if assignments_winter:
+                assignments_winter = prepare_assignments_data(
+                    assignments_winter)
+            if assignments_summer:
+                assignments_summer = prepare_assignments_data(
+                    assignments_summer)
 
-            is_empty = False if assignments_winter and assignments_summer else True
+            is_empty = False if assignments_winter or assignments_summer else True
 
             context = {
                 'error': False,
@@ -123,7 +127,7 @@ def plan_view(request):
         else:
             return render(request, 'plan/view-plan.html', {'is_empty': is_empty, 'error': False, 'year': year})
     else:
-        return HttpResponse(status=403)
+        return render(request, '403.html')
 
 
 def plan_create(request):
@@ -164,7 +168,7 @@ def plan_create(request):
         }
         return render(request, 'plan/create-plan.html', context)
     else:
-        return HttpResponse(status=403)
+        return render(request, '403.html')
 
 
 def plan_vote(request):
@@ -206,6 +210,8 @@ def plan_create_voting_sheet(request):
     return HttpResponseRedirect(reverse('plan-create'))
 
 
+# generates a json file used by scheduler or puts the very same data in csv file, depending on format argument
+# data comes from both employees and assigments Google sheets
 def generate_scheduler_file(request, slug, format):
     if request.user.is_superuser:
         current_year = SystemState.get_current_state().year
@@ -221,7 +227,7 @@ def generate_scheduler_file(request, slug, format):
         elif slug == 'lato':
             semester = 'l'
         else:
-            return HttpResponse(status=404)
+            return render(request, '404.html')
         groups = {}
         for group in GROUP_TYPE_CHOICES:
             groups[group[1]] = group[0]
@@ -252,6 +258,7 @@ def generate_scheduler_file(request, slug, format):
                 except Proposal.ObjectDoesNotExist:
                     course_id = -1
 
+                # if single group is taught by few teachers, remember the index number that points to that group
                 if assignment[-1]:
                     if assignment[1] in multiple_teachers and assignment[-1] in multiple_teachers[assignment[1]]:
                         id = multiple_teachers[assignment[1]][assignment[-1]]
@@ -262,6 +269,7 @@ def generate_scheduler_file(request, slug, format):
                                           ][assignment[-1]] = index
                 else:
                     id = index
+
                 if format == 'json':
                     content.append(
                         {'type': 'course', 'semester': semester, 'course_id': course_id, 'course_name': assignment[1], 'id': id,
@@ -270,6 +278,7 @@ def generate_scheduler_file(request, slug, format):
                     content.append(['course', semester, course_id, assignment[1], id, int(
                         groups[assignment[2].lower()]), int(assignment[5]), assignment[11]])
                 index += 1
+
             if assignment[0] == "Lp":
                 lp = True
 
@@ -294,7 +303,7 @@ def generate_scheduler_file(request, slug, format):
                 writer.writerow(c)
             return response
     else:
-        return HttpResponse(status=403)
+        return render(request, '403.html')
 
 
 def generate_scheduler_file_json(request, slug):

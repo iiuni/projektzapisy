@@ -168,7 +168,7 @@ def update_voting_results_sheet(sheet, votes):
 # BEGIN PLAN PROPOSAL SHEET LOGIC
 ##################################################
 
-# votes is return type of function get_subjects_data
+# proposal is return type of function get_subjects_data
 # function returns a list of lists
 # each inner list is a row in sheet
 def proposal_to_sheets_format(proposal):
@@ -220,23 +220,23 @@ def proposal_to_sheets_format(proposal):
 
 
 def get_short_type_name(type_name: str):
-    if type_name == 'Wykład':
+    if type_name.lower() == 'wykład':
         return 'w'
-    elif type_name == 'Repetytorium':
+    elif type_name.lower() == 'repetytorium':
         return 'rep'
-    elif type_name == 'Ćwiczenia':
+    elif type_name.lower() == 'ćwiczenia':
         return 'ćw'
-    elif type_name == 'Pracownia':
+    elif type_name.lower() == 'pracownia':
         return 'prac'
-    elif type_name == 'Ćwiczenio-pracownia':
+    elif type_name.lower() == 'ćwiczenio-pracownia':
         return 'ćw+prac'
-    elif type_name == 'Seminarium':
+    elif type_name.lower() == 'seminarium':
         return 'sem'
     elif type_name.lower() == 'admin':
         return 'admin'
 
 
-# votes is return type of function get_subjects_data
+# proposal is return type of function get_subjects_data
 # arg sheet is sheet object returns by function create_sheets_service
 def update_plan_proposal_sheet(sheet, proposal):
     data = proposal_to_sheets_format(proposal)
