@@ -8,9 +8,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-
 POLL_ARCHIVE = {}
-SUBMISSION_ARCHIVE = []
+
 
 def archive_polls_from_old_schema(apps, schema_editor):
     """Saves all the polls to a global variable."""
@@ -19,7 +18,7 @@ def archive_polls_from_old_schema(apps, schema_editor):
     OpenQuestionOrdering = apps.get_model('poll', 'OpenQuestionOrdering')
     SingleChoiceQuestionOrdering = apps.get_model('poll', 'SingleChoiceQuestionOrdering')
     MultipleChoiceQuestionOrdering = apps.get_model('poll', 'MultipleChoiceQuestionOrdering')
-    
+
     def dump_open_question(oq: OpenQuestionOrdering) -> Dict:
         q = oq.question
         return {
@@ -28,7 +27,7 @@ def archive_polls_from_old_schema(apps, schema_editor):
             'type': 'textarea',
             'position': (oq.sec_title, oq.position)
         }
-    
+
     def dump_multi_choice_question(oq: MultipleChoiceQuestionOrdering) -> Dict:
         q = oq.question
         return {
@@ -38,7 +37,7 @@ def archive_polls_from_old_schema(apps, schema_editor):
             'choices': [o.content for o in q.options.all()],
             'position': (oq.sec_title, oq.position)
         }
-        
+
     def dump_single_choice_question(oq: SingleChoiceQuestionOrdering) -> Dict:
         q = oq.question
         return {
@@ -53,12 +52,12 @@ def archive_polls_from_old_schema(apps, schema_editor):
         open_questions = OpenQuestionOrdering.objects.filter(sections__poll=poll).select_related(
             'question').annotate(sec_title=models.F('sections__title'))
         single_choice = SingleChoiceQuestionOrdering.objects.filter(
-            sections__poll=poll).select_related('question').prefetch_related('question__options').annotate(
-            sec_title=models.F('sections__title'))
+            sections__poll=poll).select_related('question').prefetch_related(
+                'question__options').annotate(sec_title=models.F('sections__title'))
         multi_choice = MultipleChoiceQuestionOrdering.objects.filter(
-            sections__poll=poll).select_related('question').prefetch_related('question__options').annotate(
-            sec_title=models.F('sections__title'))
-        
+            sections__poll=poll).select_related('question').prefetch_related(
+                'question__options').annotate(sec_title=models.F('sections__title'))
+
         oqs = ([dump_single_choice_question(q) for q in single_choice] +
                [dump_multi_choice_question(q) for q in multi_choice] +
                [dump_open_question(q) for q in open_questions])
@@ -79,46 +78,52 @@ def archive_polls_from_old_schema(apps, schema_editor):
         POLL_ARCHIVE[poll.id] = d
 
 
-def archive_submissions_from_old_schema(apps, schema_editor):
-    """Saves all the submissions to a global variable."""
-    Section = apps.get_model('poll', 'Section')
+def migrate_submissions(apps, schema_editor):
+    """Migrates the submissions with one-by-one."""
     SavedTicket = apps.get_model('poll', 'SavedTicket')
 
     OpenQuestionAnswer = apps.get_model('poll', 'OpenQuestionAnswer')
     MultipleChoiceQuestionAnswer = apps.get_model('poll', 'MultipleChoiceQuestionAnswer')
     SingleChoiceQuestionAnswer = apps.get_model('poll', 'SingleChoiceQuestionAnswer')
 
+    Submission = apps.get_model('poll', 'Submission')
+
     for st in SavedTicket.objects.all():
-        submission = {
-            'id': st.id,
-            'ticket': st.ticket,
-            'poll': st.poll_id,
-            'submitted': st.finished,
-        }
         try:
             questions = copy.deepcopy(POLL_ARCHIVE[st.poll_id]['questions'])
         except KeyError:
             continue
         for question in questions:
             if question['type'] == 'textarea':
-                ans = OpenQuestionAnswer.objects.filter(saved_ticket=st, question=question['id']).first()
+                ans = OpenQuestionAnswer.objects.filter(saved_ticket=st,
+                                                        question=question['id']).first()
                 question.update({
                     'answer': ans.content if ans else "",
                 })
             elif question['type'] == 'radio':
-                ans = SingleChoiceQuestionAnswer.objects.filter(saved_ticket=st, question=question['id']).first()
+                ans = SingleChoiceQuestionAnswer.objects.filter(
+                    saved_ticket=st, question=question['id']).select_related('option').first()
                 question.update({
                     'answer': ans.option.content if ans else "",
                 })
             elif question['type'] == 'checkbox':
-                ans = MultipleChoiceQuestionAnswer.objects.filter(saved_ticket=st, question=question['id']).first()
+                ans = MultipleChoiceQuestionAnswer.objects.filter(
+                    saved_ticket=st, question=question['id']).prefetch_related('options').first()
                 question.update({
                     'answer': [o.content for o in ans.options.all()] if ans else [],
                 })
-        submission.update({
-            'answers': questions,
-        })
-        SUBMISSION_ARCHIVE.append(submission)
+            del question['id']
+            del question['position']
+        Submission.objects.create(
+            poll_id=st.poll_id,
+            ticket=st.ticket + str(st.poll_id),
+            submitted=st.finished,
+            answers={
+                "version": 1,
+                "schema": questions
+            },
+        )
+
 
 def restore_polls(apps, schema_editor):
     """Restores the polls from POLL_ARCHIVE.
@@ -134,20 +139,6 @@ def restore_polls(apps, schema_editor):
         poll.semester_id = dump['semester']
         poll.save()
 
-def restore_submissions(apps, schema_editor):
-    """Restores the submissions from SUBMISSION_ARCHIVE."""
-    Submission = apps.get_model('poll', 'Submission')
-    for submission in SUBMISSION_ARCHIVE:
-        Submission.objects.create(
-            poll_id = submission['poll'],
-            ticket = submission['ticket'] + str(submission['poll']),
-            submitted = submission['submitted'],
-            answers =  {
-                "version": 1,
-                "schema": submission['answers']
-            },
-        )
-
 
 class Migration(migrations.Migration):
 
@@ -158,7 +149,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(code=archive_polls_from_old_schema),
-        migrations.RunPython(code=archive_submissions_from_old_schema),
+        # migrations.RunPython(code=archive_submissions_from_old_schema),
         migrations.CreateModel(
             name='Schema',
             fields=[
@@ -186,6 +177,17 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'zgłoszenia',
             },
         ),
+        migrations.AddField(
+            model_name='submission',
+            name='poll',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='poll.Poll'),
+        ),
+        migrations.AddField(
+            model_name='submission',
+            name='schema',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='poll.Schema'),
+        ),
+        migrations.RunPython(migrate_submissions),
         migrations.AlterUniqueTogether(
             name='lastvisit',
             unique_together=set(),
@@ -444,16 +446,5 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='TemplateSections',
         ),
-        migrations.AddField(
-            model_name='submission',
-            name='poll',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='poll.Poll'),
-        ),
-        migrations.AddField(
-            model_name='submission',
-            name='schema',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='poll.Schema'),
-        ),
         migrations.RunPython(code=restore_polls),
-        migrations.RunPython(code=restore_submissions),
     ]
