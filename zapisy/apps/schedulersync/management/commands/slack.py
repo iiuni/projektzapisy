@@ -1,3 +1,5 @@
+"""Object prepares attachments to send to Slack. Then sends all collected attachments"""
+
 import json
 import os
 import requests
@@ -15,7 +17,7 @@ class Slack:
         }
         self.attachments.append(attachment)
 
-    def prepare_slack_message(self, summary):
+    def prepare_slack_message(self, summary: 'Summary'):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 term.dayOfWeek, term.start_time, term.end_time, term.group.teacher)

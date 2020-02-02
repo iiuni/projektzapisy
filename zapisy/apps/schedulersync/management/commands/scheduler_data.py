@@ -1,3 +1,8 @@
+""" Get data from scheduler API urls and lays out that data to list of SZTerm.
+    Szterm contains all necessary data to update or create term.
+    That data lacks courses and teachers mapping, so prepare all teachers
+    and courses to map in seperate dict and set."""
+
 import collections
 import os
 from datetime import time
@@ -32,7 +37,8 @@ class SchedulerData:
         self.teachers = {}
         self.courses = set()
 
-    def __map_scheduler_types(self, sh_results, sh_terms, term):
+    def __map_scheduler_types(self, sh_results: 'Dict[int, SchedulerApiResult]',
+                              sh_terms: 'Dict[int, SchedulerAPITerm]', term: SZTerm) -> SZTerm:
         """ Change SZTerm data with data in SZ format. Does not map course and employee """
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
@@ -71,8 +77,10 @@ class SchedulerData:
         return SZTerm(term.scheduler_id, term.teacher, term.course, type,
                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 
-    def get_scheduler_data(self) -> 'Scheduler_data[List[SchedulerAPIGroup], \
-                                    Dict[SchedulerAPITerm], Dict[SchedulerAPIResult]]':
+    def get_scheduler_data(self):
+        """ Get data from scheduler API and lays out that data to SZTerm, which has all
+            necessary data to update or create term in SZ. That data
+            lacks employee and course mapping"""
         def get_logged_client():
             client = requests.session()
             client.get(URL_LOGIN)
@@ -91,7 +99,7 @@ class SchedulerData:
                 data[int(id)] = SchedulerAPIResult(rooms, terms)
             return data
 
-        def get_groups_data(groups: 'List[int, List, Dict]') -> 'List[int, str, str, str]':
+        def get_groups_data(groups: 'List[int, List, Dict]') -> 'List[SchedulerAPIGroup]':
             """ Lays out (id, teachers, extra) data coming from scheduler """
             data = []
             for rec in groups:
@@ -103,7 +111,7 @@ class SchedulerData:
                 data.append(SchedulerAPIGroup(id, teacher, course, group_type, limit))
             return data
 
-        def get_terms_data(terms: 'List[int, int, Dict, Dict]') -> 'Dict[int, int, int, int, int]':
+        def get_terms_data(terms: 'List[int, int, Dict, Dict]') -> 'Dict[int, SchedulerAPITerm]':
             """ Lays out (id, day, start, end) data coming from scheduler """
             data = {}
             for rec in terms:

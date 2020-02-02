@@ -1,3 +1,9 @@
+"""  Object maps teachers and courses in SchedulerData object to objects in database.
+     Then replace corresponding teachers and courses in terms in SchedulerData object.
+     If course or teacher cannot be found and interactive flag is set, then
+     user will be asked for proper input.
+     Fills summary object given in constructor"""
+
 import collections
 
 from apps.enrollment.courses.models import CourseInstance
@@ -16,7 +22,9 @@ class SchedulerMapper:
         self.summary = summary
         self.semester = semester
 
-    def __map_teachers(self, teachers):
+    def __map_teachers(self, teachers: 'Dict[str, str]'):
+        """ Map teachers by scheduler username to object in database. If teacher cannot be found, in
+            interactive mode user will be asked for proper username"""
         def get_employee(username: str, full_name: str, interactive: bool = True) -> Employee:
             """Finds matching employee in the database.
 
@@ -48,7 +56,8 @@ class SchedulerMapper:
                         else Employee.objects.get(user__username=username)
                     if sh_username != username:
                         EmployeeMap.objects.create(scheduler_username=sh_username, employee=emp)
-                        self.summary.maps_added.append((username, str(emp)))
+                        self.summary.maps_added.append((sh_username, str(emp)))
+                        print(">Employee '{}' mapped to {}".format(sh_username, emp))
                     return emp
                 except Employee.DoesNotExist:
                     pass
@@ -66,7 +75,9 @@ class SchedulerMapper:
         for teacher in teachers:
             teachers[teacher] = get_employee(teacher, teachers[teacher], self.interactive_flag)
 
-    def __map_courses(self, courses):
+    def __map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
+        """ Map courses by scheduler names to object in database. If corresponding proposal cannot be found, in
+            interactive mode user will be asked for proper proposal name"""
         def get_proposal(course_name: str, interactive: bool = True) -> 'Optional[Proposal]':
             """Finds a proposal in offer with a given name.
 
@@ -91,7 +102,7 @@ class SchedulerMapper:
                     if name != course_name:
                         CourseMap.objects.create(scheduler_course=course_name.upper(), proposal=proposal)
                         self.summary.maps_added.append((course_name, str(proposal)))
-                        print(">Proposal '{}' mapped".format(proposal))
+                        print(">Proposal '{}' mapped to {}".format(course_name, proposal))
                     return proposal
                 except Proposal.DoesNotExist:
                     error = "No proposal was found"
@@ -130,7 +141,9 @@ class SchedulerMapper:
                 mapped_courses[course] = get_course(proposal)
         return mapped_courses
 
-    def map_scheduler_data(self, scheduler_data):
+    def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
+        """ Map teacher and courses in scheduler_data to objects in database.
+            Then replace corresponding teachers and courses in terms in scheduler_data"""
         self.__map_teachers(scheduler_data.teachers)
         scheduler_data.courses = self.__map_courses(scheduler_data.courses)
         mapped_terms = []
