@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 import argparse
+import hashlib
 import json
+import math
+import secrets
 import sys
 from getpass import getpass
-from math import gcd
-from secrets import randbelow
-from typing import Dict
-from urllib.parse import urljoin
+from typing import Dict, NamedTuple, Tuple
 
 import requests
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
-from Crypto.Util.number import inverse
 
 
-def hash_(m: int) -> int:
+def _hash(m: int) -> int:
     """We are using hash function to disable multiplicative properties
     of RSA encryption/decryption. In other words, if E(m) is standard rsa
     encryption/decryption, then E(m*k) = E(m) * E(k), but if we set
@@ -23,9 +20,28 @@ def hash_(m: int) -> int:
     by knowing factors of m. Server will also compute SHA256 of a ticket, so
     if we didn't do this, out ticket would be invalid
     """
-    h = SHA256.new()
+    h = hashlib.sha256()
     h.update(str(m).encode())
     return int(h.hexdigest(), 16)
+
+
+def _inverse(a: int, m: int) -> int:
+    """Returns a**(-1) mod m.
+
+    Raises:
+        ZeroDivisionError if the inverse does not exist.
+    """
+    def egcd(a, b) -> Tuple[int, int, int]:
+        if a == 0:
+            return (b, 0, 1)
+        else:
+            g, y, x = egcd(b % a, a)
+            return (g, x - (b // a) * y, y)
+    g, x, y = egcd(a, m)
+    if g != 1:
+        raise ZeroDivisionError
+    else:
+        return x % m
 
 
 def blind(pub_key, m, r):
@@ -33,27 +49,33 @@ def blind(pub_key, m, r):
 
 
 def unblind(pub_key, m, r):
-    return (m * inverse(r, pub_key.n)) % pub_key.n
+    return (m * _inverse(r, pub_key.n)) % pub_key.n
 
 
 class Ticket:
     """Class which is responsible for generating and holding ticket data."""
     def __init__(self, pub_key):
-        # This while loop could be omitted, since condition GCD(r, pub_key.n) != 1 will probably
-        # never happen in our universe lifetime, but lets do that for the sake of correctness.
+        # This while loop could be omitted, since condition GCD(r, pub_key.n) !=
+        # 1 will probably never happen in our universe lifetime, but lets do
+        # that for the sake of correctness.
         while True:
-            m = randbelow(pub_key.n)
-            r = randbelow(pub_key.n)
-            if gcd(r, pub_key.n) == 1:
+            m = secrets.randbelow(pub_key.n)
+            r = secrets.randbelow(pub_key.n)
+            if math.gcd(r, pub_key.n) == 1:
                 break
         self.m = m
         self.r = r
 
 
+class RSAPublicKey(NamedTuple):
+    n: int
+    e: int
+
+
 class PollData:
     """This class serves the purpose of holding data related to poll"""
     def __init__(self, poll: Dict, ticket=None):
-        self.pub_key = RSA.construct((int(poll['key']['n']), int(poll['key']['e'])))
+        self.pub_key = RSAPublicKey(int(poll['key']['n']), int(poll['key']['e']))
         self.name = poll['poll_info']['name']
         self.type = poll['poll_info']['type']
         self.id = poll['poll_info']['id']
@@ -61,7 +83,7 @@ class PollData:
 
     def serialize_blinded_ticket(self) -> Dict:
         assert self.ticket is not None
-        ticket_to_sign = blind(self.pub_key, hash_(self.ticket.m), self.ticket.r)
+        ticket_to_sign = blind(self.pub_key, _hash(self.ticket.m), self.ticket.r)
         return {
             'ticket': str(ticket_to_sign),
             'id': self.id,
@@ -72,19 +94,35 @@ class TicketCreate:
     """Main logic."""
     def __init__(self, url):
         self.url = url
-        self.client = requests.Session()
+        self.session = requests.Session()
 
-    def _post(self, path: str, *args, **kwargs) -> requests.Response:
+    def _post(self, path: str, data=None, json=None) -> requests.Response:
         """Wrapper for self.client.post."""
-        if 'headers' not in kwargs:
-            kwargs['headers'] = {}
-        kwargs['headers']['X-CSRFToken'] = self.csrf_token
-        response = self.client.post(urljoin(self.url, path), *args, **kwargs)
-        response.raise_for_status()
-        return response
+        def raise_for_status_with_message(r: requests.Response):
+            """Takes a "requests" response object and expands the
+            raise_for_status method to return more helpful errors.
+            """
+            try:
+                r.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                if r.text:
+                    raise requests.exceptions.HTTPError(f"{e} Error Message: {r.text}")
+                else:
+                    raise e
+            return
+
+        headers = {
+            'X-CSRFToken': self.csrf_token,
+        }
+        r = self.session.post(requests.compat.urljoin(self.url, path),
+                              data=data,
+                              headers=headers,
+                              json=json)
+        raise_for_status_with_message(r)
+        return r
 
     def login(self) -> None:
-        self.client.get(self.url)
+        self.session.get(self.url)
         username = input('Username: ')
         password = getpass('Password: ')
         data = {
@@ -92,9 +130,9 @@ class TicketCreate:
             'password': password,
         }
 
-        self._post('/users/login/', data=data)
-        login_success_check = self._post('/grade/ticket/tickets-generate', allow_redirects=False)
-        if login_success_check.status_code != 200:
+        r = self._post('/users/login/?next=/grade', data=data)
+        # When login is successful Django redirects us where we want.
+        if not r.url.endswith('/grade/'):
             raise RuntimeError("Login failed - probably wrong username or password")
 
     def get_polls(self) -> Dict[int, PollData]:
@@ -134,18 +172,13 @@ class TicketCreate:
         }
         # res is an array of dictionaries with following format:
         # {
-        #   status: string = OK | ERROR
-        #   message: string
         #   id: int
-        #   ticket: string
         #   signature: string
         # }
         for signed_ticket in res:
-            if signed_ticket['status'] == 'ERROR':
-                print('ERROR: {}'.format(signed_ticket['message']))
-                continue
             poll_data = polls[signed_ticket['id']]
-            unblinded_signature = unblind(poll_data.pub_key, int(signed_ticket['signature']), poll_data.ticket.r)
+            unblinded_signature = unblind(poll_data.pub_key, int(signed_ticket['signature']),
+                                          poll_data.ticket.r)
             tickets_for_user['tickets'].append({
                 'name': poll_data.name,
                 'type': poll_data.type,
@@ -158,8 +191,8 @@ class TicketCreate:
     @property
     def csrf_token(self):
         """get CSRF Token"""
-        if 'csrftoken' in self.client.cookies:
-            return self.client.cookies['csrftoken']
+        if 'csrftoken' in self.session.cookies:
+            return self.session.cookies['csrftoken']
         raise AttributeError("CSRF token not found")
 
 
