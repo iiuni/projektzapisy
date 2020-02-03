@@ -87,7 +87,6 @@ PIPELINE_CSS = {
             'css/enrollment/courses.css',
             'css/common/schedule.css',
             'css/common/schedule-courses.css',
-            'css/enrollment/users/users-list.css'
         ),
         'output_filename': 'css/userslist.min.css',
         'extra_context': {
@@ -158,8 +157,6 @@ PIPELINE_JS = {
             'js/jquery/jquery-tmpl/jquery.tmpl.min.js',
             'js/components/sidebar.js',
             'js/common/listFilter.js',
-            'js/enrollment/users/templates/employee.js',
-            'js/enrollment/users/employees-list.js',
         ),
         'output_filename': 'js/employeelist.min.js',
     },
@@ -175,8 +172,6 @@ PIPELINE_JS = {
             'js/jquery/jquery-tmpl/jquery.tmpl.min.js',
             'js/components/sidebar.js',
             'js/common/listFilter.js',
-            'js/enrollment/users/templates/student.js',
-            'js/enrollment/users/students-list.js',
         ),
         'output_filename': 'js/studentlist.min.js',
     },
