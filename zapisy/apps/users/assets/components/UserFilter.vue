@@ -12,13 +12,13 @@
                 </fieldset>
             </li>
             <li class="list-group-item bg-light">
-            <div id="user-alpha-list">
-                <ul id="user-list-menu">
-                    <li v-for="char in chars" class="charFilter">
-        				<button class="btn btn-link p-1" v-on:click="emitCharFilter(char)" >{{char}}</button>
-                    </li>
-                </ul>
-            </div>
+                <div id="user-alpha-list">
+                    <ul id="user-list-menu">
+                        <li v-for="char in chars" class="charFilter">
+                            <button class="btn btn-link p-1" v-on:click="emitCharFilter(char)" >{{char}}</button>
+                        </li>
+                    </ul>
+                </div>
             </li>
         </ul>
     </div>
@@ -33,9 +33,9 @@ export default {
         return {
             input_value: "",
             chars: ['A', 'B', 'C', 'Ć', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'Ł', 'M', 'N', 'Ń', 'O', 'Q',
-                    'P', 'R', 'S', 'Ś', 'T', 'U', 'W', 'X', 'Y', 'Z', 'Ż', 'Ź', 'Wszyscy']
-            }
-        },
+                'P', 'R', 'S', 'Ś', 'T', 'U', 'W', 'X', 'Y', 'Z', 'Ż', 'Ź', 'Wszyscy']
+        }
+    },
     name: "StudentFilter",
     methods: {
         emitInputFilter: function(event) {

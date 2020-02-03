@@ -104,8 +104,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
                                                       "id": employee_from_queryset.user.id,
                                                       "email": employee_from_queryset.user.email
                                                       }})
-    data = {
-            "employees": employees_queryset,
+    data = {"employees": employees_queryset,
             "employees_dict": employees,
             }
 
