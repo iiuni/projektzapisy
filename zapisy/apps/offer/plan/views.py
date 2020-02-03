@@ -10,11 +10,14 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from django.core.exceptions import ObjectDoesNotExist
 import json
 import csv
+import environ
 
+env = environ.Env()
+environ.Env.read_env()
 
-VOTING_RESULTS_SPREADSHEET_ID = '1pfLThuoKf4wxirnMXLi0OEksIBubWpjyrSJ7vTqrb-M'
-CLASS_ASSIGNMENT_SPREADSHEET_ID = '1jy195Cvfly7SJ1BI_-eBDjB4tx706ra35GCdFqmGDVM'
-EMPLOYEES_SPREADSHEET_ID = '1OGvQLfekTF5qRAZyYSkSi164WtnDwsI1RUEDz80nyhY'
+VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
+CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
+EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 
 def plan_view(request):
