@@ -179,9 +179,7 @@ class Command(BaseCommand):
         scheduler_mapper = SchedulerMapper(interactive_flag, self.summary, self.semester)
         scheduler_mapper.map_scheduler_data(scheduler_data)
         for term in scheduler_data.terms:
-            if term.course is None:
-                continue
-            else:
+            if term.course is not None:
                 self.create_or_update_group_and_term(term)
 
         if not dont_delete_terms_flag:
@@ -212,4 +210,5 @@ class Command(BaseCommand):
                 transaction.set_rollback(True)
             self.stdout.write('\nDry run was on. Nothing was saved or deleted. All messages were informational.')
         else:
+            self.stdout.write('All changes to database are committed instantly.\n\n')
             self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)

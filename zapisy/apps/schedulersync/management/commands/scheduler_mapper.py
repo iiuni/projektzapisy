@@ -11,7 +11,6 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-
 # System Zapisow term data
 SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 'type', 'limit',
                                          'dayOfWeek', 'start_time', 'end_time', 'classrooms'])
@@ -23,9 +22,19 @@ class SchedulerMapper:
         self.summary = summary
         self.semester = semester
 
+    def __prompt(self, text):
+        print()
+        print(text)
+        print("Type 'quit' to exit script")
+        var = input("->: ")
+        if var == 'quit':
+            exit(0)
+        return var
+
     def __map_teachers(self, teachers: 'Dict[str, str]'):
         """ Map teachers by scheduler username to object in database. If teacher cannot be found, in
             interactive mode user will be asked for proper username"""
+
         def get_employee(username: str, full_name: str, interactive: bool = True) -> Employee:
             """Finds matching employee in the database.
 
@@ -67,11 +76,9 @@ class SchedulerMapper:
                     EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
                     self.summary.maps_added.append((username, str(nieznany)))
                     return nieznany
-                print("No employee found for username {}\nPlease provide the correct "
-                      "username for {}.\nType 'None' if that teacher should be replaced with "
-                      "'Nieznany Prowadzący'".format(username, full_name))
-                username = input("Username: ")
-                print("")
+                username = self.__prompt("No employee found for username {}\nPlease provide the correct "
+                                         "username for {}.\nType 'None' if that teacher should be replaced with "
+                                         "'Nieznany Prowadzący'".format(username, full_name))
 
         for teacher in teachers:
             teachers[teacher] = get_employee(teacher, teachers[teacher], self.interactive_flag)
@@ -79,6 +86,7 @@ class SchedulerMapper:
     def __map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
         """ Map courses by scheduler names to object in database. If corresponding proposal cannot be found, in
             interactive mode user will be asked for proper proposal name"""
+
         def get_proposal(course_name: str, interactive: bool = True) -> 'Optional[Proposal]':
             """Finds a proposal in offer with a given name.
 
@@ -98,8 +106,16 @@ class SchedulerMapper:
             while True:
                 error = ""
                 try:
-                    proposal = None if name == 'None' else Proposal.objects.filter(
-                        status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(name__iexact=name)
+                    if name == 'None':
+                        proposal = None
+                    else:
+                        try:
+                            int(name)
+                            proposal = Proposal.objects.filter(
+                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(id=name)
+                        except ValueError:
+                            proposal = Proposal.objects.filter(
+                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(name__iexact=name)
                     if name != course_name:
                         CourseMap.objects.create(scheduler_course=course_name.upper(), proposal=proposal)
                         self.summary.maps_added.append((course_name, str(proposal)))
@@ -116,10 +132,9 @@ class SchedulerMapper:
                     if not interactive:
                         self.summary.multiple_proposals.append(course_name)
                         return None
-                print("{} for name {}\nPlease provide correct name of the course proposal in the database.\n"
-                      "Type 'None' to mark the course to be ignored.".format(error, name))
-                name = input('Proposal name (Capitalization does not matter): ')
-                print()
+                name = self.__prompt("{} for name {}\nPlease provide correct name or id of "
+                                     "the course proposal in the database.\n"
+                                     "Type 'None' to mark the course to be ignored.".format(error, name))
 
         def get_course(proposal: 'Proposal') -> 'CourseInstance':
             """ return CourseInstance object from SZ database"""
