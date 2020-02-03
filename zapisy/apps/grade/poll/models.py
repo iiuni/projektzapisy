@@ -214,7 +214,7 @@ class Poll(models.Model):
             elif is_employee:
                 polls_for_courses = Poll.objects.filter(
                     course__semester=current_semester,
-                    course__entity__owner=user.employee,
+                    course__owner=user.employee,
                 )
                 polls_for_groups = Poll.objects.filter(
                     group__course__semester=current_semester,
@@ -447,7 +447,7 @@ class Submission(models.Model):
                 courses = CourseInstance.objects.filter(semester=semester)
             else:
                 courses = CourseInstance.objects.filter(
-                    entity__owner=user.employee, semester=semester
+                    owner=user.employee, semester=semester
                 )
 
             general_submissions = cls.objects.filter(
