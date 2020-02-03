@@ -79,7 +79,7 @@ class SubmissionEntryForm(forms.ModelForm):
         elif field["type"] == "checkbox" and "choices" in field:
             attrs = {"disabled": "disabled"} if not active else {}
             choices = tuple(zip(field["choices"], field["choices"]))
-            form_field = forms.ChoiceField(
+            form_field = forms.MultipleChoiceField(
                 choices=choices,
                 label=field["question"],
                 widget=forms.CheckboxSelectMultiple(choices=choices, attrs=attrs),
