@@ -24,8 +24,8 @@ urlpatterns = [
     url(r'^users/', include('apps.users.urls')),
 
     url(r'^grade/', include('apps.grade.urls')),
-    url(r'^s/(?P<query>.*)/$', users_views.students_list, name='users-list-search'),
-    url(r'^e/(?P<query>.*)/$', users_views.employees_list, name='users-list-search'),
+    url(r'^s/(?P<query>.*)/$', users_views.students_view, name='users-list-search'),
+    url(r'^e/(?P<query>.*)/$', users_views.employees_view, name='users-list-search'),
 
     url(r'^offer/', include('apps.offer.proposal.urls')),
     url(r'^prefs/', include('apps.offer.preferences.urls')),
