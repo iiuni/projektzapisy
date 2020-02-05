@@ -3,7 +3,7 @@ from apps.users.models import BaseUser
 from django.urls import reverse
 from apps.offer.vote.models.system_state import SystemState
 from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
-from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type
+from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type, get_last_years
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from django.http import JsonResponse
 from apps.offer.proposal.models import Proposal, ProposalStatus
@@ -135,12 +135,11 @@ def plan_view(request):
 
 def plan_create(request):
     if request.user.is_superuser:
-        courses_proposal = get_votes(3)
+        courses_proposal = get_votes(get_last_years(3))
         assignments = read_entire_sheet(
             create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
 
         courses = []
-        current_year = SystemState.get_current_state().year
 
         if not assignments:
             for key, value in courses_proposal.items():
@@ -148,7 +147,7 @@ def plan_create(request):
                 # Second value is the semester when the course is planned to be
                 # Third value says if this course is proposed
                 courses.append(
-                    [key, value[current_year]['semester'], propose(value)]
+                    [key, value.semester, propose(value)]
                 )
         else:
             for key, value in courses_proposal.items():
@@ -160,7 +159,7 @@ def plan_create(request):
                         break
 
                 courses.append(
-                    [key, value[current_year]['semester'], checked]
+                    [key, value.semester, checked]
                 )
 
         context = {
@@ -181,15 +180,14 @@ def plan_vote(request):
             if course != 'csrfmiddlewaretoken':
                 picked_courses.append(course)
         picked_courses.sort()
-        all_courses = get_votes(1)
+        all_courses = get_votes(get_last_years(1))
         picked_courses_accurate_info_z = []
         picked_courses_accurate_info_l = []
-        current_year = SystemState.get_current_state().year
         for key, value in all_courses.items():
             if key in picked_courses:
-                subject = (key, value[current_year]['semester'],
-                           value[current_year]['proposal'])
-                if value[current_year]['semester'] == 'z':
+                subject = (key, value.semester,
+                           value.proposal)
+                if value.semester == 'z':
                     picked_courses_accurate_info_z.append(subject)
                 else:
                     picked_courses_accurate_info_l.append(subject)
@@ -207,9 +205,10 @@ def plan_vote(request):
 
 
 def plan_create_voting_sheet(request):
-    voting = get_votes(3)
+    years = get_last_years(3)
+    voting = get_votes(years)
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
-    update_voting_results_sheet(sheet, voting)
+    update_voting_results_sheet(sheet, voting, years)
     return HttpResponseRedirect(reverse('plan-create'))
 
 

@@ -26,4 +26,3 @@ zapisy/webpack_resources/webpack-stats.json
 *.gz
 *.sql
 *.sqlite3
-zapisy/apps/offer/plan/Credentials.json

@@ -37,23 +37,22 @@ def create_sheets_service(sheet_id):
 # this functions prepare data to be in a sheet format
 # this function returns list with voting data for every course List[List]
 # and sheet header
-def votes_to_sheets_format(votes):
-    values = create_voting_results_sheet_layout(votes)
+def votes_to_sheets_format(votes, years):
+    values = create_voting_results_sheet_layout(votes, years)
 
-    for value in votes.values():
-        latest_year = list(value.values())[0]
+    for name, value in votes.items():
         row = []
         years = []
         year = 365
         current_year_str = SystemState.get_current_state().year
         current_year = datetime.datetime.strptime(current_year_str, '%Y/%y')
-        val = list(value.values())
+        val = list(value.voting.values())
 
-        for key in value.keys():
+        for key in value.voting.keys():
             years.append(datetime.datetime.strptime(key, '%Y/%y'))
 
         if len(years) == 3:
-            for val in value.values():
+            for val in value.voting.values():
                 voting_sheet_create_annual_part_of_row(row, val)
         elif len(years) == 2:
             if current_year == years[0]:
@@ -83,9 +82,9 @@ def votes_to_sheets_format(votes):
                 voting_sheet_create_annual_part_of_row(row, val[0])
                 voting_sheet_create_annual_part_of_row(row)
 
-        row.insert(0, latest_year['semester'])
-        row.insert(0, latest_year['type'])
-        row.insert(0, latest_year['name'])
+        row.insert(0, value.semester)
+        row.insert(0, value.course_type)
+        row.insert(0, name)
         values.append(row)
 
     return values
@@ -109,8 +108,7 @@ def voting_sheet_create_annual_part_of_row(row, value={}):
 
 
 # votes is return type of function get_votes
-def create_voting_results_sheet_layout(votes):
-    years = list(list(votes.values())[0].keys())
+def create_voting_results_sheet_layout(votes, years):
     values = [
         [],
         [
@@ -146,8 +144,8 @@ def create_voting_results_sheet_layout(votes):
 
 # votes is return type of function get_votes
 # arg sheet is sheet object returns by function create_sheets_service
-def update_voting_results_sheet(sheet, votes):
-    data = votes_to_sheets_format(votes)
+def update_voting_results_sheet(sheet, votes, years):
+    data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
     sheet.values_update(
         range='A:R',

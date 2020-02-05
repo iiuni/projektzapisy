@@ -10,21 +10,50 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.enrollment.courses.models.group import Group, GROUP_TYPE_CHOICES
 from functools import reduce
-from typing import List, Tuple
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional
+else:
+    from typing import List, Tuple, Dict, NamedTuple, Optional
+    from typing_extensions import TypedDict
+
+
+class SingleYearVoteSummary(TypedDict):
+    # Total of points awarded in a vote.
+    total: int
+    # Number of voters who awarded this course with maximum number of votes.
+    count_max: int
+    # Number of voters that voted for this course
+    votes: int
+    # Number of enrolled students. None if course was not given that year.
+    enrolled: Optional[int]
+
+
+class ProposalVoteSummary(NamedTuple):
+    proposal: Proposal
+    semester: str
+    course_type: str
+    # Indexed by the academic year.
+    voting: Dict[str, SingleYearVoteSummary]
+
+
+# Indexed by the Proposal name
+VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 
 
 # A simple function to propose, whether the course should be taught in upcoming year.
 # As an argument, it takes a single dictionary entry from get_votes function.
-def propose(vote):
+def propose(vote: ProposalVoteSummary):
     current_year = SystemState.get_current_state().year
-    proposal = Proposal.objects.get(id=vote[current_year]['proposal'])
+    proposal = Proposal.objects.get(id=vote.proposal)
     avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
         total=Sum('value')).aggregate(Avg('total'))
     previous_avg = 0
     years = 0
     percentage = 0.8
 
-    for year, values in vote.items():
+    for year, values in vote.voting.items():
         if not year == current_year:
             years += 1
             previous_avg = values['total']
@@ -32,9 +61,9 @@ def propose(vote):
         return True
     if proposal.recommended_for_first_year:
         return True
-    if vote[current_year]['total'] >= avg['total__avg']:
+    if vote.voting[current_year]['total'] >= avg['total__avg']:
         return True
-    if years > 0 and vote[current_year]['total'] >= percentage * (previous_avg / years):
+    if years > 0 and vote.voting[current_year]['total'] >= percentage * (previous_avg / years):
         return True
     return False
 
@@ -58,12 +87,12 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
     # | hours     | hours allocated for this type of class |
 
     course_data = {}
-    states = get_year_list(years)
+    states = get_last_years(years)
 
     for subject in subjects:
         course_data[subject[0]] = {'id': subject[2], 'semester': subject[1],
                                    'instance': CourseInstance.objects.filter(
-            reduce(lambda x, y: x | y, [Q(semester__year=year.year) for year in states]), offer=subject[2],
+            reduce(lambda x, y: x | y, [Q(semester__year=year) for year in states]), offer=subject[2],
             semester__type=subject[1]).order_by('-semester__year')}
 
     groups = []
@@ -123,32 +152,21 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: int):
     return groups
 
 
-def get_votes(years: int):
-    # years argument specifies how many years back we want to collect data from.
-    # Return value: Dict[str, Dict[str, Dict[...]]]
-    # Each dictionary entry describes a various data about course in a single year, whether it was already taught or is still
-    # voted upon.
-    # First dictionary is indexed by course's name, and each entry is another dictionary.
-    # Second dictionary is indexed by course's year, and each entry is dictionary with such fields:
-    # | field name                       | type   | desc                                                                       |
-    # --------------------------------------------------------------------------------------------------------------------------
-    # | 'semester'                       | string | course's semester (either z, meaning winter, or l, meaning summer)         |
-    # | 'proposal'                       | int    | course's proposal id (see proposal model)                                  |
-    # | 'type'                           | string | course's type                                                              |
-    # | 'total'                          | int    | number of points gathered by course across all votes in a single year      |
-    # | 'count_max'                      | int    | number of votes for this proposal with value = max_vote_value              |
-    # | 'votes'                          | int    | number of students that voted for this course                              |
-    # | 'teacher'                        | string | lecturer/teacher of this course                                            |
-    # | 'enrolled                        | int    | sum of enrolled students. If it's proposal for current year, field is None |
-
+def get_last_years(years: int) -> List[str]:
     states_all = SystemState.objects.all().order_by('-year')
-    current_year = SystemState.get_current_state().year
     states = []
 
     for (i, state) in enumerate(states_all):
         if i >= years:
             break
-        states.append(state)
+        states.append(state.year)
+
+    return states
+
+
+# years argument specifies how many years back we want to collect data from.
+def get_votes(years: List[str]) -> VotingSummaryPerYear:
+    current_year = SystemState.get_current_state().year
     max_vote_value = max(SingleVote.VALUE_CHOICES)[0]
 
     # Creates set of dictionaries with various data about courses put on the vote.
@@ -159,15 +177,12 @@ def get_votes(years: int):
     # | 'state__year'                    | string | year in which this instance of the course was put on the vote              |
     # | 'proposal__semester'             | string | course's semester (either z, l, u)                                         |
     # | 'proposal'                       | int    | course's proposal id (see proposal model)                                  |
-    # | 'proposal__course_type__name'    | string | course's type                                                              |
     # | 'total'                          | int    | number of points gathered by course across all votes in a single year      |
     # | 'count_max'                      | int    | number of votes for this proposal with value = max_vote_value              |
     # | 'votes'                          | int    | number of students that voted for this course                              |
-    # | 'teacher'                        | string | lecturer/teacher of this course                                            |
-    # | 'name'                           | string | true course name
 
     votes = SingleVote.objects.filter(
-        reduce(lambda x, y: x | y, [Q(state__year=year.year) for year in states])).values(
+        reduce(lambda x, y: x | y, [Q(state__year=year) for year in years])).values(
             'proposal__name', 'state__year', 'proposal__semester', 'proposal', 'proposal__course_type__name').annotate(
                 total=Sum('value'), count_max=Count('value', filter=Q(value=max_vote_value)),
                 votes=Count('proposal__name'),
@@ -181,39 +196,42 @@ def get_votes(years: int):
             if current_year == vote['state__year']:
                 if vote['proposal__semester'] == 'u':
                     if vote['proposal__name'] + ' (lato)' not in courses_data:
-                        courses_data[vote['proposal__name'] + ' (lato)'] = {}
+                        courses_data[vote['proposal__name'] +
+                                     ' (lato)'] = ProposalVoteSummary(vote['proposal'], 'l', vote['proposal__course_type__name'], {})
                     if vote['proposal__name'] + ' (zima)' not in courses_data:
-                        courses_data[vote['proposal__name'] + ' (zima)'] = {}
+                        courses_data[vote['proposal__name'] +
+                                     ' (zima)'] = ProposalVoteSummary(vote['proposal'], 'z', vote['proposal__course_type__name'], {})
                 else:
-                    courses_data[vote['proposal__name']] = {}
+                    courses_data[vote['proposal__name']] = ProposalVoteSummary(
+                        vote['proposal'], vote['proposal__semester'], vote['proposal__course_type__name'], {})
             else:
                 continue
-        data = {'total': vote['total'], 'votes': vote['votes'], 'count_max': vote['count_max'],
-                'type': vote['proposal__course_type__name'], 'teacher': vote['teacher'],
-                'proposal': vote['proposal'], 'name': vote['proposal__name']}
+
+        def make_vote_record(total, count_max, votes, students_in_course):
+            data = SingleYearVoteSummary()
+            data['total'] = total
+            data['count_max'] = count_max
+            data['votes'] = votes
+            data['enrolled'] = students_in_course
+            return data
 
         if vote['proposal__semester'] == 'u':
-            data['semester'] = 'l'
-            courses_data[vote['proposal__name'] +
-                         ' (lato)'][vote['state__year']] = dict(data)
+            in_course = count_students_in_course(
+                vote['proposal'], vote['state__year'], 'l')
 
-            data['semester'] = 'z'
             courses_data[vote['proposal__name'] +
-                         ' (zima)'][vote['state__year']] = dict(data)
+                         ' (lato)'].voting[vote['state__year']] = make_vote_record(vote['total'], vote['count_max'], vote['votes'], in_course)
+
+            in_course = count_students_in_course(
+                vote['proposal'], vote['state__year'], 'z')
+            courses_data[vote['proposal__name'] +
+                         ' (zima)'].voting[vote['state__year']] = make_vote_record(vote['total'], vote['count_max'], vote['votes'], in_course)
         else:
-            data['semester'] = vote['proposal__semester']
-            courses_data[vote['proposal__name']][
-                vote['state__year']] = dict(data)
 
-    # Rearrange data and if course existed in previous years count how many students were enrolled
-    for course in courses_data.values():
-        for semester, data in course.items():
-            instance = CourseInstance.objects.filter(
-                offer=data['proposal'], semester__year=semester, semester__type=data['semester'])
-            if not instance:
-                data['enrolled'] = None
-            else:
-                data['enrolled'] = count_students_in_course(instance)
+            in_course = count_students_in_course(
+                vote['proposal'], vote['state__year'], vote['proposal__semester'])
+            courses_data[vote['proposal__name']].voting[
+                vote['state__year']] = make_vote_record(vote['total'], vote['count_max'], vote['votes'], in_course)
     return courses_data
 
 
@@ -225,7 +243,9 @@ def count_students_in_groups(groups: List[Group]) -> int:
 
 
 # Counts students enrolled for a course
-def count_students_in_course(courses: CourseInstance) -> int:
+def count_students_in_course(proposal: Proposal, year: str, semester: str) -> int:
+    courses = CourseInstance.objects.filter(
+        offer=proposal, semester__year=year, semester__type=semester)
     enrolled = 0
     for course in courses:
         groups = Group.objects.filter(
@@ -236,18 +256,6 @@ def count_students_in_course(courses: CourseInstance) -> int:
             groups = Group.objects.filter(course=course)
             enrolled += count_students_in_groups(groups)
     return enrolled
-
-
-# gets a list of a number (equal to years) of latest SystemState objects created
-def get_year_list(years: int):
-    states_all = SystemState.objects.all().order_by('-year')
-    states = []
-
-    for (i, state) in enumerate(states_all):
-        if i >= years:
-            break
-        states.append(state)
-    return states
 
 
 # prepares assignment data to be displayed in template
