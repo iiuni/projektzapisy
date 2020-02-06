@@ -287,7 +287,7 @@ class ClearSession(View):
     """Removes submissions from the active session."""
 
     def get(self, request):
-        del self.request.session['grade_poll_submissions']
+        self.request.session.flush()
         messages.success(
             request,
             "Dziękujemy za wzięcie udziału w ocenie zajęć! "
