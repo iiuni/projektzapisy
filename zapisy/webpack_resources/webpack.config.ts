@@ -347,7 +347,7 @@ const webpackConfig: webpack.Configuration = {
                 })
             },
             {
-                test: /\.(png|jpg|gif|ico)$/,
+                test: /\.(png|jpg|gif|ico|ttf|woff|woff2)$/,
                 use: [{
                     loader: "url-loader",
                     options: {
@@ -371,6 +371,7 @@ const webpackConfig: webpack.Configuration = {
             // Allow absolute imports from other apps.
             "@": path.resolve(ASSET_DEF_SEARCH_DIR),
         },
+        mainFields: ['main', 'module'],
     },
     resolveLoader: {
         modules: [

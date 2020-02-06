@@ -1,0 +1,121 @@
+{% extends "grade/base.html" %}
+{% load cache %}
+{% load render_bundle get_files from webpack_loader %}
+{% load filters %}
+
+{% block main-subtitle %}Wyniki oceny{% endblock %}
+{% block nav-grade-results %}active{% endblock %}
+
+{% block bread %}
+{% include 'grade/_breadcrumbs.html' %}
+<li class="breadcrumb-item active" aria-current="page">Wyniki oceny</li>
+{% endblock %}
+
+{% block all-content %}
+
+{% render_bundle 'poll-bokeh-plotting' %}
+
+<div class="row">
+  <div class="col-lg-8 col-12">
+    {% if is_grade_active and current_semester == selected_semester %}
+    <div class="alert alert-info">
+      Ocena zajęć jest obecnie aktywna. Przesłane ankiety nadal mogą być modyfikowane przez studentów.
+    </div>
+    {% endif %}
+    {% if current_poll %}
+    <div class="mb-3">
+      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}</span></h3>
+      <h5>Kategoria: <span class="text-secondary">{{ current_poll.category }}</span></h5>
+    </div>
+    {% endif %}
+    {% if results %}
+    {% for entry in results.entries %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ entry.question }}</h5>
+        {% if entry.field_type == "radio" or entry.field_type == "checkbox" %}
+        {{ entry.plot.1 | safe }}
+        {{ entry.plot.0 | safe }}
+        {% else %}
+        {% for answer in entry.answers %}
+        {% if answer %}
+        <div class="{% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2">{{ answer }}</div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+      </div>
+      {% if results.display_answers_count %}
+      <div class="card-footer text-muted">
+        Udzielonych odpowiedzi: {{ entry.answers|length }}
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="mb-3">
+      {% if current_poll %}
+      Nie została wypełniona żadna ankieta.
+      {% else %}
+      Nie wybrano żadnej grupy.
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+  </div>
+  <div class="col-lg-4 col-12">
+    <select class="form-control mb-3"
+      onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+      {% for semester in semesters %}
+      <option value="{% url 'grade-poll-results' semester_id=semester.id %}"
+        {% if semester.id == selected_semester.id  %}selected{% endif %}>{{ semester }}</option>
+      {% endfor %}
+    </select>
+    <div class="accordion" id="course-sections">
+      {% for group_name, entries in polls.items %}
+      {% with index=iterator|next %}
+      <div class="card">
+        <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
+          data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
+          <div class="d-flex w-100 justify-content-between">
+            <span>{{ group_name }}</span>
+            {% with x=submissions_count|lookup:group_name %}
+            <span class="text-right text-nowrap">
+              {% if x %}{{ x }}{% else %}0{% endif %}
+            </span>
+            {% endwith %}
+          </div>
+        </div>
+        <div
+          class="border-top collapse {% if current_poll and current_poll.category == group_name %}show{% endif %} list-group list-group-flush"
+          id="course-section-{{ index }}" aria-labelledby="course-section-{{ index }}-heading">
+          {% for entry in entries %}
+          {% if current_poll and entry.id == current_poll.id %}
+          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
+            class="list-group-item list-group-item-action active">
+            <div class="d-flex w-100 justify-content-between">
+              <span>{{ entry.subcategory }}</span>
+              <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
+            </div>
+          </a>
+          {% else %}
+          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
+            class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <span>{{ entry.subcategory }}</span>
+              <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
+            </div>
+          </a>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endwith %}
+      {% empty %}
+      <div class="alert alert-info">
+        Brak przesłanych ankiet w wybranym semestrze.
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

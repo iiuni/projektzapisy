@@ -1,30 +1,30 @@
+import json
+
 from django.contrib import admin
-from django import forms
+from django.contrib.postgres.fields import JSONField
+from django.forms import widgets
 
-from apps.grade.poll.models.template import Template
-from apps.grade.poll.models.saved_ticket import SavedTicket
-
-
-class PollAdminForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(PollAdminForm, self).__init__(*args, **kwargs)
-        self.fields['group'].queryset = self.fields['group'].queryset.select_related(
-            'course', 'course', 'teacher', 'teacher__user')
-        self.fields['author'].queryset = self.fields['author'].queryset.select_related('user')
+from .models import Schema
 
 
-class PollAdmin(admin.ModelAdmin):
-    list_filter = ('semester',)
-    search_fields = ('title',)
-    form = PollAdminForm
+class PrettyJSONWidget(widgets.Textarea):
+    """Formats JSON in a textarea with an indentation."""
+    def format_value(self, value):
+        try:
+            value = json.dumps(json.loads(value), indent=2, ensure_ascii=False)
+            # these lines will try to adjust size of TextArea to fit to content
+            row_lengths = [len(r) for r in value.split('\n')]
+            self.attrs['rows'] = min(max(len(row_lengths) + 2, 10), 30)
+            self.attrs['cols'] = min(max(max(row_lengths) + 2, 40), 120)
+            return value
+        except Exception:
+            return super(PrettyJSONWidget, self).format_value(value)
 
 
-class TemplateAdmin(admin.ModelAdmin):
+@admin.register(Schema)
+class SchemaAdmin(admin.ModelAdmin):
+    list_display = ('type',)
 
-    def get_queryset(self, request):
-        qs = super(TemplateAdmin, self).get_queryset(request)
-        return qs.select_related('studies_type', 'author', 'author__user')
-
-
-admin.site.register(SavedTicket)
-admin.site.register(Template, TemplateAdmin)
+    formfield_overrides = {
+        JSONField: {'widget': PrettyJSONWidget}
+    }

@@ -1,227 +1,148 @@
 import json
-from functools import reduce
 
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.core.cache import cache
-from django.contrib.auth import authenticate
-from django.utils.safestring import SafeText
+from django.db import transaction
+from django.http import (HttpResponseBadRequest, HttpResponseForbidden,
+                         JsonResponse)
+from django.shortcuts import redirect, render
 
-from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.users.models import BaseUser
 from apps.enrollment.courses.models.semester import Semester
-from apps.grade.poll.models.poll import Poll
-from apps.grade.ticket_create.utils import generate_keys_for_polls, generate_keys, group_polls_by_course, \
-    secure_signer, unblind, get_valid_tickets, to_plaintext, connect_groups, secure_signer_without_save, secure_mark
-from apps.grade.ticket_create.models import PublicKey
-from apps.grade.ticket_create.forms import ContactForm, PollCombineForm
-from apps.users.decorators import employee_required, student_required
-
-
-# KEYS generate:
-
-@employee_required
-def ajax_keys_generate(request):
-    generate_keys_for_polls()
-    return HttpResponse("OK")
-
-
-@employee_required
-def ajax_keys_progress(request):
-    count = cache.get('generated-keys', 0)
-    return HttpResponse(str(count))
+from apps.grade.poll.models import Poll
+from apps.grade.poll.utils import get_grouped_polls
+from apps.grade.ticket_create.models import RSAKeys, StudentGraded
+from apps.users.decorators import student_required
 
 
 @student_required
-def ajax_get_rsa_keys_step1(request):
-    message = "No XHR"
-    if request.is_ajax():
-        if request.method == 'POST':
-            students_polls = Poll.get_all_polls_for_student(request.user.student)
-            groupped_polls = group_polls_by_course(students_polls)
-            form = PollCombineForm(request.POST,
-                                   polls=groupped_polls)
-            if form.is_valid():
-                connected_groups = connect_groups(groupped_polls, form)
-                tickets = [generate_keys(gs) for gs in connected_groups]
-                message = json.dumps(tickets)
-    return HttpResponse(message)
+def get_poll_data(request):
+    """Lists Polls available to the student.
 
-
-@student_required
-def ajax_get_rsa_keys_step2(request):
-    message = "No XHR"
-    if request.is_ajax():
-        if request.method == 'POST':
-            students_polls = Poll.get_all_polls_for_student(request.user.student)
-            groupped_polls = group_polls_by_course(students_polls)
-            form = PollCombineForm(
-                request.POST,
-                polls=groupped_polls
-            )
-            if form.is_valid():
-                ts = json.loads(request.POST.get('ts'))
-                connected_groups = connect_groups(groupped_polls, form)
-                groups = reduce(list.__add__, connected_groups)
-                tickets = zip(groups, ts)
-                signed = [(group, int(t), secure_signer_without_save(request.user, group, t))
-                          for group, t in tickets]
-                unblinds = [(str(ticket), unblind(group, ticket_signature))
-                            for group, ticket, ticket_signature in signed]
-                message = json.dumps(unblinds)
-    return HttpResponse(message)
-
-
-@student_required
-def connections_choice(request):
-    grade = Semester.objects.filter(is_grade_active=True).count() > 0
+    The response follows the format:
+    [
+        # Every poll comes in a record.
+        {
+            "key": {
+                "n": 12345...,
+                "e": 12345...,
+            },
+            "poll_info": {
+                "id": 123,
+                # Name and Type only serve as a description. Name specifies the
+                # exact poll (exam, group), Type says which course it concerns.
+                "name": "Egzamin: Zbigniew Religa",
+                "type": "Przeszczep serca dla zuchwałych",
+            }
+        },
+    ]
+    """
     students_polls = Poll.get_all_polls_for_student(request.user.student)
-    if students_polls:
-        semester = students_polls[0].semester
-    else:
-        semester = None
-    groupped_polls = group_polls_by_course(students_polls)
-    polls_lists, general_polls = Poll.get_polls_list(request.user.student)
-    connected = any(len(x) > 1 for x in groupped_polls)
-    if grade:
-        if request.method == "POST":
-            form = PollCombineForm(request.POST,
-                                   polls=groupped_polls)
-            if form.is_valid():
-                unblindst = json.loads(request.POST.get('unblindst', ''))
-                unblindt = json.loads(request.POST.get('unblindt', ''))
-                ts = json.loads(request.POST.get('ts', ''))
-                connected_groups = connect_groups(groupped_polls, form)
-                if connected_groups:
-                    groups = reduce(list.__add__, connected_groups)
-                else:
-                    groups = []
-                prepared_tickets = list(zip(groups, unblindt, unblindst))
-                # final mark:
-                for g, t, _ in prepared_tickets:
-                    secure_mark(request.user, g, t)
-                errors, tickets_to_serve = get_valid_tickets(prepared_tickets)
-                if errors:
-                    message = 'Nie udało się pobrać następujących biletów:\n<ul>'
-                    for poll, reason in errors:
-                        message += "<li>Ankieta: " + str(poll)
-                        message += "<br>Powód: "
-                        message += str(reason)
-                        message += "</li>"
-                    message += "</ul>"
-                    messages.error(request, SafeText(message))
-                data = {'tickets': to_plaintext(tickets_to_serve),
-                        'grade': grade}
-
-                if tickets_to_serve:
-                    StudentGraded.objects.get_or_create(student=request.user.student,
-                                                        semester=semester)
-
-                return render(request, "grade/ticket_create/tickets_save.html", data)
-
-        else:
-            pass
-        #             form = PollCombineForm( polls = groupped_polls )
-
-        data = {'polls': polls_lists, 'grade': grade, 'general_polls': general_polls}
-        return render(request, 'grade/ticket_create/connection_choice.html', data)
-    else:
-        messages.error(request, "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów")
-        return render(request, 'grade/ticket_create/connection_choice.html', {'grade': grade})
+    keys = RSAKeys.objects.filter(poll__in=students_polls).select_related(
+        'poll', 'poll__group', 'poll__course', 'poll__semester')
+    response_data = []
+    for key in keys:
+        poll = key.poll
+        poll_data = {
+            'key': key.serialize_for_signing_protocol(),
+            'poll_info': poll.serialize_for_signing_protocol(),
+        }
+        response_data.append(poll_data)
+    return JsonResponse(response_data, safe=False)
 
 
-@csrf_exempt
-def client_connection(request):
-    if request.method == 'POST':
-
-        form = ContactForm(request.POST)
-
-        if form.is_valid():
-            idUser = form.cleaned_data['idUser']
-            passwordUser = form.cleaned_data['passwordUser']
-            groupNumber = form.cleaned_data['groupNumber']
-            groupKey = int(form.cleaned_data['groupKey'])
-
-            user = authenticate(username=idUser, password=passwordUser)
-
-            if user is None:
-                return HttpResponse("nie ma takiego użytkownika")
-            if BaseUser.is_student(user):
-                return HttpResponse("użytkownik nie jest studentem")
-
-            if groupNumber == "*":
-                st = ""
-                students_polls = Poll.get_all_polls_for_student(user.student)
-
-                if students_polls:
-                    semester = students_polls[0].semester
-                    StudentGraded.objects.get_or_create(student=user.student,
-                                                        semester=semester)
-                groupped_polls = group_polls_by_course(students_polls)
-                for polls in groupped_polls:
-
-                    if len(polls) == 1:
-
-                        st += str(polls[0].pk) + '***'
-                        st += '[' + str(polls[0].title) + ']%%%'
-
-                        if polls[0].group:
-                            st += str(polls[0].group.course.name) + '%%%'
-                            st += str(polls[0].group.get_type_display()) + ': %%%'
-                            st += str(polls[0].group.get_teacher_full_name()) + '%%%'
-
-                        st += str('***')
-
-                        st += str(PublicKey.objects.get(poll=polls[0].pk).public_key) + '???'
-
-                    else:
-                        for poll in polls:
-                            st += str(poll.pk) + '***'
-                            if not poll.group:
-                                st += 'Ankiety ogólne: %%%   [' + poll.title + '] '
-                            else:
-                                st += 'Przedmiot: ' + polls[0].group.course.name + '%%%    [' + poll.title + '] ' + \
-                                      poll.group.get_type_display() + ': ' + poll.group.get_teacher_full_name() + '***'
-                                st += str(PublicKey.objects.get(poll=poll.pk).public_key) + '&&&'
-                        st += '???'
-
-                return HttpResponse(st)
-
-            students_polls = Poll.get_all_polls_for_student(user.student)
-
-            st = ""
-
-            for students_poll in students_polls:
-                if int(students_poll.pk) == int(groupNumber):
-                    st = secure_signer_without_save(user, students_poll, groupKey)
-                    secure_signer(user, students_poll, groupKey)
-                    p = students_poll
-                    break
-            if st == "":
-                st = "Nie jesteś zapisany do tej ankiety"
-
-            try:
-                a = int(st[0][0])
-            except ValueError as err:
-                return HttpResponse(st)
-            if st == "Nie jesteś zapisany do tej ankiety":
-                return HttpResponse(st)
-            elif st == "Bilet już pobrano":
-                return HttpResponse(st)
-            else:
-                return HttpResponse(to_plaintext([(p, '***', '%%%')]) + '???' + str(a))
+@student_required
+def tickets_generate(request):
+    """Renders tickets_generate page and lists Polls student is entitled to."""
+    semester = Semester.get_current_semester()
+    is_grade_active = semester.is_grade_active
+    if not is_grade_active:
+        messages.error(
+            request,
+            "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów"
+        )
+        return redirect('grade-main')
+    polls = get_grouped_polls(request.user.student)
+    data = {
+        'polls': polls,
+        'is_grade_active': is_grade_active,
+    }
+    return render(request, 'ticket_create/tickets_generate.html', data)
 
 
-@csrf_exempt
-def keys_list(request):
-    keys = PublicKey.objects.all()  # .order_by('poll__group__course__name')
-    return render(request, 'grade/ticket_create/keys_list.html', {'list': keys})
+@student_required
+@transaction.atomic
+def sign_tickets(request):
+    """Signs the tickets sent by a student and returns list of signatures.
 
+    The student must request to sign all the tickets he is entitled to. The
+    signing may only be performed once in a semester.
 
-@csrf_exempt
-def keys_generate(request):
-    data = {}
-    data['keys_to_create'] = Poll.count_polls_without_keys()
-    return render(request, 'grade/ticket_create/keys_generate.html', data)
+    Request must be a dict of objects:
+    {
+        "signing_requests": [
+            # An object for every poll.
+            {
+                # Id of the poll.
+                "id": 123,
+                # A blinded ticket.
+                "ticket": 12345...,
+            },
+        ]
+    }
+
+    Returns:
+        A list of signed tickets, each being a dict like below.
+        {
+            # Id of the poll.
+            'id': 123,
+            # The ticket from the request signed using a private key
+            # corresponding to the poll.
+            'signature': 1234...
+        }
+
+    Errors:
+        400 BadRequest: When JSON request could not be parsed.
+        403 Forbidden: When the student tries to sign a ticket for a poll he is
+        not entitled to, fails to request a ticket he is entitled to, or has
+        already been signing this semester.
+    """
+    try:
+        signing_requests_dict = json.loads(request.body.decode('utf-8'))
+    except json.decoder.JSONDecodeError:
+        return HttpResponseBadRequest("Couldn't parse JSON")
+
+    signing_requests = signing_requests_dict['signing_requests']
+    semester = Semester.get_current_semester()
+    student_polls = {
+        poll.pk for poll in Poll.get_all_polls_for_student(request.user.student, semester)
+    }
+    request_polls = {int(req['id']) for req in signing_requests}
+
+    if request_polls - student_polls:
+        return HttpResponseForbidden(
+            f"Student nie jest upoważniony do tych ankiet: {request_polls - student_polls}.")
+    if student_polls - request_polls:
+        return HttpResponseForbidden(f"Student powinien również wygenerować bilety dla tych "
+                                     "ankiet: {student_polls - request_polls}.")
+    if len(request_polls) != len(signing_requests):
+        return HttpResponseForbidden(f"Próbowano podpisać wiele biletów do jednej ankiety.")
+    # Now we made sure that student_polls == request_polls
+
+    # We obtain a lock on RSA keys.
+    keys = RSAKeys.objects.filter(poll__in=request_polls).select_for_update()
+    keys_by_poll = {key.poll_id: key for key in keys}
+
+    _, created = StudentGraded.objects.get_or_create(student=request.user.student,
+                                                     semester=semester)
+    if not created:
+        return HttpResponseForbidden(f"Student już podpisywał bilety w tym semestrze.")
+
+    response = []
+    for signing_request in signing_requests:
+        key = keys_by_poll[int(signing_request['id'])]
+        signed_ticket = key.sign_ticket(signing_request['ticket'])
+        signing_response = {
+            'id': signing_request['id'],
+            'signature': str(signed_ticket),
+        }
+        response.append(signing_response)
+    return JsonResponse(response, safe=False)

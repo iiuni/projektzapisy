@@ -1,0 +1,169 @@
+{
+  "PollType.GENERAL": {
+    "version": 1,
+    "schema": [
+      {
+        "question": "Czy chodzisz regularnie na zajęcia?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Ile czasu tygodniowo, poza zajęciami, regularnie przeznaczasz na studiowanie?",
+        "type": "radio",
+        "choices": [
+          "kilka godzin",
+          "około 1 dnia",
+          "kilka dni (około 3)",
+          "prawie cały tydzień"
+        ]
+      },
+      {
+        "question": "Jakich przedmiotów Twoim zdaniem brak w ofercie studiów?",
+        "type": "textarea"
+      },
+      {
+        "question": "Jakie przedmioty Twoim zdaniem zaliczyłeś/zaliczyłaś niepotrzebnie?",
+        "type": "textarea"
+      },
+      {
+        "question": "Inne uwagi odnośnie organizacji zajęć i studiów",
+        "type": "textarea"
+      }
+    ]
+  },
+  "PollType.LECTURE": {
+    "version": 1,
+    "schema": [
+      {
+        "question": "Jak często chodziłeś/chodziłaś na wykłady?",
+        "type": "radio",
+        "choices": [
+          "regularnie (kilka nieobecności)",
+          "nieregularnie (około połowa nieobecności)",
+          "rzadko (kilka obecności)",
+          "wcale"
+        ]
+      },
+      {
+        "question": "Ile czasu spędziłeś/spędziłaś przygotowując się do egzaminu lub przygotowując pracę końcową (projekt itp.)",
+        "type": "radio",
+        "choices": [
+          "wcale",
+          "około 1 dnia",
+          "kilka (2-4) dni",
+          "około tygodnia",
+          "ponad dwa tygodnie"
+        ]
+      },
+      {
+        "question": "Czy poleciłbyś/poleciłabyś ten przedmiot innym studentom?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Czy chętnie poszedłbyś na kolejny przedmiot do tego prowadzącego?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Inne uwagi na temat przedmiotu",
+        "type": "textarea"
+      }
+    ]
+  },
+  "PollType.EXAM": {
+    "version": 1,
+    "schema": [
+      {
+        "question": "Czy egzamin był trudny?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Uważasz, że w stosunku do otrzymanej oceny, Twoje umiejętności są",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie lepsze",
+          "trochę lepsze",
+          "mniej więcej takie same",
+          "trochę gorsze",
+          "zdecydowanie gorsze"
+        ]
+      },
+      {
+        "question": "Czy chcesz przekazać uwagi dotyczące treści egzaminu?",
+        "type": "textarea"
+      },
+      {
+        "question": "Czy chcesz przekazać uwagi dotyczące organizacji egzaminu?",
+        "type": "textarea"
+      }
+    ]
+  },
+  "default": {
+    "version": 1,
+    "schema": [
+      {
+        "question": "Ile średnio czasu tygodniowo poświęcałeś na przygotowanie się do zajęć? ",
+        "type": "radio",
+        "choices": [
+          "mniej niż 1 godzinę",
+          "około 2 godzin",
+          "jedno popołudnie (około 5 godzin)",
+          "dwa popołudnia (około 10 godzin)",
+          "więcej niż dwa dni"
+        ]
+      },
+      {
+        "question": "Czy zajęcia pomogły Ci w opanowaniu materiału?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Czy prowadzący był pomocny w opanowaniu materiału i nabyciu wiedzy?",
+        "type": "radio",
+        "choices": [
+          "zdecydowanie tak",
+          "raczej tak",
+          "trudno powiedzieć",
+          "raczej nie",
+          "zdecydowanie nie"
+        ]
+      },
+      {
+        "question": "Inne uwagi na temat zajęć",
+        "type": "textarea"
+      }
+    ]
+  }
+}
