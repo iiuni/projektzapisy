@@ -71,6 +71,13 @@
         <ul>
           {% for term in terms_list %}
             <li>{{term.dayOfWeek|number_to_weekday}} {{term.start_time|time:'G'}}-{{term.end_time|time:'G'}}
+              {% if term.title %}
+                {% if term.title|length > 0 %}
+                  {{ term.title|upper }}
+                {% else %}
+                  &lt;brak nazwy&gt;
+                {% endif %}
+              {% else %}
               {% with term.group.course.name.strip as evt_title %}
                   {% if evt_title|length > 0 %}
                     {{ evt_title|upper }}
@@ -78,6 +85,7 @@
                     &lt;brak nazwy&gt;
                   {% endif %}
                 {% endwith %}
+              {% endif %}
                 {% with term.group.human_readable_type as evt_type %}
                   {% if evt_type|length > 0 %}
                     ({{ evt_type|lower }})

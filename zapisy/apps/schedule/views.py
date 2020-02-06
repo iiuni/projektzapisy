@@ -16,6 +16,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
+from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
     EventModerationMessageForm, EventMessageForm, ConflictsForm
@@ -23,6 +24,7 @@ from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
 from apps.users.models import BaseUser
 from .forms import ReportFormDate, ReportFormWeek
+from itertools import chain
 
 from xhtml2pdf import pisa
 import io
@@ -402,13 +404,18 @@ def events_raport_type_pdf(request, beg_date, end_date, rooms, report_type, seme
 def events_raport_course(request, rooms, semester):
     events = []
     for room in rooms:
-        events.append((Classroom.get_by_id(room).number, CourseTerm.objects.filter(
+        room_events = chain(CourseTerm.objects.filter(
             group__course__semester=semester,
             classrooms__id=room,
-        ).order_by('dayOfWeek', 'start_time')))
+        ), SpecialReservation.objects.filter(
+                semester=semester,
+                classroom__id=room,))
+        events.append((
+            Classroom.get_by_id(room).number,
+            sorted(room_events, key=lambda x: (x.dayOfWeek, x.start_time))
+        ))
     context = {
         'events': events,
         'semester': semester
     }
-
     return TemplateResponse(request, 'schedule/report_week_courses.html', context)
