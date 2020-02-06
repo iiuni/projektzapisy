@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from django.db import models
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
@@ -46,9 +47,12 @@ class RSAKeys(models.Model):
             track which ticket has already been used to vote.
         """
         tickets = json.loads(raw_tickets)
-        tickets_list = tickets['tickets']
-
-        tickets_ids = [ticket['id'] for ticket in tickets_list]
+        try:
+            tickets_list = tickets['tickets']
+            tickets_ids = [ticket['id'] for ticket in tickets_list]
+        except (KeyError, TypeError):
+            # If one of the keys wasn't there, it must have been an issue vith a format.
+            raise JSONDecodeError
 
         # Make sure there are no duplicate ids
         if len(tickets_ids) != len(set(tickets_ids)):

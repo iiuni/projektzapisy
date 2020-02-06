@@ -56,6 +56,8 @@ class TicketsEntry(TemplateView):
                     request, "Wprowadzone klucze nie są w poprawnym formacie."
                 )
                 return redirect('grade-poll-tickets-enter')
+            except ValueError as e:
+                messages.error(request, f"Niepoprawne klucze: {e}")
 
             entries = []
             for poll_with_ticket_id in correct_polls:
