@@ -408,8 +408,8 @@ def events_raport_course(request, rooms, semester):
             group__course__semester=semester,
             classrooms__id=room,
         ), SpecialReservation.objects.filter(
-                semester=semester,
-                classroom__id=room,))
+            semester=semester,
+            classroom__id=room,))
         events.append((
             Classroom.get_by_id(room).number,
             sorted(room_events, key=lambda x: (x.dayOfWeek, x.start_time))
