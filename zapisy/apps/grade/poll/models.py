@@ -200,28 +200,30 @@ class Poll(models.Model):
         is_superuser = user.is_superuser
         is_employee = BaseUser.is_employee(user)
 
-        if is_superuser or is_employee:
-            poll_for_semester = Poll.objects.filter(semester=current_semester).first()
-            polls.add(poll_for_semester)
+        if not is_superuser and not is_employee:
+            return polls
+        poll_for_semester = Poll.objects.filter(semester=current_semester).first()
+        polls.add(poll_for_semester)
 
-            if is_superuser:
-                polls_for_courses = Poll.objects.filter(
-                    course__semester=current_semester
-                )
-                polls_for_groups = Poll.objects.filter(
-                    group__course__semester=current_semester
-                )
-            elif is_employee:
-                polls_for_courses = Poll.objects.filter(
-                    course__semester=current_semester,
-                    course__owner=user.employee,
-                )
-                polls_for_groups = Poll.objects.filter(
-                    group__course__semester=current_semester,
-                    group__teacher=user.employee,
-                )
-            polls.update(polls_for_courses)
-            polls.update(polls_for_groups)
+        if is_superuser:
+            polls_for_courses = Poll.objects.filter(
+                course__semester=current_semester
+            )
+            polls_for_groups = Poll.objects.filter(
+                group__course__semester=current_semester
+            )
+        elif is_employee:
+            polls_for_courses = Poll.objects.filter(
+                course__semester=current_semester,
+                course__owner=user.employee,
+            ) | Poll.objects.filter(group__course__semester=current_semester,
+                                    group__course__owner=user.employee)
+            polls_for_groups = Poll.objects.filter(
+                group__course__semester=current_semester,
+                group__teacher=user.employee,
+            )
+        polls.update(polls_for_courses)
+        polls.update(polls_for_groups)
 
         return polls
 
@@ -397,68 +399,3 @@ class Submission(models.Model):
             submission.save()
 
         return submission
-
-    @classmethod
-    def get_all_submissions_for_course(cls, course: CourseInstance) -> Set:
-        """Lists all submissions tied to a given course.
-
-        Also includes all submissions for all groups of the selected
-        course.
-
-        :returns: a list of submissions.
-        """
-        submissions = set()
-        submissions_for_course = cls.objects.filter(poll__course=course, submitted=True)
-        if submissions_for_course:
-            submissions.update(submissions_for_course)
-
-        submissions_for_groups = set()
-        groups = Group.objects.filter(course=course)
-        for group in groups:
-            submissions_for_group = cls.objects.filter(
-                poll__group=group, submitted=True
-            )
-            if submissions_for_group:
-                submissions_for_groups.update(submissions_for_group)
-
-        if submissions_for_groups:
-            submissions.update(submissions_for_groups)
-
-        return submissions
-
-    @classmethod
-    def get_all(cls, user, semester=None) -> Set:
-        """Lists all submissions that the given user has access to.
-
-        Checks whether the user is an employee or has superadmin
-        privileges and creates a list of accessible, submitted
-        submissions.
-
-        :param user: possibly, an employee or a superuser.
-        :param semester:
-        :returns: a list of submissions for a given user.
-        """
-        submissions = set()
-        if not semester:
-            semester = Semester.get_current_semester()
-
-        if BaseUser.is_employee(user) or user.is_superuser:
-            if user.is_superuser:
-                courses = CourseInstance.objects.filter(semester=semester)
-            else:
-                courses = CourseInstance.objects.filter(
-                    owner=user.employee, semester=semester
-                )
-
-            general_submissions = cls.objects.filter(
-                poll__semester=semester, submitted=True
-            )
-            if general_submissions:
-                submissions.update(general_submissions)
-
-            for course in courses:
-                submissions_for_course = cls.get_all_submissions_for_course(course)
-                if submissions_for_course:
-                    submissions.update(submissions_for_course)
-
-        return submissions
