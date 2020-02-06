@@ -110,6 +110,8 @@ class StudentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # User field shouldn't be changed.
         validated_data.pop('user', None)
+        # Matricula field shouldn't be changed.
+        validated_data.pop('matricula', None)
         program_data = validated_data.pop('program', None)
         if program_data is not None:
             instance.program = Program.objects.get(name=program_data['name'])

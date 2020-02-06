@@ -212,7 +212,7 @@ class ZapisyApi:
     def create_student(self, usos_id, indeks, first_name, last_name, email,
                        ects, program_name, semestr, algorytmy_l,
                        numeryczna_l, dyskretna_l) -> int:
-        """Adds new student in the Enrolment System."""
+        """Adds new student in the Enrolment System and returns its id."""
         student = Student(
             None, usos_id, indeks, ects, 0,
             User(None, str(indeks), first_name, last_name, email),

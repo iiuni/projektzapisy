@@ -279,15 +279,20 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(len(list(self.wrapper.single_votes({"value": 0}))), 1)
 
     def test_create_student(self):
+        """Tests creation of students.
+
+        Adds student via create_student method and asserts it with new django model.
+        """
         AuthGroup.objects.create(name="students")
         Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
 
         student_id = self.wrapper.create_student(
-            420, 666, "John", "Doe", "doe@awesome.mail",
+            420, '666', "John", "Doe", "doe@awesome.mail",
             0, "Informatyka, dzienne I stopnia inżynierskie",
             1, False, False, False)
         student = self.wrapper.student(student_id)
         self.assertEqual(student.usos_id, 420)
+        self.assertEqual(student.matricula, '666')
         self.assertEqual(student.user.email, "doe@awesome.mail")
         self.assertEqual(student.program.name, "Informatyka, dzienne I stopnia inżynierskie")
         self.assertEqual(student.semestr, 1)
