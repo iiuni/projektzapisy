@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from typing import List, Set, Union
+from typing import List, Union
 from choicesenum import ChoicesEnum
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -66,10 +66,6 @@ class Poll(models.Model):
         if self.course:
             return PollType.EXAM
         return PollType.GENERAL
-
-    @property
-    def number_of_submissions(self):
-        return Submission.objects.filter(poll=self.pk, submitted=True).count()
 
     @property
     def get_semester(self):
@@ -191,19 +187,21 @@ class Poll(models.Model):
         return polls
 
     @staticmethod
-    def get_all_polls_for_semester(user, semester: Semester = None) -> Set:
+    def get_all_polls_for_semester(user, semester: Semester = None) -> List['Poll']:
+        """Returns all polls that user may see the submissions for.
+
+        The polls will be annotated with submission counts.
+        """
         current_semester = semester
         if current_semester is None:
             current_semester = Semester.get_current_semester()
 
-        polls = set()
         is_superuser = user.is_superuser
         is_employee = BaseUser.is_employee(user)
 
         if not is_superuser and not is_employee:
-            return polls
-        poll_for_semester = Poll.objects.filter(semester=current_semester).first()
-        polls.add(poll_for_semester)
+            return Poll.objects.none()
+        poll_for_semester = Poll.objects.filter(semester=current_semester)
 
         if is_superuser:
             polls_for_courses = Poll.objects.filter(
@@ -222,10 +220,11 @@ class Poll(models.Model):
                 group__course__semester=current_semester,
                 group__teacher=user.employee,
             )
-        polls.update(polls_for_courses)
-        polls.update(polls_for_groups)
 
-        return polls
+        qs = poll_for_semester | polls_for_courses | polls_for_groups
+
+        sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
+        return list(qs.annotate(number_of_submissions=sub_count_ann))
 
 
 class Schema(models.Model):

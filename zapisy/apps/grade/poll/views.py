@@ -11,11 +11,9 @@ from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
 from apps.grade.poll.utils import (
     PollSummarizedResults,
-    PollSummarizedResultsEntry,
     SubmissionWithStatus,
     check_grade_status,
     group,
-    group_submissions,
     group_submissions_with_statuses,
 )
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
@@ -187,7 +185,6 @@ class PollResults(TemplateView):
     @staticmethod
     def __get_counter_for_categories(polls):
         number_of_submissions_for_category = defaultdict(int)
-
         for poll in polls:
             if poll:
                 number_of_submissions_for_category[
