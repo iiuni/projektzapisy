@@ -51,7 +51,7 @@ class RSAKeys(models.Model):
             tickets_list = tickets['tickets']
             tickets_ids = [ticket['id'] for ticket in tickets_list]
         except (KeyError, TypeError):
-            # If one of the keys wasn't there, it must have been an issue vith a format.
+            # If one of the keys wasn't there, it must have been an issue with the format.
             raise JSONDecodeError
 
         # Make sure there are no duplicate ids
