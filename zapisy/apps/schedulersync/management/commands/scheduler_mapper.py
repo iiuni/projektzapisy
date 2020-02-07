@@ -22,7 +22,7 @@ class SchedulerMapper:
         self.summary = summary
         self.semester = semester
 
-    def __prompt(self, text):
+    def _prompt(self, text):
         print()
         print(text)
         print("Type 'quit' to exit script")
@@ -31,9 +31,13 @@ class SchedulerMapper:
             exit(0)
         return var
 
-    def __map_teachers(self, teachers: 'Dict[str, str]'):
-        """ Map teachers by scheduler username to object in database. If teacher cannot be found, in
-            interactive mode user will be asked for proper username"""
+    def _map_teachers(self, teachers: 'Dict[str, str]') -> 'Dict[str, Employee]':
+        """Maps teachers by scheduler username to Employees in database.
+
+        If a teacher cannot be found, the user will be prompted for Employee's
+        correct username in an interactive mode, or the teacher will be mapped
+        to 'Nieznany Prowadzący'.
+        """
 
         def get_employee(username: str, full_name: str, interactive: bool = True) -> Employee:
             """Finds matching employee in the database.
@@ -73,28 +77,28 @@ class SchedulerMapper:
                     pass
                 if not interactive:
                     nieznany = Employee.objects.get(user__username='Nn')
-                    EmployeeMap.objects.create(scheduler_username=username, employee=nieznany)
                     self.summary.maps_added.append((username, str(nieznany)))
                     return nieznany
-                username = self.__prompt("No employee found for username {}\nPlease provide the correct "
-                                         "username for {}.\nType 'None' if that teacher should be replaced with "
-                                         "'Nieznany Prowadzący'".format(username, full_name))
+                username = self._prompt("No employee found for username {}\nPlease provide the correct "
+                                        "username for {}.\nType 'None' if that teacher should be replaced with "
+                                        "'Nieznany Prowadzący'".format(username, full_name))
 
         for teacher in teachers:
             teachers[teacher] = get_employee(teacher, teachers[teacher], self.interactive_flag)
+        return teachers
 
-    def __map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
+    def _map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
         """ Map courses by scheduler names to object in database. If corresponding proposal cannot be found, in
             interactive mode user will be asked for proper proposal name"""
 
         def get_proposal(course_name: str, interactive: bool = True) -> 'Optional[Proposal]':
             """Finds a proposal in offer with a given name.
 
-             If the proposal is not found, in interactive mode this function will
-             prompt the user for the correct proposal and add it to the mapping.
+            If the proposal is not found, in interactive mode this function will
+            prompt the user for the correct proposal and add it to the mapping.
 
             Returns:
-                    Proposal if the match is found or None if the course should be ignored.
+                Proposal if the match is found or None if the course should be ignored.
             """
             # First try the mapping.
             try:
@@ -106,16 +110,12 @@ class SchedulerMapper:
             while True:
                 error = ""
                 try:
-                    if name == 'None':
-                        proposal = None
-                    else:
-                        try:
-                            int(name)
-                            proposal = Proposal.objects.filter(
-                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(id=name)
-                        except ValueError:
-                            proposal = Proposal.objects.filter(
-                                status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(name__iexact=name)
+                    try:
+                        proposal = None if name == 'None' else Proposal.objects.filter(
+                            status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(id=int(name))
+                    except ValueError:
+                        proposal = Proposal.objects.filter(
+                            status__in=[ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE]).get(name__iexact=name)
                     if name != course_name:
                         CourseMap.objects.create(scheduler_course=course_name.upper(), proposal=proposal)
                         self.summary.maps_added.append((course_name, str(proposal)))
@@ -132,9 +132,9 @@ class SchedulerMapper:
                     if not interactive:
                         self.summary.multiple_proposals.append(course_name)
                         return None
-                name = self.__prompt("{} for name {}\nPlease provide correct name or id of "
-                                     "the course proposal in the database.\n"
-                                     "Type 'None' to mark the course to be ignored.".format(error, name))
+                name = self._prompt("{} for name {}\nPlease provide correct name or id of "
+                                    "the course proposal in the database.\n"
+                                    "Type 'None' to mark the course to be ignored.".format(error, name))
 
         def get_course(proposal: 'Proposal') -> 'CourseInstance':
             """ return CourseInstance object from SZ database"""
@@ -160,8 +160,8 @@ class SchedulerMapper:
     def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
         """ Map teacher and courses in scheduler_data to objects in database.
             Then replace corresponding teachers and courses in terms in scheduler_data"""
-        self.__map_teachers(scheduler_data.teachers)
-        scheduler_data.courses = self.__map_courses(scheduler_data.courses)
+        scheduler_data.teachers = self._map_teachers(scheduler_data.teachers)
+        scheduler_data.courses = self._map_courses(scheduler_data.courses)
         mapped_terms = []
         for term in scheduler_data.terms:
             course = scheduler_data.courses[term.course]

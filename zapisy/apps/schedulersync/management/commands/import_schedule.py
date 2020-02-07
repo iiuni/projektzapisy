@@ -98,19 +98,20 @@ class Command(BaseCommand):
             term = sync_data_object.term
             if term.group.course != term_data.course:
                 raise CommandError(
-                    f'Term \'{term}\' with group \'{term.group}\' changed course from \'{term.group.course}\''
-                    f' to \'{term_data.course}\'\nPlease enter this change in django admin')
+                    f"Term \'{term}\' with group \'{term.group}\' changed course from \'{term.group.course}\'"
+                    f" to \'{term_data.course}\'\nPlease enter this change in django admin")
 
             if term.group.type != term_data.type:
                 raise CommandError(
-                    f'Term \'{term}\' with group \'{term.group}\' changed group type from \'{term.group.type}\''
-                    f' to \'{term_data.type}\'\nPlease enter this change in django admin')
+                    f"Term \'{term}\' with group \'{term.group}\' changed group type from \'{term.group.type}\'"
+                    f" to \'{term_data.type}\'\nPlease enter this change in django admin")
 
             def prop_updater(a, b, props):
                 """Updates selected fields of a with b.
-                 Both objects must have the fields specified in `props` defined.
+
+                Both objects must have the fields specified in `props` defined.
                 Returns:
-                        List of SlackUpdate objects describing the updates.
+                    List of SlackUpdate objects describing the updates.
                 """
                 diffs = []
                 for prop in props:
@@ -131,19 +132,12 @@ class Command(BaseCommand):
             if diffs:
                 term.save()
                 term.group.save()
-                self.stdout.write(self.style.SUCCESS('term: {} with group {} changes:'.format(term, term.group)))
-                for diff in diffs:
-                    self.stdout.write('  {}: '.format(diff.name), ending='')
-                    self.stdout.write(self.style.NOTICE(str(diff.old)), ending='')
-                    self.stdout.write(' -> ', ending='')
-                    self.stdout.write(self.style.SUCCESS(str(diff.new)))
                 self.summary.updated_terms.append((term, diffs))
-                self.stdout.write('')
         except TermSyncData.DoesNotExist:
             # The lecture always has a single group but possibly many terms
             if term_data.type == 1:
-                group = Group.objects.get_or_create(course=term_data.course, teacher=term_data.teacher,
-                                                    type=term_data.type, limit=term_data.limit)[0]
+                group, _ = Group.objects.get_or_create(course=term_data.course, teacher=term_data.teacher,
+                                                       type=term_data.type, limit=term_data.limit)
             else:
                 group = Group.objects.create(course=term_data.course, teacher=term_data.teacher,
                                              type=term_data.type, limit=term_data.limit)
@@ -153,7 +147,6 @@ class Command(BaseCommand):
             TermSyncData.objects.create(term=term, scheduler_id=term_data.scheduler_id)
             self.summary.used_scheduler_ids.append(term_data.scheduler_id)
             self.summary.created_terms.append(term)
-            self.stdout.write(self.style.SUCCESS('term: {} with group {} created\n'.format(term, group)))
 
     def remove_unused_terms_groups(self):
         groups_to_remove = set()
@@ -161,8 +154,6 @@ class Command(BaseCommand):
         for sync_data_object in sync_data_objects:
             if sync_data_object.scheduler_id not in self.summary.used_scheduler_ids:
                 groups_to_remove.add(sync_data_object.term.group)
-                self.stdout.write(self.style.NOTICE('Term {} for group {} removed'.
-                                                    format(sync_data_object.term, sync_data_object.term.group)))
                 self.summary.deleted_terms.append((str(sync_data_object.term),
                                                    str(sync_data_object.term.group)))
                 sync_data_object.term.delete()
@@ -184,14 +175,16 @@ class Command(BaseCommand):
 
         if not dont_delete_terms_flag:
             self.remove_unused_terms_groups()
+        slack = Slack()
+        slack.prepare_message(self.summary)
         if write_to_slack_flag:
-            slack = Slack()
-            slack.prepare_slack_message(self.summary)
             slack.write_to_slack()
-        self.stdout.write(self.style.SUCCESS('Created {} courses successfully! '
-                                             'Moreover {} courses were already there.'
+        if interactive_flag:
+            slack.write_to_screen()
+        self.stdout.write(self.style.SUCCESS("Created {} courses successfully! "
+                                             "Moreover {} courses were already there."
                                              .format(self.summary.created_courses, self.summary.used_courses)))
-        self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
+        self.stdout.write(self.style.SUCCESS("Created {} terms and updated {} terms successfully!"
                                              .format(len(self.summary.created_terms), len(self.summary.updated_terms))))
 
     def handle(self, *args, **options):
@@ -204,11 +197,11 @@ class Command(BaseCommand):
         interactive_flag = options['interactive']
 
         if dry_run_flag:
-            self.stdout.write('Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n')
+            self.stdout.write("Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n")
             with transaction.atomic():
                 self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
                 transaction.set_rollback(True)
-            self.stdout.write('\nDry run was on. Nothing was saved or deleted. All messages were informational.')
+            self.stdout.write("\nDry run was on. Nothing was saved or deleted. All messages were informational.")
         else:
-            self.stdout.write('All changes to database are committed instantly.\n\n')
+            self.stdout.write("All changes to database are committed instantly.\n\n")
             self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)

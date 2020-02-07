@@ -6,22 +6,31 @@ import os
 import requests
 
 
+DAYS_OF_WEEK = {'1': 'monday',
+                '2': 'tuesday',
+                '3': 'wednesday',
+                '4': 'thursday',
+                '5': 'friday',
+                '6': 'saturday',
+                '7': 'sunday', }
+
+
 class Slack:
     def __init__(self):
         self.attachments = []
 
     def add_attachment(self, color, title, text):
         attachment = {
-            "color": color,
-            "title": title,
-            "text": text
+            'color': color,
+            'title': title,
+            'text': text
         }
         self.attachments.append(attachment)
 
-    def prepare_slack_message(self, summary: 'Summary'):
+    def prepare_message(self, summary: 'Summary'):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
-                term.dayOfWeek, term.start_time, term.end_time, term.group.teacher)
+                DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)
             self.add_attachment('good', "Created: {}".format(term.group), text)
 
         for term, diffs in summary.updated_terms:
@@ -31,15 +40,15 @@ class Slack:
             self.add_attachment('warning', "Updated: {}".format(term.group), text)
 
         for term_str, group_str in summary.deleted_terms:
-            self.add_attachment('danger', 'Deleted a term:',
+            self.add_attachment('danger', "Deleted a term:",
                                 "group: {}\nterm: {}".format(group_str, term_str))
 
         for scheduler_data_str, map_str in summary.maps_added:
-            self.add_attachment('good', 'Added map:',
+            self.add_attachment('good', "Added map:",
                                 "{} mapped to {}".format(scheduler_data_str, map_str))
 
         for prop_str in summary.multiple_proposals:
-            self.add_attachment('warning', 'Multiple proposals:',
+            self.add_attachment('warning', "Multiple proposals:",
                                 "proposal {} has multiple instances with different status".format(prop_str))
 
     def write_to_slack(self):
@@ -57,3 +66,10 @@ class Slack:
                 'Request to slack returned an error %s, the response is:\n%s'
                 % (response.status_code, response.text)
             )
+
+    def write_to_screen(self):
+        print("\nChanges:\n")
+        for attachment in self.attachments:
+            print(attachment['title'])
+            print(attachment['text'])
+            print()
