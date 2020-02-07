@@ -37,7 +37,7 @@ class RSAKeys(models.Model):
         Raises:
             JSONDecodeError: when provided string is not in json format.
             ValueError: when there is something wrong with internal ticket format,
-                for example, some of the requred fields are not provided, type
+                for example, some of the required fields are not provided, type
                 of field is incorrect, there are duplicate ids, or id does not
                 exist in database.
         Returns:
@@ -50,9 +50,11 @@ class RSAKeys(models.Model):
         try:
             tickets_list = tickets['tickets']
             tickets_ids = [ticket['id'] for ticket in tickets_list]
-        except (KeyError, TypeError):
+        except KeyError as e:
             # If one of the keys wasn't there, it must have been an issue with the format.
-            raise JSONDecodeError
+            raise ValueError(f"W słowniku brakuje pola {e}")
+        except TypeError as e:
+            raise ValueError(f"{e}")
 
         # Make sure there are no duplicate ids
         if len(tickets_ids) != len(set(tickets_ids)):

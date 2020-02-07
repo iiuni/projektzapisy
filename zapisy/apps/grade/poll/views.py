@@ -56,6 +56,7 @@ class TicketsEntry(TemplateView):
                 return redirect('grade-poll-tickets-enter')
             except ValueError as e:
                 messages.error(request, f"Niepoprawne klucze: {e}")
+                return redirect('grade-poll-tickets-enter')
 
             entries = []
             for poll_with_ticket_id in correct_polls:
