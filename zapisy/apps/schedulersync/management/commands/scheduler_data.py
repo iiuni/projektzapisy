@@ -1,6 +1,6 @@
 """ Get data from scheduler API urls and lays out that data to list of SZTerm.
     Szterm contains all necessary data to update or create term.
-    That data lacks courses and teachers mapping, so prepare all teachers
+    That data lacks courses and teachers mapping, so it prepares all teachers
     and courses to map in seperate dict and set."""
 
 import collections

@@ -1,4 +1,5 @@
-"""Object prepares attachments to send to Slack. Then sends all collected attachments"""
+"""Object prepares attachments to send to written.
+   Then sends all collected attachments to Slack or writes onto screen"""
 
 import json
 import os
