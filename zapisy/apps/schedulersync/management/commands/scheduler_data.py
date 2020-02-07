@@ -1,6 +1,6 @@
 """ Get data from scheduler API urls and lays out that data to list of SZTerm.
     Szterm contains all necessary data to update or create term.
-    That data lacks courses and teachers mapping, so prepare all teachers
+    That data lacks courses and teachers mapping, so it prepares all teachers
     and courses to map in seperate dict and set."""
 
 import collections
@@ -37,9 +37,10 @@ class SchedulerData:
         self.terms = []
         self.teachers = {}
         self.courses = set()
+        self._scheduler_results = {}
+        self._scheduler_terms = {}
 
-    def __map_scheduler_types(self, sh_results: 'Dict[int, SchedulerApiResult]',
-                              sh_terms: 'Dict[int, SchedulerAPITerm]', term: SZTerm) -> SZTerm:
+    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> SZTerm:
         """ Change SZTerm data with data in SZ format. Does not map course and employee """
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
@@ -65,17 +66,17 @@ class SchedulerData:
             """ map scheduler group type to SZ group type"""
             return GROUP_TYPES[group_type]
 
-        scheduler_rooms = sh_results[term.scheduler_id].rooms
+        scheduler_rooms = self._scheduler_results[term.id].rooms
         scheduler_terms = []
-        for id in sh_results[term.scheduler_id].terms:
-            scheduler_terms.append(sh_terms[id])
+        for id in self._scheduler_results[term.id].terms:
+            scheduler_terms.append(self._scheduler_terms[id])
 
         start_time = get_start_time(scheduler_terms)
         end_time = get_end_time(scheduler_terms)
         dayOfWeek = get_day_of_week(scheduler_terms[0])
         classrooms = get_classrooms(scheduler_rooms)
-        type = get_group_type(term.type)
-        return SZTerm(term.scheduler_id, term.teacher, term.course, type,
+        type = get_group_type(term.group_type)
+        return SZTerm(term.id, term.teacher, term.course, type,
                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 
     def get_scheduler_data(self):
@@ -137,14 +138,12 @@ class SchedulerData:
         api_config = response.json()
         response = client.get(self.api_task_url)
         api_task = response.json()
-        scheduler_results = get_results_data(api_task['timetable']['results'])
+        self._scheduler_results = get_results_data(api_task['timetable']['results'])
+        self._scheduler_terms = get_terms_data(api_config['terms'])
         scheduler_groups = get_groups_data(api_config['groups'])
-        scheduler_terms = get_terms_data(api_config['terms'])
 
         for sh_group in scheduler_groups:
-            term = SZTerm(sh_group.id, sh_group.teacher, sh_group.course, sh_group.group_type,
-                          sh_group.limit, "", time(), time(), set())
-            term = self.__map_scheduler_types(scheduler_results, scheduler_terms, term)
+            term = self._map_scheduler_types(sh_group)
             self.terms.append(term)
 
         teachers_names = get_teachers_data(api_config['teachers'])
