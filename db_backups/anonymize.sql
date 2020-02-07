@@ -15,5 +15,4 @@ DELETE FROM mailer_messagelog;
 UPDATE auth_user SET password='pbkdf2_sha256$36000$Z6GlerjZ9cWC$M6zn6XGPc81913R1yw6SMouredUfO/DPnQwZ3XxUCnA=';
 
 -- Anonymize grade/poll answers
-UPDATE poll_openquestionanswer SET content = 'jakas ocena';
-DELETE FROM poll_singlechoicequestionanswer;
+DELETE FROM poll_submission;
