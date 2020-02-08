@@ -2,13 +2,14 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
 from apps.offer.vote.models.system_state import SystemState
+from apps.offer.plan.utils import ProposalVoteSummary, VotingSummaryPerYear
+from typing import List
 import environ
 import json
-# If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-def create_sheets_service(sheet_id):
+def create_sheets_service(sheet_id) -> gspread.models.Spreadsheet:
     env = environ.Env()
     environ.Env.read_env()
     creds = {"type": env('SERVICE_TYPE'),
@@ -33,12 +34,35 @@ def create_sheets_service(sheet_id):
 # BEGIN VOTING RESULT SHEET LOGIC
 ##################################################
 
+def prepare_legend_rows(years: List[str]) -> List[List[str]]:
+    """Creates two top rows with a legend.
+
+    The length of a single row is 3+4*len(years).
+    """
+    row1 = ["", "", ""] + sum(([y, "", "", "", ""] for y in years), [])
+    row2 = ["Nazwa", "Typ kursu", "Semestr"] + [
+        "Głosów",
+        "Głosujących",
+        "Za 3pkt",
+        "Był prowadzony",
+        "Zapisanych",
+    ] * len(years)
+    return [row1, row2]
+
+
 # votes is return type of function get_votes
 # this functions prepare data to be in a sheet format
 # this function returns list with voting data for every course List[List]
 # and sheet header
-def votes_to_sheets_format(votes, years):
-    values = create_voting_results_sheet_layout(votes, years)
+def votes_to_sheets_format(votes: VotingSummaryPerYear, how_many_years: List[str]) -> List[List[str]]:
+    """
+        Prepares votes in a spreadsheet format.
+
+        Each spreadsheet's row corresponds to a single
+        list inside of returned list of lists. Each cell in that row
+        is a single cell in a inside list.
+    """
+    values = prepare_legend_rows(how_many_years)
 
     for name, value in votes.items():
         row = []
@@ -47,14 +71,26 @@ def votes_to_sheets_format(votes, years):
         current_year_str = SystemState.get_current_state().year
         current_year = datetime.datetime.strptime(current_year_str, '%Y/%y')
         val = list(value.voting.values())
-
+        """
+            This logic is responsible for creating rows.
+            One row contains data about one course in 3 years but some years
+            some courses may not have been in voting so cells
+            corresponding to that years must be empty.
+            We do calculations on years to determine whether we
+            should put a empty string - '' or existing real data.
+            We also have to put data in years order and order is different
+            in a sheet than in a database.  
+        """
         for key in value.voting.keys():
+            # get date form string
             years.append(datetime.datetime.strptime(key, '%Y/%y'))
 
         if len(years) == 3:
+            # if all three years have data then:
             for val in value.voting.values():
                 voting_sheet_create_annual_part_of_row(row, val)
         elif len(years) == 2:
+            # if two years have data then:
             if current_year == years[0]:
                 if (current_year - years[1]).days > year:
                     voting_sheet_create_annual_part_of_row(row, val[0])
@@ -69,6 +105,7 @@ def votes_to_sheets_format(votes, years):
                 voting_sheet_create_annual_part_of_row(row, val[0])
                 voting_sheet_create_annual_part_of_row(row, val[1])
         elif len(years) == 1:
+            # if one year has data then:
             if current_year == years[0]:
                 voting_sheet_create_annual_part_of_row(row, val[0])
                 voting_sheet_create_annual_part_of_row(row)
@@ -105,41 +142,6 @@ def voting_sheet_create_annual_part_of_row(row, value={}):
     else:
         for i in range(5):
             row.insert(0, '')
-
-
-# votes is return type of function get_votes
-def create_voting_results_sheet_layout(votes, years):
-    values = [
-        [],
-        [
-            'Nazwa',
-            'Typ kursu',
-            'Semestr',
-        ]
-    ]
-
-    for i in range(3):
-        if i == 0:
-            for j in range(3):
-                values[0].append('')
-        else:
-            for j in range(4):
-                values[0].append('')
-        values[0].append(years[2 - i])
-
-    block = [
-        'Głosów',
-        'Głosujących',
-        'Za 3pkt',
-        'Był prowadzony',
-        'Zapisanych',
-    ]
-
-    for i in range(3):
-        for j in range(5):
-            values[1].append(block[j])
-
-    return values
 
 
 # votes is return type of function get_votes
