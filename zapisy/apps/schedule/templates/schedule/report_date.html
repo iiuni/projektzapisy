@@ -12,23 +12,21 @@
 
 {% block reporttitle %}{% endblock %}
 
-{% block reportformview %}
+{% block all-content %}
   <div class='mb-5 d-print-none'>
       <a class="btn btn-light print-report float-right">
           <i class="fa fa-print"></i>
           Drukuj
       </a>
   </div>
-  <style>
-      html {
-        font-size: 12pt;
-      }
-  </style>
-  <h1>Raport sal</h1>
-  <h2>Zakres: {{ beg_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</h2>
+
+  <div class="pt-5 mb-4">
+    <h1 align="center" class="display-1">Raport Sal</h1>
+    <h3 align="center" class="display-3">{{ beg_date|date:"Y-m-d" }} &mdash; {{ end_date|date:"Y-m-d" }}</h3>
+  </div>
 
   {% for room, terms_list in events %}
-    <h3>Sala: {{ room }}</h3>
+    <h3 class="display-3">{{ room }}</h3>
     {% if terms_list %}
       <table class="table table-sm">
         <thead>
