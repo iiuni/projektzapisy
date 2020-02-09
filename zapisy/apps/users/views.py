@@ -52,13 +52,14 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     students_queryset = Student.get_list(restrict_list_consent=not BaseUser.is_employee(request.user))
     students = {}
     for student_from_queryset in students_queryset:
-        students.update({student_from_queryset.pk: {"last_name": student_from_queryset.user.last_name,
-                                                    "first_name": student_from_queryset.user.first_name,
-                                                    "id": student_from_queryset.user.id,
-                                                    "album": student_from_queryset.matricula,
-                                                    "email": student_from_queryset.user.email
-                                                    }})
-    data = {"students": students}
+        students.update({student_from_queryset.pk:
+                        {'last_name': student_from_queryset.user.last_name,
+                         'first_name': student_from_queryset.user.first_name,
+                         'id': student_from_queryset.user.id,
+                         'album': student_from_queryset.matricula,
+                         'email': student_from_queryset.user.email
+                         }})
+    data = {'students': students}
 
     if user_id is not None:
         try:
@@ -90,8 +91,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
             'student': student,
             'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
         })
-        return render(request, 'users/student_profile.html', data)
-    return render(request, 'users/students_list.html', data)
+    return render(request, 'users/students_view.html', data)
 
 
 def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
@@ -99,14 +99,14 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     employees_queryset = Employee.get_list()
     employees = {}
     for employee_from_queryset in employees_queryset:
-        employees.update({employee_from_queryset.pk: {"last_name": employee_from_queryset.user.last_name,
-                                                      "first_name": employee_from_queryset.user.first_name,
-                                                      "id": employee_from_queryset.user.id,
-                                                      "email": employee_from_queryset.user.email
-                                                      }})
-    data = {"employees": employees_queryset,
-            "employees_dict": employees,
-            }
+        employees.update({employee_from_queryset.pk:
+                         {'last_name': employee_from_queryset.user.last_name,
+                          'first_name': employee_from_queryset.user.first_name,
+                          'id': employee_from_queryset.user.id,
+                          'email': employee_from_queryset.user.email
+                          }})
+    data = {'employees': employees_queryset,
+            'employees_dict': employees}
 
     if user_id is not None:
         try:
@@ -131,8 +131,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
             'employee': employee,
             'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
         })
-        return render(request, 'users/employee_profile.html', data)
-    return render(request, 'users/employees_list.html', data)
+    return render(request, 'users/employees_view.html', data)
 
 
 @login_required
@@ -264,15 +263,12 @@ def my_profile(request):
     return render(request, 'users/my_profile.html', data)
 
 
-def consultations_list(request: HttpRequest, begin: str = 'A') -> HttpResponse:
+def consultations_list(request: HttpRequest) -> HttpResponse:
     employees = Employee.get_list('All')
     semester = Semester.get_current_semester()
     employees = Group.teacher_in_present(employees, semester)
 
-    data = {
-        "employees": employees,
-        "char": begin
-    }
+    data = {'employees': employees}
     return render(request, 'users/consultations_list.html', data)
 
 
@@ -379,7 +375,7 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
             event.add('summary').value = "{} - {}".format(course_name, group_type)
             if term.room:
                 event.add('location').value = 'sala ' + term.room.number \
-                                              + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
+                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
 
             event.add('description').value = 'prowadzący: ' \
                                              + group.get_teacher_full_name()

@@ -19,9 +19,13 @@
 
 {% block content %}
     <div id="student-profile">
-    <div class="alert alert-primary">
-        Wybierz studenta z listy
-    </div>
+    {% if student %}
+        {% include "users/student_profile_contents.html" %}
+    {% else %}
+        <div class="alert alert-primary">
+            Wybierz studenta z listy
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
