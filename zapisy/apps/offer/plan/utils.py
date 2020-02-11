@@ -1,9 +1,9 @@
 import copy
 import sys
 from datetime import date
-from functools import reduce
+from functools import cmp_to_key, reduce
 from operator import itemgetter
-from functools import cmp_to_key
+
 from django.db import models
 from django.db.models import Avg, Count, Q, Sum, Value
 from django.db.models.functions import Concat

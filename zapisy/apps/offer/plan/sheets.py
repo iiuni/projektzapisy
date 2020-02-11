@@ -6,8 +6,8 @@ from typing import List, Optional
 import gspread
 
 import environ
-from apps.offer.plan.utils import (ProposalVoteSummary, SingleYearVoteSummary,
-                                   VotingSummaryPerYear, AssigmentsSummary)
+from apps.offer.plan.utils import (AssigmentsSummary, ProposalVoteSummary,
+                                   SingleYearVoteSummary, VotingSummaryPerYear)
 from apps.offer.vote.models.system_state import SystemState
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -62,7 +62,7 @@ def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> Li
     If sy is None, empty cells will be produced.
     """
     if sy is None:
-        return [""]*5
+        return [""] * 5
     return [
         sy['total'],
         sy['votes'],
