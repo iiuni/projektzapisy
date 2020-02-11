@@ -51,7 +51,9 @@ class SingleGroupData(TypedDict):
     semester: str
     teacher: str
     teacher_code: int
+    # Lecture, exercise etc.
     group_type: str
+    # Hours per week.
     hours: int
 
 
@@ -327,19 +329,9 @@ def prepare_assignments_data(data: List[List]):
 def process_value(record: dict, value: List):
     record['course'] = value[1]
     record['id'] = value[0]
-    if value[3] == 'w':
-        record = process_data_row(record, value, value[3])
-    elif value[3] == 'rep':
-        record = process_data_row(record, value, value[3])
-    elif value[3] == 'ćw':
-        record = process_data_row(record, value, value[3])
-    elif value[3] == 'prac':
-        record = process_data_row(record, value, value[3])
-    elif value[3] == 'ćw+prac':
+    if value[3] == 'ćw+prac':
         record = process_data_row(record, value, 'ćw_prac')
-    elif value[3] == 'sem':
-        record = process_data_row(record, value, value[3])
-    elif value[3] == 'admin':
+    else:
         record = process_data_row(record, value, value[3])
 
     return record
@@ -420,9 +412,6 @@ def make_stats_record(stats: List):
     return types[stats[3]], float(stats[7])
 
 
-# this function divides semester into subject's groups
-# and sorts them by type(wyk, rep, ćw, prac, itd...)
-# function returns a List[List]
 def sort_subject_groups_by_type(semester: AssigmentsSummary) -> AssigmentsSummary:
     """ Sorts subjects by their name and then group type. """
     return sorted(semester, key=GroupOrder)

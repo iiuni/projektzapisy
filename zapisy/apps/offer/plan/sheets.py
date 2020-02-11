@@ -14,7 +14,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-def create_sheets_service(sheet_id) -> gspread.models.Spreadsheet:
+def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
+    """Loads up data from enviorement, creates credentials and connects to appropriate spreadsheet."""
     env = environ.Env()
     environ.Env.read_env()
     creds = {"type": env('SERVICE_TYPE'),
@@ -92,25 +93,6 @@ def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> Lis
     return legend_rows + sum(proposal_rows, [])
 
 
-# arg row is a one year voting data for one course
-# arg value is dict of values that should be filled
-def voting_sheet_create_annual_part_of_row(row, value={}):
-    if len(value) > 0:
-        took_place = True if value['enrolled'] else False
-        number_of_enrolled_students = value['enrolled'] if value['enrolled'] else ''
-
-        row.insert(0, number_of_enrolled_students)
-        row.insert(0, took_place)
-        row.insert(0, value['count_max'])
-        row.insert(0, value['votes'])
-        row.insert(0, value['total'])
-    else:
-        for i in range(5):
-            row.insert(0, '')
-
-
-# votes is return type of function get_votes
-# arg sheet is sheet object returns by function create_sheets_service
 def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear, years: List[str]):
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
@@ -133,10 +115,13 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
 # BEGIN PLAN PROPOSAL SHEET LOGIC
 ##################################################
 
-# proposal is return type of function get_subjects_data
-# function returns a list of lists
-# each inner list is a row in sheet
+
 def proposal_to_sheets_format(proposal: AssigmentsSummary):
+    """Function prepares data for assigments spreadsheet.
+
+    Returns:
+        List of lists, where each inner list represents a single row in spreadsheet.
+    """
     data = [
         [
             'Lp',
@@ -201,9 +186,7 @@ def get_short_type_name(type_name: str):
         return 'admin'
 
 
-# proposal is return type of function get_subjects_data
-# arg sheet is sheet object returns by function create_sheets_service
-def update_plan_proposal_sheet(sheet, proposal):
+def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: AssigmentsSummary):
     data = proposal_to_sheets_format(proposal)
     sheet.sheet1.clear()
     sheet.values_update(
@@ -225,8 +208,7 @@ def update_plan_proposal_sheet(sheet, proposal):
 ##################################################
 
 
-# arg sheet is sheet object returns by function create_sheets_service
-def read_entire_sheet(sheet):
+def read_entire_sheet(sheet: gspread.models.Spreadsheet):
     try:
         sh = sheet.sheet1.get_all_values()
     except gspread.exceptions.APIError:
