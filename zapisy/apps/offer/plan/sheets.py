@@ -1,11 +1,16 @@
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import datetime
-from apps.offer.vote.models.system_state import SystemState
-from apps.offer.plan.utils import ProposalVoteSummary, VotingSummaryPerYear
-from typing import List
-import environ
 import json
+from operator import attrgetter, itemgetter
+from typing import List, Optional
+
+import gspread
+
+import environ
+from apps.offer.plan.utils import (ProposalVoteSummary, SingleYearVoteSummary,
+                                   VotingSummaryPerYear, AssigmentsSummary)
+from apps.offer.vote.models.system_state import SystemState
+from oauth2client.service_account import ServiceAccountCredentials
+
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
@@ -34,6 +39,7 @@ def create_sheets_service(sheet_id) -> gspread.models.Spreadsheet:
 # BEGIN VOTING RESULT SHEET LOGIC
 ##################################################
 
+
 def prepare_legend_rows(years: List[str]) -> List[List[str]]:
     """Creates two top rows with a legend.
 
@@ -50,81 +56,40 @@ def prepare_legend_rows(years: List[str]) -> List[List[str]]:
     return [row1, row2]
 
 
-# votes is return type of function get_votes
-# this functions prepare data to be in a sheet format
-# this function returns list with voting data for every course List[List]
-# and sheet header
-def votes_to_sheets_format(votes: VotingSummaryPerYear, how_many_years: List[str]) -> List[List[str]]:
+def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> List[str]:
+    """Dumps voting summary to five spreadsheet cells.
+
+    If sy is None, empty cells will be produced.
     """
-        Prepares votes in a spreadsheet format.
+    if sy is None:
+        return [""]*5
+    return [
+        sy['total'],
+        sy['votes'],
+        sy['count_max'],
+        sy['enrolled'] is not None,
+        sy['enrolled'],
+    ]
 
-        Each spreadsheet's row corresponds to a single
-        list inside of returned list of lists. Each cell in that row
-        is a single cell in a inside list.
-    """
-    values = prepare_legend_rows(how_many_years)
 
-    for name, value in votes.items():
-        row = []
-        years = []
-        year = 365
-        current_year_str = SystemState.get_current_state().year
-        current_year = datetime.datetime.strptime(current_year_str, '%Y/%y')
-        val = list(value.voting.values())
-        """
-            This logic is responsible for creating rows.
-            One row contains data about one course in 3 years but some years
-            some courses may not have been in voting so cells
-            corresponding to that years must be empty.
-            We do calculations on years to determine whether we
-            should put a empty string - '' or existing real data.
-            We also have to put data in years order and order is different
-            in a sheet than in a database.  
-        """
-        for key in value.voting.keys():
-            # get date form string
-            years.append(datetime.datetime.strptime(key, '%Y/%y'))
+def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str]) -> List[str]:
+    """Creates a single spreadsheet row summarising voting for the proposal."""
+    proposal = pvs.proposal
+    beg = [
+        proposal.name,
+        proposal.course_type.name,
+        proposal.semester,
+    ]
+    per_year = (prepare_annual_voting_part_of_row(
+        pvs.voting.get(y, None)) for y in years)
+    return [beg + sum(per_year, [])]
 
-        if len(years) == 3:
-            # if all three years have data then:
-            for val in value.voting.values():
-                voting_sheet_create_annual_part_of_row(row, val)
-        elif len(years) == 2:
-            # if two years have data then:
-            if current_year == years[0]:
-                if (current_year - years[1]).days > year:
-                    voting_sheet_create_annual_part_of_row(row, val[0])
-                    voting_sheet_create_annual_part_of_row(row)
-                    voting_sheet_create_annual_part_of_row(row, val[1])
-                else:
-                    voting_sheet_create_annual_part_of_row(row, val[0])
-                    voting_sheet_create_annual_part_of_row(row, val[1])
-                    voting_sheet_create_annual_part_of_row(row)
-            else:
-                voting_sheet_create_annual_part_of_row(row)
-                voting_sheet_create_annual_part_of_row(row, val[0])
-                voting_sheet_create_annual_part_of_row(row, val[1])
-        elif len(years) == 1:
-            # if one year has data then:
-            if current_year == years[0]:
-                voting_sheet_create_annual_part_of_row(row, val[0])
-                voting_sheet_create_annual_part_of_row(row)
-                voting_sheet_create_annual_part_of_row(row)
-            elif (current_year - years[0]).days > year:
-                voting_sheet_create_annual_part_of_row(row)
-                voting_sheet_create_annual_part_of_row(row)
-                voting_sheet_create_annual_part_of_row(row, val[0])
-            else:
-                voting_sheet_create_annual_part_of_row(row)
-                voting_sheet_create_annual_part_of_row(row, val[0])
-                voting_sheet_create_annual_part_of_row(row)
 
-        row.insert(0, value.semester)
-        row.insert(0, value.course_type)
-        row.insert(0, name)
-        values.append(row)
-
-    return values
+def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> List[List[str]]:
+    legend_rows = prepare_legend_rows(years)
+    proposal_rows = (prepare_proposal_row(pvs, years)
+                     for pvs in votes.values())
+    return legend_rows + sum(proposal_rows, [])
 
 
 # arg row is a one year voting data for one course
@@ -146,11 +111,11 @@ def voting_sheet_create_annual_part_of_row(row, value={}):
 
 # votes is return type of function get_votes
 # arg sheet is sheet object returns by function create_sheets_service
-def update_voting_results_sheet(sheet, votes, years):
+def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear, years: List[str]):
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
     sheet.values_update(
-        range='A:R',
+        range='A:' + gspread.utils.rowcol_to_a1(1, 18 * len(years))[:-1],
         params={
             'valueInputOption': 'USER_ENTERED'
         },
@@ -171,7 +136,7 @@ def update_voting_results_sheet(sheet, votes, years):
 # proposal is return type of function get_subjects_data
 # function returns a list of lists
 # each inner list is a row in sheet
-def proposal_to_sheets_format(proposal):
+def proposal_to_sheets_format(proposal: AssigmentsSummary):
     data = [
         [
             'Lp',
@@ -194,25 +159,25 @@ def proposal_to_sheets_format(proposal):
     lp = 0
     prev_name = ''
     for value in proposal:
-        if value[0][1] != prev_name:
+        if value['name'] != prev_name:
             lp += 1
-        prev_name = value[0][1]
+        prev_name = value['name']
 
         row = [
             lp,
-            value[0][1],                        # nazwa kursu
-            value[4][1],                        # typ kursu
-            get_short_type_name(value[4][1]),   # skrót typu
-            '',                                 # niestangardowa liczba godzin/semestr
-            '',                                 # h/tydzień
-            '',                                 # przelicznik
-            value[5][1],                        # h/semestr
-            '',                                 # do pensum
-            value[1][1],                        # semestr
-            value[2][1],                        # przydział
-            value[3][1],                        # kod prowadzącego
-            'FALSE',                            # potwierdzony
-            ''                                  # wielu prowadzących
+            value['name'],                              # nazwa kursu
+            value['group_type'],                        # typ grupy
+            get_short_type_name(value['group_type']),   # skrót typu
+            '',                                         # niestangardowa liczba godzin/semestr
+            '',                                         # h/tydzień
+            '',                                         # przelicznik
+            value['hours'],                             # h/semestr
+            '',                                         # do pensum
+            value['semester'],                          # semestr
+            value['teacher'],                           # przydział
+            value['teacher_code'],                      # kod prowadzącego
+            'FALSE',                                    # potwierdzony
+            ''                                          # wielu prowadzących
         ]
 
         data.append(row)

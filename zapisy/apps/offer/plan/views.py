@@ -1,16 +1,24 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect
-from apps.users.models import BaseUser
-from django.urls import reverse
-from apps.offer.vote.models.system_state import SystemState
-from apps.offer.plan.sheets import create_sheets_service, update_voting_results_sheet, update_plan_proposal_sheet, read_entire_sheet
-from apps.offer.plan.utils import get_votes, propose, get_subjects_data, prepare_assignments_data, prepare_employees_data, make_stats_record, sort_subject_groups_by_type, get_last_years
-from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
-from django.http import JsonResponse
-from apps.offer.proposal.models import Proposal, ProposalStatus
-from django.core.exceptions import ObjectDoesNotExist
-import json
 import csv
+import json
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from django.urls import reverse
+
 import environ
+from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
+from apps.offer.plan.sheets import (create_sheets_service, read_entire_sheet,
+                                    update_plan_proposal_sheet,
+                                    update_voting_results_sheet)
+from apps.offer.plan.utils import (get_last_years, get_subjects_data,
+                                   get_votes, make_stats_record,
+                                   prepare_assignments_data,
+                                   prepare_employees_data, propose,
+                                   sort_subject_groups_by_type)
+from apps.offer.proposal.models import Proposal, ProposalStatus
+from apps.offer.vote.models.system_state import SystemState
+from apps.users.models import BaseUser
 
 env = environ.Env()
 environ.Env.read_env()
@@ -193,8 +201,10 @@ def plan_vote(request):
                     picked_courses_accurate_info_l.append(subject)
 
         sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-        proposal_z = get_subjects_data(picked_courses_accurate_info_z, 3)
-        proposal_l = get_subjects_data(picked_courses_accurate_info_l, 3)
+        proposal_z = get_subjects_data(
+            picked_courses_accurate_info_z, get_last_years(3))
+        proposal_l = get_subjects_data(
+            picked_courses_accurate_info_l, get_last_years(3))
 
         proposal_z = sort_subject_groups_by_type(proposal_z)
         proposal_l = sort_subject_groups_by_type(proposal_l)
