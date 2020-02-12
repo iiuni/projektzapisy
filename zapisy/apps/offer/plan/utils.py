@@ -23,6 +23,72 @@ else:
     from typing_extensions import TypedDict
 
 
+# First value represents full name of group type, second represents short name.
+GROUP_TYPES = [('wykład', 'w'), ('ćwiczenia', 'ćw'), ('pracownia', 'prac'),
+               ('ćwiczenio-pracownia', 'ćw_prac'), ('repetytorium' 'rep'), ('seminarium' 'sem'), ('sekretarz', 'admin')]
+
+
+# For creating plan-view:
+class Statistics(TypedDict):
+    w: float
+    ćw: float
+    prac: float
+    ćw_prac: float
+    sem: float
+    rep: float
+    admin: float
+
+
+class SingleAssignmentData(NamedTuple):
+    name: str
+    index: int
+    # full name, as in GROUP_TYPES
+    group_type: str
+    group_type_short: str
+    hours_weekly: float
+    hours_semester: float
+    # l (summer) or z (winter)
+    semester: str
+    teacher: str
+    teacher_code: str
+    # if other assignment from the same course has the same value in multiple teachers
+    # field, then multiple teachers were assigned to the same group
+    multiple_teachers: Optional[int]
+
+
+class EmployeeData(TypedDict):
+    # 'pracownik' for employee, 'doktorant' for phd, 'inny' for others
+    status: str
+    name: str
+    pensum: float
+    balance: float
+    weekly_winter: int
+    weekly_summer: int
+    courses_winter: List[SingleAssignmentData]
+    courses_summer: List[SingleAssignmentData]
+
+
+# Indexed by employee's code.
+EmployeesSummary = Dict[str, EmployeeData]
+
+
+class TeacherInfo(NamedTuple):
+    code: str
+    name: str
+
+
+class AssignmentsCourseInfo(TypedDict):
+    index: int
+    stats: Statistics
+    # List of teachers assigned to a certain group in this course. Indexed by short name of group type, as in GROUP_TYPES.
+    teachers: Dict[str, List[TeacherInfo]]
+
+
+# Indexed by course name
+AssignmentsViewSummary = Dict[str, AssignmentsCourseInfo]
+
+
+# For get_votes function:
 class SingleYearVoteSummary(TypedDict):
     # Total of points awarded in a vote.
     total: int
@@ -46,18 +112,19 @@ class ProposalVoteSummary(NamedTuple):
 VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 
 
+# For get_subjects_data:
 class SingleGroupData(TypedDict):
     name: str
     semester: str
     teacher: str
     teacher_code: int
-    # Lecture, exercise etc.
+    # One of GROUP_TYPE_SHEETS
     group_type: str
     # Hours per week.
     hours: int
 
 
-AssigmentsSummary = List[SingleGroupData]
+ProposalSummary = List[SingleGroupData]
 
 
 def propose(vote: ProposalVoteSummary):
@@ -86,11 +153,11 @@ def propose(vote: ProposalVoteSummary):
     return False
 
 
-def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) -> AssigmentsSummary:
+def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) -> ProposalSummary:
     """Function prepares data to create a csv.
 
     Data returned by this function will be presented in a spreadsheet, where it will help with assigning classes. Given a course,
-    it will look for previous instances of the course (taking the newest one) and copy the group assigments from it. If such
+    it will look for previous instances of the course (taking the newest one) and copy the group Assignments from it. If such
     instance does not exist, it will assign only the owner of the course.
 
     Args:
@@ -108,7 +175,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
                                     'instance': CourseInstance.objects.filter(semester__year__in=years, offer=course_proposal,
                                                                               semester__type=course_semester).order_by('-semester__year').first()}
 
-    groups: AssigmentsSummary = []
+    groups: ProposalSummary = []
     # Prepares data necessary to create csv.
     for course, data in course_data.items():
         proposal_info = data['proposal']
@@ -228,191 +295,7 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
     return proposals
 
 
-# prepares assignment data to be displayed in template
-# return type is a list of records boilerplate(look up)
-def prepare_assignments_data(data: List[List]):
-    final = []
-    length = len(data)
-    lp = data[0][0]
-    # boilerplate for record, a list of those is our return type
-    record = {
-        'id': 0,
-        'course': '',
-        'w': {
-            'weekly': '',
-            'teachers': []
-        },
-        'rep': {
-            'weekly': '',
-            'teachers': []
-        },
-        'ćw': {
-            'weekly': '',
-            'teachers': []
-        },
-        'prac': {
-            'weekly': '',
-            'teachers': []
-        },
-        'ćw_prac': {
-            'weekly': '',
-            'teachers': []
-        },
-        'sem': {
-            'weekly': '',
-            'teachers': []
-        },
-        'admin': {
-            'weekly': '',
-            'teachers': []
-        }
-    }
-    for value in data:
-        if value[0] == lp:
-            if value[-2] == 'FALSE':
-                continue
-
-            record = process_value(record, value)
-            # check if it's last elem in list
-            if value == data[length - 1]:
-                record = clean_up(record)
-                final.append(record)
-        else:
-            lp += 1
-            if record['course'] != '':
-                record = clean_up(record)
-                final.append(record)
-                record = {
-                    'course': '',
-                    'id': 0,
-                    'w': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'rep': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'ćw': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'prac': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'ćw_prac': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'sem': {
-                        'weekly': '',
-                        'teachers': []
-                    },
-                    'admin': {
-                        'weekly': '',
-                        'teachers': []
-                    }
-                }
-            if value[-2] == 'FALSE':
-                continue
-
-            record = process_value(record, value)
-            if value == data[length - 1]:
-                record = clean_up(record)
-                final.append(record)
-    return final
-
-
-# this function interprets a single line form sheet
-# return type is a record boilerplate(look up)
-def process_value(record: dict, value: List):
-    record['course'] = value[1]
-    record['id'] = value[0]
-    if value[3] == 'ćw+prac':
-        record = process_data_row(record, value, 'ćw_prac')
-    else:
-        record = process_data_row(record, value, value[3])
-
-    return record
-
-
-# return type is a record boilerplate(look up)
-def process_data_row(record: dict, value: List, class_type: str):
-    record[class_type]['weekly'] = value[5]
-    record[class_type]['teachers'].append({
-        'name': value[-3],
-        'code': value[-2],
-    })
-    return record
-
-
-# this function removes empty elements from dict
-# return type is a record boilerplate(look up) without some values
-def clean_up(record: dict):
-    if record['w']['weekly'] == '':
-        record.pop('w')
-    if record['rep']['weekly'] == '':
-        record.pop('rep')
-    if record['ćw']['weekly'] == '':
-        record.pop('ćw')
-    if record['prac']['weekly'] == '':
-        record.pop('prac')
-    if record['ćw_prac']['weekly'] == '':
-        record.pop('ćw_prac')
-    if record['sem']['weekly'] == '':
-        record.pop('sem')
-    if record['admin']['weekly'] == '':
-        record.pop('admin')
-
-    return record
-
-# prepares data about employee to put into html
-# arg employees is data loaded from employees Google sheet
-
-
-def prepare_employees_data(employees: List):
-    staff = {}
-    phds = {}
-    others = {}
-    pensum = 0
-    for value in employees:
-        if value[4] != '' and value[0] != 'pensum':
-            pensum += int(value[0])
-
-            data = {'name': value[2] + ' ' + value[3],
-                    'pensum': value[0],
-                    'balance': float(value[13]) if value[13] else float(value[11]),
-                    'weekly_winter': 0,
-                    'weekly_summer': 0,
-                    'courses_winter': [],
-                    'courses_summer': []
-                    }
-            if value[1] == 'prac':
-                staff[value[5]] = data
-            elif value[1] == 'doktorant':
-                phds[value[5]] = data
-            else:
-                others[value[5]] = data
-    return staff, phds, others, pensum
-
-# arg stats is a single row from assigments sheet
-# this function extracts important data from that row, used to generate statistics
-
-
-def make_stats_record(stats: List):
-    types = {'w': 'wykład',
-             'ćw': 'ćwiczenia',
-             'ćw+prac': 'ćwiczenia+pracownia',
-             'prac': 'pracownia',
-             'sem': 'seminarium',
-             'rep': 'repetytorium',
-             'admin': 'sekretarz'
-             }
-    return types[stats[3]], float(stats[7])
-
-
-def sort_subject_groups_by_type(semester: AssigmentsSummary) -> AssigmentsSummary:
+def sort_subject_groups_by_type(semester: ProposalSummary) -> ProposalSummary:
     """ Sorts subjects by their name and then group type. """
     return sorted(semester, key=GroupOrder)
 

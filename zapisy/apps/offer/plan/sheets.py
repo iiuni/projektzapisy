@@ -6,7 +6,7 @@ from typing import List, Optional
 import gspread
 
 import environ
-from apps.offer.plan.utils import (AssigmentsSummary, ProposalVoteSummary,
+from apps.offer.plan.utils import (ProposalSummary, ProposalVoteSummary,
                                    SingleYearVoteSummary, VotingSummaryPerYear)
 from apps.offer.vote.models.system_state import SystemState
 from oauth2client.service_account import ServiceAccountCredentials
@@ -116,8 +116,8 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
 ##################################################
 
 
-def proposal_to_sheets_format(proposal: AssigmentsSummary):
-    """Function prepares data for assigments spreadsheet.
+def proposal_to_sheets_format(proposal: ProposalSummary):
+    """Function prepares data for Assignments spreadsheet.
 
     Returns:
         List of lists, where each inner list represents a single row in spreadsheet.
@@ -179,14 +179,14 @@ def get_short_type_name(type_name: str):
     elif type_name.lower() == 'pracownia':
         return 'prac'
     elif type_name.lower() == 'ćwiczenio-pracownia':
-        return 'ćw+prac'
+        return 'ćw_prac'
     elif type_name.lower() == 'seminarium':
         return 'sem'
     elif type_name.lower() == 'admin':
         return 'admin'
 
 
-def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: AssigmentsSummary):
+def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
     sheet.sheet1.clear()
     sheet.values_update(
