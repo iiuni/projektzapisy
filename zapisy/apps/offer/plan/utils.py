@@ -17,9 +17,9 @@ from apps.offer.vote.models.single_vote import SingleVote, SingleVoteQuerySet
 from apps.offer.vote.models.system_state import SystemState
 
 if sys.version_info >= (3, 8):
-    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional
+    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional, Union
 else:
-    from typing import List, Tuple, Dict, NamedTuple, Optional
+    from typing import List, Tuple, Dict, NamedTuple, Optional, Union
     from typing_extensions import TypedDict
 
 
