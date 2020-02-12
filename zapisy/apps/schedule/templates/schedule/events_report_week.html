@@ -1,7 +1,6 @@
 {% extends 'schedule/events_report.html' %}
 {% load render_bundle from webpack_loader %}
-{% load static %}
-{% load compressed %}
+{% load crispy_forms_tags %}
 
 {% block events_report %} class="active"{% endblock %}
 
@@ -15,31 +14,34 @@
 {% block reporttitle %}Wydruki na sale{% endblock %}
 
 {% block reportformview %}
-    <form action="{% url 'events:events_report_week' %}" method="post" id="reportForm">
+    <form action="{% url 'events:events_report_week' %}" method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}
         {% for hidden in form.hidden_fields %}
             {{ hidden }}
         {% endfor %}
 
-        <div class="mb-4 d-print-none">
-            <div id="selector-widget" class="p-1 flex-fill w-100 mt-3">
-            {{ form.rooms }}
+        <div class="form-group">
+            <div class="input-group">
+                {{ form.rooms }}
+                <div class="input-group-append" style="width: 5em;">
+                    <button type="button" id="select-all-button" class="btn btn-dark w-100">
+                        <span style="writing-mode: tb-rl; writing-mode: vertical-rl;">
+                            Zaznacz wszystkie
+                        </span>
+                    </button>
+                </div>
+            </div>
             {{ form.rooms.errors }}
-            </div>
-            <input type="button" id="select-all-button" class="btn btn-outline-dark ml-2" value="Zaznacz wszystkie">
         </div>
 
-        <div class="mb-4 d-print-none">
-            <div id="selector-widget" class="p-1 flex-fill w-100 mt-3">
+        <div class="form-group">
+            <div id="selector-widget">
             {{ form.weeks }}
-            {{ form.weeks.errors }}
             </div>
+            {{ form.weeks.errors }}
         </div>
-
-        <div class="input-group d-print-none">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-block btn-lg">
-        </div>
+        <input type="submit" value="Generuj raport" class="btn btn-success btn-block btn-lg">
     </form>
 {% endblock %}
 
