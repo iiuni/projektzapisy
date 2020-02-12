@@ -339,6 +339,7 @@ def events_report_date(request):
 @permission_required('schedule.manage_events')
 def events_report_week(request):
     semester = Semester.get_current_semester()
+    next_sem = Semester.objects.get_next()
     if request.method == 'POST':
         form = ReportFormWeek(request.POST)
         form.fields["rooms"].choices = [(x.pk, x.number)
@@ -346,8 +347,10 @@ def events_report_week(request):
         if form.is_valid():
             rooms = form.cleaned_data["rooms"]
             week = form.cleaned_data["weeks"]
-            if week == 'courseterm':
+            if week == 'currsem':
                 return events_raport_course(request, rooms, semester)
+            if week == 'nextsem':
+                return events_raport_course(request, rooms, next_sem)
             beg_date = datetime.datetime.strptime(week, "%Y-%m-%d")
             end_date = beg_date + datetime.timedelta(days=6)
             return events_raport_type_pdf(request, beg_date, end_date, rooms, 'week', semester)
@@ -358,7 +361,9 @@ def events_report_week(request):
             form.fields["rooms"].choices[room.floor][1].append((room.pk, room.number))
 
     weeks = [(week[0], f"{week[0]} - {week[1]}") for week in semester.get_all_weeks()]
-    weeks.insert(0, ('courseterm', "Generuj z planu zajęć"))
+    if semester != next_sem:
+        weeks.insert(0, ('nextsem', f"Generuj z planu zajęć dla semestru '{next_sem}'"))
+    weeks.insert(0, ('currsem', f"Generuj z planu zajęć dla semestru '{semester}'"))
     form.fields["weeks"].widget.choices = weeks
     context = {
         'form': form
