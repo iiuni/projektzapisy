@@ -52,12 +52,12 @@ class SingleAssignmentData(NamedTuple):
     teacher: str
     teacher_code: str
     # if other assignment from the same course has the same value in multiple teachers
-    # field, then multiple teachers were assigned to the same group
+    # field, then multiple teachers were assigned to the same group.
     multiple_teachers: Optional[int]
 
 
 class EmployeeData(TypedDict):
-    # 'pracownik' for employee, 'doktorant' for phd, 'inny' for others
+    # 'pracownik' for full employee, 'doktorant' for PhD student, 'inny' for others.
     status: str
     name: str
     pensum: float
@@ -84,7 +84,7 @@ class AssignmentsCourseInfo(TypedDict):
     teachers: Dict[str, List[TeacherInfo]]
 
 
-# Indexed by course name
+# Indexed by course name.
 AssignmentsViewSummary = Dict[str, AssignmentsCourseInfo]
 
 
@@ -94,7 +94,7 @@ class SingleYearVoteSummary(TypedDict):
     total: int
     # Number of voters who awarded this course with maximum number of votes.
     count_max: int
-    # Number of voters that voted for this course
+    # Number of voters that voted for this course.
     votes: int
     # Number of enrolled students. None if course was not given that year.
     enrolled: Optional[int]
@@ -108,7 +108,7 @@ class ProposalVoteSummary(NamedTuple):
     voting: Dict[str, SingleYearVoteSummary]
 
 
-# Indexed by the Proposal name
+# Indexed by the Proposal name.
 VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 
 
@@ -118,7 +118,7 @@ class SingleGroupData(TypedDict):
     semester: str
     teacher: str
     teacher_code: int
-    # One of GROUP_TYPE_SHEETS
+    # One of GROUP_TYPE_SHEETS.
     group_type: str
     # Hours per week.
     hours: int
@@ -167,10 +167,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
 
     course_data = {}
 
-    for subject in subjects:
-        course_name = subject[0]
-        course_semester = subject[1]
-        course_proposal = subject[2]
+    for course_name, course_semester, course_proposal in subjects:
         course_data[course_name] = {'proposal': course_proposal, 'semester': course_semester,
                                     'instance': CourseInstance.objects.filter(semester__year__in=years, offer=course_proposal,
                                                                               semester__type=course_semester).order_by('-semester__year').first()}
@@ -184,8 +181,8 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
             semester = 'l'
         elif course.endswith('(zima)'):
             semester = 'z'
-
-        semester = semester if semester else proposal_info.semester
+        else:
+            semester = proposal_info.semester
 
         if data['instance']:
             previous_groups = Group.objects.filter(course=data['instance'])
@@ -209,7 +206,6 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
         else:
             teacher_code = proposal_info.owner.user.username
             teacher_name = proposal_info.owner.get_full_name()
-            teacher_code = proposal_info.owner.user.username
 
             if proposal_info.hours_lecture:
                 course_hours = proposal_info.hours_lecture
@@ -296,7 +292,7 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
 
 
 def sort_subject_groups_by_type(semester: ProposalSummary) -> ProposalSummary:
-    """ Sorts subjects by their name and then group type. """
+    """Sorts subjects by their name and then group type."""
     return sorted(semester, key=GroupOrder)
 
 

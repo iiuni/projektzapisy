@@ -97,7 +97,7 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
     sheet.values_update(
-        range='A:' + gspread.utils.rowcol_to_a1(1, 18 * len(years))[:-1],
+        range='A:' + gspread.utils.rowcol_to_a1(1, 3 + 5 * len(years))[:-1],
         params={
             'valueInputOption': 'USER_ENTERED'
         },

@@ -7,7 +7,11 @@
 <ol>
     <li>Wygeneruj arkusz z wynikami głosowania.</li>
     <li>Na jego podstawie wybierz przedmioty z listy i wygeneruj arkusz z proponowanym przydziałem zajęć.</li>
-    <li>W razie potrzeby, dokonaj zmian w arkuszu z pracownikami.</li>
+    <li>W razie potrzeby, dokonaj zmian w arkuszu z pracownikami. Dla poprawnego działania, ważne jest poprawne wypełnienie kolumn: pensum, status, imię, nazwisko, kod pracownika
+        oraz balans. Kolumna status powinna mieć wartość 'prac' dla pracownika, 'doktorant' dla doktoranta lub pozostać puste dla pracownika spoza wydziału. Kolumna imię może pozostać
+        pusta w przypadku pracownika, który nie jest osobą fizyczną (np. firma zewnętrzna). Kolumna balans powinna stanowić różnicę pensum i liczby godzin w semestrze pracownika 
+        (liczba dodatnia oznacza nadmiar godzin).
+    </li>
     <li>Wypełnij arkusz z przydziałem zajęć. Każdy dodany przedmiot powinien mieć unikalny numer 'Lp', zaś grupy należące do tego samego przedmiotu powinny mieć ten sam numer.
         Statystyki generują się automatycznie. Kolumna "Potwierdzone" powinna mieć wartość "TRUE" lub "FALSE". Przy dodawaniu nowych przedmiotów, pamiętaj o zachowaniu
         posortowanego porządku.

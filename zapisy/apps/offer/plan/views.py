@@ -2,7 +2,9 @@ import copy
 import csv
 import json
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
@@ -32,7 +34,7 @@ EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 def plan_view(request):
     if not request.user.is_superuser and not BaseUser.is_employee(request.user):
-        return render(request, '403.html')
+        raise PermissionDenied
     year = SystemState.get_current_state().year
     employees_from_sheet = read_entire_sheet(
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
@@ -59,6 +61,7 @@ def plan_view(request):
     stats_winter: Statistics = make_stats_dict()
 
     if employees_from_sheet is None or assignments_from_sheet is None:
+        messages.error(request, "Arkusz nie istnieje")
         return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
 
     for employee in employees_from_sheet:
@@ -167,9 +170,8 @@ def plan_view(request):
     return render(request, 'plan/view-plan.html', context)
 
 
+@staff_member_required
 def plan_create(request):
-    if not request.user.is_superuser:
-        return render(request, '403.html')
     courses_proposal = get_votes(get_last_years(3))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
@@ -207,9 +209,8 @@ def plan_create(request):
 
 
 @require_POST
+@staff_member_required
 def plan_vote(request):
-    if not request.user.is_superuser:
-        return render(request, '403.html')
     picked_courses = []
     for course in request.POST:
         if course != 'csrfmiddlewaretoken':
@@ -218,11 +219,12 @@ def plan_vote(request):
     all_courses = get_votes(get_last_years(1))
     picked_courses_accurate_info_z = []
     picked_courses_accurate_info_l = []
-    for key, value in all_courses.items():
-        if key in picked_courses:
-            subject = (key, value.semester,
-                       value.proposal)
-            if value.semester == 'z':
+    for course in picked_courses:
+        if course in all_courses:
+            semester = all_courses[course].semester
+            proposal = all_courses[course].proposal
+            subject = (course, semester, proposal)
+            if semester == 'z':
                 picked_courses_accurate_info_z.append(subject)
             else:
                 picked_courses_accurate_info_l.append(subject)
@@ -251,17 +253,16 @@ def plan_create_voting_sheet(request):
 
 # generates a json file used by scheduler or puts the very same data in csv file, depending on format argument
 # data comes from both employees and assignments Google sheets
+@staff_member_required
 def generate_scheduler_file(request, slug, format):
-    """ Creates file for scheduler system to use.
-        Args:
-            slug: represents semester, l for summer, z for winter
-            format: format of requested file, either csv or json
-        Returns:
-            File in desired format via response.
-    """
+    """Creates a file for scheduler system to use.
 
-    if not request.user.is_superuser:
-        return render(request, '403.html')
+    Args:
+        slug: represents semester, 'lato' for summer, 'zima' for winter.
+        format: format of requested file, either 'csv' or 'json'.
+    Returns:
+        File in the desired format in a response.
+    """
     current_year = SystemState.get_current_state().year
     employees = read_entire_sheet(
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
@@ -303,48 +304,51 @@ def generate_scheduler_file(request, slug, format):
         if confirmed_assignment == 'FALSE' or confirmed_assignment != 'TRUE':
             continue
         assignment_semester = assignment[9]
-        if assignment_semester == semester:
-            id = -1
-            course_id = -1
-            group_type = assignment[2].lower()
-            assignment_multiple_teachers = assignment[-1]
-            course_name = assignment[1]
-            # skip if hours per week is not float castable
-            try:
-                hours = float(assignment[5])
-            except ValueError:
-                continue
-            # if group type is invalid, skip
-            if group_type not in groups:
-                continue
-            group_type = int(groups[group_type])
-            code = assignment[11]
-            # find proposal id of course
-            try:
-                proposal = Proposal.objects.filter(name=assignment[1])
-                for p in proposal:
-                    if p.status != ProposalStatus.WITHDRAWN:
-                        course_id = p.id
-                        break
-            except Proposal.ObjectDoesNotExist:
-                course_id = -1
+        # if it's assignment for different semester, skip it
+        if assignment_semester != semester:
+            continue
 
-            # if single group is taught by few teachers, remember the index number that points to that group
-            if assignment_multiple_teachers:
-                if course_name in multiple_teachers and assignment_multiple_teachers in multiple_teachers[course_name]:
-                    id = multiple_teachers[course_name][assignment_multiple_teachers]
-                else:
-                    id = index
-                    multiple_teachers[course_name] = {}
-                    multiple_teachers[assignment[1]
-                                      ][assignment_multiple_teachers] = index
+        id = -1
+        course_id = -1
+        group_type = assignment[2].lower()
+        assignment_multiple_teachers = assignment[-1]
+        course_name = assignment[1]
+        # skip if hours per week is not float castable
+        try:
+            hours = float(assignment[5])
+        except ValueError:
+            continue
+        # if group type is invalid, skip
+        if group_type not in groups:
+            continue
+        group_type = int(groups[group_type])
+        code = assignment[11]
+        # find proposal id of course
+        try:
+            proposal = Proposal.objects.filter(name=assignment[1])
+            for p in proposal:
+                if p.status != ProposalStatus.WITHDRAWN:
+                    course_id = p.id
+                    break
+        except Proposal.ObjectDoesNotExist:
+            course_id = -1
+
+        # if single group is taught by few teachers, remember the index number that points to that group
+        if assignment_multiple_teachers:
+            if course_name in multiple_teachers and assignment_multiple_teachers in multiple_teachers[course_name]:
+                id = multiple_teachers[course_name][assignment_multiple_teachers]
             else:
                 id = index
+                multiple_teachers[course_name] = {}
+                multiple_teachers[assignment[1]
+                                  ][assignment_multiple_teachers] = index
+        else:
+            id = index
 
-            scheduler_assignment = {'type': 'course', 'semester': semester, 'course_id': course_id,
-                                    'course_name': course_name, 'id': id, 'group_type': group_type, 'hours': hours, 'teacher_id': code}
-            content.append(scheduler_assignment)
-            index += 1
+        scheduler_assignment = {'type': 'course', 'semester': semester, 'course_id': course_id,
+                                'course_name': course_name, 'id': id, 'group_type': group_type, 'hours': hours, 'teacher_id': code}
+        content.append(scheduler_assignment)
+        index += 1
 
     if format == 'json':
         response = JsonResponse(content, safe=False)
