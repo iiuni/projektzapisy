@@ -335,13 +335,13 @@ def generate_scheduler_file(request, slug, format):
 
         # if single group is taught by few teachers, remember the index number that points to that group
         if assignment_multiple_teachers:
-            if course_name in multiple_teachers and assignment_multiple_teachers in multiple_teachers[course_name]:
-                id = multiple_teachers[course_name][assignment_multiple_teachers]
+            if (course_name, assignment_multiple_teachers) in multiple_teachers:
+                id = multiple_teachers[(
+                    course_name, assignment_multiple_teachers)]
             else:
                 id = index
-                multiple_teachers[course_name] = {}
-                multiple_teachers[course_name
-                                  ][assignment_multiple_teachers] = index
+                multiple_teachers[(
+                    course_name, assignment_multiple_teachers)] = index
         else:
             id = index
 
