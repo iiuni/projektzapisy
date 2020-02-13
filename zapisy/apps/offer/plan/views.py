@@ -340,7 +340,7 @@ def generate_scheduler_file(request, slug, format):
             else:
                 id = index
                 multiple_teachers[course_name] = {}
-                multiple_teachers[assignment[1]
+                multiple_teachers[course_name
                                   ][assignment_multiple_teachers] = index
         else:
             id = index
