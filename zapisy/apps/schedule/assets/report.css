@@ -1,7 +1,7 @@
-#id_rooms {
-    height: 4cm;
+select[name="rooms"] {
+    height: 10rem !important;
 }
 
-#id_rooms option:hover {
-    background-color: #DCDCDC;
+select[name="rooms"] option:hover {
+    background-color: var(--light);
 }

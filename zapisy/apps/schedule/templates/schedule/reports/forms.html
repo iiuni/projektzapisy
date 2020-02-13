@@ -1,0 +1,44 @@
+{% extends 'schedule/reports/base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block all-content %}
+
+<ul class="nav nav-pills nav-fill mb-3" role="tablist">
+    {% if form_table %}
+    <li class="nav-item">
+        <a class="nav-link active" href="#table-form-tab" role="tab" data-toggle="tab">Raport tabelkowy</a>
+    </li>
+    {% endif %}
+    {% if form_doors %}
+    <li class="nav-item">
+        <a class="nav-link" href="#doors-form-tab" role="tab" data-toggle="tab">Wykazy na drzwi</a>
+    </li>
+    {% endif %}
+</ul>
+<div class="tab-content">
+    {% if form_table %}
+    <div class="tab-pane fade show active" id="table-form-tab" role="tabpanel">
+        <form method="post">
+            {% include "schedule/includes/_report_form_render.html" with form=form_table %}
+            <input type="hidden" name="report-type" value="table">
+            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+        </form>
+    </div>
+    {% endif %}
+    {% if form_doors %}
+    <div class="tab-pane fade" id="doors-form-tab" role="tabpanel">
+        <form method="post">
+            {% include "schedule/includes/_report_form_render.html" with form=form_doors %}
+            <input type="hidden" name="report-type" value="doors">
+            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock all-content %}
+
+
+{% block rendered_bundles %}
+    {% render_bundle "schedule-report" %}
+{% endblock %}

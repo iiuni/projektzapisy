@@ -1,0 +1,46 @@
+{% extends 'schedule/reports/base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block all-content %}
+    <div class='mb-5 d-print-none'>
+        <a class="btn btn-light float-right" id="print-report">
+            <i class="fa fa-print"></i>
+            Drukuj
+        </a>
+    </div>
+
+    <div class="pt-5 mb-4">
+        <h1 class="display-1">Raport Sal</h1>
+        <h3 class="display-3">{{ beg_date }} &mdash; {{ end_date }}</h3>
+    </div>
+
+    {% for room, terms in events %}
+        <h3 class="display-3">{{ room }}</h3>
+        {% if terms %}
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th class="w-25">Godziny</th>
+                <th class="w-50">Wydarzenie</th>
+                <th class="w-25"">Autor</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for term in terms %}
+            <tr>
+                <td>{{ term.date|date:"j E Y" }} {{ term.begin }}&ndash;{{ term.end }}</td>
+                <td>{{ term.title }} ({{ term.type }})</td>
+                <td>{{ term.author }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Brak wydarzeń w tej sali.</p>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block rendered_bundles %}
+    {% render_bundle "schedule-report" %}
+{% endblock %}

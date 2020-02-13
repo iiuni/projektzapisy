@@ -11,10 +11,9 @@ def number_to_weekday(value: str):
         '1': "pn",
         '2': "wt",
         '3': "śr",
-        '4': "czw",
+        '4': "cz",
         '5': "pt",
         '6': "so",
-        '0': "ni",
         '7': "ni",
     }
     return types_dict.get(value, "")

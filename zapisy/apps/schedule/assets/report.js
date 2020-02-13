@@ -1,19 +1,31 @@
-import "jquery";
-const $ = jQuery;
+document.addEventListener("DOMContentLoaded", () => {
+  // zaznacz wszystkie sale do raportu
+  document.querySelectorAll(".select-all-button").forEach(e => {
+    const grandpa = e.parentElement.parentElement;
+    const select = grandpa.querySelector("select[name=rooms]");
+    if (select === undefined) {
+      return;
+    }
+    e.onclick = event => {
+      for (let opt of select.options) {
+        opt.selected = true;
+      }
+    };
+  });
 
-
-$(document).ready(() => {
-    // zaznacz wszystkie sale do raportu
-    $('#select-all-button').click((event) => {
-        $('#id_rooms option').prop('selected', true);    
+  // Print button.
+  const printButton = document.getElementById("print-report");
+  if (printButton) {
+    printButton.addEventListener("click", () => {
+      window.print();
     });
+  }
 
-    //Wydrukuj zawartość strony
-    $('.print-report').click((event) => {
-        window.print();  
-    });
+  const room_selects = document.querySelectorAll("select[name=rooms]");
+  room_selects.forEach(el => {
+    console.log(el);
+    el.classList.add("form-control");
+  });
 
-    $('#id_rooms').addClass('form-control');
-    $('#id_weeks').addClass('form-control');
-
+  document.getElementById("id_week").classList.add("form-control");
 });

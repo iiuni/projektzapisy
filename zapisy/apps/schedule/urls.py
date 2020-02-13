@@ -25,6 +25,4 @@ urlpatterns = [
     url(r'^session$', views.session, name='session'),
     url(r'^session/feed$', feeds.LatestExams(), name='session_feed'),
     url(r'^events/report$', views.events_report, name='events_report'),
-    url(r'^events/report/week$', views.events_report_week, name='events_report_week'),
-    url(r'^events/report/date$', views.events_report_date, name='events_report_date'),
 ]
