@@ -43,6 +43,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 import environ
+from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
@@ -55,10 +56,10 @@ from .slack import Slack
 
 class Summary:
     """Stores information which objects to delete and what to write to Slack and at the end of script"""
-
     def __init__(self):
         self.created_courses = 0
         self.used_courses = 0
+        self.deleted_courses = []
         self.updated_terms = []
         self.created_terms = []
         self.deleted_terms = []
@@ -69,12 +70,6 @@ class Summary:
 
 
 SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
-# id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
-SchedulerAPIGroup = collections.namedtuple('Group', ['id', 'teacher', 'course', 'group_type', 'limit'])
-# strings in terms list are id's of SchedulerAPITerm tuples
-SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
-SchedulerAPITerm = collections.namedtuple('Term', ['day', 'start_hour', 'end_hour'])
-SchedulerAPITeacher = collections.namedtuple('Teacher', ['first_name', 'last_name'])
 
 
 class Command(BaseCommand):
@@ -166,9 +161,10 @@ class Command(BaseCommand):
                                                    str(sync_data_object.term.group)))
                 sync_data_object.term.delete()
                 sync_data_object.delete()
-        for group in groups_to_remove:
-            if not Term.objects.filter(group=group):
-                group.delete()
+        Group.objects.filter(id__in=groups_to_remove, term=None).delete()
+        orphaned_courses = CourseInstance.objects.filter(semester=self.semester, groups=None)
+        self.summary.deleted_courses.extend(map(str, orphaned_courses))
+        orphaned_courses.delete()
 
     def get_secrets_env(self):
         env = environ.Env()
@@ -186,7 +182,9 @@ class Command(BaseCommand):
         scheduler_data.get_scheduler_data()
         scheduler_mapper = SchedulerMapper(interactive_flag, self.summary, self.semester)
         scheduler_mapper.map_scheduler_data(scheduler_data)
-        for term in scheduler_data.terms:
+        for i, term in enumerate(scheduler_data.terms):
+            self.stdout.write(f"Updating terms and groups -- {i}/{len(scheduler_data.terms)}", ending='\r')
+            self.stdout.flush()
             if term.course is not None:
                 self.create_or_update_group_and_term(term)
 
@@ -204,23 +202,31 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Created {} terms and updated {} terms successfully!'
                                              .format(len(self.summary.created_terms), len(self.summary.updated_terms))))
 
+    @transaction.atomic
     def handle(self, *args, **options):
         self.semester = (Semester.objects.get_next() if options['semester'] == 0
                          else Semester.objects.get(pk=int(options['semester'])))
         self.api_config_url = options['api_config_url']
         self.api_task_url = options['api_task_url']
+        self.stdout.write(self.style.WARNING("Chosen semester: {}".format(self.semester)))
         self.summary = Summary()
         dont_delete_terms_flag = options['dont_delete_terms']
         dry_run_flag = options['dry_run']
         write_to_slack_flag = options['slack']
         interactive_flag = options['interactive']
 
+        print("Press Ctrl + C to exit script and roll back changes.")
         if dry_run_flag:
-            self.stdout.write("Dry run is on. Nothing will be saved or deleted. All messages are informational.\n\n")
-            with transaction.atomic():
-                self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
-                transaction.set_rollback(True)
-            self.stdout.write("\nDry run was on. Nothing was saved or deleted. All messages were informational.")
-        else:
-            self.stdout.write("All changes to database are committed instantly.\n\n")
+            self.stdout.write("Dry run is on. Nothing will be saved or deleted. All messages are informational.")
+        try:
             self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
+        except KeyboardInterrupt:
+            self.stderr.write(self.style.ERROR("\nKeyboardInterrupt: Rolling back changes and exiting."))
+            transaction.set_rollback(True)
+        except SystemExit:
+            self.stderr.write(self.style.NOTICE("SystemExit: Commiting changes (unless --dry_run was on) and exiting."))
+            # Let the transaction finish gracefully.
+            pass
+        if dry_run_flag:
+            transaction.set_rollback(True)
+            self.stdout.write("Dry run was on. Nothing was saved or deleted. All messages were informational.")
