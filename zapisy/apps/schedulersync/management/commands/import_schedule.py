@@ -1,39 +1,44 @@
 """The script is used to fetch data from the Scheduler.
 
- Requires system variables: SLACK_WEBHOOK_URL, SCHEDULER_USERNAME, SCHEDULER_PASSWORD
- Required arguments are links to the api scheduler.
- First to api/config, second to api/task.
- The third argument is semester primary key. It is optional.
- Lack of third argument will result in running with the current semester.
- When using for the first time in a new semester, do not use the --slack flag,
- because writing to Slack so much notifications will cause an error.
+Requires system variables: SLACK_WEBHOOK_URL, SCHEDULER_USERNAME, SCHEDULER_PASSWORD
+Required arguments are links to the api scheduler.
+First to api/config, second to api/task.
+The third argument is semester primary key. It is optional.
+Lack of third argument will result in running with the current semester.
 
- Without --interactive flag not found courses and employees will be mapped to
- not to import them in the future and they will not be imported. When the
- --slack flag is used, appropriate notifications will be sent to Slack about
- the mappings.
+When using for the first time in a new semester, do not use the --slack flag,
+because writing to Slack so much notifications will cause an error.
+Without --interactive flag not found courses and employees will not be imported.
+However, they will not be mapped to not import for future. Messages about mapping
+will be appearing until mapping will be made in --interactive mode. When the
+--slack flag is used, appropriate notifications will be sent to Slack about
+the mappings.
 
- The --slack flag sends notifications about changes in terms, groups, courses,
+The --slack flag sends notifications about changes in terms, groups, courses,
     proposals, employee and courses maps. Changes also include deleting
     and creating new objects.
- The --dont_delete_terms flag stops removing unused terms with groups
-    in a given semester. It shouldn't be used. However,
-    if for some reason you do want to use it, you can do it during manually usage.
- The --interactive flag causes the script to execute with interaction. Use it
-    for making sensible mappings.
- The --dry_run flag causes all changes to the database to be undone at the end
+The --dont_delete_terms flag stops removing unused terms with groups and
+    course instances in a given semester. It shouldn't be used. However,
+    if for some reason you do want to use it, you can do it during manual usage.
+The --interactive flag causes the script to execute with interaction. Use it
+    for making sensible mappings. All messages about changes will be printed
+    onto screen.
+The --dry_run flag causes all changes to the database to be undone at the end
     of the script. The changes will be undone if an error occurs during
     the script execution or it is exited before end.
     It can be safely used for testing.
 
- Instructions for using flags:
-    First use / manual: never --slack on first use in semester, use later,
+Instructions for using flags:
+    First use (manual): Never set --slack on first use in semester, use later,
         always --interactive, you shouldn't use --dont_delete_terms,
         --dry_run freely for testing - recommended on first use
-    During the semester / automatic: always --slack, never --interactive,
+    During the semester (automatic): always --slack, never --interactive,
         never --dont_delete_terms, never --dry_run
- Example usage: python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
-    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --delete_groups
+
+Example usage:
+    python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
+    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --interactive
+
 """
 
 import collections
@@ -89,8 +94,14 @@ class Command(BaseCommand):
                                                                        ' this during manually usage.')
 
     def create_or_update_group_and_term(self, term_data: 'SZTerm'):
-        """ Check if group already exists in database, then create or update that group. Does the same for term,
-            unless update or create are set to False """
+        """Updates term and group in Enrolment System.
+
+        Checks if the group already exists in database, then creates or updates
+        that group and its term. If the term had not been synced before, there
+        may be a confusion whether the term in Scheduler corresponds to an
+        existing group or a new one should be created. This function guesses
+        that only a lecture group will have multiple terms attached to it.
+        """
         try:
             sync_data_object = TermSyncData.objects.select_related(
                 'term', 'term__group').prefetch_related('term__classrooms').get(
@@ -137,7 +148,7 @@ class Command(BaseCommand):
                 term.group.save()
                 self.summary.updated_terms.append((term, diffs))
         except TermSyncData.DoesNotExist:
-            # The lecture always has a single group but possibly many terms
+            # The lecture always has a single group but possibly many terms.
             if term_data.type == 1:
                 group, _ = Group.objects.get_or_create(course=term_data.course, teacher=term_data.teacher,
                                                        type=term_data.type, limit=term_data.limit)
@@ -170,8 +181,6 @@ class Command(BaseCommand):
         env = environ.Env()
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-        self.stdout.write(BASE_DIR)
-        self.stdout.write(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         return env
 
@@ -208,13 +217,13 @@ class Command(BaseCommand):
                          else Semester.objects.get(pk=int(options['semester'])))
         self.api_config_url = options['api_config_url']
         self.api_task_url = options['api_task_url']
-        self.stdout.write(self.style.WARNING("Chosen semester: {}".format(self.semester)))
         self.summary = Summary()
         dont_delete_terms_flag = options['dont_delete_terms']
         dry_run_flag = options['dry_run']
         write_to_slack_flag = options['slack']
         interactive_flag = options['interactive']
 
+        self.stdout.write(self.style.WARNING("Chosen semester: {}".format(self.semester)))
         print("Press Ctrl + C to exit script and roll back changes.")
         if dry_run_flag:
             self.stdout.write("Dry run is on. Nothing will be saved or deleted. All messages are informational.")

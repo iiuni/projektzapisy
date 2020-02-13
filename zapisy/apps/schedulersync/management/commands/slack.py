@@ -1,5 +1,9 @@
-"""Object prepares attachments to send to written.
-   Then sends all collected attachments to Slack or writes onto screen"""
+"""Writes informations about changes.
+
+Object prepares messages (attachments) from given Summary object.
+Then sends all collected attachments to Slack or writes onto screen.
+
+"""
 
 import json
 

@@ -1,7 +1,12 @@
-""" Get data from scheduler API urls and lays out that data to list of SZTerm.
-    Szterm contains all necessary data to update or create term.
-    That data lacks courses and teachers mapping, so it prepares all teachers
-    and courses to map in seperate dict and set."""
+""" Get data from scheduler API.
+
+Get data from scheduler API urls and lays out that data to list of SZTerm.
+Szterm contains all necessary data to update or create term.
+That data lacks courses and teachers mapping, so it prepares all teachers
+and courses to map in seperate dict and set.
+Data is stored within object (.self).
+
+"""
 
 import collections
 from datetime import time
@@ -80,9 +85,14 @@ class SchedulerData:
                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 
     def get_scheduler_data(self):
-        """ Get data from scheduler API and lays out that data to SZTerm, which has all
-            necessary data to update or create term in SZ. That data
-            lacks employee and course mapping"""
+        """ Get data from scheduler API
+
+            Gets data from scheduler API and lays out that data to list of SZTerm
+            in self.terms. This list contains all necessary data to update or
+            create term in SZ. That data lacks employee and course mapping.
+            Fills self.teachers and self.courses with teachers and courses
+            names for future mapping.
+        """
         def get_logged_client():
             client = requests.session()
             client.get(URL_LOGIN)

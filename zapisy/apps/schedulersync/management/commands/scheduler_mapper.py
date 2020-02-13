@@ -1,8 +1,13 @@
-"""  Object maps teachers and courses in SchedulerData object to objects in database.
-     Then replace corresponding teachers and courses in terms in SchedulerData object.
-     If course or teacher cannot be found and interactive flag is set, then
-     user will be asked for proper input.
-     Fills summary object given in constructor"""
+""" Maps teachers and courses in SchedulerData to objects in database.
+
+Object SchedulerMapper maps SchedulerData.teachers and SchedulerData.courses,
+which contain teachers and courses names, to objects in database.
+Then replace corresponding teachers and courses in terms in SchedulerData
+object. If course or teacher cannot be found and interactive flag is set,
+then user will be asked for proper input.
+Fills summary object given in constructor.
+
+"""
 
 import collections
 
@@ -157,8 +162,15 @@ class SchedulerMapper:
         return mapped_courses
 
     def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
-        """ Map teacher and courses in scheduler_data to objects in database.
-            Then replace corresponding teachers and courses in terms in scheduler_data"""
+        """ Maps teachers and courses in given scheduler_data.
+
+        In given scheduler_data map teachers and courses names to
+        objects in database. First in scheduler_data.teachers and
+        scheduler_data.courses, then replace in scheduler_data.terms.
+
+        Args:
+            Data from scheduler api, obtained by SchedulerData object.
+        """
         scheduler_data.teachers = self._map_teachers(scheduler_data.teachers)
         scheduler_data.courses = self._map_courses(scheduler_data.courses)
         mapped_terms = []
