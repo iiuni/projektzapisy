@@ -44,6 +44,10 @@ class Slack:
             self.add_attachment('danger', "Deleted a term:",
                                 "group: {}\nterm: {}".format(group_str, term_str))
 
+        for course in summary.deleted_courses:
+            self.add_attachment('danger', "Deleted a course instance:",
+                                "course instance: {}".format(course))
+
         for scheduler_data_str, map_str in summary.maps_added:
             self.add_attachment('good', "Added map:",
                                 "{} mapped to {}".format(scheduler_data_str, map_str))

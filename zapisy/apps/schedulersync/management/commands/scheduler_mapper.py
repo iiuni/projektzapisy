@@ -11,9 +11,7 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-# System Zapisow term data
-SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 'type', 'limit',
-                                         'dayOfWeek', 'start_time', 'end_time', 'classrooms'])
+from .scheduler_data import SZTerm
 
 
 class SchedulerMapper:
@@ -25,7 +23,8 @@ class SchedulerMapper:
     def _prompt(self, text):
         print()
         print(text)
-        print("Type 'quit' to exit script")
+        print("Type 'quit' to exit script. All changes will be commited (unless --dry_run was on).")
+        print("Press Ctrl + C to exit script. All changes will be rolled back.")
         var = input("->: ")
         if var == 'quit':
             exit(0)
@@ -79,9 +78,9 @@ class SchedulerMapper:
                     nieznany = Employee.objects.get(user__username='Nn')
                     self.summary.maps_added.append((username, str(nieznany)))
                     return nieznany
-                username = self._prompt("No employee found for username {}\nPlease provide the correct "
+                username = self._prompt("No employee found for username {}.\nPlease provide the correct "
                                         "username for {}.\nType 'None' if that teacher should be replaced with "
-                                        "'Nieznany Prowadzący'".format(username, full_name))
+                                        "'Nieznany Prowadzący'.".format(username, full_name))
 
         for teacher in teachers:
             teachers[teacher] = get_employee(teacher, teachers[teacher], self.interactive_flag)
@@ -132,7 +131,7 @@ class SchedulerMapper:
                     if not interactive:
                         self.summary.multiple_proposals.append(course_name)
                         return None
-                name = self._prompt("{} for name {}\nPlease provide correct name or id of "
+                name = self._prompt("{} for name {}.\nPlease provide correct name or id of "
                                     "the course proposal in the database.\n"
                                     "Type 'None' to mark the course to be ignored.".format(error, name))
 
@@ -145,7 +144,7 @@ class SchedulerMapper:
             except CourseInstance.DoesNotExist:
                 course = CourseInstance.create_proposal_instance(proposal, self.semester)
                 self.summary.created_courses += 1
-                print(">Course instance '{}' created\n".format(proposal.name))
+                print(f"+ Course instance '{proposal.name}' created")
             return course
 
         mapped_courses = {}
