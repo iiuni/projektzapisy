@@ -352,7 +352,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
     semester = None
     if form.cleaned_data.get('week', None) == 'currsem':
         semester = Semester.get_current_semester()
-    elif form.cleaned_data.get('week', None) == 'currsem':
+    elif form.cleaned_data.get('week', None) == 'nextsem':
         semester = Semester.objects.get_next()
     if semester:
         terms = CourseTerm.objects.filter(group__course__semester=semester,
@@ -363,7 +363,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
             for r in set(term.classrooms.all()) & rooms:
                 events.append(
                     ListEvent(date=None,
-                              weekday=term.dayOfWeek,
+                              weekday=int(term.dayOfWeek),
                               begin=term.start_time,
                               end=term.end_time,
                               room=r,
@@ -374,7 +374,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
         for term in terms:
             events.append(
                 ListEvent(date=None,
-                          weekday=term.dayOfWeek,
+                          weekday=int(term.dayOfWeek),
                           begin=term.start_time,
                           end=term.end_time,
                           room=term.classroom,
@@ -385,8 +385,8 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
         beg_date = datetime.datetime.strptime(form.cleaned_data['week'], "%Y-%m-%d")
         end_date = beg_date + datetime.timedelta(days=6)
     if beg_date and end_date:
-        terms = Term.objects.filter(day__gte=form.cleaned_data['beg_date'],
-                                    day__lte=form.cleaned_data['end_date'],
+        terms = Term.objects.filter(day__gte=beg_date,
+                                    day__lte=end_date,
                                     room__in=rooms,
                                     event__status=Event.STATUS_ACCEPTED).select_related(
                                         'room', 'event', 'event__group', 'event__author')
