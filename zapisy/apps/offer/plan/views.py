@@ -219,6 +219,8 @@ def plan_vote(request):
         if course[:4] == 'asgn':
             picked_courses.append(course[4:])
     picked_courses.sort()
+    for a in picked_courses:
+        print(a)
     all_courses = get_votes(get_last_years(1))
     picked_courses_accurate_info_z = []
     picked_courses_accurate_info_l = []
