@@ -181,10 +181,12 @@ def plan_create(request):
     if not assignments:
         for key, value in courses_proposal.items():
             # First value is the name of course
-            # Second value is the semester when the course is planned to be
-            # Third value says if this course is proposed
+            # Second is name for the input
+            # Third value is the semester when the course is planned to be
+            # Fourth value says if this course is proposed
+            name = 'asgn' + key
             courses.append(
-                [key, value.semester, propose(value)]
+                [key, name, value.semester, propose(value)]
             )
     else:
         for key, value in courses_proposal.items():
@@ -195,8 +197,9 @@ def plan_create(request):
                     checked = True
                     break
 
+            name = 'asgn' + key
             courses.append(
-                [key, value.semester, checked]
+                [key, name, value.semester, checked]
             )
 
     context = {
@@ -213,8 +216,8 @@ def plan_create(request):
 def plan_vote(request):
     picked_courses = []
     for course in request.POST:
-        if course != 'csrfmiddlewaretoken':
-            picked_courses.append(course)
+        if course[:4] == 'asgn':
+            picked_courses.append(course[4:])
     picked_courses.sort()
     all_courses = get_votes(get_last_years(1))
     picked_courses_accurate_info_z = []

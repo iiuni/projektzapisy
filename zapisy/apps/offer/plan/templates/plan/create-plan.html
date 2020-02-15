@@ -64,13 +64,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for course, semester, is_set in courses_proposal %}
+                    {% for course, name, semester, is_set in courses_proposal %}
                         {% if semester == 'z' %}
                             <tr>
                                 {% if is_set %}
-                                    <th scope="row"><input type="checkbox" name="{{ course }}" checked></th>
+                                    <th scope="row"><input type="checkbox" name="{{ name }}" checked></th>
                                 {% else %}
-                                    <th scope="row"><input type="checkbox" name="{{ course }}"></th>
+                                    <th scope="row"><input type="checkbox" name="{{ name }}"></th>
                                 {% endif %}
                                 <td>{{ course }}</td>
                             </tr>
@@ -89,13 +89,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for course, semester, is_set in courses_proposal %}
+                    {% for course, name, semester, is_set in courses_proposal %}
                         {% if semester == 'l' %}
                             <tr>
                                 {% if is_set %}
-                                    <th scope="row"><input type="checkbox" name="{{ course }}" checked></th>
+                                    <th scope="row"><input type="checkbox" name="{{ name }}" checked></th>
                                 {% else %}
-                                    <th scope="row"><input type="checkbox" name="{{ course }}"></th>
+                                    <th scope="row"><input type="checkbox" name="{{ name }}"></th>
                                 {% endif %}
                                 <td>{{ course }}</td>
                             </tr>
