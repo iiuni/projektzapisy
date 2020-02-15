@@ -131,7 +131,7 @@ ProposalSummary = List[SingleGroupData]
 def propose(vote: ProposalVoteSummary):
     """A simple, heuristic function to propose, whether the course should be taught in the upcoming year."""
     current_year = SystemState.get_current_state().year
-    proposal = Proposal.objects.get(id=vote.proposal)
+    proposal = vote.proposal
     avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
         total=Sum('value')).aggregate(Avg('total'))
     previous_avg = 0
