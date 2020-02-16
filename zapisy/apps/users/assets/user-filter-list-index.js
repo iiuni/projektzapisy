@@ -3,27 +3,16 @@ import Vue from "vue";
 import UserFilter from "./components/UserFilter.vue";
 import UserList from "./components/UserList.vue";
 
-if (document.getElementById("student-filter") !== null) {
+
+if (document.getElementById("user-filter") !== null) {
     new Vue({
-        el: "#student-filter",
+        el: "#user-filter",
         render: h => h(UserFilter)
     });
 }
-if (document.getElementById("student-list") !== null) {
+if (document.getElementById("user-list") !== null) {
     new Vue({
-        el: "#student-list",
-        render: h => h(UserList)
-    });
-}
-if (document.getElementById("employee-filter") !== null) {
-    new Vue({
-        el: "#employee-filter",
-        render: h => h(UserFilter)
-    });
-}
-if (document.getElementById("employee-list") !== null) {
-    new Vue({
-        el: "#employee-list",
+        el: "#user-list",
         render: h => h(UserList)
     });
 }

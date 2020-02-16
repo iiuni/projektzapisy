@@ -9,6 +9,7 @@
 </template>
 <script lang="ts">
 import { EventBus } from './event-bus';
+import sortBy from 'lodash/sortBy';
 
 export default {
     name: "UserList",
@@ -23,15 +24,7 @@ export default {
     beforeMount: function () {
         let rawUsers = JSON.parse(document.getElementById('user-list-json-script').textContent);
         this.users = Object.values(rawUsers);
-        this.users = this.users.sort(function (a, b) {
-            if (a.last_name > b.last_name) {
-                return 1
-            } else if (a.last_name < b.last_name) {
-                return -1
-            } else {
-                return 0
-            }
-        });
+        this.users = sortBy(this.users, ["last_name", "first_name"]);
         this.userLinkUrl = document.getElementById('user-link').getAttribute('data');
     },
     mounted: function () {

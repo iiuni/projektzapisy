@@ -59,7 +59,8 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
                          'album': student_from_queryset.matricula,
                          'email': student_from_queryset.user.email
                          }})
-    data = {'students': students}
+    data = {'students': students,
+            'user_link': request.path.replace(f'{user_id}/', '')}
 
     if user_id is not None:
         try:
@@ -106,7 +107,8 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
                           'email': employee_from_queryset.user.email
                           }})
     data = {'employees': employees_queryset,
-            'employees_dict': employees}
+            'employees_dict': employees,
+            'user_link': request.path.replace(f'{user_id}/', '')}
 
     if user_id is not None:
         try:
@@ -264,7 +266,7 @@ def my_profile(request):
 
 
 def consultations_list(request: HttpRequest) -> HttpResponse:
-    employees = Employee.get_list('All')
+    employees = Employee.objects.all()
     semester = Semester.get_current_semester()
     employees = Group.teacher_in_present(employees, semester)
 

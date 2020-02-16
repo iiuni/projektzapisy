@@ -1,6 +1,4 @@
 {% extends "enrollment/base.html" %}
-{% load compressed %}
-{% load i18n %}
 {% load render_bundle from webpack_loader %}
 
 {% block main-subtitle %}Lista studentów{% endblock %}
@@ -14,7 +12,7 @@
 {% block enrollment_menu_students %} class="active"{% endblock %}
 
 {% block top-content %}
-    <div id="student-filter"></div>
+    <div id="user-filter"></div>
 {% endblock %}
 
 {% block content %}
@@ -32,11 +30,11 @@
 
 {% block sidebar %}
     {{ students|json_script:"user-list-json-script" }}
-    <div id="user-link" data="{%  url 'student-profile' %}" style="display:none;"></div>
-<div id="main-sidebar" class="col-lg">
-    <h3>Lista studentów</h3>
-    <div id="student-list"></div>
-</div>
+    <div id="user-link" data="{{user_link}}" style="display:none;"></div>
+    <div id="main-sidebar" class="col-lg">
+        <h3>Lista studentów</h3>
+        <div id="user-list"></div>
+    </div>
 {% endblock %}
 {% block rendered_bundles %}
     {% render_bundle 'users-user-filter'%}
