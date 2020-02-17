@@ -120,26 +120,6 @@ class Employee(BaseUser):
         return Employee.objects.filter(user__is_active=True).order_by('user__last_name',
                                                                       'user__first_name')
 
-    @staticmethod
-    def get_list(begin: str ='All') -> QuerySet:
-        def next_char(begin: str) -> str:
-            try:
-                return chr(ord(begin) + 1)
-            except ValueError:
-                return chr(90)
-        if begin == 'Z':
-            employees = Employee.objects.filter(user__last_name__gte=begin, status=0).\
-                select_related().order_by('user__last_name', 'user__first_name')
-        elif begin == 'All':
-            employees = Employee.objects.filter(status=0).\
-                select_related().order_by('user__last_name', 'user__first_name')
-        else:
-            end = next_char(begin)
-            employees = Employee.objects.filter(user__last_name__range=(begin, end), status=0). \
-                select_related().order_by('user__last_name', 'user__first_name')
-
-        return employees
-
     class Meta:
         verbose_name = 'pracownik'
         verbose_name_plural = 'Pracownicy'
@@ -235,27 +215,6 @@ class Student(BaseUser):
     @classmethod
     def get_active_students(cls) -> QuerySet:
         return cls.objects.filter(status=0)
-
-    @staticmethod
-    def get_list(begin: str='All', restrict_list_consent: Optional[bool]=True) -> QuerySet:
-        def next_char(begin: str) -> str:
-            try:
-                return chr(ord(begin) + 1)
-            except ValueError:
-                return chr(90)
-
-        qs = Student.objects.filter(status=0)
-        if restrict_list_consent:
-            qs = qs.filter(consent__granted=True)
-        if begin == 'Z':
-            return qs.filter(user__last_name__gte=begin).\
-                select_related().order_by('user__last_name', 'user__first_name')
-        elif begin == 'All':
-            return qs.select_related().order_by('user__last_name', 'user__first_name')
-        else:
-            end = next_char(begin)
-            return qs.filter(user__last_name__range=(begin, end)).\
-                select_related().order_by('user__last_name', 'user__first_name')
 
     def records_set_locked(self, locked: bool) -> None:
         self.block = locked

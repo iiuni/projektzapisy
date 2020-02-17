@@ -49,7 +49,7 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 @external_contractor_forbidden
 def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     """View for students list and student profile if user id in URL is provided"""
-    students_queryset = Student.get_list(restrict_list_consent=not BaseUser.is_employee(request.user))
+    students_queryset = Student.objects.filter(status=0, consent__granted=True)
     students = {}
     for student_from_queryset in students_queryset:
         students.update({student_from_queryset.pk:
@@ -97,7 +97,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
 
 def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     """View for employees list and employee profile if user id in URL is provided"""
-    employees_queryset = Employee.get_list()
+    employees_queryset = Employee.objects.filter(status=0)
     employees = {}
     for employee_from_queryset in employees_queryset:
         employees.update({employee_from_queryset.pk:
@@ -266,7 +266,7 @@ def my_profile(request):
 
 
 def consultations_list(request: HttpRequest) -> HttpResponse:
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(status=0)
     semester = Semester.get_current_semester()
     employees = Group.teacher_in_present(employees, semester)
 
@@ -394,7 +394,7 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
 @permission_required('users.mailto_all_students')
 def email_students(request: HttpRequest) -> HttpResponse:
     """function that enables mailing all students"""
-    students = Student.get_list('All')
+    students = Student.objects.filter(status=0)
     if students:
         studentsmails = ','.join([student.user.email for student in students])
 
