@@ -3,7 +3,7 @@
         <ul class="list-group list-group-flush border border-default">
             <li class="list-group-item bg-light">
                 <fieldset class="small-fieldset">
-                    <div class="filter row" id="enr-StudentsList-top-bar">
+                    <div class="filter row ml-1" id="enr-StudentsList-top-bar">
                         <label for="user-name" class="label label-default p-2">Filtrowanie:&nbsp</label>
                         <div id="user-name" class="mt-1 mb-1">
                             <input class="form-control" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
@@ -12,13 +12,13 @@
                 </fieldset>
             </li>
             <li class="list-group-item bg-light">
-                <div id="user-alpha-list">
-                    <ul id="user-list-menu">
-                        <li v-for="char in chars" class="charFilter">
-                            <button class="btn btn-link p-1" v-on:click="emitCharFilter(char)" >{{char}}</button>
-                        </li>
-                    </ul>
-                </div>
+                <ul id="user-list-menu">
+                    <li v-for="char in chars" class="charFilter">
+                        <button class="btn btn-link p-1" v-on:click="emitCharFilter(char)"
+                                :class="{active: selectedButton(char)}">{{char}}
+                        </button>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>
@@ -33,7 +33,8 @@ export default {
         return {
             input_value: "",
             chars: ['A', 'B', 'C', 'Ć', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'Ł', 'M', 'N', 'Ń', 'O', 'Q',
-                'P', 'R', 'S', 'Ś', 'T', 'U', 'W', 'X', 'Y', 'Z', 'Ż', 'Ź', 'Wszyscy']
+                'P', 'R', 'S', 'Ś', 'T', 'U', 'W', 'X', 'Y', 'Z', 'Ż', 'Ź', 'Wszyscy'],
+            selectedChar: "Wszyscy",
         }
     },
     name: "StudentFilter",
@@ -43,7 +44,11 @@ export default {
             EventBus.$emit('user-input-filter', event.target.value);
         },
         emitCharFilter: function(char) {
+            this.selectedChar = char;
             EventBus.$emit('user-char-filter', char);
+        },
+        selectedButton: function(char) {
+            return char == this.selectedChar;
         }
     }
 };
@@ -52,5 +57,16 @@ export default {
 <style>
     .charFilter {
         display: inline;
+    }
+    .btn-link:focus {
+        text-decoration: none;
+    }
+    .btn-link:hover {
+        text-decoration: none;
+        color: black;
+    }
+    .active {
+        color: black;
+        text-decoration: none;
     }
 </style>
