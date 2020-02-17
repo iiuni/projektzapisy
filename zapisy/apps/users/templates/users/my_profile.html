@@ -77,7 +77,7 @@ $('.checkall').on('click', function(){
         </table>
 
         <a class="btn btn-light" href="{% url 'password_change' %}" role="button">Zmień hasło</a>
-        <a class="btn btn-light" href="{% url 'email_change' %}" role="button">Zmień adres email</a>
+        <a class="btn btn-light" href="{% url 'email-change' %}" role="button">Zmień adres email</a>
         {% if user.employee %}
             <a class="btn btn-light" href="{% url 'consultations-change' %}" role="button">Zmień inne dane</a>
         {% endif %}

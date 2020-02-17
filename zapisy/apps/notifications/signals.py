@@ -100,10 +100,10 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                          {'course_name': course_name}, target))
 
     queued_users = User.objects.filter(
-        student_ptr__record__group=group, student_ptr__record__status=RecordStatus.QUEUED)
+        student__record__group=group, student__record__status=RecordStatus.QUEUED)
 
     enrolled_users = User.objects.filter(
-        student_ptr__record__group=group, student_ptr__record__status=RecordStatus.ENROLLED)
+        student__record__group=group, student__record__status=RecordStatus.ENROLLED)
 
     notify_selected_users(
         queued_users,

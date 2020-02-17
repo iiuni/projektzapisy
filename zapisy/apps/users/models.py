@@ -35,6 +35,7 @@ class Employee(models.Model):
         User,
         verbose_name="Użytkownik",
         related_name='employee_ptr',
+        related_query_name='employee',
         on_delete=models.CASCADE)
     consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, validators=[MaxLengthValidator(4200)])
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
@@ -114,6 +115,7 @@ class Student(models.Model):
         User,
         verbose_name="Użytkownik",
         related_name='student_ptr',
+        related_query_name='student',
         on_delete=models.CASCADE)
     matricula = models.CharField(
         max_length=20,
