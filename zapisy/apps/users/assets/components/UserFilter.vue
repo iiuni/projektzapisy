@@ -1,26 +1,22 @@
 <template>
-    <div>
-        <ul class="list-group list-group-flush border border-default">
-            <li class="list-group-item bg-light">
-                <fieldset class="small-fieldset">
-                    <div class="filter row ml-1" id="enr-StudentsList-top-bar">
-                        <label for="user-name" class="label label-default p-2">Filtrowanie:&nbsp</label>
-                        <div id="user-name" class="mt-1 mb-1">
-                            <input class="form-control" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
-                        </div>
-                    </div>
-                </fieldset>
-            </li>
-            <li class="list-group-item bg-light">
-                <ul id="user-list-menu">
-                    <li v-for="char in chars" class="charFilter">
-                        <button class="btn btn-link p-1" v-on:click="emitCharFilter(char)"
-                                :class="{active: selectedButton(char)}">{{char}}
-                        </button>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <div class="card bg-light">
+        <div class="row card-body mx-1 mt-1 mb-0 p-2 border-bottom">
+            <div class="col-md-4">
+                <label for="user-name" class="label label-default">Filtrowanie:&nbsp</label>
+                <div id="user-name" class="mt-1 mb-1">
+                    <input class="form-control" type="text" v-bind:value="input_value" v-on:input="emitInputFilter"/>
+                </div>
+            </div>
+        </div>
+        <div class="row card-body m-1 p-1">
+            <div class="col-md-12">
+                <span v-for="char in chars" class="charFilter">
+                    <button class="btn btn-link p-1" v-on:click="emitCharFilter(char)"
+                            :class="{active: selectedButton(char)}">{{char}}
+                    </button>
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
