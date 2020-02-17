@@ -9,7 +9,7 @@
 </template>
 <script lang="ts">
 import { EventBus } from './event-bus';
-import sortBy from 'lodash/sortBy';
+import { sortBy, some } from 'lodash';
 
 export default {
     name: "UserList",
@@ -54,15 +54,14 @@ export default {
             let isPhraseMatch = true;
 
             words.forEach(function (word) {
-                if (!(firstName.startsWith(word) || lastName.startsWith(word)) &&
-                    (!(album.startsWith(word))) && (!(emailAddress.startsWith(word)))) {
+                if(!some([firstName.startsWith(word), lastName.startsWith(word), emailAddress.startsWith(word),
+                          album.startsWith(word)], Boolean)) {
                     isPhraseMatch = false;
                 }
             });
             return isPhraseMatch;
         },
         matchChar: function (user) {
-            let first_name = user.first_name.toLowerCase();
             let last_name = user.last_name.toLowerCase();
             let button = this.filter_button.toLowerCase();
 
