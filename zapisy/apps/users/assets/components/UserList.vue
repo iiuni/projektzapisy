@@ -1,13 +1,15 @@
 <template>
     <div id="user-list">
-        <ul class="list-group">
-            <li v-for="user in users" v-if="matchChar(user) && matchInput(user)" class="user-list-link mb-1">
-                <a v-bind:href="getUrlAddress(user.id)">{{`${user.first_name} ${user.last_name}`}}</a>
-            </li>
+        <ul>
+            <div v-for="user in users" :key="user.id" class="mb-1">
+                <li v-if="matchChar(user) && matchInput(user)">
+                    <a :href="getUrlAddress(user.id)">{{user.first_name}} {{user.last_name}}</a>
+                </li>
+            </div>
         </ul>
     </div>
 </template>
-<script lang="ts">
+<script lang="js">
 import { EventBus } from './event-bus';
 import { sortBy, some } from 'lodash';
 
@@ -76,10 +78,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .user-list-link {
-        margin-left: 40px;
-        margin-right: 20px;
-    }
-</style>
