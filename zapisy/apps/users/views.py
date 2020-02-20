@@ -92,7 +92,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
             'student': student,
             'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
         })
-    return render(request, 'users/students_view.html', data)
+    return render(request, 'users/users_view.html', data)
 
 
 def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
@@ -133,7 +133,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
             'employee': employee,
             'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
         })
-    return render(request, 'users/employees_view.html', data)
+    return render(request, 'users/users_view.html', data)
 
 
 @login_required
