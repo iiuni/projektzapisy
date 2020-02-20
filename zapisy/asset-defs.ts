@@ -1,7 +1,6 @@
 export default {
     rawfiles: [
         { from: "legacy/css/", to: "css/" },
-        { from: "legacy/help/", to: "help/" },
         { from: "legacy/images/", to: "images/" },
         { from: "legacy/js/", to: "js/" },
         { from: "legacy/vendor/", to: "vendor/" },
