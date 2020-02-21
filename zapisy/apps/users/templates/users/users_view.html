@@ -8,9 +8,9 @@
 {% block bread %}
   <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
   <li class="breadcrumb-item"><a href="/courses">Zapisy</a></li>
-    <li class="breadcrumb-item active" aria-current="page">
-        {% if employees_dict %} Pracownicy {% elif students %} Studenci {% endif %}
-    </li>
+  <li class="breadcrumb-item active" aria-current="page">
+      {% if employees_dict %} Pracownicy {% elif students %} Studenci {% endif %}
+  </li>
 {% endblock %}
 
 
@@ -55,10 +55,8 @@
         {{ students|json_script:"user-list-json-script" }}
     {% endif %}
     <div id="user-link" data="{{ user_link }}" style="display:none;"></div>
-    <div id="main-sidebar" class="col-lg">
         <h3>{% if employees_dict %} Lista pracowników {% else %} Lista studentów {% endif %}</h3>
         <div id="user-list"></div>
-    </div>
 {% endblock %}
 {% block rendered_bundles %}
     {% render_bundle 'users-user-filter'%}

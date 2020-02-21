@@ -11,7 +11,7 @@
 </template>
 <script lang="js">
 import { EventBus } from './event-bus';
-import { sortBy, some } from 'lodash';
+import { sortBy, some, every, map, get } from 'lodash';
 
 export default {
     name: "UserList",
@@ -41,27 +41,18 @@ export default {
         matchInput: function (user) {
             // Remove trailing/leading whitespaces from input
             let phrase = this.filter_phrase.toLowerCase().trim();
-
             const regex = /\s+/;
-
-            let firstName = user.first_name.toLowerCase();
-            let lastName = user.last_name.toLowerCase();
-            let emailAddress = user.email;
-            let album = "";
-            if (user.hasOwnProperty('album')) {
-                album = user.album;
-            }
             let words = phrase.split(regex);
 
-            let isPhraseMatch = true;
-
-            words.forEach(function (word) {
-                if(!some([firstName.startsWith(word), lastName.startsWith(word), emailAddress.startsWith(word),
-                          album.startsWith(word)], Boolean)) {
-                    isPhraseMatch = false;
-                }
-            });
-            return isPhraseMatch;
+            const props = [
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "album",
+                    ];
+            const values = map(props, (p) => get(user, p, "").toLowerCase());
+            const anyPropMatches = (word) => !some(values, (v) => v.startsWith(word));
+            return !every(words, anyPropMatches);
         },
         matchChar: function (user) {
             let last_name = user.last_name.toLowerCase();
