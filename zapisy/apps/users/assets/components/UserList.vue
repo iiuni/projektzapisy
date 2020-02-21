@@ -1,17 +1,13 @@
 <template>
-    <div id="user-list">
-        <ul>
-            <div v-for="user in users" :key="user.id" class="mb-1">
-                <li v-if="matchChar(user) && matchInput(user)">
-                    <a :href="getUrlAddress(user.id)">{{user.first_name}} {{user.last_name}}</a>
-                </li>
-            </div>
-        </ul>
-    </div>
+    <ul>
+        <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
+            <a :href="userLinkUrl+user.id">{{user.first_name}} {{user.last_name}}</a>
+        </li>
+    </ul>
 </template>
 <script lang="js">
 import { EventBus } from './event-bus';
-import { sortBy, some, every, map, get } from 'lodash';
+import { sortBy, some, every, map, get, filter } from 'lodash';
 
 export default {
     name: "UserList",
@@ -36,6 +32,11 @@ export default {
         EventBus.$on('user-input-filter', value => {
             this.filter_phrase = value
         });
+    },
+    computed: {
+      matchedUsers: function () {
+          return filter(this.users, (user) => this.matchChar(user) && this.matchInput(user))
+      }
     },
     methods: {
         matchInput: function (user) {
@@ -62,9 +63,6 @@ export default {
                 return last_name.startsWith(button);
             }
             return true;
-        },
-        getUrlAddress: function (id) {
-            return this.userLinkUrl + id
         },
     }
 }
