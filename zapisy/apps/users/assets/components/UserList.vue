@@ -52,7 +52,7 @@ export default {
                         "album",
                     ];
             const values = map(props, (p) => get(user, p, "").toLowerCase());
-            const anyPropMatches = (word) => !some(values, (v) => v.startsWith(word));
+            const anyPropMatches = (word) => !some(values, (v) => v.includes(word));
             return !every(words, anyPropMatches);
         },
         matchChar: function (user) {
