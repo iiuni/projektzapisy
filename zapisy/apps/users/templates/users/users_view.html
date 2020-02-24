@@ -30,12 +30,6 @@
             <div class="alert alert-primary">
                 Wybierz pracownika z listy
             </div>
-            <a class="btn btn-secondary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    Konsultacje
-            </a>
-            <div class="collapse mt-2" id="collapseExample" >
-                    {% include "users/consultations_list.html" %}
-            </div>
         {% endif %}
     {% elif students %}
         {% if student %}

@@ -16,6 +16,5 @@ urlpatterns = [
     path('employees/<int:user_id>/', views.employees_view, name='employee-profile'),
     path('students/<int:user_id>/', views.students_view, name='student-profile'),
     url('^ical/$', views.create_ical_file, name='ical'),
-    url('^email-students/$', views.email_students, name='email-students'),
     url('^personal-data-consent/$', views.personal_data_consent, name='personal_data_consent')
 ]

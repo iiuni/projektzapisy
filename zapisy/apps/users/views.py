@@ -9,7 +9,6 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.views import LoginView
@@ -32,9 +31,8 @@ from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
 from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
-from apps.users.forms import EmailChangeForm, ConsultationsChangeForm, EmailToAllStudentsForm
+from apps.users.forms import EmailChangeForm, ConsultationsChangeForm
 from apps.users.exceptions import InvalidUserException
-from mailer.models import Message
 
 logger = logging.getLogger()
 
@@ -273,15 +271,6 @@ def my_profile(request):
     return render(request, 'users/my_profile.html', data)
 
 
-def consultations_list(request: HttpRequest) -> HttpResponse:
-    employees = Employee.objects.filter(status=0)
-    semester = Semester.get_current_semester()
-    employees = Group.teacher_in_present(employees, semester)
-
-    data = {'employees': employees}
-    return render(request, 'users/consultations_list.html', data)
-
-
 @login_required
 def cas_logout(request, **kwargs) -> HttpResponse:
     """Rewrites the logout request to correctly support user redirections.
@@ -397,47 +386,6 @@ def create_ical_file(request: HttpRequest) -> HttpResponse:
     ical_file_name = get_ical_filename(user, semester)
     response['Content-Disposition'] = "attachment; filename={}".format(ical_file_name)
     return response
-
-
-@permission_required('users.mailto_all_students')
-def email_students(request: HttpRequest) -> HttpResponse:
-    """function that enables mailing all students"""
-    students = Student.objects.filter(status=0)
-    if students:
-        studentsmails = ','.join([student.user.email for student in students])
-
-    if request.POST:
-        data = request.POST.copy()
-        form = EmailToAllStudentsForm(data)
-        form.fields['sender'].widget.attrs['readonly'] = True
-        if form.is_valid():
-            counter = 0
-            body = form.cleaned_data['message']
-            subject = form.cleaned_data['subject']
-            for student in students:
-                address = student.user.email
-                if address:
-                    counter += 1
-                    Message.objects.create(
-                        to_address=address,
-                        from_address=form.cleaned_data['sender'],
-                        subject=subject,
-                        message_body=body)
-            if form.cleaned_data['cc_myself']:
-                Message.objects.create(
-                    to_address=request.user.email,
-                    from_address=form.cleaned_data['sender'],
-                    subject=subject,
-                    message_body=body)
-            messages.success(request, 'Wysłano wiadomość do %d studentów' % counter)
-            return HttpResponseRedirect(reverse('my-profile'))
-        else:
-            messages.error(request, 'Wystąpił błąd przy wysyłaniu wiadomości')
-    else:
-        form = EmailToAllStudentsForm(initial={'sender': 'zapisy@cs.uni.wroc.pl'})
-        form.fields['sender'].widget.attrs['readonly'] = True
-    return render(request, 'users/email_students.html',
-                  {'form': form, 'students_mails': studentsmails})
 
 
 @login_required
