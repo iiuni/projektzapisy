@@ -49,18 +49,23 @@ BREAK_DURATION = datetime.timedelta(minutes=15)
 @external_contractor_forbidden
 def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     """View for students list and student profile if user id in URL is provided"""
-    students_queryset = Student.objects.filter(status=0, consent__granted=True)
-    students = {}
-    for student_from_queryset in students_queryset:
-        students.update({student_from_queryset.pk:
-                        {'last_name': student_from_queryset.user.last_name,
-                         'first_name': student_from_queryset.user.first_name,
-                         'id': student_from_queryset.user.id,
-                         'album': student_from_queryset.matricula,
-                         'email': student_from_queryset.user.email
-                         }})
-    data = {'students': students,
-            'user_link': request.path.replace(f'{user_id}/', '')}
+    students_queryset = Student.get_active_students().select_related('user')
+    if not BaseUser.is_employee(request.user) or BaseUser.is_external_contractor(request.user):
+        students_queryset = students_queryset.filter(consent__granted=True)
+    students = {
+        s.pk: {
+            'last_name': s.user.last_name,
+            'first_name': s.user.first_name,
+            'id': s.user.id,
+            'album': s.matricula,
+            'email': s.user.email
+        }
+        for s in students_queryset
+    }
+    data = {
+        'students': students,
+        'user_link': reverse('students-list'),
+    }
 
     if user_id is not None:
         try:
@@ -72,7 +77,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
         if not BaseUser.is_employee(request.user) and not student.consent_granted():
             return HttpResponseRedirect(reverse('students-list'))
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_current_semester()
 
         records = Record.objects.filter(
             student=student,
@@ -97,18 +102,21 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
 
 def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     """View for employees list and employee profile if user id in URL is provided"""
-    employees_queryset = Employee.objects.filter(status=0)
-    employees = {}
-    for employee_from_queryset in employees_queryset:
-        employees.update({employee_from_queryset.pk:
-                         {'last_name': employee_from_queryset.user.last_name,
-                          'first_name': employee_from_queryset.user.first_name,
-                          'id': employee_from_queryset.user.id,
-                          'email': employee_from_queryset.user.email
-                          }})
-    data = {'employees': employees_queryset,
-            'employees_dict': employees,
-            'user_link': request.path.replace(f'{user_id}/', '')}
+    employees_queryset = Employee.get_actives().select_related('user')
+    employees = {
+        e.pk: {
+            'last_name': e.user.last_name,
+            'first_name': e.user.first_name,
+            'id': e.user.id,
+            'email': e.user.email,
+        }
+        for e in employees_queryset
+    }
+    data = {
+        'employees': employees_queryset,
+        'employees_dict': employees,
+        'user_link': reverse('employees-list'),
+    }
 
     if user_id is not None:
         try:
@@ -116,7 +124,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
         except Employee.DoesNotExist:
             raise Http404
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_current_semester()
         groups = Group.objects.filter(
             course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
