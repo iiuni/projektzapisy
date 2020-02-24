@@ -77,7 +77,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
         if not BaseUser.is_employee(request.user) and not student.consent_granted():
             return HttpResponseRedirect(reverse('students-list'))
 
-        semester = Semester.get_current_semester()
+        semester = Semester.objects.get_next()
 
         records = Record.objects.filter(
             student=student,
@@ -124,7 +124,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
         except Employee.DoesNotExist:
             raise Http404
 
-        semester = Semester.get_current_semester()
+        semester = Semester.objects.get_next()
         groups = Group.objects.filter(
             course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
