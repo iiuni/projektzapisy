@@ -321,17 +321,6 @@ const webpackConfig: webpack.Configuration = {
                         loader: "css-loader",
                         options: { minimize: !DEV }
                     }, {
-                        loader: "postcss-loader",
-                        options: {
-                            plugins: function () { // post css plugins, can be exported to postcss.config.js
-                                return [
-                                    require("precss"),
-                                    require("autoprefixer")
-                                ];
-                            }
-                        }
-
-                    }, {
                         loader: "sass-loader"
                     }]
                 })
@@ -347,7 +336,7 @@ const webpackConfig: webpack.Configuration = {
                 })
             },
             {
-                test: /\.(png|jpg|gif|ico)$/,
+                test: /\.(png|jpg|gif|ico|woff|woff2|svg|eot|ttf)$/,
                 use: [{
                     loader: "url-loader",
                     options: {
@@ -371,6 +360,7 @@ const webpackConfig: webpack.Configuration = {
             // Allow absolute imports from other apps.
             "@": path.resolve(ASSET_DEF_SEARCH_DIR),
         },
+        mainFields: ['main', 'module'],
     },
     resolveLoader: {
         modules: [

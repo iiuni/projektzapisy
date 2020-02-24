@@ -1,6 +1,0 @@
-﻿{% extends "grade/poll/managment/base.html" %}
-
-{% block poll-managment %}
-<a href="{% url 'grade-poll-edit-section' section_id=section.pk %}"><input type="button" value="Edytuj"></a>
-{{ form.as_divs }}
-{% endblock %}

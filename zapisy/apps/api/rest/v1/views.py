@@ -1,5 +1,6 @@
-from rest_framework import viewsets, pagination
+from rest_framework import viewsets, pagination, response
 from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import action
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -19,10 +20,20 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
 
 
 class SemesterViewSet(viewsets.ModelViewSet):
+    """Lists all semesters."""
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = Semester.objects.order_by('-semester_beginning')
     serializer_class = serializers.SemesterSerializer
+
+    @action(detail=False)
+    def current(self, request):
+        semester = Semester.get_current_semester()
+        if semester:
+            return response.Response(
+                serializers.SemesterSerializer(semester).data)
+        else:
+            return response.Response()
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -43,7 +54,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = Group.objects.select_related('course', 'course__semester', 'teacher',
-                                            'teacher__user')
+                                            'teacher__user').order_by('id')
     filter_fields = ['course__semester']
     serializer_class = serializers.GroupSerializer
     pagination_class = StandardResultsSetPagination
@@ -59,7 +70,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 class TermViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
-    queryset = Term.objects.select_related('group').prefetch_related('classrooms')
+    queryset = Term.objects.select_related('group').prefetch_related('classrooms').order_by('id')
     filter_fields = ['group__course__semester']
     serializer_class = serializers.TermSerializer
     pagination_class = StandardResultsSetPagination
@@ -69,7 +80,8 @@ class RecordViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
-        'group', 'group__course', 'group__course__semester', 'student', 'student__user')
+        'group', 'group__course', 'group__course__semester',
+        'student', 'student__user').order_by('id')
     filter_fields = ['group__course__semester']
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
@@ -88,7 +100,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     To only list active students query:
         /api/v1/students/?status=0.
     """
-    http_method_names = ['get', 'patch']
+    http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
     queryset = Student.objects.select_related('user')
     serializer_class = serializers.StudentSerializer

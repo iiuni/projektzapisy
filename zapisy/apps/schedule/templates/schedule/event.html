@@ -183,31 +183,31 @@
     {% if perms.schedule.manage_events %}
         <div class="tab-pane fade" id="nav-decision"
             role="tabpanel" aria-labelledby="nav-decision-tab">
-            <form action="{% url 'events:decision' event.id %}" method="POST">
+            <form id="decision_form" action="{% url 'events:decision' event.id %}" method="POST">
                 {% csrf_token %}
                 <fieldset class="form-group">
                     <div class="row">
-                        <legend class="col-form-label col-sm-2 pt-0">Decyzja</legend>
-                        <div class="col-sm-10">
-                            <div class="custom-radio">
-                                <input class="custom-control-input" type="radio" name="status" id="status1" value="1" checked>
-                                <label class="custom-control-label" for="status1">
-                                    Zaakceptowano
-                                </label>
-                            </div>
-                            <div class="custom-radio">
-                                <input class="custom-control-input" type="radio" name="status" id="status2" value="2">
-                                <label class="custom-control-label" for="status2">
-                                    Odrzucono
-                                </label>
-                            </div>
+                        <div class="col col-lg-2">
+                            <legend class="col-form-label col-sm-2 pt-0">Decyzja</legend>
+                        </div>
+                        <div class="col">
+                            {% if event.get_conflicted %}
+                                <button type="submit" value='1' name="status" class="btn btn-warning" {% if event.status == '1' %}disabled{% endif %}>
+                                    Zaakceptuj ignorując konflikty
+                                </button>
+                            {% else %}
+                                <button type="submit" value='1' name="status" class="btn btn-success" {% if event.status == '1' %}disabled{% endif %}>
+                                    Akceptuj
+                                </button>
+                            {% endif %}
+                            <button type="submit" value='2' name="status" class="btn btn-danger" {% if event.status == '2' %}disabled{% endif %}>Odrzuć</button>
+                            <small class="form-text text-muted">
+                                Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
+                            </small>
                         </div>
                     </div>
                 </fieldset>
-                <small class="form-text text-muted">
-                    Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
-                </small>
-                <button type="submit" class="btn btn-success">Wyślij</button>
+
             </form>
         </div>
     {% endif %}

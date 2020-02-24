@@ -1,18 +1,19 @@
+from collections import defaultdict
 from copy import deepcopy
+from datetime import date, datetime, timedelta
+
 from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import HiddenInput
+from django.forms.models import inlineformset_factory
+
+from apps.enrollment.courses.models.classroom import Classroom, floors
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
+from apps.schedule.models.message import EventMessage, EventModerationMessage
 from apps.schedule.models.term import Term
-from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.users.models import BaseUser
-from django.contrib.admin.widgets import FilteredSelectMultiple
-
-from django.forms.models import inlineformset_factory
-
-
-from datetime import timedelta, datetime, date
 
 
 class TermForm(forms.ModelForm):
@@ -105,7 +106,8 @@ class DecisionForm(forms.ModelForm):
         fields = ('status',)
 
 
-class ReportForm(forms.Form):
+class TableReportForm(forms.Form):
+    """Form for generating table-based events report."""
     today = date.today().isoformat()
     beg_date = forms.DateField(
         label='Od:',
@@ -121,7 +123,40 @@ class ReportForm(forms.Form):
                 'type': 'date',
                 'class': 'form-control',
                 'value': today}))
-    rooms = forms.MultipleChoiceField(widget=FilteredSelectMultiple("sale", is_stacked=False))
+    rooms = forms.MultipleChoiceField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        classrooms = Classroom.objects.filter(can_reserve=True)
+        by_floor = defaultdict(list)
+        floor_names = dict(floors)
+        for r in classrooms:
+            by_floor[floor_names[r.floor]].append((r.pk, r.number))
+        self.fields['rooms'].choices = by_floor.items()
+
+
+class DoorChartForm(forms.Form):
+    """Form for generating door event charts."""
+    today = date.today().isoformat()
+    rooms = forms.MultipleChoiceField()
+    week = forms.CharField(max_length=10, widget=forms.Select())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        classrooms = Classroom.objects.filter(can_reserve=True)
+        by_floor = defaultdict(list)
+        floor_names = dict(floors)
+        for r in classrooms:
+            by_floor[floor_names[r.floor]].append((r.pk, r.number))
+        self.fields['rooms'].choices = by_floor.items()
+
+        semester = Semester.get_current_semester()
+        next_sem = Semester.objects.get_next()
+        weeks = [(week[0], f"{week[0]} - {week[1]}") for week in semester.get_all_weeks()]
+        if semester != next_sem:
+            weeks.insert(0, ('nextsem', f"Generuj z planu zajęć dla semestru '{next_sem}'"))
+        weeks.insert(0, ('currsem', f"Generuj z planu zajęć dla semestru '{semester}'"))
+        self.fields['week'].widget.choices = weeks
 
 
 class ConflictsForm(forms.Form):

@@ -3,46 +3,31 @@
 {% load compressed %}
 
 {% block grade_active %} class="active"{% endblock %}
-
 {% block content-width %}16{% endblock %}
-
-
-
 {% block title %}System Oceny{% endblock %}
 
 {% block system_menu %}
-    <li class="nav-item {% block grade-info %}{% endblock %}">
-        <a class="nav-link" href="{% url 'grade-main' %}">Zasady</a></li>
-    {%if user.student and grade %}
-    <li class="nav-item {% block connection-choice %}{% endblock %}">
-        <a class="nav-link" href="{% url 'grade-ticket-connections-choice' %}">Pobierz klucze</a>
-    </li>
-    {% endif %}
-    {% if grade %}
-        <li class="nav-item {% block fill_grade_form %}{% endblock %}">
-            <a class="nav-link" href="{% url 'grade-poll-tickets-enter' %}">Oceń zajęcia</a>
-        </li>    
-    {% endif %}
-    {% if user.employee or user.is_superuser %}
-           <li class="nav-item" {% if tab == "template_list" %} class="active_tab"{% endif %}>
-               <a class="nav-link" href="{% url 'grade-poll-templates' %}">Lista szablonów</a>
-            </li>
-           <li class="nav-item" {% if tab == "section_list" %} class="active_tab"{% endif %}>
-               <a class="nav-link" href="{% url 'grade-poll-sections-list' %}">Lista sekcji</a>
-            </li>
-           <li class="nav-item" {% if tab == "group_without" %} class="active_tab"{% endif %}>
-               <a class="nav-link" href="{% url 'grade-poll-groups_without_polls' %}">Grupy bez ankiet</a>
-            </li>
-           <li class="nav-item {% block grade_result %}{% endblock %}">
-               <a class="nav-link" href="{% url 'grade-poll-poll-results' 'S' %}">Wyniki oceny</a>
-            </li>
-    {% endif %}
-    {% if user.is_superuser %}
-        <li class="nav-item inactive">
-            <a class="nav-link" href="{% url 'grade-enable-grade' %}">Otwórz ocenę</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'grade-ticket-keys-generate' %}">Wygeneruj klucze</a>
-        </li>
-    {% endif %}
+<li class="{% block nav-grade-main %}{% endblock %}">
+  <a class="nav-link" href="{% url 'grade-main' %}">Zasady</a>
+</li>
+{% if user.student and is_grade_active %}
+<li class="{% block nav-grade-ticket-tickets-generate %}{% endblock %}">
+  <a class="nav-link" href="{% url 'grade-ticket-tickets-generate' %}">Pobieranie kluczy</a>
+</li>
+{% endif %}
+{% if is_grade_active and not user.employee %}
+<li class="{% block nav-grade-tickets-enter %}{% endblock %}">
+  <a class="nav-link" href="{% url 'grade-poll-tickets-enter' %}">Wprowadzanie kluczy</a>
+</li>
+{% endif %}
+{% if user.employee or user.is_superuser %}
+<li class="{% block nav-grade-results %}{% endblock %}">
+  <a class="nav-link" href="{% url 'grade-poll-results' %}">Wyniki oceny</a>
+</li>
+{% endif %}
+{% if request.session.grade_poll_submissions and not user.is_authenticated %}
+<li class="{% block nav-grade-poll-submissions %}{% endblock %}">
+  <a class="nav-link" href="{% url 'grade-poll-submissions' %}">Ankiety</a>
+</li>
+{% endif %}
 {% endblock %}

@@ -1,89 +1,73 @@
 from django.core.management.base import BaseCommand
-from apps.grade.poll.models.origin import Origin
-from apps.grade.poll.models.poll import Poll
-from apps.grade.poll.models.section import SectionOrdering
-from apps.grade.poll.models.template import Template
-from apps.grade.poll.utils import getGroups
-from apps.users.models import Employee
+
+from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.grade.poll.models import Poll
+
+HEADER = "-- "
+MARGIN = "   "
+CREATED = " + "
 
 
 class Command(BaseCommand):
-    args = '<semester+>'
-    help = 'Tworzy ankiety dla semestru. W przypadku braku argumentu bierze aktualny.'
+    help = "Creates polls for a given semester. If not specified, current is assumed."
 
-    def handle(self, *args, **options):
-        from apps.enrollment.courses.models.semester import Semester
+    def add_arguments(self, parser):
+        parser.add_argument("-s", "--semester", type=str, help="ID of the semester")
 
-        if len(args) > 0:
-            semester = Semester.objects.get(id=args[0])
+    def handle(self, *args, **kwargs):
+        semester_id = kwargs["semester"]
+        created, skipped = 0, 0
+
+        if semester_id:
+            semester = Semester.objects.get(id=semester_id)
         else:
             semester = Semester.get_current_semester()
-        print(semester)
 
-        templates = Template.objects.filter(in_grade=True)
-        print(templates)
-        prych = Employee.objects.get(user__pk=19)  # nowym PRychem Przemka
-        print(prych)
-        for template in templates:
-            t = dict(
-                type=None if template.group_type == '--' else template.group_type,
-                sections=template.sections.all(),
-                studies_type=template.studies_type,
-                title=template.title,
-                description=template.description,
-                no_course=template.no_course,
-                course=template.course,
-                exam=template.exam,
-                semester=semester,
-                groups_without='off',
-                group=None)
-            groups = getGroups({}, t)
-            origin = Origin()
-            origin.save()
+        self.stdout.write(f"Selected semester: `{semester}` with id {semester.id}")
 
-            if groups and not template.no_course:
-                for group in groups:
-                    if t['groups_without'] == 'on' and Poll.get_all_polls_for_group(
-                            group, semester).count() > 0:
-                        continue
+        # Check whether poll exists for a selected semester
+        self.stdout.write(f"\n{HEADER}Semester polls")
+        semester_poll = Poll.objects.filter(semester=semester).count() > 0
+        if semester_poll:
+            self.stdout.write(f"{MARGIN}Poll for a selected semester already exists")
+            skipped += 1
+        else:
+            new_poll = Poll(group=None, course=None, semester=semester)
+            new_poll.save()
+            self.stdout.write(
+                f"{CREATED}Poll for a selected semester does not exist, creating"
+            )
+            created += 1
 
-                    poll = Poll()
-                    poll.author = prych
-                    poll.title = t['title']
-                    poll.description = t['description']
-                    poll.semester = t['semester']
-                    poll.group = group
-                    poll.studies_type = t['studies_type']
-                    poll.origin = origin
-                    poll.save()
+        # Check whether poll exists for courses held in a selected semester
+        self.stdout.write(f"\n{HEADER}Course/group polls")
+        courses = CourseInstance.objects.filter(semester=semester)
 
-                    if 'sections' in t:
-                        sections = t['sections']
-
-                        for section in sections:
-                            pollSection = SectionOrdering()
-                            pollSection.poll = poll
-                            pollSection.position = section.pk
-                            pollSection.section = section
-                            pollSection.save()
-
+        for course in courses:
+            course_poll = Poll.objects.filter(course=course).count() > 0
+            if not course.has_exam or course_poll:
+                self.stdout.write(f"{MARGIN}{course}")
+                skipped += 1
             else:
-                poll = Poll()
-                poll.author = prych
-                poll.title = t['title']
-                poll.description = t['description']
-                poll.semester = t['semester']
-                poll.group = None
-                poll.studies_type = t['studies_type']
-                poll.origin = origin
-                poll.save()
+                new_poll = Poll(group=None, course=course, semester=None)
+                new_poll.save()
+                self.stdout.write(f"{CREATED}{course}")
+                created += 1
 
-                if 'sections' in t:
-                    sections = t['sections']
+            groups = Group.objects.filter(course=course)
 
-                    for section in sections:
-                        pollSection = SectionOrdering()
-                        pollSection.poll = poll
-                        pollSection.position = section.pk
-                        pollSection.section = section
-                        pollSection.save()
+            for group in groups:
+                group_poll = Poll.objects.filter(group=group).count() > 0
+                if group_poll:
+                    self.stdout.write(f"{MARGIN}{MARGIN}{group}")
+                    skipped += 1
+                else:
+                    new_poll = Poll(group=group, course=None, semester=None)
+                    new_poll.save()
+                    self.stdout.write(f"{CREATED}{MARGIN}{group}")
+                    created += 1
+
+        self.stdout.write(f"\n{HEADER}Summary")
+        self.stdout.write(f"{MARGIN}Created: {created}, skipped: {skipped}")
