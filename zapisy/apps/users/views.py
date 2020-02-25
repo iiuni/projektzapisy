@@ -27,7 +27,7 @@ from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
 from apps.enrollment.timetable.views import build_group_list
 from apps.notifications.views import create_form
-from apps.users.decorators import external_contractor_forbidden
+from apps.users.decorators import employee_required, external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
 from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
@@ -190,26 +190,22 @@ def email_change(request: HttpRequest) -> HttpResponse:
     return render(request, 'users/email_change_form.html', {'form': form})
 
 
-@login_required
+@employee_required
 def consultations_change(request: HttpRequest) -> HttpResponse:
     """function that enables consultations changing"""
-    try:
-        employee = request.user.employee
-        if request.POST:
-            data = request.POST.copy()
-            form = ConsultationsChangeForm(data, instance=employee)
-            if form.is_valid():
-                form.save()
-                logger.info('User (%s) changed consultations' % request.user.get_full_name())
-                messages.success(request, "Twoje dane zostały zmienione.")
-                return HttpResponseRedirect(reverse('my-profile'))
-        else:
-            form = ConsultationsChangeForm(
-                {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
-        return render(request, 'users/consultations_change_form.html', {'form': form})
-    except Employee.DoesNotExist:
-        messages.error(request, 'Nie jesteś pracownikiem.')
-        return render(request, 'common/error.html')
+    employee = request.user.employee
+    if request.POST:
+        data = request.POST.copy()
+        form = ConsultationsChangeForm(data, instance=employee)
+        if form.is_valid():
+            form.save()
+            logger.info('User (%s) changed consultations' % request.user.get_full_name())
+            messages.success(request, "Twoje dane zostały zmienione.")
+            return HttpResponseRedirect(reverse('my-profile'))
+    else:
+        form = ConsultationsChangeForm(
+            {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
+    return render(request, 'users/employee_data_form.html', {'form': form})
 
 
 @login_required
