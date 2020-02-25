@@ -14,7 +14,7 @@
     <script id="reservation-data" type="application/json">
 {
     "canManageEvents": {% if perms.schedule.manage_events %}true{% else %}false{% endif %},
-    "imageChoose": "{% static "images/choose.png" %}"
+    "imageChoose": "{% static "schedule/choose.png" %}"
 }
     </script>
     {% render_bundle "schedule-classroom-chooser" %}
