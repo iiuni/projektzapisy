@@ -1,0 +1,27 @@
+﻿{% extends "grade/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block main-subtitle %}Wprowadzanie kluczy{% endblock %}
+{% block nav-grade-tickets-enter %}active{% endblock %}
+
+{% block bread %}
+{% include 'grade/_breadcrumbs.html' %}
+<li class="breadcrumb-item active" aria-current="page">Wprowadzanie kluczy</li>
+{% endblock %}
+
+{% block all-content %}
+{% if user.is_authenticated %}
+{% include 'poll/_user_is_authenticated.html' %}
+{% else %}
+<div id="grade-tickets-enter">
+  <form action="{% url 'grade-poll-tickets-enter' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2>Wprowadzanie kluczy</h2>
+    {{ form|crispy }}
+    <p class="text-center text-info">Jeżeli nie posiadasz jeszcze kluczy, zaloguj się i je wygeneruj.</p>
+    <button class="mx-auto d-block btn btn-primary" type="submit">Rozpocznij ocenę</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

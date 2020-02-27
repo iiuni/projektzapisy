@@ -1,0 +1,65 @@
+{% extends "grade/base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block js %}{{ block.super }}
+{% render_bundle "ticket_create-ticketsgenerate" %}
+{% endblock %}
+
+{% block nav-grade-ticket-tickets-generate %}active{% endblock %}
+{% block main-subtitle %}Pobieranie kluczy{% endblock %}
+
+{% block bread %}
+{% include 'grade/_breadcrumbs.html' %}
+<li class="breadcrumb-item active" aria-current="page">Pobieranie kluczy</li>
+{% endblock %}
+
+{% block all-content %}
+<div id="pregen">
+  {% if success %}
+  <div class="main-success">{{ success }}</div>
+  {% endif %}
+  {% if message %}
+  <div class="main-message">{{ message }}</div>
+  {% endif %}
+  {% if error %}
+  <div class="main-error">{{ error }}</div>
+  {% endif %}
+  {% if is_grade_active %}
+  <div id="grade-tickets-generate">
+    <div id="tickets_generate">
+      <h2>
+        Pobieranie kluczy do następujących ankiet:
+      </h2>
+      <div class="container">
+        <div class="row">
+          {% for group_name, entries in polls.items %}
+          <div class="col-sm-12 col-md-6 col-lg-4 p-1">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title text-info">{{ group_name }}</h5>
+                <p class="card-text">
+                  {% for entry in entries %}
+                  {{ entry }}<br>
+                  {% endfor %}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="alert alert-info">
+            Brak przesłanych ankiet w wybranym semestrze.
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% if general_polls or polls %}
+      <div class="m-3">
+        <div id="app"></div>
+      </div>
+      {% endif %}
+    </div>
+    <div>{{ p }}</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

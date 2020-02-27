@@ -8,6 +8,8 @@ BOOLEAN_CHOICES = [(True, "Tak"),
 
 
 class EventFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(field_name='title',
+                                      lookup_expr='icontains')
     type = django_filters.ChoiceFilter(choices=Event.TYPES,
                                        label='Typ',
                                        empty_label="Dowolny")

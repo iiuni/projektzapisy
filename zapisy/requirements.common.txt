@@ -33,6 +33,9 @@ postmarkup==1.2.2
 unidecode==1.0.22
 # PyYAML is used for fixtures.
 pyyaml==5.1
+# Bokeh - library used for plotting in views displaying Poll results
+bokeh==1.2.0
+
 redis==2.10.6
 # We use html2text for one-off migration from HTML to markdown.
 html2text

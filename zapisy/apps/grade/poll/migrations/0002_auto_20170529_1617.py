@@ -262,6 +262,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='lastvisit',
-            unique_together=set([('user', 'poll')]),
+            unique_together=set([('poll', 'user')]),
         ),
     ]

@@ -34,13 +34,8 @@
         </li>
     {% endif %}
     {% if perms.schedule.manage_events %}
-        <li {% block schedule_statistic %}{% endblock %}>
-            <a class="nav-link" href="{% url 'events:statistics' %}">Statystyki</a>
-        </li>
-    {% endif %}
-    {% if perms.schedule.manage_events %}
         <li {% block events_report %}{% endblock %}>
-            <a class="nav-link" href="{% url 'events:events_report' %}">Raport</a>
+            <a class="nav-link" href="{% url 'events:events_report' %}">Raporty</a>
         </li>
     {% endif %}
 

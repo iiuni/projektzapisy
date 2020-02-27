@@ -1,4 +1,8 @@
+from django.db import transaction
+
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group as AuthGroup
+
 from rest_framework import serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
@@ -8,7 +12,7 @@ from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student
+from apps.users.models import Employee, Student, Program
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -16,8 +20,8 @@ class SemesterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Semester
-        fields = ('id', 'display_name', 'usos_kod')
-        read_only_fields = ('id', 'display_name')
+        fields = ('id', 'display_name', 'year', 'type', 'usos_kod')
+        read_only_fields = ('id', 'display_name', 'year', 'type')
 
     def get_display_name(self, obj):
         return obj.get_name()
@@ -33,8 +37,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseInstance
-        fields = ('id', 'name', 'semester', 'course_type', 'usos_kod')
-        read_only_fields = ('id', 'name', 'semester')
+        fields = ('id', 'name', 'short_name', 'points', 'has_exam',
+                  'description', 'semester', 'course_type', 'usos_kod')
+        read_only_fields = ('id', 'name', 'short_name', 'points', 'has_exam',
+                            'description', 'semester', 'course_type')
 
     def get_course_type(self, obj):
         if obj.course_type is None:
@@ -54,7 +60,10 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+        extra_kwargs = {
+            'username': {'validators': []},
+        }
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -66,13 +75,47 @@ class EmployeeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user', 'consultations', 'homepage', 'room')
 
 
+class ProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = '__all__'
+        extra_kwargs = {
+            'name': {'validators': []},
+        }
+
+
 class StudentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer()
+    program = ProgramSerializer()
 
     class Meta:
         model = Student
-        fields = ('id', 'usos_id', 'matricula', 'ects', 'status', 'user')
-        read_only_fields = ('id', 'matricula', 'user')
+        fields = ('id', 'usos_id', 'matricula', 'ects', 'status', 'user', 'program',
+                  'semestr', 'algorytmy_l', 'numeryczna_l', 'dyskretna_l')
+
+    @transaction.atomic
+    def create(self, validated_data):
+        students = AuthGroup.objects.get(name='students')
+        user_data = validated_data.pop('user')
+        program_data = validated_data.pop('program')
+        user = User.objects.create_user(**user_data)
+        program = Program.objects.get(name=program_data['name'])
+        students.user_set.add(user)
+        students.save()
+        student = Student.objects.create(
+            user=user, program=program, **validated_data)
+        return student
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        # User field shouldn't be changed.
+        validated_data.pop('user', None)
+        # Matricula field shouldn't be changed.
+        validated_data.pop('matricula', None)
+        program_data = validated_data.pop('program', None)
+        if program_data is not None:
+            instance.program = Program.objects.get(name=program_data['name'])
+        return super().update(instance, validated_data)
 
 
 class DesiderataSerializer(serializers.ModelSerializer):
@@ -132,10 +175,21 @@ class GroupSerializer(serializers.ModelSerializer):
     course = CourseSerializer(read_only=True)
     teacher = EmployeeSerializer(read_only=True)
 
+    human_readable_type = serializers.SerializerMethodField()
+    teacher_full_name = serializers.SerializerMethodField()
+
+    def get_human_readable_type(self, group_model):
+        return group_model.human_readable_type()
+
+    def get_teacher_full_name(self, group_model):
+        return group_model.get_teacher_full_name()
+
     class Meta:
         model = Group
-        fields = ('id', 'type', 'course', 'teacher', 'limit', 'usos_nr')
-        read_only_fields = ('id', 'type', 'course', 'teacher', 'limit')
+        fields = ('id', 'type', 'course', 'teacher', 'limit', 'human_readable_type',
+                  'teacher_full_name', 'export_usos', 'usos_nr')
+        read_only_fields = ('id', 'type', 'course', 'teacher', 'limit',
+                            'human_readable_type', 'teacher_full_name')
 
 
 class ShallowGroupSerializer(serializers.ModelSerializer):
@@ -151,8 +205,6 @@ class TermSerializer(serializers.ModelSerializer):
     When serializing multiple objects, query them with
     `select_related('group').prefetch_related('classrooms')`.
     """
-    group = ShallowGroupSerializer(read_only=True)
-    classrooms = ClassroomSerializer(read_only=True, many=True)
 
     class Meta:
         model = Term
@@ -161,8 +213,6 @@ class TermSerializer(serializers.ModelSerializer):
 
 
 class RecordSerializer(serializers.ModelSerializer):
-    group = ShallowGroupSerializer(read_only=True)
-    student = StudentSerializer(read_only=True)
 
     class Meta:
         model = Record

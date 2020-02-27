@@ -9,6 +9,8 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import BaseUser
 
+from typing import List
+
 
 class Event(models.Model):
     """
@@ -135,6 +137,16 @@ class Event(models.Model):
         for term in terms:
             term.delete()
         self.delete()
+
+    def get_conflicted(self) -> List['Event']:
+        """Returns all conflicting events."""
+        terms = self.term_set.all()
+        event_conflicts = set()
+        for term in terms:
+            term_conflicts = term.get_conflicted()
+            for conflict in term_conflicts:
+                event_conflicts.add(conflict.event)
+        return list(event_conflicts)
 
     def _user_can_see_or_404(self, user):
         """

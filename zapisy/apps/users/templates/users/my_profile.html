@@ -94,13 +94,6 @@ $('.checkall').on('click', function(){
         </div>
     {% endif %}
 
-    {% if perms.users.mailto_all_students %}
-        <div class="mb-5">
-            <h4>Kontakt</h4>
-            <a class="btn btn-light" href="{% url 'email-students' %}" role="button">Wyślij wiadomość do studentów</a>
-        </div>
-    {% endif %}
-
     {% if user.student %}
     <div class="mb-5">
         <h4>Moje studia</h4>
