@@ -191,28 +191,28 @@ class Record(models.Model):
 
         It is preferable to call this function rather than
         :func:`~apps.enrollment.records.models.Record.can_dequeue` multiple
-        times to save on database queries.
+        times to save on database queries. The groups should contain .course and
+        .course.semester.
 
         If student is None, the function will return all False values. It does
-        not check for student's presence in the groups. Currently the function
-        is fairly simplistic. It is assumed, that all the groups are held in the
-        same semester.
+        not check for student's presence in the groups.
         """
         if time is None:
             time = datetime.now()
         if student is None or not student.is_active():
             return {k.id: False for k in groups}
-        if not groups:
-            return {}
-        semester: Semester = groups[0].course.semester
-        if semester.is_closed(time):
-            return {k.id: False for k in groups}
-        if not semester.can_remove_record(time):
-            # When disenrolment is closed, QUEUED record can still be removed,
-            # ENROLLED may not.
-            is_recorded_dict = Record.is_recorded_in_groups(student, groups)
-            return {k.id: is_recorded_dict[k.id]['enqueued'] for k in groups}
-        return {k.id: True for k in groups}
+        ret = {}
+        is_recorded_dict = Record.is_recorded_in_groups(student, groups)
+        for group in groups:
+            if group.course.records_end is not None:
+                ret[group.id] = time <= group.course.records_end
+            elif not group.course.semester.can_remove_record(time):
+                # When disenrolment is closed, QUEUED record can still be
+                # removed, ENROLLED may not.
+                ret[group.id] = is_recorded_dict[group.id]['enqueued']
+            else:
+                ret[group.id] = True
+        return ret
 
     @staticmethod
     def get_number_of_waiting_students(course: CourseInstance, group_type: str) -> int:
