@@ -16,7 +16,7 @@
                 <th scope="col">Zapisani</th>
                 <th scope="col">Kolejka</th>
                 <th scope="col">Przypięci</th>
-
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -28,10 +28,25 @@
                     <tr>
                         <td>{{ group.teacher }}</td>
                         <td>{{ group.get_type_display }}</td>
-                        <td>{{ group.limit }}</td>
+                        <td>
+                            {{ group.limit }}
+                            {% for gs in group.guaranteed_spots.all %}
+                                + 
+                                <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                                    {{ gs.limit }}
+                                </span>
+                            {% endfor %}
+                        </td>
                         <td>{{ group.enrolled }}</td>
                         <td>{{ group.queued }}</td>
                         <td>{{ group.pinned }}</td>
+                        <td>
+                            <a class="badge badge-sm badge-primary"
+                                href="{% url 'admin:courses_group_change' group.id %}"
+                                target="_blank">
+                                Admin <i class="fas fas-sm fa-external-link-alt"></i>
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             {% endfor %}

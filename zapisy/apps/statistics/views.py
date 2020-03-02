@@ -35,8 +35,8 @@ def groups(request):
     groups = Group.objects.filter(course__semester=semester).select_related(
         'course', 'teacher', 'teacher__user').order_by('course', 'type').only(
             'course__name', 'teacher__user__first_name', 'teacher__user__last_name', 'limit',
-            'type').annotate(enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(
-                pinned=pinned_agg)
+            'type').prefetch_related('guaranteed_spots', 'guaranteed_spots__role').annotate(
+                enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(pinned=pinned_agg)
     return render(request, 'statistics/groups_list.html', {
         'groups': groups,
     })
