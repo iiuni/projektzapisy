@@ -1,4 +1,5 @@
 {% load course_types %}
+{% load filters %}
 
 <div class="table-responsive tutorial">
     <h3>{{ class_type|decode_class_type_plural  }}</h3>
@@ -103,4 +104,20 @@
         <p><strong>UWAGA!</strong>
             Wyższa liczba oznacza wyższy priorytet, po zapisaniu do grupy zostajemy usunięci z kolejek o niższym priorytecie.
         </p>
+        {% if class_type in waiting_students %}
+            <p>Niezapisani studenci w kolejkach na {{ class_type|decode_class_type_plural }}
+                ({{ waiting_students|lookup:class_type|length }}):
+                <a data-toggle="collapse" href="#waiting-{{class_type}}-collapse" 
+                    role="button" aria-expanded="false" aria-controls="collapseExample">
+                    zwiń / rozwiń
+                </a>
+            </p>
+            <div class="collapse" id="waiting-{{class_type}}-collapse">
+                <ul>
+                    {% for st_id, st_fn, st_ln in waiting_students|lookup:class_type %}
+                        <li><a href="{% url 'student-profile' st_id %}">{{ st_fn }} {{ st_ln }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </div>

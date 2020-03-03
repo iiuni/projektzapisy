@@ -84,15 +84,6 @@
             </td>
         </tr>
         {% endif %}
-        {% for group_of_waiting_students in grouped_waiting_students %}
-            {# This will only be non-empty when the requesting user is staff #}
-            {% if group_of_waiting_students.students_amount %}
-                <tr>
-                    <th scope="row">Liczba chętnych na {{ group_of_waiting_students.type_name }}</th>
-                    <td>{{ group_of_waiting_students.students_amount }}</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
     </tbody>
 </table>
 

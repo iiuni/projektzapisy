@@ -91,11 +91,18 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     course.is_enrollment_on = any(g.can_enqueue for g in groups)
 
+    waiting_students = {}
+    if BaseUser.is_employee(request.user):
+        waiting_students = {
+            t: sts
+            for ((_, t), sts) in Record.list_waiting_students([course]).items()
+        }
+
     data = {
         'course': course,
         'teachers': teachers,
         'groups': groups,
-        'grouped_waiting_students': get_grouped_waiting_students(course, request.user)
+        'waiting_students': waiting_students,
     }
     return course, data
 
@@ -213,23 +220,3 @@ def group_queue_csv(request, group_id):
     except Group.DoesNotExist:
         raise Http404
     return recorded_students_csv(group_id, RecordStatus.QUEUED)
-
-
-def get_grouped_waiting_students(course: CourseInstance, user) -> List:
-    """Return numbers of waiting students grouped by course group type.
-
-    The user argument is used to decide if the list should be generated at all.
-    """
-    if not user.is_superuser:
-        return []
-
-    group_types: List = [
-        {'id': '2', 'name': 'cwiczenia'},
-        {'id': '3', 'name': 'pracownie'},
-        {'id': '5', 'name': 'ćwiczenio-pracownie'}
-    ]
-
-    return [{
-        'students_amount': Record.get_number_of_waiting_students(course, group_type['id']),
-        'type_name': group_type['name']
-    } for group_type in group_types]
