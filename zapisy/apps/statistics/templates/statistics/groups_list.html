@@ -1,5 +1,8 @@
 {% extends "statistics/base.html" %}
 
+{% load filters %}
+{% load course_types %}
+
 {% block statistics-groups-active %}active{% endblock %}
 
 {% block statistics-content %}
@@ -19,10 +22,24 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
-            {% for course, groups in courses_list %}
+        {% for course, groups in courses_list %}
+            <tbody>
                 <tr>
-                    <th colspan="12">{{ course.name }}</th>
+                    <th colspan="2">
+                        {{ course.name }}
+                    </th>
+                    <td colspan="6">
+                        {% with waiting_course=waiting_students|lookup:course.id %}
+                            {% for course_type in waiting_course %}
+                                <span class="badge badge-danger" title="Oczekujących w kolejkach">
+                                    {{ course_type|decode_class_type_plural }}
+                                    <span class="badge badge-light">
+                                        {{ waiting_course|lookup:course_type|length }}
+                                    </span>
+                                </span>
+                            {% endfor %}
+                        {% endwith %}
+                    </td>
                 </tr>
                 {% for group in groups %}
                     <tr>
@@ -49,8 +66,8 @@
                         </td>
                     </tr>
                 {% endfor %}
-            {% endfor %}
-        </tbody>
+            </tbody>
+        {% endfor %}
     </table>
 </div>
 {% endblock %}

@@ -93,10 +93,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     waiting_students = {}
     if BaseUser.is_employee(request.user):
-        waiting_students = {
-            t: sts
-            for ((_, t), sts) in Record.list_waiting_students([course]).items()
-        }
+        waiting_students = Record.list_waiting_students([course])[course.id]
 
     data = {
         'course': course,

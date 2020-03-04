@@ -217,15 +217,16 @@ class Record(models.Model):
 
     @staticmethod
     def list_waiting_students(
-            courses: List[CourseInstance]) -> Dict[Tuple[int, int], List[Tuple[int, str, str]]]:
+            courses: List[CourseInstance]) -> Dict[int, Dict[int, List[Tuple[int, str, str]]]]:
         """Returns students waiting to be enrolled.
 
         Returned students aren't enrolled in any group of given type within
         given course, but they are enqueued into at least one.
 
-        Returns:
-          A dict mapping a pair (course_id, group_type) to a tuple (student_id,
-          first_name, last_name) representing a student.
+        Returns: 
+            A dict indexed by a course_id. Every entry is a dict mapping
+            group_type to a tuple (student_id, first_name, last_name)
+            representing a student.
         """
         queued = Record.objects.filter(
             status=RecordStatus.QUEUED, group__course__in=courses).values(
@@ -236,9 +237,9 @@ class Record(models.Model):
                 'group__course', 'group__type', 'student__user', 'student__user__first_name',
                 'student__user__last_name')
         waiting = queued.difference(enrolled)
-        ret = defaultdict(list)
+        ret = defaultdict(lambda: defaultdict(list))
         for w in waiting:
-            ret[(w['group__course'], w['group__type'])].append((
+            ret[w['group__course']][w['group__type']].append((
                 w['student__user'],
                 w['student__user__first_name'],
                 w['student__user__last_name'],
