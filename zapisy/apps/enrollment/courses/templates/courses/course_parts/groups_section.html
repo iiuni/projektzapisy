@@ -2,7 +2,14 @@
 {% load filters %}
 
 <div class="table-responsive tutorial">
-    <h3>{{ class_type|decode_class_type_plural  }}</h3>
+    <h3 class="d-inline-block">{{ class_type|decode_class_type_plural  }} 
+    </h3>
+    {% if class_type in waiting_students %}
+        <span class="badge badge-danger d-inline-block align-text-bottom ml-2">
+            Niezapisanych&mdash;oczekujących
+            <span class="badge badge-light">{{ waiting_students|lookup:class_type }}</span>
+        </span>
+    {% endif %}
     <table class="table table-bordered text-center">
         <thead class="thead-dark">
             <tr>
@@ -104,20 +111,4 @@
         <p><strong>UWAGA!</strong>
             Wyższa liczba oznacza wyższy priorytet, po zapisaniu do grupy zostajemy usunięci z kolejek o niższym priorytecie.
         </p>
-        {% if class_type in waiting_students %}
-            <p>Niezapisani studenci w kolejkach na {{ class_type|decode_class_type_plural }}
-                ({{ waiting_students|lookup:class_type|length }}):
-                <a data-toggle="collapse" href="#waiting-{{class_type}}-collapse" 
-                    role="button" aria-expanded="false" aria-controls="collapseExample">
-                    zwiń / rozwiń
-                </a>
-            </p>
-            <div class="collapse" id="waiting-{{class_type}}-collapse">
-                <ul>
-                    {% for st_id, st_fn, st_ln in waiting_students|lookup:class_type %}
-                        <li><a href="{% url 'student-profile' st_id %}">{{ st_fn }} {{ st_ln }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
     </div>
