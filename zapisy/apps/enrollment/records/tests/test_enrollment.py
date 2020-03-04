@@ -336,9 +336,9 @@ class EnrollmentTest(TestCase):
             Record.enqueue_student(self.lolek, self.cooking_exercise_group_1)
 
             expected_waiting = {
-                (self.cooking_exercise_group_1.course_id, self.cooking_exercise_group_1.type): [
-                    (self.tola.user_id, self.tola.user.first_name, self.tola.user.last_name)
-                ]
+                self.cooking_exercise_group_1.course_id: {
+                    self.cooking_exercise_group_1.type: 1
+                }
             }
             self.assertDictEqual(
                 Record.list_waiting_students([self.cooking_exercise_group_1.course]),
