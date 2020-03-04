@@ -22,8 +22,8 @@
                 <th></th>
             </tr>
         </thead>
-        {% for course, groups in courses_list %}
-            <tbody>
+        <tbody>
+            {% for course, groups in courses_list %}
                 <tr>
                     <th colspan="2">
                         {{ course.name }}
@@ -66,8 +66,8 @@
                         </td>
                     </tr>
                 {% endfor %}
-            </tbody>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 {% endblock %}
