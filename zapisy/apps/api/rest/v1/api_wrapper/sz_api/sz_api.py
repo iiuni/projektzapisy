@@ -1,6 +1,6 @@
 import json
 import requests
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from typing import Iterator, Optional
 
 from .models import (User, Program,
@@ -46,8 +46,11 @@ class ZapisyApi:
 
     def _get_redirect_map(self, api_url: str) -> dict:
         rm = self._handle_get_request(api_url)
+        base_url_parts = urlparse(api_url)
         for key in rm:
-            rm[key] = rm[key].replace('http:', 'https:', 1)
+            route_url_parts = urlparse(rm[key])
+            modified_url_parts = route_url_parts._replace(scheme=base_url_parts.scheme)
+            rm[key] = modified_url_parts.geturl()
         return rm
 
     def save(self, obj: Model):
