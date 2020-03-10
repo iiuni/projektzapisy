@@ -20,8 +20,6 @@ class Model:
         """Converts model to dict recursively"""
         data = {}
         for key, value in self.__dict__.items():
-            if value is None:
-                continue
             try:
                 data[key] = value.to_dict()
             except AttributeError:
