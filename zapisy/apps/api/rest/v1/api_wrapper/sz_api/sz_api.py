@@ -45,7 +45,10 @@ class ZapisyApi:
         self.redirect_map = self._get_redirect_map(api_url)
 
     def _get_redirect_map(self, api_url: str) -> dict:
-        return self._handle_get_request(api_url)
+        rm = self._handle_get_request(api_url)
+        for key in rm:
+            rm[key] = rm[key].replace('http:', 'https:', 1)
+        return rm
 
     def save(self, obj: Model):
         self._handle_patch_request(
@@ -280,7 +283,7 @@ class ZapisyApi:
             return None
 
     def _handle_patch_request(self, path, data: dict):
-        self._handle_upload_request("patch", path, data)
+        return self._handle_upload_request("patch", path, data)
 
     def _handle_post_request(self, path, data: dict):
         return self._handle_upload_request("post", path, data)
@@ -303,10 +306,6 @@ class ZapisyApi:
             # DRF requires trailing slash for patch method
             path if path.endswith("/") else path + "/",
             json=data,
-            headers={"Authorization": self.token}
-        )
+            headers={"Authorization": self.token})
         resp.raise_for_status()
-        try:
-            return resp.json()['id']
-        except json.decoder.JSONDecodeError:
-            return None
+        return resp
