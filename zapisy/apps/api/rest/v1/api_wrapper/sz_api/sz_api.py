@@ -224,8 +224,9 @@ class ZapisyApi:
             User(None, str(indeks), first_name, last_name, email),
             Program(None, program_name), semestr, algorytmy_l,
             numeryczna_l, dyskretna_l)
-        return self._handle_post_request(
+        resp = self._handle_post_request(
             self.redirect_map[Student.redirect_key], student.to_dict())
+        return resp.json()['id']
 
     def _get_deserialized_data(self, model_class, params=None):
         if model_class.is_paginated:
