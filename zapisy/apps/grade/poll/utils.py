@@ -26,9 +26,8 @@ GroupedSubmissions = namedtuple(
 
 def check_grade_status() -> bool:
     """Checks whether any of the semesters has grade enabled."""
-    active_semesters = Semester.objects.filter(is_grade_active=True).count()
-
-    return active_semesters > 0
+    current_semester = Semester.get_current_semester()
+    return current_semester.is_grade_active
 
 
 def get_grouped_polls(student: Student) -> Dict:
