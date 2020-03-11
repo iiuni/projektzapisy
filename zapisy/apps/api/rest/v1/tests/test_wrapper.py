@@ -23,6 +23,7 @@ from apps.users.models import Program
 
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
+from apps.api.rest.v1.api_wrapper.sz_api import models as api_models
 
 
 class WrapperTests(APILiveServerTestCase):
@@ -296,6 +297,26 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(student.user.email, "doe@awesome.mail")
         self.assertEqual(student.program.name, "Informatyka, dzienne I stopnia inżynierskie")
         self.assertEqual(student.semestr, 1)
+
+    def test_change_program(self):
+        """Test changing and removing student's program."""
+        p1 = Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
+        p2 = Program.objects.create(name="Informatyka, dzienne II stopnia magisterskie")
+        student = StudentFactory(program=p1)
+
+        s = self.wrapper.student(id=student.id)
+        self.assertEqual(s.program.id, p1.id)
+
+        s.program = api_models.Program(p2.id, p2.name)
+        self.wrapper.save(s)
+        student.refresh_from_db()
+        self.assertEqual(student.program_id, p2.id)
+
+        s = self.wrapper.student(id=student.id)
+        s.program = None
+        self.wrapper.save(s)
+        student.refresh_from_db()
+        self.assertIsNone(student.program)
 
     def assert_declared_fields(self, fields, res_obj, expected_obj):
         """Tests if given fields are equal in res_obj and orig_obj.
