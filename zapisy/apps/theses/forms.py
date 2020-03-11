@@ -48,7 +48,9 @@ class ThesisFormBase(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
+        self.is_staff = False
         if user.is_staff:
+            self.is_staff = True
             self.fields['advisor'].queryset = Employee.objects.all()
         else:
             self.fields['advisor'].queryset = Employee.objects.filter(
@@ -105,10 +107,24 @@ class ThesisForm(ThesisFormBase):
         self.helper.add_input(
             Submit('submit', 'Zapisz', css_class='btn-primary'))
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.added = timezone.now()
+
+        if not self.is_staff:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
+
+        instance.save()
+        self.save_m2m()
+
+        return instance
+
 
 class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
+
+        self.status = self.instance.status
 
         if user.is_staff:
             special_row = Row(
@@ -144,6 +160,28 @@ class EditThesisForm(ThesisFormBase):
         else:
             self.helper.add_input(
                 Submit('submit', 'Zapisz', css_class='btn-primary'))
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.modified = timezone.now()
+
+        if not self.is_staff:
+            status = self.status
+
+            if status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
+                instance.status = ThesisStatus.BEING_EVALUATED.value
+            elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
+                instance.status = ThesisStatus.IN_PROGRESS.value
+            elif status == ThesisStatus.IN_PROGRESS and not "students" in self.data:
+                instance.status = ThesisStatus.ACCEPTED.value
+            else:
+                instance.status = status
+
+        if commit == True:
+            instance.save()
+            self.save_m2m()
+
+        return instance
 
 
 class RemarkForm(forms.ModelForm):

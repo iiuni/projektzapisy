@@ -190,31 +190,17 @@ def edit_thesis(request, id):
         raise PermissionDenied
 
     if request.method == "POST":
-        thesis_status = thesis.status
         form = EditThesisForm(request.user, request.POST, instance=thesis)
         # check whether it's valid:
         if form.is_valid():
-            post = form.save(commit=False)
-            post.modified = timezone.now()
-
-            if not request.user.is_staff:
-                post.status = thesis_status
-
-                if post.status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
-                    post.status = ThesisStatus.BEING_EVALUATED.value
-                elif request.POST.getlist('students'):
-                    post.status = ThesisStatus.IN_PROGRESS.value
-                else:
-                    post.status = ThesisStatus.ACCEPTED.value
-
-            post.save()
-            form.save_m2m()
+            form.save(commit=True)
             messages.success(request, 'Zapisano zmiany')
             return redirect('theses:selected_thesis', id=id)
+
     else:
         form = EditThesisForm(request.user, instance=thesis)
 
-    return render(request, 'theses/thesis_form.html', {'thesis_form': form, 'id': id})
+    return render(request, 'theses/thesis_form.html', {'thesis_form': form, 'title': thesis.title, 'id': id})
 
 
 @login_required
@@ -226,14 +212,7 @@ def new_thesis(request):
         form = ThesisForm(request.user, request.POST)
         # check whether it's valid:
         if form.is_valid():
-            post = form.save(commit=False)
-
-            if not request.user.is_staff:
-                post.status = ThesisStatus.BEING_EVALUATED.value
-
-            post.added = timezone.now()
-            post.save()
-            form.save_m2m()
+            form.save(commit=True)
             messages.success(request, 'Dodano nową pracę')
             return redirect('theses:main')
     else:
