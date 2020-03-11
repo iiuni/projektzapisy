@@ -172,12 +172,12 @@ class EditThesisForm(ThesisFormBase):
                 instance.status = ThesisStatus.BEING_EVALUATED.value
             elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
                 instance.status = ThesisStatus.IN_PROGRESS.value
-            elif status == ThesisStatus.IN_PROGRESS and not "students" in self.data:
+            elif status == ThesisStatus.IN_PROGRESS.value and "students" not in self.data:
                 instance.status = ThesisStatus.ACCEPTED.value
             else:
                 instance.status = status
 
-        if commit == True:
+        if commit:
             instance.save()
             self.save_m2m()
 
