@@ -1,59 +1,60 @@
 <table class="table border">
-    <tbody>
-        <tr>
-            <th class="text-light bg-info">Tytuł</th>
-            <td colspan="3">
-                <a href="{% url 'events:show' event.id %}">
-                    {% if event.course %}
-                        {{ event.course.name }}
-                    {% else %}
-                        {{ event.title }}
-                    {% endif %}
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <th width="12%" class="text-light bg-info">Typ</th>
-            <td width="*">{{ event.get_type_display }}</td>
-            <th width="12%" class="text-light bg-info">Status</th>
-            <td width="20%">{{ event.get_status_display }}</td>
-        </tr>
-        {% if title != 'Moje rezerwacje' %}
-            <tr>
-                <th class="text-light bg-info">Zgłasza</th>
-                <td width="*">
-                        <a href="">{{ event.author.get_full_name }}</a>
-                </td>
-                <th width="12%" class="text-light bg-info">Data</th>
-                <td width="20%">{{ event.created }}</td>
-            </tr>
+  <tbody>
+    <tr>
+      <th class="text-light bg-info">Tytuł</th>
+      <td colspan="3">
+        <a href="{% url 'events:show' event.id %}">
+          {% if event.course %} {{ event.course.name }} {%
+          else %} {{ event.title }} {% endif %}
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th width="12%" class="text-light bg-info">Typ</th>
+      <td width="*">{{ event.get_type_display }}</td>
+      <th width="12%" class="text-light bg-info">Status</th>
+      <td width="20%">{{ event.get_status_display }}</td>
+    </tr>
+    {% if title != 'Moje rezerwacje' %}
+    <tr>
+      <th class="text-light bg-info">Zgłasza</th>
+      <td width="*">
+        <a href="">{{ event.author.get_full_name }}</a>
+      </td>
+      <th width="12%" class="text-light bg-info">Data</th>
+      <td width="20%">{{ event.created }}</td>
+    </tr>
+    {% endif %} {% if event.description %}
+    <tr>
+      <th class="text-light bg-info">Opis</th>
+      <td colspan="3" class="description">
+        <span>{{ event.description|slice:":20" }}</span><span
+          class="d-none hide-{{ event.id }}">{{ event.description|slice:"20:" }}</span>{% if event.description|length > 20 %}<span
+          class="hide-{{ event.id }}">...</span>
+        <a class="ml-2" href=""
+          onclick="$('.hide-{{ event.id }}').toggleClass('d-none').siblings('a').toggleClass('txt-more'); return false;"></a>
         {% endif %}
-        {% if event.description %}
-            <tr>
-                <th class="text-light bg-info">Opis</th>
-                <td colspan="3" class="description">
-                    <span>{{ event.description|slice:":20" }}</span>
-                    {% if event.description|length > 20 %}
-                        <span class="hide-{{ event.id }}">...</span>
-                        <span class="d-none hide-{{ event.id }}">{{ event.description|slice:"20:" }}</span>
-                        <a class="ml-2" href="" onclick="$('.hide-{{ event.id }}').toggleClass('d-none').siblings('a').toggleClass('txt-more'); return false;"></a>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endif %}
-        <tr>
-            <th class="text-light bg-info">Lokalizacja</th>
-            <td colspan="3">
-                <table class="table">
-                    {% for term in event.term_set.all %}
-                    <tr class="text-center">
-                        <td>{{ term.start|time }} - {{ term.end|time }}</td>
-                        <td>{{ term.day|date:"j E Y" }}</td>
-                        <td>{% if term.room %}<a href="{{ term.room.get_absolute_url }}">Sala {{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+      </td>
+    </tr>
+    {% endif %}
+    <tr>
+      <th class="text-light bg-info">Lokalizacja</th>
+      <td colspan="3">
+        <table class="table">
+          {% for term in event.term_set.all %}
+          <tr class="text-center">
+            <td>
+              {{ term.start|time }} - {{ term.end|time }}
             </td>
-        </tr>
-    </tbody>
+            <td>{{ term.day|date:"j E Y" }}</td>
+            <td>
+              {% if term.room %}<a href="{{ term.room.get_absolute_url }}">Sala
+                {{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </tbody>
 </table>
