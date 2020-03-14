@@ -32,10 +32,7 @@
             <tr>
               <th class="text-light bg-info">Opis</th>
               <td colspan="3" class="description">
-                <div class="d-inline-block text-truncate truncate-max-length" id="{{ event.id }}">
                   {{ event.description }}
-                </div>
-                <a href="" onclick="$('#{{ event.id }}').toggleClass('text-truncate truncate-max-length').siblings('a').toggleClass('txt-more'); return false;"></a>
               </td>
             </tr>
         {% endif %}
