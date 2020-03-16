@@ -60,7 +60,6 @@ class Thesis(models.Model):
     its status is then automatically changed to either 'in progress' if the advisor
     has assigned a student, or 'accepted' otherwise.
     """
-    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=MAX_THESIS_TITLE_LEN, unique=True)
 
     advisor = models.ForeignKey(
