@@ -93,7 +93,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     course.is_enrollment_on = any(g.can_enqueue for g in groups)
 
     waiting_students = {}
-    if BaseUser.is_employee(request.user):
+    if request.user.employee:
         waiting_students = Record.list_waiting_students([course])[course.id]
 
     data = {

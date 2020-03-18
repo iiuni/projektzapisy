@@ -59,7 +59,7 @@ def get_theses_user_full_name(user: User):
     If the user is an Employee, `get_full_name_with_academic_title` will be used;
     otherwise, `get_full_name` will be used.
 
-    Accepts a BaseUser instance because this is only called by the person serializer,
+    Accepts a User instance because this is only called by the person serializer,
     and doing it this way is faster (no need to look up the employee/student instance
     via FK)
     """

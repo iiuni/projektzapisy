@@ -22,7 +22,6 @@ from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData,
                                    sort_subject_groups_by_type)
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.system_state import SystemState
-from apps.users.models import BaseUser
 
 env = environ.Env()
 environ.Env.read_env()
@@ -33,7 +32,7 @@ EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 
 def plan_view(request):
-    if not request.user.is_superuser and not BaseUser.is_employee(request.user):
+    if not request.user.is_superuser and not request.user.employee:
         raise PermissionDenied
     year = SystemState.get_current_state().year
     employees_from_sheet = read_entire_sheet(
