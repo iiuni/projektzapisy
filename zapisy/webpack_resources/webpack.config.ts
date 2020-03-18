@@ -315,15 +315,23 @@ const webpackConfig: webpack.Configuration = {
             },
             {
                 test: /\.s[c|a]ss$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [{
-                        loader: "css-loader",
-                        options: { minimize: !DEV }
-                    }, {
-                        loader: "sass-loader"
-                    }]
-                })
+                use: [
+                    // Creates `style` nodes from JS strings
+                    "style-loader",
+                    // Translates CSS into CommonJS
+                    "css-loader",
+                    {
+                        // Adds browser-specific prefixes.
+                        loader: "postcss-loader",
+                        options: {
+                            config: {
+                                path: "webpack_resources",
+                            },
+                        },
+                    },
+                    // Compiles Sass to CSS
+                    "sass-loader",
+                  ],
             },
             {
                 test: /\.css$/,

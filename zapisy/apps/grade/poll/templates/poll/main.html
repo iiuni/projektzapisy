@@ -46,93 +46,78 @@
     <p>
       Kroki przeprowadzone są dla wszystkich dostępnych dla studenta ankiet.
     </p>
-    <ol>
-      <li>
-        <h4>Przygotowanie</h4>
-        <p>
-          Serwer posiada dla każdej ankiety klucze RSA:
-        </p>
-        <p>
-          \((e, n)\) &mdash; klucz publiczny ankiety,<br />
-          \((d, n)\) &mdash; klucz prywatny ankiety.
-        </p>
-        <p>
-          Student będzie potrzebował klucza publicznego ankiety do zaślepiania i odślepiania kluczy do głosowania.
-        </p>
-        <p>
-          O kluczu do głosowania można myśleć jako o karcie do głosowania, a zaślepianiu i odślepianiu jak o wkładaniu i
-          wyjmowaniu karty z koperty.
-        </p>
-      </li>
-      <li>
-        <h4>Tworzenie kart</h4>
-        <p>
-          Karta to liczba o nie większa od \(n\):
-        </p>
-        <p>
-          \(m\) &mdash; karta,<br />
-          \(k\) &mdash; koperta.
-        </p>
-        <p>
-          Dodatkowo muszą spełniać warunek:
-        </p>
-        \[\gcd\left( k, n \right) = 1 \text{.}\]
-      </li>
-      <li>
-        <h4>Zaślepianie</h4>
-        <p>
-          Otrzymane karty wkładamy do kopert:
-        </p>
+    <dl>
+      <dt>Przygotowanie</dt>
+      <dd>
+        Serwer posiada dla każdej ankiety klucze RSA:
+        <ul>
+          <li>\((e, n)\) &mdash; klucz publiczny ankiety,</li>
+          <li>\((d, n)\) &mdash; klucz prywatny ankiety.</li>
+        </ul>
+        Student będzie potrzebował klucza publicznego ankiety do zaślepiania i
+        odślepiania kluczy do głosowania. Można o tym myśleć jak o karcie do
+        głosowania — zaślepianie i odślepianie odpowiada wkładaniu i wyjmowaniu
+        karty z koperty.
+      </dd>
+      <dt>Tworzenie kart</dt>
+      <dd>
+        Student wybiera liczby \(m\) i \(k\) mniejsze od \(n\):
+        <ul>
+          <li>\(m\) &mdash; karta,</li>
+          <li>\(k\) &mdash; koperta.</li>
+        </ul>
+      </dd>
+      <dt>Zaślepianie</dt>
+      <dd>
+        Wylosowane karty wkładamy do kopert:
+
         \[\tilde{m} \coloneqq \text{sha256}^\ast(m) \text{,}\]
         \[t \coloneqq \tilde{m} \cdot {k}^{e} \bmod n \text{,}\]
-        <p>
-          gdzie \(\text{sha256}^\ast(x)\) to funkcja \(\text{sha256}\) hashująca reprezentację dziesiętną liczby \(x\) w
-          ASCII, bez wiodących zer.
-        </p>
-      </li>
-      <li>
-        <h4>Podpisanie</h4>
-        <p>
-          Karta w kopercie jest wysłana do podpisu, pomimo że serwer wie od kogo dostał kopertę, to nie zna karty \(m\).
-          Podpisuje wykonując następującą operację:
-        </p>
+        
+        gdzie \(\text{sha256}^\ast(x)\) to funkcja \(\text{sha256}\) hashująca
+        reprezentację dziesiętną liczby \(x\) w ASCII, bez wiodących zer.
+      </dd>
+      <dt>Podpisanie</dt>
+      <dd>
+        Karta w kopercie jest wysłana do podpisu. Pomimo że serwer wie od kogo
+        dostał kopertę (i weryfikuje, że jest to osoba uprawniona do wzięcia
+        udziału w odpowiedniej ankiecie), to nie zna karty \(m\). Podpisuje
+        wykonując następującą operację: 
+        
         \[s \coloneqq {t}^{d} \bmod n \text{.}\]
-        <p>
-          Tak podpisane dane są odsyłane do klienta.
-        </p>
-      </li>
-      <li>
-        <h4>Odślepianie</h4>
-        <p>
-          Wiedząc, że:
-        </p>
+        
+        Tak podpisane dane są odsyłane do studenta.
+      </dd>
+      <dt>Odślepianie</dt>
+      <dd>
+        Wiedząc, że:
+
         \[s = {t}^{d} = (\tilde{m} \cdot {k}^{e})^{d} = {\tilde{m}}^{d} \cdot {k}^{e \cdot d} = {\tilde{m}}^{d} \cdot k
         \pmod {n} \text{,}\]
-        <p>
-          obliczamy z użyciem algorytmu Euklidesa:
-        </p>
+
+        obliczamy z użyciem rozszerzonego algorytmu Euklidesa:
+
         \[ \dfrac{ s }{ k } = \dfrac{ {\tilde{m}}^{d} \cdot k }{ k } = {\tilde{m}}^{d} \cdot k \cdot {k}^{-1} =
         {\tilde{m}}^{d} \pmod {n} \text{.}\]
-        <p>
-          Wyjmujemy karty z kopert. Dzięki arytmetyce modulo, która zadziała jak kalka, karty również będą podpisane.
-        </p>
-      </li>
-      <li>
-        <h4>Wypełnianie ankiet</h4>
-        <p>
-          Otrzymane podpisane karty zapisane są w ustalonym formacie. Należy je zapisać, a następnie wylogować się i w
-          dowolnym czasie, z dowolnej maszyny, wejść do serwisu i bezpiecznie odpowiedzieć na pytania.
-        </p>
-        <p>
-          Ostatecznie przy wypełnianiu ankiet wysyłamy \(\tilde{m}^d\) i \(m\). Karta jest poprawna, gdy:
-        </p>
+
+        Wyjmujemy karty z kopert. Dzięki arytmetyce modulo, która zadziała jak
+        kalka, karty również będą podpisane.
+      </dd>
+      <dt>Wypełnianie ankiet</dt>
+      <dd>
+        Otrzymane podpisane karty zapisane są w ustalonym formacie. Należy je
+        zapisać, a następnie wylogować się i w dowolnym czasie, z dowolnej
+        maszyny, wejść do serwisu i bezpiecznie odpowiedzieć na pytania.
+        Ostatecznie przy wypełnianiu ankiet wysyłamy \(\tilde{m}^d\) i \(m\).
+        Karta jest poprawna, gdy:
+        
         \[{(\tilde{m}^d)}^{e} = \text{sha256}^\ast(m) \text{.}\]
-        <p>
-          Bonus zostaje przyznany, gdy klucze do głosowania są podpisane, ponieważ nie istnieje możliwość zweryfikowania
-          do kogo należy dany klucz.
-        </p>
-      </li>
-    </ol>
+        
+        Bonus zostaje srudentowi przyznany w momencie podpisywania zaślepionych
+        kart, ponieważ nie istnieje możliwość zweryfikowania do kogo należy dana
+        karta do głosowania w momencie wypełniania ankiet.
+      </dd>
+    </dl>
   </div>
 </div>
 

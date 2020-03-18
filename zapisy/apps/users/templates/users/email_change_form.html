@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load compressed %}
-{% load static %}
+{% load crispy_forms_tags %}
 
 {% block bread %}
-<li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="{% url 'my-profile' %}">Moje konto</a></li>
 <li class="breadcrumb-item active" aria-current="page">Zmień e-mail</li>
 {% endblock %}
 
@@ -11,13 +11,7 @@
 
 {% block all-content %}
 <h4>Zmień adres email</h4>
-<form action="" method="post" autocomplete="off">{% csrf_token %}
-	<fieldset>
-		<div class="form-group">
-			<label for="id_email" class="col-sm-1 col-form-label">Email</label>
-			<input type="email" name="email" value="email@example.org" class="xlarge form-control" maxlength="254" id="id_email" size="30">
-		</div>
-		<input type="submit" class="btn btn-light" value="Zmień">
-	</fieldset>
+<form method="post" autocomplete="off">{% csrf_token %}
+	{{ form|crispy }}
 </form>
 {% endblock %}

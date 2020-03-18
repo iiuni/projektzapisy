@@ -3,7 +3,7 @@
 {% regroup groups|dictsort:"type" by type as groups_by_type %}
 
 {% for class_type, class_groups in groups_by_type %}
-    {% include "courses/course_parts/groups_section.html" with class_type=class_type class_groups=class_groups %}
+    {% include "courses/course_parts/groups_section.html" with class_type=class_type class_groups=class_groups waiting_students=waiting_students %}
 {% endfor %}
 
 <hr>

@@ -1,25 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
-{% load i18n %}
-
-
-{% block js %}{{ block.super }}
-
-
-<script>
-$(function(){
-$('.checkall').on('click', function(){
-    var cls = $(this).parent().parent().attr('class');
-    if( $(this).attr('checked')){
-        $('tr[class="'+ cls +'"]').find('input[type="checkbox"]').attr('checked', true);
-    } else {
-        $('tr[class="'+ cls +'"]').find('input[type="checkbox"]').attr('checked', false);
-    }
-})
-});
-</script>
-
-{% endblock %}
 
 {% block bread %}
     <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
@@ -91,13 +70,6 @@ $('.checkall').on('click', function(){
             {% else %}
                 Brak informacji
             {% endif %}
-        </div>
-    {% endif %}
-
-    {% if perms.users.mailto_all_students %}
-        <div class="mb-5">
-            <h4>Kontakt</h4>
-            <a class="btn btn-light" href="{% url 'email-students' %}" role="button">Wyślij wiadomość do studentów</a>
         </div>
     {% endif %}
 

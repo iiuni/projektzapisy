@@ -1,5 +1,4 @@
 import os
-import logging
 import environ
 from django.contrib.messages import constants as messages
 
@@ -211,7 +210,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mailer',
-    'pipeline',
     'apps.enrollment.courses',
     'apps.enrollment.records',
     'apps.enrollment.timetable',
@@ -221,6 +219,7 @@ INSTALLED_APPS = (
     'apps.offer.proposal',
     'apps.offer.vote',
     'apps.offer.desiderata',
+    'apps.offer.plan',
 
     'apps.utils',
     'apps.schedule',
@@ -344,18 +343,6 @@ CACHES = {
 
 NEWS_PER_PAGE = 15
 
-if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
-    exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
-
-PIPELINE = env.bool('PIPELINE')
-PIPELINE_AUTO = False
-PIPELINE_VERSION = True
-PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
-
-COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
-COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
-COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -364,11 +351,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-PIPELINE_STORAGE = 'pipeline.storage.PipelineFinderStorage'
-PIPELINE_VERSIONING = 'pipeline.versioning.hash.MD5Versioning'
 STATICFILES_FINDERS = (
-    'pipeline.finders.PipelineFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )

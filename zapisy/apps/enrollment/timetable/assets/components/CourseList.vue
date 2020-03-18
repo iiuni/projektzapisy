@@ -57,9 +57,9 @@ export default class CourseList extends Vue {
     <a class="btn btn-small btn-light" @click="selection = []">Odznacz wszystkie</a>
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
-        <li v-for="c of visibleCourses" :key="c.id">
-          <input type="checkbox" :id="c.id" :value="c.id" v-model="selection">
-          <label :for="c.id">{{ c.name }}</label>
+        <li v-for="c of visibleCourses" :key="c.id" class="custom-control custom-checkbox">
+          <input type="checkbox" :id="c.id" :value="c.id" v-model="selection" class="custom-control-input">
+          <label :for="c.id" class="custom-control-label">{{ c.name }}</label>
         </li>
       </ul>
     </div>
@@ -75,6 +75,7 @@ li {
 ul {
   list-style: none;
   margin: 0;
+  padding-left: 0;
 }
 
 input[type="checkbox"] {
@@ -84,14 +85,12 @@ input[type="checkbox"] {
 
 label {
   display: block;
-  padding-top: 2px;
-  padding-left: 30px;
   text-align: left;
   width: auto;
   float: initial;
 }
 
 .course-list-sidebar-inner {
-  padding: 10px;
+  padding-top: 1rem;
 }
 </style>

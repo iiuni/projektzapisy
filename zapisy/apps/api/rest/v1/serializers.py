@@ -86,7 +86,7 @@ class ProgramSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    program = ProgramSerializer()
+    program = ProgramSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Student
@@ -115,6 +115,8 @@ class StudentSerializer(serializers.ModelSerializer):
         program_data = validated_data.pop('program', None)
         if program_data is not None:
             instance.program = Program.objects.get(name=program_data['name'])
+        else:
+            instance.program = None
         return super().update(instance, validated_data)
 
 

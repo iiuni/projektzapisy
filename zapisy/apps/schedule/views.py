@@ -354,10 +354,10 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
     elif form.cleaned_data.get('week', None) == 'nextsem':
         semester = Semester.objects.get_next()
     if semester:
-        terms = CourseTerm.objects.filter(group__course__semester=semester,
-                                          classrooms__in=rooms).select_related(
-                                              'group__course', 'group__teacher',
-                                              'group__teacher__user').prefetch_related('classrooms')
+        terms = CourseTerm.objects.filter(
+            group__course__semester=semester, classrooms__in=rooms).distinct().select_related(
+                'group__course', 'group__teacher',
+                'group__teacher__user').prefetch_related('classrooms')
         for term in terms:
             for r in set(term.classrooms.all()) & rooms:
                 events.append(
@@ -406,7 +406,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
     else:
         events = sorted(events, key=operator.attrgetter('room.id', 'weekday', 'begin'))
     terms_by_room = groupby(events, operator.attrgetter('room.number'))
-    terms_by_room = [(k, list(g)) for k, g in terms_by_room]
+    terms_by_room = sorted([(int(k), list(g)) for k, g in terms_by_room])
 
     return render(request, f'schedule/reports/report_{report_type}.html', {
         'events': terms_by_room,

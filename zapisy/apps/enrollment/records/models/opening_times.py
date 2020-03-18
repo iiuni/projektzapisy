@@ -129,9 +129,11 @@ class GroupOpeningTimes(models.Model):
                                     time: datetime) -> Dict[int, bool]:
         """For each group in groups checks if the group is open for the student.
 
-        For a single group, we first look at the relation between the group and
-        the student (GroupOpeningTimes). If there is none, the group might have
-        its own opening and closing times. Finally, we look at the student's T0.
+        For a single group, we first look at the course-specific opening and
+        closing times (that may be set exceptionally, even outside of the
+        enrollment period). If there is none, we follow the relation between the
+        group and the student (GroupOpeningTimes). Finally, we look at the
+        student's T0.
 
         The function will assume, that all the groups are in the same semester.
         In order to ensure the performance of this function, Groups should be
@@ -151,18 +153,25 @@ class GroupOpeningTimes(models.Model):
 
         ret: Dict[int, bool] = {}
         for k, group in groups.items():
-            if group.opening_time_for_student is not None:
-                ret[k] = (
-                    group.opening_time_for_student <= time <= group.course.semester.records_closing
-                )
-                continue
-            if group.course.records_start is not None and group.course.records_end is not None:
-                ret[k] = group.course.records_start <= time <= group.course.records_end
-                continue
-            if not is_after_t0:
-                ret[k] = False
-                continue
-            ret[k] = True
+            # Precedence of opening times rules:
+            # 1) Course-specific opening time; 2) Opening time from voting;
+            # 3) T0 time.
+            after_opening_time: bool = True
+            if group.course.records_start is not None:
+                after_opening_time = group.course.records_start <= time
+            elif group.opening_time_for_student is not None:
+                after_opening_time = group.opening_time_for_student <= time
+            elif not is_after_t0:
+                after_opening_time = False
+            # Precedence of closing times rules:
+            # 1) Course-specific closing time; 2) semester-set enrollment
+            # closing time (if records_closing is None, enrollment is closed).
+            before_closing_time: bool = False
+            if group.course.records_end is not None:
+                before_closing_time = time <= group.course.records_end
+            elif group.course.semester.records_closing is not None:
+                before_closing_time = time <= group.course.semester.records_closing
+            ret[k] = after_opening_time and before_closing_time
         return ret
 
     @classmethod

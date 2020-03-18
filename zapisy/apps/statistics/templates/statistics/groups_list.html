@@ -1,5 +1,8 @@
 {% extends "statistics/base.html" %}
 
+{% load filters %}
+{% load course_types %}
+
 {% block statistics-groups-active %}active{% endblock %}
 
 {% block statistics-content %}
@@ -16,22 +19,51 @@
                 <th scope="col">Zapisani</th>
                 <th scope="col">Kolejka</th>
                 <th scope="col">Przypięci</th>
-
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for course, groups in courses_list %}
                 <tr>
-                    <th colspan="12">{{ course.name }}</th>
+                    <th colspan="2">
+                        {{ course.name }}
+                    </th>
+                    <td colspan="6">
+                        {% with waiting_course=waiting_students|lookup:course.id %}
+                            {% for course_type in waiting_course %}
+                                <span class="badge badge-danger" title="Oczekujących w kolejkach">
+                                    {{ course_type|decode_class_type_plural }}
+                                    <span class="badge badge-light">
+                                        {{ waiting_course|lookup:course_type }}
+                                    </span>
+                                </span>
+                            {% endfor %}
+                        {% endwith %}
+                    </td>
                 </tr>
                 {% for group in groups %}
                     <tr>
                         <td>{{ group.teacher }}</td>
                         <td>{{ group.get_type_display }}</td>
-                        <td>{{ group.limit }}</td>
+                        <td>
+                            {{ group.limit }}
+                            {% for gs in group.guaranteed_spots.all %}
+                                + 
+                                <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                                    {{ gs.limit }}
+                                </span>
+                            {% endfor %}
+                        </td>
                         <td>{{ group.enrolled }}</td>
                         <td>{{ group.queued }}</td>
                         <td>{{ group.pinned }}</td>
+                        <td>
+                            <a class="badge badge-sm badge-primary"
+                                href="{% url 'admin:courses_group_change' group.id %}"
+                                target="_blank">
+                                Admin <i class="fas fas-sm fa-external-link-alt"></i>
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             {% endfor %}

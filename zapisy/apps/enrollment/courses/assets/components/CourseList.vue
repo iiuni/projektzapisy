@@ -37,9 +37,9 @@ export default Vue.extend({
 </script>
 
 <template>
-    <ul>
-        <li v-for="c in visibleCourses" v-bind:key="c.id" class="mb-1">
-            <a :href="c.url">{{ c.name }}</a>
+    <ul class="nav d-block">
+        <li v-for="c in visibleCourses" v-bind:key="c.id">
+            <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">{{ c.name }}</a>
         </li>
     </ul>
 </template>

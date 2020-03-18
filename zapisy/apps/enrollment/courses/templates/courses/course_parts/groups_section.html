@@ -1,7 +1,15 @@
 {% load course_types %}
+{% load filters %}
 
 <div class="table-responsive tutorial">
-    <h3>{{ class_type|decode_class_type_plural  }}</h3>
+    <h3 class="d-inline-block">{{ class_type|decode_class_type_plural  }} 
+    </h3>
+    {% if class_type in waiting_students %}
+        <span class="badge badge-danger d-inline-block align-text-bottom ml-2">
+            Niezapisanych&mdash;oczekujących
+            <span class="badge badge-light">{{ waiting_students|lookup:class_type }}</span>
+        </span>
+    {% endif %}
     <table class="table table-bordered text-center">
         <thead class="thead-dark">
             <tr>
