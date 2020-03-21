@@ -1,16 +1,17 @@
 import copy
 import csv
-import json
+import os
 
+import environ
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-import environ
 from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
 from apps.offer.plan.sheets import (create_sheets_service, read_entire_sheet,
                                     update_plan_proposal_sheet,
@@ -24,7 +25,7 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.system_state import SystemState
 
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
 
 VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
 CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')

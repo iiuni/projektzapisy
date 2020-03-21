@@ -1,15 +1,14 @@
-import datetime
-import json
-from operator import attrgetter, itemgetter
+import os
 from typing import List, Optional
 
-import gspread
-
+from django.conf import settings
 import environ
-from apps.offer.plan.utils import (ProposalSummary, ProposalVoteSummary,
-                                   SingleYearVoteSummary, VotingSummaryPerYear)
-from apps.offer.vote.models.system_state import SystemState
+import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+
+from apps.offer.plan.utils import (
+    ProposalSummary, ProposalVoteSummary, SingleYearVoteSummary,
+    VotingSummaryPerYear)
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -17,7 +16,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     """Loads up data from enviorement, creates credentials and connects to appropriate spreadsheet."""
     env = environ.Env()
-    environ.Env.read_env()
+    environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
     creds = {"type": env('SERVICE_TYPE'),
              "project_id": env('PROJECT_ID'),
              "private_key_id": env('PRIVATE_KEY_ID'),
