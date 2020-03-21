@@ -250,6 +250,7 @@ DATETIME_FORMAT = "j N Y, H:i"
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
 CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
+CAS_LOGOUT_COMPLETELY = False
 
 # References pull request #655: https://github.com/iiuni/projektzapisy/pull/655
 # Force django_cas_ng to use protocol version 3 instead of 2 (the default).
@@ -262,7 +263,6 @@ CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 LOGOUT_REDIRECT_URL = '/'
 CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
-LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'

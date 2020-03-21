@@ -2,20 +2,15 @@ import datetime
 import json
 import logging
 import re
-import urllib
-
-from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.views import LoginView
-from django.shortcuts import render, redirect, Http404
+from django.shortcuts import render, Http404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-from django_cas_ng import views as cas_baseviews
 
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
@@ -266,63 +261,6 @@ def my_profile(request):
     })
 
     return render(request, 'users/my_profile.html', data)
-
-
-@login_required
-def cas_logout(request, **kwargs) -> HttpResponse:
-    """Rewrites the logout request to correctly support user redirections.
-
-    If the given HttpResponse is a redirect to CAS and it is being processed
-    using the legacy protocol (version 2), rewrite the given url to match
-    the new schema. If not, simply return the original response.
-    """
-    response = cas_baseviews.LogoutView.as_view()(request, **kwargs)
-
-    if (isinstance(response, HttpResponseRedirect) and
-            int(settings.CAS_VERSION) == 2):
-        # Explode the full generated response URL to CAS into a tuple
-        parsed_response_url: tuple = urllib.parse.urlsplit(response['Location'])
-        scheme, netloc, path, query, fragment = parsed_response_url
-
-        # Get the query parameters from the URL, and:
-        # - remove the old `url` parameter if present
-        # - generate new target URL for the redirect
-        # - append `service` with the new URL to a dictionary
-        parameters: dict = urllib.parse.parse_qs(query)
-        parameters.pop('url', None)
-        redirect_target_url: str = request.build_absolute_uri(settings.CAS_REDIRECT_URL)
-        parameters['service'] = [redirect_target_url]
-
-        # Turn a dictionary of parameters into a string
-        new_query: str = urllib.parse.urlencode(parameters, doseq=True)
-
-        # Recreate the logout URL to CAS with updated parameters
-        new_url = (scheme, netloc, path, new_query, fragment)
-        new_url: str = urllib.parse.urlunsplit(new_url)
-        response['Location'] = new_url
-
-    return response
-
-
-def login_plus_remember_me(request: HttpRequest, **kwargs: Any) -> HttpResponse:
-    """
-    Sign-in function with an option to save the session.
-    If the user clicked the 'Remember me' button (we read it from POST data), the
-    session will expire after two weeks.
-    """
-    if request.user.is_authenticated:
-        return redirect("main-page")
-    if 'polls' in request.session:
-        del request.session['polls']
-    if 'finished' in request.session:
-        del request.session['finished']
-
-    if request.method == 'POST':
-        if request.POST.get('remember_me', None):
-            request.session.set_expiry(datetime.timedelta(14).total_seconds())
-        else:
-            request.session.set_expiry(0)  # Expires on browser closing.
-    return LoginView.as_view(**kwargs)(request)
 
 
 def get_ical_filename(user: User, semester: Semester) -> str:

@@ -121,7 +121,7 @@
                                 </a>
                             </form>
                             <div class="collapse" id="login-without-usos">
-                                <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                <form action="{% url 'login' %}" method="POST" class="px-4 py-3">
                                         {% csrf_token %}
                                         {% if request.path == '/' %}
                                             <input type="hidden" name="next"
@@ -143,14 +143,6 @@
                                                     name="password" placeholder="Hasło"
                                                     oninvalid="this.setCustomValidity('Hasło jest wymagane')"
                                                     required>
-                                        </div>
-        
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" value="true"
-                                                    id="remember" name="remember_me">
-                                            <label class="form-check-label" for="remember">
-                                                Pamiętaj mnie
-                                            </label>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Zaloguj</button>
                                         <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a> 

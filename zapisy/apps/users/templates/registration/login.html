@@ -14,12 +14,22 @@
     </div>
 {% endif %}
 
+{% if next %}
+    <div class="alert alert-warning">
+        {% if user.is_authenticated %}
+            Brak uprawnień do wyświetlenia tej strony.
+        {% else %}
+            Proszę zalogować się by zobaczyć tę stronę.
+        {% endif %}
+    </div>
+{% endif %}
+
 
 <div class="container">
     <h3 class="display-3">Logowanie</h3>
     <div class="row mt-4">
         <div class="col-md-3 col-12 loginbox p-4">
-            <form action="{% url 'user-login' %}" method="POST">
+            <form action="{% url 'login' %}" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="id_username">Login</label>
@@ -28,12 +38,6 @@
                 <div class="form-group">
                     <label for="is_password">Hasło</label>
                     <input type="password" name="password" required="" id="id_password" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember_me"  id="xlInput3"  value="true"/>
-                        <label class="form-check-label" for="xlInput3" >Zapamiętaj mnie</label>
-                    </div>
                 </div>
                 <input type="hidden" name="next" value="{{ next }}" />
                 <button class="btn btn-secondary" type="submit">Zaloguj</button>
@@ -51,7 +55,7 @@
             <p>
                 Skorzystaj z naszego 
                 <a href="{% url 'password_reset'%}">formularza</a>. Jeżeli to
-                nie pomoże skontaktuj się z dziekanatem.
+                nie pomoże <a href="mailto:zapisy@cs.uni.wroc.pl">skontaktuj się z administratorem</a>.
             </p>
         </div>
     </div>

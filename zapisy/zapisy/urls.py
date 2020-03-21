@@ -5,7 +5,6 @@ from django_cas_ng import views as cas_views
 
 import apps.news.views
 from apps.api.rest.v1.urls import router as api_router_v1
-from apps.users import views as users_views
 
 admin.autodiscover()
 
@@ -34,7 +33,7 @@ urlpatterns = [
 
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/login', cas_views.LoginView.as_view(), name='cas_ng_login'),
-    path('accounts/logout', users_views.cas_logout, name='cas_ng_logout'),
+    path('accounts/logout', cas_views.LogoutView.as_view(), name='cas_ng_logout'),
     path('accounts/callback', cas_views.CallbackView.as_view(), name='cas_ng_proxy_callback'),
 ]
 
