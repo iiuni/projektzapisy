@@ -7,6 +7,7 @@ class UsersConfig(AppConfig):
     verbose_name = 'Users'
 
     def ready(self):
+        """Monkey-patches auth.User models to provide Student and Employee."""
         super(UsersConfig, self).ready()
 
         def get_student(self):
@@ -24,3 +25,7 @@ class UsersConfig(AppConfig):
         UserModel = get_user_model()
         setattr(UserModel, 'student', property(get_student))
         setattr(UserModel, 'employee', property(get_employee))
+
+        from django.contrib.auth import models as auth_models
+        setattr(auth_models.AnonymousUser, 'student', None)
+        setattr(auth_models.AnonymousUser, 'employee', None)
