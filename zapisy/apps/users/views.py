@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import re
 
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -15,9 +14,6 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.conf import settings
 
-from vobject import iCalendar
-import unidecode
-
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
 from apps.enrollment.timetable.views import build_group_list
@@ -25,7 +21,6 @@ from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 
-from .exceptions import InvalidUserException
 from .forms import EmailChangeForm, ConsultationsChangeForm
 from .models import Employee, Student, PersonalDataConsent
 
@@ -261,66 +256,6 @@ def my_profile(request):
     })
 
     return render(request, 'users/my_profile.html', data)
-
-
-def get_ical_filename(user: User, semester: Semester) -> str:
-    name_with_semester = "{}_{}".format(user.get_full_name(), semester.get_short_name())
-    name_ascii_only = unidecode.unidecode(name_with_semester)
-    path_safe_name = re.sub(r"[\s+/]", "_", name_ascii_only)
-    return "fereol_schedule_{}.ical".format(path_safe_name.lower())
-
-
-@login_required
-def create_ical_file(request: HttpRequest) -> HttpResponse:
-    user = request.user
-    semester = Semester.get_default_semester()
-
-    cal = iCalendar()
-    cal.add('x-wr-timezone').value = 'Europe/Warsaw'
-    cal.add('version').value = '2.0'
-    cal.add('prodid').value = 'Fereol'
-    cal.add('calscale').value = 'GREGORIAN'
-    cal.add('calname').value = "{} - schedule".format(user.get_full_name())
-    cal.add('method').value = 'PUBLISH'
-
-    if request.user.student:
-        student = user.student
-        records = Record.objects.filter(
-            student_id=student.pk, group__course__semester_id=semester.pk,
-            status=RecordStatus.ENROLLED
-        ).select_related('group', 'group__course')
-        groups = [r.group for r in records]
-    elif request.user.employee:
-        groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
-    else:
-        raise InvalidUserException()
-    for group in groups:
-        course_name = group.course.name
-        group_type = group.human_readable_type().lower()
-        try:
-            terms = group.get_all_terms_for_export()
-        except IndexError:
-            continue
-        for term in terms:
-            start_datetime = datetime.datetime.combine(term.day, term.start)
-            start_datetime += BREAK_DURATION
-            end_datetime = datetime.datetime.combine(term.day, term.end)
-            event = cal.add('vevent')
-            event.add('summary').value = "{} - {}".format(course_name, group_type)
-            if term.room:
-                event.add('location').value = 'sala ' + term.room.number \
-                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
-
-            event.add('description').value = 'prowadzący: ' \
-                                             + group.get_teacher_full_name()
-            event.add('dtstart').value = start_datetime
-            event.add('dtend').value = end_datetime
-
-    cal_str = cal.serialize()
-    response = HttpResponse(cal_str, content_type='application/calendar')
-    ical_file_name = get_ical_filename(user, semester)
-    response['Content-Disposition'] = "attachment; filename={}".format(ical_file_name)
-    return response
 
 
 @login_required

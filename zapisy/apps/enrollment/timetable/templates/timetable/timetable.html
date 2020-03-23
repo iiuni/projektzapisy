@@ -20,7 +20,8 @@
 
 {% block all-content %}
     <p class="text-right">
-        <a class="text-secondary" href="{% url 'ical' %}">{% trans "Eksportuj plan zajęć do pliku .ical" %}</a>
+        <a class="btn btn-sm btn-light" href="{% url 'calendar-export' %}">
+            <i class="fa fa-calendar-alt"></i> Eksportuj plan zajęć</a>
     </p>
     <div class="row m-0" id="timetable">
     </div>

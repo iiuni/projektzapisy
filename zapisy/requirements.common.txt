@@ -23,13 +23,10 @@ rollbar==0.13.17
 newrelic==2.68.0.50
 gunicorn==19.7.1
 python-dateutil==2.7.3
-vobject==0.9.5
 python-memcached==1.58
 xhtml2pdf==0.2.2
 # BBCode -> HTML
 postmarkup==1.2.2
-# Remove accents from strings (diacritics converted to Latin equivalents)
-unidecode==1.0.22
 # PyYAML is used for fixtures.
 pyyaml==5.1
 # Bokeh - library used for plotting in views displaying Poll results
