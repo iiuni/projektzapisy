@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.users import is_theses_board_member
@@ -40,6 +41,16 @@ class ThesesSystemSettings(models.Model):
     class Meta:
         verbose_name = "ustawienia systemu prac dyplomowych"
         verbose_name_plural = "ustawienia systemu prac dyplomowych"
+
+
+class ThesesQuerySet(models.QuerySet):
+    def visible(self, user):
+        if user.is_staff or is_theses_board_member(user):
+            return self
+        return self.filter(
+            (~Q(status=ThesisStatus.BEING_EVALUATED) & ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) |
+            Q(advisor__user=user) |
+            Q(supporting_advisor__user=user))
 
 
 class Thesis(models.Model):
@@ -82,6 +93,8 @@ class Thesis(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     # A thesis is _modified_ when its status changes
     modified = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()  # The default manager.
+    theses = ThesesQuerySet.as_manager()
 
     class Meta:
         verbose_name = "praca dyplomowa"
@@ -93,18 +106,6 @@ class Thesis(models.Model):
         super(Thesis, self).save(*args, **kwargs)
         if not old or (old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED):
             thesis_voting_activated.send(sender=self.__class__, instance=self)
-
-    def can_see_thesis(self, user):
-        return ((self.status != ThesisStatus.BEING_EVALUATED and self.status != ThesisStatus.RETURNED_FOR_CORRECTIONS) or
-                is_theses_board_member(user) or
-                (self.advisor is not None and user == self.advisor.user) or
-                (self.supporting_advisor is not None and user == self.supporting_advisor.user) or
-                user.is_staff)
-
-    @staticmethod
-    def get_visible_theses(user):
-        theses = Thesis.objects.all()
-        return filter(lambda t: t.can_see_thesis(user), theses)
 
     def get_accepted_votes(self):
         return len(self.thesis_votes.filter(vote=ThesisVote.ACCEPTED))

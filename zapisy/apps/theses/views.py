@@ -26,7 +26,7 @@ from apps.users.models import BaseUser, Employee, Student
 def list_all(request):
     """Display list of all visible theses"""
 
-    visible_theses = Thesis.get_visible_theses(request.user)
+    visible_theses = Thesis.theses.visible(request.user)
     board_member = is_theses_board_member(request.user)
 
     theses_list = []
