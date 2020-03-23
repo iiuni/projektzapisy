@@ -3,7 +3,6 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import Http404, redirect, render, reverse
 from django.views.decorators.http import require_POST
@@ -17,7 +16,7 @@ from apps.notifications.views import create_form
 from apps.users.decorators import (
     employee_required, external_contractor_forbidden)
 
-from .forms import ConsultationsChangeForm, EmailChangeForm
+from .forms import EmailChangeForm, EmployeeDataForm
 from .models import Employee, PersonalDataConsent, Student
 
 logger = logging.getLogger()
@@ -125,44 +124,31 @@ def employees_view(request, user_id: int = None):
 
 @login_required
 def email_change(request):
-    """function that enables mail changing"""
-    if request.POST:
-        data = request.POST.copy()
-        form = EmailChangeForm(data, instance=request.user)
+    """Allows users to change email address."""
+    if request.method == 'POST':
+        form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
-            email = form.cleaned_data['email']
-
-            user = User.objects.filter(email=email)
-
-            if user and user != request.user:
-                messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render(request, 'users/email_change_form.html', {'form': form})
-
             form.save()
-            logger.info('User (%s) changed email' % request.user.get_full_name())
+            logger.info(f"{request.user} changed email to {form.cleaned_data['email']}")
             messages.success(request, message="Twój adres e-mail został zmieniony.")
             return redirect('my-profile')
     else:
-        form = EmailChangeForm({'email': request.user.email})
-    return render(request, 'users/email_change_form.html', {'form': form})
+        form = EmailChangeForm(instance=request.user)
+    return render(request, 'users/form.html', {'form': form})
 
 
 @employee_required
-def consultations_change(request):
-    """function that enables consultations changing"""
+def employee_data_change(request):
     employee = request.user.employee
-    if request.POST:
-        data = request.POST.copy()
-        form = ConsultationsChangeForm(data, instance=employee)
+    if request.method == 'POST':
+        form = EmployeeDataForm(request.POST, instance=employee)
         if form.is_valid():
             form.save()
-            logger.info('User (%s) changed consultations' % request.user.get_full_name())
             messages.success(request, "Twoje dane zostały zmienione.")
             return redirect('my-profile')
     else:
-        form = ConsultationsChangeForm(
-            {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
-    return render(request, 'users/employee_data_form.html', {'form': form})
+        form = EmployeeDataForm(instance=employee)
+    return render(request, 'users/form.html', {'form': form})
 
 
 @login_required
