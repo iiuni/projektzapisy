@@ -49,9 +49,9 @@ jobs:
         - |
           echo "travis_fold:start:yarn"
           # Installs Yarn/NPM dependencies.
-          (cd zapisy && yarn) || exit 1
+          cd zapisy && yarn
           # Builds assets.
-          (cd zapisy && yarn build) || exit 1
+          cd zapisy && yarn build
           # Don't store the build cache; it changes after each build, Travis then
           # picks that change up and repacks the cache archive which takes forever
           rm -rf zapisy/node_modules/.cache-loader-*
