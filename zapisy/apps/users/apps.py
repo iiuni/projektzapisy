@@ -29,3 +29,5 @@ class UsersConfig(AppConfig):
         from django.contrib.auth import models as auth_models
         setattr(auth_models.AnonymousUser, 'student', None)
         setattr(auth_models.AnonymousUser, 'employee', None)
+
+        import apps.users.signals
