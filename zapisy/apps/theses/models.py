@@ -93,8 +93,7 @@ class Thesis(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     # A thesis is _modified_ when its status changes
     modified = models.DateTimeField(auto_now_add=True)
-    objects = models.Manager()  # The default manager.
-    theses = ThesesQuerySet.as_manager()
+    objects = ThesesQuerySet.as_manager()
 
     class Meta:
         verbose_name = "praca dyplomowa"
