@@ -1,41 +1,31 @@
-import datetime
 import json
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
-from django.shortcuts import render, Http404
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-
-from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
-from django.conf import settings
+from django.shortcuts import Http404, redirect, render, reverse
+from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
-from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
+from apps.enrollment.records.models import (
+    GroupOpeningTimes, Record, RecordStatus, T0Times)
 from apps.enrollment.timetable.views import build_group_list
-from apps.notifications.views import create_form
-from apps.users.decorators import employee_required, external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
+from apps.notifications.views import create_form
+from apps.users.decorators import (
+    employee_required, external_contractor_forbidden)
 
-from .forms import EmailChangeForm, ConsultationsChangeForm
-from .models import Employee, Student, PersonalDataConsent
+from .forms import ConsultationsChangeForm, EmailChangeForm
+from .models import Employee, PersonalDataConsent, Student
 
 logger = logging.getLogger()
-
-GTC = {'1': 'wy', '2': 'cw', '3': 'pr',
-       '4': 'cw', '5': 'cw+prac',
-       '6': 'sem', '7': 'lek', '8': 'WF',
-       '9': 'rep', '10': 'proj'}
-BREAK_DURATION = datetime.timedelta(minutes=15)
 
 
 @login_required
 @external_contractor_forbidden
-def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
+def students_view(request, user_id: int = None):
     """View for students list and student profile if user id in URL is provided"""
     students_queryset = Student.get_active_students().select_related('user')
     if not request.uset.employee:
@@ -64,7 +54,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
         # We will not show the student profile if he decides to hide it.
         if not request.user.employee and not student.consent_granted():
             messages.warning(request, "Student ukrył swój profil")
-            return HttpResponseRedirect(reverse('students-list'))
+            return redirect('students-list')
 
         semester = Semester.objects.get_next()
 
@@ -89,7 +79,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
+def employees_view(request, user_id: int = None):
     """View for employees list and employee profile if user id in URL is provided"""
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
@@ -134,31 +124,7 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
 
 
 @login_required
-def set_language(request: HttpRequest) -> HttpResponse:
-    """
-    Redirect to a given url while setting the chosen language in the
-    session or cookie. The url and the language code need to be
-    specified in the request parameters.
-
-    Since this view changes how the user will see the rest of the site, it must
-    only be accessed as a POST request. If called as a GET request, it will
-    redirect to the page in the request (the 'next' parameter) without changing
-    any state.
-    """
-    redirect_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
-    response = HttpResponseRedirect(redirect_url)
-    if request.method == 'POST':
-        lang_code = request.POST.get('language', None)
-        if lang_code and check_for_language(lang_code):
-            if hasattr(request, 'session'):
-                request.session[LANGUAGE_SESSION_KEY] = lang_code
-            else:
-                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
-    return response
-
-
-@login_required
-def email_change(request: HttpRequest) -> HttpResponse:
+def email_change(request):
     """function that enables mail changing"""
     if request.POST:
         data = request.POST.copy()
@@ -175,14 +141,14 @@ def email_change(request: HttpRequest) -> HttpResponse:
             form.save()
             logger.info('User (%s) changed email' % request.user.get_full_name())
             messages.success(request, message="Twój adres e-mail został zmieniony.")
-            return HttpResponseRedirect(reverse('my-profile'))
+            return redirect('my-profile')
     else:
         form = EmailChangeForm({'email': request.user.email})
     return render(request, 'users/email_change_form.html', {'form': form})
 
 
 @employee_required
-def consultations_change(request: HttpRequest) -> HttpResponse:
+def consultations_change(request):
     """function that enables consultations changing"""
     employee = request.user.employee
     if request.POST:
@@ -192,7 +158,7 @@ def consultations_change(request: HttpRequest) -> HttpResponse:
             form.save()
             logger.info('User (%s) changed consultations' % request.user.get_full_name())
             messages.success(request, "Twoje dane zostały zmienione.")
-            return HttpResponseRedirect(reverse('my-profile'))
+            return redirect('my-profile')
     else:
         form = ConsultationsChangeForm(
             {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
@@ -270,4 +236,4 @@ def personal_data_consent(request):
             PersonalDataConsent.objects.update_or_create(student=request.user.student,
                                                          defaults={'granted': False})
             messages.success(request, 'Brak zgody zapisany')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    return redirect(request.META.get('HTTP_REFERER'))
