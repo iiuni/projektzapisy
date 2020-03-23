@@ -47,6 +47,7 @@ jobs:
           - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
       script: 
         - |
+          echo "travis_fold:start:yarn"
           # Installs Yarn/NPM dependencies.
           (cd zapisy && yarn) || exit 1
           # Builds assets.
@@ -54,6 +55,7 @@ jobs:
           # Don't store the build cache; it changes after each build, Travis then
           # picks that change up and repacks the cache archive which takes forever
           rm -rf zapisy/node_modules/.cache-loader-*
+          echo "travis_fold:end:yarn"
         - cd zapisy && python manage.py test apps --failfast --parallel
 
 cache:
