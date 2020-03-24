@@ -1,17 +1,7 @@
-import logging
-from typing import List, Optional
-
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.db.models import QuerySet
-
-
-logger = logging.getLogger()
-
-EMPLOYEE_STATUS_CHOICES = [(0, 'aktywny'), (1, 'nieaktywny')]
-ISIM_PROGRAM_NAME = 'ISIM, dzienne I stopnia'
 
 
 def is_student(user: User) -> bool:
@@ -40,28 +30,8 @@ class Employee(models.Model):
     consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, validators=[MaxLengthValidator(4200)])
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
-    status = models.PositiveIntegerField(
-        default=0,
-        choices=EMPLOYEE_STATUS_CHOICES,
-        verbose_name="Status")
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
     usos_id = models.PositiveIntegerField(verbose_name="ID w USOSie", null=True, blank=True)
-
-    def has_privileges_for_group(self, group_id: int) -> bool:
-        """
-        Method used to verify whether user is allowed to create a poll for certain group
-        (== he is an admin, a teacher for this course or a teacher for this group)
-        """
-        from apps.enrollment.courses.models.group import Group
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group.teacher == self or group.course.owner == self or self.user.is_staff
-        except Group.DoesNotExist:
-            logger.error(
-                'Function Employee.has_privileges_for_group(group_id = %d) throws Group.DoesNotExist exception.' %
-                group_id)
-        return False
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
@@ -90,7 +60,6 @@ class Employee(models.Model):
 
 
 class Student(models.Model):
-
     user = models.OneToOneField(
         User,
         verbose_name="Użytkownik",
@@ -111,7 +80,6 @@ class Student(models.Model):
         null=True,
         default=None,
         on_delete=models.CASCADE)
-    block = models.BooleanField(verbose_name="blokada planu", default=False)
     semestr = models.PositiveIntegerField(default=0, verbose_name="Semestr")
     status = models.PositiveIntegerField(default=0, verbose_name="Status")
     status.help_text = "0 - aktywny student, 1 - skreślony student"
@@ -131,39 +99,11 @@ class Student(models.Model):
     def is_active(self) -> bool:
         return self.status == 0
 
-    def is_isim(self) -> bool:
-        try:
-            return self.program == Program.objects.get(name=ISIM_PROGRAM_NAME)
-        except Program.DoesNotExist:
-            return False
-
     def consent_answered(self) -> bool:
         return hasattr(self, 'consent')
 
     def consent_granted(self) -> bool:
         return self.consent_answered() and self.consent.granted
-
-    def get_type_of_studies(self) -> str:
-        """Returns type of studies."""
-        semestr = {
-            1: 'pierwszy',
-            2: 'drugi',
-            3: 'trzeci',
-            4: 'czwarty',
-            5: 'piąty',
-            6: 'szósty',
-            7: 'siódmy',
-            8: 'ósmy',
-            9: 'dziewiąty',
-            10: 'dziesiąty',
-            0: 'niezdefiniowany'}[
-            self.semestr]
-        return '%s, semestr %s' % (self.program, semestr)
-    get_type_of_studies.short_description = 'Studia'
-
-    def participated_in_last_grades(self) -> int:
-        from apps.grade.ticket_create.models.student_graded import StudentGraded
-        return StudentGraded.objects.filter(student=self, semester__in=[45, 239]).count()
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
@@ -173,24 +113,14 @@ class Student(models.Model):
     def get_active_students(cls) -> QuerySet:
         return cls.objects.filter(status=0)
 
-    def records_set_locked(self, locked: bool) -> None:
-        self.block = locked
-        self.save()
-
-    def is_first_year_student(self) -> bool:
-        return (self.semestr in [1, 2]) and (self.program.id in [0, 2])
-
     class Meta:
-        verbose_name: str = 'student'
-        verbose_name_plural: str = 'studenci'
-        app_label: str = 'users'
-        ordering: List[str] = ['user__last_name', 'user__first_name']
+        verbose_name = 'student'
+        verbose_name_plural = 'studenci'
+        app_label = 'users'
+        ordering = ['user__last_name', 'user__first_name']
 
 
 class Program(models.Model):
-    """
-        Program of student studies
-    """
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
 
     class Meta:

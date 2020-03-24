@@ -27,7 +27,7 @@ logger = logging.getLogger()
 def students_view(request, user_id: int = None):
     """View for students list and student profile if user id in URL is provided"""
     students_queryset = Student.get_active_students().select_related('user')
-    if not request.uset.employee:
+    if not request.user.employee:
         students_queryset = students_queryset.filter(consent__granted=True)
     students = {
         s.pk: {

@@ -59,12 +59,11 @@ export_as_csv.short_description = "Export jako CSV"
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('matricula', 'get_full_name', 'ects', 'get_type_of_studies')
+    list_display = ('matricula', 'get_full_name', 'ects', 'program', 'semestr',)
     fieldsets = [
         (None, {'fields': ['user', 'matricula', 'status']}),
         ('Studia', {'fields': ['numeryczna_l', 'dyskretna_l', 'program', 'semestr', 'ects']}),
-        ('Zapisy', {'fields': ['records_opening_bonus_minutes', 'block']}),
-        ('Inne', {'fields': ['last_news_view'], 'classes': ['collapse']}),
+        ('Zapisy', {'fields': ['records_opening_bonus_minutes']}),
     ]
     search_fields = ('user__first_name', 'user__last_name', 'matricula')
     list_filter = ('program', 'status', 'semestr')
@@ -81,11 +80,11 @@ class StudentAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('get_full_name', 'homepage', 'room', 'consultations',)
-    list_filter = ('status',)
+    list_filter = ('user__is_active',)
     search_fields = ('user__first_name', 'user__last_name', 'user__username')
     fieldsets = [
         (None,
-         {'fields': ['user', 'status', 'homepage', 'room', 'consultations']})
+         {'fields': ['user', 'homepage', 'room', 'consultations']})
     ]
     ordering = ['user__last_name', 'user__first_name']
     list_display_links = ('get_full_name',)

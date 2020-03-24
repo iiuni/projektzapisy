@@ -137,7 +137,7 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
         return
 
     records = set(Employee.get_actives().select_related('user')) | set(
-        Student.objects.filter(status=0).select_related('user'))
+        Student.get_active_students().select_related('user'))
     users = [element.user for element in records]
     target = reverse('news-one', args=[news.id])
 
