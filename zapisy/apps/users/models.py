@@ -85,13 +85,6 @@ class Student(models.Model):
                                     default=True,
                                     help_text="Student może być aktywny lub skreślony.")
 
-    t0 = models.DateTimeField(null=True, blank=True)
-
-    dyskretna_l = models.BooleanField(default=False)
-    numeryczna_l = models.BooleanField(default=False)
-    algorytmy_l = models.BooleanField(default=False)
-    programowanie_l = models.BooleanField(default=False)
-
     usos_id = models.PositiveIntegerField(
         null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
 

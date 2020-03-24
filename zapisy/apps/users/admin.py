@@ -24,7 +24,7 @@ class StudentAdmin(admin.ModelAdmin):
     list_display = ('matricula', 'get_full_name', 'ects', 'program', 'semestr',)
     fieldsets = [
         (None, {'fields': ['user', 'matricula', 'is_active']}),
-        ('Studia', {'fields': ['numeryczna_l', 'dyskretna_l', 'program', 'semestr', 'ects']}),
+        ('Studia', {'fields': ['program', 'semestr', 'ects']}),
         ('Zapisy', {'fields': ['records_opening_bonus_minutes']}),
     ]
     search_fields = ('user__first_name', 'user__last_name', 'matricula')

@@ -287,10 +287,8 @@ class WrapperTests(APILiveServerTestCase):
         AuthGroup.objects.create(name="students")
         Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
 
-        student_id = self.wrapper.create_student(
-            420, '666', "John", "Doe", "doe@awesome.mail",
-            0, "Informatyka, dzienne I stopnia inżynierskie",
-            1, False, False, False)
+        student_id = self.wrapper.create_student(420, '666', "John", "Doe", "doe@awesome.mail", 0,
+                                                 "Informatyka, dzienne I stopnia inżynierskie", 1)
         student = self.wrapper.student(student_id)
         self.assertEqual(student.usos_id, 420)
         self.assertEqual(student.matricula, '666')

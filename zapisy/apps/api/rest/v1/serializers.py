@@ -91,7 +91,7 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ('id', 'usos_id', 'matricula', 'ects', 'is_active', 'user', 'program',
-                  'semestr', 'algorytmy_l', 'numeryczna_l', 'dyskretna_l')
+                  'semestr',)
 
     @transaction.atomic
     def create(self, validated_data):
