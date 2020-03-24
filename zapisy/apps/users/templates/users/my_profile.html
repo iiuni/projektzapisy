@@ -9,7 +9,7 @@
 
 {% block all-content %}
     <div class="mb-5">
-        <h4>Moje dane</h4>
+        <h2>Moje dane</h2>
         <table class="table table-condensed">
             <colgroup>
                 <col class="table-info-type"></col>
@@ -24,20 +24,21 @@
                 <td>{{ request.user.email }}</td>
             </tr>
             {% if user.student %}
-                <form action="{% url 'personal_data_consent' %}" method="post">
-                    {% csrf_token %}
-                    <tr>
-                        <th>Zgoda na udostępnianie danych innym studentom</th>
-                        <td>
+            {% csrf_token %}
+            <tr>
+                <th>Zgoda na udostępnianie danych innym studentom</th>
+                <td>
+                    <form action="{% url 'personal_data_consent' %}" method="post">
                         {% if user.student.consent_granted %}
                             Tak&emsp;
                             <button type="submit" value="Wycofaj zgodę" name="no" class="btn btn-secondary">Wycofaj zgodę</button>
                         {% else %}
                             Nie&emsp;
                             <button type="submit" value="Udziel zgody" name="yes" class="btn btn-secondary">Udziel zgody</button>
-                        {% endif %}</td>
-                    </tr>
-                </form>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
             {% endif %}
             {% if user.employee %}
                 <tr>
@@ -52,6 +53,12 @@
                     <th>tytuł naukowy</th>
                     <td>{{ request.user.employee.title }}</td>
                 </tr>
+                <tr>
+                    <th>konsultacje</th>
+                    <td>
+                        {{ user.employee.consultations }}
+                    </td>
+                </tr>
             {%endif%}
         </table>
 
@@ -62,20 +69,9 @@
         {% endif %}
     </div>
 
-    {% if user.employee %}
-        <div class="mb-5">
-            <h4>Konsultacje</h4>
-            {% if user.employee.consultations %}
-                {{ user.employee.consultations }}
-            {% else %}
-                Brak informacji
-            {% endif %}
-        </div>
-    {% endif %}
-
     {% if user.student %}
     <div class="mb-5">
-        <h4>Moje studia</h4>
+        <h2>Moje studia</h2>
         <table class="table table-condensed">
             <colgroup>
                 <col class="table-info-type"></col>
@@ -102,7 +98,7 @@
     {% endif %}
 
     <div class="mb-5">
-        <h4>Terminy</h4>
+        <h2>Terminy</h2>
         <table class="table table-condensed">
             <colgroup>
                 <col class="table-info-type"></col>
@@ -170,7 +166,7 @@
 
     {% if semesters_participated_in_grade %}
         <div class="mb-5">
-            <h4>Udział w Ocenie zajęć</h4>
+            <h2>Udział w Ocenie zajęć</h2>
             <table class="table table-condensed">
                 <colgroup>
                     <col class="table-info-type"></col>
@@ -186,21 +182,20 @@
     {% endif %}
 
     <div class="mb-5">
-        <h4>Ustawienia powiadomień</h4>
-            <p>O czym chcesz być informowany mailowo?</p>
-                <form method="POST" action="{% url 'notifications:preferences-save' %}">
-                    {% csrf_token %}
-                    <table class="table">
-                    {{ form.as_table }}
-                    </table>
-            <p>
-                <strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.
-            </p>
-                <div class="d-flex flex-row-reverse">
-                    <button type="submit" class="btn btn-light right">
-                        Zapisz
-                    </button>
-                </div>
-                </form>
+        <h2>Ustawienia powiadomień</h2>
+        <p class="text-muted">O czym chcesz być informowany mailowo?</p>
+        <form method="POST" action="{% url 'notifications:preferences-save' %}">
+            {% csrf_token %}
+            <table class="table">
+                {{ form.as_table }}
+            </table>
+            <p><strong>Uwaga</strong>: potwierdzenia oceny i głosowania zostaną
+            podpisane i będą stanowić <strong>jedyną</strong> podstawę reklamacji.</p>
+            <div class="d-flex flex-row-reverse">
+                <button type="submit" class="btn btn-primary float-right">
+                    Zapisz
+                </button>
+            </div>
+        </form>
     </div>
 {% endblock %}

@@ -11,7 +11,7 @@
 
 {% block all-content %}
 <form class="col-lg-8" method="post" autocomplete="off">{% csrf_token %}
-    <div class="card text-center">
+    <div class="card">
         <div class="card-header">
             Zmień dane użytkownika
         </div>
@@ -19,7 +19,7 @@
             {{ form|crispy }}
         </div>
         <div class="card-footer">
-            <button type="submit" class="btn btn-lg btn-primary">Zapisz</button>
+            <button type="submit" class="btn btn-lg btn-primary float-right">Zapisz</button>
         </div>
     </div>
 </form>
