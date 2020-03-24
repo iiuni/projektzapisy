@@ -81,12 +81,11 @@ class Student(models.Model):
         default=None,
         on_delete=models.CASCADE)
     semestr = models.PositiveIntegerField(default=0, verbose_name="Semestr")
-    status = models.PositiveIntegerField(default=0, verbose_name="Status")
-    status.help_text = "0 - aktywny student, 1 - skreślony student"
+    is_active = models.BooleanField("aktywny",
+                                    default=True,
+                                    help_text="Student może być aktywny lub skreślony.")
 
     t0 = models.DateTimeField(null=True, blank=True)
-
-    ects_in_semester = models.SmallIntegerField(default=0)
 
     dyskretna_l = models.BooleanField(default=False)
     numeryczna_l = models.BooleanField(default=False)
@@ -95,9 +94,6 @@ class Student(models.Model):
 
     usos_id = models.PositiveIntegerField(
         null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
-
-    def is_active(self) -> bool:
-        return self.status == 0
 
     def consent_answered(self) -> bool:
         return hasattr(self, 'consent')
@@ -111,7 +107,7 @@ class Student(models.Model):
 
     @classmethod
     def get_active_students(cls) -> QuerySet:
-        return cls.objects.filter(status=0)
+        return cls.objects.filter(is_active=True)
 
     class Meta:
         verbose_name = 'student'

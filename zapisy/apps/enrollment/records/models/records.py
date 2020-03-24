@@ -122,7 +122,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
@@ -200,7 +200,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = {}
         is_recorded_dict = Record.is_recorded_in_groups(student, groups)

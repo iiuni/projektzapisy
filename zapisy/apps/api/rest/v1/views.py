@@ -98,14 +98,14 @@ class StudentViewSet(viewsets.ModelViewSet):
     """Dumps the list of all the students.
 
     To only list active students query:
-        /api/v1/students/?status=0.
+        /api/v1/students/?is_active=true.
     """
     http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
     queryset = Student.objects.select_related('user')
     serializer_class = serializers.StudentSerializer
     pagination_class = StandardResultsSetPagination
-    filter_fields = ['status']
+    filter_fields = ['is_active']
 
 
 class DesiderataViewSet(viewsets.ModelViewSet):
