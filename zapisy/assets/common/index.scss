@@ -87,9 +87,7 @@ div.top .topbar .inline-inputs label {
   @media (max-width: 992px) {
     #sidebar-inner {
       overflow-y: hidden;
-      max-height: 100%;
-      transition: all .5s linear 0s;
-    
+
       &.folded {
         max-height: 200px;
 
