@@ -9,6 +9,7 @@ export default {
             "common/index.scss",
             "common/cookieconsent/display-cookieconsent.ts",
             "common/icons-library.ts",
+            "common/sidebar-fold.js",
         ],
         "render-markdown": [
             "common/render-markdown.ts",
