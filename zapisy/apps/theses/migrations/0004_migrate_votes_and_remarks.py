@@ -17,7 +17,7 @@ def migrate_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0017_auto_20191020_1023'),
+        ('users', '0023_auto_20200326_1613'),
         ('theses', '0003_create_theses_board_group'),
     ]
 
