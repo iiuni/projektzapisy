@@ -19,7 +19,7 @@ from apps.theses.forms import EditThesisForm, RemarkForm, ThesisForm, VoteForm, 
 from apps.theses.models import Remark, Thesis, Vote
 from apps.theses.users import get_theses_board, is_theses_board_member, is_master_rejecter
 from apps.users.decorators import employee_required
-from apps.users.models import BaseUser, Employee, Student
+from apps.users.models import Employee, Student
 
 
 @login_required

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from apps.users.models import BaseUser, Employee, is_user_in_group
+from apps.users.models import Employee, is_user_in_group, is_employee
 from apps.theses.system_settings import get_master_rejecter
 
 THESIS_BOARD_GROUP_NAME = "Komisja prac dyplomowych"
@@ -24,4 +24,4 @@ def is_theses_board_member(user: User) -> bool:
 
 def is_master_rejecter(user: User) -> bool:
     """Is the specified user a master rejecter of theses board?"""
-    return BaseUser.is_employee(user) and get_master_rejecter() == user.employee
+    return is_employee(user) and get_master_rejecter() == user.employee
