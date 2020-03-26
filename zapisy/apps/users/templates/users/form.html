@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block bread %}
+<li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
+<li class="breadcrumb-item"><a href="{% url 'my-profile' %}">Moje konto</a></li>
+<li class="breadcrumb-item active" aria-current="page">Zmień dane użytkownika</li>
+{% endblock %}
+
+{% block main-subtitle %}Zmień dane użytkownika{% endblock %}
+
+{% block all-content %}
+<form class="col-lg-8" method="post" autocomplete="off">{% csrf_token %}
+    <div class="card">
+        <div class="card-header">
+            Zmień dane użytkownika
+        </div>
+        <div class="card-body">
+            {{ form|crispy }}
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-lg btn-primary float-right">Zapisz</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

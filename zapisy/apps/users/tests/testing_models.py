@@ -4,42 +4,11 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from django.contrib.auth.models import Permission
-from django.db import connection
-
 from random import randint
 from apps.enrollment.courses.models.semester import Semester
 from datetime import datetime, timedelta
 
-from apps.users.tests.factories import StudentFactory, EmployeeFactory
-
-
-class MailsToStudentsLinkTestCase(TestCase):
-    @classmethod
-    def setUpTestData(cls) -> None:
-
-        cls.MSG_HEADER = 'Wyślij wiadomość do studentów'
-        regular_user = StudentFactory()
-        cls.regular_user = regular_user.user
-
-        permission = Permission.objects.get(codename='mailto_all_students')
-        dean_user = EmployeeFactory()
-        dean_user.user.user_permissions.add(permission)
-        cls.dean_user = dean_user.user
-
-        from apps.enrollment.courses.tests.factories import SemesterFactory
-        summer_semester = SemesterFactory(type=Semester.TYPE_SUMMER)
-        summer_semester.full_clean()
-
-    def test_mailto_link_not_exists_regular_user(self):
-        self.client.force_login(self.regular_user)
-        response = self.client.get(reverse('my-profile'))
-        self.assertNotContains(response, self.MSG_HEADER, status_code=200)
-
-    def test_mailto_link_exists_dean_user(self):
-        self.client.force_login(self.dean_user)
-        response = self.client.get(reverse('my-profile'))
-        self.assertContains(response, self.MSG_HEADER, status_code=200)
+from apps.users.tests.factories import StudentFactory
 
 
 class MyProfileSemesterInfoTestCase(TestCase):

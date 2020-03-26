@@ -335,6 +335,11 @@ class EnrollmentTest(TestCase):
             Record.enqueue_student(self.bolek, self.cooking_exercise_group_2)
             Record.enqueue_student(self.lolek, self.cooking_exercise_group_1)
 
-            self.assertEqual(
-                Record.get_number_of_waiting_students(
-                    self.cooking_exercise_group_1.course, group_type=2), 1)
+            expected_waiting = {
+                self.cooking_exercise_group_1.course_id: {
+                    self.cooking_exercise_group_1.type: 1
+                }
+            }
+            self.assertDictEqual(
+                Record.list_waiting_students([self.cooking_exercise_group_1.course]),
+                expected_waiting)

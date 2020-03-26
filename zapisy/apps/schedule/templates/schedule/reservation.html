@@ -14,7 +14,7 @@
     <script id="reservation-data" type="application/json">
 {
     "canManageEvents": {% if perms.schedule.manage_events %}true{% else %}false{% endif %},
-    "imageChoose": "{% static "images/choose.png" %}"
+    "imageChoose": "{% static "schedule/choose.png" %}"
 }
     </script>
     {% render_bundle "schedule-classroom-chooser" %}
@@ -215,7 +215,7 @@
                     Lokalizacja jest wymagana.
                 </div>
                 <small class="form-text text-muted">
-                    Wybierz lokalizaje poniżej.
+                    Wybierz lokalizacje poniżej.
                 </small>
                 <input type="hidden" id="hiddenroom" value="">
                 <input type="hidden" id="hiddenid" value="">

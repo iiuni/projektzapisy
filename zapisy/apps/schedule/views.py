@@ -1,4 +1,6 @@
 import datetime
+from typing import List, NamedTuple, Optional
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -6,24 +8,25 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse
-from django.shortcuts import redirect
-from django.template.loader import get_template
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 import operator
 from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
+from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
     EventModerationMessageForm, EventMessageForm, ConflictsForm
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
-from apps.users.models import BaseUser
+from .forms import DoorChartForm, TableReportForm
+from itertools import groupby
 from .models.message import EventModerationMessage
 
-from xhtml2pdf import pisa
-import io
 from functools import reduce
 
 
@@ -286,10 +289,10 @@ class MyScheduleAjaxView(FullCalendarView):
 
         query = []
 
-        if BaseUser.is_student(self.request.user):
+        if self.request.user.student:
             query.append(Q(record__student=self.request.user.student) & Q(record__status='1'))
 
-        if BaseUser.is_employee(self.request.user):
+        if self.request.user.employee:
             query.append(Q(teacher=self.request.user.employee))
 
         queryset = super(MyScheduleAjaxView, self).get_queryset()
@@ -304,57 +307,110 @@ class MyScheduleAjaxView(FullCalendarView):
 @login_required
 @permission_required('schedule.manage_events')
 def events_report(request):
-    from .forms import ReportForm
+    form_table = None
+    form_doors = None
     if request.method == 'POST':
-        form = ReportForm(request.POST)
-        form.fields["rooms"].choices = [(x.pk, x.number)
-                                        for x in Classroom.get_in_institute(reservation=True)]
+        # Pick the form that was sent.
+        if request.POST['report-type'] == 'table':
+            form = form_table = TableReportForm(request.POST)
+            report_type = 'table'
+        else:
+            form = form_doors = DoorChartForm(request.POST)
+            report_type = 'doors'
         if form.is_valid():
-            beg_date = form.cleaned_data["beg_date"]
-            end_date = form.cleaned_data["end_date"]
-            rooms = form.cleaned_data["rooms"]
-            return events_raport_pdf(request, beg_date, end_date, rooms)
+            return display_report(request, form, report_type)
     else:
-        form = ReportForm()
-        form.fields["rooms"].choices = [(x.pk, x.number)
-                                        for x in Classroom.get_in_institute(reservation=True)]
-    return TemplateResponse(request, 'schedule/events_report.html', locals())
+        # Just display two forms.
+        form_table = TableReportForm()
+        form_doors = DoorChartForm()
+    return render(request, 'schedule/reports/forms.html', {
+        'form_table': form_table,
+        'form_doors': form_doors,
+    })
 
 
 @login_required
 @permission_required('schedule.manage_events')
-def events_raport_pdf(request, beg_date, end_date, rooms):
+def display_report(request, form, report_type: 'Literal["table", "doors"]'):
+    class ListEvent(NamedTuple):
+        date: Optional[datetime.datetime]
+        weekday: int  # Monday is 1, Sunday is 7 like in
+        # https://docs.python.org/3/library/datetime.html#datetime.date.isoweekday.
+        begin: datetime.time
+        end: datetime.time
+        room: Classroom
+        title: str
+        type: str
+        author: str
 
-    events = []
-    # we are using this function for sorting
-    for room in rooms:
-        try:
-            cr = Classroom.objects.get(id=room)
-        except ObjectDoesNotExist:
-            raise Http404
-        # probably not safe
-        events.append((cr, Term.objects.filter(
-            day__gte=beg_date,
-            day__lte=end_date,
-            room=room,
-            event__status=Event.STATUS_ACCEPTED,
-        ).order_by('day', 'start')))
+    rooms = set(Classroom.objects.filter(id__in=form.cleaned_data['rooms']))
+    events: List[ListEvent] = []
+    # Every event will regardless of its origin be translated into a ListEvent.
+    beg_date = form.cleaned_data.get('beg_date', None)
+    end_date = form.cleaned_data.get('end_date', None)
+    semester = None
+    if form.cleaned_data.get('week', None) == 'currsem':
+        semester = Semester.get_current_semester()
+    elif form.cleaned_data.get('week', None) == 'nextsem':
+        semester = Semester.objects.get_next()
+    if semester:
+        terms = CourseTerm.objects.filter(
+            group__course__semester=semester, classrooms__in=rooms).distinct().select_related(
+                'group__course', 'group__teacher',
+                'group__teacher__user').prefetch_related('classrooms')
+        for term in terms:
+            for r in set(term.classrooms.all()) & rooms:
+                events.append(
+                    ListEvent(date=None,
+                              weekday=int(term.dayOfWeek),
+                              begin=term.start_time,
+                              end=term.end_time,
+                              room=r,
+                              title=term.group.course.name,
+                              type=term.group.human_readable_type(),
+                              author=term.group.teacher.get_full_name()))
+        terms = SpecialReservation.objects.filter(semester=semester, classroom__in=rooms).select_related('classroom')
+        for term in terms:
+            events.append(
+                ListEvent(date=None,
+                          weekday=int(term.dayOfWeek),
+                          begin=term.start_time,
+                          end=term.end_time,
+                          room=term.classroom,
+                          title=term.title,
+                          type="",
+                          author=""))
+    elif 'week' in form.cleaned_data:
+        beg_date = datetime.datetime.strptime(form.cleaned_data['week'], "%Y-%m-%d")
+        end_date = beg_date + datetime.timedelta(days=6)
+    if beg_date and end_date:
+        terms = Term.objects.filter(day__gte=beg_date,
+                                    day__lte=end_date,
+                                    room__in=rooms,
+                                    event__status=Event.STATUS_ACCEPTED).select_related(
+                                        'room', 'event', 'event__group', 'event__author')
+        for term in terms:
+            events.append(
+                ListEvent(date=term.day,
+                          weekday=term.day.isoweekday(),
+                          begin=term.start,
+                          end=term.end,
+                          room=term.room,
+                          title=term.event.title or str(term.event.course) or "",
+                          type=term.event.group.human_readable_type()
+                          if term.event.group else term.event.get_type_display(),
+                          author=term.event.author.get_full_name()))
 
-    context = {
+    if report_type == 'table':
+        events = sorted(events, key=operator.attrgetter('room.id', 'date', 'begin'))
+    else:
+        events = sorted(events, key=operator.attrgetter('room.id', 'weekday', 'begin'))
+    terms_by_room = groupby(events, operator.attrgetter('room.number'))
+    terms_by_room = sorted([(int(k), list(g)) for k, g in terms_by_room])
+
+    return render(request, f'schedule/reports/report_{report_type}.html', {
+        'events': terms_by_room,
+        'semester': semester,
         'beg_date': beg_date,
         'end_date': end_date,
-        'events': events,
-        'pagesize': 'A4',
-        'report': True
-    }
-
-    template = get_template('schedule/events_report_pdf.html')
-    html = template.render(context)
-    result = io.BytesIO()
-
-    pisa.pisaDocument(io.StringIO(html), result, encoding='UTF-8')
-
-    response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=raport.pdf'
-
-    return response
+    })

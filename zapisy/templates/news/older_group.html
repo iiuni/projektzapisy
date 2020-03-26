@@ -1,8 +1,0 @@
-{% ifnotequal older_no 0 %}
-<li>
-	<a href="{% url 'news-page' category older_beginwith %}" title="Starsze"
-		onclick="News.loadPage('{% url 'news-page' category older_beginwith %}?json=true'); return false;">
-		Starsze</a>
-	({{ older_no }})
-</li>
-{% endifnotequal %}

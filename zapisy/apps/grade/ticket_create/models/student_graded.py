@@ -8,9 +8,10 @@ class StudentGraded(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name="semestr")
 
     class Meta:
-        verbose_name = 'udzial w ocenie'
-        verbose_name_plural = 'udzial w ocenie'
+        verbose_name = "udział w ocenie"
+        verbose_name_plural = "udział w ocenie"
+        unique_together = [['student', 'semester']]
         app_label = 'ticket_create'
 
     def __str__(self):
-        return str(self.student) + " " + str(self.semester)
+        return f"{self.student} wygenerował bilety oceny w semestrze {self.semester}"

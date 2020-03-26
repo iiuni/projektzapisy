@@ -1,0 +1,419 @@
+{% extends "offer/base.html" %}
+{% block main-subtitle %}Planowanie{% endblock %}
+{% block offer_menu_plan %} class="active"{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-5">
+    <h2>Przydział zajęć {{ year }}</h2>
+    {% if request.user.is_superuser %}
+        <a href="{% url 'plan-create' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
+    {% endif %}
+</div>
+{% if not error and not is_empty %}
+<div>
+    <h3 class="assignment-courses mb-3">Idź do:</h3>
+    <div class="pt-4 pb-4 pl-5" style="background: #E5E5E5">
+        <ul class="p-0 m-0">
+            <li>
+                <a href="#subjects">Przydział według przedmiotów</a>
+                <ul class="pl-3">
+                    <li><a href="#winter">Semestr zimowy</a></li>
+                    <li><a href="#summer">Semestr letni</a></li>
+                </ul>
+            </li>
+            <li class="mt-2">
+                <a href="#employees">Przydział według pracowników</a>
+                <ul class="pl-3">
+                    <li><a href="#staff">Pracownicy</a></li>
+                    <li><a href="#phds">Doktoranci</a></li>
+                    <li><a href="#others">Spoza wydziału</a></li>
+                </ul>
+            </li>
+            <li class="mt-2"><a href="#under">Osoby niedociążone</a></li>
+            <li class="mt-1"><a href="#over">Osoby przeciążone</a></li>
+            <li class="mt-1"><a href="#stats">Statystyka</a></li>
+        </ul>
+    </div>
+</div>
+    
+<div id="subjects">
+    <h3 class="assignment-courses mb-3 mt-4">Przydział według przedmiotów</h3>
+    <div class="mb-3" id="winter">
+        <h4 class="winter-semester">Semestr zimowy</h4>
+        <div>
+            {% for course_name, course_data in winter.items %}
+                <div>
+                    <div class="bg-primary" id="{{course_data.index}}">
+                        <h6 class="text-light p-2 mb-0">{{ course_name }}</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        {% if course_data.stats.w %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">wykład ({{ course_data.stats.w }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.w %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }}</a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.rep %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">repetytorium ({{ course_data.stats.rep }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.rep %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.ćw %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">ćwiczenia ({{ course_data.stats.ćw }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.ćw %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.prac %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">pracownia ({{ course_data.stats.prac }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.prac %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.ćw_prac %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">ćwiczenia+pracownia ({{ course_data.stats.ćw_prac }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.ćw_prac %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.sem %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">seminarium ({{ course_data.stats.sem }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.sem %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.admin %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">admin ({{ course_data.stats.admin }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.admin %}
+                                   {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3" id="summer">
+        <h4 class="summer-semester">Semestr letni</h4>
+        <div>
+            {% for course_name, course_data in summer.items %}
+                <div>
+                    <div class="bg-primary" id="{{course_data.index}}">
+                        <h6 class="text-light p-2 mb-0">{{ course_name }}</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        {% if course_data.stats.w %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">wykład ({{ course_data.stats.w }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.w %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }}</a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }}</a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.rep %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">repetytorium ({{ course_data.stats.rep }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.rep %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.code }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.ćw %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">ćwiczenia ({{ course_data.stats.ćw }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.ćw %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.prac %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">pracownia ({{ course_data.stats.prac }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.prac %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.ćw_prac %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">ćwiczenia+pracownia ({{ course_data.stats.ćw_prac }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.ćw_prac %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.sem %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">seminarium ({{ course_data.stats.sem }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.sem %}
+                                    {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if course_data.stats.admin %}
+                            <div class="type_of_course_row">
+                                <p class="d-inline">admin ({{ course_data.stats.admin }}h/tydzień): </p>
+                                {% for teacher in course_data.teachers.admin %}
+                                   {% if not teacher.name %}
+                                        <a href="#{{ teacher.code }}">{{ teacher }} </a><span>,</span>
+                                    {% else %}
+                                        <a href="#{{ teacher.code }}">{{ teacher.name }} </a><span>,</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="employees">
+    <h3 class="assignment-courses mb-3 mt-4">Przydział według pracowników</h3>
+    <div class="mb-3" id="staff">
+        <h4 class="winter-semester">Pracownicy</h4>
+        <div>
+            {% for employee, staff_data in staff.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_winter %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_summer %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3" id="phds">
+        <h4 class="winter-semester">Doktoranci</h4>
+        <div>
+            {% for employee, staff_data in phds.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_winter %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_summer %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3" id="others">
+        <h4 class="winter-semester">Spoza wydziału</h4>
+        <div>
+            {% for employee, staff_data in others.items %}
+                <div>
+                    <div class="bg-primary" id="{{employee}}">
+                        <h6 class="text-light p-2 mb-0">{{ staff_data.name }} ({{ employee }}), pensum: {{ staff_data.pensum}}, bilans: {{staff_data.balance}}h</h6>
+                    </div>
+                    <div class="p-2" style="background: #E5E5E5">
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr zimowy ({{staff_data.weekly_winter}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_winter %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                        <div class="p-2" style="background: #b3ccff">
+                            <h8>Semestr letni ({{staff_data.weekly_summer}}h/tydzień)</h8>
+                        </div>
+                        <div class="p-2" style="background: #E5E5E5">
+                                {% for course in staff_data.courses_summer %}
+                                    <a href="#{{course.index}}">{{course.name}}</a>, {{course.group_type}} ({{course.hours_weekly}}h{% if course.other %}/{{course.other}}{% endif %})
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="under">
+    <h3 class="assignment-courses mb-3 mt-4">Osoby niedociążone</h3>
+    <div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for employee, staff_data in staff.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in phds.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in others.items %}
+                {% if staff_data.balance < 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="over">
+    <h3 class="assignment-courses mb-3 mt-4">Osoby przeciążone</h3>
+    <div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for employee, staff_data in staff.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in phds.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+            {% for employee, staff_data in others.items %}
+                {% if staff_data.balance > 0 %}
+                    <a href="#{{employee}}">{{staff_data.name}}</a> ({{staff_data.balance|floatformat:"-1"}}h)<br>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="stats">
+    <h3 class="assignment-courses mb-3 mt-4">Statystyka</h3>
+    <div>
+    <div class="bg-primary">
+        <h6 class="text-light p-2 mb-0">Suma pensów pracowników: {{ pensum }}h<br>
+        Liczba zaplanowanych godzin: {{ hours_summer|add:hours_winter }}h<br>
+        Bilans: {{balance}}h (dodatni oznacza nadmiar godzin) </h6>
+    </div>
+    <div class="p-2" style="background: #E5E5E5">
+        <div class="p-2" style="background: #b3ccff">
+            <h8>w semestrze zimowym {{ hours_winter }}h, w tym:</h8>
+        </div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for type, stat in stats_winter.items %}
+                {{type}}: {{stat}}h<br>
+            {% endfor %}
+        </div>
+        <div class="p-2" style="background: #b3ccff">
+            <h8>w semestrze letnim {{ hours_summer }}h, w tym:</h8>
+        </div>
+        <div class="p-2" style="background: #E5E5E5">
+            {% for type, stat in stats_summer.items %}
+                {{type}}: {{stat}}h<br>
+            {% endfor %}
+        </div>
+    </div>                     
+</div>
+<script>
+    var elems = document.querySelectorAll('.type_of_course_row');
+    elems.forEach(function(elem){
+        elem.removeChild(elem.lastElementChild)
+    })
+</script>
+{% elif error %}
+<h3>Wystąpił błąd. Spróbuj ponownie później</h3>
+{% else %}
+<h3>Brak danych do wyświetlenia</h3>
+{% endif %}
+{% endblock %}

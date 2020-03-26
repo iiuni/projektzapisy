@@ -1,9 +1,0 @@
-{% extends "offer/manage/base.html" %}
-{% block groups_active %} class = "active" {% endblock %}
-{% block content %}
-
-{% for course in courses %}
-  <p><a href="/offer/manage/groups/{{course.slug}}">{{course}}</a></p>
-{% endfor %}
-
-{% endblock %}

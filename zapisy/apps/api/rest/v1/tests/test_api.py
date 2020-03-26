@@ -115,6 +115,8 @@ class VoteSystemTests(TestCase):
         self.assertEqual(semester_list_response.data, [{
             'id': self.semester.pk,
             'display_name': self.semester.get_name(),
+            'year': self.semester.year,
+            'type': self.semester.type,
             'usos_kod': None,
         }])
 
@@ -124,6 +126,8 @@ class VoteSystemTests(TestCase):
         self.assertDictEqual(semester_change_response.data, {
             'id': self.semester.pk,
             'display_name': self.semester.get_name(),
+            'year': self.semester.year,
+            'type': self.semester.type,
             'usos_kod': 'Nowy Kod USOS',
         })
         self.semester.refresh_from_db()

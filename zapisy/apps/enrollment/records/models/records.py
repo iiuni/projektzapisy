@@ -42,9 +42,10 @@ Record Lifetime:
     filled by an asynchronous process, so the GROUP_CHANGE_SIGNAL is sent.
 """
 
+from collections import defaultdict
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Optional, Set
+from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
 from choicesenum import ChoicesEnum
 from enum import Enum
@@ -56,7 +57,7 @@ from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.models.group import GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student
 from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
@@ -121,7 +122,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
@@ -191,42 +192,54 @@ class Record(models.Model):
 
         It is preferable to call this function rather than
         :func:`~apps.enrollment.records.models.Record.can_dequeue` multiple
-        times to save on database queries.
+        times to save on database queries. The groups should contain .course and
+        .course.semester.
 
         If student is None, the function will return all False values. It does
-        not check for student's presence in the groups. Currently the function
-        is fairly simplistic. It is assumed, that all the groups are held in the
-        same semester.
+        not check for student's presence in the groups.
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
-        if not groups:
-            return {}
-        semester: Semester = groups[0].course.semester
-        if semester.is_closed(time):
-            return {k.id: False for k in groups}
-        if not semester.can_remove_record(time):
-            # When disenrolment is closed, QUEUED record can still be removed,
-            # ENROLLED may not.
-            is_recorded_dict = Record.is_recorded_in_groups(student, groups)
-            return {k.id: is_recorded_dict[k.id]['enqueued'] for k in groups}
-        return {k.id: True for k in groups}
+        ret = {}
+        is_recorded_dict = Record.is_recorded_in_groups(student, groups)
+        for group in groups:
+            if group.course.records_end is not None:
+                ret[group.id] = time <= group.course.records_end
+            elif not group.course.semester.can_remove_record(time):
+                # When disenrolment is closed, QUEUED record can still be
+                # removed, ENROLLED may not.
+                ret[group.id] = is_recorded_dict[group.id]['enqueued']
+            else:
+                ret[group.id] = True
+        return ret
 
     @staticmethod
-    def get_number_of_waiting_students(course: CourseInstance, group_type: str) -> int:
-        """Returns number of students waiting to be enrolled.
+    def list_waiting_students(
+            courses: List[CourseInstance]) -> DefaultDict[int, DefaultDict[int, int]]:
+        """Returns students waiting to be enrolled.
 
         Returned students aren't enrolled in any group of given type within
         given course, but they are enqueued into at least one.
+
+        Returns:
+            A dict indexed by a course_id. Every entry is a dict mapping
+            group_type to a number of waiting students.
         """
-        return Record.objects.filter(
-            status=RecordStatus.QUEUED, group__course=course,
-            group__type=group_type).only('student').exclude(
-                student__in=Record.objects.filter(
-                    status=RecordStatus.ENROLLED, group__course=course, group__type=group_type).
-                only('student').values_list('student')).distinct('student').count()
+        queued = Record.objects.filter(
+            status=RecordStatus.QUEUED, group__course__in=courses).values(
+                'group__course', 'group__type', 'student__user',
+                'student__user__first_name', 'student__user__last_name')
+        enrolled = Record.objects.filter(
+            status=RecordStatus.ENROLLED, group__course__in=courses).values(
+                'group__course', 'group__type', 'student__user', 'student__user__first_name',
+                'student__user__last_name')
+        waiting = queued.difference(enrolled)
+        ret = defaultdict(lambda: defaultdict(int))
+        for w in waiting:
+            ret[w['group__course']][w['group__type']] += 1
+        return ret
 
     @classmethod
     def is_enrolled(cls, student: Student, group: Group) -> bool:
@@ -333,11 +346,11 @@ class Record(models.Model):
         user is neither a student nor an employee, an empty set is returned.
         """
         common_groups = set()
-        if BaseUser.is_student(user):
+        if user.student:
             student_records = Record.objects.filter(
                 group__in=groups, student=user.student, status=RecordStatus.ENROLLED)
             common_groups = {r.group_id for r in student_records}
-        if BaseUser.is_employee(user):
+        if user.employee:
             common_groups = set(
                 Group.objects.filter(pk__in=[g.pk for g in groups],
                                      teacher=user.employee).values_list('pk', flat=True))

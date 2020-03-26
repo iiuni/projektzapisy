@@ -16,7 +16,7 @@
             <h2>Egzaminy</h2>
         </div>
         <div class="p-0">
-            <a href="{% url 'events:session_feed' %}"><img src="{% static "feed-icon.png" %}" alt="RSS"></a>
+            <a href="{% url 'events:session_feed' %}"><img src="{% static "schedule/feed-icon.png" %}" alt="RSS"></a>
         </div>
     </div>
 
@@ -27,7 +27,7 @@
             {% regroup exam.list|dictsort:"event.course.name" by event.course as list %}
             {% for ll in list %}
                 <dd>
-                    <h6><a href="{{ ll.grouper.get_absolute_url }}">{{ ll.grouper.name }}</a></h6>
+                    <h6><a href="{% url 'course-page' ll.grouper.slug %}">{{ ll.grouper.name }}</a></h6>
                     <ul>
                         {% for term in ll.list %}
                             <li>

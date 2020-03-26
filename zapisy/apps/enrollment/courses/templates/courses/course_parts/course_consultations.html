@@ -12,12 +12,14 @@
         </thead>
         <tbody>
         {% for teacher in teachers %}
-            <tr>
-                <td scope="row"><a href="{% url 'employee-profile' teacher.user.id %}" class="person">
-                    {{ teacher.user.get_full_name }}</a></td>
-                <td>{{ teacher.room|default:"" }}</td>
-                <td>{{ teacher.consultations }}</td>
-            </tr>
+            {% if teacher %}
+                <tr>
+                    <td scope="row"><a href="{% url 'employee-profile' teacher.user_id %}" class="person">
+                        {{ teacher.user.get_full_name }}</a></td>
+                    <td>{{ teacher.room|default:"" }}</td>
+                    <td>{{ teacher.consultations }}</td>
+                </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>

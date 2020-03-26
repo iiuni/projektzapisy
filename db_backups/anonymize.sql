@@ -5,6 +5,9 @@ UPDATE users_studiazamawiane SET bank_account='';
 UPDATE auth_user SET first_name=CONCAT(SUBSTRING(first_name, 1, 1), '_', id);
 UPDATE auth_user SET last_name=CONCAT(SUBSTRING(last_name, 1, 1), '_', id);
 
+-- Delete api tokens
+UPDATE authtoken_token SET key='niepoprawnytoken';
+
 -- Anonymize/remove email addresses
 UPDATE auth_user SET email='email@example.org';
 DELETE FROM mailer_message;
@@ -15,5 +18,4 @@ DELETE FROM mailer_messagelog;
 UPDATE auth_user SET password='pbkdf2_sha256$36000$Z6GlerjZ9cWC$M6zn6XGPc81913R1yw6SMouredUfO/DPnQwZ3XxUCnA=';
 
 -- Anonymize grade/poll answers
-UPDATE poll_openquestionanswer SET content = 'jakas ocena';
-DELETE FROM poll_singlechoicequestionanswer;
+DELETE FROM poll_submission;

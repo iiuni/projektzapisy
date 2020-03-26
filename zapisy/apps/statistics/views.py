@@ -1,3 +1,5 @@
+from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.records.models.records import Record
 from django.contrib.auth.decorators import permission_required
 from django.db import models
 from django.shortcuts import render
@@ -35,8 +37,11 @@ def groups(request):
     groups = Group.objects.filter(course__semester=semester).select_related(
         'course', 'teacher', 'teacher__user').order_by('course', 'type').only(
             'course__name', 'teacher__user__first_name', 'teacher__user__last_name', 'limit',
-            'type').annotate(enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(
-                pinned=pinned_agg)
+            'type').prefetch_related('guaranteed_spots', 'guaranteed_spots__role').annotate(
+                enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(pinned=pinned_agg)
+    waiting_students = Record.list_waiting_students(
+        CourseInstance.objects.filter(semester=semester))
     return render(request, 'statistics/groups_list.html', {
         'groups': groups,
+        'waiting_students': waiting_students,
     })

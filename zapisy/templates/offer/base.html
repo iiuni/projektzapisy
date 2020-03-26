@@ -24,10 +24,14 @@
         <a class="nav-link" href="{% url 'vote-main' %}">Głosowanie</a>
     </li>
     {% endif %}
-
     {% if user.employee %}
     <li {% block offer_menu_desiderata %} {% endblock %}>
             <a class="nav-link" href="{% url 'change_desiderata' %}">Dezyderaty</a>
+    </li>
+    {% endif %}
+    {% if user.employee or request.user.is_superuser %}
+    <li {% block offer_menu_plan %} {% endblock %}>
+            <a class="nav-link" href="{% url 'plan-view' %}">Planowanie</a>
     </li>
     {% endif %}
 {% endblock %}

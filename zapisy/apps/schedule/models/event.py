@@ -7,7 +7,6 @@ from django.http import Http404
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.users.models import BaseUser
 
 from typing import List
 
@@ -89,7 +88,7 @@ class Event(models.Model):
         if not self.pk:
 
             # if author is an employee, accept any exam and test events
-            if ((BaseUser.is_employee(self.author) and self.type in (Event.TYPE_EXAM, Event.TYPE_TEST)) or
+            if ((self.author.employee and self.type in (Event.TYPE_EXAM, Event.TYPE_TEST)) or
                     self.author.has_perm('schedule.manage_events')):
                 self.status = self.STATUS_ACCEPTED
 
@@ -100,7 +99,7 @@ class Event(models.Model):
 
             # students can only add generic events that have to be accepted first
 
-            if BaseUser.is_student(self.author) and not self.author.has_perm(
+            if self.author.student and not self.author.has_perm(
                     'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(

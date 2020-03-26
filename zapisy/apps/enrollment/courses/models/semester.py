@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from django.db import models
 
@@ -252,6 +252,19 @@ class Semester(models.Model):
                                                        self.lectures_ending,
                                                        day_of_week)
         return [x.day for x in added_days]
+
+    def get_all_weeks(self) -> List[Tuple[datetime, datetime]]:
+        """Returns list of all weeks in semester.
+
+        Each tuple contains first and last day of the week.
+        """
+        week_start = self.semester_beginning - timedelta(days=self.semester_beginning.weekday())
+        weeks = []
+        while week_start <= self.semester_ending:
+            week_end = week_start + timedelta(days=6)
+            weeks.append((week_start, week_end))
+            week_start += timedelta(days=7)
+        return weeks
 
     @staticmethod
     def get_current_semester():

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Logowanie</li>
+{% endblock %}
+
+{% block main-subtitle %}Logowanie{% endblock %}
+
+{% block all-content %}
+{% if form.errors %}
+    <div class="alert alert-danger">
+        Podany identyfikator i hasło się nie zgadzają. Spróbuj ponownie.
+    </div>
+{% endif %}
+
+{% if next %}
+    <div class="alert alert-warning">
+        {% if user.is_authenticated %}
+            Brak uprawnień do wyświetlenia tej strony.
+        {% else %}
+            Proszę zalogować się by zobaczyć tę stronę.
+        {% endif %}
+    </div>
+{% endif %}
+
+
+<div class="container">
+    <h3 class="display-3">Logowanie</h3>
+    <div class="row mt-4">
+        <div class="col-md-3 col-12 loginbox p-4">
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Login</label>
+                    <input type="text" name="username" autofocus="" maxlength="254" id="id_username"  class="form-control" required>    
+                </div>
+                <div class="form-group">
+                    <label for="is_password">Hasło</label>
+                    <input type="password" name="password" required="" id="id_password" class="form-control" required>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}" />
+                <button class="btn btn-secondary" type="submit">Zaloguj</button>
+            </form>
+        </div>
+        <div class="col-md-8 ml-md-3 col-12">
+            <h4>Jak zdobyć hasło?</h4>
+            <p>
+                Każdy student Uniwersytetu Wrocławskiego może zalogować się poprzez
+                USOS. Dozwolone jest również alternatywne uwierzytelnianie za pomocą
+                loginu i hasła. Jeśli takiego nie masz, <a
+                href="mailto:zapisy@cs.uni.wroc.pl">napisz do administratora</a>
+            </p>
+            <h4>Nie pamiętasz hasła?</h4>
+            <p>
+                Skorzystaj z naszego 
+                <a href="{% url 'password_reset'%}">formularza</a>. Jeżeli to
+                nie pomoże <a href="mailto:zapisy@cs.uni.wroc.pl">skontaktuj się z administratorem</a>.
+            </p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#id_username').focus();
+</script>
+
+{% endblock %}

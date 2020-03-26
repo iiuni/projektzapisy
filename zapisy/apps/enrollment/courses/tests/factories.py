@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 
 import factory
 from factory.django import DjangoModelFactory
@@ -9,6 +9,7 @@ from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
 from ..models.course_information import CourseInformation
 from ..models.course_type import Type
+from ..models.term import Term
 from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 from .semester_year_provider import SemesterYearProvider
@@ -85,7 +86,7 @@ class GroupFactory(DjangoModelFactory):
         model = Group
 
     course = factory.SubFactory(CourseInstanceFactory)
-    type = 2
+    type = '2'  # GROUP_TYPE_CHOICES: exercises.
     limit = 10
     teacher = factory.SubFactory(EmployeeFactory)
 
@@ -105,3 +106,22 @@ class ClassroomFactory(DjangoModelFactory):
     can_reserve = True
     type = 0
     floor = 0
+
+
+class TermFactory(DjangoModelFactory):
+    class Meta:
+        model = Term
+
+    dayOfWeek = '2'
+    start_time = time(10, 00)
+    end_time = time(12, 00)
+    group = factory.SubFactory(GroupFactory)
+
+    @factory.post_generation
+    def classrooms(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for classroom in extracted:
+                self.groups.add(classroom)
