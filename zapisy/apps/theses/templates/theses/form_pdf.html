@@ -36,7 +36,7 @@
         licencjackiej/inżynierskiej/magisterskiej na kierunku informatyka/ISIM
     </h2>
     <h3>I. Dane studenta</h3>
-    <p>Imię i nazwisko: <strong>{{ first_student.name }}</strong></p>
+    <p>Imię i nazwisko: <strong>{{ first_student.get_full_name }}</strong></p>
     <p>Numer albumu: <strong>{{ first_student.matricula }}</strong></p>
     <h3>II. Dane promotora</h3>
     <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.advisor }}</strong></p>
@@ -54,7 +54,7 @@
         <h3>IV. Dane współautorów</h3>
       {% endif %}
       {% for student in students %}
-        <p>Imię i nazwisko: <strong>{{ student.name }}</strong></p>
+        <p>Imię i nazwisko: <strong>{{ student.get_full_name }}</strong></p>
         <p>Numer albumu: <strong>{{ student.matricula }}</strong></p></br>
       {% endfor %}
     {% endif %}

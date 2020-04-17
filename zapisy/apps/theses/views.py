@@ -163,20 +163,20 @@ def gen_form(request, id, studentid):
        not thesis.is_supporting_advisor_assigned(request.user):
         raise PermissionDenied
 
-    first_student = {'name': first_student.__str__(
-    ), 'matricula': first_student.matricula}
-
     students = []
     for student in thesis.students.all():
         if(student.id != studentid):
-            students.append({'name': student.__str__(),
-                             'matricula': student.matricula})
+            students.append(student)
 
     students_num = len(students) + 1
 
-    return render(request, 'theses/form_pdf.html', {'thesis': thesis, 'first_student': first_student,
-                                                    'students': students,
-                                                    'students_num': students_num})
+    return render(
+        request, 'theses/form_pdf.html', {
+            'thesis': thesis,
+            'first_student': first_student,
+            'students': students,
+            'students_num': students_num
+        })
 
 
 @login_required
@@ -200,7 +200,11 @@ def edit_thesis(request, id):
     else:
         form = EditThesisForm(request.user, instance=thesis)
 
-    return render(request, 'theses/thesis_form.html', {'thesis_form': form, 'title': thesis.title, 'id': id})
+    return render(request, 'theses/thesis_form.html', {
+        'thesis_form': form,
+        'title': thesis.title,
+        'id': id
+    })
 
 
 @login_required
