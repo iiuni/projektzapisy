@@ -52,8 +52,8 @@ export default {
                         "album",
                     ];
             const values = map(props, (p) => get(user, p, "").toLowerCase());
-            const anyPropMatches = (word) => !some(values, (v) => v.includes(word));
-            return !every(words, anyPropMatches);
+            const anyPropMatches = (word) => some(values, (v) => v.includes(word));
+            return every(words, anyPropMatches);
         },
         matchChar: function (user) {
             let last_name = user.last_name.toLowerCase();
