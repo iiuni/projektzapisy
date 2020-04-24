@@ -341,9 +341,33 @@
       args:
         chdir: ~/
 
-    ###
-    # Wczytanie bazy
-    ###
+    # Vagrant file node_modules mounting
+    - stat:
+        path: /vagrant_node_modules
+      register: node_folder
+
+    - name: Create vagrant_node_modules folder if necessary
+      file:
+        path: /vagrant_node_modules
+        state: directory
+      become: yes
+      when: not node_folder.stat.exists
+
+    - name: Change file ownership and group 
+      file:
+        path: /vagrant_node_modules
+        owner: vagrant
+        group: vagrant
+      become: yes
+
+    - name: Mount vagrant_node_modules
+      mount:
+        src: /vagrant_node_modules
+        path: /vagrant/zapisy/node_modules
+        opts: bind
+        state: mounted
+        fstype: none
+      become: yes
 
 - name: Include playbook with services configuration
   import_playbook: services.yml

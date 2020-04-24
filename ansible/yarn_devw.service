@@ -4,6 +4,6 @@ Description=Yarn devw service
 User=vagrant
 Group=vagrant
 WorkingDirectory=/vagrant/zapisy/
-ExecStartPre= /usr/local/bin/yarn
+ExecStartPre= /usr/local/bin/yarn install
 ExecStart=/usr/local/bin/yarn devw
 Type=simple
