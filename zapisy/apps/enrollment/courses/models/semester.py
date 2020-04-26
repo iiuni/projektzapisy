@@ -73,8 +73,6 @@ class Semester(models.Model):
         max_length=20,
         verbose_name='Kod semestru w systemie USOS')
 
-    objects = models.Manager()
-
     def clean(self):
         """
         Overloaded clean method. Checks for any conflicts between this SpecialReservation
@@ -258,12 +256,12 @@ class Semester(models.Model):
         return weeks
 
     @staticmethod
-    def get_next():
-        """returns visible semester that has latest records_closing time"""
+    def get_upcoming_semester():
+        """Returns visible semester that has latest records_closing time"""
         try:
-            return Semester.objects.get(visible=True, records_closing__gte=datetime.now())
-        except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return Semester.objects.filter(visible=True).order_by('records_closing').last()
+            return Semester.objects.filter(visible=True, records_closing__gte=datetime.now()).order_by('records_closing').first()
+        except (ObjectDoesNotExist):
+            return get_current_semester()
 
     @staticmethod
     def get_current_semester():

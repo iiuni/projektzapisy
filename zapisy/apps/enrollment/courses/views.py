@@ -41,7 +41,7 @@ def courses_list(request, semester_id: Optional[int] = None):
     """A basic courses view with courses listed on the right and no course selected.
     """
     if semester_id is None:
-        semester = Semester.get_next()
+        semester = Semester.get_upcoming_semester()
     else:
         semester = Semester.objects.get(pk=semester_id)
     data = prepare_courses_list_data(semester)

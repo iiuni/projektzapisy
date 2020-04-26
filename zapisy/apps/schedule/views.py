@@ -352,7 +352,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
     if form.cleaned_data.get('week', None) == 'currsem':
         semester = Semester.get_current_semester()
     elif form.cleaned_data.get('week', None) == 'nextsem':
-        semester = Semester.get_next()
+        semester = Semester.get_upcoming_semester()
     if semester:
         terms = CourseTerm.objects.filter(
             group__course__semester=semester, classrooms__in=rooms).distinct().select_related(
