@@ -7,7 +7,7 @@
 
   tasks:
     # Runserver service
-    - name: Deploy runserver 
+    - name: Deploy runserver
       copy:
         src: runserver.service
         dest: /etc/systemd/system/
@@ -42,4 +42,33 @@
         state: started
         enabled: yes
       become: yes
-      
+
+    # RQworker1
+    - name: Deploy rqworker1
+      copy:
+        src: rqworker1.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Start rqworker1
+      systemd:
+        name: rqworker1
+        state: started
+        enabled: yes
+      become: yes
+
+    # RQworker2
+    - name: Deploy rqworker2
+      copy:
+        src: rqworker2.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Start rqworker2
+      systemd:
+        name: rqworker2
+        state: started
+        enabled: yes
+      become: yes
