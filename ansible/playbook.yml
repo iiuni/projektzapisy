@@ -16,12 +16,24 @@
 
   tasks:
     # apt.sh
-    - name: Apt update and upgrade
-      apt: 
+    - name: Update APT Cache
+      apt:
         update_cache: yes
-        upgrade: 'yes'
+        force_apt_get: yes
       become: yes
 
+    - name: Remove apt lock file
+      file:
+        state: absent
+        path: "/var/lib/dpkg/lock"
+      become: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
+        state: latest
+        force_apt_get: yes
+      become: yes
 
     # apache_setup.sh
     - name: Install apache2
@@ -52,7 +64,7 @@
       apt:
         name: apache2-dev
       become: yes
-    
+
     #postgre_setup.sh
     - name: Ensure a locale exists
       locale_gen:
@@ -217,7 +229,7 @@
         - "Local command to access the database via psql:"
         - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS}} psql -h localhost -p 15432 {{ APP_DB_NAME }}"
       when: sql1_stat.stat.exists == False
-    
+
 
     # tools_install.sh
     - name: Install tools
@@ -270,7 +282,7 @@
       become: yes
       become_user: root
 
-    
+
     # py3.sh
     - debug:
         msg: Install Python 3.6...
@@ -315,7 +327,7 @@
     # env3_setup.sh
     - name: Install pip
       apt:
-        pkg: 
+        pkg:
         - python-pip
         - python3-venv
         update_cache: yes
@@ -353,7 +365,7 @@
       become: yes
       when: not node_folder.stat.exists
 
-    - name: Change file ownership and group 
+    - name: Change file ownership and group
       file:
         path: /vagrant_node_modules
         owner: vagrant
