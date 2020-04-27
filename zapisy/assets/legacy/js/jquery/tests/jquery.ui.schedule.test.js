@@ -1,6 +1,0 @@
-(function($) {
-
-module("schedule");
-
-
-})(jQuery);

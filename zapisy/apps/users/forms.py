@@ -1,22 +1,21 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from apps.users.models import Employee
+from .models import Employee
 
 
 class EmailChangeForm(forms.ModelForm):
     class Meta:
-        fields = ['email']
         model = User
+        fields = ('email',)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+            raise forms.ValidationError("Adres jest już użyty przez innego użytkownika")
 
 
-class ConsultationsChangeForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ConsultationsChangeForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = "form-control"
-            visible.field.widget.attrs['size'] = 41
-
+class EmployeeDataForm(forms.ModelForm):
     class Meta:
-        fields = ['title', 'room', 'homepage', 'consultations']
         model = Employee
+        fields = ('title', 'room', 'homepage', 'consultations',)

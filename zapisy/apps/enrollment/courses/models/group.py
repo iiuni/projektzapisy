@@ -84,11 +84,6 @@ class Group(models.Model):
         """return all terms of current group"""
         return self.term.all()
 
-    def get_all_terms_for_export(self):
-        """return all terms of current group"""
-        from apps.schedule.models.term import Term
-        return Term.objects.filter(event__group=self)
-
     def human_readable_type(self):
         types = {
             '1': 'Wykład',

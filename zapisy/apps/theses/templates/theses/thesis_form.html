@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% load crispy_forms_tags %}
+
+{% block main-subtitle %}System prac dyplomowych{% endblock %}
+
+{% block theses_active %} class="active"{% endblock %}
+
+{% block all-content %}
+<div id="thesis-root">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+        {% if new_thesis %}
+            Dodawanie nowej pracy dyplomowej
+        </h1>
+        {% else %}
+            Edycja pracy dyplomowej
+        </h1>
+        <form action="{% url 'theses:delete_thesis' id %}" method="POST" class="post-form">
+            {% csrf_token %}
+            <div class="text-right">
+            <input class="btn btn-default btn-danger confirm-delete float-right align-bottom ml-3" name="delete" type="submit" value="Usuń pracę"/>
+            <script>
+                $(document).on('click', '.confirm-delete', function(){
+                    return confirm('Czy na pewno chcesz usunąć tę pracę dyplomową?');
+                })
+            </script>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        {% crispy thesis_form %}
+    </form>
+</div>
+{% endblock %}

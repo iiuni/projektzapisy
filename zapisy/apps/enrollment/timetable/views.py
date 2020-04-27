@@ -1,4 +1,5 @@
 """Views for timetable and prototype."""
+import csv
 import json
 from typing import List
 
@@ -17,9 +18,9 @@ from apps.enrollment.courses.templatetags.course_types import \
     decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.timetable.models import Pin
-from apps.offer.proposal.models import Proposal
+from apps.schedule.models.term import Term as SchTerm
 from apps.users.decorators import student_required
-from apps.users.models import BaseUser, Employee, Student
+from apps.users.models import Employee, Student
 
 
 def build_group_list(groups: List[Group]):
@@ -124,9 +125,9 @@ def employee_timetable_data(employee: Employee):
 @login_required
 def my_timetable(request):
     """Shows the student/employee his own timetable page."""
-    if BaseUser.is_student(request.user):
+    if request.user.student:
         data = student_timetable_data(request.user.student)
-    elif BaseUser.is_employee(request.user):
+    elif request.user.employee:
         data = employee_timetable_data(request.user.employee)
     else:
         messages.error(
@@ -292,3 +293,29 @@ def prototype_update_groups(request):
         group.is_enrolled = bool(group.is_enrolled)
     group_dicts = build_group_list(groups)
     return JsonResponse(group_dicts, safe=False)
+
+
+@login_required
+def calendar_export(request):
+    """Exports user's timetable for import in Google Calendar."""
+    semester = Semester.objects.get_next()
+    groups = Group.objects.filter(course__semester=semester).filter(
+        Q(teacher__user=request.user) | Q(record__student__user=request.user))
+    terms = SchTerm.objects.filter(event__group__in=groups).select_related(
+        'event__group', 'event__group__course', 'event__group__teacher',
+        'event__group__teacher__user', 'room')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-disposition'] = 'attachment; filename="calendar.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Subject', 'Start Date', 'Start Time', 'End Date', 'End Time', 'Location', 'Description'])
+    for term in terms:
+        group = term.event.group
+        room = term.room
+
+        name = f"{group.course.name} - {group.get_type_display()}"
+        location = f"Sala {room.number}, Instytut Informatyki Uniwersytetu Wrocławskiego"
+        description = f"Prowadzący: {group.get_teacher_full_name()}"
+        writer.writerow([name, term.day, term.start, term.day, term.end, location, description])
+    return response

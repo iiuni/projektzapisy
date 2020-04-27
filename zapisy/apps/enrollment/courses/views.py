@@ -3,6 +3,7 @@ import json
 from typing import Tuple, Optional, Dict, List
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -13,7 +14,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student, is_external_contractor
 
 
 def prepare_courses_list_data(semester: Semester):
@@ -61,7 +62,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         return None, None
 
     student: Student = None
-    if request.user.is_authenticated and BaseUser.is_student(request.user):
+    if request.user.is_authenticated and request.user.student:
         student = request.user.student
 
     groups = course.groups.exclude(extra='hidden').select_related(
@@ -92,7 +93,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     course.is_enrollment_on = any(g.can_enqueue for g in groups)
 
     waiting_students = {}
-    if BaseUser.is_employee(request.user):
+    if request.user.employee:
         waiting_students = Record.list_waiting_students([course])[course.id]
 
     data = {
@@ -112,14 +113,11 @@ def course_view(request, slug):
     return render(request, 'courses/courses.html', data)
 
 
-def can_user_view_students_list_for_group(user: BaseUser, group: Group) -> bool:
+def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
     """Tell whether the user is authorized to see students' names
     and surnames in the given group.
     """
-    is_user_proper_employee = (
-        BaseUser.is_employee(
-            user) and not BaseUser.is_external_contractor(user)
-    )
+    is_user_proper_employee = (user.employee and not is_external_contractor(user))
     is_user_group_teacher = user == group.teacher.user
     return is_user_proper_employee or is_user_group_teacher
 

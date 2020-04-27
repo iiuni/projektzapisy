@@ -7,19 +7,18 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 
 from apps.news.models import News
-from apps.users.models import BaseUser
 
 
 def all_news(request):
     """
         Latest news, result of query search or given page with focused news
     """
-    if BaseUser.is_student(request.user):
+    if request.user.student:
         student = request.user.student
         student.last_news_view = datetime.datetime.now()
         student.save()
 
-    elif BaseUser.is_employee(request.user):
+    elif request.user.employee:
         employee = request.user.employee
         employee.last_news_view = datetime.datetime.now()
         employee.save()

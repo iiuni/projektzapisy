@@ -9,6 +9,7 @@ class NotificationType(str, Enum):
     TEACHER_HAS_BEEN_CHANGED_ENROLLED = 'teacher_has_been_changed_enrolled'
     TEACHER_HAS_BEEN_CHANGED_QUEUED = 'teacher_has_been_changed_queued'
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
+    THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
 
 
 mapping = {
@@ -31,4 +32,6 @@ mapping = {
     NotificationType.NEWS_HAS_BEEN_ADDED:
     "Dodano nową wiadomość w aktualnościach: {title}\n"
     "{contents}",
+    NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
+    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
 }

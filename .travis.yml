@@ -16,16 +16,6 @@ services:
 
 install:
   - pip install -r zapisy/requirements.test.txt
-  - |
-    if [[ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]]; then
-      # Installs Yarn/NPM dependencies.
-      (cd zapisy && yarn) || exit 1
-      # Builds assets.
-      (cd zapisy && yarn build) || exit 1
-      # Don't store the build cache; it changes after each build, Travis then
-      # picks that change up and repacks the cache archive which takes forever
-      rm -rf zapisy/node_modules/.cache-loader-*
-    fi
 
 
 before_script:
@@ -55,7 +45,18 @@ jobs:
           # Cache the virtualenv packages folder so virtualenv doesn't waste
           # time installing locally cached packages
           - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
-      script: cd zapisy && python manage.py test apps --failfast --parallel
+      script: 
+        - |
+          echo "travis_fold:start:yarn"
+          # Installs Yarn/NPM dependencies.
+          (cd zapisy && yarn) || exit 1
+          # Builds assets.
+          (cd zapisy && yarn build) || exit 1
+          # Don't store the build cache; it changes after each build, Travis then
+          # picks that change up and repacks the cache archive which takes forever
+          rm -rf zapisy/node_modules/.cache-loader-*
+          echo "travis_fold:end:yarn"
+        - cd zapisy && python manage.py test apps --failfast --parallel
 
 cache:
   - pip

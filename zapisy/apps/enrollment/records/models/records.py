@@ -57,7 +57,7 @@ from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.models.group import GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student
 from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
@@ -122,7 +122,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
@@ -200,7 +200,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = {}
         is_recorded_dict = Record.is_recorded_in_groups(student, groups)
@@ -346,11 +346,11 @@ class Record(models.Model):
         user is neither a student nor an employee, an empty set is returned.
         """
         common_groups = set()
-        if BaseUser.is_student(user):
+        if user.student:
             student_records = Record.objects.filter(
                 group__in=groups, student=user.student, status=RecordStatus.ENROLLED)
             common_groups = {r.group_id for r in student_records}
-        if BaseUser.is_employee(user):
+        if user.employee:
             common_groups = set(
                 Group.objects.filter(pk__in=[g.pk for g in groups],
                                      teacher=user.employee).values_list('pk', flat=True))

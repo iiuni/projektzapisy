@@ -16,5 +16,6 @@ export default {
       ]
    },
    rawfiles: [
+      "feed-icon.png"
    ],
 };

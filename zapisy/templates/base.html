@@ -1,6 +1,5 @@
 {# Base template for an entire System #}
 
-{% load fereol_common %}
 {% load static %}
 {% load should_display_debug %}
 {% load debug_info %}
@@ -16,7 +15,7 @@
     <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
     <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
 
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
     <script>
@@ -38,7 +37,7 @@
     {% block js %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    
+
 </head>
 
 <body>
@@ -64,9 +63,9 @@
                         <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
                     </li>
                     {% if user.is_authenticated %}
-                    <li {% block theses_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
-                    </li>
+                        <li {% block theses_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
+                        </li>
                     {% endif %}
                 </ul>
             {% if user.is_authenticated %}
@@ -90,15 +89,7 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            {% if user.profile.is_student and user.student.get_number_of_news > 0 %}
-                                <a href="{% url 'news-all' %}"
-                                   class="unread nav-link">Aktualności ({{ user.student.get_number_of_news }})</a>
-                            {% elif user.profile.is_employee and user.employee.get_number_of_news > 0 %}
-                                <a href="{% url 'news-all' %}"
-                                   class="unread nav-link">Aktualności ({{ user.employee.get_number_of_news }})</a>
-                            {% else %}
                                 <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
-                            {% endif %}
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
@@ -115,21 +106,21 @@
                         <div class="dropdown-menu dropdown-menu-right m-2">
                             <div class="social-buttons m-3">
                                 <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
-                                    <img src="{% static 'images/logo_UWr.svg' %}"
+                                    <img src="{% static 'images/logo-uwr.svg' %}"
                                          alt="Uniwersytet Wrocławski">
                                     <div class="clearfix"></div>
                                     Zaloguj się przez USOS
                                 </a>
                             </div>
                             <form class="m-3">
-                                <a class="btn btn-primary" data-toggle="collapse" 
-                                        href="#login-without-usos" role="button" 
+                                <a class="btn btn-primary" data-toggle="collapse"
+                                        href="#login-without-usos" role="button"
                                         aria-expanded="false" aria-controls="login-without-usos">
                                     lub użyj konta Systemu Zapisów
                                 </a>
                             </form>
                             <div class="collapse" id="login-without-usos">
-                                <form action="{% url 'user-login' %}" method="POST" class="px-4 py-3">
+                                <form action="{% url 'login' %}" method="POST" class="px-4 py-3">
                                         {% csrf_token %}
                                         {% if request.path == '/' %}
                                             <input type="hidden" name="next"
@@ -152,16 +143,8 @@
                                                     oninvalid="this.setCustomValidity('Hasło jest wymagane')"
                                                     required>
                                         </div>
-        
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" value="true"
-                                                    id="remember" name="remember_me">
-                                            <label class="form-check-label" for="remember">
-                                                Pamiętaj mnie
-                                            </label>
-                                        </div>
                                         <button type="submit" class="btn btn-primary">Zaloguj</button>
-                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a>
                                     </form>
                             </div>
                         </div>
@@ -174,13 +157,13 @@
             <div class="logo header">
                 <div class="container">
                     <a href="/">
-                        <img src="{% static 'images/logo_UWr.svg' %}" alt="Uniwersytet Wrocławski">
+                        <img src="{% static 'images/logo-uwr.svg' %}" alt="Uniwersytet Wrocławski">
                     </a>
                 </div>
             </div>
             <div class="container">
                 <div class="row">
-                    <div id="system_menu"> 
+                    <div id="system_menu">
                         <ul class="nav nav-tabs" id="main-menu-list" role="tablist">
                             {% block system_menu %}
                             {% endblock %}
@@ -214,14 +197,18 @@
                 </div>
             </div>
             <div class="row my-4">
-                <div class="col-lg-9 col-12" id="main-content">
-                    {# WARNING ajaxCourseLoad.ts depends on this #}
-                        {% block content %}
-                        {% endblock %}
-                </div>
-                <nav class="col-lg-3 col-12 d-print-none" id="sidebar">
-                    {% block sidebar %}
+                <div class="col-lg-9 col-12 order-last order-lg-first" id="main-content">
+                    {% block content %}
                     {% endblock %}
+                </div>
+                <nav class="col-lg-3 col-12
+                        d-print-none order-first
+                        order-lg-last mb-3" id="sidebar">
+                    <div class="folded" id="sidebar-inner">
+                        {% block sidebar %}
+                        {% endblock %}
+                    </div>
+                    <a class="text-dark" href="#" id="fold-toggler">zwiń / rozwiń</a>
                 </nav>
             </div>
             {% endblock %}

@@ -120,7 +120,7 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_student.id, student1.id)
         self.assertEqual(res_student.matricula, student1.matricula)
         self.assertEqual(res_student.ects, student1.ects)
-        self.assertEqual(res_student.status, student1.status)
+        self.assertEqual(res_student.is_active, student1.is_active)
         self.assertEqual(res_student.user.id, student1.user.id)
         self.assertEqual(res_student.user.username, student1.user.username)
         self.assertEqual(res_student.user.first_name, student1.user.first_name)
@@ -141,7 +141,7 @@ class WrapperTests(APILiveServerTestCase):
 
         [changed_student] = list(self.wrapper.students())
 
-        self.assertEqual(changed_student.status, student.status)
+        self.assertEqual(changed_student.is_active, student.is_active)
         self.assertEqual(changed_student.usos_id, 666)
 
     def test_pagination(self):
@@ -287,10 +287,8 @@ class WrapperTests(APILiveServerTestCase):
         AuthGroup.objects.create(name="students")
         Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
 
-        student_id = self.wrapper.create_student(
-            420, '666', "John", "Doe", "doe@awesome.mail",
-            0, "Informatyka, dzienne I stopnia inżynierskie",
-            1, False, False, False)
+        student_id = self.wrapper.create_student(420, '666', "John", "Doe", "doe@awesome.mail", 0,
+                                                 "Informatyka, dzienne I stopnia inżynierskie", 1)
         student = self.wrapper.student(student_id)
         self.assertEqual(student.usos_id, 420)
         self.assertEqual(student.matricula, '666')

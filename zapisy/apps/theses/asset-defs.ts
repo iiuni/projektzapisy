@@ -1,7 +1,5 @@
 export default {
-	bundles: {
-		"main": [
-			"theses-main.tsx",
-		],
-	},
+  bundles: {
+    "theses-widget": ["theses-widget.js"]
+  }
 };
