@@ -2,7 +2,6 @@
 - hosts: all
 
   vars:
-    PYTHON: "/home/vagrant/env3/bin/python3"
     NODEJS_VERSION: "6"
     ansible_distribution_release: "xenial"
 
@@ -186,6 +185,17 @@
         state: present
         fstype: none
       become: yes
+
+    - stat:
+        path: /vagrant/zapisy/logs
+      register: logs_folder
+
+    - name: Create logs directory
+      file:
+        path: /vagrant/zapisy/logs
+        state: directory
+      become: yes
+      when: not logs_folder.stat.exists
 
 - name: Include playbook with postgres configuration
   import_playbook: postgres.yml

@@ -44,14 +44,6 @@
         state: started
       become: yes
 
-    # - name: Start runserver
-    #   systemd:
-    #     name: runserver
-    #     state: present
-    #     enabled: yes
-    #     masked: no
-    #   become: yes
-
     # Yarn devw service
     - name: Deploy yarn devw
       copy:
@@ -91,19 +83,11 @@
         enabled: no
       become: yes
 
-    - name: Start runserver
+    - name: Start yarn_devw
       systemd:
         name: yarn_devw
         state: started
       become: yes
-
-    # - name: Start yarn devw
-    #   systemd:
-    #     name: yarn_devw
-    #     state: started
-    #     enabled: yes
-    #     masked: no
-    #   become: yes
 
     # RQworker1
     - name: Deploy rqworker1
@@ -136,14 +120,6 @@
         state: started
       become: yes
 
-    # - name: Start rqworker1
-    #   systemd:
-    #     name: rqworker1
-    #     state: started
-    #     enabled: yes
-    #     masked: no
-    #   become: yes
-
     # RQworker2
     - name: Deploy rqworker2
       copy:
@@ -174,11 +150,3 @@
         name: rqworker2
         state: started
       become: yes
-
-    # - name: Start rqworker2
-    #   systemd:
-    #     name: rqworker2
-    #     state: started
-    #     enabled: yes
-    #     masked: no
-    #   become: yes

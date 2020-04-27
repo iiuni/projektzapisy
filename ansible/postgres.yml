@@ -31,13 +31,6 @@
         state: present
       become: yes
 
-    # Do usunięcia jeśli korzystamy z venv
-    - name: Temp Install psycopg2
-      apt:
-        name: python3-psycopg2
-        state: present
-      become: yes
-
     - name: Test for line existance in postgresql.conf
       shell: grep "listen_addresses = '*'" {{ PG_CONF }}
       register: postgresql_grep
