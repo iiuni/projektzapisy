@@ -1,0 +1,12 @@
+[Unit]
+Description=Yarn devw service
+[Service]
+User=vagrant
+Group=vagrant
+TimeoutStartSec=900
+WorkingDirectory=/vagrant/zapisy/
+ExecStart=/usr/local/bin/yarn devw
+Type=simple
+
+[Install]
+WantedBy=vagrant.mount

@@ -23,13 +23,6 @@ Vagrant.configure(2) do |config|
     # Enable "IO APIC" for better multicore performance, see
     # https://serverfault.com/questions/74672/why-should-i-enable-io-apic-in-virtualbox
     vb.customize ["modifyvm", :id, "--ioapic", "on"]
-    # The folder "node_modules" will live somewhere else and only be mounted
-    # in /vagrant/zapisy to avoid the issue with symlinks on Windows.
-    config.vm.provision "shell", inline: <<-SHELL
-      echo "Preparing local node_modules folder…"
-      mkdir -p /vagrant_node_modules
-      chown vagrant:vagrant /vagrant_node_modules
-    SHELL
     config.vm.provision "shell", run: "always", inline: <<-SHELL
       mkdir -p /vagrant/zapisy/node_modules
       mount --bind /vagrant_node_modules /vagrant/zapisy/node_modules
