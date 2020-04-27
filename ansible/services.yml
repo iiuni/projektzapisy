@@ -21,12 +21,36 @@
         replace: "{{IP}}:{{PORT}}"
       become: yes
 
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Disable runserver service
+      service:
+        name: runserver
+        enabled: no
+      become: yes
+
+    - name: Enable runserver service
+      service:
+        name: runserver
+        enabled: yes
+      become: yes
+
     - name: Start runserver
       systemd:
         name: runserver
         state: started
-        enabled: yes
       become: yes
+
+    # - name: Start runserver
+    #   systemd:
+    #     name: runserver
+    #     state: present
+    #     enabled: yes
+    #     masked: no
+    #   become: yes
 
     # Yarn devw service
     - name: Deploy yarn devw
@@ -36,12 +60,50 @@
         force: yes
       become: yes
 
-    - name: Start yarn devw
+    - name: Deploy yarn
+      copy:
+        src: yarn.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Disable yarn_devw service
+      service:
+        name: yarn_devw
+        enabled: no
+      become: yes
+
+    - name: Enable yarn_devw service
+      service:
+        name: yarn_devw
+        enabled: yes
+      become: yes
+
+    - name: Start yarn
+      systemd:
+        name: yarn
+        state: started
+        enabled: no
+      become: yes
+
+    - name: Start runserver
       systemd:
         name: yarn_devw
         state: started
-        enabled: yes
       become: yes
+
+    # - name: Start yarn devw
+    #   systemd:
+    #     name: yarn_devw
+    #     state: started
+    #     enabled: yes
+    #     masked: no
+    #   become: yes
 
     # RQworker1
     - name: Deploy rqworker1
@@ -51,12 +113,36 @@
         force: yes
       become: yes
 
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Disable rqworker1 service
+      service:
+        name: rqworker1
+        enabled: no
+      become: yes
+
+    - name: Enable rqworker1 service
+      service:
+        name: rqworker1
+        enabled: yes
+      become: yes
+
     - name: Start rqworker1
       systemd:
         name: rqworker1
         state: started
-        enabled: yes
       become: yes
+
+    # - name: Start rqworker1
+    #   systemd:
+    #     name: rqworker1
+    #     state: started
+    #     enabled: yes
+    #     masked: no
+    #   become: yes
 
     # RQworker2
     - name: Deploy rqworker2
@@ -66,9 +152,33 @@
         force: yes
       become: yes
 
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Disable rqworker2 service
+      service:
+        name: rqworker2
+        enabled: no
+      become: yes
+
+    - name: Enable rqworker2 service
+      service:
+        name: rqworker2
+        enabled: yes
+      become: yes
+
     - name: Start rqworker2
       systemd:
         name: rqworker2
         state: started
-        enabled: yes
       become: yes
+
+    # - name: Start rqworker2
+    #   systemd:
+    #     name: rqworker2
+    #     state: started
+    #     enabled: yes
+    #     masked: no
+    #   become: yes

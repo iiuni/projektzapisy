@@ -377,7 +377,7 @@
         src: /vagrant_node_modules
         path: /vagrant/zapisy/node_modules
         opts: bind
-        state: mounted
+        state: present
         fstype: none
       become: yes
 

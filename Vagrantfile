@@ -23,5 +23,9 @@ Vagrant.configure(2) do |config|
     # Enable "IO APIC" for better multicore performance, see
     # https://serverfault.com/questions/74672/why-should-i-enable-io-apic-in-virtualbox
     vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    config.vm.provision "shell", run: "always", inline: <<-SHELL
+      mkdir -p /vagrant/zapisy/node_modules
+      mount --bind /vagrant_node_modules /vagrant/zapisy/node_modules
+    SHELL
   end
 end
