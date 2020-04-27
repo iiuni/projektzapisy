@@ -275,6 +275,15 @@ def change_interested(request, event_id):
 
 
 @login_required
+def get_terms(request, year, month, day):
+    from apps.enrollment.courses.models.classroom import Classroom
+
+    time = datetime.date(int(year), int(month), int(day))
+    terms = Classroom.get_terms_in_day(time, ajax=True)
+    return HttpResponse(terms, content_type="application/json")
+
+
+@login_required
 def ajax_get_terms(request, year, month, day):
     from apps.enrollment.courses.models.classroom import Classroom
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import $ from "jquery";
 import { Term } from "../store/classrooms";
 
 @Component({
@@ -8,16 +9,24 @@ import { Term } from "../store/classrooms";
     label: String,
     type: String,
     capacity: Number,
+    id: Number,
     terms: {
       type: Array as () => Array<Term>,
       default: []
     },
-    reservation: Object
+    reservation: {
+      type: Array as () => Array<{ width: string; occupied: boolean }>,
+      default: []
+    }
+  },
+  methods: {
+    onClick: function() {
+      $("#form-room").val(this.id);
+    }
   }
 })
 export default class ClassroomField extends Vue {
   visibleBlocks: { width: string; occupied: boolean }[] = [];
-  reservationPreview: { width: string; occupied: boolean }[] = [];
   calculateLength = (startTime: string, endTime: string) => {
     let hS = Number(startTime.substr(0, 2));
     let mS = Number(startTime.substr(3, 5));
@@ -48,22 +57,6 @@ export default class ClassroomField extends Vue {
       );
       this.visibleBlocks.push({ width: emptyWidth, occupied: false });
     }
-
-    this.reservationPreview.push({
-      width: this.calculateLength("08:00", this.reservation.startTime),
-      occupied: false
-    });
-    this.reservationPreview.push({
-      width: this.calculateLength(
-        this.reservation.startTime,
-        this.reservation.endTime
-      ),
-      occupied: true
-    });
-    this.reservationPreview.push({
-      width: this.calculateLength(this.reservation.endTime, "22:00"),
-      occupied: false
-    });
   }
 }
 </script>
@@ -75,7 +68,7 @@ export default class ClassroomField extends Vue {
     <div class="container p-0 m-0">
       <div class="row">
         <div class="col-sm-2 p-1">
-          <button type="button" class="btn btn-primary">Wybierz</button>
+          <button type="button" class="btn btn-primary" v-on:click="onClick">Wybierz</button>
         </div>
         <div class="col-sm-8 p-1">
           <div class="container p-0 m-0">
@@ -97,7 +90,7 @@ export default class ClassroomField extends Vue {
                     <div class="progress bg-transparent" style="height: 35px">
                       <div
                         role="progressbar"
-                        v-for="(item, key) in reservationPreview"
+                        v-for="(item, key) in reservation"
                         :key="key"
                         :class="'progress-bar ' + (item.occupied ? 'bg-primary' : 'bg-transparent')"
                         :style="'width: ' + item.width"

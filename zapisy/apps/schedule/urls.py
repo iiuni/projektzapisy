@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     url(r'^classrooms$', views.classrooms, name='classrooms'),
+    url(r'^classrooms/get_terms/(?P<year>[0-9]*)/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/$', views.get_terms,
+        name='get_terms'),
     url(r'^classrooms/terms/(?P<year>[0-9]*)/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/$', views.ajax_get_terms,
         name='ajax_get_terms'),
     url(r'^classrooms/reservation$', views.reservation, name='reservation'),

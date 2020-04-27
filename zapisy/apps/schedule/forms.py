@@ -24,12 +24,13 @@ class NewTermForm(forms.ModelForm):
         exclude = ["event"]
 
     day = forms.DateField(widget=forms.TextInput(
-        attrs={'type': 'date'}), label="")
+        attrs={'type': 'date', 'class': 'form-date'}), label="")
     start = forms.TimeField(widget=forms.TextInput(
-        attrs={'type': 'time'}), label="")
+        attrs={'type': 'time', 'class': 'form-time', 'id': 'start-time'}), label="")
     end = forms.TimeField(widget=forms.TextInput(
-        attrs={'type': 'time'}), label="")
-    room = forms.ModelChoiceField(queryset=Classroom.objects.all(), label="")
+        attrs={'type': 'time', 'class': 'form-time', 'id': 'end-time'}), label="")
+    room = forms.ModelChoiceField(queryset=Classroom.objects.all(), widget=forms.Select(attrs={
+                                  'id': 'form-room'}), label="")
     ignore_conflicts = forms.BooleanField(
         required=False, label="Ignoruj konflikty")
 
