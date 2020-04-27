@@ -1,15 +1,71 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Term } from "../store/classrooms";
 
 @Component({
   props: {
     label: String,
     type: String,
-    capacity: Number
+    capacity: Number,
+    terms: {
+      type: Array as () => Array<Term>,
+      default: []
+    },
+    reservation: Object
   }
 })
-export default class ClassroomField extends Vue {}
+export default class ClassroomField extends Vue {
+  visibleBlocks: { width: string; occupied: boolean }[] = [];
+  reservationPreview: { width: string; occupied: boolean }[] = [];
+  calculateLength = (startTime: string, endTime: string) => {
+    let hS = Number(startTime.substr(0, 2));
+    let mS = Number(startTime.substr(3, 5));
+    let hE = Number(endTime.substr(0, 2));
+    let mE = Number(endTime.substr(3, 5));
+
+    let hD = hE - hS;
+    let mD = mE - mS < 0 ? 60 + mE - mS : mE - mS;
+    hD = mE - mS < 0 ? hD - 1 : hD;
+
+    return String(((hD + mD / 60) / 14) * 100) + "%";
+  };
+  mounted() {
+    if (this.terms.length != 0) {
+      let width = this.calculateLength("08:00", this.terms[0].startTime);
+      this.visibleBlocks.push({ width: width, occupied: false });
+    }
+    for (let i = 0; i < this.terms.length; i++) {
+      let width = this.calculateLength(
+        this.terms[i].startTime,
+        this.terms[i].endTime
+      );
+      this.visibleBlocks.push({ width: width, occupied: true });
+
+      let emptyWidth = this.calculateLength(
+        this.terms[i].endTime,
+        i + 1 != this.terms.length ? this.terms[i + 1].startTime : "22:00"
+      );
+      this.visibleBlocks.push({ width: emptyWidth, occupied: false });
+    }
+
+    this.reservationPreview.push({
+      width: this.calculateLength("08:00", this.reservation.startTime),
+      occupied: false
+    });
+    this.reservationPreview.push({
+      width: this.calculateLength(
+        this.reservation.startTime,
+        this.reservation.endTime
+      ),
+      occupied: true
+    });
+    this.reservationPreview.push({
+      width: this.calculateLength(this.reservation.endTime, "22:00"),
+      occupied: false
+    });
+  }
+}
 </script>
 
 
@@ -26,35 +82,25 @@ export default class ClassroomField extends Vue {}
             <div class="row">
               <div class="col">
                 <div style="height: 35px">
-                  <div class="progress" style="height: 35px">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: 14.28%"></div>
+                  <div class="progress bg-light" style="height: 35px">
                     <div
-                      class="progress-bar bg-secondary progress-bar-striped"
                       role="progressbar"
-                      style="width: 14.28%"
-                    >Zajęte</div>
-                    <div class="progress-bar bg-light" role="progressbar" style="width: 32.14%"></div>
-                    <div
-                      class="progress-bar bg-secondary progress-bar-striped"
-                      role="progressbar"
-                      style="width: 17.85%"
-                    >Zajęte</div>
-                    <div class="progress-bar bg-light" role="progressbar" style="width: 21.42%"></div>
+                      v-for="(item, key) in visibleBlocks"
+                      :key="key"
+                      :class="'progress-bar ' + (item.occupied ? 'bg-secondary progress-bar-striped' : 'bg-transparent')"
+                      :style="'width: ' + item.width"
+                    >{{item.occupied ? 'Zajęte' : ''}}</div>
                   </div>
                   <div
                     style="z-index: 2; position: relative; top: -35px; opacity: 0.5; width: 100%"
                   >
                     <div class="progress bg-transparent" style="height: 35px">
                       <div
-                        class="progress-bar bg-transparent"
                         role="progressbar"
-                        style="width: 25%;"
-                      ></div>
-                      <div class="progress-bar bg-primary" role="progressbar" style="width: 21.42%"></div>
-                      <div
-                        class="progress-bar bg-transparent"
-                        role="progressbar"
-                        style="width: 53.58%;"
+                        v-for="(item, key) in reservationPreview"
+                        :key="key"
+                        :class="'progress-bar ' + (item.occupied ? 'bg-primary' : 'bg-transparent')"
+                        :style="'width: ' + item.width"
                       ></div>
                     </div>
                   </div>
