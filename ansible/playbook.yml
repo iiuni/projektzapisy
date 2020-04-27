@@ -2,20 +2,11 @@
 - hosts: all
 
   vars:
-    APP_DB_USER: fereol
-    APP_DB_PASS: fereolpass
-    APP_DB_NAME: fereol
-    PG_VERSION: 10
-    PG_CONF: "/etc/postgresql/{{ PG_VERSION }}/main/postgresql.conf"
-    PG_HBA: "/etc/postgresql/{{ PG_VERSION }}/main/pg_hba.conf"
-    PG_DIR: "/var/lib/postgresql/{{ PG_VERSION }}/main"
-    RE_SQL: "/var/lib/postgresql/reset_zapisy.sql"
-    PYTHON: "/usr/bin/python3"
+    PYTHON: "/home/vagrant/env3/bin/python3"
     NODEJS_VERSION: "6"
     ansible_distribution_release: "xenial"
 
   tasks:
-    # apt.sh
     - name: Update APT Cache
       apt:
         update_cache: yes
@@ -35,7 +26,6 @@
         force_apt_get: yes
       become: yes
 
-    # apache_setup.sh
     - name: Install apache2
       apt:
         name: apache2
@@ -65,194 +55,20 @@
         name: apache2-dev
       become: yes
 
-    #postgre_setup.sh
-    - name: Ensure a locale exists
-      locale_gen:
-        name: pl_PL.UTF-8
-        state: present
-      become: yes
-
-    - name: Install postgresql-{{ PG_VERSION }}
-      apt:
-        name: postgresql-{{ PG_VERSION }}
-        state: present
-      become: yes
-
-    - name: Install postgresql-contrib-{{ PG_VERSION }}
-      apt:
-        name: postgresql-contrib-{{ PG_VERSION }}
-        state: present
-      become: yes
-
-    # Do usunięcia jeśli korzystamy z venv
-    - name: Temp Install psycopg2
-      apt:
-        name: python3-psycopg2
-        state: present
-      become: yes
-
-    - name: Test for line existance in postgresql.conf
-      shell: grep "listen_addresses = '*'" {{ PG_CONF }}
-      register: postgresql_grep
-
-    - name: Edit postgresql.conf to change listen address to '*'
-      lineinfile:
-        path: "{{ PG_CONF }}"
-        regexp: "^#listen_addresses = \'localhost\'"
-        line: listen_addresses = '*'
-      when: postgresql_grep.stdout != ""
-      become: yes
-
-    - name: Test for line existance in pg_hba.conf
-      become: yes
-      shell: grep "host    all             all             all                     md5" {{ PG_HBA }}
-      register: pg_hba_grep
-      failed_when: pg_hba_grep.rc != 1 and pg_hba_grep.rc != 0
-
-    - name: Append to pg_hba.conf to add password auth
-      lineinfile:
-        path: "{{ PG_HBA }}"
-        line: host    all             all             all                     md5
-      when: pg_hba_grep.stdout != ""
-      become: yes
-
-    - name: Second test for line existance in postgresql.conf
-      shell: grep "client_encoding = utf8" {{ PG_CONF }}
-      register: postgresql2_grep
-      failed_when: postgresql2_grep.rc != 1 and postgresql2_grep.rc != 0
-
-    - name: Explicitly set default client_encoding
-      lineinfile:
-        path: "{{ PG_CONF }}"
-        line: client_encoding = utf8
-      when: postgresql2_grep.stdout != ""
-      become: yes
-
-    - name: Restart so that all new config is loaded
-      service:
-        name: postgresql
-        state: restarted
-      become: yes
-
-    - name: Check if sql for recreating database exists
-      stat:
-        path: "{{ RE_SQL }}"
-      register: sql1_stat
-
-    - name: Create sql for recreating database
-      become: yes
-      blockinfile:
-        path: "{{ RE_SQL }}"
-        create: yes
-        block: |
-          DROP DATABASE $APP_DB_NAME;
-          DROP DATABASE test_$APP_DB_NAME;
-          CREATE DATABASE $APP_DB_NAME WITH OWNER={{ APP_DB_USER }}
-                                            LC_COLLATE='pl_PL.UTF-8'
-                                            LC_CTYPE='pl_PL.UTF-8'
-                                            ENCODING='UTF8'
-                                            TEMPLATE=template0;
-          CREATE DATABASE test_$APP_DB_NAME WITH OWNER={{ APP_DB_USER }}
-                                            LC_COLLATE='pl_PL.UTF-8'
-                                            LC_CTYPE='pl_PL.UTF-8'
-                                            ENCODING='UTF8'
-                                            TEMPLATE=template0;
-      when: sql1_stat.stat.exists == False
-
-    - name: Create the database user
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_user:
-        name: "{{ APP_DB_USER }}"
-        password: "{{ APP_DB_PASS }}"
-        role_attr_flags: CREATEDB
-
-    - name: Create the database
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "{{ APP_DB_NAME }}"
-        owner: "{{ APP_DB_USER }}"
-        encoding: UTF-8
-        lc_collate: pl_PL.UTF-8
-        lc_ctype: pl_PL.UTF-8
-        template: template0
-
-    - name: Update the database
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "{{ APP_DB_NAME }}"
-        state: restore
-        target: "/vagrant/ii_zapisy_dump_dev.sql"
-
-    - name: Create the test database
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "test_{{ APP_DB_NAME }}"
-        owner: "{{ APP_DB_USER }}"
-        encoding: UTF-8
-        lc_collate: pl_PL.UTF-8
-        lc_ctype: pl_PL.UTF-8
-        template: template0
-
-    - debug:
-        msg:
-        - "Your PostgreSQL database has been setup and can be accessed on your local machine on the forwarded port (default: 15432)"
-        - "Host: localhost"
-        - "Port: 15432"
-        - "Database: {{ APP_DB_NAME }}"
-        - "Username: {{ APP_DB_USER }}"
-        - "Password: {{ APP_DB_PASS }}"
-        - ""
-        - "Admin access to postgres user via VM:"
-        - "vagrant ssh"
-        - "sudo su - postgres"
-        - ""
-        - "psql access to app database user via VM:"
-        - "vagrant ssh"
-        - "sudo su - postgres"
-        - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS }} psql -h localhost {{ APP_DB_NAME }}"
-        - ""
-        - "Env variable for application development:"
-        - "DATABASE_URL=postgresql://{{ APP_DB_USER }}:{{ APP_DB_PASS }}@localhost:15432/{{ APP_DB_NAME }}"
-        - ""
-        - "Local command to access the database via psql:"
-        - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS}} psql -h localhost -p 15432 {{ APP_DB_NAME }}"
-      when: sql1_stat.stat.exists == False
-
-
-    # tools_install.sh
     - name: Install tools
       apt:
         name:
-        - git
         - libpq-dev
-        - unzip
         - libc6-dev
         - libjpeg62-dev
         - libfreetype6-dev
-        - xvfb
-        - firefox
-        - memcached
       become: yes
 
-    # nodejs_setup.sh
     - name: Install the gpg key for nodejs LTS
       apt_key:
         url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
         state: present
       become: yes
-
 
     - name: Install the nodejs LTS repos
       apt_repository:
@@ -282,11 +98,6 @@
       become: yes
       become_user: root
 
-
-    # py3.sh
-    - debug:
-        msg: Install Python 3.6...
-
     - name: Install python3
       apt:
         name: python3
@@ -297,7 +108,11 @@
         name: python3-venv
       become: yes
 
-    # bash_setup.sh
+    - name: Install redis
+      apt:
+        name: redis-server
+      become: yes
+
     - name: Add alias to .bash_alises
       lineinfile:
         path: ~/.bash_aliases
@@ -316,15 +131,6 @@
         insertafter: EOF
         create: yes
 
-    # redis.sh
-    - debug:
-        msg: Install Redis...
-    - name: Install redis
-      apt:
-        name: redis-server
-      become: yes
-
-    # env3_setup.sh
     - name: Install pip
       apt:
         pkg:
@@ -380,6 +186,9 @@
         state: present
         fstype: none
       become: yes
+
+- name: Include playbook with postgres configuration
+  import_playbook: postgres.yml
 
 - name: Include playbook with services configuration
   import_playbook: services.yml
