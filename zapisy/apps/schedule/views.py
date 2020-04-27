@@ -279,7 +279,8 @@ def get_terms(request, year, month, day):
     from apps.enrollment.courses.models.classroom import Classroom
 
     time = datetime.date(int(year), int(month), int(day))
-    terms = Classroom.get_terms_in_day(time, ajax=True)
+    terms = Classroom.get_occupied_terms_in_day(time)
+
     return HttpResponse(terms, content_type="application/json")
 
 
@@ -289,6 +290,7 @@ def ajax_get_terms(request, year, month, day):
 
     time = datetime.date(int(year), int(month), int(day))
     terms = Classroom.get_terms_in_day(time, ajax=True)
+
     return HttpResponse(terms, content_type="application/json")
 
 

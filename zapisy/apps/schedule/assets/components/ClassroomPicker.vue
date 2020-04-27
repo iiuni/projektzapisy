@@ -3,6 +3,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import $ from "jquery";
 import axios from "axios";
+import { Term, Classroom, calculateLength } from "../store/terms";
 import ClassroomField from "./ClassroomField.vue";
 
 @Component({
@@ -11,19 +12,9 @@ import ClassroomField from "./ClassroomField.vue";
   }
 })
 export default class ClassroomPicker extends Vue {
-  reservationPreview: { width: string; occupied: boolean }[] = [];
-  calculateLength = (startTime: string, endTime: string) => {
-    let hS = Number(startTime.substr(0, 2));
-    let mS = Number(startTime.substr(3, 5));
-    let hE = Number(endTime.substr(0, 2));
-    let mE = Number(endTime.substr(3, 5));
+  classrooms: Classroom[] = [];
 
-    let hD = hE - hS;
-    let mD = mE - mS < 0 ? 60 + mE - mS : mE - mS;
-    hD = mE - mS < 0 ? hD - 1 : hD;
-
-    return String(((hD + mD / 60) / 14) * 100) + "%";
-  };
+  reservationLayer: Term[] = [];
 
   mounted() {
     let self = this;
@@ -31,17 +22,17 @@ export default class ClassroomPicker extends Vue {
       let start = $("#start-time").val();
       let end = $("#end-time").val();
 
-      self.reservationPreview = [];
-      self.reservationPreview.push({
-        width: self.calculateLength("08:00", start),
+      self.reservationLayer = [];
+      self.reservationLayer.push({
+        width: calculateLength("08:00", start),
         occupied: false
       });
-      self.reservationPreview.push({
-        width: self.calculateLength(start, end),
+      self.reservationLayer.push({
+        width: calculateLength(start, end),
         occupied: true
       });
-      self.reservationPreview.push({
-        width: self.calculateLength(end, "22:00"),
+      self.reservationLayer.push({
+        width: calculateLength(end, "22:00"),
         occupied: false
       });
     });
@@ -53,10 +44,49 @@ export default class ClassroomPicker extends Vue {
 
       axios
         .get(
-          "/classrooms/terms/" + +date[0] + "/" + date[1] + "/" + date[2] + "/"
+          "/classrooms/get_terms/" +
+            date[0] +
+            "/" +
+            date[1] +
+            "/" +
+            date[2] +
+            "/"
         )
         .then(response => {
-          console.log(response);
+          self.classrooms = [];
+          for (let key in response.data) {
+            let item = response.data[key];
+            let termsLayer = [];
+
+            if (item.occupied.length != 0) {
+              let width = calculateLength("08:00", item.occupied[0].begin);
+              termsLayer.push({ width: width, occupied: false });
+            }
+
+            for (let i = 0; i < item.occupied.length; i++) {
+              let width = calculateLength(
+                item.occupied[i].begin,
+                item.occupied[i].end
+              );
+              termsLayer.push({ width: width, occupied: true });
+
+              let emptyWidth = calculateLength(
+                item.occupied[i].end,
+                i + 1 != item.occupied.length
+                  ? item.occupied[i + 1].begin
+                  : "22:00"
+              );
+              termsLayer.push({ width: emptyWidth, occupied: false });
+            }
+
+            self.classrooms.push({
+              label: item.number,
+              type: item.type,
+              id: item.id,
+              capacity: item.capacity,
+              termsLayer: termsLayer
+            });
+          }
         });
     });
   }
@@ -67,21 +97,14 @@ export default class ClassroomPicker extends Vue {
   <div>
     <h3>Filtruj sale</h3>
     <ClassroomField
-      label="Sala 4"
-      :capacity="40"
-      :id="11"
-      type="Sala ćwiczeniowa"
-      :terms="[{startTime: '10:00', endTime: '12:00'}, {startTime: '14:00', endTime: '15:30'},
-      {startTime: '16:00', endTime: '17:45'}]"
-      :reservation="reservationPreview"
-    />
-    <ClassroomField
-      label="Sala 4"
-      :capacity="40"
-      :id="10"
-      type="Sala ćwiczeniowa"
-      :terms="[{startTime: '08:00', endTime: '11:45'}, {startTime: '13:30', endTime: '16:00'}]"
-      :reservation="reservationPreview"
+      v-for="item in this.classrooms"
+      :key="item.id"
+      :label="item.label"
+      :capacity="item.capacity"
+      :id="item.id"
+      :type="item.type"
+      :termsLayer="item.termsLayer"
+      :reservation="reservationLayer"
     />
   </div>
 </template>

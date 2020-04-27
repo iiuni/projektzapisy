@@ -10,61 +10,34 @@ import { Term } from "../store/classrooms";
     type: String,
     capacity: Number,
     id: Number,
-    terms: {
+    termsLayer: {
       type: Array as () => Array<Term>,
       default: []
     },
-    reservation: {
-      type: Array as () => Array<{ width: string; occupied: boolean }>,
+    reservationLayer: {
+      type: Array as () => Array<Term>,
       default: []
     }
   },
   methods: {
     onClick: function() {
       $("#form-room").val(this.id);
+      $([document.documentElement, document.body]).animate(
+        {
+          scrollTop: $("#term-forms").offset().top
+        },
+        500
+      );
     }
   }
 })
-export default class ClassroomField extends Vue {
-  visibleBlocks: { width: string; occupied: boolean }[] = [];
-  calculateLength = (startTime: string, endTime: string) => {
-    let hS = Number(startTime.substr(0, 2));
-    let mS = Number(startTime.substr(3, 5));
-    let hE = Number(endTime.substr(0, 2));
-    let mE = Number(endTime.substr(3, 5));
-
-    let hD = hE - hS;
-    let mD = mE - mS < 0 ? 60 + mE - mS : mE - mS;
-    hD = mE - mS < 0 ? hD - 1 : hD;
-
-    return String(((hD + mD / 60) / 14) * 100) + "%";
-  };
-  mounted() {
-    if (this.terms.length != 0) {
-      let width = this.calculateLength("08:00", this.terms[0].startTime);
-      this.visibleBlocks.push({ width: width, occupied: false });
-    }
-    for (let i = 0; i < this.terms.length; i++) {
-      let width = this.calculateLength(
-        this.terms[i].startTime,
-        this.terms[i].endTime
-      );
-      this.visibleBlocks.push({ width: width, occupied: true });
-
-      let emptyWidth = this.calculateLength(
-        this.terms[i].endTime,
-        i + 1 != this.terms.length ? this.terms[i + 1].startTime : "22:00"
-      );
-      this.visibleBlocks.push({ width: emptyWidth, occupied: false });
-    }
-  }
-}
+export default class ClassroomField extends Vue {}
 </script>
 
 
 <template>
   <div class="p-3 text-center">
-    {{ label }}
+    <p class="font-weight-bold">Sala numer {{ label }}</p>
     <div class="container p-0 m-0">
       <div class="row">
         <div class="col-sm-2 p-1">
@@ -78,7 +51,7 @@ export default class ClassroomField extends Vue {
                   <div class="progress bg-light" style="height: 35px">
                     <div
                       role="progressbar"
-                      v-for="(item, key) in visibleBlocks"
+                      v-for="(item, key) in terms"
                       :key="key"
                       :class="'progress-bar ' + (item.occupied ? 'bg-secondary progress-bar-striped' : 'bg-transparent')"
                       :style="'width: ' + item.width"
