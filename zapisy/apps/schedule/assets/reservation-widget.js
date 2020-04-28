@@ -1,12 +1,12 @@
 import Vue from "vue";
-import ReservationComponent from "./components/ReservationComponent.vue";
+import ClassroomPicker from "./components/ClassroomPicker.vue";
 
 let schedule_reservation_widget_app = new Vue({
   el: "#reservation-widget",
   components: {
-    ReservationComponent,
+    ClassroomPicker,
   },
   render: function (h) {
-    return h(ReservationComponent);
+    return h(ClassroomPicker);
   },
 });

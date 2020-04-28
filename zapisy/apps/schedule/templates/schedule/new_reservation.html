@@ -43,8 +43,66 @@
     {% for term_form in formset %}
         {% crispy term_form %}
     {% endfor %}
-
-    <div id="reservation-widget"></div>
+    <div>
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a
+                class="nav-item nav-link active"
+                id="nav-place-in-tab"
+                data-toggle="tab"
+                href="#nav-place-in"
+                role="tab"
+                aria-controls="nav-place-in"
+                aria-selected="false"
+            >Sala Instytutu</a>
+            <a
+                class="nav-item nav-link"
+                id="nav-place-out-tab"
+                data-toggle="tab"
+                href="#nav-place-out"
+                role="tab"
+                aria-controls="nav-place-out"
+                aria-selected="true"
+            >Miejsce zewnętrzne</a>
+            </div>
+        </nav>
+  
+        <div class="tab-content mt-3" id="nav-tabContent">
+            <div
+            class="tab-pane fade show active"
+            id="nav-place-in"
+            role="tabpanel"
+            aria-labelledby="nav-place-in-tab"
+            >
+                <div id="reservation-widget" ></div>
+            </div>
+            <div
+            class="tab-pane fade"
+            id="nav-place-out"
+            role="tabpanel"
+            aria-labelledby="nav-place-out-tab"
+            >
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Musisz samemu zatroszczyć się o rezerwację!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="inputplacediv" class="container">
+                    <div class="form-group row">
+                        <label for="inputplace" class="col-sm-2 col-form-label">Miejsce</label>
+                        <div class="col-sm-10 input-group">
+                            <input type="text" class="form-control" id="inputplace" 
+                            placeholder="np. Instytu Matematyczny, Sala HS">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info" id="addoutsidelocation">Wybierz</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <button type="submit" class="save btn btn-default">Save</button>
 </form>
