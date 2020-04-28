@@ -2,10 +2,12 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import ClassroomPicker from "./ClassroomPicker.vue";
+import OutsideReservation from "./OutsideReservation.vue";
 
 @Component({
   components: {
-    ClassroomPicker
+    ClassroomPicker,
+    OutsideReservation
   }
 })
 export default class ReservationComponent extends Vue {}
@@ -50,7 +52,9 @@ export default class ReservationComponent extends Vue {}
         id="nav-place-out"
         role="tabpanel"
         aria-labelledby="nav-place-out-tab"
-      >pupa</div>
+      >
+        <OutsideReservation />
+      </div>
     </div>
   </div>
 </template>
