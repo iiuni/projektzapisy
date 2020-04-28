@@ -24,7 +24,7 @@ class NewTermForm(forms.ModelForm):
         exclude = ["event"]
 
     day = forms.DateField(widget=forms.TextInput(
-        attrs={'type': 'date', 'class': 'form-date'}), label="")
+        attrs={'type': 'date', 'class': 'form-date', 'min': '{% now "Y-m-d" %}'}), label="")
     start = forms.TimeField(widget=forms.TextInput(
         attrs={'type': 'time', 'class': 'form-time', 'id': 'start-time'}), label="")
     end = forms.TimeField(widget=forms.TextInput(

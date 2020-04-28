@@ -12,11 +12,15 @@ import { Term } from "../store/classrooms";
     id: Number,
     termsLayer: {
       type: Array as () => Array<Term>,
-      default: []
+      default() {
+        return [];
+      }
     },
     reservationLayer: {
       type: Array as () => Array<Term>,
-      default: []
+      default() {
+        return [];
+      }
     }
   },
   methods: {
@@ -51,7 +55,7 @@ export default class ClassroomField extends Vue {}
                   <div class="progress bg-light" style="height: 35px">
                     <div
                       role="progressbar"
-                      v-for="(item, key) in terms"
+                      v-for="(item, key) in termsLayer"
                       :key="key"
                       :class="'progress-bar ' + (item.occupied ? 'bg-secondary progress-bar-striped' : 'bg-transparent')"
                       :style="'width: ' + item.width"
@@ -63,7 +67,7 @@ export default class ClassroomField extends Vue {}
                     <div class="progress bg-transparent" style="height: 35px">
                       <div
                         role="progressbar"
-                        v-for="(item, key) in reservation"
+                        v-for="(item, key) in reservationLayer"
                         :key="key"
                         :class="'progress-bar ' + (item.occupied ? 'bg-primary' : 'bg-transparent')"
                         :style="'width: ' + item.width"

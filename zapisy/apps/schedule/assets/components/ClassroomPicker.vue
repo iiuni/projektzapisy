@@ -3,17 +3,36 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import $ from "jquery";
 import axios from "axios";
-import { Term, Classroom, calculateLength } from "../store/terms";
+import { Term, Classroom, isFree, calculateLength } from "../store/terms";
 import ClassroomField from "./ClassroomField.vue";
 
 @Component({
   components: {
     ClassroomField
+  },
+  data: () => {
+    return {
+      showOccupied: true
+    };
+  },
+  methods: {
+    getUnoccupied: function() {
+      let begin = $("#start-time").val();
+      let end = $("#end-time").val();
+      this.unoccupiedClassrooms = this.classrooms.filter(item => {
+        return isFree(item.rawOccupied, begin, end);
+      });
+    }
+  },
+  watch: {
+    showOccupied: function(newShow: boolean) {
+      this.showOccupied = newShow;
+    }
   }
 })
 export default class ClassroomPicker extends Vue {
   classrooms: Classroom[] = [];
-
+  unoccupiedClassrooms: Classroom[] = [];
   reservationLayer: Term[] = [];
 
   mounted() {
@@ -21,6 +40,13 @@ export default class ClassroomPicker extends Vue {
     $(".form-time").change(function(event) {
       let start = $("#start-time").val();
       let end = $("#end-time").val();
+
+      self.getUnoccupied();
+
+      if (start > end) {
+        self.reservationLayer = [];
+        return;
+      }
 
       self.reservationLayer = [];
       self.reservationLayer.push({
@@ -60,7 +86,10 @@ export default class ClassroomPicker extends Vue {
 
             if (item.occupied.length != 0) {
               let width = calculateLength("08:00", item.occupied[0].begin);
-              termsLayer.push({ width: width, occupied: false });
+              termsLayer.push({
+                width: width,
+                occupied: false
+              });
             }
 
             for (let i = 0; i < item.occupied.length; i++) {
@@ -68,15 +97,21 @@ export default class ClassroomPicker extends Vue {
                 item.occupied[i].begin,
                 item.occupied[i].end
               );
-              termsLayer.push({ width: width, occupied: true });
+              termsLayer.push({
+                width: width,
+                occupied: true
+              });
 
-              let emptyWidth = calculateLength(
-                item.occupied[i].end,
+              let nextEnd =
                 i + 1 != item.occupied.length
                   ? item.occupied[i + 1].begin
-                  : "22:00"
-              );
-              termsLayer.push({ width: emptyWidth, occupied: false });
+                  : "22:00";
+              let emptyWidth = calculateLength(item.occupied[i].end, nextEnd);
+
+              termsLayer.push({
+                width: emptyWidth,
+                occupied: false
+              });
             }
 
             self.classrooms.push({
@@ -84,9 +119,11 @@ export default class ClassroomPicker extends Vue {
               type: item.type,
               id: item.id,
               capacity: item.capacity,
-              termsLayer: termsLayer
+              termsLayer: termsLayer,
+              rawOccupied: item.occupied
             });
           }
+          self.getUnoccupied();
         });
     });
   }
@@ -96,15 +133,21 @@ export default class ClassroomPicker extends Vue {
 <template>
   <div>
     <h3>Filtruj sale</h3>
+    <div class="input-group">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" :id="2137" v-model="showOccupied" />
+        <label class="custom-control-label" :for="2137">Pokaz zajęte</label>
+      </div>
+    </div>
     <ClassroomField
-      v-for="item in this.classrooms"
+      v-for="item in (showOccupied ? this.classrooms : this.unoccupiedClassrooms)"
       :key="item.id"
       :label="item.label"
       :capacity="item.capacity"
       :id="item.id"
       :type="item.type"
       :termsLayer="item.termsLayer"
-      :reservation="reservationLayer"
+      :reservationLayer="reservationLayer"
     />
   </div>
 </template>

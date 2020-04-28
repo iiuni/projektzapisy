@@ -9,6 +9,25 @@ export interface Classroom {
   capacity: Number;
   id: Number;
   termsLayer: Term[];
+  rawOccupied: { begin: string; end: string }[];
+}
+
+export function isFree(
+  occupied: { begin: string; end: string }[],
+  begin: string,
+  end: string
+) {
+  let isFree = true;
+  occupied.forEach((item) => {
+    if (
+      (begin >= item.begin && begin < item.end) ||
+      (end > item.begin && end <= item.end)
+    )
+      isFree = false;
+  });
+
+  console.log(isFree);
+  return isFree;
 }
 
 export function calculateLength(
