@@ -135,8 +135,13 @@ export default class ClassroomPicker extends Vue {
     <h3>Filtruj sale</h3>
     <div class="input-group">
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" :id="2137" v-model="showOccupied" />
-        <label class="custom-control-label" :for="2137">Pokaz zajęte</label>
+        <input
+          type="checkbox"
+          class="custom-control-input"
+          id="showOccupied"
+          v-model="showOccupied"
+        />
+        <label class="custom-control-label" for="showOccupied">Pokaż zajęte</label>
       </div>
     </div>
     <ClassroomField

@@ -21,7 +21,8 @@ export function isFree(
   occupied.forEach((item) => {
     if (
       (begin >= item.begin && begin < item.end) ||
-      (end > item.begin && end <= item.end)
+      (end > item.begin && end <= item.end) ||
+      (begin <= item.begin && end >= item.end)
     )
       isFree = false;
   });
