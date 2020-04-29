@@ -112,15 +112,6 @@
         name: redis-server
       become: yes
 
-    - name: Add alias to .bash_alises
-      lineinfile:
-        path: ~/.bash_aliases
-        line: "alias run='python /vagrant/zapisy/run.py'"
-        regex: "^alias run='python /vagrant/zapisy/run.py'$"
-        state: present
-        insertafter: EOF
-        create: yes
-
     - name: Add source command to .bashrc
       lineinfile:
         path: ~/.bashrc
