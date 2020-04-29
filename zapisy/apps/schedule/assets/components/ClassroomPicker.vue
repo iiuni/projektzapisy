@@ -22,51 +22,49 @@ import ClassroomField from "./ClassroomField.vue";
       this.unoccupiedClassrooms = this.classrooms.filter(item => {
         return isFree(item.rawOccupied, begin, end);
       });
-    }
-  },
-  watch: {
-    showOccupied: function(newShow: boolean) {
-      this.showOccupied = newShow;
-    }
-  }
-})
-export default class ClassroomPicker extends Vue {
-  classrooms: Classroom[] = [];
-  unoccupiedClassrooms: Classroom[] = [];
-  reservationLayer: Term[] = [];
+    },
+    onChangedTime: function() {
+      let start = $(".active-term")
+        .find("#start-time")
+        .val();
+      let end = $(".active-term")
+        .find("#end-time")
+        .val();
 
-  mounted() {
-    let self = this;
-    $(".form-time").change(function(event) {
-      let start = $("#start-time").val();
-      let end = $("#end-time").val();
-
-      self.getUnoccupied();
+      this.getUnoccupied();
 
       if (start > end) {
-        self.reservationLayer = [];
+        this.reservationLayer = [];
         return;
       }
 
-      self.reservationLayer = [];
-      self.reservationLayer.push({
+      this.reservationLayer = [];
+      this.reservationLayer.push({
         width: calculateLength("08:00", start),
         occupied: false
       });
-      self.reservationLayer.push({
+      this.reservationLayer.push({
         width: calculateLength(start, end),
         occupied: true
       });
-      self.reservationLayer.push({
+      this.reservationLayer.push({
         width: calculateLength(end, "22:00"),
         occupied: false
       });
-    });
+    },
+    onChangedDate: function() {
+      var self = this;
+      var date = $(".active-term")
+        .find(".form-date")
+        .val();
 
-    $(".form-date").change(function(event) {
-      var date = $(".form-date")
-        .val()
-        .split("-");
+      if (date == "") {
+        self.classrooms = [];
+        self.unoccupiedClassrooms = [];
+        return;
+      }
+
+      date = date.split("-");
 
       axios
         .get(
@@ -125,7 +123,37 @@ export default class ClassroomPicker extends Vue {
           }
           self.getUnoccupied();
         });
-    });
+    }
+  },
+  watch: {
+    showOccupied: function(newShow: boolean) {
+      this.showOccupied = newShow;
+    }
+  }
+})
+export default class ClassroomPicker extends Vue {
+  classrooms: Classroom[] = [];
+  unoccupiedClassrooms: Classroom[] = [];
+  reservationLayer: Term[] = [];
+
+  mounted() {
+    let self = this;
+
+    let f = event => {
+      self.onChangedTime();
+      self.onChangedDate();
+
+      $(".active-term")
+        .find(".form-time")
+        .change(self.onChangedTime);
+
+      $(".active-term")
+        .find(".form-date")
+        .change(self.onChangedDate);
+    };
+
+    $(document).on("click", ".edit-term-form", f);
+    $(document).on("click", "#new-term-form", f);
   }
 }
 </script>

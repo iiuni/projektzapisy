@@ -8,7 +8,7 @@ from django.forms import HiddenInput
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Row, Column, ButtonHolder, Submit, HTML, Div
+from crispy_forms.layout import Field, Layout, Fieldset, Row, Column, ButtonHolder, Submit, HTML, Div
 
 from apps.enrollment.courses.models.classroom import Classroom, floors
 from apps.enrollment.courses.models.course_instance import CourseInstance
@@ -39,7 +39,7 @@ class NewTermForm(forms.ModelForm):
         self.helper = FormHelper()
 
         self.helper.layout = Layout(
-            Row(Column('day', css_class='col-2 mb-0'), Column('start', css_class='form-group col-2 mb-0'), Column('end', css_class='form-group col-2 mb-0'), Column('room', css_class='form-group col-2 mb-0'), css_class='form-row'))
+            Row(Column('day', css_class='col-2 mb-0'), Column('start', css_class='form-group col-2 mb-0'), Column('end', css_class='form-group col-2 mb-0'), Column('room', css_class='form-group col-2 mb-0'), Column(HTML('<button class="btn btn-primary edit-term-form"> Edytuj </button> <button class="btn btn-danger delete-term-form">Usuń</button>'), css_class='col-4 mb-0'), css_class='form-row p-2'))
 
 
 NewTermFormSet = inlineformset_factory(Event, Term, extra=1, form=NewTermForm)
@@ -71,14 +71,22 @@ class TermForm(forms.ModelForm):
 TermFormSet = inlineformset_factory(Event, Term, extra=0, form=TermForm)
 
 
+class CustomVisibleCheckbox(Field):
+    template = 'forms/custom_visible_checkbox.html'
+
+
 class NewEventForm(forms.ModelForm):
+
     class Meta:
         model = Event
         exclude = ('status', 'author', 'created',
                    'edited', 'group', 'interested')
 
     title = forms.CharField(label="Nazwa")
-    type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT, label="Rodzaj")
+    type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT, label="Rodzaj", widget=forms.Select(attrs={
+        'id': 'form-type'}))
+    visible = forms.BooleanField(
+        label="Wydarzenie widoczne dla wszystkich użytkowników systemu", widget=forms.CheckboxInput(attrs={'class': ""}))
     course = forms.ModelChoiceField(
         queryset=CourseInstance.objects.none(), label="Przedmiot")
 
@@ -100,15 +108,17 @@ class NewEventForm(forms.ModelForm):
                     groups__teacher=user.employee,
                     semester__in=[semester, previous_semester])
             else:
-                queryset = CourseInstance.objects.filter(semester__in=[semester, previous_semester]). \
-                    select_related('semester'). \
-                    order_by('semester')
+                queryset = CourseInstance.objects.filter(semester__in=[
+                    semester, previous_semester]).select_related('semester').order_by('semester')
 
             self.fields['course'].queryset = queryset
 
         self.helper.layout = Layout(
             'type',
-            'course',
+            Div('course', css_id="form-course"),
+            Div(CustomVisibleCheckbox('visible'),
+                css_class="d-none form-event"),
+            Div('title', css_class='d-none form-event'),
             Div('description',
                 HTML('<small class="form-text text-muted">Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.</small>')),
         )
@@ -144,9 +154,8 @@ class EventForm(forms.ModelForm):
             previous_semester = Semester.get_semester(
                 datetime.now().date() - timedelta(days=30))
 
-            queryset = CourseInstance.objects.filter(semester__in=[semester, previous_semester]). \
-                select_related('semester'). \
-                order_by('semester')
+            queryset = CourseInstance.objects.filter(
+                semester__in=[semester, previous_semester]).select_related('semester').order_by('semester')
 
             if not user.has_perm('schedule.manage_events'):
                 queryset = CourseInstance.objects.filter(

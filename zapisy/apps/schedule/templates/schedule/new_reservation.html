@@ -10,6 +10,11 @@
     <li class="breadcrumb-item active" aria-current="page">Rezerwuj</li>
 {% endblock %}
 
+{% block js %}
+
+{% render_bundle "schedule-reservation2" %}
+{% endblock %}
+
 {% block all-content %}
 <h2>Nowa rezerwacja</h2>
 <form method="POST" class="post-form">
@@ -40,9 +45,12 @@
             </div>
         </div>
     </div>
-    {% for term_form in formset %}
-        {% crispy term_form %}
-    {% endfor %}
+    <div id="term-formset" class="mb-5">
+        {% for term_form in formset %}
+            {% crispy term_form %}
+        {% endfor %}
+        <button class="btn btn-primary" id="new-term-form">Dodaj nowy termin</button>
+    </div>
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">

@@ -27,7 +27,6 @@ export function isFree(
       isFree = false;
   });
 
-  console.log(isFree);
   return isFree;
 }
 

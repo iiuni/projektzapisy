@@ -25,7 +25,9 @@ import { Term } from "../store/classrooms";
   },
   methods: {
     onClick: function() {
-      $("#form-room").val(this.id);
+      $(".active-term")
+        .find("#form-room")
+        .val(this.id);
       $([document.documentElement, document.body]).animate(
         {
           scrollTop: $("#term-forms").offset().top
