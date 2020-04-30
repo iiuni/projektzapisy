@@ -1,4 +1,3 @@
-{% load render_bundle from webpack_loader %}
 {% load filters %}
 
 <div class="d-flex justify-content-between align-items-center">
@@ -89,7 +88,5 @@
 
 <div class="description">
     <h2>Opis przedmiotu:</h2>
-    {{ course.description|default:"Brak"|markdown }}
+    {% markdown course.description|default:"Brak" %}
 </div>
-
-{% render_bundle 'render-markdown' %}

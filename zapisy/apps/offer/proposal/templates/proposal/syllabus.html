@@ -136,7 +136,7 @@
         </tr>
         <tr>
             <th>Metody uczenia się</th>
-            <td>{{ proposal.teaching_methods|markdown }}</td>
+            <td>{% markdown proposal.teaching_methods %}</td>
         </tr>
     </tbody>
 </table>
@@ -155,7 +155,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">13.</th>
             <th colspan="2">Wymagania wstępne w zakresie wiedzy, umiejętności i kompetencji społecznych dla przedmiotu/modułu</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.preconditions|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.preconditions %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -164,7 +164,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">14.</th>
             <th colspan="2">Cele przedmiotu</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.objectives|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.objectives %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -173,7 +173,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">15.</th>
             <th colspan="2">Treści programowe</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.contents|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.contents %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -183,7 +183,7 @@
             <th colspan="2">Zakładane efekty uczenia się</th>
         </tr>
         <tr>
-            <td colspan="2">{{ proposal.teaching_effects|markdown }}</td>
+            <td colspan="2">{% markdown proposal.teaching_effects %}</td>
         </tr>
     </tbody>
 </table>
@@ -193,7 +193,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">17.</th>
             <th colspan="2">Literatura obowiązkowa i zalecana</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.literature|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.literature %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -202,7 +202,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">18.</th>
             <th colspan="2">Metody weryfikacji zakładanych efektów kształcenia</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.verification_methods|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.verification_methods %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -211,7 +211,7 @@
             <th class="number-cell" rowspan="2" scope="rowgroup">19.</th>
             <th colspan="2">Warunki i forma zaliczenia poszczególnych komponentów przedmiotu/modułu</th>
         </tr>
-        <tr><td colspan="2">{{ proposal.passing_means|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.passing_means %}</td></tr>
     </tbody>
 </table>
 <table class="table table-bordered">
@@ -219,6 +219,6 @@
         <tr>
             <th class="number-cell" rowspan="2" scope="rowgroup">20.</th>
             <th colspan="2">Nakład pracy studenta/doktoranta</th>
-        <tr><td colspan="2">{{ proposal.student_labour|markdown }}</td></tr>
+        <tr><td colspan="2">{% markdown proposal.student_labour %}</td></tr>
     </tbody>
 </table>

@@ -1,6 +1,6 @@
 from django import template
-from django.utils.html import conditional_escape
-from django.utils.safestring import mark_safe
+from django.utils import html, safestring
+from webpack_loader import utils as webpack_utils
 
 register = template.Library()
 
@@ -36,17 +36,23 @@ def minimum(first, second):
     return min(first, second)
 
 
-@register.filter(name='markdown', needs_autosecape=True)
-def markdown_text(text, autoescape=True):
+@register.simple_tag(name='markdown', takes_context=True)
+def markdown_text(context, text, autoescape=True):
     """This renders Markdown string as HTML.
 
-    For the markdown string to be rendered you need to include 'render-markdown'
-    bundle in the template.
+    To render text as markdown put {% markdown text %} into the template. It
+    will include JS asset ('render-markdown' bundle) on the first use in the
+    template, but not on subsequent uses.
     """
-    if autoescape:
-        esc = conditional_escape
-    else:
-        def esc(x):
-            return x
-    result_html = '<span class="markdown">%s</span>' % esc(text)
-    return mark_safe(result_html)
+    includes = ''
+    if 'render_markdown_src' not in context:
+        # The first markdown in the template - include JS.
+        context['render_markdown_src'] = True
+        # Ask Webpack for the location of the asset.
+        includes = '\n'.join(webpack_utils.get_as_tags('render-markdown'))
+    result_html = html.format_html(
+        '<span class="markdown">{}</span>{}',
+        text,
+        safestring.mark_safe(includes),
+    )
+    return result_html
