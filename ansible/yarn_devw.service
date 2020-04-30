@@ -1,5 +1,7 @@
 [Unit]
 Description=Yarn devw service
+After=yarn.service
+
 [Service]
 User=vagrant
 Group=vagrant
@@ -9,4 +11,4 @@ ExecStart=/usr/local/bin/yarn devw
 Type=simple
 
 [Install]
-WantedBy=vagrant.mount
+WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
