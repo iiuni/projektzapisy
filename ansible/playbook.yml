@@ -4,6 +4,7 @@
   vars:
     NODEJS_VERSION: "6"
     ansible_distribution_release: "xenial"
+    PYTHON: "/usr/bin/python3"
 
   tasks:
     - name: Update APT Cache
@@ -25,11 +26,6 @@
         force_apt_get: yes
       become: yes
 
-    - name: Install apache2
-      apt:
-        name: apache2
-      become: yes
-
     - stat:
         path: /var/www
       register: sym_link
@@ -47,20 +43,6 @@
         dest: /var/www
         state: link
       when: not sym_link.stat.exists or not sym_link.stat.islnk
-      become: yes
-
-    - name: Install apache2-dev
-      apt:
-        name: apache2-dev
-      become: yes
-
-    - name: Install tools
-      apt:
-        name:
-        - libpq-dev
-        - libc6-dev
-        - libjpeg62-dev
-        - libfreetype6-dev
       become: yes
 
     - name: Install the gpg key for nodejs LTS
@@ -124,12 +106,14 @@
     - name: Install pip
       apt:
         pkg:
-        - python-pip
+        - python3-pip
         - python3-venv
         update_cache: yes
       become: yes
 
     - name: Upgrade pip
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
       pip:
         name: pip
         state: latest
@@ -138,7 +122,7 @@
       become: yes
 
     - name: Set up virtualenv
-      shell: python3.6 -m venv env3
+      shell: python3 -m venv env3
       args:
         chdir: ~/
 
