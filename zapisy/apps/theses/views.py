@@ -95,7 +95,7 @@ def view_thesis(request, id):
     for voter in all_voters:
         if voter not in voters:
             votes.append({'owner': voter,
-                          'vote': ThesisVote.NONE.display})
+                          'vote': ThesisVote.NONE.label})
 
     for vote in votes:
         if vote['owner'].user == request.user:
