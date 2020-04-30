@@ -1,4 +1,5 @@
 {% load crispy_forms_field %}
+{% load render_bundle from webpack_loader %}
 
 <div id="div_{{ field.id_for_label }}" class="form-group">
     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -16,3 +17,5 @@
         {% endif %}
     </markdown-editor>
 </div>
+
+{% render_bundle 'proposal-markdown-editor' %}
