@@ -10,9 +10,9 @@ from ..models.classroom import Classroom
 from ..models.course_information import CourseInformation
 from ..models.course_type import Type
 from ..models.term import Term
-from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 from .semester_year_provider import SemesterYearProvider
+from apps.common import days_of_week
 
 factory.Faker.add_provider(SemesterYearProvider)
 
@@ -95,7 +95,7 @@ class ChangedDayForFridayFactory(DjangoModelFactory):
     class Meta:
         model = ChangedDay
 
-    weekday = common.FRIDAY
+    weekday = days_of_week.FRIDAY
 
 
 class ClassroomFactory(DjangoModelFactory):

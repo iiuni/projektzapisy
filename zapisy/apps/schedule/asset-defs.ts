@@ -3,6 +3,9 @@ export default {
       "reservation": [
          "reservation.js",
       ],
+      "fullcalendar": [
+         "fullcalendar.ts"
+      ],
       "classroom-chooser": [
          "classroomchooser.js",
       ],

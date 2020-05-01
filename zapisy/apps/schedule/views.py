@@ -22,7 +22,7 @@ from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
     EventModerationMessageForm, EventMessageForm, ConflictsForm
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
-from apps.utils.fullcalendar import FullCalendarView
+from .fullcalendar import FullCalendarView
 from .forms import DoorChartForm, TableReportForm
 from itertools import groupby
 from .models.message import EventModerationMessage

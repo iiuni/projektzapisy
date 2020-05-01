@@ -221,7 +221,7 @@ INSTALLED_APPS = (
     'apps.offer.desiderata',
     'apps.offer.plan',
 
-    'apps.utils',
+    'apps.common',
     'apps.schedule',
     # 'debug_toolbar',
     'apps.grade.poll',

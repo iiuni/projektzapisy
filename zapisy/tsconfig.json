@@ -9,7 +9,7 @@
     "strict": true,
     "jsx": "react",
     "module": "esnext",
-    "baseUrl": "./assets",
+    "baseUrl": "./common/assets",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "types": [

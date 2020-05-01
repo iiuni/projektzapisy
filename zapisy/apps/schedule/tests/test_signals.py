@@ -7,7 +7,7 @@ from apps.enrollment.courses.tests.factories import (CourseInstanceFactory, Grou
 from apps.enrollment.courses.models.semester import ChangedDay, Freeday
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.term import Term
-from zapisy import common
+from apps.common import days_of_week
 
 
 class TermModificationsOnSignalTest(test.TestCase):
@@ -23,8 +23,8 @@ class TermModificationsOnSignalTest(test.TestCase):
         cls.semester = SemesterFactory(lectures_beginning=date(2019, 5, 1),
                                        lectures_ending=date(2019, 5, 31))
         # We change one Thursday to Friday and one Friday to Thursday.
-        ChangedDay.objects.create(day=date(2019, 5, 16), weekday=common.FRIDAY)
-        ChangedDay.objects.create(day=date(2019, 5, 17), weekday=common.THURSDAY)
+        ChangedDay.objects.create(day=date(2019, 5, 16), weekday=days_of_week.FRIDAY)
+        ChangedDay.objects.create(day=date(2019, 5, 17), weekday=days_of_week.THURSDAY)
         # One Thursday is going to be free.
         Freeday.objects.create(day=date(2019, 5, 9))
 
@@ -37,7 +37,7 @@ class TermModificationsOnSignalTest(test.TestCase):
     def test_thursday_terms_added(self):
         """A simple scenario where we just add a term."""
         t = CourseTerm.objects.create(group=self.group,
-                                      dayOfWeek=common.THURSDAY,
+                                      dayOfWeek=days_of_week.THURSDAY,
                                       start_time=time(12),
                                       end_time=time(14))
         t.classrooms.add(self.classrooms[0])
@@ -64,12 +64,12 @@ class TermModificationsOnSignalTest(test.TestCase):
         """We move the class to different time and classroom."""
         # This is the same as above.
         t = CourseTerm.objects.create(group=self.group,
-                                      dayOfWeek=common.THURSDAY,
+                                      dayOfWeek=days_of_week.THURSDAY,
                                       start_time=time(12),
                                       end_time=time(14))
         t.classrooms.add(self.classrooms[0])
         # Now we move the class to the other time.
-        t.dayOfWeek = common.FRIDAY
+        t.dayOfWeek = days_of_week.FRIDAY
         t.save()
         self.assertCountEqual(Term.objects.all().values_list('day', flat=True), [
             date(2019, 5, 3),
@@ -93,13 +93,13 @@ class TermModificationsOnSignalTest(test.TestCase):
     def test_class_with_many_terms(self):
         # We create one term just as before
         t1 = CourseTerm.objects.create(group=self.group,
-                                       dayOfWeek=common.THURSDAY,
+                                       dayOfWeek=days_of_week.THURSDAY,
                                        start_time=time(12),
                                        end_time=time(14))
         t1.classrooms.add(self.classrooms[0])
         # And we add another.
         t2 = CourseTerm.objects.create(group=self.group,
-                                       dayOfWeek=common.WEDNESDAY,
+                                       dayOfWeek=days_of_week.WEDNESDAY,
                                        start_time=time(10),
                                        end_time=time(12))
         t2.classrooms.add(self.classrooms[1])
@@ -117,7 +117,7 @@ class TermModificationsOnSignalTest(test.TestCase):
         ])
 
         # Now we move the Thursday term to Friday.
-        t1.dayOfWeek = common.FRIDAY
+        t1.dayOfWeek = days_of_week.FRIDAY
         t1.save()
         self.assertCountEqual(Term.objects.all().values_list('day', 'room_id'), [
             (date(2019, 5, 1), self.classrooms[1].pk),

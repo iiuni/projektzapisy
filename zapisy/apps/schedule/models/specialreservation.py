@@ -6,8 +6,7 @@ from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 
-from zapisy import common
-
+from apps.common import days_of_week
 from apps.enrollment.courses.models.term import Term as CourseTerm
 
 
@@ -60,7 +59,7 @@ class SpecialReservation(models.Model):
     title = models.CharField(verbose_name='nazwa', max_length=255)
     classroom = models.ForeignKey(Classroom, verbose_name='sala', on_delete=models.CASCADE)
     dayOfWeek = models.CharField(max_length=1,
-                                 choices=common.DAYS_OF_WEEK,
+                                 choices=days_of_week.DAYS_OF_WEEK,
                                  verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name='rozpoczęcie', blank=False)
     end_time = models.TimeField(verbose_name='zakończenie', blank=False)
@@ -80,7 +79,7 @@ class SpecialReservation(models.Model):
         A versatile function returning SpecialReservations. day is either datetime.date or string
 
         :param semester: enrollment.courses.model.Semester
-        :param day: common.DAYS_OF_WEEK or datetime.date
+        :param day: DAYS_OF_WEEK or datetime.date
         """
 
         query = cls.objects.any_semester(semester)
