@@ -56,6 +56,13 @@ div.header {
   background-color: #00709e;
 }
 
+// Developement runs will flash orange top bar.
+body.debug {
+  .top {
+    background-color: rgb(217, 89, 0);
+  }
+}
+
 div.top .topbar .inline-inputs label {
   float: none;
   color: #FFFFFF;
