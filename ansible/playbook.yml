@@ -2,8 +2,6 @@
 - hosts: all
 
   vars:
-    NODEJS_VERSION: "6"
-    ansible_distribution_release: "xenial"
     PYTHON: "/usr/bin/python3"
 
   tasks:
@@ -13,10 +11,9 @@
         force_apt_get: yes
       become: yes
 
-    - name: Remove apt lock file
-      file:
-        state: absent
-        path: "/var/lib/dpkg/lock"
+    # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
     - name: Upgrade all packages to the latest version
@@ -24,38 +21,6 @@
         name: "*"
         state: latest
         force_apt_get: yes
-      become: yes
-
-    - stat:
-        path: /var/www
-      register: sym_link
-
-    - name: Delete /var/www in case it is not symbolic link
-      file:
-        path: /var/www
-        state: absent
-      when: sym_link.stat.exists and not sym_link.stat.islnk
-      become: yes
-
-    - name: Create /var/www if necessary
-      file:
-        src: /vagrant
-        dest: /var/www
-        state: link
-      when: not sym_link.stat.exists or not sym_link.stat.islnk
-      become: yes
-
-    - name: Install the gpg key for nodejs LTS
-      apt_key:
-        url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-        state: present
-      become: yes
-
-    - name: Install the nodejs LTS repos
-      apt_repository:
-        repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
-        state: present
-        update_cache: yes
       become: yes
 
     - name: Install the nodejs
@@ -157,7 +122,7 @@
         src: /vagrant_node_modules
         path: /vagrant/zapisy/node_modules
         opts: bind
-        state: present
+        state: mounted
         fstype: none
       become: yes
 
