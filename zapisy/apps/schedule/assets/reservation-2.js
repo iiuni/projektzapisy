@@ -3,17 +3,17 @@ const $ = jQuery;
 
 function setEdited(object) {
   $(".active-term").removeClass("active-term");
-  $(object).closest(".term-form").addClass("active-term");
+  $(object).closest("form").addClass("active-term");
   $("#term-formset").find("input").prop("disabled", true);
   $("#term-formset")
     .find(".form-place")
     .removeClass("bg-light");
   $(object)
-    .closest(".term-form")
+    .closest("form")
     .find("input")
     .prop("disabled", false);
   $(object)
-    .closest(".term-form")
+    .closest("form")
     .find(".form-place")
     .addClass("bg-light");
 }
@@ -60,8 +60,7 @@ $(document).ready(() => {
   });
 
   $("#new-term-form").click((event) => {
-    event.preventDefault();
-    var cloned = $(".term-form").last().clone();
+    var cloned = $("form").last().clone();
     cloned.insertBefore($("#new-term-form"));
     cloned.find(".row").find("input").val("").end();
     setEdited(cloned.find(".edit-term-form"));
