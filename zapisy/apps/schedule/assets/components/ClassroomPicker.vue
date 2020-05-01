@@ -31,12 +31,12 @@ import ClassroomField from "./ClassroomField.vue";
         .find("#end-time")
         .val();
 
-      this.getUnoccupied();
-
       if (start > end) {
         this.reservationLayer = [];
         return;
       }
+
+      this.getUnoccupied();
 
       this.reservationLayer = [];
       this.reservationLayer.push({

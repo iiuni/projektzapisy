@@ -3,19 +3,20 @@ const $ = jQuery;
 
 function setEdited(object) {
   $(".active-term").removeClass("active-term");
-  $(object).closest("form").addClass("active-term");
+  $(object).closest(".term-form").addClass("active-term");
   $("#term-formset").find("input").prop("disabled", true);
-  $("#term-formset").find("select").prop("disabled", true);
+  $("#term-formset")
+    .find(".form-place")
+    .removeClass("bg-light");
   $(object)
-    .closest("form")
+    .closest(".term-form")
     .find("input")
     .prop("disabled", false);
   $(object)
-    .closest("form")
-    .find(".select")
-    .prop("disabled", false);
+    .closest(".term-form")
+    .find(".form-place")
+    .addClass("bg-light");
 }
-
 function deleteTermClick(event) {
   event.preventDefault();
   $(event.target).closest("form").remove();
@@ -29,8 +30,13 @@ function editTermClick(event) {
 $(document).ready(() => {
   $("#addoutsidelocation").click((event) => {
     console.log($("#inputplace").val());
+    $(".active-term").find(".form-room").val("");
+    $(".active-term")
+      .find(".form-place")
+      .val($("#inputplace").val());
   });
 
+  //On reservation type = event, display title field. Otherwise hide it.
   $("#form-type").change(function (event) {
     if ($("#form-type").val() == 2) {
       $("#form-course").addClass("d-none");
@@ -49,14 +55,15 @@ $(document).ready(() => {
 
   $(document).on("click", ".edit-term-form", editTermClick);
 
+  $(document).on("click", "#save-event", (event) => {
+    $("#main-form").submit();
+  });
+
   $("#new-term-form").click((event) => {
-    var cloned = $("form").last().clone();
+    event.preventDefault();
+    var cloned = $(".term-form").last().clone();
     cloned.insertBefore($("#new-term-form"));
     cloned.find(".row").find("input").val("").end();
-    $("#term-formset").find("input").prop("disabled", true);
-    $("#term-formset")
-      .find("select")
-      .prop("disabled", true);
     setEdited(cloned.find(".edit-term-form"));
   });
 });

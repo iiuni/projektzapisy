@@ -53,20 +53,23 @@ def classroom(request, slug):
 
 @login_required
 def new_reservation(request, event_id=None):
-    form = NewEventForm(request.user)
 
-    if form.is_valid():
-        event = form.save(commit=False)
-        event.author = request.user
-        formset = NewTermFormSet(request.POST or None, instance=event)
-        if formset.is_valid():
-            event.save()
-            formset.save()
+    if request.method == "POST":
+        form = NewEventForm(request.user, request.POST)
+        formset = NewTermFormSet(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.author = request.user
+            formset = NewTermFormSet(request.POST or None, instance=event)
+            if formset.is_valid():
+                event.save()
+                formset.save()
 
-            return redirect(event)
-        errors = True
+                return redirect(event)
+            errors = True
     else:
-        formset = NewTermFormSet(data=request.POST or None, instance=Event())
+        form = NewEventForm(request.user)
+        formset = NewTermFormSet()
     return render(request, 'schedule/new_reservation.html', {'form': form, 'formset': formset})
 
 

@@ -41,13 +41,18 @@ class Event(models.Model):
                          (TYPE_TEST, 'Kolokwium'),
                          (TYPE_GENERIC, 'Wydarzenie')]
 
-    title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
+    title = models.CharField(
+        max_length=255, verbose_name='Tytuł', null=True, blank=True)
     description = models.TextField(verbose_name='Opis', blank=True)
     type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
-    visible = models.BooleanField(verbose_name='Wydarzenie jest publiczne', default=False)
-    status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
-    course = models.ForeignKey(CourseInstance, null=True, blank=True, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+    visible = models.BooleanField(
+        verbose_name='Wydarzenie jest publiczne', default=False)
+    status = models.CharField(
+        choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
+    course = models.ForeignKey(
+        CourseInstance, null=True, blank=True, on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        Group, null=True, blank=True, on_delete=models.CASCADE)
     reservation = models.ForeignKey(
         'schedule.SpecialReservation',
         null=True,
@@ -56,7 +61,8 @@ class Event(models.Model):
 
     interested = models.ManyToManyField(User, related_name='interested_events')
 
-    author = models.ForeignKey(User, verbose_name='Twórca', on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User, verbose_name='Twórca', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
 
@@ -75,56 +81,6 @@ class Event(models.Model):
         permissions = (
             ("manage_events", "Może zarządzać wydarzeniami"),
         )
-
-    def clean(self, *args, **kwargs):
-        """
-        Overload clean method.
-        If author is employee and try reserve room for exam - accept it
-        If author has perms to manage events - accept it
-        """
-
-        # if this is a new item
-
-        if not self.pk:
-
-            # if author is an employee, accept any exam and test events
-            if ((self.author.employee and self.type in (Event.TYPE_EXAM, Event.TYPE_TEST)) or
-                    self.author.has_perm('schedule.manage_events')):
-                self.status = self.STATUS_ACCEPTED
-
-            # all exams and tests should be public
-
-            if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST]:
-                self.visible = True
-
-            # students can only add generic events that have to be accepted first
-
-            if self.author.student and not self.author.has_perm(
-                    'schedule.manage_events'):
-                if self.type != Event.TYPE_GENERIC:
-                    raise ValidationError(
-                        message={'type': ['Nie masz uprawnień aby dodawać wydarzenia tego typu']},
-                        code='permission')
-
-                if self.status != Event.STATUS_PENDING:
-                    raise ValidationError(
-                        message={
-                            'status': ['Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
-                        code='permission')
-
-        else:
-            old = Event.objects.get(pk=self.pk)
-
-            # if status is changed
-            if old.status != self.status:
-
-                # if status changes to accepted, validate all term objects
-                if self.status == Event.STATUS_ACCEPTED:
-                    from .term import Term
-                    for term in Term.objects.filter(event=self):
-                        term.clean()
-
-        super(Event, self).clean()
 
     def remove(self):
         """

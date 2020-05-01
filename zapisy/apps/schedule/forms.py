@@ -24,13 +24,15 @@ class NewTermForm(forms.ModelForm):
         exclude = ["event"]
 
     day = forms.DateField(widget=forms.TextInput(
-        attrs={'type': 'date', 'class': 'form-date', 'min': '{% now "Y-m-d" %}'}), label="")
+        attrs={'type': 'date', 'class': 'form-date', 'disabled': True}), label="", help_text="Wybierz termin, aby zobaczyć dostępne sale.")
     start = forms.TimeField(widget=forms.TextInput(
-        attrs={'type': 'time', 'class': 'form-time', 'id': 'start-time'}), label="")
+        attrs={'type': 'time', 'class': 'form-time', 'id': 'start-time', 'disabled': True}), label="")
     end = forms.TimeField(widget=forms.TextInput(
-        attrs={'type': 'time', 'class': 'form-time', 'id': 'end-time'}), label="")
-    room = forms.ModelChoiceField(queryset=Classroom.objects.all(), widget=forms.Select(attrs={
-                                  'id': 'form-room'}), label="")
+        attrs={'type': 'time', 'class': 'form-time', 'id': 'end-time', 'disabled': True}), label="")
+    place = forms.CharField(label="", help_text="Wybierz lokalizację poniżej.", widget=forms.TextInput(
+        attrs={'class': 'form-place m-0', 'readonly': True}))
+    room = forms.ModelChoiceField(
+        queryset=Classroom.objects.all(), widget=forms.HiddenInput(attrs={'class': 'form-room'}))
     ignore_conflicts = forms.BooleanField(
         required=False, label="Ignoruj konflikty")
 
@@ -39,10 +41,14 @@ class NewTermForm(forms.ModelForm):
         self.helper = FormHelper()
 
         self.helper.layout = Layout(
-            Row(Column('day', css_class='col-2 mb-0'), Column('start', css_class='form-group col-2 mb-0'), Column('end', css_class='form-group col-2 mb-0'), Column('room', css_class='form-group col-2 mb-0'), Column(HTML('<button class="btn btn-primary edit-term-form"> Edytuj </button> <button class="btn btn-danger delete-term-form">Usuń</button>'), css_class='col-4 mb-0'), css_class='form-row p-2'))
+            Div(
+                Row(Column('day', css_class='col-2 mb-0'), Column('start', css_class='form-group col-2 mb-0'), Column('end', css_class='form-group col-2 mb-0'), Column('place', css_class='form-group col-3 mb-0'),
+                    Column(HTML('<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> <button class="btn btn-danger delete-term-form mb-1">Usuń</button>'), css_class='col-3 mb-0'), css_class='form-row p-2'),
+                'room', css_class="term-form"))
 
 
-NewTermFormSet = inlineformset_factory(Event, Term, extra=1, form=NewTermForm)
+NewTermFormSet = inlineformset_factory(
+    Event, Term, extra=1, form=NewTermForm)
 
 
 class TermForm(forms.ModelForm):
@@ -82,17 +88,18 @@ class NewEventForm(forms.ModelForm):
         exclude = ('status', 'author', 'created',
                    'edited', 'group', 'interested')
 
-    title = forms.CharField(label="Nazwa")
+    title = forms.CharField(label="Nazwa", required=False)
     type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT, label="Rodzaj", widget=forms.Select(attrs={
         'id': 'form-type'}))
     visible = forms.BooleanField(
-        label="Wydarzenie widoczne dla wszystkich użytkowników systemu", widget=forms.CheckboxInput(attrs={'class': ""}))
+        label="Wydarzenie widoczne dla wszystkich użytkowników systemu", widget=forms.CheckboxInput(attrs={'class': ""}), required=False)
     course = forms.ModelChoiceField(
-        queryset=CourseInstance.objects.none(), label="Przedmiot")
+        queryset=CourseInstance.objects.none(), label="Przedmiot", required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(NewEventForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_tag = False
 
         if user.employee:
             self.fields['type'].choices = Event.TYPES_FOR_TEACHER
@@ -122,6 +129,9 @@ class NewEventForm(forms.ModelForm):
             Div('description',
                 HTML('<small class="form-text text-muted">Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.</small>')),
         )
+
+    def clean(self):
+        print("czyszczem")
 
 
 class EventForm(forms.ModelForm):
