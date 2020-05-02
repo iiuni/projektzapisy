@@ -15,5 +15,8 @@ export default {
             "markdown/render-markdown.ts",
             "markdown/render-markdown.scss",
         ],
+        "markdown-editor": [
+            "markdown/markdown-editor.js",
+        ],
     },
 };

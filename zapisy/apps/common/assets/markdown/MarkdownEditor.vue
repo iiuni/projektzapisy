@@ -1,24 +1,21 @@
 <template>
-    <div>
-        <div class="md-editor-wrapper">
-            <textarea
-                class="text-monospace form-control bg-light"
-                :class="{ 'is-invalid': is_invalid }"
-                rows="10"
-                :value="input"
-                :name="name"
-                @input="update"
-            ></textarea>
-            <div class="preview">
-                <span v-html="compiledMarkdown"></span>
-                <a
-                    class="doc-link"
-                    href="https://guides.github.com/features/mastering-markdown/#examples"
-                    target="_blank"
-                >
-                    <font-awesome-icon :icon="faMarkdown" />
-                </a>
-            </div>
+    <div class="md-editor-wrapper form-control" :class="{ 'is-invalid': is_invalid }">
+        <textarea
+            class="form-control text-monospace bg-light"
+            rows="10"
+            :value="input"
+            :name="name"
+            @input="update"
+        ></textarea>
+        <div class="preview">
+            <span v-html="compiledMarkdown"></span>
+            <a
+                class="doc-link"
+                href="https://guides.github.com/features/mastering-markdown/#examples"
+                target="_blank"
+            >
+                <font-awesome-icon :icon="faMarkdown" />
+            </a>
         </div>
         <slot></slot>
     </div>
@@ -71,14 +68,12 @@ export default {
     display: flex;
     align-items: stretch;
     justify-content: space-between;
+    padding: 0;
+    height: auto;
 
     @media (max-width: 767px) {
         flex-direction: column;
     }
-
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-
     textarea {
         @media (min-width: 768px) {
             width: calc(50% - 0.25em);
@@ -86,6 +81,7 @@ export default {
             border-bottom-right-radius: 0;
         }
         padding: 1em;
+        border: none;
     }
 
     .preview {

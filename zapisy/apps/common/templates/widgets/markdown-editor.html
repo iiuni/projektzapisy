@@ -1,0 +1,7 @@
+<markdown-editor name="{{ widget.name }}" value="{{ widget.value|default_if_none:'' }}"
+    {% if field.errors %}
+        is_invalid
+    {% endif %}
+    data-input-type="markdown-editor-widget"
+    {% include "django/forms/widgets/attrs.html" %}>
+</markdown-editor>
