@@ -17,8 +17,12 @@ import ClassroomField from "./ClassroomField.vue";
   },
   methods: {
     getUnoccupied: function() {
-      let begin = $("#start-time").val();
-      let end = $("#end-time").val();
+      let begin = $(".active-term")
+        .find(".form-start")
+        .val();
+      let end = $(".active-term")
+        .find(".form-end")
+        .val();
       this.unoccupiedClassrooms = this.classrooms.filter(item => {
         return isFree(item.rawOccupied, begin, end);
       });
@@ -31,10 +35,13 @@ import ClassroomField from "./ClassroomField.vue";
         .find(".form-end")
         .val();
 
-      if (start > end) {
+      if (start > end || end < "08:00" || start > "22:00") {
         this.reservationLayer = [];
         return;
       }
+
+      start = start < "08:00" ? "08:00" : start;
+      end = end > "22:00" ? "22:00" : end;
 
       this.getUnoccupied();
 
