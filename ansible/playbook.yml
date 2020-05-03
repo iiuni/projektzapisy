@@ -23,17 +23,11 @@
         force_apt_get: yes
       become: yes
 
-    - name: Install the nodejs
+    - name: Install nodejs and npm
       apt:
-        name: nodejs
-        state: present
-      become: yes
-      become_user: root
-
-    - name: Install the nodejs
-      apt:
-        name: npm
-        state: present
+        pkg:
+        - nodejs
+        - npm
       become: yes
       become_user: root
 

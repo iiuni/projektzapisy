@@ -37,6 +37,15 @@
         password: "{{ APP_DB_PASS }}"
         role_attr_flags: CREATEDB
 
+    - name: Drop the database
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        state: absent
+
     - name: Create the database
       become: yes
       become_user: postgres
@@ -72,6 +81,7 @@
         command: migrate
         app_path: "/vagrant/zapisy"
         virtualenv: "/home/vagrant/env3"
+      when: not dumpsql.stat.exists
 
     - debug:
         msg:
