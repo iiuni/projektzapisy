@@ -22,7 +22,6 @@ class NewTermForm(forms.ModelForm):
     class Meta:
         model = Term
         exclude = ["event"]
-
     day = forms.DateField(widget=forms.TextInput(
         attrs={'type': 'date', 'class': 'form-day', 'disabled': True}), label="", help_text="Wybierz termin, aby zobaczyć dostępne sale.")
     start = forms.TimeField(widget=forms.TextInput(
@@ -45,11 +44,14 @@ class NewTermForm(forms.ModelForm):
             Div(
                 Row(Column('day', css_class='col-2 mb-0'), Column('start', css_class='form-group col-2 mb-0'), Column('end', css_class='form-group col-2 mb-0'), Column('place', css_class='form-group col-3 mb-0'),
                     Column(HTML('<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> <button class="btn btn-danger delete-term-form mb-1">Usuń</button>'), css_class='col-3 mb-0'), css_class='form-row p-2'),
-                'room', css_class="term-form"))
+                'room', 'id', Div('DELETE', css_class='d-none'), css_class="term-form"))
 
 
-NewTermFormSet = inlineformset_factory(
-    Event, Term, extra=1, form=NewTermForm)
+NewTermFormset = inlineformset_factory(
+    Event, Term, extra=1, form=NewTermForm, can_delete=True)
+
+EditTermFormset = inlineformset_factory(
+    Event, Term, extra=0, form=NewTermForm, can_delete=True)
 
 
 class TermForm(forms.ModelForm):
