@@ -19,8 +19,8 @@ from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
-from apps.schedule.forms import NewEventForm, EventForm, EditTermFormset, \
-    NewTermFormset, TermFormSet, DecisionForm, EventModerationMessageForm, \
+from apps.schedule.forms import EventForm, EditTermFormSet, \
+    NewTermFormSet, DecisionForm, EventModerationMessageForm, \
     EventMessageForm, ConflictsForm
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
@@ -55,18 +55,18 @@ def classroom(request, slug):
 @login_required
 def new_reservation(request, event_id=None):
     if request.method == "POST":
-        form = NewEventForm(request.user, request.POST)
+        form = EventForm(request.user, request.POST)
         if form.is_valid():
             event = form.save(commit=False)
-            formset = NewTermFormset(request.POST, instance=event)
+            formset = NewTermFormSet(request.POST, instance=event)
             if formset.is_valid():
                 new_event = event.save()
                 new_formset = formset.save()
 
                 return redirect(event)
     else:
-        form = NewEventForm(request.user)
-        formset = NewTermFormset()
+        form = EventForm(request.user)
+        formset = NewTermFormSet()
     return render(request, 'schedule/reservation.html', {'form': form, 'formset': formset})
 
 
@@ -74,9 +74,9 @@ def new_reservation(request, event_id=None):
 def edit_reservation(request, event_id=None):
     is_edit = True
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
-    form = NewEventForm(data=request.POST or None,
-                        instance=event, user=request.user)
-    formset = EditTermFormset(request.POST or None, instance=event)
+    form = EventForm(data=request.POST or None,
+                     instance=event, user=request.user)
+    formset = EditTermFormSet(request.POST or None, instance=event)
     reservation = event.reservation
 
     if form.is_valid():
