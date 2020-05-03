@@ -64,31 +64,24 @@ function cloneTermForm() {
   cloned
     .find(".form-room")
     .attr("name", namePrefix + "room");
+  cloned
+    .find('input[name$="-DELETE"]')
+    .attr("name", namePrefix + "DELETE");
 
   cloned.find(".row").find("input").val("").end();
   cloned.removeClass("d-none");
   cloned
     .find('input[name$="-DELETE"]')
-    .prop("checked", false);
+    .prop("checked", true);
 }
 
 function deleteTermClick(event) {
   event.preventDefault();
 
-  if (formsetCounter != 1) {
-    formsetCounter -= 1;
+  formsetCounter =
+    formsetCounter == 0 ? 0 : formsetCounter - 1;
 
-    $(event.target)
-      .closest(".term-form")
-      .addClass("d-none");
-  } else {
-    $(event.target)
-      .closest(".term-form")
-      .find("input")
-      .val("")
-      .end();
-    setTermsToDefault();
-  }
+  $(event.target).closest(".term-form").addClass("d-none");
 
   $(event.target)
     .closest(".term-form")

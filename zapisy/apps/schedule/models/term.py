@@ -101,7 +101,7 @@ class Term(models.Model):
                     code='invalid'
                 )
 
-            if not self.ignore_conflicts:
+            if self.day and self.start and self.end and not self.ignore_conflicts:
                 self.validate_against_event_terms()
                 self.validate_against_course_terms()
 

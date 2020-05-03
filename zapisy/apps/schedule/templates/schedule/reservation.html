@@ -49,6 +49,7 @@
         {{ formset.management_form }}
         {% for term_form in formset %}
             {% crispy term_form %}
+            {{term_form.errors}}
         {% endfor %}
         <button class="btn btn-primary" id="new-term-form">Dodaj nowy termin</button>
     </div>
