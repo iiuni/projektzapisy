@@ -1,9 +1,0 @@
-[Unit]
-Description=Mount bind node_modules service
-
-[Service]
-ExecStart=/bin/mount --bind /vagrant_node_modules /vagrant/zapisy/node_modules
-Type=oneshot
-
-[Install]
-WantedBy=vagrant.mount

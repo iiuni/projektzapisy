@@ -5,7 +5,7 @@
     # Deploy
     - name: Deploy mount bind
       copy:
-        src: mount.service
+        src: vagrant-zapisy-node_modules.mount
         dest: /etc/systemd/system/
         force: yes
       become: yes
@@ -51,9 +51,9 @@
         daemon_reload: yes
       become: yes
 
-    - name: Enable and run mount service
+    - name: Enable and run node_modules mount
       service:
-        name: mount
+        name: vagrant-zapisy-node_modules.mount
         enabled: yes
         state: started
       become: yes

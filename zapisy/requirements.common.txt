@@ -15,7 +15,6 @@ django-webpack-loader==0.6.0
 djangorestframework==3.9.2
 django-pagedown~=2.0.3
 
-Fabric3==1.14.post1
 ipdb==0.11
 ipython==6.4.0
 pycryptodome==3.8.1
