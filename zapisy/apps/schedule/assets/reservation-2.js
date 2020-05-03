@@ -1,25 +1,66 @@
 import "jquery";
 const $ = jQuery;
 
-function setEdited(object) {
+function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
-  $(object).closest("form").addClass("active-term");
-  $("#term-formset").find("input").prop("disabled", true);
-  $("#term-formset")
+  $(".term-form").find("input").prop("disabled", true);
+  $(".term-form")
     .find(".form-place")
     .removeClass("bg-light");
+}
+
+function setEdited(object) {
+  setTermsToDefault();
+  $(object).closest(".term-form").addClass("active-term");
   $(object)
-    .closest("form")
+    .closest(".term-form")
     .find("input")
     .prop("disabled", false);
   $(object)
-    .closest("form")
+    .closest(".term-form")
     .find(".form-place")
     .addClass("bg-light");
 }
+
+function cloneTermForm() {
+  var cloned = $(".term-form").last().clone();
+  cloned = cloned.insertBefore($("#new-term-form"));
+
+  var counter = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
+  let namePrefix = "term_set-" + counter + "-";
+  $('input[name="term_set-TOTAL_FORMS"]').val(
+    parseInt(counter) + 1
+  );
+
+  cloned.find(".form-day").attr("name", namePrefix + "day");
+  cloned
+    .find(".form-start")
+    .attr("name", namePrefix + "start");
+  cloned.find(".form-end").attr("name", namePrefix + "end");
+  cloned
+    .find(".form-place")
+    .attr("name", namePrefix + "place");
+  cloned
+    .find(".form-room")
+    .attr("name", namePrefix + "room");
+
+  cloned.find(".row").find("input").val("").end();
+}
+
 function deleteTermClick(event) {
   event.preventDefault();
-  $(event.target).closest("form").remove();
+  var counter = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
+
+  if (counter != 1) {
+    $('input[name="term_set-TOTAL_FORMS"]').val(
+      parseInt(counter) - 1
+    );
+    $(event.target).closest(".term-form").remove();
+  }
 }
 
 function editTermClick(event) {
@@ -29,7 +70,6 @@ function editTermClick(event) {
 
 $(document).ready(() => {
   $("#addoutsidelocation").click((event) => {
-    console.log($("#inputplace").val());
     $(".active-term").find(".form-room").val("");
     $(".active-term")
       .find(".form-place")
@@ -56,13 +96,16 @@ $(document).ready(() => {
   $(document).on("click", ".edit-term-form", editTermClick);
 
   $(document).on("click", "#save-event", (event) => {
+    event.preventDefault();
+    $(".term-form").find("input").prop("disabled", false);
     $("#main-form").submit();
   });
 
   $("#new-term-form").click((event) => {
-    var cloned = $("form").last().clone();
-    cloned.insertBefore($("#new-term-form"));
-    cloned.find(".row").find("input").val("").end();
-    setEdited(cloned.find(".edit-term-form"));
+    event.preventDefault();
+    cloneTermForm();
+    setEdited(
+      $(".term-form").last().find(".edit-term-form")
+    );
   });
 });

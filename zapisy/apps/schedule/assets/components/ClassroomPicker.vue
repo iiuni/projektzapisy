@@ -25,10 +25,10 @@ import ClassroomField from "./ClassroomField.vue";
     },
     onChangedTime: function() {
       let start = $(".active-term")
-        .find("#start-time")
+        .find(".form-start")
         .val();
       let end = $(".active-term")
-        .find("#end-time")
+        .find(".form-end")
         .val();
 
       if (start > end) {
@@ -55,7 +55,7 @@ import ClassroomField from "./ClassroomField.vue";
     onChangedDate: function() {
       var self = this;
       var date = $(".active-term")
-        .find(".form-date")
+        .find(".form-day")
         .val();
 
       if (date == "") {
@@ -148,7 +148,7 @@ export default class ClassroomPicker extends Vue {
         .change(self.onChangedTime);
 
       $(".active-term")
-        .find(".form-date")
+        .find(".form-day")
         .change(self.onChangedDate);
     };
 

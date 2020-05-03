@@ -56,17 +56,14 @@ def new_reservation(request, event_id=None):
 
     if request.method == "POST":
         form = NewEventForm(request.user, request.POST)
-        formset = NewTermFormSet(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
-            event.author = request.user
-            formset = NewTermFormSet(request.POST or None, instance=event)
+            formset = NewTermFormSet(request.POST, instance=event)
             if formset.is_valid():
-                event.save()
-                formset.save()
+                new_event = event.save()
+                new_formset = formset.save()
 
                 return redirect(event)
-            errors = True
     else:
         form = NewEventForm(request.user)
         formset = NewTermFormSet()
