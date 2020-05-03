@@ -1,5 +1,5 @@
 import collections
-import datetime
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -77,6 +77,11 @@ class Term(models.Model):
         """
         Overloaded method from models.Model
         """
+        if self.day < datetime.now().date():
+            raise ValidationError(
+                message={'day': ['Rezerwacja może obejmować tylko przyszłą datę']},
+                code='invalid')
+
         if self.start and self.end and self.start >= self.end:
             raise ValidationError(
                 message={'end': ['Koniec musi następować po początku']},
