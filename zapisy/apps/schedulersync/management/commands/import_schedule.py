@@ -140,7 +140,7 @@ class Command(BaseCommand):
             # is better at managing these. They should be synchronised down to
             # the enrolment system.
             # The group limit will be managed inside the system, so it should
-            # not be overwriten by the scheduler.
+            # not be overwritten by the scheduler.
             diffs.extend(prop_updater(term, term_data, ['dayOfWeek', 'start_time', 'end_time']))
             diffs.extend(prop_updater(term.group, term_data, ['teacher']))
 
