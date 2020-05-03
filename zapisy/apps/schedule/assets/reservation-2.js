@@ -1,6 +1,18 @@
 import "jquery";
 const $ = jQuery;
 
+var formsetCounter = 0;
+
+function setFormDisplay() {
+  if ($("#form-type").val() == 2) {
+    $("#form-course").addClass("d-none");
+    $(".form-event").removeClass("d-none");
+  } else {
+    $("#form-course").removeClass("d-none");
+    $(".form-event").addClass("d-none");
+  }
+}
+
 function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
   $(".term-form").find("input").prop("disabled", true);
@@ -20,19 +32,26 @@ function setEdited(object) {
     .closest(".term-form")
     .find(".form-place")
     .addClass("bg-light");
+
+  $(object)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", false);
 }
 
 function cloneTermForm() {
-  var cloned = $(".term-form").last().clone();
+  let cloned = $(".term-form").last().clone();
   cloned = cloned.insertBefore($("#new-term-form"));
 
-  var counter = parseInt(
+  let counter = parseInt(
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
-  let namePrefix = "term_set-" + counter + "-";
   $('input[name="term_set-TOTAL_FORMS"]').val(
     parseInt(counter) + 1
   );
+  formsetCounter += 1;
+
+  let namePrefix = "term_set-" + counter + "-";
 
   cloned.find(".form-day").attr("name", namePrefix + "day");
   cloned
@@ -47,20 +66,40 @@ function cloneTermForm() {
     .attr("name", namePrefix + "room");
 
   cloned.find(".row").find("input").val("").end();
+  cloned.removeClass("d-none");
+  cloned
+    .find('input[name$="-DELETE"]')
+    .prop("checked", false);
 }
 
 function deleteTermClick(event) {
   event.preventDefault();
-  var counter = parseInt(
-    $('input[name="term_set-TOTAL_FORMS"]').val()
-  );
 
-  if (counter != 1) {
-    $('input[name="term_set-TOTAL_FORMS"]').val(
-      parseInt(counter) - 1
-    );
-    $(event.target).closest(".term-form").remove();
+  if (formsetCounter != 1) {
+    formsetCounter -= 1;
+
+    $(event.target)
+      .closest(".term-form")
+      .addClass("d-none");
+  } else {
+    $(event.target)
+      .closest(".term-form")
+      .find("input")
+      .val("")
+      .end();
+    setTermsToDefault();
   }
+
+  $(event.target)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", true);
+}
+
+function newTermClick(event) {
+  event.preventDefault();
+  cloneTermForm();
+  setEdited($(".term-form").last().find(".edit-term-form"));
 }
 
 function editTermClick(event) {
@@ -68,24 +107,35 @@ function editTermClick(event) {
   setEdited(event.target);
 }
 
+function addOutsideLocation(event) {
+  $(".active-term").find(".form-room").val("");
+  $(".active-term")
+    .find(".form-place")
+    .val($("#inputplace").val());
+}
+
+function saveEvent(event) {
+  event.preventDefault();
+  $(".term-form").find("input").prop("disabled", false);
+  $("#main-form").submit();
+}
+
 $(document).ready(() => {
-  $("#addoutsidelocation").click((event) => {
-    $(".active-term").find(".form-room").val("");
-    $(".active-term")
-      .find(".form-place")
-      .val($("#inputplace").val());
-  });
+  formsetCounter = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
 
   //On reservation type = event, display title field. Otherwise hide it.
-  $("#form-type").change(function (event) {
-    if ($("#form-type").val() == 2) {
-      $("#form-course").addClass("d-none");
-      $(".form-event").removeClass("d-none");
-    } else {
-      $("#form-course").removeClass("d-none");
-      $(".form-event").addClass("d-none");
-    }
-  });
+  setFormDisplay();
+  $(document).on("change", "#form-type", setFormDisplay);
+
+  $(document).on(
+    "click",
+    "#addoutsidelocation",
+    addOutsideLocation
+  );
+
+  $(document).on("click", "#new-term-form", newTermClick);
 
   $(document).on(
     "click",
@@ -95,17 +145,5 @@ $(document).ready(() => {
 
   $(document).on("click", ".edit-term-form", editTermClick);
 
-  $(document).on("click", "#save-event", (event) => {
-    event.preventDefault();
-    $(".term-form").find("input").prop("disabled", false);
-    $("#main-form").submit();
-  });
-
-  $("#new-term-form").click((event) => {
-    event.preventDefault();
-    cloneTermForm();
-    setEdited(
-      $(".term-form").last().find(".edit-term-form")
-    );
-  });
+  $(document).on("click", "#save-event", saveEvent);
 });

@@ -77,7 +77,7 @@ class Term(models.Model):
         """
         Overloaded method from models.Model
         """
-        if self.start >= self.end:
+        if self.start and self.end and self.start >= self.end:
             raise ValidationError(
                 message={'end': ['Koniec musi następować po początku']},
                 code='overlap')
