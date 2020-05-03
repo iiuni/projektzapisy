@@ -79,27 +79,3 @@
         virtualenv: "/home/vagrant/env3"
       when: not dumpsql.stat.exists
 
-    - debug:
-        msg:
-        - "Your PostgreSQL database has been setup and can be accessed on your local machine on the forwarded port (default: 15432)"
-        - "Host: localhost"
-        - "Port: 15432"
-        - "Database: {{ APP_DB_NAME }}"
-        - "Username: {{ APP_DB_USER }}"
-        - "Password: {{ APP_DB_PASS }}"
-        - ""
-        - "Admin access to postgres user via VM:"
-        - "vagrant ssh"
-        - "sudo su - postgres"
-        - ""
-        - "psql access to app database user via VM:"
-        - "vagrant ssh"
-        - "sudo su - postgres"
-        - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS }} psql -h localhost {{ APP_DB_NAME }}"
-        - ""
-        - "Env variable for application development:"
-        - "DATABASE_URL=postgresql://{{ APP_DB_USER }}:{{ APP_DB_PASS }}@localhost:15432/{{ APP_DB_NAME }}"
-        - ""
-        - "Local command to access the database via psql:"
-        - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS}} psql -h localhost -p 15432 {{ APP_DB_NAME }}"
-      when: not logs_folder.stat.exists

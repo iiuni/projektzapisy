@@ -82,16 +82,11 @@
         group: vagrant
       become: yes
 
-    - stat:
-        path: /vagrant/zapisy/logs
-      register: logs_folder
-
     - name: Create logs directory
       file:
         path: /vagrant/zapisy/logs
         state: directory
       become: yes
-      when: not logs_folder.stat.exists
 
 - name: Include playbook with postgres configuration
   import_playbook: postgres.yml
