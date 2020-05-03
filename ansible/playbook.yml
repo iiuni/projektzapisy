@@ -86,17 +86,13 @@
         chdir: ~/
       become: yes
 
-    - name: Set up virtualenv
-      shell: python3 -m venv env3
-      args:
-        chdir: ~/
-
-    - name: Get requirements
+    - name: Set up virtualenv and get requirements
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        virtualenv: env3
+        virtualenv: ~/env3
+        virtualenv_command: "{{ PYTHON }} -m venv"
         requirements: /vagrant/zapisy/requirements.development.txt
-      args:
-        chdir: ~/
 
     # Vagrant file node_modules mounting
     - stat:
@@ -107,24 +103,10 @@
       file:
         path: /vagrant_node_modules
         state: directory
-      become: yes
-      when: not node_folder.stat.exists
-
-    - name: Change file ownership and group
-      file:
-        path: /vagrant_node_modules
         owner: vagrant
         group: vagrant
       become: yes
-
-    - name: Mount vagrant_node_modules
-      mount:
-        src: /vagrant_node_modules
-        path: /vagrant/zapisy/node_modules
-        opts: bind
-        state: mounted
-        fstype: none
-      become: yes
+      when: not node_folder.stat.exists
 
     - stat:
         path: /vagrant/zapisy/logs

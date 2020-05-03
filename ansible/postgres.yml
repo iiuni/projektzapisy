@@ -6,10 +6,6 @@
     APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
     PG_VERSION: 10
-    PG_CONF: "/etc/postgresql/{{ PG_VERSION }}/main/postgresql.conf"
-    PG_HBA: "/etc/postgresql/{{ PG_VERSION }}/main/pg_hba.conf"
-    PG_DIR: "/var/lib/postgresql/{{ PG_VERSION }}/main"
-    RE_SQL: "/var/lib/postgresql/reset_zapisy.sql"
     PYTHON: "/home/vagrant/env3/bin/python3"
 
   tasks:
@@ -30,74 +26,6 @@
         name: postgresql-contrib-{{ PG_VERSION }}
         state: present
       become: yes
-
-    - name: Test for line existance in postgresql.conf
-      shell: grep "listen_addresses = '*'" {{ PG_CONF }}
-      register: postgresql_grep
-
-    - name: Edit postgresql.conf to change listen address to '*'
-      lineinfile:
-        path: "{{ PG_CONF }}"
-        regexp: "^#listen_addresses = \'localhost\'"
-        line: listen_addresses = '*'
-      when: postgresql_grep.stdout != ""
-      become: yes
-
-    - name: Test for line existance in pg_hba.conf
-      become: yes
-      shell: grep "host    all             all             all                     md5" {{ PG_HBA }}
-      register: pg_hba_grep
-      failed_when: pg_hba_grep.rc != 1 and pg_hba_grep.rc != 0
-
-    - name: Append to pg_hba.conf to add password auth
-      lineinfile:
-        path: "{{ PG_HBA }}"
-        line: host    all             all             all                     md5
-      when: pg_hba_grep.stdout != ""
-      become: yes
-
-    - name: Second test for line existance in postgresql.conf
-      shell: grep "client_encoding = utf8" {{ PG_CONF }}
-      register: postgresql2_grep
-      failed_when: postgresql2_grep.rc != 1 and postgresql2_grep.rc != 0
-
-    - name: Explicitly set default client_encoding
-      lineinfile:
-        path: "{{ PG_CONF }}"
-        line: client_encoding = utf8
-      when: postgresql2_grep.stdout != ""
-      become: yes
-
-    - name: Restart so that all new config is loaded
-      service:
-        name: postgresql
-        state: restarted
-      become: yes
-
-    - name: Check if sql for recreating database exists
-      stat:
-        path: "{{ RE_SQL }}"
-      register: sql1_stat
-
-    - name: Create sql for recreating database
-      become: yes
-      blockinfile:
-        path: "{{ RE_SQL }}"
-        create: yes
-        block: |
-          DROP DATABASE $APP_DB_NAME;
-          DROP DATABASE test_$APP_DB_NAME;
-          CREATE DATABASE $APP_DB_NAME WITH OWNER={{ APP_DB_USER }}
-                                            LC_COLLATE='pl_PL.UTF-8'
-                                            LC_CTYPE='pl_PL.UTF-8'
-                                            ENCODING='UTF8'
-                                            TEMPLATE=template0;
-          CREATE DATABASE test_$APP_DB_NAME WITH OWNER={{ APP_DB_USER }}
-                                            LC_COLLATE='pl_PL.UTF-8'
-                                            LC_CTYPE='pl_PL.UTF-8'
-                                            ENCODING='UTF8'
-                                            TEMPLATE=template0;
-      when: sql1_stat.stat.exists == False
 
     - name: Create the database user
       become: yes
@@ -137,18 +65,13 @@
         target: "/vagrant/ii_zapisy_dump_dev.sql"
       when: dumpsql.stat.exists
 
-    - name: Create the test database
-      become: yes
-      become_user: postgres
+    - name: Apply migrates to empty database
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "test_{{ APP_DB_NAME }}"
-        owner: "{{ APP_DB_USER }}"
-        encoding: UTF-8
-        lc_collate: pl_PL.UTF-8
-        lc_ctype: pl_PL.UTF-8
-        template: template0
+      django_manage:
+        command: migrate
+        app_path: "/vagrant/zapisy"
+        virtualenv: "/home/vagrant/env3"
 
     - debug:
         msg:
@@ -173,4 +96,4 @@
         - ""
         - "Local command to access the database via psql:"
         - "PGUSER={{ APP_DB_USER }} PGPASSWORD={{ APP_DB_PASS}} psql -h localhost -p 15432 {{ APP_DB_NAME }}"
-      when: sql1_stat.stat.exists == False
+      when: not logs_folder.stat.exists
