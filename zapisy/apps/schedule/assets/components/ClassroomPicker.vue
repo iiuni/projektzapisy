@@ -3,7 +3,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import $ from "jquery";
 import axios from "axios";
-import { Term, Classroom, isFree, calculateLength } from "../store/terms";
+import { Term, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
 
 @Component({

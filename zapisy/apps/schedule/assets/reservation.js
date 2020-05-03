@@ -1,175 +1,149 @@
-import "./reservation.css";
-
 import "jquery";
 const $ = jQuery;
 
-// przejdz do danego elementu
-var scroll = function(id) {
-    $('html, body').animate({
-        scrollTop: $(id).offset().top
-    }, 0);
-};
+var formsetCounter = 0;
 
-// wyczyść formularz dodawania terminu
-var resetAddTermForm = function() {
-    $('#inputplace').val('');
-    $('#addterm').text('Dodaj termin');
-};
+function setFormDisplay() {
+  if ($("#form-type").val() == 2) {
+    $("#form-course").addClass("d-none");
+    $(".form-event").removeClass("d-none");
+  } else {
+    $("#form-course").removeClass("d-none");
+    $(".form-event").addClass("d-none");
+  }
+}
 
-// sprawdź poprawność dodawanego terminu
-var validateAddTermForm = function() {
-    let valid = $('#addtermform')[0].checkValidity();
-    let begin = $('#begin');
-    let end = $('#end'); 
-    if( begin.val() > end.val() ) {
-        valid = false;
-        begin.addClass('is-invalid');
-        end.addClass('is-invalid');
-    }
-    else{
-        begin.removeClass('is-invalid');
-        end.removeClass('is-invalid');
-    }
-    let location = $('#location');
-    if( location.val().length == 0 ){
-        valid = false;
-        location.addClass('is-invalid');
-    }
-    else
-        location.removeClass('is-invalid');
-    return valid;
-};
+function setTermsToDefault() {
+  $(".active-term").removeClass("active-term");
+  $(".term-form").find("input").prop("disabled", true);
+  $(".term-form")
+    .find(".form-place")
+    .removeClass("bg-light");
+}
 
+function setEdited(object) {
+  setTermsToDefault();
+  $(object).closest(".term-form").addClass("active-term");
+  $(object)
+    .closest(".term-form")
+    .find("input")
+    .prop("disabled", false);
+  $(object)
+    .closest(".term-form")
+    .find(".form-place")
+    .addClass("bg-light");
+
+  $(object)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", false);
+}
+
+function cloneTermForm() {
+  let cloned = $(".term-form").last().clone();
+  cloned = cloned.insertBefore($("#new-term-form"));
+
+  let counter = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
+  $('input[name="term_set-TOTAL_FORMS"]').val(
+    parseInt(counter) + 1
+  );
+  formsetCounter += 1;
+
+  let namePrefix = "term_set-" + counter + "-";
+
+  cloned.find(".form-day").attr("name", namePrefix + "day");
+  cloned
+    .find(".form-start")
+    .attr("name", namePrefix + "start");
+  cloned.find(".form-end").attr("name", namePrefix + "end");
+  cloned
+    .find(".form-place")
+    .attr("name", namePrefix + "place");
+  cloned
+    .find(".form-room")
+    .attr("name", namePrefix + "room");
+
+  cloned.find(".row").find("input").val("").end();
+  cloned.removeClass("d-none");
+  cloned
+    .find('input[name$="-DELETE"]')
+    .prop("checked", false);
+}
+
+function deleteTermClick(event) {
+  event.preventDefault();
+
+  if (formsetCounter != 1) {
+    formsetCounter -= 1;
+
+    $(event.target)
+      .closest(".term-form")
+      .addClass("d-none");
+  } else {
+    $(event.target)
+      .closest(".term-form")
+      .find("input")
+      .val("")
+      .end();
+    setTermsToDefault();
+  }
+
+  $(event.target)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", true);
+}
+
+function newTermClick(event) {
+  event.preventDefault();
+  cloneTermForm();
+  setEdited($(".term-form").last().find(".edit-term-form"));
+}
+
+function editTermClick(event) {
+  event.preventDefault();
+  setEdited(event.target);
+}
+
+function addOutsideLocation(event) {
+  $(".active-term").find(".form-room").val("");
+  $(".active-term")
+    .find(".form-place")
+    .val($("#inputplace").val());
+}
+
+function saveEvent(event) {
+  event.preventDefault();
+  $(".term-form").find("input").prop("disabled", false);
+  $("#main-form").submit();
+}
 
 $(document).ready(() => {
+  formsetCounter = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
 
-    // dodawanie terminu do listy
-    $('#addtermform').submit((event) => {
-        event.preventDefault();
+  //On reservation type = event, display title field. Otherwise hide it.
+  setFormDisplay();
+  $(document).on("change", "#form-type", setFormDisplay);
 
-        if( !validateAddTermForm() ){
-            return false;
-        }
+  $(document).on(
+    "click",
+    "#add-outside-location",
+    addOutsideLocation
+  );
 
-        let isNew = false;
-        if ($('#hiddenid').val()) {
-            var counter = parseInt($('#hiddenid').val());
-        } else {
-            isNew = true;
-            var counter = parseInt($('input[name="term_set-TOTAL_FORMS"]').val());
-        }
+  $(document).on("click", "#new-term-form", newTermClick);
 
-        let namePrefix = 'term_set-'+ counter +'-';
-        let template = $('.termstable-template'); 
-        let tr = template.clone(true).removeClass("termstable-template d-none");
-        let value;
-        
-        value = $('#term').val();
-        tr.find('.termstable-template-term > strong').append(value);
-        tr.find('.termstable-template-term > input')
-            .attr('name', namePrefix + 'day').val(value);
+  $(document).on(
+    "click",
+    ".delete-term-form",
+    deleteTermClick
+  );
 
-        value = $('#begin').val();
-        tr.children('.termstable-template-begin').append(value);
-        tr.find('.termstable-template-begin > input')
-            .attr('name', namePrefix + 'start').val(value);
+  $(document).on("click", ".edit-term-form", editTermClick);
 
-        value = $('#end').val();
-        tr.children('.termstable-template-end').append(value);
-        tr.find('.termstable-template-end > input')
-            .attr('name', namePrefix + 'end').val(value);
-
-        value = $('#location').val();
-        tr.children('.termstable-template-location').append(value);
-        tr.find('.termstable-template-location > .termstable-template-place')
-            .attr('name', namePrefix + 'place').val(value);
-        tr.find('.termstable-template-location > .termstable-template-room')
-            .attr('name', namePrefix + 'room').val($("#hiddenroom").val());
-
-        if ( !isNew && $('#termstable tbody tr').eq(counter).find('input[name$="-id"]').length > 0) {
-            tr.append($('#termstable tbody tr').eq(counter).find('input[name$="-id"]').clone(true));
-        }
-
-        tr.find(".termstable-template-delete")
-            .attr('name', namePrefix + 'DELETE')
-            .attr('id', 'id_' + namePrefix + 'DELETE');
-
-        if ( !isNew ) {
-            let old = $('#termstable tbody tr').eq(counter);
-            tr.insertAfter(old);
-            old.remove();
-        } else {
-            tr.insertBefore(template);
-            $('input[name="term_set-TOTAL_FORMS"]').val(parseInt(counter) + 1);
-        }
-
-
-        resetAddTermForm();
-        return false;
-    });
-
-    // rozpoczęcie edycji istniejącego terminu
-    $('.editterm').click((event) => {
-        event.preventDefault();
-
-        let tr = $(event.target).parent().parent().addClass('edited bg-light');
-        let room = tr.find('input[name$="-room"]').val();
-        $('#addterm').text('Zmień termin');
-        $('#term').val(tr.find('input[name$="-day"]').val()).change();
-        $('#begin').val(tr.find('input[name$="-start"]').val());
-        $('#end').val(tr.find('input[name$="-end"]').val());
-        $('#location').val(tr.find('input[name$="-place"]').val());
-
-        $('#hiddenroom').val(room);
-        $('#hiddenid').val(tr.index());
-
-        if("" === room) {
-            $('#inputplace').val($('#location').val());
-        }
-
-       scroll('#addtermform');
-    });
-
-    // zapisz formularz
-    $('#save_event').click((event) => {
-        if ($('#termstable tbody').find('tr:not(.removed, .d-none)').length == 0 ) {
-            if (window.confirm("Czy na pewno chcesz usunąć to wydarzenie?"))
-                $('#mainform').submit();                          
-        } else {
-            $('#mainform').submit();
-        }
-    });
-
-    // ustaw ignorowanie konfliktów
-    $('#ignore_all_conflicts').change((event) => {
-        let checked = event.target.checked;
-        $('input[name$="-ignore_conflicts"]').val(+checked);
-    });
-
-    // ustaw zewnętrzną lokalizację
-    $('#addoutsidelocation').click((event) => {
-        $('#hiddenroom').val('');
-        $('#location').val($('#inputplace').val());
-        scroll('#location');
-    });
-
-    // ustaw termin w stan do usunięcia
-    $('.removeterm').click((event) => {
-        var tr = $(event.target).parent().parent();
-        tr.find('input[name$="-DELETE"]').prop('checked', true);
-        tr.find('.unremoveterm').removeClass('d-none');
-        tr.find('.editterm').addClass('d-none');
-        tr.addClass('removed text-danger');
-        $(event.target).addClass('d-none');
-    })
-
-    // anuluj ustawienie terminu w stan do usunięcia
-    $('.unremoveterm').click((event) => {
-        var tr = $(event.target).parent().parent();
-        tr.find('input[name$="-DELETE"]').prop('checked', false);
-        tr.find('.removeterm').removeClass('d-none');
-        tr.find('.editterm').removeClass('d-none');
-        tr.removeClass('removed text-danger');
-        $(event.target).addClass('d-none');
-    });
+  $(document).on("click", "#save-event", saveEvent);
 });

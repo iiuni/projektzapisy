@@ -53,7 +53,7 @@ def classroom(request, slug):
 
 
 @login_required
-def reservation(request, event_id=None):
+def new_reservation(request, event_id=None):
     if request.method == "POST":
         form = NewEventForm(request.user, request.POST)
         if form.is_valid():
@@ -71,7 +71,7 @@ def reservation(request, event_id=None):
 
 
 @login_required
-def edit_event(request, event_id=None):
+def edit_reservation(request, event_id=None):
     is_edit = True
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
     form = NewEventForm(data=request.POST or None,
