@@ -9,7 +9,6 @@ urlpatterns = [
     url(r'^classrooms/terms/(?P<year>[0-9]*)/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/$', views.ajax_get_terms,
         name='ajax_get_terms'),
     url(r'^classrooms/reservation$', views.reservation, name='reservation'),
-    url(r'^classrooms/new_reservation$', views.new_reservation, name='new_reservation'),
     url(r'^classrooms/reservations$', views.reservations, name='reservations'),
     url(r'^classrooms/conflicts$', views.conflicts, name='conflicts'),
     url(r'^classrooms/(?P<slug>[0-9]+)$', views.classroom, name='classroom'),

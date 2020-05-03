@@ -131,7 +131,7 @@ $(document).ready(() => {
 
   $(document).on(
     "click",
-    "#addoutsidelocation",
+    "#add-outside-location",
     addOutsideLocation
   );
 
