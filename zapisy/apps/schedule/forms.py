@@ -21,7 +21,7 @@ from apps.schedule.models.term import Term
 class TermForm(forms.ModelForm):
     class Meta:
         model = Term
-        exclude = ["event"]
+        exclude = ["event", "ignore_conflicts"]
     day = forms.DateField(widget=forms.TextInput(
         attrs={'type': 'date', 'class': 'form-day', 'disabled': True}), label="", help_text="Wybierz termin, aby zobaczyć dostępne sale.")
     start = forms.TimeField(widget=forms.TextInput(
@@ -32,13 +32,14 @@ class TermForm(forms.ModelForm):
         attrs={'class': 'form-place m-0', 'readonly': True}), required=False)
     room = forms.ModelChoiceField(
         queryset=Classroom.objects.all(), widget=forms.HiddenInput(attrs={'class': 'form-room'}), required=False)
-    ignore_conflicts = forms.BooleanField(
-        required=False, label="Ignoruj konflikty")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(TermForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+
+        if user.has_perm('schedule.manage_events'):
+            self.instance.ignore_conflicts = True
 
         self.helper.layout = Layout(
             Div(

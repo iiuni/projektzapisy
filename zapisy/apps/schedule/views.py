@@ -58,7 +58,9 @@ def new_reservation(request, event_id=None):
         form = EventForm(request.user, request.POST)
         if form.is_valid():
             event = form.save(commit=False)
-            formset = NewTermFormSet(request.POST, instance=event)
+            formset = NewTermFormSet(request.POST, instance=event, form_kwargs={
+                                     'user': request.user})
+
             if formset.is_valid():
                 new_event = event.save()
                 new_formset = formset.save()
@@ -66,7 +68,7 @@ def new_reservation(request, event_id=None):
                 return redirect(event)
     else:
         form = EventForm(request.user)
-        formset = NewTermFormSet()
+        formset = NewTermFormSet(form_kwargs={'user': request.user})
     return render(request, 'schedule/reservation.html', {'form': form, 'formset': formset})
 
 
@@ -76,7 +78,8 @@ def edit_reservation(request, event_id=None):
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
     form = EventForm(data=request.POST or None,
                      instance=event, user=request.user)
-    formset = EditTermFormSet(request.POST or None, instance=event)
+    formset = EditTermFormSet(request.POST or None, instance=event, form_kwargs={
+                              'user': request.user})
     reservation = event.reservation
 
     if form.is_valid():
@@ -84,6 +87,7 @@ def edit_reservation(request, event_id=None):
         if not event.id:
             event.author = request.user
         event.reservation = reservation
+
         if formset.is_valid():
             event.save()
             formset.save()
