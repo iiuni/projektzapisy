@@ -137,6 +137,7 @@ class Command(BaseCommand):
                 return diffs
 
             diffs.extend(prop_updater(term, term_data, ['dayOfWeek', 'start_time', 'end_time']))
+            # We _DO_NOT_ synchronize limit, see: pull request #891.
             diffs.extend(prop_updater(term.group, term_data, ['teacher']))
 
             if set(term.classrooms.all()) != term_data.classrooms:
