@@ -62,8 +62,8 @@ def new_reservation(request, event_id=None):
                                      'user': request.user})
 
             if formset.is_valid():
-                new_event = event.save()
-                new_formset = formset.save()
+                event.save()
+                formset.save()
 
                 return redirect(event)
     else:
@@ -268,16 +268,6 @@ def get_terms(request, year, month, day):
     return HttpResponse(terms, content_type="application/json")
 
 
-@login_required
-def ajax_get_terms(request, year, month, day):
-    from apps.enrollment.courses.models.classroom import Classroom
-
-    time = datetime.date(int(year), int(month), int(day))
-    terms = Classroom.get_terms_in_day(time, ajax=True)
-
-    return HttpResponse(terms, content_type="application/json")
-
-
 class ClassroomTermsAjaxView(FullCalendarView):
     model = Term
     adapter = EventAdapter
@@ -307,8 +297,8 @@ class MyScheduleAjaxView(FullCalendarView):
         query = []
 
         if self.request.user.student:
-            query.append(Q(record__student=self.request.user.student)
-                         & Q(record__status='1'))
+            query.append(Q(record__student=self.request.user.student) &
+                         Q(record__status='1'))
 
         if self.request.user.employee:
             query.append(Q(teacher=self.request.user.employee))

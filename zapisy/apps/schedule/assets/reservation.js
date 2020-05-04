@@ -118,7 +118,6 @@ $(document).ready(() => {
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
 
-  //On reservation type = event, display title field. Otherwise hide it.
   setFormDisplay();
   $(document).on("change", "#form-type", setFormDisplay);
 
