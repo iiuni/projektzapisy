@@ -14,6 +14,7 @@ class PreferencesTestCase(test.TestCase):
         self.s2 = StudentFactory()
         self.s3 = StudentFactory(is_active=False)
         self.t1 = EmployeeFactory()
+        self.t2 = EmployeeFactory()
 
         NotificationPreferencesStudent.objects.create(user=self.s1.user, news_has_been_added=True)
         NotificationPreferencesStudent.objects.create(user=self.s2.user, news_has_been_added=False)
