@@ -16,8 +16,6 @@ class PreferencesTestCase(test.TestCase):
         self.t1 = EmployeeFactory()
         self.t2 = EmployeeFactory()
 
-        self.a = EmployeeFactory()
-
         NotificationPreferencesStudent.objects.create(user=self.s1.user, news_has_been_added=True)
         NotificationPreferencesStudent.objects.create(user=self.s2.user, news_has_been_added=False)
         NotificationPreferencesStudent.objects.create(user=self.s3.user, news_has_been_added=True)
@@ -28,7 +26,7 @@ class PreferencesTestCase(test.TestCase):
         """Lists recipients of outgoing e-mail notifications."""
         for m in outbox:
             self.assertEqual(len(m.to), 1)
-            yield m.to
+            yield m.to[0]
 
     def test_regular_news(self):
         """Tests that users' preferences are adhered to when a news is added.
@@ -37,7 +35,7 @@ class PreferencesTestCase(test.TestCase):
         """
         n = News.objects.create(title="Tytuł zwykłego newsa",
                                 body="Bardzo ciekawa wiadomość",
-                                author=self.a.user)
+                                author=self.t1.user)
         self.assertCountEqual(self.inspect_outbox(mail.outbox),
                               [self.s1.user.email, self.t1.user.email])
 
@@ -48,7 +46,7 @@ class PreferencesTestCase(test.TestCase):
         """
         n = News.objects.create(title="Tytuł pilnego newsa",
                                 body="Bardzo ciekawa i ważna wiadomość",
-                                author=self.a.user,
+                                author=self.t1.user,
                                 priority=PriorityChoices.HIGH)
         self.assertCountEqual(self.inspect_outbox(mail.outbox),
                               [self.s1.user.email, self.s2.user.email, self.t1.user.email])
