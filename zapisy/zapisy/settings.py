@@ -15,7 +15,8 @@ RELEASE = env.bool('RELEASE')
 # With DEBUG = False Django will refuse to serve requests to hosts different than this one.
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-INTERNAL_IPS = ('127.0.0.1',)
+# Virtualbox default for the host machine as seen from the guest.
+INTERNAL_IPS = ('10.0.2.2',)
 
 EMAIL_BACKEND = env.str('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EVENT_MODERATOR_EMAIL = 'zapisy@cs.uni.wroc.pl'
