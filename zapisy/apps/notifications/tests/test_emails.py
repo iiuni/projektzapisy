@@ -8,7 +8,7 @@ from apps.enrollment.courses.tests.factories import GroupFactory
 from apps.notifications.custom_signals import teacher_changed
 from apps.notifications.templates import NotificationType
 from apps.notifications.utils import render_description
-from apps.users.tests.factories import EmployeeFactory
+from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 
 @override_settings(RUN_ASYNC=False)

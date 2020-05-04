@@ -10,7 +10,7 @@ from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.news.models import News
+from apps.news.models import News, PriorityChoices
 from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
 from apps.theses.enums import ThesisVote
@@ -130,15 +130,21 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 
 @receiver(post_save, sender=News)
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
-    news = kwargs['instance']
+    news: News = kwargs['instance']
 
     # Do not notify about modified news.
     if not kwargs['created']:
         return
 
-    # Do not notify about hidden news.
-    if news.category == '-':
+    # Do not notify about hidden or low-priority news.
+    if news.priority == PriorityChoices.HIDDEN:
         return
+    elif news.priority == PriorityChoices.LOW:
+        return
+    elif news.priority == PriorityChoices.NORMAL:
+        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED
+    else:
+        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY
 
     records = set(Employee.get_actives().select_related('user')) | set(
         Student.get_active_students().select_related('user'))
@@ -147,7 +153,7 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
 
     notify_selected_users(
         users,
-        Notification(get_id(), get_time(), NotificationType.NEWS_HAS_BEEN_ADDED, {
+        Notification(get_id(), get_time(), notification_type, {
             'title': news.title,
             'contents': news.body
         }, target))

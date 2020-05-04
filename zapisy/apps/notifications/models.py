@@ -18,6 +18,11 @@ class NotificationPreferencesStudent(models.Model):
     news_has_been_added = models.BooleanField(
         "Nowa wiadomość w Aktualnościach", default=True)
 
+    @property
+    def news_has_been_added_high_priority(self):
+        """High-priority news is sent to all active students."""
+        return self.user.student.is_active
+
 
 class NotificationPreferencesTeacher(models.Model):
     user = models.ForeignKey(
@@ -28,3 +33,8 @@ class NotificationPreferencesTeacher(models.Model):
         "Nowa wiadomość w Aktualnościach", default=True)
     thesis_voting_has_been_activated = models.BooleanField(
         "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
+
+    @property
+    def news_has_been_added_high_priority(self):
+        """Use regular news setting for employees."""
+        return self.news_has_been_added
