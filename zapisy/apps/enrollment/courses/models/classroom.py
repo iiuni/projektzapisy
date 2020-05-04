@@ -125,7 +125,6 @@ class Classroom(models.Model):
             result[key]['occupied'] = out
         return json.dumps(result)
 
-
     @classmethod
     def get_in_institute(cls, reservation=False):
         rooms = cls.objects.all()

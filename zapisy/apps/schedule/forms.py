@@ -176,13 +176,10 @@ class DoorChartForm(forms.Form):
 
         semester = Semester.get_current_semester()
         next_sem = Semester.objects.get_next()
-        weeks = [(week[0], f"{week[0]} - {week[1]}")
-                 for week in semester.get_all_weeks()]
+        weeks = [(week[0], f"{week[0]} - {week[1]}") for week in semester.get_all_weeks()]
         if semester != next_sem:
-            weeks.insert(
-                0, ('nextsem', f"Generuj z planu zajęć dla semestru '{next_sem}'"))
-        weeks.insert(
-            0, ('currsem', f"Generuj z planu zajęć dla semestru '{semester}'"))
+            weeks.insert(0, ('nextsem', f"Generuj z planu zajęć dla semestru '{next_sem}'"))
+        weeks.insert(0, ('currsem', f"Generuj z planu zajęć dla semestru '{semester}'"))
         self.fields['week'].widget.choices = weeks
 
 
