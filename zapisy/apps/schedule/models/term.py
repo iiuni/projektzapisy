@@ -77,10 +77,6 @@ class Term(models.Model):
         """
         Overloaded method from models.Model
         """
-        if self.day and self.day < datetime.now().date():
-            raise ValidationError(
-                message={'day': ['Rezerwacja może obejmować tylko przyszłą datę']},
-                code='invalid')
 
         if self.start and self.end and self.start >= self.end:
             raise ValidationError(

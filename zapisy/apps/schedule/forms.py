@@ -23,7 +23,7 @@ class TermForm(forms.ModelForm):
         model = Term
         exclude = ["event", "ignore_conflicts"]
     day = forms.DateField(widget=forms.TextInput(
-        attrs={'type': 'date', 'class': 'form-day', 'disabled': True}), label="", help_text="Wybierz termin, aby zobaczyć dostępne sale.")
+        attrs={'type': 'date', 'class': 'form-day', 'min': datetime.now().strftime("%Y-%m-%d"), 'disabled': True}), label="", help_text="Wybierz termin, aby zobaczyć dostępne sale.")
     start = forms.TimeField(widget=forms.TextInput(
         attrs={'type': 'time', 'class': 'form-time form-start', 'disabled': True}), label="")
     end = forms.TimeField(widget=forms.TextInput(
