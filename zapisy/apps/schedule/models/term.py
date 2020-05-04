@@ -1,5 +1,5 @@
 import collections
-from datetime import datetime
+import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import Q
