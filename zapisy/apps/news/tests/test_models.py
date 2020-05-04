@@ -1,10 +1,7 @@
-from random import randint
-
 from django.test import TestCase
 
-from datetime import datetime, timedelta
-
 from apps.news.models import News
+
 from .utils import generate_random_news
 
 
@@ -32,7 +29,7 @@ class NewsManagerTest(TestCase):
         for n in ns:
             n.delete()
 
-        ns = generate_random_news(50)
+        ns = generate_random_news(50, published=False)
         ids = [x.id for x in ns]
         range_min, range_max = min(ids), max(ids)
         self.assertEqual(News.objects.get_page_number_by_news_id(range_max), 1)

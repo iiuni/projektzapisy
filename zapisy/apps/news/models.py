@@ -16,9 +16,11 @@ class NewsManager(models.QuerySet):
 
     def get_page_number_by_news_id(self, news_id):
         """If news doesn't exist the first page is returned"""
+        if not self.filter(pk=news_id).exists():
+            return 1
         later_news = self.published().filter(pk__gte=news_id)
         count = later_news.count() or 1
-        return (count // settings.NEWS_PER_PAGE)
+        return ((count - 1) // settings.NEWS_PER_PAGE) + 1
 
 
 class News(models.Model):
