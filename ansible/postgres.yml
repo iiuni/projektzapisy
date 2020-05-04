@@ -33,6 +33,17 @@
         password: "{{ APP_DB_PASS }}"
         role_attr_flags: CREATEDB
 
+    - stat:
+        path: /etc/systemd/system/runserver.service
+      register: service_status
+
+    - name: Stop Django Runserver service
+      service:
+        name: runserver
+        state: stopped
+      become: yes
+      when: service_status.stat.exists
+
     - name: Drop the database
       become: yes
       become_user: postgres
