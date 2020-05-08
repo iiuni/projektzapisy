@@ -4,6 +4,6 @@
   <div class="custom-control custom-checkbox">
     {% crispy_field field 'class' 'custom-control-input' %}
     <label class="custom-control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-    <small class="form-text text-muted"><strong>Uwagi:</strong>Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.</small>
+    <small class="form-text text-muted">{{ field.help_text }}</small>
   </div>
 </div>
