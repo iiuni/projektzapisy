@@ -266,6 +266,10 @@ CAS_LOGOUT_COMPLETELY = False
 LOGOUT_REDIRECT_URL = '/'
 CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
+# This chceck has to be disabled as long as we are using an incorrect Nginx
+# configuration which rewrites HTTPS to HTTP.
+CAS_CHECK_NEXT = lambda _: True
+
 LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
