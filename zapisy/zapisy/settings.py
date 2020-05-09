@@ -268,7 +268,7 @@ CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 # This chceck has to be disabled as long as we are using an incorrect Nginx
 # configuration which rewrites HTTPS to HTTP.
-CAS_CHECK_NEXT = lambda _: True
+CAS_CHECK_NEXT = lambda _: True  # noqa: E731
 
 LOGIN_REDIRECT_URL = '/users/'
 
