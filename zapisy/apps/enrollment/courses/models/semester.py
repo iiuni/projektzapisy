@@ -257,10 +257,12 @@ class Semester(models.Model):
 
     @staticmethod
     def get_upcoming_semester():
-        """Returns visible semester that has latest records_closing time"""
+        """Returns next semester if there's enough information visible - usually at the end of current semester.
+           Otherwise or returns current semester.
+           Return: Semester or None"""
         try:
-            return Semester.objects.filter(visible=True, records_closing__gte=datetime.now()).order_by('records_closing')[0]
-        except (Semester.DoesNotExist, IndexError):
+            return Semester.objects.filter(visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
+        except (Semester.DoesNotExist):
             return Semester.get_current_semester()
 
     @staticmethod
