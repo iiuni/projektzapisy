@@ -29,6 +29,7 @@ from itertools import groupby
 from .models.message import EventModerationMessage
 
 from functools import reduce
+import json
 
 
 @login_required
@@ -258,12 +259,50 @@ def change_interested(request, event_id):
 
 @login_required
 def get_terms(request, year, month, day):
-    from apps.enrollment.courses.models.classroom import Classroom
+    date = datetime.date(int(year), int(month), int(day))
 
-    time = datetime.date(int(year), int(month), int(day))
-    terms = Classroom.get_occupied_terms_in_day(time)
+    def make_dict(start_time, end_time):
+        return {
+            'begin': ':'.join(str(start_time).split(':')[:2]),
+            'end': ':'.join(str(end_time).split(':')[:2])
+        }
 
-    return HttpResponse(terms, content_type="application/json")
+    result = {}
+
+    rooms = Classroom.get_in_institute(reservation=True)
+
+    for room in rooms:
+        if room.number not in result:
+            result[room.number] = {
+                'id': room.id,
+                'number': room.number,
+                'capacity': room.capacity,
+                'type': room.get_type_display(),
+                'title': room.number,
+                'occupied': []
+            }
+
+    terms = Term.objects.filter(day=date, room__in=rooms,
+                                event__status='1').select_related('room', 'event')
+
+    for term in terms:
+        result[term.room.number]['occupied'].append(make_dict(term.start, term.end))
+
+    for key in result:
+        array = sorted(result[key]['occupied'], key=lambda k: k['begin'])
+        out = []
+        i = 0
+        while i < len(array):
+            if (out and array[i]['begin'] >= out[-1]['begin']
+                    and array[i]['begin'] <= out[-1]['end']):
+                out[-1]['end'] = max(out[-1]['end'], array[i]['end'])
+            else:
+                out.append(array[i])
+            i += 1
+        result[key]['occupied'] = out
+
+    return HttpResponse(json.dumps(result), content_type="application/json")
+
 
 
 class ClassroomTermsAjaxView(FullCalendarView):

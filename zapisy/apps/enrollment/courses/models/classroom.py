@@ -2,7 +2,6 @@ from datetime import time
 from django.urls import reverse
 
 from django.db import models
-import json
 from django.db.models import Q
 from django_extensions.db.fields import AutoSlugField
 
@@ -61,69 +60,6 @@ class Classroom(models.Model):
     @classmethod
     def get_by_slug(cls, slug):
         return cls.objects.get(slug=slug)
-
-    @classmethod
-    def get_occupied_terms_in_day(cls, date):
-        from apps.schedule.models.term import Term as EventTerm
-        from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
-        from apps.enrollment.courses.models.term import Term
-
-        def make_dict(start_time, end_time):
-            return {'begin': ':'.join(str(start_time).split(':')[:2]),
-                    'end': ':'.join(str(end_time).split(':')[:2])}
-
-        result = {}
-
-        rooms = cls.get_in_institute(reservation=True)
-
-        for room in rooms:
-            if room.number not in result:
-                result[room.number] = {'id': room.id,
-                                       'number': room.number,
-                                       'capacity': room.capacity,
-                                       'type': room.get_type_display(),
-                                       'title': room.number,
-                                       'occupied': []}
-
-        terms = EventTerm.objects.filter(
-            day=date,
-            room__in=rooms,
-            event__status='1').select_related(
-            'room',
-            'event')
-
-        for term in terms:
-            result[term.room.number]['occupied'].append(
-                make_dict(term.start, term.end))
-
-        if not Freeday.is_free(date):
-            weekday = ChangedDay.get_day_of_week(date)
-            selected_semester = Semester.get_semester(date)
-
-            if selected_semester is not None and selected_semester.lectures_beginning <= date and date <= selected_semester.lectures_ending:
-                course_terms = Term.objects.filter(
-                    dayOfWeek=weekday, group__course__semester=selected_semester).select_related(
-                        'group').prefetch_related('classrooms')
-
-                for course_term in course_terms:
-                    for classroom in course_term.classrooms.all():
-                        if classroom not in rooms:
-                            continue
-                        result[classroom.number]['occupied'].append(
-                            make_dict(course_term.start_time, course_term.end_time))
-
-        for key in result:
-            array = sorted(result[key]['occupied'], key=lambda k: k['begin'])
-            out = []
-            i = 0
-            while i < len(array):
-                if(out and array[i]['begin'] >= out[-1]['begin'] and array[i]['begin'] <= out[-1]['end']):
-                    out[-1]['end'] = max(out[-1]['end'], array[i]['end'])
-                else:
-                    out.append(array[i])
-                i += 1
-            result[key]['occupied'] = out
-        return json.dumps(result)
 
     @classmethod
     def get_in_institute(cls, reservation=False):
