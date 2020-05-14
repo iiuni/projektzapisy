@@ -293,8 +293,8 @@ def get_terms(request, year, month, day):
         out = []
         i = 0
         while i < len(array):
-            if (out and array[i]['begin'] >= out[-1]['begin']
-                    and array[i]['begin'] <= out[-1]['end']):
+            if (out and array[i]['begin'] >= out[-1]['begin'] and
+                    array[i]['begin'] <= out[-1]['end']):
                 out[-1]['end'] = max(out[-1]['end'], array[i]['end'])
             else:
                 out.append(array[i])
@@ -302,7 +302,6 @@ def get_terms(request, year, month, day):
         result[key]['occupied'] = out
 
     return HttpResponse(json.dumps(result), content_type="application/json")
-
 
 
 class ClassroomTermsAjaxView(FullCalendarView):

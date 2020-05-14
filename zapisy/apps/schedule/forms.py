@@ -23,34 +23,34 @@ class TermForm(forms.ModelForm):
         model = Term
         exclude = ["event", "ignore_conflicts"]
 
-    day = forms.DateField(widget=forms.TextInput(
-        attrs={
-            'type': 'date',
-            'class': 'form-day',
-            'min': datetime.now().strftime("%Y-%m-%d"),
-            'disabled': True
-        }),
-                          label="",
-                          help_text="Wybierz termin, aby zobaczyć dostępne sale.")
-    start = forms.TimeField(widget=forms.TextInput(attrs={
-        'type': 'time',
-        'class': 'form-time form-start',
-        'disabled': True
-    }),
-                            label="")
-    end = forms.TimeField(widget=forms.TextInput(attrs={
-        'type': 'time',
-        'class': 'form-time form-end',
-        'disabled': True
-    }),
-                          label="")
+    day = forms.DateField(label="",
+                          help_text="Wybierz termin, aby zobaczyć dostępne sale.",
+                          widget=forms.TextInput(
+                              attrs={
+                                  'type': 'date',
+                                  'class': 'form-day',
+                                  'min': datetime.now().strftime("%Y-%m-%d"),
+                                  'disabled': True
+                              }))
+    start = forms.TimeField(label="",
+                            widget=forms.TextInput(attrs={
+                                'type': 'time',
+                                'class': 'form-time form-start',
+                                'disabled': True
+                            }))
+    end = forms.TimeField(label="",
+                          widget=forms.TextInput(attrs={
+                              'type': 'time',
+                              'class': 'form-time form-end',
+                              'disabled': True
+                          }))
     place = forms.CharField(label="",
                             help_text="Wybierz lokalizację poniżej.",
+                            required=False,
                             widget=forms.TextInput(attrs={
                                 'class': 'form-place m-0',
                                 'readonly': True
-                            }),
-                            required=False)
+                            }))
     room = forms.ModelChoiceField(queryset=Classroom.objects.all(),
                                   widget=forms.HiddenInput(attrs={'class': 'form-room'}),
                                   required=False)
@@ -71,8 +71,7 @@ class TermForm(forms.ModelForm):
                 Column('place', css_class='form-group col-3 mb-0'),
                 Column(HTML(
                     '<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> <button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
-                ),
-                       css_class='col-3 mb-0'),
+                ), css_class='col-3 mb-0'),
                 css_class='form-row p-2'),
                 'room',
                 'id',
@@ -103,8 +102,7 @@ class EventForm(forms.ModelForm):
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
-        help_text=
-        "Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
+        help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
     type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT,
                              label="Rodzaj",
@@ -113,8 +111,7 @@ class EventForm(forms.ModelForm):
         label="Wydarzenie widoczne dla wszystkich użytkowników systemu",
         widget=forms.CheckboxInput(attrs={'class': ""}),
         required=False,
-        help_text=
-        "Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
+        help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
                                     label="Przedmiot",
