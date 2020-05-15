@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
-max-doc-length = 80
+max-doc-length = 99
 exclude =
     node_modules,
     *migrations,
