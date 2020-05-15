@@ -1,4 +1,5 @@
 """Defines several thesis-related enums.
+
 Using a separate file for these definitions helps prevent
 circular dependencies
 """

@@ -18,14 +18,11 @@ class EventModerationMessage(models.Model):
 
     @classmethod
     def get_event_messages(cls, event):
-        """
-
-        Get list of EventMessages for event
+        """Get list of EventMessages for event.
 
         @param event: Event object
         @return: list of EventModerationMessage
         """
-
         return cls.objects.filter(event=event).select_related('author')
 
 
@@ -43,14 +40,11 @@ class Message(models.Model):
 
     @classmethod
     def get_event_messages(cls, event):
-        """
-
-        Get list of EventMessages for event
+        """Get list of EventMessages for event.
 
         @param event: Event object
         @return: list of EventModerationMessage
         """
-
         return cls.objects.filter(event=event).select_related('author')
 
 

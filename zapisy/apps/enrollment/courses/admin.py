@@ -163,10 +163,7 @@ class GroupAdmin(admin.ModelAdmin):
         return super(GroupAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-        """
-        Filter the objects displayed in the change_list to only
-        display those for the currently signed in user.
-        """
+        """Joins in group data from other models for display."""
         qs = super(GroupAdmin, self).get_queryset(request)
         return qs.select_related('teacher', 'teacher__user', 'course',
                                  'course__semester').prefetch_related('term', 'record_set')

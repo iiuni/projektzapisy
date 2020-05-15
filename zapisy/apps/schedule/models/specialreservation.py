@@ -75,13 +75,13 @@ class SpecialReservation(models.Model):
             classrooms=None,
             start_time=None,
             end_time=None):
-        """
-        A versatile function returning SpecialReservations. day is either datetime.date or string
+        """A versatile function returning SpecialReservations.
+
+        Day is either datetime.date or string.
 
         :param semester: enrollment.courses.model.Semester
         :param day: DAYS_OF_WEEK or datetime.date
         """
-
         query = cls.objects.any_semester(semester)
 
         if day is not None:
@@ -136,10 +136,10 @@ class SpecialReservation(models.Model):
             raise ValidationError(message={'__all__': msg_list}, code='overlap')
 
     def clean(self):
-        """
-        Overloaded clean method. Checks for any conflicts between this SpecialReservation
-        and other SpecialReservations, Terms of Events and Terms of Course Groups
+        """Overloaded clean method.
 
+        Checks for any conflicts between this SpecialReservation and other
+        SpecialReservations, Terms of Events and Terms of Course Groups.
         """
         if self.end_time <= self.start_time:
             raise ValidationError(

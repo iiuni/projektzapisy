@@ -15,8 +15,7 @@ from apps.users.models import Student
 
 @login_required
 def list_all(request):
-    """Display list of all visible theses"""
-
+    """Display list of all visible theses."""
     visible_theses = Thesis.objects.visible(request.user)
     board_member = is_theses_board_member(request.user)
 
@@ -47,8 +46,7 @@ def list_all(request):
 
 @login_required
 def view_thesis(request, id):
-    """Show subpage for one thesis"""
-
+    """Show subpage for one thesis."""
     thesis = get_object_or_404(Thesis, id=id)
     not_has_been_accepted = not thesis.has_been_accepted
     board_member = is_theses_board_member(request.user)
@@ -141,8 +139,7 @@ def view_thesis(request, id):
 
 @login_required
 def gen_form(request, id, studentid):
-    """Display form to print for specific student assigned to a thesis"""
-
+    """Display form to print for specific student assigned to a thesis."""
     thesis = get_object_or_404(Thesis, id=id)
     try:
         first_student = thesis.students.get(id=studentid)
@@ -173,8 +170,7 @@ def gen_form(request, id, studentid):
 @login_required
 @employee_required
 def edit_thesis(request, id):
-    """Show form for edit selected thesis"""
-
+    """Show form for edit selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
 
     if not request.user.is_staff and not thesis.is_mine(request.user):
@@ -201,8 +197,7 @@ def edit_thesis(request, id):
 @login_required
 @employee_required
 def new_thesis(request):
-    """Show form for create new thesis"""
-
+    """Show form for create new thesis."""
     if request.method == "POST":
         form = ThesisForm(request.user, request.POST)
         # check whether it's valid:
@@ -219,8 +214,7 @@ def new_thesis(request):
 @login_required
 @employee_required
 def edit_remark(request, id):
-    """Edit remark for selected thesis"""
-
+    """Edit remark for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
 
@@ -242,8 +236,7 @@ def edit_remark(request, id):
 @login_required
 @employee_required
 def vote_for_thesis(request, id):
-    """Vote for selected thesis"""
-
+    """Vote for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
 
@@ -265,8 +258,7 @@ def vote_for_thesis(request, id):
 @login_required
 @employee_required
 def rejecter_decision(request, id):
-    """Change status of selected thesis"""
-
+    """Change status of selected thesis."""
     if not is_master_rejecter(request.user):
         raise PermissionDenied
 
@@ -288,8 +280,7 @@ def rejecter_decision(request, id):
 @login_required
 @employee_required
 def delete_thesis(request, id):
-    """Delete selected thesis"""
-
+    """Delete selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
 
     if (request.method != "POST" or

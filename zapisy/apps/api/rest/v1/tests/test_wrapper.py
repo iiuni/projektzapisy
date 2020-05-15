@@ -27,16 +27,14 @@ from apps.api.rest.v1.api_wrapper.sz_api import models as api_models
 
 
 class WrapperTests(APILiveServerTestCase):
-    """E2E tests for ZapisyApi wrapper
+    """E2E tests for ZapisyApi wrapper.
 
     First to check when these tests fail:
-        models in api_wrapper.sz_api.models.py should be up to date
-        and reflect serializers in serializers.py and corresponding
-        django models. So if you have changed some django model and seeing
-        below tests failing, it may be the case.
-
+    Models in api_wrapper.sz_api.models.py should be up to date
+    and reflect serializers in serializers.py and corresponding
+    django models. So if you have changed some django model and seeing
+    below tests failing, it may be the case.
     """
-
     def setUp(self):
         # we ca't use patch decorador
         # because it wouldn't patch inside of setUp method.
@@ -94,7 +92,6 @@ class WrapperTests(APILiveServerTestCase):
 
         Create Semester model and assert it with Semester returned by wrapper
         """
-
         semester = SemesterFactory()
         res_semester = self.wrapper.semester(semester.id)
 
@@ -109,7 +106,6 @@ class WrapperTests(APILiveServerTestCase):
 
         Create Student model and assert it with Student returned by wrapper.
         """
-
         student1, student2 = StudentFactory(), StudentFactory()
         student1.save()
         student2.save()
@@ -132,7 +128,6 @@ class WrapperTests(APILiveServerTestCase):
 
         Create Student, get it by wrapper, change it and save it.
         """
-
         student = StudentFactory()
         [res_student] = list(self.wrapper.students())
         self.assertEqual(res_student.id, student.id)

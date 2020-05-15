@@ -3,9 +3,7 @@ from .fullcalendar import FullCalendarAdapter
 
 
 def get_week_range_by_date(date):
-    """
-    Returns tuple of (monday, sunday) enclosing given date
-    """
+    """Returns tuple of (monday, sunday) enclosing given date."""
     monday = date - timedelta(days=date.weekday())
     sunday = monday + timedelta(days=7)
     return (monday, sunday)

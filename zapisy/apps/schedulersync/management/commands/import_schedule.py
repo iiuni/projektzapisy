@@ -129,6 +129,7 @@ class Command(BaseCommand):
                 """Updates selected fields of a with b.
 
                 Both objects must have the fields specified in `props` defined.
+
                 Returns:
                     List of SlackUpdate objects describing the updates.
                 """

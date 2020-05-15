@@ -154,8 +154,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
 
 
 class SystemStateViewSet(viewsets.ModelViewSet):
-    """Get all vote system states"""
-
+    """Get all vote system states."""
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     queryset = SystemState.objects.all()

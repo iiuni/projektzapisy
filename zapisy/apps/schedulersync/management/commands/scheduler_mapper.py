@@ -1,4 +1,4 @@
-""" Maps teachers and courses in SchedulerData to objects in database.
+"""Maps teachers and courses in SchedulerData to objects in database.
 
 Object SchedulerMapper maps SchedulerData.teachers and SchedulerData.courses,
 which contain teachers and courses names, to objects in database.
@@ -143,7 +143,7 @@ class SchedulerMapper:
                                     "Type 'None' to mark the course to be ignored.".format(error, name))
 
         def get_course(proposal: 'Proposal') -> 'CourseInstance':
-            """ return CourseInstance object from SZ database"""
+            """Return CourseInstance object from SZ database."""
             course = None
             try:
                 course = CourseInstance.objects.get(semester=self.semester, offer=proposal)
@@ -164,7 +164,7 @@ class SchedulerMapper:
         return mapped_courses
 
     def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
-        """ Maps teachers and courses in given scheduler_data.
+        """Maps teachers and courses in given scheduler_data.
 
         In given scheduler_data map teachers and courses names to
         objects in database. First in scheduler_data.teachers and

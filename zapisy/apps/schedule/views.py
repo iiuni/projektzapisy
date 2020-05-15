@@ -127,12 +127,11 @@ def reservations(request):
 @login_required
 @permission_required('schedule.manage_events')
 def conflicts(request):
-    """
-    Finds conflicts in given daterange and pass into template.
+    """Finds conflicts in given daterange and pass into template.
+
     Implemented as 3D dictionary (ordered by day,classroom,hour).
     Works better than naive regroup in template (O(nlog(n)) vs O(n^2)).
     """
-
     form = ConflictsForm(request.GET)
     if form.is_valid():
         beg_date = form.cleaned_data['beg_date']

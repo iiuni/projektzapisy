@@ -107,8 +107,7 @@ class SubmissionEntry(UpdateView):
         return context
 
     def get_form_kwargs(self):
-        """Fetches the schema with answers that will be used to render
-            the form."""
+        """Fetches the schema with answers that will be used to render the form."""
         kw = super().get_form_kwargs()
         submission = self.active_submission
         if submission:
@@ -117,8 +116,7 @@ class SubmissionEntry(UpdateView):
         return kw
 
     def get_initial(self):
-        """Populates the form with answers sent by the user in
-            previous requests."""
+        """Populates the form with answers sent by the user in previous requests."""
         initial = super().get_initial()
         submission = self.active_submission
 
@@ -215,8 +213,7 @@ class PollResults(TemplateView):
         return poll_results
 
     def get(self, request, semester_id=None, poll_id=None, submission_id=None):
-        """Controls the main logic of passing the data to the template
-        responsible for presenting the results of the poll.
+        """The main logic of passing data to the template presenting the results of the poll.
 
         :param semester_id: if given, fetches polls from requested semester.
         :param poll_id: if given, displays summary for a given poll.

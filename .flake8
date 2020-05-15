@@ -5,3 +5,11 @@ exclude =
     node_modules,
     *migrations,
     scripts,
+    # mailer app will be removed soon.
+    mailer,
+docstring-convention = google
+extend-ignore =
+    # Do not enforce docstrings in every function.
+    D1,
+    # It is perfectly valid to only describe the unobvious arguments.
+    D417,

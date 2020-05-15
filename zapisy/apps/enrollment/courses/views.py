@@ -38,8 +38,7 @@ def prepare_courses_list_data(semester: Semester):
 
 
 def courses_list(request, semester_id: Optional[int] = None):
-    """A basic courses view with courses listed on the right and no course selected.
-    """
+    """A basic courses view with courses listed on the right and no course selected."""
     if semester_id is None:
         semester = Semester.objects.get_next()
     else:
@@ -114,9 +113,7 @@ def course_view(request, slug):
 
 
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
-    """Tell whether the user is authorized to see students' names
-    and surnames in the given group.
-    """
+    """Is user authorized to see students' names in the given group?"""
     is_user_proper_employee = (user.employee and not is_external_contractor(user))
     is_user_group_teacher = user == group.teacher.user
     return is_user_proper_employee or is_user_group_teacher
@@ -124,7 +121,9 @@ def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
 
 @login_required
 def group_view(request, group_id):
-    """Group records view - list of all students enrolled and enqueued to group.
+    """Group records view.
+
+    Presents list of all students enrolled and enqueued to group.
     """
     group: Group = None
     try:
@@ -176,8 +175,7 @@ def group_view(request, group_id):
 
 
 def recorded_students_csv(group_id: int, status: RecordStatus) -> HttpResponse:
-    """Builds the HttpResponse with list of student enrolled/enqueued in group.
-    """
+    """Builds the HttpResponse with list of student enrolled/enqueued in group."""
     order = 'student__user__last_name' if status == RecordStatus.ENROLLED else 'created'
     records_in_group = Record.objects.filter(
         group_id=group_id, status=status

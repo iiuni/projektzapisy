@@ -443,13 +443,17 @@ class Record(models.Model):
 
     @classmethod
     def pull_record_into_group(cls, group_id: int) -> bool:
-        """Checks if there are vacancies in the group and pulls the first
-        student from the queue if possible.
+        """Checks for vacancies and pulls first student from queue if possible.
 
-        The function will return False if the group is already full, or the
-        queue is empty or the enrollment is closed for the semester. True value
-        will mean, that it should be run again on that group. The function may
-        throw DatabaseError if transaction fails.
+        If there is free spot in the group, this function will pick the first
+        record from the queue and try to enroll it into the group. The first
+        record may be removed if the student is not eligible for enrollment.
+
+        Returns:
+          The function will return False if the group is already full, or the
+          queue is empty or the enrollment is closed for the semester. True
+          value will mean, that it should be run again on that group. The
+          function may throw DatabaseError if transaction fails.
 
         Concurrency:
           This function may be run concurrently. A data race could potentially
@@ -527,8 +531,7 @@ class Record(models.Model):
                     raise
 
     def enroll_or_remove(self, group: Group) -> List[int]:
-        """This function takes a single QUEUED record and tries to change its
-        status into ENROLLED.
+        """Takes a single QUEUED record and tries to change its status to ENROLLED.
 
         The operation might fail under certain circumstances (the student is not
         enrolled in the lecture group, enrolling would exceed his ECTS limit).

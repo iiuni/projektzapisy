@@ -24,7 +24,7 @@ from apps.users.models import Employee, Student
 
 
 def build_group_list(groups: List[Group]):
-    """Builds a serializable object containing relevant information about groups
+    """Builds a serializable object containing relevant information about groups.
 
     The information must be sufficient to display information in the timetable
     and perform actions (enqueuing/dequeuing).

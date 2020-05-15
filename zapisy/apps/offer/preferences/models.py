@@ -76,9 +76,7 @@ class Preference(models.Model):
 
     @staticmethod
     def make_preferences(employee: Employee):
-        """Creates preferences for questions that do not have a preference
-        object for the given employee.
-        """
+        """Creates missing preferences for questions for the given employee."""
         existing_preferences = Preference.objects.filter(employee=employee).values_list(
             'question_id', flat=True)
         missing_questions = PreferencesQuestion.objects.exclude(pk__in=existing_preferences)

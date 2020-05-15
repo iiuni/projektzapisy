@@ -1,4 +1,3 @@
-"""Proposal views"""
 import copy
 import json
 

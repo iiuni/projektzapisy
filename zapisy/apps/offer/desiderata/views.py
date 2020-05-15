@@ -9,10 +9,7 @@ from apps.users.decorators import employee_required
 
 @employee_required
 def change_desiderata(request):
-    """
-    This view is to change desiderata for semester
-    in which the desiderata is currently open.
-    """
+    """Handles form in semester with desiderata currently open."""
     user = request.user
     employee = user.employee
     semester = Semester.get_default_semester()

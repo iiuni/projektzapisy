@@ -16,8 +16,8 @@ from apps.enrollment.courses.models.semester import Semester
 def _get_default_semester_for_season(season):
     """Finds a semester for upcoming year with specified type.
 
-    Parameters:
-      Season is supposed to be one of Semester.TYPE_CHOICES.
+    Args:
+      season: Season is supposed to be one of Semester.TYPE_CHOICES.
     """
     query = Semester.objects.filter(year=_get_default_year, type=season)
     try:

@@ -15,7 +15,7 @@ class NewsManager(models.QuerySet):
         return self.exclude(priority=PriorityChoices.HIDDEN)
 
     def get_page_number_by_news_id(self, news_id):
-        """If news doesn't exist the first page is returned"""
+        """If news doesn't exist the first page is returned."""
         if not self.filter(pk=news_id).exists():
             return 1
         later_news = self.published().filter(pk__gte=news_id)

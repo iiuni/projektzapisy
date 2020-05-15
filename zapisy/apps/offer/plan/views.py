@@ -273,6 +273,7 @@ def generate_scheduler_file(request, slug, format):
     Args:
         slug: represents semester, 'lato' for summer, 'zima' for winter.
         format: format of requested file, either 'csv' or 'json'.
+
     Returns:
         File in the desired format in a response.
     """

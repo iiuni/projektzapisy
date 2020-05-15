@@ -50,8 +50,7 @@ class ProposalFormTest(test.TestCase):
         cls.semester = SemesterFactory()
 
     def test_current_course_modified(self):
-        """Tests that the form also updates the current instance of the course.
-        """
+        """Tests that the form also updates the current instance of the course."""
         # First, create the proposal.
         form = EditProposalForm(data=self.form_data, user=self.employee.user)
         form.save()

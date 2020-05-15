@@ -142,11 +142,11 @@ class RedisNotificationsRepository(NotificationsRepository):
 
 
 def get_notifications_repository() -> NotificationsRepository:
-    """
+    """Returns a default implementation of NotificationsRepository.
+
     Return an object implementing NotificationsRepository interface,
     thus providing access to _some_ notifications storage.
     Client code should always call this method instead of
     instantiating such classes directly.
     """
-
     return RedisNotificationsRepository(JsonNotificationSerializer())

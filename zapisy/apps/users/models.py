@@ -58,9 +58,7 @@ class Employee(models.Model):
         )
 
     def get_full_name_with_academic_title(self) -> str:
-        """Same as `get_full_name`, but prepends the employee's academic title
-        if one is defined.
-        """
+        """Prepends the employee's academic title (if specified) to the name."""
         base_name = self.get_full_name()
         return f'{self.title} {base_name}' if self.title else base_name
 
@@ -130,9 +128,7 @@ class Program(models.Model):
 
 
 class PersonalDataConsent(models.Model):
-    """
-        Model przechowuje zgody dotyczące udostępniania danych osobowych studentów
-    """
+    """Stores students' data processing consents."""
     student = models.OneToOneField(Student, related_name='consent', on_delete=models.CASCADE)
     granted = models.NullBooleanField(verbose_name="zgoda udzielona")
 

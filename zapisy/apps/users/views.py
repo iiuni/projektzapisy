@@ -25,7 +25,7 @@ logger = logging.getLogger()
 @login_required
 @external_contractor_forbidden
 def students_view(request, user_id: int = None):
-    """View for students list and student profile if user id in URL is provided"""
+    """View for students list and student profile if user id in URL is provided."""
     students_queryset = Student.get_active_students().select_related('user')
     if not request.user.employee:
         students_queryset = students_queryset.filter(consent__granted=True)
@@ -79,7 +79,7 @@ def students_view(request, user_id: int = None):
 
 
 def employees_view(request, user_id: int = None):
-    """View for employees list and employee profile if user id in URL is provided"""
+    """View for employees list and employee profile if user id in URL is provided."""
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
         e.pk: {

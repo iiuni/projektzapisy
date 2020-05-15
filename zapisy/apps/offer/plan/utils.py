@@ -162,7 +162,6 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
             proposal). Each tuple represents single course.
         years: list of years to look for data in.
     """
-
     course_data = {}
 
     for course_name, course_semester, course_proposal in subjects:
