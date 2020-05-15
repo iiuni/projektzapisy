@@ -158,7 +158,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
     the owner of the course.
 
     Args:
-        subjects: list of tuples (course name, course semester, course 
+        subjects: list of tuples (course name, course semester, course
             proposal). Each tuple represents single course.
         years: list of years to look for data in.
     """

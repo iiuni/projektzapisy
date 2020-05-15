@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django import forms
 
 from apps.theses.forms import ThesisFormAdmin, RemarkFormAdmin, VoteFormAdmin
 from apps.theses.models import Thesis, Remark, Vote, ThesesSystemSettings

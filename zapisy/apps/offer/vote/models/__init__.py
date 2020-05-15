@@ -1,4 +1,4 @@
 from .system_state import SystemState
 from .single_vote import SingleVote
 
-__all__ = ['SystemState', 'SingleVote',]
+__all__ = ['SystemState', 'SingleVote']
