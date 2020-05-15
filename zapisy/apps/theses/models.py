@@ -98,7 +98,10 @@ class Thesis(models.Model):
         verbose_name_plural = "prace dyplomowe"
 
     def save(self, *args, **kwargs):
-        """Overloaded save method - during save check changes and send signals to notifications app"""
+        """Overloaded save method.
+
+        During save check changes and send signals to notifications app.
+        """
         old = self.pk and type(self).objects.get(pk=self.pk)
         super(Thesis, self).save(*args, **kwargs)
         if not old or (old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED):

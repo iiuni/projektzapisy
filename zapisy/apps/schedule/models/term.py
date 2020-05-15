@@ -177,8 +177,10 @@ class Term(models.Model):
     @classmethod
     def prepare_conflict_dict(cls, start_time, end_time):
         """
-        Head is top term for which next terms (if conflicted in terms of time) will be considered as conflicts.
-        current_result stores conflicts for given current head
+        Head is top term for which next terms (if conflicted in terms of time)
+        will be considered as conflicts. current_result stores conflicts for
+        given current head
+
         @return OrderedDict[day][room][head|conflicted]
         """
         candidates = Term.objects.filter(

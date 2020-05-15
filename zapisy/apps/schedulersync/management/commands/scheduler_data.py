@@ -7,11 +7,12 @@ and courses to map in seperate dict and set.
 Data is stored within object (.self).
 
 """
-
 import collections
 from datetime import time
+from typing import Dict, List, Set
 
 import requests
+
 from apps.enrollment.courses.models.classroom import Classroom
 
 
@@ -53,12 +54,12 @@ class SchedulerData:
             day = scheduler_term.day
             return str(day + 1)
 
-        def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
+        def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
             """ Returns earliest starting time among the SchedulerAPITerms."""
             hour = min(term.start_hour for term in scheduler_terms)
             return time(hour=hour)
 
-        def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
+        def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
             """ Returns latest starting time among the SchedulerAPITerms."""
             hour = max(term.end_hour for term in scheduler_terms)
             return time(hour=hour)
@@ -102,7 +103,7 @@ class SchedulerData:
             client.post(URL_LOGIN, data=login_data)
             return client
 
-        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerApiResult]':
+        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerApiResult]':  # noqa: F821
             """ Lays out (room x term) data coming from scheduler """
             data = {}
             for id in results:

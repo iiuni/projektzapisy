@@ -188,7 +188,10 @@ class Group(models.Model):
             return None
 
     def save(self, *args, **kwargs):
-        """Overloaded save method - during save check changes and send signals to notifications app"""
+        """Overloaded save method.
+
+        During save check changes and send signals to notifications app.
+        """
         old = type(self).objects.get(pk=self.pk) if self.pk else None
         super(Group, self).save(*args, **kwargs)
         if old:

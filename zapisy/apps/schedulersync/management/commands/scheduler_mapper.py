@@ -8,6 +8,8 @@ then user will be asked for proper input.
 Fills summary object given in constructor.
 
 """
+from typing import Dict, Optional, Set
+
 from apps.enrollment.courses.models import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
@@ -89,8 +91,11 @@ class SchedulerMapper:
         return teachers
 
     def _map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
-        """ Map courses by scheduler names to object in database. If corresponding proposal cannot be found, in
-            interactive mode user will be asked for proper proposal name"""
+        """Maps courses by scheduler names to object in database.
+
+        If corresponding proposal cannot be found, in interactive mode user will
+        be asked for proper proposal name.
+        """
 
         def get_proposal(course_name: str, interactive: bool = True) -> 'Optional[Proposal]':
             """Finds a proposal in offer with a given name.
@@ -158,7 +163,7 @@ class SchedulerMapper:
                 mapped_courses[course] = get_course(proposal)
         return mapped_courses
 
-    def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
+    def map_scheduler_data(self, scheduler_data: 'SchedulerData'):  # noqa: F821
         """ Maps teachers and courses in given scheduler_data.
 
         In given scheduler_data map teachers and courses names to

@@ -32,7 +32,7 @@ class Slack:
         }
         self.attachments.append(attachment)
 
-    def prepare_message(self, summary: 'Summary'):
+    def prepare_message(self, summary: 'Summary'):  # noqa: F821
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)

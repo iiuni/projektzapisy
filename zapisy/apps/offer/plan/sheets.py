@@ -14,7 +14,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
 def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
-    """Loads up data from enviorement, creates credentials and connects to appropriate spreadsheet."""
+    """Creates a Google Sheets connection.
+
+    Loads up data from enviorement, creates credentials and connects to
+    appropriate spreadsheet.
+    """
     env = environ.Env()
     environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
     creds = {"type": env('SERVICE_TYPE'),

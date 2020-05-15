@@ -29,15 +29,16 @@ The --dry_run flag causes all changes to the database to be undone at the end
     It can be safely used for testing.
 
 Instructions for using flags:
-    First use (manual): Never set --slack on first use in semester, use later,
+    First use (manual): Never set --slack on first use in semester, use later,
         always --interactive, you shouldn't use --dont_delete_terms,
         --dry_run freely for testing - recommended on first use
-    During the semester (automatic): always --slack, never --interactive,
-        never --dont_delete_terms, never --dry_run
+    During the semester (automatic): always --slack, never --interactive,
+        never --dont_delete_terms, never --dry_run
 
 Example usage:
     python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
-    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --interactive
+    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/
+    --dry_run --interactive
 
 """
 
@@ -60,7 +61,11 @@ from .slack import Slack
 
 
 class Summary:
-    """Stores information which objects to delete and what to write to Slack and at the end of script"""
+    """Holds importing summary.
+
+    Stores information which objects to delete and what to write to Slack and at
+    the end of script.
+    """
     def __init__(self):
         self.created_courses = 0
         self.used_courses = 0
@@ -93,7 +98,7 @@ class Command(BaseCommand):
         parser.add_argument('--interactive', action='store_true', help='script will need keyboard interaction. Use'
                                                                        ' this during manually usage.')
 
-    def create_or_update_group_and_term(self, term_data: 'SZTerm'):
+    def create_or_update_group_and_term(self, term_data: 'SZTerm'):  # noqa: F821
         """Updates term and group in Enrolment System.
 
         Checks if the group already exists in database, then creates or updates

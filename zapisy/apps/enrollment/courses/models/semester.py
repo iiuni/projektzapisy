@@ -237,12 +237,13 @@ class Semester(models.Model):
         return dates
 
     def get_all_added_days_of_week(self, day_of_week, start_date=None):
-        """
-        Gets dates of all weekdays changed from another weekday to specvified weekday in this semester, starting from
-        the specified date or the beggining of the semester
+        """Finds all days with switched weekday.
 
-        :param day_of_week: DAYS_OF_WEEK
-        :param start_date: datetime.date
+        Args:
+            day_of_week: Filters by day of week the date is switched to.
+            start_date: If provided, the switched days starting with this date
+                are returned. Otherwise the search is limited to the current
+                semester.
         """
         from_date = self.lectures_beginning
         if start_date:

@@ -58,7 +58,7 @@ class Poll(models.Model):
         verbose_name_plural = 'ankiety'
 
     @property
-    def type(self) -> Union[PollType, 'CourseGroupType']:
+    def type(self) -> Union[PollType, 'CourseGroupType']:  # noqa: F821
         """Determines the PollType by checking foreign keys references"""
         if self.group:
             return self.group.type

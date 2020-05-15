@@ -262,11 +262,13 @@ def plan_create_voting_sheet(request):
     return HttpResponseRedirect(reverse('plan-create'))
 
 
-# generates a json file used by scheduler or puts the very same data in csv file, depending on format argument
-# data comes from both employees and assignments Google sheets
 @staff_member_required
 def generate_scheduler_file(request, slug, format):
     """Creates a file for scheduler system to use.
+
+    Generates a json file used by scheduler or puts the very same data in csv
+    file, depending on format argument. Data comes from both employees and
+    assignments Google sheets.
 
     Args:
         slug: represents semester, 'lato' for summer, 'zima' for winter.
@@ -344,7 +346,8 @@ def generate_scheduler_file(request, slug, format):
         except Proposal.ObjectDoesNotExist:
             course_id = -1
 
-        # if single group is taught by few teachers, remember the index number that points to that group
+        # If single group is taught by few teachers, remember the index number
+        # that points to that group.
         if assignment_multiple_teachers:
             if (course_name, assignment_multiple_teachers) in multiple_teachers:
                 id = multiple_teachers[(

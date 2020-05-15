@@ -198,7 +198,7 @@ class LockBase:
         * If timeout <= 0, raise AlreadyLocked immediately if the file is
           already locked.
         """
-        raise NotImplemented("implement in subclass")
+        raise NotImplementedError("implement in subclass")
 
     def release(self):
         """
@@ -206,25 +206,25 @@ class LockBase:
 
         If the file is not locked, raise NotLocked.
         """
-        raise NotImplemented("implement in subclass")
+        raise NotImplementedError("implement in subclass")
 
     def is_locked(self):
         """
         Tell whether or not the file is locked.
         """
-        raise NotImplemented("implement in subclass")
+        raise NotImplementedError("implement in subclass")
 
     def i_am_locking(self):
         """
         Return True if this object is locking the file.
         """
-        raise NotImplemented("implement in subclass")
+        raise NotImplementedError("implement in subclass")
 
     def break_lock(self):
         """
         Remove a lock.  Useful if a locking thread failed to unlock.
         """
-        raise NotImplemented("implement in subclass")
+        raise NotImplementedError("implement in subclass")
 
     def __enter__(self):
         """

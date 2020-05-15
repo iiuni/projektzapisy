@@ -69,7 +69,8 @@ class AdminTestCase(TestCase):
     def test_subpages(self, link_text: str) -> None:
         self.client.post("/fereol_admin/login/", {"username": self.admin.username, "password": self.password},
                          follow=True)
-        # For some unknown for me reasons, logging in at set up won't be enough, and we have to log in for each test
+        # For some unknown for me reasons, logging in at set up won't be enough,
+        # and we have to log in for each test.
         response = self.client.get(link_text, follow=True)
         assert('user-tools' in str(response.content))
         self.client.get("/fereol_admin/logout/", follow=True)

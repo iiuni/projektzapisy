@@ -24,7 +24,11 @@ def get_master_rejecter():
 
 
 def change_status(thesis, vote):
-    """Automaticaly change status of a thesis depending on previous votes, new vote and assigned students"""
+    """Implements status changes.
+
+    Status changes automatically of a thesis depending on previous votes, new
+    vote and assigned students.
+    """
     if vote == ThesisVote.ACCEPTED and thesis.get_accepted_votes() >= get_num_required_votes() - 1:
         if thesis.has_no_students_assigned:
             thesis.status = ThesisStatus.ACCEPTED
