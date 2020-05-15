@@ -5,6 +5,7 @@ exclude =
     node_modules,
     *migrations,
     scripts,
+    db_backups,
     # mailer app will be removed soon.
     mailer,
 docstring-convention = google
