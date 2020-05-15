@@ -9,6 +9,8 @@ import json
 
 import requests
 
+from .import_schedule import Summary
+
 
 DAYS_OF_WEEK = {'1': 'monday',
                 '2': 'tuesday',
@@ -32,7 +34,7 @@ class Slack:
         }
         self.attachments.append(attachment)
 
-    def prepare_message(self, summary: 'Summary'):  # noqa: F821
+    def prepare_message(self, summary: 'Summary'):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)

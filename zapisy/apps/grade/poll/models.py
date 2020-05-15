@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
 from apps.users.models import Student
@@ -58,7 +58,7 @@ class Poll(models.Model):
         verbose_name_plural = 'ankiety'
 
     @property
-    def type(self) -> Union[PollType, 'CourseGroupType']:  # noqa: F821
+    def type(self) -> Union[PollType, GroupType]:
         """Determines the PollType by checking foreign keys references"""
         if self.group:
             return self.group.type

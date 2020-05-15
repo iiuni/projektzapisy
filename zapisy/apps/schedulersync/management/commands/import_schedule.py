@@ -55,7 +55,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
 from apps.schedulersync.models import TermSyncData
 
-from .scheduler_data import SchedulerData
+from .scheduler_data import SchedulerData, SZTerm
 from .scheduler_mapper import SchedulerMapper
 from .slack import Slack
 
@@ -98,7 +98,7 @@ class Command(BaseCommand):
         parser.add_argument('--interactive', action='store_true', help='script will need keyboard interaction. Use'
                                                                        ' this during manually usage.')
 
-    def create_or_update_group_and_term(self, term_data: 'SZTerm'):  # noqa: F821
+    def create_or_update_group_and_term(self, term_data: 'SZTerm'):
         """Updates term and group in Enrolment System.
 
         Checks if the group already exists in database, then creates or updates

@@ -103,7 +103,7 @@ class SchedulerData:
             client.post(URL_LOGIN, data=login_data)
             return client
 
-        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerApiResult]':  # noqa: F821
+        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':
             """ Lays out (room x term) data coming from scheduler """
             data = {}
             for id in results:

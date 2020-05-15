@@ -15,7 +15,7 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-from .scheduler_data import SZTerm
+from .scheduler_data import SchedulerData, SZTerm
 
 
 class SchedulerMapper:
@@ -163,7 +163,7 @@ class SchedulerMapper:
                 mapped_courses[course] = get_course(proposal)
         return mapped_courses
 
-    def map_scheduler_data(self, scheduler_data: 'SchedulerData'):  # noqa: F821
+    def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
         """ Maps teachers and courses in given scheduler_data.
 
         In given scheduler_data map teachers and courses names to
