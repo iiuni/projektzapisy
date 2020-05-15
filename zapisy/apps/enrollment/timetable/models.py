@@ -1,7 +1,6 @@
 """Models for the timetable prototype."""
 from typing import Iterable
 
-from django.contrib.auth.models import Group as AuthGroup
 from django.db import models
 
 from apps.enrollment.courses.models import Group, Semester

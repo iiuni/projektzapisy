@@ -200,9 +200,7 @@ def recorded_students_csv(group_id: int, status: RecordStatus) -> HttpResponse:
 @employee_required
 def group_enrolled_csv(request, group_id):
     """Prints out the group members in csv format."""
-    try:
-        _ = Group.objects.get(id=group_id)
-    except Group.DoesNotExist:
+    if not Group.objects.filter(id=group_id).exist():
         raise Http404
     return recorded_students_csv(group_id, RecordStatus.ENROLLED)
 
@@ -210,8 +208,6 @@ def group_enrolled_csv(request, group_id):
 @employee_required
 def group_queue_csv(request, group_id):
     """Prints out the group queue in csv format."""
-    try:
-        _ = Group.objects.get(id=group_id)
-    except Group.DoesNotExist:
+    if not Group.objects.filter(id=group_id).exist():
         raise Http404
     return recorded_students_csv(group_id, RecordStatus.QUEUED)

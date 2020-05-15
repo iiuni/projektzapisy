@@ -31,5 +31,5 @@ class NotificationsUtilsTestCase(TestCase):
         descr_args = {}
 
         with self.assertRaises(DescriptionArgumentMissingException):
-            rendered = render_description(
+            render_description(
                 NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, descr_args)

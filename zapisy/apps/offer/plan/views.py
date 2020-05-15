@@ -80,7 +80,13 @@ def plan_view(request):
         code = employee[4]
         balance = float(employee[11]) if employee[11] else 0
         ed: EmployeeData(status, name, pensum, balance) = {
-            'status': status, 'name': name, 'pensum': pensum, 'balance': balance, 'courses_winter': [], 'courses_summer': []}
+            'status': status,
+            'name': name,
+            'pensum': pensum,
+            'balance': balance,
+            'courses_winter': [],
+            'courses_summer': []
+        }
         if status == 'pracownik':
             staff[code] = copy.copy(ed)
         elif status == 'doktorant':
@@ -350,8 +356,16 @@ def generate_scheduler_file(request, slug, format):
         else:
             id = index
 
-        scheduler_assignment = {'type': 'course', 'semester': semester, 'course_id': course_id,
-                                'course_name': course_name, 'id': id, 'group_type': group_type, 'hours': hours, 'teacher_id': code}
+        scheduler_assignment = {
+            'type': 'course',
+            'semester': semester,
+            'course_id': course_id,
+            'course_name': course_name,
+            'id': id,
+            'group_type': group_type,
+            'hours': hours,
+            'teacher_id': code
+        }
         content.append(scheduler_assignment)
         index += 1
 

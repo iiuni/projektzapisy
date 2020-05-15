@@ -13,7 +13,7 @@ from django.conf import settings
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.users.models import Program, Student
+from apps.users.models import Student
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
 

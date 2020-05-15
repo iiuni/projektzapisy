@@ -33,7 +33,7 @@ class PreferencesTestCase(test.TestCase):
 
         But only active users and only for regular news.
         """
-        n = News.objects.create(title="Tytuł zwykłego newsa",
+        News.objects.create(title="Tytuł zwykłego newsa",
                                 body="Bardzo ciekawa wiadomość",
                                 author=self.t1.user)
         self.assertCountEqual(self.inspect_outbox(mail.outbox),
@@ -44,7 +44,7 @@ class PreferencesTestCase(test.TestCase):
 
         But the employees still have a say.
         """
-        n = News.objects.create(title="Tytuł pilnego newsa",
+        News.objects.create(title="Tytuł pilnego newsa",
                                 body="Bardzo ciekawa i ważna wiadomość",
                                 author=self.t1.user,
                                 priority=PriorityChoices.HIGH)

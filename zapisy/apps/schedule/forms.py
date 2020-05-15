@@ -3,7 +3,6 @@ from copy import deepcopy
 from datetime import date, datetime, timedelta
 
 from django import forms
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import HiddenInput
 from django.forms.models import inlineformset_factory
 

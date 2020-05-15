@@ -47,7 +47,7 @@ class SubmissionEntryForm(forms.ModelForm):
             updated_answers = self.instance.answers
             for index, field in enumerate(self.jsonfields):
                 field_name = f"field_{index}"
-                answer = updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
+                updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
 
             self.instance.submitted = True
             self.instance.answers = updated_answers

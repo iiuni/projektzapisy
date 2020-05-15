@@ -8,9 +8,6 @@ then user will be asked for proper input.
 Fills summary object given in constructor.
 
 """
-
-import collections
-
 from apps.enrollment.courses.models import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap

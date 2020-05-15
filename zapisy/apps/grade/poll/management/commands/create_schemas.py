@@ -1,9 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.models.semester import Semester
-from apps.grade.poll.models import Poll, PollType, Schema
+from apps.grade.poll.models import PollType, Schema
 
 HEADER = "-- "
 MARGIN = "   "

@@ -74,60 +74,6 @@ class SpecialReservationTestCase(TestCase):
         reservation_4.full_clean()
         reservation_4.save(author_id=reservation_author.pk)
 
-    def test_reservation_created_terms(self):
-        terms = EventTerm.get_terms_for_dates(
-            [date(2016, 5, 12)],
-            Classroom.get_by_number('110'),
-            time(15),
-            time(16)
-        )
-
-        '''
-        Powinno przechodzić, bo SpecialReservation tworzy Term dla każdego dnia w semestrze,
-        w którym dana rezerwacja występuje po wykonaniu metody save. To jednak nie
-        przechodzi. Dlaczego?
-
-        Rozwiązanie zagadki: My tutaj operujemy na przeszłych semestrach, a podczas tworzenia
-        SpecialReservation, gdy tworzone są eventy i termsy robione są rezerwacje od teraz,
-        czyli datetime.now().date(). Zatem nic nie zostanie zarezerwowane, jeśli operujemy na
-        przeszłych datach.
-
-        Należy tworzyć testy operujące na datach w teraźniejszości, lub przyszłości.
-        Trzeba to wszystko zrefactorować na fabryki.
-        '''
-
-        # self.assertTrue(terms)
-
-    def test_try_clean_on_overlapping_reservation(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        room = Classroom.get_by_number('110')
-        reservation = SpecialReservation(
-            semester=semester,
-            title='overlapping',
-            classroom=room,
-            dayOfWeek=days_of_week.THURSDAY,
-            start_time=time(14),
-            end_time=time(16)
-        )
-        # Powinno rzucać wyjątek, bo w setUp została stworzona rezerwacja, która
-        # nakłąda się na godziny tej.
-        # self.assertRaises(ValidationError, reservation.full_clean)
-
-    def test_clean_on_overlapping_reservation_where_both_are_same(self):
-        semester = Semester.get_semester(date(2016, 5, 12))  # summer20152016
-        room = Classroom.get_by_number('110')
-        reservation = SpecialReservation(
-            semester=semester,
-            title='overlapping',
-            classroom=room,
-            dayOfWeek=days_of_week.WEDNESDAY,
-            start_time=time(15),
-            end_time=time(16)
-        )
-        # To powinno rzucić ValidationError, bo taka rezerwacja
-        # została już stworzona i zapisana do bazy w setUp.
-        #self.assertRaises(ValidationError, reservation.full_clean)
-
     def test_special_reservation_unicode_method(self):
         reservations = SpecialReservation.objects.all()
         for reservation in reservations:
@@ -247,8 +193,6 @@ class TermTestCase(TestCase):
         room25 = enrollment_factories.ClassroomFactory()
         room25.save()
         room25.full_clean()
-
-        today = date.today().strftime("%A")
 
         reservation_author = factories.UserFactory()
         reservation_author.save()
@@ -608,8 +552,9 @@ class EventTestCase(TestCase):
             Record.objects.create(student=student, group=group, status=RecordStatus.ENROLLED)
         users = [student.user for student in students]
 
-        event = factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
-                                       interested=users, course=group.course)
+        factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
+                               interested=users,
+                               course=group.course)
         # followers = event.get_followers()
         # users_emails = [user.email for user in users]
         # self.assertCountEqual(users_emails, followers)

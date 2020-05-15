@@ -93,7 +93,9 @@ class GuaranteedSpotsInline(admin.StackedInline):
     extra = 0
     fieldsets = ((None, {
         'fields': ('role', 'limit'),
-        'description': "<strong style='color: red'>Grupy użytkowników, którym gwarantujemy miejsca w jednej grupie zajęciowej muszą być rozłączne!</strong>",
+        'description': ("<strong style='color: red'>Grupy użytkowników, którym "
+                        "gwarantujemy miejsca w jednej grupie zajęciowej muszą być "
+                        "rozłączne!</strong>"),
     }), )
 
 

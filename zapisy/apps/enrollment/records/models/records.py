@@ -574,7 +574,7 @@ class Record(models.Model):
                 self.status = RecordStatus.REMOVED
                 self.save()
 
-                #Send notifications
+                # Send notifications
                 if can_enroll_status == EnrollStatus.ECTS_ERR:
                     student_not_pulled.send_robust(
                         sender=self.__class__,

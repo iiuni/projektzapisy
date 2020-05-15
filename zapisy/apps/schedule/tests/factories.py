@@ -1,5 +1,4 @@
-from datetime import time, date, datetime
-import string
+from datetime import time, date
 import random
 
 import factory

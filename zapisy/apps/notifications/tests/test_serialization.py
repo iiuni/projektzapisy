@@ -1,5 +1,4 @@
 from django.test import SimpleTestCase
-import random
 from datetime import datetime
 
 from apps.notifications.datatypes import Notification

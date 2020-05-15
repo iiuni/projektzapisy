@@ -1,6 +1,5 @@
 from django.urls import include, path
 from .poll import views as poll_views
-from django.views.generic import TemplateView
 
 # to tree/list_view and description, pass by GET:
 # format=json - returns data as json
