@@ -260,12 +260,12 @@ class Semester(models.Model):
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
-		been scheduled. It may be useful when students want to plan their
-		timetables.
-		"""
+        been scheduled. It may be useful when students want to plan their
+        timetables.
+        """
         try:
-            return Semester.objects.filter(visible=True, records_closing__gte=datetime.now()).
-            	earliest('records_closing')
+            return Semester.objects.filter(
+                visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
         except (Semester.DoesNotExist):
             return Semester.get_current_semester()
 
