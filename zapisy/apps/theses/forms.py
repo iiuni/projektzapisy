@@ -1,9 +1,17 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Column, Div, Field, HTML, Layout, Row, Submit
 from django import forms
 from django.utils import timezone
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column, HTML, Field, Div
-from apps.theses.models import Thesis, Remark, Vote, MAX_THESIS_TITLE_LEN, MAX_ASSIGNED_STUDENTS
+
+from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
+from apps.theses.models import (
+    MAX_ASSIGNED_STUDENTS,
+    MAX_THESIS_TITLE_LEN,
+    Remark,
+    Thesis,
+    Vote,
+)
 from apps.theses.system_settings import change_status
 from apps.users.models import Employee, Student
 
@@ -44,7 +52,7 @@ class ThesisFormBase(forms.ModelForm):
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do", required=False)
     description = forms.CharField(
-        label="Opis", widget=forms.Textarea, required=False)
+        label="Opis", widget=common_widgets.MarkdownArea, required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
