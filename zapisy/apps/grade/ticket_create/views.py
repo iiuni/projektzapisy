@@ -2,8 +2,7 @@ import json
 
 from django.contrib import messages
 from django.db import transaction
-from django.http import (HttpResponseBadRequest, HttpResponseForbidden,
-                         JsonResponse)
+from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 
 from apps.enrollment.courses.models.semester import Semester

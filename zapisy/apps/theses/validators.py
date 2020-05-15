@@ -4,6 +4,7 @@ from typing import Optional
 from django.core.exceptions import ValidationError
 
 from apps.users.models import Employee
+
 from .users import get_num_board_members, is_theses_board_member
 
 

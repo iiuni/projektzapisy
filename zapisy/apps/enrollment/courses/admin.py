@@ -1,16 +1,15 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
-from django.contrib import messages
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
-from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import Record, RecordStatus, T0Times, GroupOpeningTimes
+from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 
 
 class GroupInline(admin.TabularInline):

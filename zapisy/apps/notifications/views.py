@@ -1,10 +1,11 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository

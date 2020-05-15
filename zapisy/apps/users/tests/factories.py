@@ -1,12 +1,12 @@
 from typing import Any
-from django.contrib.auth.models import Group
+
 import factory
-from factory.django import DjangoModelFactory
-from factory import post_generation
-
 from django.conf import settings
+from django.contrib.auth.models import Group
+from factory import post_generation
+from factory.django import DjangoModelFactory
 
-from apps.users.models import Student, Employee, User
+from apps.users.models import Employee, Student, User
 
 langs = [x[0] for x in settings.LANGUAGES]
 

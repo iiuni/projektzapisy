@@ -1,29 +1,20 @@
-from django.contrib.auth.models import Group as AuthGroup
-
 from datetime import datetime
-
 from unittest.mock import patch
 
-from rest_framework.test import APILiveServerTestCase
-from rest_framework.test import RequestsClient
+from django.contrib.auth.models import Group as AuthGroup
 from rest_framework.authtoken.models import Token
-
-from apps.enrollment.courses.tests.factories import (SemesterFactory,
-                                                     CourseInstanceFactory,
-                                                     ClassroomFactory,
-                                                     GroupFactory,
-                                                     TermFactory)
-from apps.enrollment.records.tests.factories import RecordFactory
-from apps.offer.proposal.tests.factories import ProposalFactory
-from apps.offer.vote.models import SystemState, SingleVote
-from apps.users.tests.factories import (StudentFactory,
-                                        UserFactory,
-                                        EmployeeFactory)
-from apps.users.models import Program
+from rest_framework.test import APILiveServerTestCase, RequestsClient
 
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
 from apps.api.rest.v1.api_wrapper.sz_api import models as api_models
+from apps.enrollment.courses.tests.factories import (ClassroomFactory, CourseInstanceFactory,
+                                                     GroupFactory, SemesterFactory, TermFactory)
+from apps.enrollment.records.tests.factories import RecordFactory
+from apps.offer.proposal.tests.factories import ProposalFactory
+from apps.offer.vote.models import SingleVote, SystemState
+from apps.users.models import Program
+from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
 
 class WrapperTests(APILiveServerTestCase):

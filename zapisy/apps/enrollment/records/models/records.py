@@ -42,22 +42,22 @@ Record Lifetime:
     filled by an asynchronous process, so the GROUP_CHANGE_SIGNAL is sent.
 """
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from datetime import datetime
+from enum import Enum
 from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
-from enum import Enum
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import DatabaseError, models, transaction
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.group import GuaranteedSpots, GroupType
+from apps.enrollment.courses.models.group import GroupType, GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
+from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.users.models import Student
-from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
-from inspect import signature, Parameter
 import functools
+from inspect import Parameter, signature
 
 
 def auto_assign(func):

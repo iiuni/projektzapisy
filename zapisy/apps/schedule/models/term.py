@@ -2,14 +2,15 @@ import collections
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.db import models
+from django.db.models import Q
 from django.dispatch import receiver
 
-from .event import Event
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term as CourseTerm
+
+from .event import Event
 
 
 class Term(models.Model):

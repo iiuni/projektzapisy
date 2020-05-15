@@ -1,8 +1,9 @@
 from django.test import TestCase
-from apps.theses.models import Thesis, Vote, ThesesSystemSettings
+
 from apps.theses.enums import ThesisStatus, ThesisVote
-from apps.theses.system_settings import change_status
 from apps.theses.forms import EditThesisForm
+from apps.theses.models import ThesesSystemSettings, Thesis, Vote
+from apps.theses.system_settings import change_status
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 

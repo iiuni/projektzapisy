@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import ValidationError
@@ -7,8 +9,6 @@ from django.http import Http404
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
-
-from typing import List
 
 
 class Event(models.Model):

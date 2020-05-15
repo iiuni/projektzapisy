@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import Student, Program
+from ..models import Program, Student
 from . import factories
 
 

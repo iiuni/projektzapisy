@@ -1,33 +1,34 @@
 import datetime
+import operator
+from functools import reduce
+from itertools import groupby
 from typing import List, NamedTuple, Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.views.decorators.http import require_POST
-import operator
+
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
-from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
-from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
-    EventModerationMessageForm, EventMessageForm, ConflictsForm
+from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
+                                 EventModerationMessageForm, TermFormSet)
+from apps.schedule.models.event import Event
+from apps.schedule.models.specialreservation import SpecialReservation
+from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
-from .fullcalendar import FullCalendarView
-from .forms import DoorChartForm, TableReportForm
-from itertools import groupby
-from .models.message import EventModerationMessage
 
-from functools import reduce
+from .forms import DoorChartForm, TableReportForm
+from .fullcalendar import FullCalendarView
+from .models.message import EventModerationMessage
 
 
 @login_required

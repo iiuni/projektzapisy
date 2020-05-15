@@ -1,14 +1,13 @@
 import os
 from typing import List, Optional
 
-from django.conf import settings
 import environ
 import gspread
+from django.conf import settings
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apps.offer.plan.utils import (
-    ProposalSummary, ProposalVoteSummary, SingleYearVoteSummary,
-    VotingSummaryPerYear)
+from apps.offer.plan.utils import (ProposalSummary, ProposalVoteSummary, SingleYearVoteSummary,
+                                   VotingSummaryPerYear)
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 

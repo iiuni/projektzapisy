@@ -1,6 +1,7 @@
 from django.db import models
-from apps.users.models import Employee
+
 from apps.offer.proposal.models import Proposal
+from apps.users.models import Employee
 
 
 class TermSyncData(models.Model):

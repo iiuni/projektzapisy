@@ -1,7 +1,7 @@
 import json
 import os.path
-
 from typing import List, Union
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 

@@ -1,16 +1,12 @@
 import json
-import requests
-from urllib.parse import urljoin, urlparse
 from typing import Iterator, Optional
+from urllib.parse import urljoin, urlparse
 
-from .models import (User, Program,
-                     Semester, Student,
-                     Employee, CourseInstance,
-                     Classroom, Group,
-                     Term, Record,
-                     Desiderata, DesiderataOther,
-                     SpecialReservation, SystemState,
-                     SingleVote, Model)
+import requests
+
+from .models import (Classroom, CourseInstance, Desiderata, DesiderataOther, Employee, Group, Model,
+                     Program, Record, Semester, SingleVote, SpecialReservation, Student,
+                     SystemState, Term, User)
 
 
 class ZapisyApi:

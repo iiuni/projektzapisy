@@ -1,6 +1,7 @@
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.classroom import Classroom
 from datetime import datetime
+
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.semester import Semester
 
 
 class SemesterObjectMother():

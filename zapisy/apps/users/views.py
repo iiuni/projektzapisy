@@ -8,13 +8,11 @@ from django.shortcuts import Http404, redirect, render, reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
-from apps.enrollment.records.models import (
-    GroupOpeningTimes, Record, RecordStatus, T0Times)
+from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
-from apps.users.decorators import (
-    employee_required, external_contractor_forbidden)
+from apps.users.decorators import employee_required, external_contractor_forbidden
 
 from .forms import EmailChangeForm, EmployeeDataForm
 from .models import Employee, PersonalDataConsent, Student

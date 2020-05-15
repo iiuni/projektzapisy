@@ -5,10 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from freezegun import freeze_time
 
 from apps.enrollment.courses.tests.factories import CourseInstanceFactory, SemesterFactory
+from apps.offer.proposal.models import ProposalStatus, SemesterChoices
 from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.tests.factories import StudentFactory
-from apps.offer.proposal.models import ProposalStatus, SemesterChoices
 
 from ..forms import prepare_vote_formset
 

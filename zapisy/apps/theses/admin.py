@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from apps.theses.forms import ThesisFormAdmin, RemarkFormAdmin, VoteFormAdmin
-from apps.theses.models import Thesis, Remark, Vote, ThesesSystemSettings
+from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin, VoteFormAdmin
+from apps.theses.models import Remark, ThesesSystemSettings, Thesis, Vote
 
 
 class ThesisAdmin(admin.ModelAdmin):

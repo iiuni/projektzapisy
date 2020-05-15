@@ -1,12 +1,12 @@
-from typing import Optional, List, Tuple
-
-from django.db import models
-
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db.models import Q
-from django.core.validators import ValidationError
 from datetime import datetime, timedelta
+from typing import List, Optional, Tuple
+
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.validators import ValidationError
+from django.db import models
+from django.db.models import Q
+
 from apps.common import days_of_week
 
 from .term import Term

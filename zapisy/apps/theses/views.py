@@ -6,9 +6,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.theses.enums import ThesisStatus, ThesisVote
-from apps.theses.forms import EditThesisForm, RemarkForm, ThesisForm, VoteForm, RejecterForm
+from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
 from apps.theses.models import Thesis
-from apps.theses.users import get_theses_board, is_theses_board_member, is_master_rejecter
+from apps.theses.users import get_theses_board, is_master_rejecter, is_theses_board_member
 from apps.users.decorators import employee_required
 from apps.users.models import Student
 

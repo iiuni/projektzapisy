@@ -6,9 +6,9 @@ from django import test
 from freezegun import freeze_time
 
 from apps.enrollment.courses.tests import factories as courses
-from apps.users.tests import factories as users
 from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import RSAKeys, StudentGraded
+from apps.users.tests import factories as users
 
 grade_client = importlib.import_module('apps.grade.ticket_create.assets.grade-client')
 

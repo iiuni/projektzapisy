@@ -1,9 +1,9 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.contrib.auth.models import User
 from django.db.models import QuerySet
 
-from apps.users.models import (Employee, Student, Program)
+from apps.users.models import Employee, Program, Student
 
 
 class ExtendedUserAdmin(admin.ModelAdmin):

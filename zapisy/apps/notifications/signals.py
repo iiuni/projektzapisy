@@ -1,5 +1,5 @@
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -11,12 +11,8 @@ from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
-from apps.notifications.custom_signals import (
-    student_not_pulled,
-    student_pulled,
-    teacher_changed,
-    thesis_voting_activated,
-)
+from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
+                                               thesis_voting_activated)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote

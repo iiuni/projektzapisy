@@ -1,11 +1,11 @@
-from datetime import time, date
+import logging
+from datetime import date, time
 
+from django.core.cache import cache as mcache
 from django.db import models
 from django.db.models import signals
-from django.core.cache import cache as mcache
 
 from apps.common import days_of_week
-import logging
 
 backup_logger = logging.getLogger('project.backup')
 

@@ -1,7 +1,7 @@
 import datetime
 
-from django import test
 import freezegun
+from django import test
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_type import Type as CourseType

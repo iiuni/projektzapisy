@@ -1,4 +1,5 @@
 from datetime import timedelta
+
 from .fullcalendar import FullCalendarAdapter
 
 

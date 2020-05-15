@@ -1,25 +1,25 @@
-from datetime import time, date, timedelta
 import random
+from datetime import date, time, timedelta
 
-from django.test import TestCase
-from django.core.validators import ValidationError
 from django.contrib.auth.models import Permission
+from django.core.validators import ValidationError
 from django.http import Http404
+from django.test import TestCase
 from django.utils.crypto import get_random_string
 
-from apps.common import days_of_week
-from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
-from apps.users.models import Employee
-from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term as EventTerm
-from apps.schedule.models.message import EventModerationMessage, EventMessage
-from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.tests.factories import UserFactory, EmployeeFactory, StudentFactory
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.classroom import Classroom
-from apps.schedule import feeds
 import apps.enrollment.courses.tests.factories as enrollment_factories
+from apps.common import days_of_week
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.tests.objectmothers import ClassroomObjectMother, SemesterObjectMother
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.schedule import feeds
+from apps.schedule.models.event import Event
+from apps.schedule.models.message import EventMessage, EventModerationMessage
+from apps.schedule.models.specialreservation import SpecialReservation
+from apps.schedule.models.term import Term as EventTerm
+from apps.users.models import Employee
+from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
 from . import factories
 

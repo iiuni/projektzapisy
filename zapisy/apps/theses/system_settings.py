@@ -3,8 +3,9 @@
 The functions in this module permit interaction with the theses system settings
 implemented as a single instance of models.ThesesSystemSettings.
 """
-from . import models
 from apps.theses.enums import ThesisStatus, ThesisVote
+
+from . import models
 
 
 def _get_settings():

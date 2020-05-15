@@ -7,8 +7,8 @@ from datetime import timedelta
 
 from django.test import TestCase
 
-from apps.enrollment.records.models import T0Times, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group
+from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.records.models import GroupOpeningTimes, T0Times
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.users.models import Student
 

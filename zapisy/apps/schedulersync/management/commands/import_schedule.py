@@ -45,10 +45,10 @@ Example usage:
 import collections
 import os
 
+import environ
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import environ
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester

@@ -3,8 +3,8 @@
 Voting cycle spans two semesters in one academic year. Thus the system state
 corresponds to a single academic year.
 """
-from datetime import date
 import re
+from datetime import date
 from typing import Optional
 
 from django.core.exceptions import ValidationError

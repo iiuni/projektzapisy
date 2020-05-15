@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
+from parameterized import parameterized
 
 from apps.enrollment.courses.models import Semester
-from parameterized import parameterized
 
 
 class AdminTestCase(TestCase):

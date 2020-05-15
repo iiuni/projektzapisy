@@ -1,4 +1,5 @@
 import django_filters
+
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term

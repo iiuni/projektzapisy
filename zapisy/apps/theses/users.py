@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from apps.users.models import Employee, is_user_in_group, is_employee
+
 from apps.theses.system_settings import get_master_rejecter
+from apps.users.models import Employee, is_employee, is_user_in_group
 
 THESIS_BOARD_GROUP_NAME = "Komisja prac dyplomowych"
 

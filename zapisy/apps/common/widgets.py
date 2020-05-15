@@ -1,4 +1,4 @@
-from django.forms import widgets, Media
+from django.forms import Media, widgets
 from webpack_loader import utils as webpack_utils
 
 

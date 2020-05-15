@@ -1,6 +1,6 @@
+import json
 from abc import ABC, abstractmethod
 from datetime import datetime
-import json
 
 from apps.notifications.datatypes import Notification
 

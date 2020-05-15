@@ -14,11 +14,9 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models.group import GroupType
 from apps.offer.plan.sheets import (create_sheets_service, read_entire_sheet,
-                                    update_plan_proposal_sheet,
-                                    update_voting_results_sheet)
-from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData,
-                                   EmployeesSummary, SingleAssignmentData,
-                                   Statistics, TeacherInfo, get_last_years,
+                                    update_plan_proposal_sheet, update_voting_results_sheet)
+from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData, EmployeesSummary,
+                                   SingleAssignmentData, Statistics, TeacherInfo, get_last_years,
                                    get_subjects_data, get_votes, propose,
                                    sort_subject_groups_by_type)
 from apps.offer.proposal.models import Proposal, ProposalStatus

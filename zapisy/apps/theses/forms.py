@@ -5,8 +5,7 @@ from django.utils import timezone
 
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
-from apps.theses.models import (MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN,
-                                Remark, Thesis, Vote)
+from apps.theses.models import MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.theses.system_settings import change_status
 from apps.users.models import Employee, Student
 

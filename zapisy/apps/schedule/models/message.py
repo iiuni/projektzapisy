@@ -1,6 +1,7 @@
-from django.db import models
-from apps.schedule.models.event import Event
 from django.contrib.auth.models import User
+from django.db import models
+
+from apps.schedule.models.event import Event
 
 
 class EventModerationMessage(models.Model):

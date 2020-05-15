@@ -15,7 +15,6 @@ import requests
 
 from apps.enrollment.courses.models.classroom import Classroom
 
-
 URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
 
 # The mapping between group types in scheduler and enrollment system

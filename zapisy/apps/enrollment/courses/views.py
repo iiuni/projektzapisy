@@ -1,6 +1,6 @@
 import csv
 import json
-from typing import Tuple, Optional, Dict, List
+from typing import Dict, List, Optional, Tuple
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User

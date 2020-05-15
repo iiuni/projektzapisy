@@ -1,7 +1,7 @@
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
 
-from apps.users.models import is_external_contractor, is_student, is_employee
+from apps.users.models import is_employee, is_external_contractor, is_student
 
 
 def student_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):

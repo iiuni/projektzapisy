@@ -1,9 +1,9 @@
+from collections import defaultdict, namedtuple
+from typing import Dict, List, Tuple
+
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
-
-from collections import defaultdict, namedtuple
-from typing import Dict, List, Tuple
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission

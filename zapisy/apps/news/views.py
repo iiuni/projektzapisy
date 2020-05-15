@@ -1,8 +1,8 @@
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
-from django.urls import reverse
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from .models import News
 

@@ -3,16 +3,17 @@ from datetime import datetime, time
 import factory
 from factory.django import DjangoModelFactory
 
-from ..models.course_instance import CourseInstance
-from ..models.group import Group, GroupType
-from ..models.semester import ChangedDay, Semester
+from apps.common import days_of_week
+from apps.users.tests.factories import EmployeeFactory
+
 from ..models.classroom import Classroom
 from ..models.course_information import CourseInformation
+from ..models.course_instance import CourseInstance
 from ..models.course_type import Type
+from ..models.group import Group, GroupType
+from ..models.semester import ChangedDay, Semester
 from ..models.term import Term
-from apps.users.tests.factories import EmployeeFactory
 from .semester_year_provider import SemesterYearProvider
-from apps.common import days_of_week
 
 factory.Faker.add_provider(SemesterYearProvider)
 

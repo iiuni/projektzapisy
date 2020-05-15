@@ -7,15 +7,15 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.users.models import Student
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
+from apps.users.models import Student
 
 
 class T0Times(models.Model):
