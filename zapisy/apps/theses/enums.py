@@ -2,7 +2,6 @@
 Using a separate file for these definitions helps prevent
 circular dependencies
 """
-from enum import Enum
 from django.db import models
 
 
