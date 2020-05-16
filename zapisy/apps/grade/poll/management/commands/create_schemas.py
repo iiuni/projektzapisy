@@ -24,7 +24,7 @@ class Command(BaseCommand):
         if poll_type:
             types.append(poll_type)
         else:
-            types = PollType.choices()
+            types = PollType.choices
 
         for schema_type in types:
             schema = Schema(

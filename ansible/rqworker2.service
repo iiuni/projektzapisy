@@ -4,7 +4,7 @@ Description=Start rqworker dispatch-notifications
 User=vagrant
 Group=vagrant
 WorkingDirectory=/vagrant/zapisy/
-ExecStart=/home/vagrant/env3/bin/python3.6 /vagrant/zapisy/manage.py rqworker dispatch-notifications
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py rqworker dispatch-notifications
 Type=simple
 
 [Install]

@@ -1,11 +1,11 @@
 from datetime import time, date, datetime
 import string
-from zapisy import common
 import random
 
 import factory
 from factory.django import DjangoModelFactory
 
+from apps.common import days_of_week
 from apps.users.tests.factories import UserFactory
 from apps.enrollment.courses.tests.factories import GroupFactory, ClassroomFactory
 from apps.schedule.models.event import Event
@@ -94,6 +94,6 @@ class SpecialReservationFactory(DjangoModelFactory):
 
     title = factory.Sequence(lambda n: 'Special reservation %d' % n)
     classroom = factory.SubFactory(ClassroomFactory)
-    dayOfWeek = common.FRIDAY
+    dayOfWeek = days_of_week.FRIDAY
     start_time = time(10, 15)
     end_time = time(12)

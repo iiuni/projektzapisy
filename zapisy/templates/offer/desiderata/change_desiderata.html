@@ -1,11 +1,6 @@
 {% extends "offer/base.html" %}
-{% load static %}
 
 {% block main-subtitle %}Dezyderaty{% endblock %}
-{% block js %}
-    {{ block.super }}
-    <script type="text/javascript" src="{% static "js/offer/desiderata.js" %}"></script>
-{% endblock %}
 
 {% block offer_menu_desiderata %} class="active"{% endblock %}
 
@@ -14,7 +9,6 @@
     <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
     <li class="breadcrumb-item active">Dezyderaty</li>
     
-    {# end bread #}
 {% endblock %}
 
 {% block all-content %}
@@ -43,7 +37,7 @@
                     </td>
                 {% endfor %}
                     <td>
-                        <button class="btn btn-small btn-info desiderata-toggler">Przełącz</button>
+                        <button class="btn btn-small btn-info" onclick="toggleRow(event, this)">Przełącz</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -58,5 +52,15 @@
     {% else %}
     Do wypełnienia dezyderat zapraszamy w następnym semestrze.
     {% endif %}
+
+    <script>
+        function toggleRow(event, elem) {
+            event.preventDefault();
+            const row = elem.closest("tr");
+            const checkboxes = Array.from(row.querySelectorAll("[type='checkbox']"));
+            const state = checkboxes.some(ch => ch.checked );
+            checkboxes.forEach(c => { c.checked = !state });
+        };
+    </script>
 
 {% endblock %}

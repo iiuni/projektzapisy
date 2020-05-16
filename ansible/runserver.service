@@ -5,7 +5,7 @@ Restart=always
 User=vagrant
 Group=vagrant
 WorkingDirectory=/vagrant/zapisy/
-ExecStart=/home/vagrant/env3/bin/python3.6 /vagrant/zapisy/manage.py runserver ip:port
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py runserver 0.0.0.0:8000
 Type=simple
 
 [Install]

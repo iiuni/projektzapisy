@@ -47,23 +47,22 @@ import logging
 from datetime import datetime
 from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
-from choicesenum import ChoicesEnum
 from enum import Enum
 from django.contrib.auth.models import User
 from django.db import DatabaseError, models, transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.group import GuaranteedSpots
+from apps.enrollment.courses.models.group import GuaranteedSpots, GroupType
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student
 from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RecordStatus(ChoicesEnum):
+class RecordStatus(models.TextChoices):
     """RecordStatus describes a lifetime of a record."""
     QUEUED = '0'
     ENROLLED = '1'
@@ -86,7 +85,7 @@ class Record(models.Model):
     """
     group = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=RecordStatus.choices())
+    status = models.CharField(max_length=1, choices=RecordStatus.choices)
     priority = models.IntegerField(
         verbose_name='priorytet',
         default=5,
@@ -122,7 +121,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
@@ -200,7 +199,7 @@ class Record(models.Model):
         """
         if time is None:
             time = datetime.now()
-        if student is None or not student.is_active():
+        if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = {}
         is_recorded_dict = Record.is_recorded_in_groups(student, groups)
@@ -346,11 +345,11 @@ class Record(models.Model):
         user is neither a student nor an employee, an empty set is returned.
         """
         common_groups = set()
-        if BaseUser.is_student(user):
+        if user.student:
             student_records = Record.objects.filter(
                 group__in=groups, student=user.student, status=RecordStatus.ENROLLED)
             common_groups = {r.group_id for r in student_records}
-        if BaseUser.is_employee(user):
+        if user.employee:
             common_groups = set(
                 Group.objects.filter(pk__in=[g.pk for g in groups],
                                      teacher=user.employee).values_list('pk', flat=True))
@@ -375,7 +374,7 @@ class Record(models.Model):
         if not cls.can_enqueue(student, group, cur_time):
             return []
         enqueued_groups = []
-        if group.type != Group.GROUP_TYPE_LECTURE:
+        if group.type != GroupType.LECTURE:
             lecture_group = Group.get_lecture_group(group.course_id)
             if lecture_group is not None:
                 enqueued_lecture_groups = cls.enqueue_student(student, lecture_group)
@@ -416,7 +415,7 @@ class Record(models.Model):
             return []
         removed_groups = []
         # If this is a lecture, remove him from all other groups as well.
-        if record.group.type == Group.GROUP_TYPE_LECTURE:
+        if record.group.type == GroupType.LECTURE:
             other_groups_query = Record.objects.filter(
                 student=student, group__course_id=record.group.course_id).exclude(
                     status=RecordStatus.REMOVED).exclude(pk=record.pk)
@@ -469,7 +468,7 @@ class Record(models.Model):
         # records into that group in order to avoid dropping the record, when a
         # student enqueues into the groups at the same time, and this group is
         # being worked before the lecture group.
-        if group.type != Group.GROUP_TYPE_LECTURE:
+        if group.type != GroupType.LECTURE:
             lecture_group = Group.get_lecture_group(group.course_id)
             if lecture_group is not None:
                 cls.fill_group(lecture_group.pk)
@@ -552,7 +551,7 @@ class Record(models.Model):
                 status=RecordStatus.REMOVED).select_for_update()
 
             # Check if he is enrolled into the lecture group.
-            if group.type != Group.GROUP_TYPE_LECTURE:
+            if group.type != GroupType.LECTURE:
                 lecture_group = Group.get_lecture_group(group.course_id)
                 if lecture_group is not None:
                     lecture_group_is_enrolled = self.is_enrolled(self.student.id, lecture_group.id)

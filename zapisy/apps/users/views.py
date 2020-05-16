@@ -1,54 +1,33 @@
-import datetime
 import json
 import logging
-import re
-import urllib
-
-from typing import Any
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.views import LoginView
-from django.shortcuts import render, redirect, Http404
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-from django_cas_ng import views as cas_baseviews
-
-from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
-from django.conf import settings
-
-from vobject import iCalendar
-import unidecode
+from django.shortcuts import Http404, redirect, render, reverse
+from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
-from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes, T0Times
+from apps.enrollment.records.models import (
+    GroupOpeningTimes, Record, RecordStatus, T0Times)
 from apps.enrollment.timetable.views import build_group_list
-from apps.notifications.views import create_form
-from apps.users.decorators import external_contractor_forbidden
 from apps.grade.ticket_create.models.student_graded import StudentGraded
+from apps.notifications.views import create_form
+from apps.users.decorators import (
+    employee_required, external_contractor_forbidden)
 
-from apps.users.models import Employee, Student, PersonalDataConsent, BaseUser
-from apps.users.forms import EmailChangeForm, ConsultationsChangeForm
-from apps.users.exceptions import InvalidUserException
+from .forms import EmailChangeForm, EmployeeDataForm
+from .models import Employee, PersonalDataConsent, Student
 
 logger = logging.getLogger()
-
-GTC = {'1': 'wy', '2': 'cw', '3': 'pr',
-       '4': 'cw', '5': 'cw+prac',
-       '6': 'sem', '7': 'lek', '8': 'WF',
-       '9': 'rep', '10': 'proj'}
-BREAK_DURATION = datetime.timedelta(minutes=15)
 
 
 @login_required
 @external_contractor_forbidden
-def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
+def students_view(request, user_id: int = None):
     """View for students list and student profile if user id in URL is provided"""
     students_queryset = Student.get_active_students().select_related('user')
-    if not BaseUser.is_employee(request.user) or BaseUser.is_external_contractor(request.user):
+    if not request.user.employee:
         students_queryset = students_queryset.filter(consent__granted=True)
     students = {
         s.pk: {
@@ -72,8 +51,9 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
             raise Http404
 
         # We will not show the student profile if he decides to hide it.
-        if not BaseUser.is_employee(request.user) and not student.consent_granted():
-            return HttpResponseRedirect(reverse('students-list'))
+        if not request.user.employee and not student.consent_granted():
+            messages.warning(request, "Student ukrył swój profil")
+            return redirect('students-list')
 
         semester = Semester.objects.get_next()
 
@@ -98,7 +78,7 @@ def students_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
+def employees_view(request, user_id: int = None):
     """View for employees list and employee profile if user id in URL is provided"""
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
@@ -143,73 +123,32 @@ def employees_view(request: HttpRequest, user_id: int = None) -> HttpResponse:
 
 
 @login_required
-def set_language(request: HttpRequest) -> HttpResponse:
-    """
-    Redirect to a given url while setting the chosen language in the
-    session or cookie. The url and the language code need to be
-    specified in the request parameters.
-
-    Since this view changes how the user will see the rest of the site, it must
-    only be accessed as a POST request. If called as a GET request, it will
-    redirect to the page in the request (the 'next' parameter) without changing
-    any state.
-    """
-    redirect_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
-    response = HttpResponseRedirect(redirect_url)
+def email_change(request):
+    """Allows users to change email address."""
     if request.method == 'POST':
-        lang_code = request.POST.get('language', None)
-        if lang_code and check_for_language(lang_code):
-            if hasattr(request, 'session'):
-                request.session[LANGUAGE_SESSION_KEY] = lang_code
-            else:
-                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
-    return response
-
-
-@login_required
-def email_change(request: HttpRequest) -> HttpResponse:
-    """function that enables mail changing"""
-    if request.POST:
-        data = request.POST.copy()
-        form = EmailChangeForm(data, instance=request.user)
+        form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
-            email = form.cleaned_data['email']
-
-            user = User.objects.filter(email=email)
-
-            if user and user != request.user:
-                messages.error(request, "Podany adres jest już przypisany do innego użytkownika!")
-                return render(request, 'users/email_change_form.html', {'form': form})
-
             form.save()
-            logger.info('User (%s) changed email' % request.user.get_full_name())
+            logger.info(f"{request.user} changed email to {form.cleaned_data['email']}")
             messages.success(request, message="Twój adres e-mail został zmieniony.")
-            return HttpResponseRedirect(reverse('my-profile'))
+            return redirect('my-profile')
     else:
-        form = EmailChangeForm({'email': request.user.email})
-    return render(request, 'users/email_change_form.html', {'form': form})
+        form = EmailChangeForm(instance=request.user)
+    return render(request, 'users/form.html', {'form': form})
 
 
-@login_required
-def consultations_change(request: HttpRequest) -> HttpResponse:
-    """function that enables consultations changing"""
-    try:
-        employee = request.user.employee
-        if request.POST:
-            data = request.POST.copy()
-            form = ConsultationsChangeForm(data, instance=employee)
-            if form.is_valid():
-                form.save()
-                logger.info('User (%s) changed consultations' % request.user.get_full_name())
-                messages.success(request, "Twoje dane zostały zmienione.")
-                return HttpResponseRedirect(reverse('my-profile'))
-        else:
-            form = ConsultationsChangeForm(
-                {'consultations': employee.consultations, 'homepage': employee.homepage, 'room': employee.room})
-        return render(request, 'users/consultations_change_form.html', {'form': form})
-    except Employee.DoesNotExist:
-        messages.error(request, 'Nie jesteś pracownikiem.')
-        return render(request, 'common/error.html')
+@employee_required
+def employee_data_change(request):
+    employee = request.user.employee
+    if request.method == 'POST':
+        form = EmployeeDataForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Twoje dane zostały zmienione.")
+            return redirect('my-profile')
+    else:
+        form = EmployeeDataForm(instance=employee)
+    return render(request, 'users/form.html', {'form': form})
 
 
 @login_required
@@ -227,7 +166,7 @@ def my_profile(request):
         'semester': semester,
     }
 
-    if BaseUser.is_employee(request.user):
+    if request.user.employee:
         data.update({
             'consultations': request.user.employee.consultations,
             'room': request.user.employee.room,
@@ -235,7 +174,7 @@ def my_profile(request):
             'title': request.user.employee.title,
         })
 
-    if semester and BaseUser.is_student(request.user):
+    if semester and request.user.student:
         student: Student = request.user.student
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
@@ -272,123 +211,6 @@ def my_profile(request):
 
 
 @login_required
-def cas_logout(request, **kwargs) -> HttpResponse:
-    """Rewrites the logout request to correctly support user redirections.
-
-    If the given HttpResponse is a redirect to CAS and it is being processed
-    using the legacy protocol (version 2), rewrite the given url to match
-    the new schema. If not, simply return the original response.
-    """
-    response = cas_baseviews.LogoutView.as_view()(request, **kwargs)
-
-    if (isinstance(response, HttpResponseRedirect) and
-            int(settings.CAS_VERSION) == 2):
-        # Explode the full generated response URL to CAS into a tuple
-        parsed_response_url: tuple = urllib.parse.urlsplit(response['Location'])
-        scheme, netloc, path, query, fragment = parsed_response_url
-
-        # Get the query parameters from the URL, and:
-        # - remove the old `url` parameter if present
-        # - generate new target URL for the redirect
-        # - append `service` with the new URL to a dictionary
-        parameters: dict = urllib.parse.parse_qs(query)
-        parameters.pop('url', None)
-        redirect_target_url: str = request.build_absolute_uri(settings.CAS_REDIRECT_URL)
-        parameters['service'] = [redirect_target_url]
-
-        # Turn a dictionary of parameters into a string
-        new_query: str = urllib.parse.urlencode(parameters, doseq=True)
-
-        # Recreate the logout URL to CAS with updated parameters
-        new_url = (scheme, netloc, path, new_query, fragment)
-        new_url: str = urllib.parse.urlunsplit(new_url)
-        response['Location'] = new_url
-
-    return response
-
-
-def login_plus_remember_me(request: HttpRequest, **kwargs: Any) -> HttpResponse:
-    """
-    Sign-in function with an option to save the session.
-    If the user clicked the 'Remember me' button (we read it from POST data), the
-    session will expire after two weeks.
-    """
-    if request.user.is_authenticated:
-        return redirect("main-page")
-    if 'polls' in request.session:
-        del request.session['polls']
-    if 'finished' in request.session:
-        del request.session['finished']
-
-    if request.method == 'POST':
-        if request.POST.get('remember_me', None):
-            request.session.set_expiry(datetime.timedelta(14).total_seconds())
-        else:
-            request.session.set_expiry(0)  # Expires on browser closing.
-    return LoginView.as_view(**kwargs)(request)
-
-
-def get_ical_filename(user: User, semester: Semester) -> str:
-    name_with_semester = "{}_{}".format(user.get_full_name(), semester.get_short_name())
-    name_ascii_only = unidecode.unidecode(name_with_semester)
-    path_safe_name = re.sub(r"[\s+/]", "_", name_ascii_only)
-    return "fereol_schedule_{}.ical".format(path_safe_name.lower())
-
-
-@login_required
-def create_ical_file(request: HttpRequest) -> HttpResponse:
-    user = request.user
-    semester = Semester.get_default_semester()
-
-    cal = iCalendar()
-    cal.add('x-wr-timezone').value = 'Europe/Warsaw'
-    cal.add('version').value = '2.0'
-    cal.add('prodid').value = 'Fereol'
-    cal.add('calscale').value = 'GREGORIAN'
-    cal.add('calname').value = "{} - schedule".format(user.get_full_name())
-    cal.add('method').value = 'PUBLISH'
-
-    if BaseUser.is_student(user):
-        student = user.student
-        records = Record.objects.filter(
-            student_id=student.pk, group__course__semester_id=semester.pk,
-            status=RecordStatus.ENROLLED
-        ).select_related('group', 'group__course')
-        groups = [r.group for r in records]
-    elif BaseUser.is_employee(user):
-        groups = list(Group.objects.filter(course__semester=semester, teacher=user.employee))
-    else:
-        raise InvalidUserException()
-    for group in groups:
-        course_name = group.course.name
-        group_type = group.human_readable_type().lower()
-        try:
-            terms = group.get_all_terms_for_export()
-        except IndexError:
-            continue
-        for term in terms:
-            start_datetime = datetime.datetime.combine(term.day, term.start)
-            start_datetime += BREAK_DURATION
-            end_datetime = datetime.datetime.combine(term.day, term.end)
-            event = cal.add('vevent')
-            event.add('summary').value = "{} - {}".format(course_name, group_type)
-            if term.room:
-                event.add('location').value = 'sala ' + term.room.number \
-                    + ', Instytut Informatyki Uniwersytetu Wrocławskiego'
-
-            event.add('description').value = 'prowadzący: ' \
-                                             + group.get_teacher_full_name()
-            event.add('dtstart').value = start_datetime
-            event.add('dtend').value = end_datetime
-
-    cal_str = cal.serialize()
-    response = HttpResponse(cal_str, content_type='application/calendar')
-    ical_file_name = get_ical_filename(user, semester)
-    response['Content-Disposition'] = "attachment; filename={}".format(ical_file_name)
-    return response
-
-
-@login_required
 @require_POST
 def personal_data_consent(request):
     if request.POST:
@@ -400,4 +222,4 @@ def personal_data_consent(request):
             PersonalDataConsent.objects.update_or_create(student=request.user.student,
                                                          defaults={'granted': False})
             messages.success(request, 'Brak zgody zapisany')
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    return redirect(request.META.get('HTTP_REFERER'))

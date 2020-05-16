@@ -3,7 +3,8 @@ from datetime import time, date
 from django.db import models
 from django.db.models import signals
 from django.core.cache import cache as mcache
-from zapisy import common
+
+from apps.common import days_of_week
 import logging
 
 backup_logger = logging.getLogger('project.backup')
@@ -16,7 +17,7 @@ class Term(models.Model):
 
     dayOfWeek = models.CharField(
         max_length=1,
-        choices=common.DAYS_OF_WEEK,
+        choices=days_of_week.DAYS_OF_WEEK,
         verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name='rozpoczęcie')
     end_time = models.TimeField(verbose_name='zakończenie')
@@ -81,11 +82,11 @@ class Term(models.Model):
 
     @staticmethod
     def get_day_of_week(date):
-        return common.DAYS_OF_WEEK[date.weekday()][0]
+        return days_of_week.DAYS_OF_WEEK[date.weekday()][0]
 
     @staticmethod
     def get_python_day_of_week(day_of_week):
-        return [x[0] for x in common.DAYS_OF_WEEK].index(day_of_week)
+        return [x[0] for x in days_of_week.DAYS_OF_WEEK].index(day_of_week)
 
     def numbers(self):
         if not self.id:
@@ -113,7 +114,7 @@ class Term(models.Model):
         A versatile function returning Terms. day is either datetime.date or string
 
         :param semester: enrollment.courses.model.Semester
-        :param day: common.DAYS_OF_WEEK or datetime.date
+        :param day: DAYS_OF_WEEK or datetime.date
         """
         from .semester import ChangedDay, Freeday
         query = cls.objects.filter(group__course__semester=semester)

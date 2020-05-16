@@ -177,10 +177,6 @@ function getAllAssetDefs() {
         bundles: {},
         rawfiles: [],
     };
-    if (fs.existsSync(ASSET_DEF_FILENAME)) {
-        const defs = readAsssetDefsFromFile(ASSET_DEF_FILENAME);
-        mergeAssetDefs(result, defs);
-    }
     const searchPath = path.join(ASSET_DEF_SEARCH_DIR, "**", ASSET_DEF_FILENAME);
     for (const defFile of glob.sync(searchPath)) {
         const defs = readAsssetDefsFromFile(defFile);

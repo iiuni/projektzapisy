@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from apps.utils.fullcalendar import FullCalendarAdapter
+from .fullcalendar import FullCalendarAdapter
 
 
 def get_week_range_by_date(date):

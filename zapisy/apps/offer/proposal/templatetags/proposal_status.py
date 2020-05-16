@@ -16,4 +16,4 @@ def status_label(status: int) -> str:
 def semester_display(semester: SemesterChoices) -> str:
     """Returns a display value of a SemesterChoices enum."""
     semester = SemesterChoices(semester)
-    return semester.display
+    return semester.label

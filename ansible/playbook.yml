@@ -2,92 +2,27 @@
 - hosts: all
 
   vars:
-    PYTHON: "/home/vagrant/env3/bin/python3"
-    NODEJS_VERSION: "6"
-    ansible_distribution_release: "xenial"
+    PYTHON: "/usr/bin/python3"
 
   tasks:
-    - name: Update APT Cache
-      apt:
-        update_cache: yes
-        force_apt_get: yes
-      become: yes
 
-    - name: Remove apt lock file
-      file:
-        state: absent
-        path: "/var/lib/dpkg/lock"
+    # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
     - name: Upgrade all packages to the latest version
       apt:
         name: "*"
-        state: latest
-        force_apt_get: yes
-      become: yes
-
-    - name: Install apache2
-      apt:
-        name: apache2
-      become: yes
-
-    - stat:
-        path: /var/www
-      register: sym_link
-
-    - name: Delete /var/www in case it is not symbolic link
-      file:
-        path: /var/www
-        state: absent
-      when: sym_link.stat.exists and not sym_link.stat.islnk
-      become: yes
-
-    - name: Create /var/www if necessary
-      file:
-        src: /vagrant
-        dest: /var/www
-        state: link
-      when: not sym_link.stat.exists or not sym_link.stat.islnk
-      become: yes
-
-    - name: Install apache2-dev
-      apt:
-        name: apache2-dev
-      become: yes
-
-    - name: Install tools
-      apt:
-        name:
-        - libpq-dev
-        - libc6-dev
-        - libjpeg62-dev
-        - libfreetype6-dev
-      become: yes
-
-    - name: Install the gpg key for nodejs LTS
-      apt_key:
-        url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-        state: present
-      become: yes
-
-    - name: Install the nodejs LTS repos
-      apt_repository:
-        repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
-        state: present
         update_cache: yes
+        state: latest
       become: yes
 
-    - name: Install the nodejs
+    - name: Install nodejs and npm
       apt:
-        name: nodejs
-        state: present
-      become: yes
-      become_user: root
-
-    - name: Install the nodejs
-      apt:
-        name: npm
-        state: present
+        pkg:
+        - nodejs
+        - npm
       become: yes
       become_user: root
 
@@ -113,15 +48,6 @@
         name: redis-server
       become: yes
 
-    - name: Add alias to .bash_alises
-      lineinfile:
-        path: ~/.bash_aliases
-        line: "alias run='python /vagrant/zapisy/run.py'"
-        regex: "^alias run='python /vagrant/zapisy/run.py'$"
-        state: present
-        insertafter: EOF
-        create: yes
-
     - name: Add source command to .bashrc
       lineinfile:
         path: ~/.bashrc
@@ -134,57 +60,32 @@
     - name: Install pip
       apt:
         pkg:
-        - python-pip
+        - python3-pip
         - python3-venv
         update_cache: yes
       become: yes
 
-    - name: Upgrade pip
+    - name: Set up virtualenv and get requirements
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        name: pip
-        state: latest
-      args:
-        chdir: ~/
-      become: yes
-
-    - name: Set up virtualenv
-      shell: python3.6 -m venv env3
-      args:
-        chdir: ~/
-
-    - name: Get requirements
-      pip:
-        virtualenv: env3
+        virtualenv: ~/env3
+        virtualenv_command: "{{ PYTHON }} -m venv"
         requirements: /vagrant/zapisy/requirements.development.txt
-      args:
-        chdir: ~/
 
     # Vagrant file node_modules mounting
-    - stat:
-        path: /vagrant_node_modules
-      register: node_folder
-
-    - name: Create vagrant_node_modules folder if necessary
+    - name: Create vagrant_node_modules folder
       file:
         path: /vagrant_node_modules
         state: directory
-      become: yes
-      when: not node_folder.stat.exists
-
-    - name: Change file ownership and group
-      file:
-        path: /vagrant_node_modules
         owner: vagrant
         group: vagrant
       become: yes
 
-    - name: Mount vagrant_node_modules
-      mount:
-        src: /vagrant_node_modules
-        path: /vagrant/zapisy/node_modules
-        opts: bind
-        state: present
-        fstype: none
+    - name: Create logs directory
+      file:
+        path: /vagrant/zapisy/logs
+        state: directory
       become: yes
 
 - name: Include playbook with postgres configuration

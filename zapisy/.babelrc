@@ -5,10 +5,7 @@
             "browsers": ["last 2 versions", "ie >= 10"]
           },
           "modules": false
-        }],
-        // Stage 2 polyfills and syntactical transformations
-        // see https://stackoverflow.com/a/37252259/1928235
-        "babel-preset-stage-2"
+        }]
     ],
     "plugins": [
       "transform-runtime",
@@ -21,9 +18,6 @@
           "transform": "lodash/${member}",
           "preventFullImport": true
         }
-      }],
-      // Needed to use React in .jsx files; .tsx files are transformed
-      // by the TypeScript compiler
-      "transform-react-jsx"
+      }]
     ]
 }

@@ -10,9 +10,13 @@ from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.news.models import News
+from apps.news.models import News, PriorityChoices
+from apps.theses.models import Thesis
+from apps.theses.users import get_theses_board
+from apps.theses.enums import ThesisVote
+from apps.theses.views import view_thesis
 from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.custom_signals import teacher_changed, student_pulled, student_not_pulled
+from apps.notifications.custom_signals import teacher_changed, student_pulled, student_not_pulled, thesis_voting_activated
 from apps.notifications.templates import NotificationType
 
 
@@ -126,24 +130,47 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
 
 @receiver(post_save, sender=News)
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
-    news = kwargs['instance']
+    news: News = kwargs['instance']
 
     # Do not notify about modified news.
     if not kwargs['created']:
         return
 
-    # Do not notify about hidden news.
-    if news.category == '-':
+    # Do not notify about hidden or low-priority news.
+    if news.priority == PriorityChoices.HIDDEN:
         return
+    elif news.priority == PriorityChoices.LOW:
+        return
+    elif news.priority == PriorityChoices.NORMAL:
+        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED
+    else:
+        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY
 
     records = set(Employee.get_actives().select_related('user')) | set(
-        Student.objects.filter(status=0).select_related('user'))
+        Student.get_active_students().select_related('user'))
     users = [element.user for element in records]
     target = reverse('news-one', args=[news.id])
 
     notify_selected_users(
         users,
-        Notification(get_id(), get_time(), NotificationType.NEWS_HAS_BEEN_ADDED, {
+        Notification(get_id(), get_time(), notification_type, {
             'title': news.title,
             'contents': news.body
+        }, target))
+
+
+@receiver(thesis_voting_activated, sender=Thesis)
+def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
+    thesis = kwargs['instance']
+
+    all_voters = get_theses_board()
+    accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
+    users = [voter.user for voter in all_voters if voter not in accepting_voters]
+    target = reverse('theses:selected_thesis', args=[thesis.id])
+
+    notify_selected_users(
+        users,
+        Notification(get_id(), get_time(),
+                     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
+            'title': thesis.title
         }, target))

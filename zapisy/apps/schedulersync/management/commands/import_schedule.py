@@ -136,8 +136,13 @@ class Command(BaseCommand):
                         setattr(a, prop, sched_val)
                 return diffs
 
+            # The class times and location will be managed in Scheduler, which
+            # is better at managing these. They should be synchronised down to
+            # the enrolment system.
+            # The group limit will be managed inside the system, so it should
+            # not be overwritten by the scheduler.
             diffs.extend(prop_updater(term, term_data, ['dayOfWeek', 'start_time', 'end_time']))
-            diffs.extend(prop_updater(term.group, term_data, ['teacher', 'limit']))
+            diffs.extend(prop_updater(term.group, term_data, ['teacher']))
 
             if set(term.classrooms.all()) != term_data.classrooms:
                 diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))

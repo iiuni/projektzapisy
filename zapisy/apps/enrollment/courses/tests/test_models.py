@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, date
 
 from django.core.validators import ValidationError
 from django.test import TestCase
-from zapisy import common
 
+from apps.common import days_of_week
 from apps.enrollment.courses.models.semester import Freeday, ChangedDay, Semester
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother
 from apps.offer.proposal.tests.factories import ProposalFactory
@@ -40,18 +40,18 @@ class ChangedDayTestCase(TestCase):
 
         change1 = ChangedDay(
             day=semester.semester_beginning + timedelta(days=3),
-            weekday=common.SUNDAY
+            weekday=days_of_week.SUNDAY
         )
         change1.save()
         change2 = ChangedDay(
             day=semester.semester_beginning + timedelta(days=4),
-            weekday=common.SUNDAY
+            weekday=days_of_week.SUNDAY
         )
         change2.save()
 
         change3 = ChangedDay(
             day=semester.semester_beginning + timedelta(days=2),
-            weekday=common.SATURDAY
+            weekday=days_of_week.SATURDAY
         )
         change3.save()
 
@@ -60,7 +60,7 @@ class ChangedDayTestCase(TestCase):
         self.assertNotEqual(semester, None)
         changed_days = ChangedDay.get_added_days_of_week(semester.semester_beginning,
                                                          semester.semester_ending,
-                                                         common.SUNDAY)
+                                                         days_of_week.SUNDAY)
 
         self.assertEqual(len(changed_days), 2)
 
@@ -74,7 +74,7 @@ class ChangedDayTestCase(TestCase):
 
     def test_clean_on_changing_sunday_to_sunday(self):
         changed_day = ChangedDay(day=datetime(2016, 3, 27),
-                                 weekday=common.SUNDAY)
+                                 weekday=days_of_week.SUNDAY)
         self.assertRaises(ValidationError, changed_day.clean)
 
 
@@ -88,7 +88,7 @@ class SemesterTestCase(TestCase):
 
         friday_to_sunday = ChangedDay(
             day=date(2015, 10, 16),
-            weekday=common.SUNDAY
+            weekday=days_of_week.SUNDAY
         )
         friday_to_sunday.save()
 
@@ -103,7 +103,7 @@ class SemesterTestCase(TestCase):
 
     def test_get_all_sundays_in_winter_semester(self):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
-        sundays = winter_semester.get_all_days_of_week(common.SUNDAY)
+        sundays = winter_semester.get_all_days_of_week(days_of_week.SUNDAY)
         self.assertTrue(sundays)
         # a sunday in winter semester
         a_sunday = date(2015, 12, 6)
@@ -113,7 +113,7 @@ class SemesterTestCase(TestCase):
 
     def test_count_added_sundays(self):
         winter_semester = Semester.get_semester(datetime(2015, 12, 1))
-        sundays_added = winter_semester.get_all_added_days_of_week(common.SUNDAY)
+        sundays_added = winter_semester.get_all_added_days_of_week(days_of_week.SUNDAY)
         self.assertTrue(sundays_added)
 
 

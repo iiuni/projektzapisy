@@ -13,32 +13,41 @@ from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
 
 
-# w przypadku edycji, poprawić też javascript: Fereol.Enrollment.CourseGroup.groupTypes
-GROUP_TYPE_CHOICES = [('1', 'wykład'), ('2', 'ćwiczenia'), ('3', 'pracownia'),
-                      ('5', 'ćwiczenio-pracownia'),
-                      ('6', 'seminarium'), ('7', 'lektorat'), ('8', 'WF'),
-                      ('9', 'repetytorium'), ('10', 'projekt'),
-                      ('11', 'tutoring'), ('12', 'proseminarium')]
+class GroupType(models.TextChoices):
+    LECTURE = '1', 'wykład'
+    EXERCISES = '2', 'ćwiczenia'
+    LAB = '3', 'pracownia'
+    EXERCISES_LAB = '5', 'ćwiczenio-pracownia'
+    SEMINAR = '6', 'seminarium'
+    LANGUAGE_COURSE = '7', 'lektorat'
+    PE = '8', 'WF'
+    COMPENDIUM = '9', 'repetytorium'
+    PROJECT = '10', 'projekt'
+    TUTORING = '11', 'tutoring'
+    PRO_SEMINAR = '12', 'proseminarium'
 
-GROUP_EXTRA_CHOICES = [('', ''),
-                       ("pierwsze 7 tygodni", "pierwsze 7 tygodni"),
-                       ("drugie 7 tygodni", "drugie 7 tygodni"),
-                       ('grupa rezerwowa', 'grupa rezerwowa'),
-                       ('grupa licencjacka', 'grupa licencjacka'),
-                       ('grupa magisterska', 'grupa magisterska'),
-                       ('grupa zaawansowana', 'grupa zaawansowana'),
-                       ('zajecia na mat.', 'zajęcia na matematyce'),
-                       ('wykład okrojony', 'wykład okrojony'),
-                       ('grupa 1', 'grupa 1'),
-                       ('grupa 2', 'grupa 2'),
-                       ('grupa 3', 'grupa 3'),
-                       ('grupa 4', 'grupa 4'),
-                       ('grupa 5', 'grupa 5'),
-                       ('pracownia linuksowa', 'pracownia linuksowa'),
-                       ('grupa anglojęzyczna', 'grupa anglojęzyczna'),
-                       ('I rok', 'I rok'), ('II rok', 'II rok'), ('ISIM', 'ISIM'),
-                       ('hidden', 'grupa ukryta'),
-                       ]
+
+class GroupExtra(models.TextChoices):
+    EMPTY = '', ''
+    FIRST_SEV_WEEKS = 'pierwsze 7 tygodni', 'pierwsze 7 tygodni'
+    SEC_SEV_WEEKS = 'drugie 7 tygodni', 'drugie 7 tygodni'
+    BACKUP_GROUP = 'grupa rezerwowa', 'grupa rezerwowa'
+    BACHELOR_GROUP = 'grupa licencjacka', 'grupa licencjacka'
+    MASTERS_GROUP = 'grupa magisterska', 'grupa magisterska'
+    ADVANCED_GROUP = 'grupa zaawansowana', 'grupa zaawansowana'
+    MATH_DEP_CLASS = 'zajęcia na mat.', 'zajęcia na matematyce'
+    STRIPPLED_LECTURE = 'wykład okrojony', 'wykład okrojony'
+    GROUP_ONE = 'grupa 1', 'grupa 1'
+    GROUP_TWO = 'grupa 2', 'grupa 2'
+    GROUP_THREE = 'grupa 3', 'grupa 3'
+    GROUP_FOUR = 'grupa 4', 'grupa 4'
+    GROUP_FIVE = 'grupa 5', 'grupa 5'
+    LINUX_LAB = 'pracownia linuksowa', 'pracownia linuksowa'
+    ENGLISH_GROUP = 'grupa anglojęzyczna', 'grupa anglojęzyczna'
+    FIRST_YEAR = 'I rok', 'I rok'
+    SEC_YEAR = 'II rok', 'II rok'
+    ISIM = 'ISIM', 'ISIM'
+    HIDDEN_GROUP = 'hidden', 'grupa ukryta'
 
 
 class Group(models.Model):
@@ -54,12 +63,11 @@ class Group(models.Model):
         blank=True,
         verbose_name='prowadzący',
         on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=GROUP_TYPE_CHOICES, verbose_name='typ zajęć')
-    GROUP_TYPE_LECTURE = '1'
+    type = models.CharField(max_length=2, choices=GroupType.choices, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
     extra = models.CharField(
         max_length=20,
-        choices=GROUP_EXTRA_CHOICES,
+        choices=GroupExtra.choices,
         verbose_name='dodatkowe informacje',
         default='',
         blank=True)
@@ -83,11 +91,6 @@ class Group(models.Model):
     def get_all_terms(self):
         """return all terms of current group"""
         return self.term.all()
-
-    def get_all_terms_for_export(self):
-        """return all terms of current group"""
-        from apps.schedule.models.term import Term
-        return Term.objects.filter(event__group=self)
 
     def human_readable_type(self):
         types = {
@@ -178,7 +181,7 @@ class Group(models.Model):
         The Group.MultipleObjectsReturned exception will be raised when many
         lecture groups exist for course.
         """
-        group_query = cls.objects.filter(course_id=course_id, type=Group.GROUP_TYPE_LECTURE)
+        group_query = cls.objects.filter(course_id=course_id, type=GroupType.LECTURE)
         try:
             return group_query.get()
         except cls.DoesNotExist:

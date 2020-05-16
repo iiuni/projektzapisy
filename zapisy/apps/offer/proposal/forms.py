@@ -10,6 +10,7 @@ from typing import Optional
 from crispy_forms import helper, layout
 from django import forms
 
+from apps.common.widgets import MarkdownArea
 from apps.enrollment.courses.models import CourseInstance
 
 from .models import Proposal, ProposalStatus
@@ -27,7 +28,7 @@ class EditProposalForm(forms.ModelForm):
         label="ECTS",
         required=False,
         disabled=True,
-        help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
+        help_text="To pole wypełni się samo na podstawie typu przedmiotu.")
 
     @staticmethod
     def status_transitions(current_status: Optional[ProposalStatus]):
@@ -74,7 +75,7 @@ class EditProposalForm(forms.ModelForm):
         def choices_pair(c: ProposalStatus):
             """Generates a tuple like `.choices()` but with single choice only.
             """
-            return (c, c.display)
+            return (c, c.label)
 
         current_status = None if not self.instance else self.instance.status
         return map(choices_pair, self.status_transitions(current_status))
@@ -103,7 +104,7 @@ class EditProposalForm(forms.ModelForm):
             old_status = ProposalStatus(old_status)
         if status not in self.status_transitions(old_status):
             raise forms.ValidationError(
-                f"Nie można przejść ze statusu {old_status.display} do {status.display}.")
+                f"Nie można przejść ze statusu {old_status.label} do {status.label}.")
         return status
 
     def clean(self):
@@ -123,23 +124,23 @@ class EditProposalForm(forms.ModelForm):
             if not contents:
                 all_requirements_satisfied = False
                 self.add_error('contents',
-                               (f"By móc ustawić status {status.display.upper()} trzeba "
+                               (f"By móc ustawić status {status.label.upper()} trzeba "
                                 "wypełnić treści programowe."))
             objectives = cleaned_data.get('objectives')
             if not objectives:
                 all_requirements_satisfied = False
                 self.add_error('objectives',
-                               (f"By móc ustawić status {status.display.upper()} trzeba "
+                               (f"By móc ustawić status {status.label.upper()} trzeba "
                                 "wypełnić cele przedmiotu."))
             literature = cleaned_data.get('literature')
             if not literature:
                 all_requirements_satisfied = False
                 self.add_error(
                     'literature',
-                    f"By móc ustawić status {status.display.upper()} trzeba opisać literaturę.")
+                    f"By móc ustawić status {status.label.upper()} trzeba opisać literaturę.")
             if not all_requirements_satisfied:
                 raise forms.ValidationError((
-                    f"By móc ustawić status {status.display.upper()} trzeba opisać „Treści "
+                    f"By móc ustawić status {status.label.upper()} trzeba opisać „Treści "
                     "programowe”, „Cele przedmiotu” i „Literaturę”."))
 
         return cleaned_data
@@ -200,7 +201,7 @@ class EditProposalForm(forms.ModelForm):
             'name': "Nazwa powinna być w języku wykładowym.",
             'name_en': "Dla przedmiotów po angielsku powinna być taka sama jak nazwa.",
             'language': """Wszystkie pola należy wypełnić w języku wykładowym.
-                Aby zmienić język istniejącego przedmiotu należy stworzyć nową
+                Aby zmienić język istniejącego przedmiotu należy stworzyć nową
                 propozycję.""",
             'short_name': "np. „JFiZO”, „AiSD” — nazwa do wyświetlania w planie zajęć.",
             'description': "Można formatować tekst używając Markdown.",
@@ -254,6 +255,18 @@ class EditProposalForm(forms.ModelForm):
                   * przygotowanie do egzaminu lub rozwiązywanie dodatkowych
                     zadań **??**""",
         }
+        widgets = {
+            'description': MarkdownArea(),
+            'teaching_methods': MarkdownArea(),
+            'preconditions': MarkdownArea(),
+            'objectives': MarkdownArea(),
+            'contents': MarkdownArea(),
+            'teaching_effects': MarkdownArea(),
+            'literature': MarkdownArea(),
+            'verification_methods': MarkdownArea(),
+            'passing_means': MarkdownArea(),
+            'student_labour': MarkdownArea(),
+        }
 
 
 class CustomCheckbox(layout.Field):
@@ -263,15 +276,6 @@ class CustomCheckbox(layout.Field):
     https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html.
     """
     template = 'proposal/fields/custom_checkbox.html'
-
-
-class Markdown(layout.Field):
-    """Renders textarea with Markdown preview.
-
-    For the editor to work, the bundle 'proposal-markdown-editor' must be
-    included in the template.
-    """
-    template = 'proposal/fields/markdown.html'
 
 
 class CollapsableFieldset(layout.Fieldset):
@@ -314,7 +318,7 @@ class ProposalFormHelper(helper.FormHelper):
                     css_class='col-md-4 px-4'),
                 css_class='align-items-end',
             ),
-            Markdown('description'),
+            'description',
             FormRow(
                 Column('hours_lecture', css_class='col-md-2'),
                 Column('hours_exercise', css_class='col-md-2'),
@@ -330,15 +334,15 @@ class ProposalFormHelper(helper.FormHelper):
         CollapsableFieldset(
             "Informacje szczegółowe",
             'name_en',
-            Markdown('teaching_methods'),
-            Markdown('preconditions'),
-            Markdown('objectives'),
-            Markdown('contents'),
-            Markdown('teaching_effects'),
-            Markdown('literature'),
-            Markdown('verification_methods'),
-            Markdown('passing_means'),
-            Markdown('student_labour'),
+            'teaching_methods',
+            'preconditions',
+            'objectives',
+            'contents',
+            'teaching_effects',
+            'literature',
+            'verification_methods',
+            'passing_means',
+            'student_labour',
             css_id='syllabus-fields',
         ),
         layout.Submit('submit', "Zapisz"),

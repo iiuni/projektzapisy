@@ -17,7 +17,6 @@ from apps.grade.poll.utils import (
     group_submissions_with_statuses,
 )
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
-from apps.users.models import BaseUser
 
 
 class TicketsEntry(TemplateView):
@@ -248,7 +247,7 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
-        if request.user.is_superuser or BaseUser.is_employee(request.user):
+        if request.user.is_superuser or request.user.employee:
             return render(
                 request,
                 self.template_name,

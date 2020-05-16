@@ -3,9 +3,7 @@ import "./katex.less";
 
 import renderMathInElement from "katex/dist/contrib/auto-render";
 
-import { whenDomLoaded } from "common/utils";
-
-whenDomLoaded(() => {
+document.addEventListener("DOMContentLoaded", () => {
    const element = document.getElementById("od-vote-main-rules")!;
    renderMathInElement(element);
 });

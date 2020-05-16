@@ -6,7 +6,7 @@ different classes.
 """
 from django.db import models
 
-from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
+from apps.enrollment.courses.models.group import GroupType
 from apps.offer.proposal.models import Proposal
 from apps.users.models import Employee
 
@@ -24,7 +24,7 @@ class PreferencesQuestion(models.Model):
     taught by an employee.
     """
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, verbose_name="przedmiot")
-    class_type = models.CharField("typ zajęć", max_length=2, choices=GROUP_TYPE_CHOICES)
+    class_type = models.CharField("typ zajęć", max_length=2, choices=GroupType.choices)
 
     objects = PreferencesQuestionManager()
 

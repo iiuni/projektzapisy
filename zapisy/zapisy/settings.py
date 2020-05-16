@@ -1,5 +1,4 @@
 import os
-import logging
 import environ
 from django.contrib.messages import constants as messages
 
@@ -15,6 +14,9 @@ RELEASE = env.bool('RELEASE')
 
 # With DEBUG = False Django will refuse to serve requests to hosts different than this one.
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+# Virtualbox default for the host machine as seen from the guest.
+INTERNAL_IPS = ('10.0.2.2',)
 
 EMAIL_BACKEND = env.str('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EVENT_MODERATOR_EMAIL = 'zapisy@cs.uni.wroc.pl'
@@ -166,6 +168,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
+                'django.template.context_processors.debug',
                 'apps.users.context_processors.roles',
             ],
         },
@@ -185,7 +188,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'middleware.error_handling.ErrorHandlerMiddleware',
     'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
@@ -211,7 +213,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mailer',
-    'pipeline',
     'apps.enrollment.courses',
     'apps.enrollment.records',
     'apps.enrollment.timetable',
@@ -221,15 +222,15 @@ INSTALLED_APPS = (
     'apps.offer.proposal',
     'apps.offer.vote',
     'apps.offer.desiderata',
+    'apps.offer.plan',
 
-    'apps.utils',
+    'apps.common',
     'apps.schedule',
     # 'debug_toolbar',
     'apps.grade.poll',
     'apps.grade.ticket_create',
-    'apps.email_change',
     'apps.schedulersync',
-    'apps.theses.apps.ThesesConfig',
+    'apps.theses',
     'django_extensions',
     'django_filters',
     'bootstrap_pagination',
@@ -252,6 +253,7 @@ DATETIME_FORMAT = "j N Y, H:i"
 CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
 CAS_CREATE_USER = False
 CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
+CAS_LOGOUT_COMPLETELY = False
 
 # References pull request #655: https://github.com/iiuni/projektzapisy/pull/655
 # Force django_cas_ng to use protocol version 3 instead of 2 (the default).
@@ -264,7 +266,10 @@ CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 LOGOUT_REDIRECT_URL = '/'
 CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
-LOGIN_URL = '/users/login/'
+# This chceck has to be disabled as long as we are using an incorrect Nginx
+# configuration which rewrites HTTPS to HTTP.
+CAS_CHECK_NEXT = lambda _: True  # noqa: E731
+
 LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
@@ -345,18 +350,6 @@ CACHES = {
 
 NEWS_PER_PAGE = 15
 
-if os.path.isfile(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')):
-    exec(open(os.path.join(BASE_DIR, 'zapisy', 'pipeline.py')).read())
-
-PIPELINE = env.bool('PIPELINE')
-PIPELINE_AUTO = False
-PIPELINE_VERSION = True
-PIPELINE_YUI_BINARY = 'java -jar libs/yuicompressor-2.4.7.jar'
-
-COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=False)
-COMPRESS_ENABLED = env.bool('COMPRESS_ENABLED', default=False)
-COMPRESS_OFFLINT_TIMEOUT = env.int('COMPRESS_OFFLINT_TIMEOUT', default=0)
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -365,11 +358,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-PIPELINE_STORAGE = 'pipeline.storage.PipelineFinderStorage'
-PIPELINE_VERSIONING = 'pipeline.versioning.hash.MD5Versioning'
 STATICFILES_FINDERS = (
-    'pipeline.finders.PipelineFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
@@ -405,6 +394,6 @@ REST_FRAMEWORK = {
         # Limit the number of rest calls made by unauthenticated users.
         'anon': '100/day',
     },
-    # default filter backends for views - enables querying/filtering after specifying `filter_fields` in a view
+    # default filter backends for views - enables querying/filtering after specifying `filterset_fields` in a view
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

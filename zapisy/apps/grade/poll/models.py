@@ -2,7 +2,6 @@ import json
 import os.path
 
 from typing import List, Union
-from choicesenum import ChoicesEnum
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
@@ -10,10 +9,10 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import BaseUser, Student
+from apps.users.models import Student
 
 
-class PollType(ChoicesEnum):
+class PollType(models.IntegerChoices):
     LECTURE = 1, 'ankieta dla wykładu'
     EXERCISE = 2, 'ankieta dla ćwiczeń'
     LABS = 3, 'ankieta dla pracowni'
@@ -197,7 +196,7 @@ class Poll(models.Model):
             current_semester = Semester.get_current_semester()
 
         is_superuser = user.is_superuser
-        is_employee = BaseUser.is_employee(user)
+        is_employee = user.employee
 
         if not is_superuser and not is_employee:
             return Poll.objects.none()
@@ -254,7 +253,7 @@ class Schema(models.Model):
     """
 
     questions = JSONField(default=dict)
-    type = models.SmallIntegerField("Kategoria", choices=PollType.choices())
+    type = models.SmallIntegerField("Kategoria", choices=PollType.choices)
 
     class Meta:
         verbose_name = 'szablon'

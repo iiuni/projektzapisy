@@ -4,15 +4,15 @@ import factory
 from factory.django import DjangoModelFactory
 
 from ..models.course_instance import CourseInstance
-from ..models.group import Group
+from ..models.group import Group, GroupType
 from ..models.semester import ChangedDay, Semester
 from ..models.classroom import Classroom
 from ..models.course_information import CourseInformation
 from ..models.course_type import Type
 from ..models.term import Term
-from zapisy import common
 from apps.users.tests.factories import EmployeeFactory
 from .semester_year_provider import SemesterYearProvider
+from apps.common import days_of_week
 
 factory.Faker.add_provider(SemesterYearProvider)
 
@@ -86,7 +86,7 @@ class GroupFactory(DjangoModelFactory):
         model = Group
 
     course = factory.SubFactory(CourseInstanceFactory)
-    type = '2'  # GROUP_TYPE_CHOICES: exercises.
+    type = GroupType.EXERCISES
     limit = 10
     teacher = factory.SubFactory(EmployeeFactory)
 
@@ -95,7 +95,7 @@ class ChangedDayForFridayFactory(DjangoModelFactory):
     class Meta:
         model = ChangedDay
 
-    weekday = common.FRIDAY
+    weekday = days_of_week.FRIDAY
 
 
 class ClassroomFactory(DjangoModelFactory):

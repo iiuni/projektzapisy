@@ -6,29 +6,33 @@ import json
 from django.db.models import Q
 from django_extensions.db.fields import AutoSlugField
 
-floors = [(0, 'Parter'),
-          (1, 'I piętro'),
-          (2, 'II Piętro'),
-          (3, 'III piętro')]
 
-types = [(0, 'Sala wykładowa'),
-         (1, 'Sala ćwiczeniowa'),
-         (2, 'Pracownia komputerowa - Windows'),
-         (3, 'Pracownia komputerowa - Linux'),
-         (4, 'Pracownia dwusystemowa (Windows+Linux)'),
-         (5, 'Poligon (109)')]
+class Floors(models.IntegerChoices):
+    GROUND_FLOOR = 0, 'Parter'
+    FIRST_FLOOR = 1, 'I piętro'
+    SEC_FLOOR = 2, 'II piętro'
+    THIRD_FLOOR = 3, 'III piętro'
+
+
+class Types(models.IntegerChoices):
+    LECTURE_HALL = 0, 'Sala wykładowa'
+    CLASSROOM = 1, 'Sala ćwiczeniowa'
+    WINDOWS_LAB = 2, 'Pracownia komputerowa - Windows'
+    LINUX_LAB = 3, 'Pracownia komputerowa - Linux'
+    DOUBLE_OS_LAB = 4, 'Pracownia dwusystemowa (Windows+Linux)'
+    POLIGON = 5, 'Poligon (109)'
 
 
 class Classroom(models.Model):
     """classroom in institute"""
-    type = models.IntegerField(choices=types, default=1, verbose_name='typ')
+    type = models.IntegerField(choices=Types.choices, default=Types.CLASSROOM, verbose_name='typ')
     description = models.TextField(null=True, blank=True, verbose_name='opis')
     number = models.CharField(max_length=20, verbose_name='numer sali')
     # we don't use ordering properly
     order = models.IntegerField(null=True, blank=True)
     building = models.CharField(max_length=75, verbose_name='budynek', blank=True, default='')
     capacity = models.PositiveSmallIntegerField(default=0, verbose_name='liczba miejsc')
-    floor = models.IntegerField(choices=floors, null=True, blank=True)
+    floor = models.IntegerField(choices=Floors.choices, null=True, blank=True)
     can_reserve = models.BooleanField(default=False)
     slug = AutoSlugField(populate_from='number')
 

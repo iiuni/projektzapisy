@@ -216,14 +216,12 @@ class ZapisyApi:
         return self._get_single_record(SystemState, id)
 
     def create_student(self, usos_id, indeks, first_name, last_name, email,
-                       ects, program_name, semestr, algorytmy_l,
-                       numeryczna_l, dyskretna_l) -> int:
+                       ects, program_name, semestr) -> int:
         """Adds new student in the Enrolment System and returns its id."""
         student = Student(
-            None, usos_id, indeks, ects, 0,
+            None, usos_id, indeks, ects, True,
             User(None, str(indeks), first_name, last_name, email),
-            Program(None, program_name), semestr, algorytmy_l,
-            numeryczna_l, dyskretna_l)
+            Program(None, program_name), semestr)
         resp = self._handle_post_request(
             self.redirect_map[Student.redirect_key], student.to_dict())
         return resp.json()['id']

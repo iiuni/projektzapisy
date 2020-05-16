@@ -42,7 +42,7 @@ class T0Times(models.Model):
         the database, the enrollment is closed in the semester or has not yet
         started.
         """
-        if not student.is_active():
+        if not student.is_active:
             return False
         if semester.records_closing is not None and time > semester.records_closing:
             return False

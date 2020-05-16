@@ -1,15 +1,24 @@
 from django.contrib import admin
+from django import forms
 
-from . import models
-from .forms import ThesisForm
+from apps.theses.forms import ThesisFormAdmin, RemarkFormAdmin, VoteFormAdmin
+from apps.theses.models import Thesis, Remark, Vote, ThesesSystemSettings
 
 
 class ThesisAdmin(admin.ModelAdmin):
-    autocomplete_fields = ['advisor', 'supporting_advisor']
-    form = ThesisForm
+    autocomplete_fields = []
+    list_display = ('title', 'kind', 'status', 'added')
+    form = ThesisFormAdmin
 
 
-admin.site.register(models.Thesis, ThesisAdmin)
+class RemarkAdmin(admin.ModelAdmin):
+    autocomplete_fields = []
+    form = RemarkFormAdmin
+
+
+class VoteAdmin(admin.ModelAdmin):
+    autocomplete_fields = []
+    form = VoteFormAdmin
 
 
 class ThesesSystemSettingsAdmin(admin.ModelAdmin):
@@ -24,4 +33,7 @@ class ThesesSystemSettingsAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(models.ThesesSystemSettings, ThesesSystemSettingsAdmin)
+admin.site.register(Thesis, ThesisAdmin)
+admin.site.register(Remark, RemarkAdmin)
+admin.site.register(Vote, VoteAdmin)
+admin.site.register(ThesesSystemSettings, ThesesSystemSettingsAdmin)

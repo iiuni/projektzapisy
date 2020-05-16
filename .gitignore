@@ -10,7 +10,6 @@ search_index/*
 *~
 .idea/
 zapisy/zapisy/settings_local.py
-/apache
 .idea/
 .rvmrc
 static/

@@ -1,6 +1,5 @@
 {% extends 'schedule/classrooms.html' %}
 {% load render_bundle from webpack_loader %}
-{% load static %}
 
 {% block bread %}
     <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
@@ -60,7 +59,7 @@
     }
 }]
     </script>
-    {% render_bundle "fullcalendar" %}
+    {% render_bundle "schedule-fullcalendar" %}
 {% endblock %}
 
 {% block classroomtitle %}Sala {{ room.number }}{% endblock %}

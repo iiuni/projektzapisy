@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.core.validators import ValidationError
 from datetime import datetime, timedelta
 from django.conf import settings
-from zapisy import common
+from apps.common import days_of_week
 
 from .term import Term
 
@@ -203,7 +203,7 @@ class Semester(models.Model):
         """
         Get all dates when the specifies day of week schedule is valid
 
-        :param day_of_week: common.DAYS_OF_WEEK
+        :param day_of_week: DAYS_OF_WEEK
         :param start_date: datetime.date
         """
         date = self.lectures_beginning
@@ -241,7 +241,7 @@ class Semester(models.Model):
         Gets dates of all weekdays changed from another weekday to specvified weekday in this semester, starting from
         the specified date or the beggining of the semester
 
-        :param day_of_week: common.DAYS_OF_WEEK
+        :param day_of_week: DAYS_OF_WEEK
         :param start_date: datetime.date
         """
         from_date = self.lectures_beginning
@@ -376,14 +376,14 @@ class Freeday(models.Model):
 class ChangedDay(models.Model):
     day = models.DateField(verbose_name='dzień wolny', unique=True)
     weekday = models.CharField(
-        choices=common.DAYS_OF_WEEK,
+        choices=days_of_week.DAYS_OF_WEEK,
         max_length=1,
         verbose_name='zmieniony na')
 
     def clean(self):
         if Term.get_day_of_week(self.day) == self.weekday:
             raise ValidationError(
-                message={'weekday': ['To już jest ' + common.DAYS_OF_WEEK[self.day.weekday()][1]]}, code='invalid')
+                message={'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]}, code='invalid')
 
     @classmethod
     def get_day_of_week(cls, date):

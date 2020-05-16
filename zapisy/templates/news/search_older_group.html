@@ -1,5 +1,0 @@
-{% if page.has_next %}
-<a href="{% url 'news-search' category %}?q={{query}}&page={{page.next_page_number}}" title="Starsze"
-	onclick="News.loadPage('{% url 'news-search' category %}?q={{query}}&page={{page.next_page_number}}&json=true'); return false;">
-	Starsze</a>
-{% endif %}

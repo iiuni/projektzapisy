@@ -7,13 +7,12 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import HiddenInput
 from django.forms.models import inlineformset_factory
 
-from apps.enrollment.courses.models.classroom import Classroom, floors
+from apps.enrollment.courses.models.classroom import Classroom, Floors
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.message import EventMessage, EventModerationMessage
 from apps.schedule.models.term import Term
-from apps.users.models import BaseUser
 
 
 class TermForm(forms.ModelForm):
@@ -57,12 +56,12 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(data, **kwargs)
         if not self.instance.pk:
             self.instance.author = user
-        if BaseUser.is_employee(user):
+        if user.employee:
             self.fields['type'].choices = Event.TYPES_FOR_TEACHER
         else:
             self.fields['type'].choices = Event.TYPES_FOR_STUDENT
 
-        if not BaseUser.is_employee(user):
+        if not user.employee:
             self.fields['course'].queryset = CourseInstance.objects.none()
         else:
             semester = Semester.get_current_semester()
@@ -129,7 +128,7 @@ class TableReportForm(forms.Form):
         super().__init__(*args, **kwargs)
         classrooms = Classroom.objects.filter(can_reserve=True)
         by_floor = defaultdict(list)
-        floor_names = dict(floors)
+        floor_names = dict(Floors)
         for r in classrooms:
             by_floor[floor_names[r.floor]].append((r.pk, r.number))
         self.fields['rooms'].choices = by_floor.items()
@@ -145,7 +144,7 @@ class DoorChartForm(forms.Form):
         super().__init__(*args, **kwargs)
         classrooms = Classroom.objects.filter(can_reserve=True)
         by_floor = defaultdict(list)
-        floor_names = dict(floors)
+        floor_names = dict(Floors)
         for r in classrooms:
             by_floor[floor_names[r.floor]].append((r.pk, r.number))
         self.fields['rooms'].choices = by_floor.items()

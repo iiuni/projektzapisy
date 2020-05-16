@@ -60,8 +60,8 @@ class ProposalAdmin(admin.ModelAdmin):
         ]
         if queryset.exclude(status__in=allowed_statuses).exists():
             message = (f"Nie wykonano akcji. Tylko propozycje o statusie "
-                       f"{ProposalStatus.PROPOSAL.display.upper()} lub "
-                       f"{ProposalStatus.IN_VOTE.display.upper()} powinny być "
+                       f"{ProposalStatus.PROPOSAL.label.upper()} lub "
+                       f"{ProposalStatus.IN_VOTE.label.upper()} powinny być "
                        "przenoszone do oferty.")
             self.message_user(request, message, level=messages.WARNING)
             return
@@ -69,7 +69,7 @@ class ProposalAdmin(admin.ModelAdmin):
         message = f"Przeniesiono {num} propozycji do oferty."
         self.message_user(request, message, level=messages.SUCCESS)
     move_into_offer.short_description = (
-        f"Zmień status wybranych propozycji na {ProposalStatus.IN_OFFER.display.upper()}")
+        f"Zmień status wybranych propozycji na {ProposalStatus.IN_OFFER.label.upper()}")
 
     def withdraw_proposals(self, request, queryset):
         """Changes the status of selected proposals to WITHDRAWN."""
@@ -84,7 +84,7 @@ class ProposalAdmin(admin.ModelAdmin):
         num = queryset.update(status=ProposalStatus.WITHDRAWN)
         self.message_user(request, f"Wycofano z oferty {num} propozycji", level=messages.SUCCESS)
     withdraw_proposals.short_description = (
-        f"Zmień status wybranych propozycji na {ProposalStatus.WITHDRAWN.display.upper()}")
+        f"Zmień status wybranych propozycji na {ProposalStatus.WITHDRAWN.label.upper()}")
 
     def put_under_vote(self, request, queryset):
         """Changes the status of selected proposals to IN_VOTE."""
@@ -99,7 +99,7 @@ class ProposalAdmin(admin.ModelAdmin):
                           f"Przeniesiono pod głosowanie {num} propozycji",
                           level=messages.SUCCESS)
     put_under_vote.short_description = (
-        f"Zmień status wybranych propozycji na {ProposalStatus.IN_VOTE.display.upper()}")
+        f"Zmień status wybranych propozycji na {ProposalStatus.IN_VOTE.label.upper()}")
 
     def create_instances_action_for_semester(self, semester: Semester):
         """Defines an admin action for creating course instances in a semester.

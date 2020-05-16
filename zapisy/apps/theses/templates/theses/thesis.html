@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% load crispy_forms_tags %}
+
+{% block main-subtitle %}System prac dyplomowych{% endblock %}
+
+{% block theses_active %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a class="breadcrumb-item" href="{% url 'theses:main' %}">Prace dyplomowe</a></li>
+    <li class="breadcrumb-item active">{{ thesis.title }}</li>
+{% endblock %}
+
+{% block all-content %}
+<div id="thesis-root">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+            {{ thesis.title }}
+        </h1>
+        <div class="ml-2 d-flex align-items-center justify-content-end flex-wrap">
+            {% if show_master_rejecter %}
+                <div class="d-inline-block">
+                    <form action="{% url 'theses:rejecter_thesis' thesis.id %}" method="POST" class="post-form">
+                        {% csrf_token %}
+                        {% crispy rejecter_rejected %}
+                    </form>
+                </div>
+                <div class="d-inline-block ml-1">
+                    <form action="{% url 'theses:rejecter_thesis' thesis.id %}" method="POST" class="post-form">
+                        {% csrf_token %}
+                        {% crispy rejecter_accepted %}
+                    </form>
+                </div>
+            {% endif %}
+            {% if can_edit_thesis %}
+                <div class="d-inline-block mb-3 ml-1">
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'theses:edit_thesis' thesis.id %}">
+                        {% if save_and_verify %}
+                            Edytuj i prześlij do komisji
+                        {% else %}
+                            Edytuj
+                        {% endif %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <table class="table table-bordered table-md-responsive d-print-none" id="table-info">
+    <colgroup>
+        <col class="table-info-type"></col>
+    </colgroup>
+    <tbody>
+        <tr>
+            <th scope="row" style="width: 50%">Typ</th>
+            <td>
+                {{ thesis.get_kind_display }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Status</th>
+            <td>
+                {{ thesis.get_status_display }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Promotor</th>
+            <td>{% if thesis.advisor %}
+                    {{ thesis.advisor }}
+                {% else %}
+                    Brak
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Promotor wspierający</th>
+            <td>{% if thesis.supporting_advisor %}
+                    {{ thesis.supporting_advisor }}
+                {% else %}
+                    Brak
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Studenci</th>
+            <td>
+                {% for student in students %}
+                    {{ student }}&nbsp;
+                {% empty %}
+                    Brak
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Zarezerwowana do</th>
+            <td>{% if thesis.reserved_until %}
+                    {{ thesis.reserved_until }}
+                {% else %}
+                    Brak daty rezerwacji
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">Data dodania</th>
+            <td>{{ thesis.added }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Data aktualizacji</th>
+            <td>{{ thesis.modified }}</td>
+        </tr>
+    </tbody>
+    </table>
+    <h2>Opis pracy dyplomowej</h2>
+    {% if thesis.description %}
+        {{ thesis.description }}
+    {% else %}
+        Brak opisu.
+    {% endif %}
+    {% if can_download_declarations %}
+        {% if students %}
+            <h5 class="mt-4">Deklaracje do pobrania</h5>
+            {% for student in students %}
+                <a href="{% url 'theses:gen_form' thesis.id student.id %}" class="btn btn-link">Deklaracja {{ student }}</a></br>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    {% if can_see_remarks %}
+    <h2 class="mt-4">Głosowanie</h2>
+    <div class="d-inline-block w-auto">
+        {% if can_vote %}
+        <div class="d-inline-block mt-2 mb-2 w-100">
+            <div class="d-inline-block">
+                <form action="{% url 'theses:vote_thesis' thesis.id %}" method="POST" class="post-form">
+                    {% csrf_token %}
+                    {% crispy vote_form_accepted %}
+                </form>
+            </div>
+            <div class="d-inline-block">
+                <form action="{% url 'theses:vote_thesis' thesis.id %}" method="POST" class="post-form">
+                    {% csrf_token %}
+                    {% crispy vote_form_rejected %}
+                </form>
+            </div>
+            <div class="d-inline-block">
+                <form action="{% url 'theses:vote_thesis' thesis.id %}" method="POST" class="post-form">
+                    {% csrf_token %}
+                    {% crispy vote_form_none %}
+                </form>
+            </div>
+        </div>
+        </br>
+        {% endif %}
+        {% for vote in votes %}
+            {% if vote.owner == request.user.employee %}
+                <div
+                    {% if vote.vote == "zaakceptowana"%}
+                        class="d-inline-block mb-3 p-2 border rounded border-success bg-success text-white text-center"
+                    {% elif vote.vote == "odrzucona" %}
+                        class="d-inline-block mb-3 p-2 border rounded border-danger bg-danger text-white text-center"
+                    {% elif vote.vote == "brak głosu" %}
+                        class="d-inline-block mb-3 p-2 border rounded border-primary bg-primary text-white text-center"
+                    {% endif %}
+                >
+                    <h5 class="card-title">Mój głos</h5>
+                    <p class="p-0 m-0">{{ vote.vote }}</p>
+                </div>
+            {% else %}
+                <div
+                    {% if vote.vote == "zaakceptowana"%}
+                        class="d-inline-block mb-3 p-2 border rounded border-success text-success text-center"
+                    {% elif vote.vote == "odrzucona" %}
+                        class="d-inline-block mb-3 p-2 border rounded border-danger text-danger text-center"
+                    {% elif vote.vote == "brak głosu" %}
+                        class="d-inline-block mb-3 p-2 border rounded border-primary text-primary text-center"
+                    {% endif %}
+                >
+                        <h5 class="card-title">{{ vote.owner }}</h5>
+                        <p class="p-0 m-0">{{ vote.vote }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+        <h2 class="mt-4">Uwagi</h2>
+        {% if board_member %}
+            {% if not_has_been_accepted %}
+                <h4>Edytuj swoją uwagę</h4>
+                <form action="{% url 'theses:remark_thesis' thesis.id %}" method="POST" class="post-form">
+                    {% csrf_token %}
+                    {% crispy remark_form %}
+                </form>
+                <br/>
+            {% endif %}
+        {% endif %}
+        {% if remarks_exist %}
+            {% for remark in remarks %}
+            <div class="mb-2">
+                <h5 class="d-inline-block">
+                    {{ remark.author }}
+                    <small class="text-muted">{{ remark.modified }}</small>
+                </h5>
+                <p>{{ remark.text }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            Brak uwag.
+        {% endif %}
+    {% endif %}
+
+</div>
+{% endblock %}

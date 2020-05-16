@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block main-subtitle %}System prac dyplomowych{% endblock %}
+
+{% block theses_active %} class="active"{% endblock %}
+
+{% block all-content %}
+
+{{ theses_list|json_script:"theses-data" }}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="d-inline-block">
+        Prace dyplomowe
+    </h1>
+	{% if user.employee %}
+		<a href="{% url 'theses:new_thesis' %}" class="btn btn-primary" role="button">Nowa praca dyplomowa</a>
+	{% endif %}
+</div>
+
+<p class="row justify-content-center">
+
+<div id="theses-filter"></div>
+
+<p class="row justify-content-center">
+
+<div id="theses-list"></div>
+
+</div>
+{% endblock %}
+
+{% block rendered_bundles %}
+    {% render_bundle 'theses-theses-widget' %}
+{% endblock %}

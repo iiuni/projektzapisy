@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='classroom',
             name='slug',
-            field=AutoSlugField(editable=False, populate_from=b'number'),
+            field=AutoSlugField(editable=False, populate_from='number'),
         ),
         migrations.AlterField(
             model_name='classroom',

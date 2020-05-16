@@ -70,9 +70,8 @@ class Student(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, usos_id, matricula, ects, status,
-                 user: dict, program: dict, semestr, algorytmy_l,
-                 numeryczna_l, dyskretna_l):
+    def __init__(self, id, usos_id, matricula, ects, is_active,
+                 user: dict, program: dict, semestr):
         self.user = User.from_dict(user)
         self.program = Program.from_dict(program)
 

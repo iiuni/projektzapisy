@@ -6,4 +6,7 @@ Group=vagrant
 TimeoutStartSec=900
 WorkingDirectory=/vagrant/zapisy/
 ExecStart=/usr/local/bin/yarn
-Type=simple
+Type=oneshot
+
+[Install]
+WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
