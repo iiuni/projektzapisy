@@ -11,4 +11,4 @@ ExecStart=/usr/local/bin/yarn devw
 Type=simple
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
+WantedBy=vagrant.mount vagrant-deploy-current-zapisy-node_modules.mount

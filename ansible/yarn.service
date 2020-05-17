@@ -9,4 +9,4 @@ ExecStart=/usr/local/bin/yarn
 Type=oneshot
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
+WantedBy=vagrant.mount vagrant-deploy-current-zapisy-node_modules.mount

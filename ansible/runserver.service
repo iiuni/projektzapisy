@@ -4,8 +4,8 @@ Description=Start server
 Restart=always
 User=vagrant
 Group=vagrant
-WorkingDirectory=/vagrant/zapisy/
-ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py runserver 0.0.0.0:8000
+WorkingDirectory=/vagrant/deploy/current/zapisy/
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/deploy/current/zapisy/manage.py runserver 0.0.0.0:8000
 Type=simple
 
 [Install]

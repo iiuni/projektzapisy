@@ -66,27 +66,11 @@
         lc_ctype: pl_PL.UTF-8
         template: template0
 
-    - stat:
-        path: /vagrant/ii_zapisy_dump_dev.sql
-      register: dumpsql
-
-    - name: Update the database
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "{{ APP_DB_NAME }}"
-        state: restore
-        target: "/vagrant/ii_zapisy_dump_dev.sql"
-      when: dumpsql.stat.exists
-
-    - name: Apply migrates to empty database
+    - name: Apply migrates
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       django_manage:
         command: migrate
-        app_path: "/vagrant/zapisy"
+        app_path: "{{ deploy_helper.current_path }}/zapisy"
         virtualenv: "/home/vagrant/env3"
-      when: not dumpsql.stat.exists
 

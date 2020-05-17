@@ -3,8 +3,8 @@ Description=Start rqworker default
 [Service]
 User=vagrant
 Group=vagrant
-WorkingDirectory=/vagrant/zapisy/
-ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py rqworker default
+WorkingDirectory=/vagrant/deploy/current/zapisy/
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/deploy/current/zapisy/manage.py rqworker default
 Type=simple
 
 [Install]

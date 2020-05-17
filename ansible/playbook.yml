@@ -38,11 +38,6 @@
         name: python3
       become: yes
 
-    - name: Install python3-venv
-      apt:
-        name: python3-venv
-      become: yes
-
     - name: Install redis
       apt:
         name: redis-server
@@ -71,7 +66,7 @@
       pip:
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
-        requirements: /vagrant/zapisy/requirements.development.txt
+        requirements: "{{ deploy_helper.current_path }}/zapisy/requirements.development.txt"
 
     # Vagrant file node_modules mounting
     - name: Create vagrant_node_modules folder
@@ -84,7 +79,7 @@
 
     - name: Create logs directory
       file:
-        path: /vagrant/zapisy/logs
+        path: "{{ deploy_helper.current_path }}/zapisy/logs"
         state: directory
       become: yes
 

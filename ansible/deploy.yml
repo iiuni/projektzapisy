@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+      become: yes
+
+    - name: Initialize the deploy root and gather facts
+      deploy_helper:
+        path: /vagrant/deploy
+
+    - name: Clone the project to the new release folder
+      become: yes
+      git:
+        repo: 'https://github.com/iiuni/projektzapisy.git'
+        dest: "{{ deploy_helper.new_release_path }}"
+        version: ansible-deploy
+
+    - name: Add an unfinished file, to allow cleanup on successful finalize
+      file:
+        path: '{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}'
+        state: touch
+
+    - name: Finalize
+      deploy_helper:
+        path: /vagrant/deploy
+        release: '{{ deploy_helper.new_release }}'
+        state: finalize
