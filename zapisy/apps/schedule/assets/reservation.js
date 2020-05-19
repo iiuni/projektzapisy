@@ -2,6 +2,8 @@ import "jquery";
 const $ = jQuery;
 
 var formsetCounter = 0;
+var maxFormsetNumber = 0;
+var listOfEmpty = [];
 
 function setFormDisplay() {
   if ($("#form-type").val() == 2) {
@@ -15,7 +17,9 @@ function setFormDisplay() {
 
 function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
-  $(".term-form").find("input").prop("disabled", true);
+  $(".term-form")
+    .find("input")
+    .prop("disabled", true);
   $(".term-form")
     .find(".form-place")
     .removeClass("bg-light");
@@ -23,7 +27,9 @@ function setTermsToDefault() {
 
 function setEdited(object) {
   setTermsToDefault();
-  $(object).closest(".term-form").addClass("active-term");
+  $(object)
+    .closest(".term-form")
+    .addClass("active-term");
   $(object)
     .closest(".term-form")
     .find("input")
@@ -39,60 +45,48 @@ function setEdited(object) {
     .prop("checked", false);
 }
 
-function cloneTermForm() {
-  let cloned = $(".term-form").last().clone();
-  cloned = cloned.insertBefore($("#new-term-form"));
-
-  let counter = parseInt(
-    $('input[name="term_set-TOTAL_FORMS"]').val()
-  );
-  $('input[name="term_set-TOTAL_FORMS"]').val(
-    parseInt(counter) + 1
-  );
-  formsetCounter += 1;
-
-  let namePrefix = "term_set-" + counter + "-";
-
-  cloned.find(".form-day").attr("name", namePrefix + "day");
-  cloned
-    .find(".form-start")
-    .attr("name", namePrefix + "start");
-  cloned.find(".form-end").attr("name", namePrefix + "end");
-  cloned
-    .find(".form-place")
-    .attr("name", namePrefix + "place");
-  cloned
-    .find(".form-room")
-    .attr("name", namePrefix + "room");
-  cloned
-    .find('input[name$="-DELETE"]')
-    .attr("name", namePrefix + "DELETE");
-
-  cloned.find(".row").find("input").val("").end();
-  cloned.removeClass("d-none");
-  cloned
-    .find('input[name$="-DELETE"]')
-    .prop("checked", true);
-}
-
 function deleteTermClick(event) {
   event.preventDefault();
 
-  formsetCounter =
-    formsetCounter == 0 ? 0 : formsetCounter - 1;
-
-  $(event.target).closest(".term-form").addClass("d-none");
+  $(event.target)
+    .closest(".term-form")
+    .addClass("d-none");
 
   $(event.target)
     .closest(".term-form")
     .find('input[name$="-DELETE"]')
     .prop("checked", true);
+
+  if (
+    !$(event.target)
+      .closest(".term-form")
+      .find('input[name$="-id"]')
+      .val()
+  ) {
+    formsetCounter -= 1;
+    $(event.target)
+      .closest(".term-form")
+      .insertAfter($(".term-form").last());
+    for (let i = 0; i < listOfEmpty.length; i++) {
+      listOfEmpty[i] -= 1;
+    }
+    listOfEmpty.push(maxFormsetNumber - 1);
+  }
 }
 
 function newTermClick(event) {
   event.preventDefault();
-  cloneTermForm();
-  setEdited($(".term-form").last().find(".edit-term-form"));
+  if (formsetCounter == maxFormsetNumber) return;
+
+  if (!listOfEmpty) return;
+
+  formsetCounter += 1;
+
+  var last = listOfEmpty.shift();
+
+  var newTermForm = $(".term-form").eq(last);
+  newTermForm.removeClass("d-none");
+  setEdited(newTermForm);
 }
 
 function editTermClick(event) {
@@ -101,7 +95,9 @@ function editTermClick(event) {
 }
 
 function addOutsideLocation(event) {
-  $(".active-term").find(".form-room").val("");
+  $(".active-term")
+    .find(".form-room")
+    .val("");
   $(".active-term")
     .find(".form-place")
     .val($("#inputplace").val());
@@ -109,14 +105,24 @@ function addOutsideLocation(event) {
 
 function saveEvent(event) {
   event.preventDefault();
-  $(".term-form").find("input").prop("disabled", false);
+  $(".term-form")
+    .find("input")
+    .prop("disabled", false);
   $("#main-form").submit();
 }
 
 $(document).ready(() => {
-  formsetCounter = parseInt(
+  maxFormsetNumber = parseInt(
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
+
+  formsetCounter = maxFormsetNumber - 3;
+  $(".term-form")
+    .slice(0, formsetCounter)
+    .removeClass("d-none");
+  for (let i = formsetCounter; i < maxFormsetNumber; i++) {
+    listOfEmpty.push(i);
+  }
 
   setFormDisplay();
   $(document).on("change", "#form-type", setFormDisplay);
