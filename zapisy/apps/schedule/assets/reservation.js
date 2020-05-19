@@ -116,7 +116,7 @@ $(document).ready(() => {
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
 
-  formsetCounter = maxFormsetNumber - 3;
+  formsetCounter = maxFormsetNumber - 10;
   $(".term-form")
     .slice(formsetCounter, maxFormsetNumber)
     .each((id, el) => {

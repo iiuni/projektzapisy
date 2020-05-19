@@ -81,13 +81,13 @@ class TermForm(forms.ModelForm):
 
 NewTermFormSet = inlineformset_factory(Event,
                                        Term,
-                                       extra=3,
+                                       extra=10,
                                        min_num=1,
                                        validate_min=True,
                                        form=TermForm,
                                        can_delete=True)
 
-EditTermFormSet = inlineformset_factory(Event, Term, extra=3, form=TermForm, can_delete=True)
+EditTermFormSet = inlineformset_factory(Event, Term, extra=10, form=TermForm, can_delete=True)
 
 
 class CustomVisibleCheckbox(Field):
