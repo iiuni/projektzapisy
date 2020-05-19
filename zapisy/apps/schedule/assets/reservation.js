@@ -118,6 +118,12 @@ $(document).ready(() => {
 
   formsetCounter = maxFormsetNumber - 3;
   $(".term-form")
+    .slice(formsetCounter, maxFormsetNumber)
+    .each((id, el) => {
+      if ($(el).find(".is-invalid")[0]) formsetCounter += 1;
+    });
+
+  $(".term-form")
     .slice(0, formsetCounter)
     .removeClass("d-none");
   for (let i = formsetCounter; i < maxFormsetNumber; i++) {
