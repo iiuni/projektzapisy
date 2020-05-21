@@ -19,12 +19,10 @@ import ClassroomField from "./ClassroomField.vue";
     getUnoccupied: function() {
       let begin = $(".active-term")
         .find(".form-start")
-        .val()
-        .substr(0, 5);
+        .val();
       let end = $(".active-term")
         .find(".form-end")
-        .val()
-        .substr(0, 5);
+        .val();
       this.unoccupiedClassrooms = this.classrooms.filter(item => {
         return isFree(item.rawOccupied, begin, end);
       });
@@ -32,12 +30,10 @@ import ClassroomField from "./ClassroomField.vue";
     onChangedTime: function() {
       let start = $(".active-term")
         .find(".form-start")
-        .val()
-        .substr(0, 5);
+        .val();
       let end = $(".active-term")
         .find(".form-end")
-        .val()
-        .substr(0, 5);
+        .val();
 
       if (start > end || end < "08:00" || start > "22:00") {
         this.reservationLayer = [];
@@ -75,65 +71,53 @@ import ClassroomField from "./ClassroomField.vue";
         return;
       }
 
-      date = date.split("-");
+      axios.get("/classrooms/get_terms/" + date + "/").then(response => {
+        self.classrooms = [];
+        for (let key in response.data) {
+          let item = response.data[key];
+          let termsLayer = [];
 
-      axios
-        .get(
-          "/classrooms/get_terms/" +
-            date[0] +
-            "/" +
-            date[1] +
-            "/" +
-            date[2] +
-            "/"
-        )
-        .then(response => {
-          self.classrooms = [];
-          for (let key in response.data) {
-            let item = response.data[key];
-            let termsLayer = [];
-
-            if (item.occupied.length != 0) {
-              let width = calculateLength("08:00", item.occupied[0].begin);
-              termsLayer.push({
-                width: width,
-                occupied: false
-              });
-            }
-
-            for (let i = 0; i < item.occupied.length; i++) {
-              let width = calculateLength(
-                item.occupied[i].begin,
-                item.occupied[i].end
-              );
-              termsLayer.push({
-                width: width,
-                occupied: true
-              });
-
-              let nextEnd =
-                i + 1 != item.occupied.length
-                  ? item.occupied[i + 1].begin
-                  : "22:00";
-              let emptyWidth = calculateLength(item.occupied[i].end, nextEnd);
-
-              termsLayer.push({
-                width: emptyWidth,
-                occupied: false
-              });
-            }
-
-            self.classrooms.push({
-              label: item.number,
-              type: item.type,
-              id: item.id,
-              capacity: item.capacity,
-              termsLayer: termsLayer,
-              rawOccupied: item.occupied
+          if (item.occupied.length != 0) {
+            let width = calculateLength("08:00", item.occupied[0].begin);
+            termsLayer.push({
+              width: width,
+              occupied: false
             });
           }
-          self.getUnoccupied();
-        });
+
+          for (let i = 0; i < item.occupied.length; i++) {
+            let width = calculateLength(
+              item.occupied[i].begin,
+              item.occupied[i].end
+            );
+            termsLayer.push({
+              width: width,
+              occupied: true
+            });
+
+            let nextEnd =
+              i + 1 != item.occupied.length
+                ? item.occupied[i + 1].begin
+                : "22:00";
+            let emptyWidth = calculateLength(item.occupied[i].end, nextEnd);
+
+            termsLayer.push({
+              width: emptyWidth,
+              occupied: false
+            });
+          }
+
+          self.classrooms.push({
+            label: item.number,
+            type: item.type,
+            id: item.id,
+            capacity: item.capacity,
+            termsLayer: termsLayer,
+            rawOccupied: item.occupied
+          });
+        }
+        self.getUnoccupied();
+      });
     }
   },
   watch: {

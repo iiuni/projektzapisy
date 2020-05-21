@@ -24,6 +24,8 @@ import { Term } from "../store/classrooms";
     }
   },
   methods: {
+    /* Wybierając salę za pomocą widgetu powinniśmy zmienić wartość pól room i place
+       aktualnie edytowanego terminu. Robimy to za pośrednictwem JQuery. */
     onClick: function() {
       $(".active-term")
         .find(".form-room")
