@@ -2,6 +2,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import $ from "jquery";
+import { min, max } from "lodash";
 import axios from "axios";
 import { Term, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
@@ -40,8 +41,8 @@ import ClassroomField from "./ClassroomField.vue";
         return;
       }
 
-      start = start < "08:00" ? "08:00" : start;
-      end = end > "22:00" ? "22:00" : end;
+      start = max(["08:00", start]);
+      end = min(["22:00", end]);
 
       this.getUnoccupied();
 
