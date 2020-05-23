@@ -4,15 +4,15 @@ const $ = jQuery;
 var formsetCounter = 0;
 var maxFormsetNumber = 0;
 
-// Lista pozycji pustych formularzy terminów, które możemy
-// dodać jako nowy termin. Jeśli na liście tej znajduje się
-// liczba n, oznacza to, że idąc od góry n-ty formularz jest
-// wolny. Liczby te są uporządkowane rosnąco.
+// List of positions of empty term forms that are available
+// to add to the formset as new term forms. If list contains
+// number n, it means, that the nth form from the top is
+// available. List is in ascending order.
 var listOfEmpty = [];
 
-/* Funkcja zmienia wygląd formularza w zależności od typu rezerwacji.
-   Dla wydarzenia wyświetlamy pole tytułu i widoczności, dla egzaminu
-   lub kolokwium dodatkowe pole wyboru przedmiotu. */
+// Changes display of the form regarding to chosen reservation
+// type. For event it displays title and visibility fields.
+// For exams it displays course choice field.
 function setFormDisplay() {
   if ($("#form-type").val() == 2) {
     $("#form-course").addClass("d-none");
@@ -23,7 +23,7 @@ function setFormDisplay() {
   }
 }
 
-/* Wyłącza edycję aktualnie aktywnych terminów. */
+// Disables edition of currently active terms.
 function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
   $(".term-form")
@@ -34,8 +34,7 @@ function setTermsToDefault() {
     .removeClass("bg-light");
 }
 
-/* Włącza edycję danego terminu. */
-
+// Enables edition of given term.
 function setEdited(object) {
   setTermsToDefault();
   $(object)
@@ -50,13 +49,14 @@ function setEdited(object) {
     .find(".form-place")
     .addClass("bg-light");
 
-  // Termin przestaje być oznaczony jako przeznaczony do usunięcia
+  // Unmarks term as planned to be deleted.
   $(object)
     .closest(".term-form")
     .find('input[name$="-DELETE"]')
     .prop("checked", false);
 }
 
+// Deletes term
 function deleteTermClick(event) {
   event.preventDefault();
 
@@ -69,8 +69,8 @@ function deleteTermClick(event) {
     .find('input[name$="-DELETE"]')
     .prop("checked", true);
 
-  // Jeżeli usuwamy termin który nie jest zapisany w bazie (ma niepuste id), to
-  // formularz może być jeszcze w przyszłości użyty
+  // If the term is not in the database (has empty id value), then the form
+  // can be reused, so we append it to the listOfEmpty.
   if (
     !$(event.target)
       .closest(".term-form")
@@ -79,20 +79,20 @@ function deleteTermClick(event) {
   ) {
     formsetCounter -= 1;
 
-    // Formularz jest umieszczony na końcu listy formularzy, aby przy ponownym
-    // użyciu nie pojawił się pomiędzy istniejącymi formularzami.
+    // Form is moved to the end of the list of forms to make sure it will not
+    // appear between existing forms when reused.
     $(event.target)
       .closest(".term-form")
       .insertAfter($(".term-form").last());
 
-    // Przesuwamy pozycję pustych formularzy o jeden do góry, ponieważ
-    // usunięty formularz przesunęlismy na koniec
-    for (let i = 0; i < listOfEmpty.length; i++) {
-      listOfEmpty[i] -= 1;
-    }
-
-    // Dodajemy usunięty formularz na koniec listy
-    listOfEmpty.push(maxFormsetNumber - 1);
+    // As we moved our form to the end of the list, we need to extend listOfEmpty.
+    // As in list we keep only positions of empty forms, we only have to append new
+    // position to the beginning of the list.
+    let newPos =
+      listOfEmpty.length != 0
+        ? listOfEmpty[0] - 1
+        : maxFormsetNumber - 1;
+    listOfEmpty.unshift(newPos);
   }
 }
 
@@ -104,13 +104,11 @@ function newTermClick(event) {
 
   formsetCounter += 1;
 
-  // Wybieramy pozycję pierwszego pustego formularza terminu
-  // i usuwamy ją z listy pustych.
-  var last = listOfEmpty.shift();
+  // We choose position of the first empty term form and remove it from listOfEmpty.
+  var first = listOfEmpty.shift();
 
-  // Znajdujemy wybrany element, wyświetlamy go i oznaczamy
-  // jako aktualnie edytowany
-  var newTermForm = $(".term-form").eq(last);
+  // We find chosen element, display it and mark as active.
+  var newTermForm = $(".term-form").eq(first);
   newTermForm.removeClass("d-none");
   setEdited(newTermForm);
 }
@@ -120,9 +118,8 @@ function editTermClick(event) {
   setEdited(event.target);
 }
 
-/* Odpowiada za ustawienie zewnętrznej lokacji. Lokacja 
-   terminu zostaje ustawiona jako wartość pola zewnętrznej 
-   lokacji, zaś pole wybranej sali zostaje wyczyszczone. */
+// Handles setting outside location. The place field is
+// set as outside location field value, and room field is cleaned.
 function addOutsideLocation(event) {
   $(".active-term")
     .find(".form-room")
@@ -141,24 +138,24 @@ function saveEvent(event) {
 }
 
 $(document).ready(() => {
-  // Pobieramy otrzymaną z serwera liczbę formularzy.
+  // We get number of term forms received from server.
   maxFormsetNumber = parseInt(
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
 
-  // Otrzymujemy zawsze dodatkowo 10 formularzy terminów, które powinny
-  // zostać ukryte. Pozostałe to albo jeden formularz podstawowy,
-  // albo wcześniej dodane terminy.
+  // As we always get 10 extra term forms that should be hidden.
+  // The rest is either one basic term form or terms that are already in
+  // database.
   formsetCounter = maxFormsetNumber - 10;
 
-  // Wyświetlamy formularze terminów, które nie przeszły walidacji.
+  // Displaying term forms that are invalid.
   $(".term-form")
     .slice(formsetCounter, maxFormsetNumber)
     .each((id, el) => {
       if ($(el).find(".is-invalid")[0]) formsetCounter += 1;
     });
 
-  // Dodajemy pozycje pustych formularzy terminów
+  // We add position of available term forms to listOfEmpty.
   $(".term-form")
     .slice(0, formsetCounter)
     .removeClass("d-none");
