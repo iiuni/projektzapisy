@@ -71,6 +71,6 @@
         ansible_python_interpreter: "{{ PYTHON }}"
       django_manage:
         command: migrate
-        app_path: "{{ deploy_helper.current_path }}/zapisy"
+        app_path: "~/deploy/current/zapisy"
         virtualenv: "/home/vagrant/env3"
 

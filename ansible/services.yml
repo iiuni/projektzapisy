@@ -3,13 +3,6 @@
 
   tasks:
     # Deploy
-    - name: Deploy mount bind
-      copy:
-        src: vagrant-zapisy-node_modules.mount
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
     - name: Deploy Django Runserver
       copy:
         src: runserver.service
@@ -49,13 +42,6 @@
     - name: Systemd daemon reload
       systemd:
         daemon_reload: yes
-      become: yes
-
-    - name: Enable and run node_modules mount
-      service:
-        name: vagrant-zapisy-node_modules.mount
-        enabled: yes
-        state: started
       become: yes
 
     - name: Enable and run Django Runserver service

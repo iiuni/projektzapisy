@@ -74,8 +74,8 @@
         state: directory
       become: yes
 
-# - name: Include playbook with postgres configuration
-#   import_playbook: postgres.yml
+- name: Include playbook with postgres configuration
+  import_playbook: postgres.yml
 
-# - name: Include playbook with services configuration
-#   import_playbook: services.yml
+- name: Include playbook with services configuration
+  import_playbook: services.yml

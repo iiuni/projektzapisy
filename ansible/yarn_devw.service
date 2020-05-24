@@ -6,9 +6,9 @@ After=yarn.service
 User=vagrant
 Group=vagrant
 TimeoutStartSec=900
-WorkingDirectory=/vagrant/zapisy/
+WorkingDirectory=/home/vagrant/deploy/current/zapisy/
 ExecStart=/usr/local/bin/yarn devw
 Type=simple
 
 [Install]
-WantedBy=vagrant.mount vagrant-deploy-current-zapisy-node_modules.mount
+WantedBy=multi-user.target
