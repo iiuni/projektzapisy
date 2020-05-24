@@ -6,7 +6,7 @@
     APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
     PG_VERSION: 10
-    PYTHON: "/server/env3/bin/python3"
+    PYTHON: "/home/vagrant/env3/bin/python3"
 
   tasks:
     - name: Ensure a locale exists
@@ -44,14 +44,14 @@
       become: yes
       when: service_status.stat.exists
 
-    - name: Drop the database
-      become: yes
-      become_user: postgres
-      vars:
-        ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
-        name: "{{ APP_DB_NAME }}"
-        state: absent
+    # - name: Drop the database
+    #   become: yes
+    #   become_user: postgres
+    #   vars:
+    #     ansible_python_interpreter: "{{ PYTHON }}"
+    #   postgresql_db:
+    #     name: "{{ APP_DB_NAME }}"
+    #     state: absent
 
     - name: Create the database
       become: yes
@@ -71,6 +71,6 @@
         ansible_python_interpreter: "{{ PYTHON }}"
       django_manage:
         command: migrate
-        app_path: "/server/deploy/current/zapisy"
-        virtualenv: "/server/env3"
+        app_path: "~/deploy/current/zapisy"
+        virtualenv: "~/env3"
 

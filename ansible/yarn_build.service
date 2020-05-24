@@ -6,7 +6,7 @@ After=yarn.service
 User=vagrant
 Group=vagrant
 TimeoutStartSec=900
-WorkingDirectory=/server/deploy/current/zapisy/
+WorkingDirectory=/home/vagrant/deploy/current/zapisy/
 ExecStart=/usr/local/bin/yarn build
 Type=simple
 
