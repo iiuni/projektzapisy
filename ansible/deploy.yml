@@ -9,6 +9,9 @@
       file:
         path: /server
         state: directory
+        owner: vagrant
+        group: vagrant
+      become: yes
 
     - name: Install git
       apt:

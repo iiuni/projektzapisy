@@ -17,9 +17,9 @@
         force: yes
       become: yes
 
-    - name: Deploy yarn devw
+    - name: Deploy yarn build
       copy:
-        src: yarn_devw.service
+        src: yarn_build.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
@@ -58,9 +58,9 @@
         enabled: no
       become: yes
 
-    - name: Enable and run yarn_devw service
+    - name: Enable and run yarn_build service
       service:
-        name: yarn_devw
+        name: yarn_build
         enabled: yes
         state: started
       become: yes

@@ -1,5 +1,5 @@
 [Unit]
-Description=Yarn devw service
+Description=Yarn build service
 After=yarn.service
 
 [Service]
@@ -7,7 +7,7 @@ User=vagrant
 Group=vagrant
 TimeoutStartSec=900
 WorkingDirectory=/server/deploy/current/zapisy/
-ExecStart=/usr/local/bin/yarn devw
+ExecStart=/usr/local/bin/yarn build
 Type=simple
 
 [Install]
