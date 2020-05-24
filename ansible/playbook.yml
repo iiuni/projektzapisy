@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
 
   vars:
     PYTHON: "/usr/bin/python3"
@@ -66,25 +66,16 @@
       pip:
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
-        requirements: "{{ deploy_helper.current_path }}/zapisy/requirements.development.txt"
-
-    # Vagrant file node_modules mounting
-    - name: Create vagrant_node_modules folder
-      file:
-        path: /vagrant_node_modules
-        state: directory
-        owner: vagrant
-        group: vagrant
-      become: yes
+        requirements: "~/deploy/current/zapisy/requirements.development.txt"
 
     - name: Create logs directory
       file:
-        path: "{{ deploy_helper.current_path }}/zapisy/logs"
+        path: "~/deploy/current/zapisy/logs"
         state: directory
       become: yes
 
-- name: Include playbook with postgres configuration
-  import_playbook: postgres.yml
+# - name: Include playbook with postgres configuration
+#   import_playbook: postgres.yml
 
-- name: Include playbook with services configuration
-  import_playbook: services.yml
+# - name: Include playbook with services configuration
+#   import_playbook: services.yml
