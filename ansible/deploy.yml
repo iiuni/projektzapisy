@@ -9,9 +9,6 @@
       file:
         path: /server
         state: directory
-        owner: vagrant
-        group: vagrant
-      become: yes
 
     - name: Install git
       apt:
@@ -42,6 +39,3 @@
         state: finalize
         clean: true
         keep_releases: 2
-
-- name: Include playbook with configuration of new version
-  import_playbook: "/server/deploy/current/ansible/playbook.yml"

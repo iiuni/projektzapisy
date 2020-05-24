@@ -72,7 +72,6 @@
       file:
         path: "/server/deploy/current/zapisy/logs"
         state: directory
-      become: yes
 
 - name: Include playbook with postgres configuration
   import_playbook: postgres.yml
