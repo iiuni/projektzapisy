@@ -5,6 +5,14 @@
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
+    - name: Create server folder
+      file:
+        path: /server
+        state: directory
+        owner: vagrant
+        group: vagrant
+      become: yes
+
     - name: Install git
       apt:
         name: git
@@ -12,11 +20,10 @@
 
     - name: Initialize the deploy root and gather facts
       deploy_helper:
-        path: ~/deploy
+        path: /server/deploy
         state: present
 
     - name: Clone the project to the new release folder
-      become: yes
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
@@ -30,11 +37,11 @@
 
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       deploy_helper:
-        path: ~/deploy
+        path: /server/deploy
         release: "{{ deploy_helper.new_release }}"
         state: finalize
         clean: true
         keep_releases: 2
 
 - name: Include playbook with configuration of new version
-  import_playbook: "/home/vagrant/deploy/current/ansible/playbook.yml"
+  import_playbook: "/server/deploy/current/ansible/playbook.yml"

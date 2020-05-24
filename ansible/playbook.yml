@@ -46,8 +46,8 @@
     - name: Add source command to .bashrc
       lineinfile:
         path: ~/.bashrc
-        line: "source ~/env3/bin/activate"
-        regex: "^source ~/env3/bin/activate$"
+        line: "source /server/env3/bin/activate"
+        regex: "^source /server/env3/bin/activate$"
         state: present
         insertafter: EOF
         create: yes
@@ -64,13 +64,13 @@
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        virtualenv: ~/env3
+        virtualenv: /server/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
-        requirements: "~/deploy/current/zapisy/requirements.development.txt"
+        requirements: "/server/deploy/current/zapisy/requirements.development.txt"
 
     - name: Create logs directory
       file:
-        path: "~/deploy/current/zapisy/logs"
+        path: "/server/deploy/current/zapisy/logs"
         state: directory
       become: yes
 
