@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import ValidationError
@@ -8,13 +10,8 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
 
-from typing import List
-
 
 class Event(models.Model):
-    """
-    Model of Event
-    """
     TYPE_EXAM = '0'
     TYPE_TEST = '1'
     TYPE_GENERIC = '2'
@@ -77,16 +74,13 @@ class Event(models.Model):
         )
 
     def clean(self, *args, **kwargs):
-        """
-        Overload clean method.
+        """Overload clean method.
+
         If author is employee and try reserve room for exam - accept it
         If author has perms to manage events - accept it
         """
-
         # if this is a new item
-
         if not self.pk:
-
             # if author is an employee, accept any exam and test events
             if ((self.author.employee and self.type in (Event.TYPE_EXAM, Event.TYPE_TEST)) or
                     self.author.has_perm('schedule.manage_events')):
@@ -128,10 +122,7 @@ class Event(models.Model):
         super(Event, self).clean()
 
     def remove(self):
-        """
-            Removing all terms bounded with given event
-
-        """
+        """Removing all terms bounded with given event."""
         from .term import Term
         terms = Term.objects.filter(event=self)
         for term in terms:
@@ -149,9 +140,7 @@ class Event(models.Model):
         return list(event_conflicts)
 
     def _user_can_see_or_404(self, user):
-        """
-
-        Private method. Return True if user can see event, otherwise False.
+        """Private method. Return True if user can see event, otherwise False.
 
         @param user: auth.User
         @return: Boolean
@@ -166,10 +155,7 @@ class Event(models.Model):
 
     @classmethod
     def get_event_or_404(cls, id, user):
-        """
-
-        If events exist and user can see it - return
-        otherwise raise Http404
+        """If events exist and user can see it - return otherwise raise Http404.
 
         @param id: Integer Number
         @param user:  auth.User
@@ -188,10 +174,9 @@ class Event(models.Model):
 
     @classmethod
     def get_event_for_moderation_or_404(cls, id, user):
-        """
+        """If events exist and user can send moderation message - return it.
 
-        If events exist and user can send moderation message - return it
-        otherwise raise Http404
+        Otherwise raise Http404.
 
         @param id: Integer Number
         @param user:  auth.User
@@ -210,10 +195,9 @@ class Event(models.Model):
 
     @classmethod
     def get_event_for_moderation_only_or_404(cls, id, user):
-        """
+        """If events exist and user can send moderation message - return it.
 
-        If events exist and user can send moderation message - return it
-        otherwise raise Http404
+        Otherwise raise Http404
 
         @param id: Integer Number
         @param user:  auth.User
@@ -232,9 +216,7 @@ class Event(models.Model):
 
     @classmethod
     def get_all(cls):
-        """
-
-        Return all events with all needed select_related and prefetch_related
+        """Return all events with all needed select_related and prefetch_related.
 
         @return: Event QuerySet
         """
@@ -243,9 +225,7 @@ class Event(models.Model):
 
     @classmethod
     def get_all_without_courses(cls):
-        """
-
-        Return all events with all needed select_related and prefetch_related
+        """Return all events with all needed select_related and prefetch_related.
 
         @return: Event QuerySet
         """
@@ -253,8 +233,7 @@ class Event(models.Model):
 
     @classmethod
     def get_for_user(cls, user):
-        """
-        Get list of events, where user is author
+        """Get list of events, where user is author.
 
         @param user: auth.User object
         @return: Event QuerySet
@@ -264,8 +243,7 @@ class Event(models.Model):
 
     @classmethod
     def get_exams(cls):
-        """
-        Return list of all exam
+        """Return list of all exams.
 
         @return Event QuerySet
         """

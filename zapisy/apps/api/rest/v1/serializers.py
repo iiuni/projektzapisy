@@ -1,18 +1,16 @@
-from django.db import transaction
-
-from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as AuthGroup
-
+from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework import serializers
 
-from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.models import Employee, Student, Program
+from apps.users.models import Employee, Program, Student
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -156,7 +154,7 @@ class SingleVoteSerializer(serializers.ModelSerializer):
 
 
 class SystemStateSerializer(serializers.ModelSerializer):
-    """Serializes vote system state, get id and friendly name"""
+    """Serializes vote system state, get id and friendly name."""
     state_name = serializers.SerializerMethodField()
 
     def get_state_name(self, systemstate_model):

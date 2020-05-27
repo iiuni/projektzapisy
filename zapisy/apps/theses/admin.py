@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django import forms
 
-from apps.theses.forms import ThesisFormAdmin, RemarkFormAdmin, VoteFormAdmin
-from apps.theses.models import Thesis, Remark, Vote, ThesesSystemSettings
+from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin, VoteFormAdmin
+from apps.theses.models import Remark, ThesesSystemSettings, Thesis, Vote
 
 
 class ThesisAdmin(admin.ModelAdmin):
@@ -22,9 +21,11 @@ class VoteAdmin(admin.ModelAdmin):
 
 
 class ThesesSystemSettingsAdmin(admin.ModelAdmin):
-    """Exactly one instance of ThesesSystemSettings is created
-    when applying migrations, and users should only be permitted
-    to modify that one instance, not create new ones or delete existing ones
+    """Theses system settings admin.
+
+    Exactly one instance of ThesesSystemSettings is created when applying
+    migrations, and users should only be permitted to modify that one instance,
+    not create new ones or delete existing ones
     """
     def has_add_permission(self, request):
         return False

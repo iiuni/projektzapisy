@@ -42,28 +42,27 @@ Record Lifetime:
     filled by an asynchronous process, so the GROUP_CHANGE_SIGNAL is sent.
 """
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from datetime import datetime
+from enum import Enum
 from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
-from choicesenum import ChoicesEnum
-from enum import Enum
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import DatabaseError, models, transaction
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.group import GuaranteedSpots
+from apps.enrollment.courses.models.group import GroupType, GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
+from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.users.models import Student
-from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RecordStatus(ChoicesEnum):
+class RecordStatus(models.TextChoices):
     """RecordStatus describes a lifetime of a record."""
     QUEUED = '0'
     ENROLLED = '1'
@@ -86,7 +85,7 @@ class Record(models.Model):
     """
     group = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=RecordStatus.choices())
+    status = models.CharField(max_length=1, choices=RecordStatus.choices)
     priority = models.IntegerField(
         verbose_name='priorytet',
         default=5,
@@ -375,7 +374,7 @@ class Record(models.Model):
         if not cls.can_enqueue(student, group, cur_time):
             return []
         enqueued_groups = []
-        if group.type != Group.GROUP_TYPE_LECTURE:
+        if group.type != GroupType.LECTURE:
             lecture_group = Group.get_lecture_group(group.course_id)
             if lecture_group is not None:
                 enqueued_lecture_groups = cls.enqueue_student(student, lecture_group)
@@ -416,7 +415,7 @@ class Record(models.Model):
             return []
         removed_groups = []
         # If this is a lecture, remove him from all other groups as well.
-        if record.group.type == Group.GROUP_TYPE_LECTURE:
+        if record.group.type == GroupType.LECTURE:
             other_groups_query = Record.objects.filter(
                 student=student, group__course_id=record.group.course_id).exclude(
                     status=RecordStatus.REMOVED).exclude(pk=record.pk)
@@ -444,13 +443,17 @@ class Record(models.Model):
 
     @classmethod
     def pull_record_into_group(cls, group_id: int) -> bool:
-        """Checks if there are vacancies in the group and pulls the first
-        student from the queue if possible.
+        """Checks for vacancies and pulls first student from queue if possible.
 
-        The function will return False if the group is already full, or the
-        queue is empty or the enrollment is closed for the semester. True value
-        will mean, that it should be run again on that group. The function may
-        throw DatabaseError if transaction fails.
+        If there is free spot in the group, this function will pick the first
+        record from the queue and try to enroll it into the group. The first
+        record may be removed if the student is not eligible for enrollment.
+
+        Returns:
+          The function will return False if the group is already full, or the
+          queue is empty or the enrollment is closed for the semester. True
+          value will mean, that it should be run again on that group. The
+          function may throw DatabaseError if transaction fails.
 
         Concurrency:
           This function may be run concurrently. A data race could potentially
@@ -469,7 +472,7 @@ class Record(models.Model):
         # records into that group in order to avoid dropping the record, when a
         # student enqueues into the groups at the same time, and this group is
         # being worked before the lecture group.
-        if group.type != Group.GROUP_TYPE_LECTURE:
+        if group.type != GroupType.LECTURE:
             lecture_group = Group.get_lecture_group(group.course_id)
             if lecture_group is not None:
                 cls.fill_group(lecture_group.pk)
@@ -528,8 +531,7 @@ class Record(models.Model):
                     raise
 
     def enroll_or_remove(self, group: Group) -> List[int]:
-        """This function takes a single QUEUED record and tries to change its
-        status into ENROLLED.
+        """Takes a single QUEUED record and tries to change its status to ENROLLED.
 
         The operation might fail under certain circumstances (the student is not
         enrolled in the lecture group, enrolling would exceed his ECTS limit).
@@ -552,7 +554,7 @@ class Record(models.Model):
                 status=RecordStatus.REMOVED).select_for_update()
 
             # Check if he is enrolled into the lecture group.
-            if group.type != Group.GROUP_TYPE_LECTURE:
+            if group.type != GroupType.LECTURE:
                 lecture_group = Group.get_lecture_group(group.course_id)
                 if lecture_group is not None:
                     lecture_group_is_enrolled = self.is_enrolled(self.student.id, lecture_group.id)
@@ -575,7 +577,7 @@ class Record(models.Model):
                 self.status = RecordStatus.REMOVED
                 self.save()
 
-                #Send notifications
+                # Send notifications
                 if can_enroll_status == EnrollStatus.ECTS_ERR:
                     student_not_pulled.send_robust(
                         sender=self.__class__,

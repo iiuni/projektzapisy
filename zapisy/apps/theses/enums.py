@@ -1,12 +1,12 @@
 """Defines several thesis-related enums.
+
 Using a separate file for these definitions helps prevent
 circular dependencies
 """
-from enum import Enum
-from choicesenum import ChoicesEnum
+from django.db import models
 
 
-class ThesisKind(ChoicesEnum):
+class ThesisKind(models.IntegerChoices):
     MASTERS = 0, "mgr"
     ENGINEERS = 1, "inż"
     BACHELORS = 2, "lic"
@@ -16,7 +16,7 @@ class ThesisKind(ChoicesEnum):
     BACHELORS_ENGINEERS_ISIM = 5, "lic+inż+isim"
 
 
-class ThesisStatus(ChoicesEnum):
+class ThesisStatus(models.IntegerChoices):
     BEING_EVALUATED = 1, "weryfikowana przez komisję"
     RETURNED_FOR_CORRECTIONS = 2, "zwrócona do poprawek"
     ACCEPTED = 3, "zaakceptowana"
@@ -24,7 +24,7 @@ class ThesisStatus(ChoicesEnum):
     DEFENDED = 5, "obroniona"
 
 
-class ThesisVote(ChoicesEnum):
+class ThesisVote(models.IntegerChoices):
     NONE = 1, "brak głosu"
     REJECTED = 2, "odrzucona"
     ACCEPTED = 3, "zaakceptowana"

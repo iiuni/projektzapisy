@@ -7,7 +7,6 @@ single semester).
 """
 from typing import Dict
 
-import choicesenum
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -18,7 +17,7 @@ from .effects import Effects
 from .tag import Tag
 
 
-class Language(choicesenum.ChoicesEnum):
+class Language(models.TextChoices):
     ENGLISH = 'en', "angielski"
     POLISH = 'pl', "polski"
 
@@ -36,7 +35,7 @@ class CourseInformation(models.Model):
     slug = models.SlugField("identyfikator URL", unique=True, max_length=255)
     description = models.TextField("opis przedmiotu", blank=True)
     language = models.CharField(
-        "język wykładowy", choices=Language.choices(), max_length=2, default=Language.POLISH)
+        "język wykładowy", choices=Language.choices, max_length=2, default=Language.POLISH)
     course_type = models.ForeignKey(CourseType, verbose_name="rodzaj", on_delete=models.PROTECT)
     owner = models.ForeignKey(Employee, on_delete=models.PROTECT)
     recommended_for_first_year = models.BooleanField(

@@ -1,10 +1,11 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
@@ -47,7 +48,7 @@ def preferences_save(request):
 
 
 def create_form(request):
-    """It is not a view itself, just factory for preferences and preferences_save"""
+    """It is not a view itself, just factory for preferences and preferences_save."""
     if request.user.employee:
         instance, created = NotificationPreferencesTeacher.objects.get_or_create(user=request.user)
         if request.method == 'POST':
@@ -63,7 +64,7 @@ def create_form(request):
 @login_required
 @require_POST
 def delete_all(request):
-    """Removes all user's notifications"""
+    """Removes all user's notifications."""
     repo = get_notifications_repository()
     repo.remove_all(request.user)
 
@@ -73,7 +74,7 @@ def delete_all(request):
 @login_required
 @require_POST
 def delete_one(request):
-    """Removes one notification"""
+    """Removes one notification."""
     # Axios sends POST data in json rather than _Form-Encoded_.
     data = json.loads(request.body.decode('utf-8'))
     uuid = data.get('uuid')

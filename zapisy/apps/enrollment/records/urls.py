@@ -1,6 +1,7 @@
 """Enrollment actions."""
 
 from django.urls import path
+
 from apps.enrollment.records import views
 
 urlpatterns = [

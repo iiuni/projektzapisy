@@ -3,8 +3,8 @@ import csv
 import json
 from typing import List
 
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
@@ -14,8 +14,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.templatetags.course_types import \
-    decode_class_type_singular
+from apps.enrollment.courses.templatetags.course_types import decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.timetable.models import Pin
 from apps.schedule.models.term import Term as SchTerm
@@ -24,7 +23,7 @@ from apps.users.models import Employee, Student
 
 
 def build_group_list(groups: List[Group]):
-    """Builds a serializable object containing relevant information about groups
+    """Builds a serializable object containing relevant information about groups.
 
     The information must be sufficient to display information in the timetable
     and perform actions (enqueuing/dequeuing).

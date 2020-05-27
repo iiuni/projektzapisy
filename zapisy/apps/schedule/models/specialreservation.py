@@ -1,14 +1,13 @@
-from django.db import models
-from django.core.validators import ValidationError
 from datetime import date, datetime
 
+from django.core.validators import ValidationError
+from django.db import models
+
+from apps.common import days_of_week
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
-from apps.schedule.models.event import Event
-
-from zapisy import common
-
 from apps.enrollment.courses.models.term import Term as CourseTerm
+from apps.schedule.models.event import Event
 
 
 class SpecialReservationQuerySet(models.query.QuerySet):
@@ -60,7 +59,7 @@ class SpecialReservation(models.Model):
     title = models.CharField(verbose_name='nazwa', max_length=255)
     classroom = models.ForeignKey(Classroom, verbose_name='sala', on_delete=models.CASCADE)
     dayOfWeek = models.CharField(max_length=1,
-                                 choices=common.DAYS_OF_WEEK,
+                                 choices=days_of_week.DAYS_OF_WEEK,
                                  verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name='rozpoczęcie', blank=False)
     end_time = models.TimeField(verbose_name='zakończenie', blank=False)
@@ -76,13 +75,13 @@ class SpecialReservation(models.Model):
             classrooms=None,
             start_time=None,
             end_time=None):
-        """
-        A versatile function returning SpecialReservations. day is either datetime.date or string
+        """A versatile function returning SpecialReservations.
+
+        Day is either datetime.date or string.
 
         :param semester: enrollment.courses.model.Semester
-        :param day: common.DAYS_OF_WEEK or datetime.date
+        :param day: DAYS_OF_WEEK or datetime.date
         """
-
         query = cls.objects.any_semester(semester)
 
         if day is not None:
@@ -137,10 +136,10 @@ class SpecialReservation(models.Model):
             raise ValidationError(message={'__all__': msg_list}, code='overlap')
 
     def clean(self):
-        """
-        Overloaded clean method. Checks for any conflicts between this SpecialReservation
-        and other SpecialReservations, Terms of Events and Terms of Course Groups
+        """Overloaded clean method.
 
+        Checks for any conflicts between this SpecialReservation and other
+        SpecialReservations, Terms of Events and Terms of Course Groups.
         """
         if self.end_time <= self.start_time:
             raise ValidationError(

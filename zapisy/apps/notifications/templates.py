@@ -9,6 +9,7 @@ class NotificationType(str, Enum):
     TEACHER_HAS_BEEN_CHANGED_ENROLLED = 'teacher_has_been_changed_enrolled'
     TEACHER_HAS_BEEN_CHANGED_QUEUED = 'teacher_has_been_changed_queued'
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
+    NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY = 'news_has_been_added_high_priority'
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
 
 
@@ -30,8 +31,9 @@ mapping = {
     'Nastąpiła zmiana prowadzacego w grupie przedmiotu "{course_name}", do której jesteś w kolejce. '
     'Typ grupy to {type}, a nowy prowadzący to {teacher}.',
     NotificationType.NEWS_HAS_BEEN_ADDED:
-    "Dodano nową wiadomość w aktualnościach: {title}\n"
-    "{contents}",
+    "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
+    NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
+    "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
 }

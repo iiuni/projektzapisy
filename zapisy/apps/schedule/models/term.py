@@ -2,21 +2,18 @@ import collections
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.db import models
+from django.db.models import Q
 from django.dispatch import receiver
 
-from .event import Event
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.term import Term as CourseTerm
+
+from .event import Event
 
 
 class Term(models.Model):
-    """
-    Term representation
-    """
-
     event = models.ForeignKey(Event, verbose_name='Wydarzenie', on_delete=models.CASCADE)
 
     day = models.DateField(verbose_name='Dzień')
@@ -74,10 +71,7 @@ class Term(models.Model):
                     code='overlap')
 
     def clean(self):
-        """
-        Overloaded method from models.Model
-        """
-
+        """Overloaded method from models.Model"""
         if self.start and self.end and self.start >= self.end:
             raise ValidationError(
                 message={'end': ['Koniec musi następować po początku']},
@@ -143,8 +137,7 @@ class Term(models.Model):
 
     @classmethod
     def get_exams(cls):
-        """
-        Get list of events with type 'exam'
+        """Get list of events with type 'exam'.
 
         @return: Term QuerySet
         """
@@ -154,8 +147,7 @@ class Term(models.Model):
 
     @classmethod
     def get_terms_for_dates(cls, dates, classroom, start_time=None, end_time=None):
-        """
-        Gets terms in specified classroom on specified days
+        """Gets terms in specified classroom on specified days.
 
         :param end_time: datetime.time
         :param start_time: datetime.time
@@ -177,9 +169,12 @@ class Term(models.Model):
 
     @classmethod
     def prepare_conflict_dict(cls, start_time, end_time):
-        """
-        Head is top term for which next terms (if conflicted in terms of time) will be considered as conflicts.
-        current_result stores conflicts for given current head
+        """Returns a report of conflicting events.
+
+        Head is top term for which next terms (if conflicted in terms of time)
+        will be considered as conflicts. current_result stores conflicts for
+        given current head
+
         @return OrderedDict[day][room][head|conflicted]
         """
         candidates = Term.objects.filter(

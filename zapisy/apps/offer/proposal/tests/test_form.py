@@ -1,7 +1,7 @@
 import datetime
 
-from django import test
 import freezegun
+from django import test
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_type import Type as CourseType
@@ -50,8 +50,7 @@ class ProposalFormTest(test.TestCase):
         cls.semester = SemesterFactory()
 
     def test_current_course_modified(self):
-        """Tests that the form also updates the current instance of the course.
-        """
+        """Tests that the form also updates the current instance of the course."""
         # First, create the proposal.
         form = EditProposalForm(data=self.form_data, user=self.employee.user)
         form.save()

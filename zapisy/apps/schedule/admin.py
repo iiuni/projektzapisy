@@ -1,7 +1,8 @@
-from django.contrib import admin
 from django import forms
-from .models.term import Term
+from django.contrib import admin
+
 from .models.specialreservation import SpecialReservation
+from .models.term import Term
 
 
 class SpecialReservationForm(forms.ModelForm):

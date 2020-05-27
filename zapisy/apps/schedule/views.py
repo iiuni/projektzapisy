@@ -1,35 +1,38 @@
 import datetime
+import operator
+import json
+from functools import reduce
+from itertools import groupby
 from typing import List, NamedTuple, Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.views.decorators.http import require_POST
-import operator
+
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
-from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
+from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
+                                 EventModerationMessageForm, TermFormSet)
+from apps.schedule.models.event import Event
+from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.forms import EventForm, EditTermFormSet, \
     NewTermFormSet, DecisionForm, EventModerationMessageForm, \
     EventMessageForm, ConflictsForm, ExtraTermsNumber
+from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
-from apps.utils.fullcalendar import FullCalendarView
-from .forms import DoorChartForm, TableReportForm
-from itertools import groupby
-from .models.message import EventModerationMessage
 
-from functools import reduce
-import json
+from .forms import DoorChartForm, TableReportForm
+from .fullcalendar import FullCalendarView
+from .models.message import EventModerationMessage
 
 
 @login_required
@@ -134,12 +137,11 @@ def reservations(request):
 @login_required
 @permission_required('schedule.manage_events')
 def conflicts(request):
-    """
-    Finds conflicts in given daterange and pass into template.
+    """Finds conflicts in given daterange and pass into template.
+
     Implemented as 3D dictionary (ordered by day,classroom,hour).
     Works better than naive regroup in template (O(nlog(n)) vs O(n^2)).
     """
-
     form = ConflictsForm(request.GET)
     if form.is_valid():
         beg_date = form.cleaned_data['beg_date']
@@ -376,7 +378,7 @@ def events_report(request):
 
 @login_required
 @permission_required('schedule.manage_events')
-def display_report(request, form, report_type: 'Literal["table", "doors"]'):
+def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # noqa: F821
     class ListEvent(NamedTuple):
         date: Optional[datetime.datetime]
         weekday: int  # Monday is 1, Sunday is 7 like in

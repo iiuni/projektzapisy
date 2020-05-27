@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-
-{% load render_bundle from webpack_loader %}
 {% load filters %}
 
 {% block main-subtitle %}Aktualności{% endblock %}
@@ -56,7 +54,7 @@
                     <span class="od-news-author">{{ news.author.get_full_name }}</span>
                 </div>
                 <div class="my-3">
-                    <div>{{ news.body|markdown }}</div>
+                    <div>{% markdown news.body %}</div>
                 </div>
             </div>
             {% endfor %}
@@ -89,6 +87,4 @@
         </div>
     </div>
 </div>
-
-{% render_bundle 'render-markdown' %}
 {% endblock %}

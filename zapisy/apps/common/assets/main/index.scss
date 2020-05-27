@@ -1,0 +1,205 @@
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+
+@page {
+  size: auto;
+}
+
+html {
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+footer {
+  margin-top: auto;
+  padding-top: 5rem;
+  .container-fluid {
+    background-color: var(--light);
+    padding: 1rem 0;
+    p {
+      margin: .5rem 0;
+    }
+  }
+}
+
+a {
+  cursor: pointer;
+}
+
+@media print {
+  // Some browsers do not handle printing layouts with flexbox. This should be
+  // fixed in Bootstrap.
+  // https://github.com/twbs/bootstrap/issues/26781
+  .row,
+  .form-row {
+    display: block;
+  }
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+div.header {
+ /* Old browsers */
+  height: 96px;
+}
+
+.top {
+  background-color: #00709e;
+}
+
+// Developement runs will flash orange top bar.
+body.debug {
+  .top {
+    background-color: rgb(217, 89, 0);
+  }
+}
+
+div.top .topbar .inline-inputs label {
+  float: none;
+  color: #FFFFFF;
+}
+
+#login-dropdown {
+  .dropdown-menu {
+    padding: 12px;
+    background: rgba($light, 0.75);
+
+    .btn {
+      padding: 10px 5px;
+      margin: 10px auto;
+      display: block;
+      text-align: center;
+      background-image: none;
+      border: none;
+      font-weight: bolder;
+      width: 100%;
+    }
+
+    #btn-usos {
+      padding: 5px;
+    }
+  }
+}
+
+#sidebar {
+  @media (max-width: 992px) {
+    #sidebar-inner {
+      overflow-y: hidden;
+
+      &.folded {
+        max-height: 200px;
+
+        // Blurs over the bottom of filter card.
+        &:after {
+          position: absolute;
+          display: block;
+          // Height of the card footer.
+          bottom: 1.5em;
+          left: 0;
+          height: 50%;
+          width: 100%;
+          content: "";
+          // Bootstrap light colour.
+          background: linear-gradient(to top,
+              rgba(255,255,255, 1) 0%, 
+              rgba(255,255,255, 0) 100%
+          );
+          pointer-events: none; /* so the text is still selectable */
+        }
+      }
+    }
+    #fold-toggler {
+      display: block;
+      text-align: center;
+    }
+  }
+  @media (min-width: 992px) {
+    #fold-toggler {
+      display: none;
+    }
+  }
+}
+
+div.loginbox {
+  background-color: #f5f5f5;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+}
+
+#system_menu {
+  width: 100%;
+  ul#main-menu-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 0;
+    li {
+      flex: 0 0 auto;
+      margin: 0 2px;
+      a {
+        background-color: #005f92;
+        color: #FFFFFF;
+        margin-right: 1px;
+      }
+
+      &.active a {
+        background-color: #FFFFFF;
+        color: #005f92;
+        margin-right: 1px;
+      }
+    }
+  }
+}
+
+colgroup col.table-info-type  {
+	background-color: #F9F9F9;
+}
+
+// Required field marker in forms.
+.asteriskField {
+  padding-left: .25em;
+  color: var(--red);
+}
+
+// News items on the main page and the news page.
+.od-news-item {
+  margin: 2rem 0;
+  padding: 4rem;
+  background: var(--light);
+
+  .od-news-date {
+    color: var(--dark);
+    font-style: italic;
+    display: block;
+    @media (min-width: 992px) {
+      float: right;
+    }
+  }
+
+  .od-news-author {
+    font-style: italic;
+    font-variant: small-caps;
+    font-size: 120%;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  // The news pops out slightly on hover.
+  &:hover {
+    transform: scale(1.01, 1.01);
+    transition: transform 250ms;
+  }
+}

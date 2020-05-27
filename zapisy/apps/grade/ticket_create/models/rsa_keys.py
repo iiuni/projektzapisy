@@ -1,7 +1,9 @@
 import json
-from django.db import models
-from Crypto.PublicKey import RSA
+
 from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from django.db import models
+
 from apps.grade.poll.models import Poll
 
 
@@ -21,8 +23,7 @@ class RSAKeys(models.Model):
         return f'Klucze RSA: {self.poll}'
 
     def serialize_for_signing_protocol(self):
-        """Extracts public parts of the key,
-        needed for ticket signing protocol"""
+        """Extracts public parts of the key, needed for ticket signing protocol."""
         key = RSA.importKey(self.private_key)
         return {
             'n': str(key.n),
@@ -32,12 +33,14 @@ class RSAKeys(models.Model):
     @staticmethod
     def parse_raw_tickets(raw_tickets):
         """Parses raw json containing tickets.
+
         Raises:
             JSONDecodeError: when provided string is not in json format.
             ValueError: when there is something wrong with internal ticket format,
                 for example, some of the required fields are not provided, type
                 of field is incorrect, there are duplicate ids, or id does not
                 exist in database.
+
         Returns:
             Tuple of (valid_polls, error_polls), where error_polls are list of those
             polls, for which signature was incorrect, and valid_polls is list of named tuples,

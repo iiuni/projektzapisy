@@ -47,7 +47,7 @@ class SubmissionEntryForm(forms.ModelForm):
             updated_answers = self.instance.answers
             for index, field in enumerate(self.jsonfields):
                 field_name = f"field_{index}"
-                answer = updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
+                updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
 
             self.instance.submitted = True
             self.instance.answers = updated_answers
@@ -56,7 +56,9 @@ class SubmissionEntryForm(forms.ModelForm):
 
     @staticmethod
     def __determine_field_by_type(field: Dict, active=True):
-        """Uses the `question_type` to correctly identify what field
+        """Deduces HTML field type from `question_type`.
+
+        Uses the `question_type` to correctly identify what field
         should be used according to the rules defined in schema.
 
         :param field: a single entry in JSON Schema that defines the field.

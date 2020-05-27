@@ -12,7 +12,9 @@ import requests
 
 
 def _hash(m: int) -> int:
-    """We are using hash function to disable multiplicative properties
+    """Hashes a string representation of an int.
+
+    We are using hash function to disable multiplicative properties
     of RSA encryption/decryption. In other words, if E(m) is standard rsa
     encryption/decryption, then E(m*k) = E(m) * E(k), but if we set
     E'(m) = E(H(m)), where H is hash function, then E'(m*k) != E'(m) * E'(k).
@@ -73,7 +75,7 @@ class RSAPublicKey(NamedTuple):
 
 
 class PollData:
-    """This class serves the purpose of holding data related to poll"""
+    """This class serves the purpose of holding data related to poll."""
     def __init__(self, poll: Dict, ticket=None):
         self.pub_key = RSAPublicKey(int(poll['key']['n']), int(poll['key']['e']))
         self.name = poll['poll_info']['name']
@@ -99,8 +101,10 @@ class TicketCreate:
     def _post(self, path: str, data=None, json=None) -> requests.Response:
         """Wrapper for self.client.post."""
         def raise_for_status_with_message(r: requests.Response):
-            """Takes a "requests" response object and expands the
-            raise_for_status method to return more helpful errors.
+            """Inspects response HTTP code.
+
+            Takes a "requests" response object and expands the raise_for_status
+            method to return more helpful errors.
             """
             try:
                 r.raise_for_status()
@@ -136,8 +140,10 @@ class TicketCreate:
             raise RuntimeError("Login failed - probably wrong username or password")
 
     def get_polls(self) -> Dict[int, PollData]:
-        """First step of the protocol, query the server for polls metadata(name, type, id)
-        and public keys.
+        """First step of the protocol.
+
+        Query the server for polls metadata(name, type, id) and public keys.
+
         Returns:
             Dict with id as a key, and as a value, data received from the server,
             wrapped in PollData class.
@@ -147,8 +153,10 @@ class TicketCreate:
         return {poll['poll_info']['id']: PollData(poll) for poll in polls}
 
     def get_blinded_tickets_for_signing(self, polls: Dict[int, PollData]):
-        """Second step of the protocol, after generating tickets, sends them,
-        blinded, to the server for signing.
+        """Second step of the protocol.
+
+        After generating tickets, sends them, blinded, to the server for
+        signing.
         """
         data = {
             'signing_requests': []
@@ -190,7 +198,7 @@ class TicketCreate:
 
     @property
     def csrf_token(self):
-        """get CSRF Token"""
+        """Get CSRF Token provided by the server."""
         if 'csrftoken' in self.session.cookies:
             return self.session.cookies['csrftoken']
         raise AttributeError("CSRF token not found")

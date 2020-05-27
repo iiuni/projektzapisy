@@ -1,7 +1,7 @@
 from django.db import models
 
+from apps.common import days_of_week
 from apps.enrollment.courses.models.semester import Semester
-from zapisy import common
 
 
 class Desiderata(models.Model):
@@ -10,7 +10,7 @@ class Desiderata(models.Model):
         verbose_name='prowadzący',
         on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
-    day = models.CharField(max_length=1, choices=common.DAYS_OF_WEEK, verbose_name='dzień tygodnia')
+    day = models.CharField(max_length=1, choices=days_of_week.DAYS_OF_WEEK, verbose_name='dzień tygodnia')
     hour = models.IntegerField(verbose_name='godzina')
 
     @staticmethod

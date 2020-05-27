@@ -12,13 +12,11 @@ from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
+from apps.enrollment.courses.models.group import GroupType
 from apps.offer.plan.sheets import (create_sheets_service, read_entire_sheet,
-                                    update_plan_proposal_sheet,
-                                    update_voting_results_sheet)
-from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData,
-                                   EmployeesSummary, SingleAssignmentData,
-                                   Statistics, TeacherInfo, get_last_years,
+                                    update_plan_proposal_sheet, update_voting_results_sheet)
+from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData, EmployeesSummary,
+                                   SingleAssignmentData, Statistics, TeacherInfo, get_last_years,
                                    get_subjects_data, get_votes, propose,
                                    sort_subject_groups_by_type)
 from apps.offer.proposal.models import Proposal, ProposalStatus
@@ -80,7 +78,13 @@ def plan_view(request):
         code = employee[4]
         balance = float(employee[11]) if employee[11] else 0
         ed: EmployeeData(status, name, pensum, balance) = {
-            'status': status, 'name': name, 'pensum': pensum, 'balance': balance, 'courses_winter': [], 'courses_summer': []}
+            'status': status,
+            'name': name,
+            'pensum': pensum,
+            'balance': balance,
+            'courses_winter': [],
+            'courses_summer': []
+        }
         if status == 'pracownik':
             staff[code] = copy.copy(ed)
         elif status == 'doktorant':
@@ -256,15 +260,18 @@ def plan_create_voting_sheet(request):
     return HttpResponseRedirect(reverse('plan-create'))
 
 
-# generates a json file used by scheduler or puts the very same data in csv file, depending on format argument
-# data comes from both employees and assignments Google sheets
 @staff_member_required
 def generate_scheduler_file(request, slug, format):
     """Creates a file for scheduler system to use.
 
+    Generates a json file used by scheduler or puts the very same data in csv
+    file, depending on format argument. Data comes from both employees and
+    assignments Google sheets.
+
     Args:
         slug: represents semester, 'lato' for summer, 'zima' for winter.
         format: format of requested file, either 'csv' or 'json'.
+
     Returns:
         File in the desired format in a response.
     """
@@ -285,8 +292,8 @@ def generate_scheduler_file(request, slug, format):
         return render(request, '404.html')
 
     groups = {}
-    for group in GROUP_TYPE_CHOICES:
-        groups[group[1]] = group[0]
+    for group in GroupType:
+        groups[group.label] = group.value
 
     for employee in employees:
         # if pensum is not castable to float, just skip this row
@@ -338,7 +345,8 @@ def generate_scheduler_file(request, slug, format):
         except Proposal.ObjectDoesNotExist:
             course_id = -1
 
-        # if single group is taught by few teachers, remember the index number that points to that group
+        # If single group is taught by few teachers, remember the index number
+        # that points to that group.
         if assignment_multiple_teachers:
             if (course_name, assignment_multiple_teachers) in multiple_teachers:
                 id = multiple_teachers[(
@@ -350,8 +358,16 @@ def generate_scheduler_file(request, slug, format):
         else:
             id = index
 
-        scheduler_assignment = {'type': 'course', 'semester': semester, 'course_id': course_id,
-                                'course_name': course_name, 'id': id, 'group_type': group_type, 'hours': hours, 'teacher_id': code}
+        scheduler_assignment = {
+            'type': 'course',
+            'semester': semester,
+            'course_id': course_id,
+            'course_name': course_name,
+            'id': id,
+            'group_type': group_type,
+            'hours': hours,
+            'teacher_id': code
+        }
         content.append(scheduler_assignment)
         index += 1
 

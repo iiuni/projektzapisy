@@ -1,16 +1,15 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
-from django.contrib import messages
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
-from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
+from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
-from apps.enrollment.records.models import Record, RecordStatus, T0Times, GroupOpeningTimes
+from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 
 
 class GroupInline(admin.TabularInline):
@@ -32,12 +31,27 @@ class SemesterAdmin(admin.ModelAdmin):
     list_display = ('get_name', 'visible')
     list_filter = ('visible', 'year', 'type')
     fieldsets = [
-        (None, {'fields': ['year', 'type', 'visible']}),
-        ('Ocena', {'fields': ['is_grade_active', 'first_grade_semester', 'second_grade_semester']}),
-        ('Czas trwania semestru', {'fields': ['semester_beginning', 'semester_ending']}),
-        ('Czas trwania zajęć', {'fields': ['lectures_beginning', 'lectures_ending']}),
-        ('Czas trwania zapisów', {'fields': ['records_opening', 'records_ects_limit_abolition', 'records_ending', 'records_closing']}),
-        ('Czas trwania dezyderat', {'fields': ['desiderata_opening', 'desiderata_closing']}),
+        (None, {
+            'fields': ['year', 'type', 'visible']
+        }),
+        ('Ocena', {
+            'fields': ['is_grade_active', 'first_grade_semester', 'second_grade_semester']
+        }),
+        ('Czas trwania semestru', {
+            'fields': ['semester_beginning', 'semester_ending']
+        }),
+        ('Czas trwania zajęć', {
+            'fields': ['lectures_beginning', 'lectures_ending']
+        }),
+        ('Czas trwania zapisów', {
+            'fields': [
+                'records_opening', 'records_ects_limit_abolition', 'records_ending',
+                'records_closing'
+            ]
+        }),
+        ('Czas trwania dezyderat', {
+            'fields': ['desiderata_opening', 'desiderata_closing']
+        }),
     ]
     list_editable = ('visible',)
 
@@ -93,7 +107,9 @@ class GuaranteedSpotsInline(admin.StackedInline):
     extra = 0
     fieldsets = ((None, {
         'fields': ('role', 'limit'),
-        'description': "<strong style='color: red'>Grupy użytkowników, którym gwarantujemy miejsca w jednej grupie zajęciowej muszą być rozłączne!</strong>",
+        'description': ("<strong style='color: red'>Grupy użytkowników, którym "
+                        "gwarantujemy miejsca w jednej grupie zajęciowej muszą być "
+                        "rozłączne!</strong>"),
     }), )
 
 
@@ -146,10 +162,7 @@ class GroupAdmin(admin.ModelAdmin):
         return super(GroupAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-        """
-        Filter the objects displayed in the change_list to only
-        display those for the currently signed in user.
-        """
+        """Joins in group data from other models for display."""
         qs = super(GroupAdmin, self).get_queryset(request)
         return qs.select_related('teacher', 'teacher__user', 'course',
                                  'course__semester').prefetch_related('term', 'record_set')

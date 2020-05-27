@@ -1,8 +1,7 @@
 from django import forms
-from django.forms.formsets import formset_factory, BaseFormSet
+from django.forms.formsets import BaseFormSet, formset_factory
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
-
 
 REVERSE_DAY = {
     '1': 'Poniedziałek',

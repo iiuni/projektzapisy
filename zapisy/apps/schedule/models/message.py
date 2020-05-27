@@ -1,6 +1,7 @@
-from django.db import models
-from apps.schedule.models.event import Event
 from django.contrib.auth.models import User
+from django.db import models
+
+from apps.schedule.models.event import Event
 
 
 class EventModerationMessage(models.Model):
@@ -18,14 +19,11 @@ class EventModerationMessage(models.Model):
 
     @classmethod
     def get_event_messages(cls, event):
-        """
-
-        Get list of EventMessages for event
+        """Get list of EventMessages for event.
 
         @param event: Event object
         @return: list of EventModerationMessage
         """
-
         return cls.objects.filter(event=event).select_related('author')
 
 
@@ -43,14 +41,11 @@ class Message(models.Model):
 
     @classmethod
     def get_event_messages(cls, event):
-        """
-
-        Get list of EventMessages for event
+        """Get list of EventMessages for event.
 
         @param event: Event object
         @return: list of EventModerationMessage
         """
-
         return cls.objects.filter(event=event).select_related('author')
 
 

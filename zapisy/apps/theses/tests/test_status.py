@@ -1,10 +1,10 @@
 from django.test import TestCase
-from apps.theses.models import Thesis, Vote, ThesesSystemSettings
+
 from apps.theses.enums import ThesisStatus, ThesisVote
-from apps.theses.system_settings import change_status
 from apps.theses.forms import EditThesisForm
-from apps.users.models import Employee, Student, User
-from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
+from apps.theses.models import ThesesSystemSettings, Thesis, Vote
+from apps.theses.system_settings import change_status
+from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 
 class ThesisStatusChangeTestCase(TestCase):
@@ -12,17 +12,27 @@ class ThesisStatusChangeTestCase(TestCase):
         self.thesis_owner = EmployeeFactory()
 
         Thesis.objects.create(title="thesis_vote_0",
-                              advisor=self.thesis_owner, kind=0, status=ThesisStatus.BEING_EVALUATED)
-        thesis_vote_1 = Thesis.objects.create(
-            title="thesis_vote_1", advisor=self.thesis_owner, kind=0, status=ThesisStatus.BEING_EVALUATED)
+                              advisor=self.thesis_owner,
+                              kind=0,
+                              status=ThesisStatus.BEING_EVALUATED)
+        thesis_vote_1 = Thesis.objects.create(title="thesis_vote_1",
+                                              advisor=self.thesis_owner,
+                                              kind=0,
+                                              status=ThesisStatus.BEING_EVALUATED)
         thesis_vote_1.students.add(StudentFactory())
 
         Thesis.objects.create(title="thesis_edit_0",
-                              advisor=self.thesis_owner, kind=0, status=ThesisStatus.ACCEPTED)
-        Thesis.objects.create(title="thesis_edit_1", advisor=self.thesis_owner,
-                              kind=0, status=ThesisStatus.RETURNED_FOR_CORRECTIONS)
-        test_edit_2 = Thesis.objects.create(
-            title="thesis_edit_2", advisor=self.thesis_owner, kind=0, status=ThesisStatus.IN_PROGRESS)
+                              advisor=self.thesis_owner,
+                              kind=0,
+                              status=ThesisStatus.ACCEPTED)
+        Thesis.objects.create(title="thesis_edit_1",
+                              advisor=self.thesis_owner,
+                              kind=0,
+                              status=ThesisStatus.RETURNED_FOR_CORRECTIONS)
+        test_edit_2 = Thesis.objects.create(title="thesis_edit_2",
+                                            advisor=self.thesis_owner,
+                                            kind=0,
+                                            status=ThesisStatus.IN_PROGRESS)
         test_edit_2.students.add(StudentFactory())
 
         settings = ThesesSystemSettings.objects.get()

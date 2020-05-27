@@ -1,18 +1,15 @@
-from django.shortcuts import render
 from django.contrib import messages
+from django.shortcuts import render
 
-from apps.offer.desiderata.models import Desiderata, DesiderataOther
-from apps.offer.desiderata.forms import DesiderataFormSet, DesiderataOtherForm
 from apps.enrollment.courses.models.semester import Semester
+from apps.offer.desiderata.forms import DesiderataFormSet, DesiderataOtherForm
+from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.users.decorators import employee_required
 
 
 @employee_required
 def change_desiderata(request):
-    """
-    This view is to change desiderata for semester
-    in which the desiderata is currently open.
-    """
+    """Handles form in semester with desiderata currently open."""
     user = request.user
     employee = user.employee
     semester = Semester.get_default_semester()

@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-
-{% load render_bundle from webpack_loader %}
 {% load filters %}
 
 {% block main-subtitle %}Strona główna{% endblock %}
@@ -17,7 +15,7 @@
             <span class="od-news-author">{{ news.author.get_full_name }}</span>
         </div>
         <div class="my-3">
-            {{ news.body|markdown }}
+            {% markdown news.body %}
         </div>
     </div>
     {% endfor %}
@@ -42,6 +40,4 @@
             <a class="btn btn-secondary" href="{% url 'grade-main' %}">Przejdź</a>
         </div>
     </div>
-
-    {% render_bundle 'render-markdown' %}
 {% endblock %}

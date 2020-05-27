@@ -7,15 +7,15 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.users.models import Program, Student
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.offer.vote.models.single_vote import SingleVote
+from apps.users.models import Student
 
 
 class T0Times(models.Model):
@@ -57,9 +57,11 @@ class T0Times(models.Model):
 
     @classmethod
     def populate_t0(cls, semester: Semester):
-        """Computes T0's for all active students based on their ECTS points and
-        their participation in courses grading. The additional administrative
-        bonus is also taken into account.
+        """Computes T0's for all active students.
+
+        The times are based on their ECTS points and their participation in
+        courses grading. The additional administrative bonus is also taken into
+        account.
 
         The function will throw a DatabaseError if something goes wrong.
         """
