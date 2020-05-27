@@ -19,7 +19,7 @@ var listOfEmpty = [];
 // type. For event it displays title and visibility fields.
 // For exams it displays course choice field.
 function setFormDisplay() {
-  if ($("#form-type").val() == 2) {
+  if ($("#form-type").val() === 2) {
     $("#form-course").addClass("d-none");
     $(".form-event").removeClass("d-none");
   } else {
@@ -103,7 +103,7 @@ function deleteTermClick(event) {
 
 function newTermClick(event) {
   event.preventDefault();
-  if (formsetCounter == maxFormsetNumber) return;
+  if (formsetCounter === maxFormsetNumber) return;
 
   if (!listOfEmpty) return;
 
