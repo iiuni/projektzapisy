@@ -21,12 +21,10 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
-                                 EventModerationMessageForm, TermFormSet)
+                                 EventModerationMessageForm, EditTermFormSet, NewTermFormSet,
+                                 ExtraTermsNumber)
 from apps.schedule.models.event import Event
 from apps.schedule.models.specialreservation import SpecialReservation
-from apps.schedule.forms import EventForm, EditTermFormSet, \
-    NewTermFormSet, DecisionForm, EventModerationMessageForm, \
-    EventMessageForm, ConflictsForm, ExtraTermsNumber
 from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 

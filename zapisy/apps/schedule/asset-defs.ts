@@ -7,9 +7,6 @@ export default {
       "fullcalendar": [
          "fullcalendar.ts"
       ],
-      "classroom-chooser": [
-         "classroomchooser.js",
-      ],
       "report": [
          "report.js",
          "report.css",
