@@ -66,7 +66,7 @@ import ClassroomField from "./ClassroomField.vue";
         .find(".form-day")
         .val();
 
-      if (date == "") {
+      if (date === "") {
         self.classrooms = [];
         self.unoccupiedClassrooms = [];
         return;
@@ -78,34 +78,27 @@ import ClassroomField from "./ClassroomField.vue";
           let item = response.data[key];
           let termsLayer = [];
 
-          if (item.occupied.length != 0) {
-            let width = calculateLength("08:00", item.occupied[0].begin);
-            termsLayer.push({
-              width: width,
-              occupied: false
-            });
-          }
+          item.occupied.push({
+            begin: "22:00"
+          });
+          let lastFree = "08:00";
 
-          for (let i = 0; i < item.occupied.length; i++) {
-            let width = calculateLength(
-              item.occupied[i].begin,
-              item.occupied[i].end
-            );
-            termsLayer.push({
-              width: width,
-              occupied: true
-            });
-
-            let nextEnd =
-              i + 1 != item.occupied.length
-                ? item.occupied[i + 1].begin
-                : "22:00";
-            let emptyWidth = calculateLength(item.occupied[i].end, nextEnd);
-
+          for (const occ of item.occupied) {
+            const emptyWidth = calculateLength(lastFree, occ.begin);
             termsLayer.push({
               width: emptyWidth,
               occupied: false
             });
+            if (!occ.end) {
+              // We reached the last, dummy event.
+              break;
+            }
+            let width = calculateLength(occ.begin, occ.end);
+            termsLayer.push({
+              width: width,
+              occupied: true
+            });
+            lastFree = occ.end;
           }
 
           self.classrooms.push({
