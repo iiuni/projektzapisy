@@ -24,8 +24,8 @@ import { TermDisplay } from "../terms";
     }
   },
   methods: {
-    /* Wybierając salę za pomocą widgetu powinniśmy zmienić wartość pól room i place
-       aktualnie edytowanego terminu. Robimy to za pośrednictwem JQuery. */
+    // When changing location using widget we have to change values of room and place
+    // fields of currently edited term. We do it using JQuery.
     onClick: function() {
       $(".active-term")
         .find(".form-room")
