@@ -89,11 +89,7 @@ NewTermFormSet = inlineformset_factory(Event,
                                        form=TermForm,
                                        can_delete=True)
 
-EditTermFormSet = inlineformset_factory(Event,
-                                        Term, 
-                                        extra=ExtraTermsNumber, 
-                                        form=TermForm, 
-                                        can_delete=True)
+EditTermFormSet = inlineformset_factory(Event, Term, extra=ExtraTermsNumber, form=TermForm, can_delete=True)
 
 
 class CustomVisibleCheckbox(Field):

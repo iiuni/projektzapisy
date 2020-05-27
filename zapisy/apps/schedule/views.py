@@ -70,9 +70,7 @@ def new_reservation(request, event_id=None):
     else:
         form = EventForm(request.user)
         formset = NewTermFormSet(form_kwargs={'user': request.user})
-    return render(request, 
-                'schedule/reservation.html', 
-                {'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
+    return render(request, 'schedule/reservation.html', {'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
 
 
 @login_required
@@ -104,8 +102,8 @@ def edit_reservation(request, event_id=None):
             return redirect(event)
     errors = True
 
-    return TemplateResponse(request, 
-                            'schedule/reservation.html', 
+    return TemplateResponse(request,
+                            'schedule/reservation.html',
                             {'is_edit': is_edit, 'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
 
 
