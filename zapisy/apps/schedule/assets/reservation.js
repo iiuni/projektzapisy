@@ -1,3 +1,7 @@
+// The following code is responsible for display of reservation form
+// and management of terms formset, including adding, removing and
+// editing reservation terms.
+
 import "jquery";
 const $ = jQuery;
 
