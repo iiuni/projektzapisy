@@ -97,8 +97,7 @@ class Event(models.Model):
                     'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(
-                        message={
-                            'type': ['Nie masz uprawnień aby dodawać wydarzenia tego typu']},
+                        message={'type': ['Nie masz uprawnień aby dodawać wydarzenia tego typu']},
                         code='permission')
 
                 if self.status != Event.STATUS_PENDING:
