@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export interface Term {
   width: string;
   occupied: boolean;
@@ -34,14 +36,12 @@ export function calculateLength(
   startTime: string,
   endTime: string
 ) {
-  let hS = Number(startTime.substr(0, 2));
-  let mS = Number(startTime.substr(3, 5));
-  let hE = Number(endTime.substr(0, 2));
-  let mE = Number(endTime.substr(3, 5));
+  let momentStartTime = moment(startTime, "HH:mm");
+  let momentEndTime = moment(endTime, "HH:mm");
 
-  let hD = hE - hS;
-  let mD = mE - mS < 0 ? 60 + mE - mS : mE - mS;
-  hD = mE - mS < 0 ? hD - 1 : hD;
+  var duration = moment
+    .duration(momentEndTime.diff(momentStartTime))
+    .asHours();
 
-  return String(((hD + mD / 60) / 14) * 100) + "%";
+  return String((duration / 14) * 100) + "%";
 }
