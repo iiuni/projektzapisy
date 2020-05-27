@@ -174,24 +174,26 @@ class EventMessageForm(forms.ModelForm):
 class DecisionForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('status', )
+        fields = ('status',)
 
 
 class TableReportForm(forms.Form):
     """Form for generating table-based events report."""
     today = date.today().isoformat()
-    beg_date = forms.DateField(label='Od:',
-                               widget=forms.TextInput(attrs={
-                                   'type': 'date',
-                                   'class': 'form-control',
-                                   'value': today
-                               }))
-    end_date = forms.DateField(label='Do:',
-                               widget=forms.TextInput(attrs={
-                                   'type': 'date',
-                                   'class': 'form-control',
-                                   'value': today
-                               }))
+    beg_date = forms.DateField(
+        label='Od:',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
+    end_date = forms.DateField(
+        label='Do:',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
     rooms = forms.MultipleChoiceField()
 
     def __init__(self, *args, **kwargs):
@@ -230,15 +232,17 @@ class DoorChartForm(forms.Form):
 
 class ConflictsForm(forms.Form):
     today = date.today().isoformat()
-    beg_date = forms.DateField(label='Od:',
-                               widget=forms.TextInput(attrs={
-                                   'type': 'date',
-                                   'class': 'form-control',
-                                   'value': today
-                               }))
-    end_date = forms.DateField(label='Do:',
-                               widget=forms.TextInput(attrs={
-                                   'type': 'date',
-                                   'class': 'form-control',
-                                   'value': today
-                               }))
+    beg_date = forms.DateField(
+        label='Od:',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
+    end_date = forms.DateField(
+        label='Do:',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'value': today}))
