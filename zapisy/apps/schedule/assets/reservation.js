@@ -153,8 +153,6 @@ $(document).ready(() => {
     $("#extra-terms-number").val()
   );
 
-  console.log(extraTermsNumber);
-
   // Extra terms in formset should remain hidden, as they are empty.
   // The rest is either one basic term form or terms that are already in
   // database, so they should be displayed.
