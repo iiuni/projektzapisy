@@ -71,7 +71,7 @@ class Term(models.Model):
                     code='overlap')
 
     def clean(self):
-        """Overloaded method from models.Model"""
+        """Overloaded method from models.Model."""
         if self.start and self.end and self.start >= self.end:
             raise ValidationError(
                 message={'end': ['Koniec musi następować po początku']},
