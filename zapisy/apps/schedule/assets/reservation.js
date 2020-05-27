@@ -3,6 +3,7 @@ const $ = jQuery;
 
 var formsetCounter = 0;
 var maxFormsetNumber = 0;
+var extraTermsNumber = 0;
 
 // List of positions of empty term forms that are available
 // to add to the formset as new term forms. If list contains
@@ -143,10 +144,17 @@ $(document).ready(() => {
     $('input[name="term_set-TOTAL_FORMS"]').val()
   );
 
-  // As we always get 10 extra term forms that should be hidden.
+  // We get number of extra term forms (empty ones) received from server
+  extraTermsNumber = parseInt(
+    $("#extra-terms-number").val()
+  );
+
+  console.log(extraTermsNumber);
+
+  // Extra terms in formset should remain hidden, as they are empty.
   // The rest is either one basic term form or terms that are already in
-  // database.
-  formsetCounter = maxFormsetNumber - 10;
+  // database, so they should be displayed.
+  formsetCounter = maxFormsetNumber - extraTermsNumber;
 
   // Displaying term forms that are invalid.
   $(".term-form")

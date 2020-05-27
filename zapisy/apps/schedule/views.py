@@ -21,7 +21,7 @@ from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import EventForm, EditTermFormSet, \
     NewTermFormSet, DecisionForm, EventModerationMessageForm, \
-    EventMessageForm, ConflictsForm
+    EventMessageForm, ConflictsForm, ExtraTermsNumber
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
 from apps.utils.fullcalendar import FullCalendarView
 from .forms import DoorChartForm, TableReportForm
@@ -70,7 +70,9 @@ def new_reservation(request, event_id=None):
     else:
         form = EventForm(request.user)
         formset = NewTermFormSet(form_kwargs={'user': request.user})
-    return render(request, 'schedule/reservation.html', {'form': form, 'formset': formset})
+    return render(request, 
+                'schedule/reservation.html', 
+                {'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
 
 
 @login_required
@@ -102,7 +104,9 @@ def edit_reservation(request, event_id=None):
             return redirect(event)
     errors = True
 
-    return TemplateResponse(request, 'schedule/reservation.html', locals())
+    return TemplateResponse(request, 
+                            'schedule/reservation.html', 
+                            {'is_edit': is_edit, 'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
 
 
 def session(request, semester=None):

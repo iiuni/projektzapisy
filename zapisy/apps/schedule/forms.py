@@ -79,15 +79,21 @@ class TermForm(forms.ModelForm):
                 css_class="term-form d-none"))
 
 
+# Number of extra term forms is kept in this variable, as it is send to the form
+ExtraTermsNumber = 10
 NewTermFormSet = inlineformset_factory(Event,
                                        Term,
-                                       extra=10,
+                                       extra=ExtraTermsNumber,
                                        min_num=1,
                                        validate_min=True,
                                        form=TermForm,
                                        can_delete=True)
 
-EditTermFormSet = inlineformset_factory(Event, Term, extra=10, form=TermForm, can_delete=True)
+EditTermFormSet = inlineformset_factory(Event,
+                                        Term, 
+                                        extra=ExtraTermsNumber, 
+                                        form=TermForm, 
+                                        can_delete=True)
 
 
 class CustomVisibleCheckbox(Field):

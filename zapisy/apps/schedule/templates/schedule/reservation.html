@@ -17,6 +17,7 @@
 
 {% block all-content %}
 <h2>{% if is_edit %}Edytuj rezerwację{% else %}Nowa rezerwacja{% endif %}</h2>
+<input id="extra-terms-number" class="d-none" value="{{ extra_terms_number }}">
 <form method="POST" class="post-form" id="main-form">
     <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ml-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ml-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
     {% csrf_token %}
