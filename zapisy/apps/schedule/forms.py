@@ -1,13 +1,11 @@
 from collections import defaultdict
-from copy import deepcopy
 from datetime import date, datetime, timedelta
 
 from django import forms
-from django.forms import HiddenInput
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Fieldset, Row, Column, ButtonHolder, Submit, HTML, Div
+from crispy_forms.layout import Field, Layout, Row, Column, HTML, Div
 
 from apps.enrollment.courses.models.classroom import Classroom, Floors
 from apps.enrollment.courses.models.course_instance import CourseInstance
@@ -70,7 +68,8 @@ class TermForm(forms.ModelForm):
                 Column('place', css_class='form-group col-3 mb-0'),
                 Column(HTML(
                     '<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> <button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
-                ), css_class='col-3 mb-0'),
+                ),
+                       css_class='col-3 mb-0'),
                 css_class='form-row p-2'),
                 'room',
                 'id',
@@ -88,7 +87,11 @@ NewTermFormSet = inlineformset_factory(Event,
                                        form=TermForm,
                                        can_delete=True)
 
-EditTermFormSet = inlineformset_factory(Event, Term, extra=ExtraTermsNumber, form=TermForm, can_delete=True)
+EditTermFormSet = inlineformset_factory(Event,
+                                        Term,
+                                        extra=ExtraTermsNumber,
+                                        form=TermForm,
+                                        can_delete=True)
 
 
 class CustomVisibleCheckbox(Field):
@@ -103,7 +106,8 @@ class EventForm(forms.ModelForm):
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
-        help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
+        help_text=
+        "Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
     type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT,
                              label="Rodzaj",
@@ -112,7 +116,8 @@ class EventForm(forms.ModelForm):
         label="Wydarzenie widoczne dla wszystkich użytkowników systemu",
         widget=forms.CheckboxInput(attrs={'class': ""}),
         required=False,
-        help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
+        help_text=
+        "Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
                                     label="Przedmiot",
@@ -169,26 +174,24 @@ class EventMessageForm(forms.ModelForm):
 class DecisionForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('status',)
+        fields = ('status', )
 
 
 class TableReportForm(forms.Form):
     """Form for generating table-based events report."""
     today = date.today().isoformat()
-    beg_date = forms.DateField(
-        label='Od:',
-        widget=forms.TextInput(
-            attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'value': today}))
-    end_date = forms.DateField(
-        label='Do:',
-        widget=forms.TextInput(
-            attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'value': today}))
+    beg_date = forms.DateField(label='Od:',
+                               widget=forms.TextInput(attrs={
+                                   'type': 'date',
+                                   'class': 'form-control',
+                                   'value': today
+                               }))
+    end_date = forms.DateField(label='Do:',
+                               widget=forms.TextInput(attrs={
+                                   'type': 'date',
+                                   'class': 'form-control',
+                                   'value': today
+                               }))
     rooms = forms.MultipleChoiceField()
 
     def __init__(self, *args, **kwargs):
@@ -227,17 +230,15 @@ class DoorChartForm(forms.Form):
 
 class ConflictsForm(forms.Form):
     today = date.today().isoformat()
-    beg_date = forms.DateField(
-        label='Od:',
-        widget=forms.TextInput(
-            attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'value': today}))
-    end_date = forms.DateField(
-        label='Do:',
-        widget=forms.TextInput(
-            attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'value': today}))
+    beg_date = forms.DateField(label='Od:',
+                               widget=forms.TextInput(attrs={
+                                   'type': 'date',
+                                   'class': 'form-control',
+                                   'value': today
+                               }))
+    end_date = forms.DateField(label='Do:',
+                               widget=forms.TextInput(attrs={
+                                   'type': 'date',
+                                   'class': 'form-control',
+                                   'value': today
+                               }))

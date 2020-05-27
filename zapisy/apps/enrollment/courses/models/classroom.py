@@ -1,5 +1,3 @@
-import json
-
 from django.db import models
 from django.urls import reverse
 from django_extensions.db.fields import AutoSlugField

@@ -101,7 +101,6 @@ def edit_reservation(request, event_id=None):
 
             messages.success(request, 'Zmieniono zdarzenie')
             return redirect(event)
-    errors = True
 
     return TemplateResponse(request,
                             'schedule/reservation.html',
