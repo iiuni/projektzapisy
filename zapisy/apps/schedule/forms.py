@@ -69,7 +69,7 @@ class TermForm(forms.ModelForm):
                 Column(HTML(
                     '<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> <button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
                 ),
-                       css_class='col-3 mb-0'),
+                    css_class='col-3 mb-0'),
                 css_class='form-row p-2'),
                 'room',
                 'id',
@@ -106,8 +106,7 @@ class EventForm(forms.ModelForm):
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
-        help_text=
-        "Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
+        help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne; widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
     type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT,
                              label="Rodzaj",
@@ -116,8 +115,7 @@ class EventForm(forms.ModelForm):
         label="Wydarzenie widoczne dla wszystkich użytkowników systemu",
         widget=forms.CheckboxInput(attrs={'class': ""}),
         required=False,
-        help_text=
-        "Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
+        help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
                                     label="Przedmiot",
