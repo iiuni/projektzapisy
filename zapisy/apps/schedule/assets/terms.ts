@@ -1,6 +1,10 @@
 import moment from "moment";
 
-export interface Term {
+// This interface stores all data needed for proper display of term block
+// in classroom field. It contains width attribute (as a % of lenght of
+// whole day) and occupied attribute which informs how the block should
+// be displayed.
+export interface TermDisplay {
   width: string;
   occupied: boolean;
 }
@@ -10,7 +14,7 @@ export interface Classroom {
   type: String;
   capacity: Number;
   id: Number;
-  termsLayer: Term[];
+  termsLayer: TermDisplay[];
   rawOccupied: { begin: string; end: string }[];
 }
 

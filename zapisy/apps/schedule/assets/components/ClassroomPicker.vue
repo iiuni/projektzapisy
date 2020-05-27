@@ -4,7 +4,7 @@ import Component from "vue-class-component";
 import $ from "jquery";
 import { min, max } from "lodash";
 import axios from "axios";
-import { Term, Classroom, isFree, calculateLength } from "../terms";
+import { TermDisplay, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
 
 @Component({
@@ -130,7 +130,7 @@ import ClassroomField from "./ClassroomField.vue";
 export default class ClassroomPicker extends Vue {
   classrooms: Classroom[] = [];
   unoccupiedClassrooms: Classroom[] = [];
-  reservationLayer: Term[] = [];
+  reservationLayer: TermDisplay[] = [];
 
   // Attaches handlers to change of active term form.
   mounted() {

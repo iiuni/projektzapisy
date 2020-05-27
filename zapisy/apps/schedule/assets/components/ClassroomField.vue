@@ -2,7 +2,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import $ from "jquery";
-import { Term } from "../store/classrooms";
+import { TermDisplay } from "../terms";
 
 @Component({
   props: {
@@ -11,13 +11,13 @@ import { Term } from "../store/classrooms";
     capacity: Number,
     id: Number,
     termsLayer: {
-      type: Array as () => Array<Term>,
+      type: Array as () => Array<TermDisplay>,
       default() {
         return [];
       }
     },
     reservationLayer: {
-      type: Array as () => Array<Term>,
+      type: Array as () => Array<TermDisplay>,
       default() {
         return [];
       }
