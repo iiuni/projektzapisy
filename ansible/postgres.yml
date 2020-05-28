@@ -88,5 +88,4 @@
         command: migrate
         app_path: "/vagrant/zapisy"
         virtualenv: "/home/vagrant/env3"
-      when: not dumpsql.stat.exists
 
