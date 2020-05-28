@@ -63,7 +63,7 @@ class Term(models.Model):
                 raise ValidationError(
                     message={
                         '__all__': [
-                            'W tym samym czasie w tej sali odbywają się zajęcia: ' +
+                            'W tym samym czasie w tej sali odbywają się zajęcia: ' +
                             course_terms[0].group.course.name +
                             ' ' +
                             str(
@@ -80,7 +80,7 @@ class Term(models.Model):
         if not self.room and not self.place:
             raise ValidationError(
                 message={'room': ['Musisz wybrać salę lub miejsce zewnętrzne'],
-                         'place': ['Musisz wybrać salę lub miejsce zewnętrzne']},
+                         'place': ['Musisz wybrać salę lub miejsce zewnętrzne']},
                 code='invalid'
             )
 

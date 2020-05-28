@@ -134,7 +134,7 @@ class Term(models.Model):
         if start_time and end_time:
             query = query.filter(start_time__lt=end_time, end_time__gt=start_time)
 
-        return query.select_related('group__course')
+        return query.select_related('group__course').prefetch_related('classrooms')
 
     def serialize_for_json(self):
         return {

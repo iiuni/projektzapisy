@@ -108,7 +108,7 @@ class EventForm(forms.ModelForm):
     description = forms.CharField(
         label="Opis",
         help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne;"
-        "widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
+        " widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
     type = forms.ChoiceField(choices=Event.TYPES_FOR_STUDENT,
                              label="Rodzaj",

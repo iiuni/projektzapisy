@@ -58,10 +58,10 @@ def classroom(request, slug):
 def new_reservation(request, event_id=None):
     if request.method == "POST":
         form = EventForm(request.user, request.POST)
+        formset = NewTermFormSet(request.POST, form_kwargs={'user': request.user})
         if form.is_valid():
             event = form.save(commit=False)
-            formset = NewTermFormSet(request.POST, instance=event, form_kwargs={
-                                     'user': request.user})
+            formset = NewTermFormSet(request.POST, instance=event, form_kwargs={'user': request.user})
 
             if formset.is_valid():
                 event.save()
@@ -290,21 +290,28 @@ def get_terms(request, year, month, day):
 
     terms = Term.objects.filter(day=date, room__in=rooms,
                                 event__status='1').select_related('room', 'event')
-
     for term in terms:
         result[term.room.number]['occupied'].append(make_dict(term.start, term.end))
+
+    # Some of the course terms fail to be represented by Event Terms which leads
+    # to conflicts. Once this mess is fixed we can remove this lines below.
+    semester = Semester.get_semester(date)
+    if semester.lectures_beginning <= date <= semester.lectures_ending:
+        course_terms = CourseTerm.get_terms_for_semester(
+            semester=semester, day=date, classrooms=rooms
+        )
+        for ct in course_terms:
+            for room in ct.classrooms.all():
+                result[room.number]['occupied'].append(make_dict(ct.start_time, ct.end_time))
 
     for key in result:
         array = sorted(result[key]['occupied'], key=lambda k: k['begin'])
         out = []
-        i = 0
-        while i < len(array):
-            if (out and array[i]['begin'] >= out[-1]['begin'] and
-                    array[i]['begin'] <= out[-1]['end']):
-                out[-1]['end'] = max(out[-1]['end'], array[i]['end'])
+        for t in array:
+            if out and out[-1]['begin'] <= t['begin'] <= out[-1]['end']:
+                out[-1]['end'] = max(out[-1]['end'], t['end'])
             else:
-                out.append(array[i])
-            i += 1
+                out.append(t)
         result[key]['occupied'] = out
 
     return HttpResponse(json.dumps(result), content_type="application/json")
