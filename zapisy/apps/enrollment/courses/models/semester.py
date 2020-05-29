@@ -47,10 +47,6 @@ class Semester(models.Model):
 
     semester_beginning = models.DateField(null=False, verbose_name='Data rozpoczęcia semestru')
     semester_ending = models.DateField(null=False, verbose_name='Data zakończenia semestru')
-    desiderata_opening = models.DateTimeField(
-        null=True, blank=True, verbose_name='Czas otwarcia dezyderat')
-    desiderata_closing = models.DateTimeField(
-        null=True, blank=True, verbose_name='Czas zamknięcia dezyderat')
 
     is_grade_active = models.BooleanField(verbose_name='Ocena aktywna', default=False)
     records_ects_limit_abolition = models.DateTimeField(
