@@ -15,7 +15,7 @@ def change_desiderata(request):
     """
     user = request.user
     employee = user.employee
-    semester = Semester.get_default_semester()
+    semester = Semester.get_upcoming_semester()
 
     desiderata = Desiderata.get_desiderata(employee, semester)
     other = DesiderataOther.get_desiderata_other(employee, semester)

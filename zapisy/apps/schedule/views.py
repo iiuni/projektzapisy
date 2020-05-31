@@ -106,7 +106,7 @@ def session(request, semester=None):
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
     if semester:
-        semester = Semester.get_by_id(semester)
+        semester = Semester.objects.get(pk=semester)
     else:
         semester = Semester.get_current_semester()
 
