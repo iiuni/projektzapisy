@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
 
   vars:
     PYTHON: "/usr/bin/python3"
@@ -38,11 +38,6 @@
         name: python3
       become: yes
 
-    - name: Install python3-venv
-      apt:
-        name: python3-venv
-      become: yes
-
     - name: Install redis
       apt:
         name: redis-server
@@ -71,22 +66,12 @@
       pip:
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
-        requirements: /vagrant/zapisy/requirements.development.txt
-
-    # Vagrant file node_modules mounting
-    - name: Create vagrant_node_modules folder
-      file:
-        path: /vagrant_node_modules
-        state: directory
-        owner: vagrant
-        group: vagrant
-      become: yes
+        requirements: "~/deploy/current/zapisy/requirements.development.txt"
 
     - name: Create logs directory
       file:
-        path: /vagrant/zapisy/logs
+        path: "~/deploy/current/zapisy/logs"
         state: directory
-      become: yes
 
 - name: Include playbook with postgres configuration
   import_playbook: postgres.yml

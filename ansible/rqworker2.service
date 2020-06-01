@@ -1,11 +1,12 @@
 [Unit]
 Description=Start rqworker dispatch-notifications
+
 [Service]
 User=vagrant
 Group=vagrant
-WorkingDirectory=/home/vagrant/deploy/current/zapisy/
-ExecStart=/home/vagrant/env3/bin/python3 /home/vagrant/deploy/current/zapisy/manage.py rqworker dispatch-notifications
+WorkingDirectory=/vagrant/zapisy/
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py rqworker dispatch-notifications
 Type=simple
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=vagrant.mount
