@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
@@ -24,9 +26,17 @@ def all_news(request):
     except (PageNotAnInteger, EmptyPage):
         news = paginator.page(1)
 
-    data = {'items': news, 'page_range': paginator.page_range, 'query': query}
+    # Allows to combine query with pagination.
+    self_url = '?'
+    if query:
+        self_url += f'q={urllib.parse.quote_plus(query)}&'
 
-    return render(request, 'news/list_all.html', data)
+    return render(request, 'news/list_all.html', {
+        'items': news,
+        'page_range': paginator.page_range,
+        'query': query,
+        'self_url': self_url
+    })
 
 
 def all_news_focus_one(request, news_id):
