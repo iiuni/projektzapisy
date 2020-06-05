@@ -4,12 +4,11 @@ import csv
 import json
 from typing import List
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import Http404, HttpResponse, redirect, render
+from django.shortcuts import Http404, HttpResponse, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
