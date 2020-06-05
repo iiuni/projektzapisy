@@ -24,11 +24,11 @@
                 <td>{{ request.user.email }}</td>
             </tr>
             {% if user.student %}
-            {% csrf_token %}
             <tr>
                 <th>Zgoda na udostępnianie danych innym studentom</th>
                 <td>
                     <form action="{% url 'personal_data_consent' %}" method="post">
+                        {% csrf_token %}
                         {% if user.student.consent_granted %}
                             Tak&emsp;
                             <button type="submit" value="Wycofaj zgodę" name="no" class="btn btn-secondary">Wycofaj zgodę</button>
