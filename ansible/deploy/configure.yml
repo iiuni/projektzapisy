@@ -1,0 +1,93 @@
+---
+- hosts: server
+
+  gather_facts: false
+
+  vars:
+    APP_DB_USER: fereol
+    APP_DB_PASS: fereolpass
+    APP_DB_NAME: fereol
+    PG_VERSION: 10
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+
+    # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+      become: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
+        update_cache: yes
+        state: latest
+        force_apt_get: true
+      become: yes
+
+    - name: Install tools
+      apt:
+        pkg:
+        - nodejs
+        - npm
+        - git
+        - redis-server
+      become: yes
+      become_user: root
+
+    - name: Instal yarn
+      npm:
+        name: yarn
+        global: yes
+      become: yes
+      become_user: root
+
+    - name: Install python3, pip and psycopg2
+      apt:
+        pkg:
+        - python3
+        - python3-pip
+        - python3-venv
+        - python3-psycopg2
+        update_cache: yes
+      become: yes
+
+
+    # Configure postgres
+
+    - name: Ensure a locale exists
+      locale_gen:
+        name: pl_PL.UTF-8
+        state: present
+      become: yes
+
+    - name: Install postgresql-{{ PG_VERSION }} and postgresql-contrib-{{ PG_VERSION }}
+      apt:
+        pkg:
+        - postgresql-{{ PG_VERSION }}
+        - postgresql-contrib-{{ PG_VERSION }}
+        state: present
+      become: yes
+
+    - name: Create the database user
+      become: yes
+      become_user: postgres
+      postgresql_user:
+        name: "{{ APP_DB_USER }}"
+        password: "{{ APP_DB_PASS }}"
+        role_attr_flags: CREATEDB
+        encrypted: yes
+
+    - name: Create the database
+      become: yes
+      become_user: postgres
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        owner: "{{ APP_DB_USER }}"
+        encoding: UTF-8
+        lc_collate: pl_PL.UTF-8
+        lc_ctype: pl_PL.UTF-8
+        template: template0
+
+
+

@@ -3,12 +3,12 @@ Description=Yarn build service
 After=yarn.service
 
 [Service]
-User=vagrant
-Group=vagrant
+User=$user$
+Group=$user$
 TimeoutStartSec=900
-WorkingDirectory=/home/vagrant/deploy/current/zapisy/
+WorkingDirectory=/home/$user$/deploy/current/zapisy/
 ExecStart=/usr/local/bin/yarn build
-Type=simple
+Type=oneshot
 
 [Install]
 WantedBy=multi-user.target

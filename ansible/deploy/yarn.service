@@ -1,10 +1,10 @@
 [Unit]
 Description=Yarn service
 [Service]
-User=vagrant
-Group=vagrant
+User=$user$
+Group=$user$
 TimeoutStartSec=900
-WorkingDirectory=/home/vagrant/deploy/current/zapisy/
+WorkingDirectory=/home/$user$/deploy/current/zapisy/
 ExecStart=/usr/local/bin/yarn
 Type=oneshot
 

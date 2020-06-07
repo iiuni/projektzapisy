@@ -1,14 +1,12 @@
 ---
-- hosts: localhost
+- hosts: server
+
+  gather_facts: false
 
   vars:
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
-    - name: Install git
-      apt:
-        name: git
-      become: yes
 
     - name: Initialize the deploy root and gather facts
       deploy_helper:
@@ -19,7 +17,7 @@
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
-        version: ansible-deploy
+        version: master-dev
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: true
@@ -27,10 +25,155 @@
         path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
         state: touch
 
+
+    - name: Set up virtualenv and get requirements
+      pip:
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+        virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+        requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.development.txt"
+
+    - name: Create logs directory
+      file:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
+        state: directory
+
+
+    - stat:
+        path: /etc/systemd/system/runserver.service
+      register: service_status
+
+    - name: Stop Django Runserver service
+      service:
+        name: runserver
+        state: stopped
+      become: yes
+      when: service_status.stat.exists
+
+    - name: Apply migrates
+      django_manage:
+        command: migrate
+        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+
+
+
+    - name: Deploy Django Runserver
+      copy:
+        src: runserver.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn
+      copy:
+        src: yarn.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn build
+      copy:
+        src: yarn_build.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker1
+      copy:
+        src: rqworker1.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker2
+      copy:
+        src: rqworker2.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Replace a pattern with username in runserver service
+      become: yes
+      replace:
+        path: /etc/systemd/system/runserver.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in yarn service
+      become: yes
+      replace:
+        path: /etc/systemd/system/yarn.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in yarn build service
+      become: yes
+      replace:
+        path: /etc/systemd/system/yarn_build.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in rqworker1 service
+      become: yes
+      replace:
+        path: /etc/systemd/system/rqworker1.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in rqworker2 service
+      become: yes
+      replace:
+        path: /etc/systemd/system/rqworker2.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+
+    # Enable and run
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
+      become: yes
       deploy_helper:
         path: ~/deploy
         release: "{{ deploy_helper.new_release }}"
         state: finalize
         clean: true
         keep_releases: 2
+
+    - name: Enable and run Django Runserver service
+      service:
+        name: runserver
+        enabled: yes
+        state: restarted
+      become: yes
+
+    - name: Start yarn
+      systemd:
+        name: yarn
+        state: restarted
+        enabled: no
+      become: yes
+
+    - name: Enable and run yarn_build service
+      service:
+        name: yarn_build
+        enabled: no
+        state: restarted
+      become: yes
+
+    - name: Enable and run rqworker1 service
+      service:
+        name: rqworker1
+        enabled: yes
+        state: restarted
+      become: yes
+
+    - name: Enable and run rqworker2 service
+      service:
+        name: rqworker2
+        enabled: yes
+        state: restarted
+      become: yes
