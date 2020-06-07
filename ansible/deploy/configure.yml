@@ -1,7 +1,5 @@
 ---
-- hosts: server
-
-  gather_facts: false
+- hosts: deploy
 
   vars:
     APP_DB_USER: fereol

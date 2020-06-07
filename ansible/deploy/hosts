@@ -1,11 +1,7 @@
 ---
-[server:children]
-server1
-#infrastructure
+[deploy:children]
+#example
 
-[server1]
-#database ansible_host=192.168.1.179 ansible_port=22 ansible_user=postgres
-webserver ansible_host=192.168.1.179 ansible_port=22 ansible_user=vagrant
+#[example]
+#webserver ansible_host=127.0.0.1 ansible_port=22 ansible_user=exampleuser
 
-[infrastructure]
-ldap ansible_host=10.0.0.100 ansible_port=22 ansible_user=root
