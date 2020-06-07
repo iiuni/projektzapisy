@@ -135,7 +135,6 @@
       become: yes
 
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
-      become: yes
       deploy_helper:
         path: ~/deploy
         release: "{{ deploy_helper.new_release }}"
