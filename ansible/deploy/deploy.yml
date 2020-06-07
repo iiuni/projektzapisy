@@ -15,7 +15,7 @@
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
-        version: master-dev
+        version: master
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: true
