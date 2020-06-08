@@ -7,14 +7,13 @@ from apps.news.models import News
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    """
-        News admin manager
-    """
-    fields = ('title', 'body', 'author', 'category')
+    fields = ('title', 'body', 'author', 'priority')
     list_display = ('title', 'date')
     list_filter = ['date']
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget},
+        models.TextField: {
+            'widget': AdminPagedownWidget
+        },
     }
 
     def get_changeform_initial_data(self, request):

@@ -47,12 +47,4 @@ class Migration(migrations.Migration):
             UPDATE users_student
             SET is_active = NOT (status::bool)
         '''),
-        migrations.RemoveField(
-            model_name='student',
-            name='status',
-        ),
-        migrations.RemoveField(
-            model_name='student',
-            name='t0',
-        ),
     ]

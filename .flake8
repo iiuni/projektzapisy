@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 120
+max-doc-length = 99
+exclude =
+    node_modules,
+    *migrations,
+    scripts,
+    db_backups,
+    # mailer app will be removed soon.
+    mailer,
+docstring-convention = google
+import-order-style = pep8
+application-import-names = apps, zapisy
+extend-ignore =
+    # Do not enforce docstrings in every function.
+    D1,
+    # It is perfectly valid to only describe the unobvious arguments.
+    D417,
+    # flake8-import-order treats relative imports differently from isort.
+    I202,

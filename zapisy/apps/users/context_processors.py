@@ -1,4 +1,4 @@
-from apps.users.models import is_external_contractor, is_employee, is_student
+from apps.users.models import is_employee, is_external_contractor, is_student
 
 
 def roles(request):

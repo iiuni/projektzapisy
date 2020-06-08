@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from apps.notifications.templates import NotificationType
 from apps.notifications.exceptions import DescriptionArgumentMissingException
+from apps.notifications.templates import NotificationType
 from apps.notifications.utils import render_description
 
 
@@ -31,5 +31,5 @@ class NotificationsUtilsTestCase(TestCase):
         descr_args = {}
 
         with self.assertRaises(DescriptionArgumentMissingException):
-            rendered = render_description(
+            render_description(
                 NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, descr_args)

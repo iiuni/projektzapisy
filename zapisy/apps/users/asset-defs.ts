@@ -3,5 +3,8 @@ export default {
         "user-filter": [
             "user-filter-list-index.js",
         ],
+        "consent-dialog": [
+            "consent-dialog.ts"
+        ]
     },
 };

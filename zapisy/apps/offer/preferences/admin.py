@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PreferencesQuestion, Preference
+from .models import Preference, PreferencesQuestion
 
 
 @admin.register(PreferencesQuestion)

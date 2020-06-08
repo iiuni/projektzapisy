@@ -6,7 +6,7 @@ different classes.
 """
 from django.db import models
 
-from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES
+from apps.enrollment.courses.models.group import GroupType
 from apps.offer.proposal.models import Proposal
 from apps.users.models import Employee
 
@@ -24,7 +24,7 @@ class PreferencesQuestion(models.Model):
     taught by an employee.
     """
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE, verbose_name="przedmiot")
-    class_type = models.CharField("typ zajęć", max_length=2, choices=GROUP_TYPE_CHOICES)
+    class_type = models.CharField("typ zajęć", max_length=2, choices=GroupType.choices)
 
     objects = PreferencesQuestionManager()
 
@@ -76,9 +76,7 @@ class Preference(models.Model):
 
     @staticmethod
     def make_preferences(employee: Employee):
-        """Creates preferences for questions that do not have a preference
-        object for the given employee.
-        """
+        """Creates missing preferences for questions for the given employee."""
         existing_preferences = Preference.objects.filter(employee=employee).values_list(
             'question_id', flat=True)
         missing_questions = PreferencesQuestion.objects.exclude(pk__in=existing_preferences)

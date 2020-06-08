@@ -7,9 +7,7 @@ from apps.users.tests.factories import EmployeeFactory
 
 
 class LifecycleTest(test.TestCase):
-    """Tests that the proposal form does not allow an employee to walk around
-    the lifecycle of a course proposal.
-    """
+    """Tests that the form does not allow an employee to cheat the lifecycle of a proposal."""
 
     @classmethod
     def setUpTestData(cls):
@@ -23,8 +21,7 @@ class LifecycleTest(test.TestCase):
         )
 
     def test_employee_can_create_draft(self):
-        """Tests that the employee can create an (almost empty) draft proposal.
-        """
+        """Tests that the employee can create an (almost empty) draft proposal."""
         form_data = {
             'name': "Szydełkowanie",
             'language': 'pl',
@@ -47,8 +44,7 @@ class LifecycleTest(test.TestCase):
         self.assertEqual(p.status, ProposalStatus.DRAFT)
 
     def test_employee_cannot_put_proposal_into_offer(self):
-        """Tests that the employee cannot put the proposal directly into offer.
-        """
+        """Tests that the employee cannot put the proposal directly into offer."""
         form_data = {
             'name': "Szydełkowanie",
             'language': 'pl',
@@ -70,8 +66,11 @@ class LifecycleTest(test.TestCase):
             form.save()
 
     def test_employee_can_fix_proposal(self):
-        """The proposal has been marked as CORRECTIONS_REQUIRED by the head of
-        teaching. The employee needs to correct it now."""
+        """Tests the status changes of a proposal that was sent back.
+
+        The proposal has been marked as CORRECTIONS_REQUIRED by the head of
+        teaching. The employee needs to correct it now.
+        """
         # First employee creates a proposal.
         form_data = {
             'name': "Szydełkowanie",

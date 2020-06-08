@@ -1,13 +1,13 @@
-from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.records.models.records import Record
 from django.contrib.auth.decorators import permission_required
 from django.db import models
 from django.shortcuts import render
 
-from apps.enrollment.records.models import RecordStatus
-from apps.users.models import Student
-from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.records.models import RecordStatus
+from apps.enrollment.records.models.records import Record
+from apps.users.models import Student
 
 
 @permission_required('courses.view_stats')

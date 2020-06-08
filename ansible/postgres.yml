@@ -1,0 +1,91 @@
+---
+- hosts: all
+
+  vars:
+    APP_DB_USER: fereol
+    APP_DB_PASS: fereolpass
+    APP_DB_NAME: fereol
+    PG_VERSION: 10
+    PYTHON: "/home/vagrant/env3/bin/python3"
+
+  tasks:
+    - name: Ensure a locale exists
+      locale_gen:
+        name: pl_PL.UTF-8
+        state: present
+      become: yes
+
+    - name: Install postgresql-{{ PG_VERSION }} and postgresql-contrib-{{ PG_VERSION }}
+      apt:
+        pkg:
+        - postgresql-{{ PG_VERSION }}
+        - postgresql-contrib-{{ PG_VERSION }}
+        state: present
+      become: yes
+
+    - name: Create the database user
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      postgresql_user:
+        name: "{{ APP_DB_USER }}"
+        password: "{{ APP_DB_PASS }}"
+        role_attr_flags: CREATEDB
+
+    - stat:
+        path: /etc/systemd/system/runserver.service
+      register: service_status
+
+    - name: Stop Django Runserver service
+      service:
+        name: runserver
+        state: stopped
+      become: yes
+      when: service_status.stat.exists
+
+    - name: Drop the database
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        state: absent
+
+    - name: Create the database
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        owner: "{{ APP_DB_USER }}"
+        encoding: UTF-8
+        lc_collate: pl_PL.UTF-8
+        lc_ctype: pl_PL.UTF-8
+        template: template0
+
+    - stat:
+        path: /vagrant/ii_zapisy_dump_dev.sql
+      register: dumpsql
+
+    - name: Update the database
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        state: restore
+        target: "/vagrant/ii_zapisy_dump_dev.sql"
+      when: dumpsql.stat.exists
+
+    - name: Apply migrates to empty database
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      django_manage:
+        command: migrate
+        app_path: "/vagrant/zapisy"
+        virtualenv: "/home/vagrant/env3"
+

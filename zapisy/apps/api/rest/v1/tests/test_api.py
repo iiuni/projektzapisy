@@ -3,9 +3,9 @@ import json
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.enrollment.courses.tests.factories import (CourseInstanceFactory, SemesterFactory)
+from apps.enrollment.courses.tests.factories import CourseInstanceFactory, SemesterFactory
 from apps.offer.proposal.tests.factories import ProposalFactory
-from apps.offer.vote.models import SystemState, SingleVote
+from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
 

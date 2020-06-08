@@ -1,0 +1,64 @@
+{% extends "offer/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block main-subtitle %}Dezyderaty{% endblock %}
+
+{% block offer_menu_desiderata %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'offer-main' %}">Oferta dydaktyczna</a></li>
+    <li class="breadcrumb-item active">Dezyderaty</li>
+    
+{% endblock %}
+
+{% block all-content %}
+    <h1>Dezyderaty</h1>
+
+    <div class="alert alert-info">
+        Pozostaw zaznaczone te godziny, w których <strong>możesz</strong> prowadzić zajęcia:
+    </div>
+
+    <form method="post">{% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Godziny</th>
+                    {% for hour in hours_formset.hours %}
+                    <th>{{hour}}</th>
+                    {% endfor %}
+                    <th>Cały dzień</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day, hours in hours_formset.iter %}
+                    <tr>
+                        <td>{{ day }}</td>
+                        {% for hour, form in hours.items %}
+                            <td>
+                                {{ form.value }}{{form.day}}{{form.hour}}
+                            </td>
+                        {% endfor %}
+                        <td>
+                            <button
+                               class="btn btn-small btn-info day-toggle">Przełącz</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p>
+            W formularzu można zaznaczać zakresy:
+            <kbd>shift + 🖱️</kbd>.
+        </p>
+        {{ hours_formset.management_form }}
+        
+        {{ comments_form | crispy }}
+        <button type="submit" class="btn btn-primary">Zapisz</button>
+    </form>
+
+{% render_bundle "desiderata-checkboxes" %}
+
+{% endblock %}

@@ -1,12 +1,13 @@
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
 
-from apps.users.models import is_external_contractor, is_student, is_employee
+from apps.users.models import is_employee, is_external_contractor, is_student
 
 
 def student_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
-    """
-    Decorator for views that checks that the user is student, redirecting to the login page if necessary.
+    """Checks that the user is a student.
+
+    This view decorator redirects to the login page if necessary.
     """
     actual_decorator = user_passes_test(
         is_student,
@@ -19,8 +20,9 @@ def student_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, lo
 
 
 def employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
-    """
-    Decorator for views that checks that the user is employee, redirecting to the login page if necessary.
+    """Checks that the user is employee.
+
+    This view decorator redirects to the login page if necessary.
     """
     actual_decorator = user_passes_test(
         is_employee,
@@ -33,12 +35,12 @@ def employee_required(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, l
 
 
 def external_contractor_forbidden(view_func=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
-    """
-    Check whether the logged user is either a student or an actual employee
-    (i.e. not external contractor).
-    Redirect to the login page if that's not the case.
-    """
+    """Check whether the logged user is either a student or an actual employee.
 
+    Some data we would rather not show to external contractors teaching our
+    students. Redirects to the login page if user is neither a student nor a
+    real employee.
+    """
     decorator = user_passes_test(
         lambda u: not is_external_contractor(u),
         login_url=login_url,

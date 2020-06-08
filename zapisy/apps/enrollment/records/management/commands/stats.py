@@ -1,5 +1,7 @@
 from optparse import make_option
-from django.core.management.base import BaseCommand, CommandError
+
+from django.core.management.base import BaseCommand
+
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record
@@ -36,7 +38,6 @@ class Command(BaseCommand):
                 records = Record.enrolled.filter(student=student, group__course__semester=semester)
                 for r in records:
                     print(str(student.id) + ' ' + str(r.group_id))
-                    #print str(student.id) + ' ' + str(r.id)
 
         if options['group']:
             groups = Group.objects.filter(course__semester=semester)

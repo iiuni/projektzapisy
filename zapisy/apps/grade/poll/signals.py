@@ -1,4 +1,4 @@
-"""Signals in the grade/poll module
+"""Signals in the grade/poll module.
 
 Historically, all polls for a given semester would be created manually
 by an administrator either by invoking a command or by pressing a button.

@@ -1,27 +1,27 @@
-from datetime import time, date, timedelta
 import random
+from datetime import date, time, timedelta
 
-from django.test import TestCase
-from django.core.validators import ValidationError
 from django.contrib.auth.models import Permission
+from django.core.validators import ValidationError
 from django.http import Http404
+from django.test import TestCase
 from django.utils.crypto import get_random_string
 
-from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother, ClassroomObjectMother
-from apps.users.models import Employee
-from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term as EventTerm
-from apps.schedule.models.message import EventModerationMessage, EventMessage
-from apps.schedule.models.specialreservation import SpecialReservation
-from apps.users.tests.factories import UserFactory, EmployeeFactory, StudentFactory
-from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.models.classroom import Classroom
-from apps.schedule import feeds
 import apps.enrollment.courses.tests.factories as enrollment_factories
+from apps.common import days_of_week
+from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.tests.objectmothers import ClassroomObjectMother, SemesterObjectMother
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.schedule import feeds
+from apps.schedule.models.event import Event
+from apps.schedule.models.message import EventMessage, EventModerationMessage
+from apps.schedule.models.specialreservation import SpecialReservation
+from apps.schedule.models.term import Term as EventTerm
+from apps.users.models import Employee
+from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
 from . import factories
-from zapisy import common
 
 
 class SpecialReservationTestCase(TestCase):
@@ -41,7 +41,7 @@ class SpecialReservationTestCase(TestCase):
         reservation = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room110,
-                                         dayOfWeek=common.WEDNESDAY,
+                                         dayOfWeek=days_of_week.WEDNESDAY,
                                          start_time=time(15),
                                          end_time=time(16))
         reservation.full_clean()
@@ -50,7 +50,7 @@ class SpecialReservationTestCase(TestCase):
         reservation_2 = SpecialReservation(semester=semester,
                                            title='ąęłżóćśśń',
                                            classroom=room110,
-                                           dayOfWeek=common.THURSDAY,
+                                           dayOfWeek=days_of_week.THURSDAY,
                                            start_time=time(15),
                                            end_time=time(16))
         reservation_2.full_clean()
@@ -59,7 +59,7 @@ class SpecialReservationTestCase(TestCase):
         reservation_3 = SpecialReservation(semester=semester_2,
                                            title='Reserve whole monday',
                                            classroom=room110,
-                                           dayOfWeek=common.MONDAY,
+                                           dayOfWeek=days_of_week.MONDAY,
                                            start_time=time(8),
                                            end_time=time(21))
         reservation_3.full_clean()
@@ -68,65 +68,11 @@ class SpecialReservationTestCase(TestCase):
         reservation_4 = SpecialReservation(semester=semester,
                                            title='Reserve just after reservation 2',
                                            classroom=room110,
-                                           dayOfWeek=common.THURSDAY,
+                                           dayOfWeek=days_of_week.THURSDAY,
                                            start_time=time(16),
                                            end_time=time(18))
         reservation_4.full_clean()
         reservation_4.save(author_id=reservation_author.pk)
-
-    def test_reservation_created_terms(self):
-        terms = EventTerm.get_terms_for_dates(
-            [date(2016, 5, 12)],
-            Classroom.get_by_number('110'),
-            time(15),
-            time(16)
-        )
-
-        '''
-        Powinno przechodzić, bo SpecialReservation tworzy Term dla każdego dnia w semestrze,
-        w którym dana rezerwacja występuje po wykonaniu metody save. To jednak nie
-        przechodzi. Dlaczego?
-
-        Rozwiązanie zagadki: My tutaj operujemy na przeszłych semestrach, a podczas tworzenia
-        SpecialReservation, gdy tworzone są eventy i termsy robione są rezerwacje od teraz,
-        czyli datetime.now().date(). Zatem nic nie zostanie zarezerwowane, jeśli operujemy na
-        przeszłych datach.
-
-        Należy tworzyć testy operujące na datach w teraźniejszości, lub przyszłości.
-        Trzeba to wszystko zrefactorować na fabryki.
-        '''
-
-        # self.assertTrue(terms)
-
-    def test_try_clean_on_overlapping_reservation(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        room = Classroom.get_by_number('110')
-        reservation = SpecialReservation(
-            semester=semester,
-            title='overlapping',
-            classroom=room,
-            dayOfWeek=common.THURSDAY,
-            start_time=time(14),
-            end_time=time(16)
-        )
-        # Powinno rzucać wyjątek, bo w setUp została stworzona rezerwacja, która
-        # nakłąda się na godziny tej.
-        # self.assertRaises(ValidationError, reservation.full_clean)
-
-    def test_clean_on_overlapping_reservation_where_both_are_same(self):
-        semester = Semester.get_semester(date(2016, 5, 12))  # summer20152016
-        room = Classroom.get_by_number('110')
-        reservation = SpecialReservation(
-            semester=semester,
-            title='overlapping',
-            classroom=room,
-            dayOfWeek=common.WEDNESDAY,
-            start_time=time(15),
-            end_time=time(16)
-        )
-        # To powinno rzucić ValidationError, bo taka rezerwacja
-        # została już stworzona i zapisana do bazy w setUp.
-        #self.assertRaises(ValidationError, reservation.full_clean)
 
     def test_special_reservation_unicode_method(self):
         reservations = SpecialReservation.objects.all()
@@ -140,7 +86,7 @@ class SpecialReservationTestCase(TestCase):
             semester=semester,
             title='non-overlapping reservation',
             classroom=room,
-            dayOfWeek=common.THURSDAY,
+            dayOfWeek=days_of_week.THURSDAY,
             start_time=time(14),
             end_time=time(15)
         )
@@ -153,7 +99,7 @@ class SpecialReservationTestCase(TestCase):
 
     def test_no_reservations_on_not_reserved_day(self):
         semester = Semester.get_semester(date(2016, 5, 12))
-        reservations = SpecialReservation.get_reservations_for_semester(semester, day=common.FRIDAY)
+        reservations = SpecialReservation.get_reservations_for_semester(semester, day=days_of_week.FRIDAY)
         self.assertFalse(reservations)
 
     def test_number_of_reservations(self):
@@ -248,15 +194,13 @@ class TermTestCase(TestCase):
         room25.save()
         room25.full_clean()
 
-        today = date.today().strftime("%A")
-
         reservation_author = factories.UserFactory()
         reservation_author.save()
 
         reservation = SpecialReservation(semester=semester,
                                          title="A reservation",
                                          classroom=room25,
-                                         dayOfWeek=common.MONDAY,
+                                         dayOfWeek=days_of_week.MONDAY,
                                          start_time=time(8),
                                          end_time=time(16))
         reservation.full_clean()
@@ -264,7 +208,7 @@ class TermTestCase(TestCase):
         reservation2 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.TUESDAY,
+                                          dayOfWeek=days_of_week.TUESDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation2.full_clean()
@@ -272,7 +216,7 @@ class TermTestCase(TestCase):
         reservation3 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.WEDNESDAY,
+                                          dayOfWeek=days_of_week.WEDNESDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation3.full_clean()
@@ -280,7 +224,7 @@ class TermTestCase(TestCase):
         reservation4 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.THURSDAY,
+                                          dayOfWeek=days_of_week.THURSDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation4.full_clean()
@@ -288,7 +232,7 @@ class TermTestCase(TestCase):
         reservation5 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.FRIDAY,
+                                          dayOfWeek=days_of_week.FRIDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation5.full_clean()
@@ -296,7 +240,7 @@ class TermTestCase(TestCase):
         reservation6 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.SATURDAY,
+                                          dayOfWeek=days_of_week.SATURDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation6.full_clean()
@@ -304,7 +248,7 @@ class TermTestCase(TestCase):
         reservation7 = SpecialReservation(semester=semester,
                                           title="A reservation",
                                           classroom=room25,
-                                          dayOfWeek=common.SUNDAY,
+                                          dayOfWeek=days_of_week.SUNDAY,
                                           start_time=time(8),
                                           end_time=time(16))
         reservation7.full_clean()
@@ -608,8 +552,9 @@ class EventTestCase(TestCase):
             Record.objects.create(student=student, group=group, status=RecordStatus.ENROLLED)
         users = [student.user for student in students]
 
-        event = factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
-                                       interested=users, course=group.course)
+        factories.EventFactory(type=random.choice([Event.TYPE_EXAM, Event.TYPE_TEST]),
+                               interested=users,
+                               course=group.course)
         # followers = event.get_followers()
         # users_emails = [user.email for user in users]
         # self.assertCountEqual(users_emails, followers)
@@ -683,7 +628,7 @@ class EventsOnChangedDayTestCase(TestCase):
             classroom=classroom,
             start_time=time(16, 15),
             end_time=time(18),
-            dayOfWeek=common.THURSDAY
+            dayOfWeek=days_of_week.THURSDAY
         )
         reserv_thursday.full_clean()
         reserv_thursday.save(author_id=self.reservation_author.pk)

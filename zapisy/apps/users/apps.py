@@ -30,4 +30,4 @@ class UsersConfig(AppConfig):
         setattr(auth_models.AnonymousUser, 'student', None)
         setattr(auth_models.AnonymousUser, 'employee', None)
 
-        import apps.users.signals
+        import apps.users.signals  # noqa

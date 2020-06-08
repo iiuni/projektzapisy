@@ -1,16 +1,12 @@
 import json
-import requests
-from urllib.parse import urljoin, urlparse
 from typing import Iterator, Optional
+from urllib.parse import urljoin, urlparse
 
-from .models import (User, Program,
-                     Semester, Student,
-                     Employee, CourseInstance,
-                     Classroom, Group,
-                     Term, Record,
-                     Desiderata, DesiderataOther,
-                     SpecialReservation, SystemState,
-                     SingleVote, Model)
+import requests
+
+from .models import (Classroom, CourseInstance, Desiderata, DesiderataOther, Employee, Group, Model,
+                     Program, Record, Semester, SingleVote, SpecialReservation, Student,
+                     SystemState, Term, User)
 
 
 class ZapisyApi:
@@ -84,7 +80,7 @@ class ZapisyApi:
         return self._get_deserialized_data(Employee)
 
     def employee(self, id: int) -> Employee:
-        """returns Employee with a given id."""
+        """Returns Employee with a given id."""
         return self._get_single_record(Employee, id)
 
     def courses(
@@ -128,6 +124,7 @@ class ZapisyApi:
         Term represents a single meeting between the teacher and the students
         in a week. A group may have multiple terms, typically this happens
         only for lecture groups.
+
         Args:
             semester_id: If provided, only terms in the semester are listed.
         """
@@ -135,7 +132,7 @@ class ZapisyApi:
             Term, params={"group__course__semester": semester_id})
 
     def term(self, id: int) -> Term:
-        """Returns term with a given id"""
+        """Returns term with a given id."""
         return self._get_single_record(Term, id)
 
     def records(
@@ -212,7 +209,7 @@ class ZapisyApi:
         return self._get_deserialized_data(SystemState, params=filters)
 
     def systemstate(self, id: int) -> SystemState:
-        """Returns the SystemState object with a given id"""
+        """Returns the SystemState object with a given id."""
         return self._get_single_record(SystemState, id)
 
     def create_student(self, usos_id, indeks, first_name, last_name, email,

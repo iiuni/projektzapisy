@@ -1,10 +1,11 @@
-from datetime import time, date
+import logging
+from datetime import date, time
 
+from django.core.cache import cache as mcache
 from django.db import models
 from django.db.models import signals
-from django.core.cache import cache as mcache
-from zapisy import common
-import logging
+
+from apps.common import days_of_week
 
 backup_logger = logging.getLogger('project.backup')
 
@@ -12,11 +13,10 @@ HOURS = [(str(hour), "%s.00" % hour) for hour in range(8, 23)]
 
 
 class Term(models.Model):
-    """terms of groups"""
 
     dayOfWeek = models.CharField(
         max_length=1,
-        choices=common.DAYS_OF_WEEK,
+        choices=days_of_week.DAYS_OF_WEEK,
         verbose_name='dzień tygodnia')
     start_time = models.TimeField(verbose_name='rozpoczęcie')
     end_time = models.TimeField(verbose_name='zakończenie')
@@ -50,15 +50,15 @@ class Term(models.Model):
             (self.end_time.minute - self.start_time.minute)
 
     def time_from_in_minutes(self):
-        "Returns number of minutes from start of day (midnight) to term beggining"""
+        """Returns number of minutes from start of day (midnight) to term beggining."""
         return (self.start_time.hour) * 60 + (self.start_time.minute)
 
     def time_from(self):
-        "Returns hourFrom in time format"""
+        """Returns hourFrom in time format."""
         return self.start_time
 
     def time_to(self):
-        "Returns hourTo in time format"""
+        """Returns hourTo in time format."""
         return self.end_time
 
     def _convert_string_to_time(self, str):
@@ -81,11 +81,11 @@ class Term(models.Model):
 
     @staticmethod
     def get_day_of_week(date):
-        return common.DAYS_OF_WEEK[date.weekday()][0]
+        return days_of_week.DAYS_OF_WEEK[date.weekday()][0]
 
     @staticmethod
     def get_python_day_of_week(day_of_week):
-        return [x[0] for x in common.DAYS_OF_WEEK].index(day_of_week)
+        return [x[0] for x in days_of_week.DAYS_OF_WEEK].index(day_of_week)
 
     def numbers(self):
         if not self.id:
@@ -109,11 +109,10 @@ class Term(models.Model):
             classrooms=None,
             start_time=None,
             end_time=None):
-        """
-        A versatile function returning Terms. day is either datetime.date or string
+        """A versatile function returning Terms. day is either datetime.date or string.
 
         :param semester: enrollment.courses.model.Semester
-        :param day: common.DAYS_OF_WEEK or datetime.date
+        :param day: DAYS_OF_WEEK or datetime.date
         """
         from .semester import ChangedDay, Freeday
         query = cls.objects.filter(group__course__semester=semester)
@@ -135,7 +134,7 @@ class Term(models.Model):
         if start_time and end_time:
             query = query.filter(start_time__lt=end_time, end_time__gt=start_time)
 
-        return query.select_related('group__course')
+        return query.select_related('group__course').prefetch_related('classrooms')
 
     def serialize_for_json(self):
         return {

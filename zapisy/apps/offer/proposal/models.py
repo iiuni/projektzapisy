@@ -1,16 +1,15 @@
-import choicesenum
 from django.db import models
 
 from apps.enrollment.courses.models.course_information import CourseInformation
 
 
-class SemesterChoices(choicesenum.ChoicesEnum):
+class SemesterChoices(models.TextChoices):
     UNASSIGNED = 'u', "nieokreślony"
     WINTER = 'z', "zimowy"
     SUMMER = 'l', "letni"
 
 
-class ProposalStatus(choicesenum.ChoicesEnum):
+class ProposalStatus(models.IntegerChoices):
     PROPOSAL = 0, "propozycja"
     IN_OFFER = 1, "w ofercie"
     IN_VOTE = 2, "poddana pod głosowanie"
@@ -27,10 +26,10 @@ class Proposal(CourseInformation):
     """
 
     status = models.PositiveSmallIntegerField(
-        "status propozycji", choices=ProposalStatus.choices(), default=ProposalStatus.DRAFT)
+        "status propozycji", choices=ProposalStatus.choices, default=ProposalStatus.DRAFT)
     semester = models.CharField(
         "semestr",
-        choices=SemesterChoices.choices(),
+        choices=SemesterChoices.choices,
         max_length=1,
         default=SemesterChoices.UNASSIGNED)
 

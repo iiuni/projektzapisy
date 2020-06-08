@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ thesis.title }}</title>
+    <style>
+      body{
+        font-size: 12px;
+      }
+      h1 {
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+      }
+      h2 {
+        font-size: 14px;
+        text-align: center;
+      }
+      h3{
+          font-size: 13px;
+          text-decoration: underline;
+      }
+      p{
+          text-indent: 2em;
+          margin: 0;
+          padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+        Uniwersytet Wrocławski</br>
+        Wydział Matematyki i Informatyki
+    </h1>
+    <h2>
+        Deklaracja wyboru tematu pracy</br> 
+        licencjackiej/inżynierskiej/magisterskiej na kierunku informatyka/ISIM
+    </h2>
+    <h3>I. Dane studenta</h3>
+    <p>Imię i nazwisko: <strong>{{ first_student.get_full_name }}</strong></p>
+    <p>Numer albumu: <strong>{{ first_student.matricula }}</strong></p>
+    <h3>II. Dane promotora</h3>
+    <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.advisor }}</strong></p>
+    <h3>III. Dane pracy</h3>
+    <p>Proponowany tytuł pracy: <strong>{{ thesis.title }}</strong></p>
+    {% if thesis.reserved_until %}
+        <p>Temat jest zarezerwowany dla ww. studenta/ów do: {{ thesis.reserved_until }}</p>
+    {% endif %}
+    <p>Temat zawiera część programistyczną: <strong>TAK/NIE</strong></p>
+    <p>Temat będzie realizowany przez <strong>{{ students_num }}</strong> {% if students_num == 1 %}studenta{% else %}studentów{% endif %}.</p>
+    {% if students %}
+      {% if students_num == 2 %}
+        <h3>IV. Dane współautora</h3>
+      {% else %}
+        <h3>IV. Dane współautorów</h3>
+      {% endif %}
+      {% for student in students %}
+        <p>Imię i nazwisko: <strong>{{ student.get_full_name }}</strong></p>
+        <p>Numer albumu: <strong>{{ student.matricula }}</strong></p></br>
+      {% endfor %}
+    {% endif %}
+    </br></br></br></br></br>
+        .................................................................</br>Data i podpis studenta</br></br></br></br></br>
+        .................................................................</br>Data i podpis promotora</br></br></br></br></br>
+    <strong>UWAGA:</strong></br>
+    Jeśli zadeklarowana praca nie zostanie złożona w Dziekanacie przed upływem podanego terminu rezerwacji, promotor może odmówić dalszej współpracy przy realizacji tematu oraz może przydzielić temat innej osobie. Do kontynuacji współpracy wymagane jest ponowne złożenie deklaracji.
+    </body>
+</html>

@@ -1,17 +1,16 @@
-from rest_framework import viewsets, pagination, response
-from rest_framework.permissions import IsAdminUser
+from rest_framework import pagination, response, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
 
-from apps.enrollment.courses.models.classroom import Classroom
+from apps.api.rest.v1 import serializers
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
-from apps.offer.vote.models import SystemState, SingleVote
+from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Student
-
-from apps.api.rest.v1 import serializers
 
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
@@ -45,7 +44,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = CourseInstance.objects.select_related('course_type', 'semester').order_by('id')
-    filter_fields = ['semester']
+    filterset_fields = ['semester']
     serializer_class = serializers.CourseSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -55,7 +54,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Group.objects.select_related('course', 'course__semester', 'teacher',
                                             'teacher__user').order_by('id')
-    filter_fields = ['course__semester']
+    filterset_fields = ['course__semester']
     serializer_class = serializers.GroupSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -71,7 +70,7 @@ class TermViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch']
     permission_classes = (IsAdminUser,)
     queryset = Term.objects.select_related('group').prefetch_related('classrooms').order_by('id')
-    filter_fields = ['group__course__semester']
+    filterset_fields = ['group__course__semester']
     serializer_class = serializers.TermSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -82,7 +81,7 @@ class RecordViewSet(viewsets.ModelViewSet):
     queryset = Record.objects.filter(status=RecordStatus.ENROLLED).select_related(
         'group', 'group__course', 'group__course__semester',
         'student', 'student__user').order_by('id')
-    filter_fields = ['group__course__semester']
+    filterset_fields = ['group__course__semester']
     serializer_class = serializers.RecordSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -105,7 +104,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.select_related('user')
     serializer_class = serializers.StudentSerializer
     pagination_class = StandardResultsSetPagination
-    filter_fields = ['is_active']
+    filterset_fields = ['is_active']
 
 
 class DesiderataViewSet(viewsets.ModelViewSet):
@@ -113,7 +112,7 @@ class DesiderataViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Desiderata.objects.all()
     serializer_class = serializers.DesiderataSerializer
-    filter_fields = '__all__'
+    filterset_fields = '__all__'
 
 
 class DesiderataOtherViewSet(viewsets.ModelViewSet):
@@ -121,7 +120,7 @@ class DesiderataOtherViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = DesiderataOther.objects.all()
     serializer_class = serializers.DesiderataOtherSerializer
-    filter_fields = '__all__'
+    filterset_fields = '__all__'
 
 
 class SpecialReservationViewSet(viewsets.ModelViewSet):
@@ -129,7 +128,7 @@ class SpecialReservationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = SpecialReservation.objects.all()
     serializer_class = serializers.SpecialReservationSerializer
-    filter_fields = '__all__'
+    filterset_fields = '__all__'
 
 
 class SingleVoteViewSet(viewsets.ModelViewSet):
@@ -142,7 +141,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     serializer_class = serializers.SingleVoteSerializer
     pagination_class = StandardResultsSetPagination
-    filter_fields = '__all__'
+    filterset_fields = '__all__'
 
     def get_queryset(self):
         queryset = SingleVote.objects.select_related('proposal').meaningful()
@@ -154,10 +153,9 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
 
 
 class SystemStateViewSet(viewsets.ModelViewSet):
-    """Get all vote system states"""
-
+    """Get all vote system states."""
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     queryset = SystemState.objects.all()
     serializer_class = serializers.SystemStateSerializer
-    filter_fields = '__all__'
+    filterset_fields = '__all__'

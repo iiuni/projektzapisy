@@ -1,7 +1,7 @@
 {% extends "schedule/base.html" %}
 {% load render_bundle from webpack_loader %}
-{% load static %}
-
+{% load static %} 
+{% load crispy_forms_tags %}
 {% block schedule_reservation %} class="active"{% endblock %}
 
 {% block bread %}
@@ -10,285 +10,118 @@
     <li class="breadcrumb-item active" aria-current="page">Rezerwuj</li>
 {% endblock %}
 
-{% block js %}{{ block.super }}
-    <script id="reservation-data" type="application/json">
-{
-    "canManageEvents": {% if perms.schedule.manage_events %}true{% else %}false{% endif %},
-    "imageChoose": "{% static "schedule/choose.png" %}"
-}
-    </script>
-    {% render_bundle "schedule-classroom-chooser" %}
-    {% render_bundle "schedule-reservation" %}
+{% block js %}
+
+{% render_bundle "schedule-reservation" %}
 {% endblock %}
 
-
 {% block all-content %}
-<h2>{% if is_edit %}Zmień rezerwacje{% else %}Nowa rezerwacja{% endif %}</h2>
-
-<form method="POST" id="mainform">
+<h2>{% if is_edit %}Edytuj rezerwację{% else %}Nowa rezerwacja{% endif %}</h2>
+<input id="extra-terms-number" class="d-none" value="{{ extra_terms_number }}">
+<form method="POST" class="post-form" id="main-form">
+    <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ml-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ml-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
     {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
-    {{ form.non_field_errors }}
-    <fieldset class="my-3">
+    {% crispy form %}
 
-        {% if user.employee %}
-            <div class="form-group row">
-                <label for="id_type" class="col-sm-2 col-form-label">Rodzaj</label>
-                <div class="col-sm-10">
-                    {{ form.type }}
-                </div>
-            </div>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <dl>
-                    <dt>
-                        Egzaminy, Kolokwia
-                    </dt>
-                    <dd class="ml-2">
-                        prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.
-                    </dd>
-                    <dt>
-                        Wydarzenia
-                    </dt>
-                    <dd class="ml-2">
-                        każdy zalogowany może zgłosić chęć rezerwacji;
-                        rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.
-                    </dd>
-                </dl>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+    <hr>
 
-            <div id="form_course" class="form-group row">
-                <label for="id_course" class="col-sm-2 col-form-label">Przedmiot</label>
-                <div class="col-sm-10">
-                    {{ form.course }}
-                </div>
-            </div>
-        {% endif %}
+    <h3 id="term-forms">Terminy</h3>
 
-        <div id="form_title" class="form-group row">
-            <label for="id_title" class="col-sm-2 col-form-label">Tytuł</label>
-            <div class="col-sm-10">
-                {{ form.title }}
-                <small class="form-text text-muted">
-                    Tytuł pod jakim widoczne będzie wydarzenie
-                </small>
+    <div class="container">
+        <div class="row font-weight-bold mb-2 border-bottom">
+            <div class="col-2 p-2 border">
+                Dzień
+            </div>
+            <div class="col-2 p-2 border">
+                Początek
+            </div>
+            <div class="col-2 p-2 border">
+                Koniec
+            </div>
+            <div class="col-3 p-2 border">
+                Lokalizacja
+            </div>
+            <div class="col-3 p-2 border">
+                Działania
             </div>
         </div>
-
-        <div id="form_visible" class="form-group row">
-            <label id="optionsCheckboxes" for="id_visible" class="col-sm-2 col-form-label">
-                Opcje
-            </label>
-            <div class="col-sm-10 custom-control custom-checkbox">
-                {{ form.visible }}
-                <label class="custom-control-label" for="id_visible">
-                    Wydarzenie widoczne dla wszystkich użytkowników systemu
-                </label>
-                <small class="form-text text-muted">
-                    <strong>Uwagi:</strong>
-                    Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora.
-                </small>
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label for="id_description" class="col-sm-2 col-form-label">Opis</label>
-            <div class="col-sm-10">
-                {{ form.description }}
-                {{ form.description.errors }}
-                <small class="form-text text-muted">
-                    Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne;
-                    widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.
-                </small>
-            </div>
-        </div>
-
-    </fieldset><hr>
-
-
-
-
-    <h3>Terminy</h3>
-
-    {{ formset.management_form }}
-    <table id="termstable" class="table table-bordered mb-0">
-        <thead>
-            <tr>
-                <th class="termtbl1">Dzień</th>
-                <th class="termtbl2">Od</th>
-                <th class="termtbl2">Do</th>
-                <th class="termtbl4">Lokalizacja</th>
-                <th class="termtbl3">Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for form in formset %}
-            <tr>
-                <td><strong>{{ form.instance.day|date:"Y-m-d" }}</strong>{{ form.day }}</td>
-                <td>{{ form.instance.start|time }}{{ form.start }}</td>
-                <td>{{ form.instance.end|time }}{{ form.end }}</td>
-                <td>{% if form.instance.room %}Sala
-                    {{ form.instance.room.number }}{% else %}
-                    {{ form.instance.place }}{% endif %}{{ form.room }}{{ form.place }}
-                    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
-                </td>
-
-                <td>
-                    <button type="button" class="d-none btn btn-success unremoveterm">
-                        Cofnij usunięcie
-                    </button>
-                    <button type="button" class="btn btn-danger removeterm">Usuń</button>
-                    <button type="button" class="btn btn-info editterm float-right">Edytuj</button>
-                    <div class="d-none">{{ form.DELETE }}</div>
-                    <div class="d-none ignore_conflicts">{{ form.ignore_conflicts }}</div>
-                </td>
-                {{ form.id }}
-            </tr>
+    </div>
+    <div id="term-formset" class="mb-5">
+        {{ formset.management_form }}
+        {% for term_form in formset %}
+            {% crispy term_form %}
         {% endfor %}
-            <tr class="termstable-template bg-light d-none">
-                <td class="termstable-template-term">
-                    <strong></strong>
-                    <input class="d-none">
-                </td>
-                <td class="termstable-template-begin">
-                    <input class="d-none">
-                </td>
-                <td class="termstable-template-end">
-                    <input class="d-none">
-                </td>
-                <td class="termstable-template-location">
-                    <input class="d-none termstable-template-place" maxlength="255">
-                    <input class="d-none termstable-template-room">
-                </td>
-                <td>
-                    <button type="button" class="d-none btn btn-success unremoveterm">
-                        Cofnij usunięcie
-                    </button>
-                    <button type="button" class="btn btn-danger removeterm">Usuń</button>
-                    <button type="button" class="btn btn-info editterm float-right">Edytuj</button>
-                    <div class="d-none">
-                        <input type="checkbox" class="termstable-template-delete">
-                    </div>
-                    <div class="d-none termstable-template-ignore-conflicts ignore_conflicts"></div>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
-    <input type="submit" class="d-none" name="sendthisform" value="test" id="testmainform">
-</form>
-
-
-<form id="addtermform" class="needs-validation">
-    <table class="table">
-        <tbody>
-        <tr>
-            <td class="termtbl1">
-                <input id="term" type="date" class="term form-control" value=""
-                    min="{% now "Y-m-d" %}" required>
-                <small class="form-text text-muted">
-                    Wybierz termin, by zobaczyć sale wolne w tym czasie.
-                </small>
-            </td>
-            <div>
-            <td class="termtbl2x2" colspan="2">
-                <div class=" input-group">
-                    <input id="begin" type="time" class="begin timepicker form-control" required
-                        placeholder="np. 8:00" 
-                        pattern="^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$">
-                    <input id="end" type="time" class="end timepicker  form-control rounded-right" required
-                        placeholder="np. 10:00" 
-                        pattern="^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$">
-                    <div class="invalid-feedback">
-                        Koniec musi następować po początku.
-                    </div>
-                </div>
-            </td>
-            <td class="termtbl4">
-                <input class="form-control bg-light" id="location" name="location"
-                    placeholder="Miejsce" type="text" required readonly>
-                <div class="invalid-feedback">
-                    Lokalizacja jest wymagana.
-                </div>
-                <small class="form-text text-muted">
-                    Wybierz lokalizacje poniżej.
-                </small>
-                <input type="hidden" id="hiddenroom" value="">
-                <input type="hidden" id="hiddenid" value="">
-                <input type="hidden" id="hiddeneventid" value="">
-            </td>
-            <td class="termtbl3">
-                <button id="addterm" class="btn btn-success float-right">Dodaj termin</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</form>
-
-<form action="javascript:void(0);">
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link active" id="nav-place-in-tab" data-toggle="tab" href="#nav-place-in" role="tab" aria-controls="nav-place-in" aria-selected="false">Sala Instytutu</a>
-            <a class="nav-item nav-link" id="nav-place-out-tab" data-toggle="tab" href="#nav-place-out" role="tab" aria-controls="nav-place-out" aria-selected="true">Miejsce zewnętrzne</a>
-        </div>
-    </nav>
-
-    <div class="tab-content mt-3" id="nav-tabContent">
-        <div class="tab-pane fade" id="nav-place-out" role="tabpanel" aria-labelledby="nav-place-out-tab">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                Musisz samemu zatroszczyć się o rezerwację!
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <button class="btn btn-primary" id="new-term-form">Dodaj nowy termin</button>
+    </div>
+    <div>
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a
+                class="nav-item nav-link active"
+                id="nav-place-in-tab"
+                data-toggle="tab"
+                href="#nav-place-in"
+                role="tab"
+                aria-controls="nav-place-in"
+                aria-selected="false"
+            >Sala Instytutu</a>
+            <a
+                class="nav-item nav-link"
+                id="nav-place-out-tab"
+                data-toggle="tab"
+                href="#nav-place-out"
+                role="tab"
+                aria-controls="nav-place-out"
+                aria-selected="true"
+            >Miejsce zewnętrzne</a>
             </div>
-            <div id="inputplacediv" class="container">
-                <div class="form-group row">
-                    <label for="inputplace" class="col-sm-2 col-form-label">Miejsce</label>
-                    <div class="col-sm-10 input-group">
-                        <input type="text" class="form-control" id="inputplace" 
-                        placeholder="np. Instytu Matematyczny, Sala HS">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-info" id="addoutsidelocation">Wybierz</button>
+        </nav>
+  
+        <div class="tab-content mt-3" id="nav-tabContent">
+            <div
+            class="tab-pane fade show active"
+            id="nav-place-in"
+            role="tabpanel"
+            aria-labelledby="nav-place-in-tab"
+            >
+                <div id="reservation-widget" ></div>
+            </div>
+            <div
+            class="tab-pane fade"
+            id="nav-place-out"
+            role="tabpanel"
+            aria-labelledby="nav-place-out-tab"
+            >
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Musisz samemu zatroszczyć się o rezerwację!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="inputplacediv" class="container">
+                    <div class="form-group row">
+                        <label for="inputplace" class="col-sm-2 col-form-label">Miejsce</label>
+                        <div class="col-sm-10 input-group">
+                            <input type="text" class="form-control" id="inputplace" 
+                            placeholder="np. Instytut Matematyczny, Sala HS">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info" id="add-outside-location">Wybierz</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade show active" id="nav-place-in" role="tabpanel" aria-labelledby="nav-place-in-tab">
-
-            <fieldset id="rooms_filter" class="container">
-                <legend >Filtruj sale</legend>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="filteroccupated" name="selectsssplace"
-                    value="outside" class="custom-control-input" checked>
-                    <label class="custom-control-label" for="filteroccupated">Pokaż zajęte</label>
-                </div>
-            </fieldset>
-
-            <div id="canvasplacediv" class="container">
-                <canvas id="can" width="900">
-                    Niestety Twoja przeglądarka nie wspiera HTML5.
-                </canvas>
-            </div>
-
-        </div>
     </div>
+    
+    <hr>
+    <button type="submit" class="save btn btn-success mt-3" id="save-event">Zapisz</button>
+
+
 </form>
-<form action="javascript:void(0);">
-    <div class="d-flex">
-        <div class="custom-control custom-checkbox col">
-        {% if errors and perms.schedule.manage_events %}
-                <input type="checkbox" class="custom-control-input" id="ignore_all_conflicts">
-                <label class="custom-control-label" for="ignore_all_conflicts">
-                    Zignoruj konflikty
-                </label>
-        {% endif %}
-        </div>
-        <input type="button" id="save_event" class="btn btn-success" name="zapisz" value="Zapisz">
-    </div>
-</form>
+
+{% endblock %}
+
+{% block rendered_bundles %}
+    {% render_bundle 'schedule-reservation-widget' %}
 {% endblock %}

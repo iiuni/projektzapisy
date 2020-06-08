@@ -7,8 +7,8 @@ from datetime import timedelta
 
 from django.test import TestCase
 
-from apps.enrollment.records.models import T0Times, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group
+from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.records.models import GroupOpeningTimes, T0Times
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.users.models import Student
 
@@ -57,9 +57,7 @@ class OpeningTimesTest(TestCase):
                                                         bolek_knitting_group_opening))
 
     def test_records_end(self):
-        """Tests, that student will not be able to enroll after records are
-        closed.
-        """
+        """Tests, that student will not be able to enroll after records are closed."""
         self.assertTrue(
             GroupOpeningTimes.is_group_open_for_student(self.bolek, self.knitting_lecture_group,
                                                         self.semester.records_closing))
@@ -69,7 +67,9 @@ class OpeningTimesTest(TestCase):
                 self.semester.records_closing + timedelta(seconds=5)))
 
     def test_group_own_record_times(self):
-        """If a course has its own opening time and it was not participating in
+        """Tests individual CourseInstance opening times.
+
+        If a course has its own opening time and it was not participating in
         voting, its time should take precedence over T0s.
         """
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
@@ -96,8 +96,7 @@ class OpeningTimesTest(TestCase):
                 self.washing_up_seminar_group.course.records_end + timedelta(seconds=5)))
 
     def test_plural_function(self):
-        """This repeats some of the tests using `are_groups_open_for_student`.
-        """
+        """This repeats some of the tests using `are_groups_open_for_student`."""
         bolek_t0 = T0Times.objects.get(student=self.bolek, semester=self.semester).time
         bolek_votes_for_knitting = SingleVote.objects.get(
             student=self.bolek,

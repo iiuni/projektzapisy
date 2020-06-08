@@ -9,15 +9,9 @@ Vagrant.configure(2) do |config|
   config.ssh.shell = "bash"
   config.vm.box = "ubuntu/bionic64"
   config.vm.box_url = "https://app.vagrantup.com/ubuntu/boxes/bionic64"
-  config.vm.provision :shell, path: "env/apt.sh"
-  config.vm.provision :shell, path: "env/apache_setup.sh"
-  config.vm.provision :shell, path: "env/postgre_setup.sh"
-  config.vm.provision :shell, path: "env/tools_install.sh"
-  config.vm.provision :shell, path: "env/nodejs_setup.sh"
-  config.vm.provision :shell, path: "env/py3.sh"
-  config.vm.provision :shell, path: "env/bash_setup.sh", privileged: false
-  config.vm.provision :shell, path: "env/redis.sh"
-  config.vm.provision :shell, path: "env/env3_setup.sh", privileged: false
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "ansible/playbook.yml"
+  end
   config.vm.network :forwarded_port, guest: 80, host: 8001
   config.vm.network :forwarded_port, guest: 8000, host: 8000
   config.vm.network :forwarded_port, guest: 5432, host: 15432
@@ -29,16 +23,5 @@ Vagrant.configure(2) do |config|
     # Enable "IO APIC" for better multicore performance, see
     # https://serverfault.com/questions/74672/why-should-i-enable-io-apic-in-virtualbox
     vb.customize ["modifyvm", :id, "--ioapic", "on"]
-    # The folder "node_modules" will live somewhere else and only be mounted
-    # in /vagrant/zapisy to avoid the issue with symlinks on Windows.
-    config.vm.provision "shell", inline: <<-SHELL
-      echo "Preparing local node_modules folder…"
-      mkdir -p /vagrant_node_modules
-      chown vagrant:vagrant /vagrant_node_modules
-    SHELL
-    config.vm.provision "shell", run: "always", inline: <<-SHELL
-      mkdir -p /vagrant/zapisy/node_modules
-      mount --bind /vagrant_node_modules /vagrant/zapisy/node_modules
-    SHELL
   end
 end

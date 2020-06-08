@@ -1,6 +1,6 @@
-from django.test import SimpleTestCase
-import random
 from datetime import datetime
+
+from django.test import SimpleTestCase
 
 from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer

@@ -1,25 +1,19 @@
 import copy
 import sys
-from datetime import date
-from functools import cmp_to_key, reduce
-from operator import itemgetter
 
-from django.db import models
-from django.db.models import Avg, Count, Q, Sum, Value
-from django.db.models.functions import Concat
+from django.db.models import Avg, Count, Q, Sum
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import GROUP_TYPE_CHOICES, Group
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models.records import Record, RecordStatus
-from apps.offer.proposal.models import (Proposal, ProposalStatus,
-                                        SemesterChoices)
-from apps.offer.vote.models.single_vote import SingleVote, SingleVoteQuerySet
+from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
+from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
 
 if sys.version_info >= (3, 8):
-    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional, Union
+    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional
 else:
-    from typing import List, Tuple, Dict, NamedTuple, Optional, Union
+    from typing import List, Tuple, Dict, NamedTuple, Optional
     from typing_extensions import TypedDict
 
 
@@ -129,11 +123,12 @@ ProposalSummary = List[SingleGroupData]
 
 
 def propose(vote: ProposalVoteSummary):
-    """A simple, heuristic function to propose, whether the course should be taught in the upcoming year."""
+    """A heuristic suggesting, whether to teach the course in upcoming year."""
     current_year = SystemState.get_current_state().year
     proposal = vote.proposal
-    avg = SingleVote.objects.filter(state__year=current_year, value__gt=0).values('proposal').annotate(
-        total=Sum('value')).aggregate(Avg('total'))
+    avg = SingleVote.objects.filter(
+        state__year=current_year,
+        value__gt=0).values('proposal').annotate(total=Sum('value')).aggregate(Avg('total'))
     previous_avg = 0
     years = 0
     percentage = 0.8
@@ -156,21 +151,30 @@ def propose(vote: ProposalVoteSummary):
 def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) -> ProposalSummary:
     """Function prepares data to create a csv.
 
-    Data returned by this function will be presented in a spreadsheet, where it will help with assigning classes. Given a course,
-    it will look for previous instances of the course (taking the newest one) and copy the group Assignments from it. If such
-    instance does not exist, it will assign only the owner of the course.
+    Data returned by this function will be presented in a spreadsheet, where it
+    will help with assigning classes. Given a course, it will look for previous
+    instances of the course (taking the newest one) and copy the group
+    Assignments from it. If such instance does not exist, it will assign only
+    the owner of the course.
 
     Args:
-        subjects: list of tuples (course name, course semester, course proposal). Each tuple represents single course.
+        subjects: list of tuples (course name, course semester, course
+            proposal). Each tuple represents single course.
         years: list of years to look for data in.
     """
-
     course_data = {}
 
     for course_name, course_semester, course_proposal in subjects:
-        course_data[course_name] = {'proposal': course_proposal, 'semester': course_semester,
-                                    'instance': CourseInstance.objects.filter(semester__year__in=years, offer=course_proposal,
-                                                                              semester__type=course_semester).order_by('-semester__year').first()}
+        course_data[course_name] = {
+            'proposal':
+            course_proposal,
+            'semester':
+            course_semester,
+            'instance':
+            CourseInstance.objects.filter(
+                semester__year__in=years, offer=course_proposal,
+                semester__type=course_semester).order_by('-semester__year').first()
+        }
 
     groups: ProposalSummary = []
     # Prepares data necessary to create csv.
@@ -200,8 +204,14 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
                 group_type = group.human_readable_type()
                 teacher_code = group.teacher.user.username
                 teacher_name = group.teacher.get_full_name()
-                sgd: SingleGroupData = {'name': course, 'semester': semester, 'teacher': teacher_name,
-                                        'teacher_code': teacher_code, 'group_type': group_type, 'hours': course_hours}
+                sgd: SingleGroupData = {
+                    'name': course,
+                    'semester': semester,
+                    'teacher': teacher_name,
+                    'teacher_code': teacher_code,
+                    'group_type': group_type,
+                    'hours': course_hours
+                }
                 groups.append(sgd)
         else:
             teacher_code = proposal_info.owner.user.username
@@ -225,8 +235,14 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
             if proposal_info.hours_recap:
                 course_hours = proposal_info.hours_recap
                 group_type = 'Repetytorium'
-            sgd: SingleGroupData = {'name': course, 'semester': semester, 'teacher': teacher_name,
-                                    'teacher_code': teacher_code, 'group_type': group_type, 'hours': course_hours}
+            sgd: SingleGroupData = {
+                'name': course,
+                'semester': semester,
+                'teacher': teacher_name,
+                'teacher_code': teacher_code,
+                'group_type': group_type,
+                'hours': course_hours
+            }
             groups.append(sgd)
     return groups
 
@@ -239,7 +255,7 @@ def get_last_years(n: int) -> List[str]:
 
 
 def get_votes(years: List[str]) -> VotingSummaryPerYear:
-    """ This function prepares the voting data, that'll be put in a spreadsheet. """
+    """Prepares the voting data, that'll be put in a spreadsheet."""
     max_vote_value = max(SingleVote.VALUE_CHOICES)[0]
 
     # Collect the information on Proposals currently in vote. Leave voting blank
@@ -259,8 +275,11 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
 
     # Collect voting history for these proposals.
     votes = SingleVote.objects.filter(
-        state__year__in=years, proposal__status=ProposalStatus.IN_VOTE).values('proposal_id', 'state__year').annotate(
-            total=Sum('value'), count_max=Count('value', filter=Q(value=max_vote_value)), votes=Count('value', filter=Q(value__gt=0))).order_by('proposal_id', '-state__year')
+        state__year__in=years,
+        proposal__status=ProposalStatus.IN_VOTE).values('proposal_id', 'state__year').annotate(
+            total=Sum('value'),
+            count_max=Count('value', filter=Q(value=max_vote_value)),
+            votes=Count('value', filter=Q(value__gt=0))).order_by('proposal_id', '-state__year')
 
     votes_dict = {(v['proposal_id'], v['state__year']): SingleYearVoteSummary(
         total=v['total'], count_max=v['count_max'], votes=v['votes'], enrolled=None)

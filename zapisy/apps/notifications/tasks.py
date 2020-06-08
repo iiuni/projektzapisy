@@ -6,9 +6,9 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django_rq import job
 
+from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
-from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 
 
 @job('dispatch-notifications')

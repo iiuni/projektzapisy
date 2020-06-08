@@ -1,5 +1,5 @@
 def mailto(author, students, bcc=False):
-    """Helper method to create mailto links"""
+    """Helper method to create mailto links."""
     result = author.email
 
     if students:

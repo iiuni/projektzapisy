@@ -1,9 +1,6 @@
 {# Base template for an entire System #}
 
 {% load static %}
-{% load should_display_debug %}
-{% load debug_info %}
-{% load i18n %}
 {% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
@@ -29,7 +26,7 @@
         gtag('config', 'UA-109984921-1');
     </script>
 
-    {% render_bundle "main" %}
+    {% render_bundle "common-main" %}
     {% render_bundle "polyfill" %}
     {% render_bundle "vendors" %}
     {% block styles %}
@@ -37,10 +34,10 @@
     {% block js %}{% endblock %}
     {% block rss %}{% endblock %}
     {% block head_extra %}{% endblock %}
-    
+
 </head>
 
-<body>
+<body{% if debug %} class="debug"{% endif %}>
     <div class="container-fluid p-0 d-print-none">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -63,9 +60,9 @@
                         <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
                     </li>
                     {% if user.is_authenticated %}
-                    <li {% block theses_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
-                    </li>
+                        <li {% block theses_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
+                        </li>
                     {% endif %}
                 </ul>
             {% if user.is_authenticated %}
@@ -113,8 +110,8 @@
                                 </a>
                             </div>
                             <form class="m-3">
-                                <a class="btn btn-primary" data-toggle="collapse" 
-                                        href="#login-without-usos" role="button" 
+                                <a class="btn btn-primary" data-toggle="collapse"
+                                        href="#login-without-usos" role="button"
                                         aria-expanded="false" aria-controls="login-without-usos">
                                     lub użyj konta Systemu Zapisów
                                 </a>
@@ -144,7 +141,7 @@
                                                     required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Zaloguj</button>
-                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a> 
+                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a>
                                     </form>
                             </div>
                         </div>
@@ -163,7 +160,7 @@
             </div>
             <div class="container">
                 <div class="row">
-                    <div id="system_menu"> 
+                    <div id="system_menu">
                         <ul class="nav nav-tabs" id="main-menu-list" role="tablist">
                             {% block system_menu %}
                             {% endblock %}
@@ -197,14 +194,18 @@
                 </div>
             </div>
             <div class="row my-4">
-                <div class="col-lg-9 col-12" id="main-content">
-                    {# WARNING ajaxCourseLoad.ts depends on this #}
-                        {% block content %}
-                        {% endblock %}
-                </div>
-                <nav class="col-lg-3 col-12 d-print-none" id="sidebar">
-                    {% block sidebar %}
+                <div class="col-lg-9 col-12 order-last order-lg-first" id="main-content">
+                    {% block content %}
                     {% endblock %}
+                </div>
+                <nav class="col-lg-3 col-12
+                        d-print-none order-first
+                        order-lg-last mb-3" id="sidebar">
+                    <div class="folded" id="sidebar-inner">
+                        {% block sidebar %}
+                        {% endblock %}
+                    </div>
+                    <a class="text-dark" href="#" id="fold-toggler">zwiń / rozwiń</a>
                 </nav>
             </div>
             {% endblock %}
@@ -221,12 +222,6 @@
                     {% endif %}
                     | Błędy i uwagi: <a href="https://github.com/iiuni/projektzapisy/issues">[link]</a>
                     Wygenerowano: {% now "H:i:s" %}
-                    {% should_display_debug as display_debug %}
-                    {% if display_debug is True %}
-                    {% autoescape off %}
-                    {% debug_info %}
-                    {% endautoescape %}
-                    {% endif %}
                 </p>
             </div>
         </div>

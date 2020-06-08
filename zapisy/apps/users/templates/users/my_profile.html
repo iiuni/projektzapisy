@@ -24,11 +24,11 @@
                 <td>{{ request.user.email }}</td>
             </tr>
             {% if user.student %}
-            {% csrf_token %}
             <tr>
                 <th>Zgoda na udostępnianie danych innym studentom</th>
                 <td>
                     <form action="{% url 'personal_data_consent' %}" method="post">
+                        {% csrf_token %}
                         {% if user.student.consent_granted %}
                             Tak&emsp;
                             <button type="submit" value="Wycofaj zgodę" name="no" class="btn btn-secondary">Wycofaj zgodę</button>
@@ -135,7 +135,7 @@
                         {% regroup groups_at_time|dictsort:"course_id" by course as courses %}
                             <ul class="voted-courses">
                             {% for course in courses %}
-                                <li><a href="{{ course.grouper.get_absolute_url }}">{{ course.grouper.name }}</a>
+                                <li><a href="{% url 'course-page' course.grouper.slug %}">{{ course.grouper.name }}</a>
                                     <ul class="classes-list">
                                         {% for group in course.list|dictsort:"type" %}
                                             <li>

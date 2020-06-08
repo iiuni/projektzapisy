@@ -1,9 +1,9 @@
+from collections import defaultdict, namedtuple
+from typing import Dict, List, Tuple
+
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
-
-from collections import defaultdict, namedtuple
-from typing import Dict, List
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
@@ -39,7 +39,7 @@ def get_grouped_polls(student: Student) -> Dict:
 
 def group_submissions_with_statuses(
     submissions: List[SubmissionWithStatus]
-) -> (dict, dict):
+) -> Tuple[dict, dict]:
     """Groups submissions into a structure that is useful for templating.
 
     Fields are defined in a `GroupedSubmissions` namedtuple.
@@ -69,8 +69,10 @@ def group_submissions_with_statuses(
 
 
 def group_submissions(submissions: List[Submission]) -> dict:
-    """Groups a list of submissions into a dictionary of nested
-    categories and subcategories.
+    """Groups a list of submissions into a dictionary.
+
+    The submissions are transformed into a dictionary of nested categories and
+    subcategories.
 
     This method is structuring data that allows for easy displaying
     handly tables in views such as the one responsible for summarizing
@@ -90,7 +92,9 @@ def group_submissions(submissions: List[Submission]) -> dict:
 
 
 def group(entries: List[Poll], sort=False) -> dict:
-    """Groups a list of polls/submissions into a dictionary of nested
+    """Groups a list of polls/submissions into a dictionary.
+
+    The polls and submissions are combined into a dictionary of nested
     categories and original entries.
 
     This method is structuring data that allows for easy displaying
@@ -133,8 +137,7 @@ class PollSummarizedResultsEntry:
 
     @property
     def field_choices(self):
-        """Lists all possible answers that could be selected for
-        radio fields."""
+        """Lists all possible answers that could be selected for radio fields."""
         if self.field_type == 'radio':
             return self._choices
         if self.field_type == 'checkbox':
@@ -197,8 +200,7 @@ class PollSummarizedResultsEntry:
 
 
 class PollSummarizedResults:
-    """Acts as a container for all sections (entries) in the summary
-    results view of the Poll.
+    """Container for all sections (entries) in the summary results view of the Poll.
 
     A single section is also a self-contained entry, defined by
     the `PollSummarizedResultsEntry` class.

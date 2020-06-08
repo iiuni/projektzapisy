@@ -109,7 +109,9 @@ class GuaranteedSpotsEnrollmentTest(TestCase):
         self.assertFalse(Record.is_enrolled(self.lolek, self.group))
 
     def test_two_isim_students(self):
-        """When there are two ISIM students, they compete for the regular spots
+        """Test scenario with two ISIM students running for the same group.
+
+        When there are two ISIM students, they compete for the regular spots
         and the guaranteed spot at the same time.
         """
         with freeze_time(self.opening_time + timedelta(seconds=5)):

@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
-from apps.enrollment.records.models import Record, RecordStatus, GroupOpeningTimes
-from apps.enrollment.courses.models import Semester, Group
+from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus
 from apps.users.models import Student
 
 
@@ -72,9 +72,11 @@ class EnrollmentTest(TestCase):
                 status=RecordStatus.ENROLLED).exists())
 
     def test_lecture_group_also_enrolled(self):
-        """Bolek will just enqueue into the exercises group. He should also be
-        enrolled into the lecture."""
+        """Tests automatic adding into the corresponding lecture group.
 
+        Bolek will just enqueue into the exercises group. He should also be
+        enrolled into the lecture.
+        """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertCountEqual(
                 Record.enqueue_student(self.bolek, self.cooking_exercise_group_1),
@@ -128,9 +130,12 @@ class EnrollmentTest(TestCase):
                 status=RecordStatus.ENROLLED).exists())
 
     def test_bolek_comes_before_lolek(self):
-        """Bolek will be first to enroll into the groups. Lolek will remain in
+        """Tests that the group limits are respected.
+
+        Bolek will be first to enroll into the groups. Lolek will remain in
         the queue of the exercise group, yet he will fit in the lecture
-        group."""
+        group.
+        """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertCountEqual(
                 Record.enqueue_student(self.bolek, self.cooking_exercise_group_1),
@@ -216,7 +221,9 @@ class EnrollmentTest(TestCase):
                 status=RecordStatus.QUEUED).exists())
 
     def test_student_exceeds_the_35_limit(self):
-        """Bolek will try to sign up to "Gotowanie" and "Szydełkowanie" before
+        """Tests the ECTS limit constraint.
+
+        Bolek will try to sign up to "Gotowanie" and "Szydełkowanie" before
         35 points limit abolition. He should be successful with "Gotowanie",
         which costs exactly 35 ECTS, but not with the second enrollment.
         """
@@ -250,10 +257,12 @@ class EnrollmentTest(TestCase):
             Record.student_points_in_semester(self.bolek, self.semester), 35)
 
     def test_higher_priority_1(self):
-        """Both exercise groups are occupied by Bolek and Lolek. Tola will
-        enqueue to both with different priorities. She will end up in the group
-        of higher priority regardless of the order in which Bolek and Lolek free
-        up the places.
+        """Tests queue priorities.
+
+        Both exercise groups are occupied by Bolek and Lolek. Tola will enqueue
+        to both with different priorities. She will end up in the group of
+        higher priority regardless of the order in which Bolek and Lolek free up
+        the places.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
@@ -283,8 +292,10 @@ class EnrollmentTest(TestCase):
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
     def test_higher_priority_2(self):
-        """The only difference between this test and the one above is the order
-        in which Bolek and Lolek leave their groups.
+        """Tests queue priorities.
+
+        The only difference between this test and the one above is the order in
+        which Bolek and Lolek leave their groups.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))

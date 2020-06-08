@@ -1,0 +1,94 @@
+---
+- hosts: all
+
+  tasks:
+    # Deploy
+    - name: Deploy mount bind
+      copy:
+        src: vagrant-zapisy-node_modules.mount
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy Django Runserver
+      copy:
+        src: runserver.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn
+      copy:
+        src: yarn.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn devw
+      copy:
+        src: yarn_devw.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker1
+      copy:
+        src: rqworker1.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker2
+      copy:
+        src: rqworker2.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    # Enable and run
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Enable and run node_modules mount
+      service:
+        name: vagrant-zapisy-node_modules.mount
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Enable and run Django Runserver service
+      service:
+        name: runserver
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Start yarn
+      systemd:
+        name: yarn
+        state: started
+        enabled: no
+      become: yes
+
+    - name: Enable and run yarn_devw service
+      service:
+        name: yarn_devw
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Enable and run rqworker1 service
+      service:
+        name: rqworker1
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Enable and run rqworker2 service
+      service:
+        name: rqworker2
+        enabled: yes
+        state: started
+      become: yes
