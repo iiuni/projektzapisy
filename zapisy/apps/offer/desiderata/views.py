@@ -11,7 +11,6 @@ def change_desiderata(request):
     """Handles form in semester with desiderata currently open."""
     user = request.user
     employee = user.employee
-    semester = Semester.get_upcoming_semester()
 
     desiderata = Desiderata.get_desiderata(employee)
     other, _ = DesiderataOther.objects.get_or_create(employee=employee)

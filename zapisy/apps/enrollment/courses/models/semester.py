@@ -5,7 +5,6 @@ from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core.validators import ValidationError
 from django.db import models
-from django.db.models import Q
 
 from apps.common import days_of_week
 
@@ -163,7 +162,7 @@ class Semester(models.Model):
         try:
             return Semester.objects.get(semester_beginning__lte=date,
                                         semester_ending__gte=date)
-        except Semester.DoesNotExist:
+        except ObjectDoesNotExist:
             return None
         except MultipleObjectsReturned:
             raise
@@ -251,7 +250,7 @@ class Semester(models.Model):
 
     @staticmethod
     def get_current_semester():
-        """ if exist, it returns current semester. otherwise return None """
+        """If exists, it returns current semester, otherwise return None."""
         return Semester.get_semester(datetime.today())
 
     def desiderata_is_open(self):
