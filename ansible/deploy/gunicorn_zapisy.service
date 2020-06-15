@@ -1,0 +1,12 @@
+[Unit]
+Description=Zapisy gunicorn daemon
+
+[Service]
+Restart=always
+Type=simple
+User=$user$
+Group=$user$
+ExecStart=/home/$user$/deploy/current/ansible/deploy/gunicorn_start.sh
+
+[Install]
+WantedBy=vagrant.mount

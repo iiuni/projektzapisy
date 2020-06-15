@@ -110,12 +110,114 @@
         cmd: nginx -s reload
       become: yes
 
+    # Sandboxing nginx
+    - name: Stop nginx service
+      systemd:
+        name: nginx
+        state: stopped
+      become: yes
 
+    - name: Adding user www-data to group ssl-cert
+      user:
+        name: "www-data"
+        groups: "ssl-cert"
+        append: yes
+      become: yes
+
+    - name: Create /run/nginx folder
+      file:
+        path: /run/nginx
+        state: directory
+        owner: "www-data"
+        group: "www-data"
+        mode: '1775'
+      become: yes
+
+    - name: Copy nginx service file to /etc
+      copy:
+        src: "/lib/systemd/system/nginx.service"
+        dest: "/etc/systemd/system/nginx.service"
+        force: yes
+      become: yes
+
+    - name: Delete nginx service file from /lib
+      file:
+        path: /lib/systemd/system/nginx.service
+        state: absent
+      become: yes
+
+    - name: Configure nginx service
+      lineinfile:
+        path: /etc/systemd/system/nginx.service
+        insertafter: "^KillMode=mixed$"
+        line: "{{ item.line }}"
+      with_items:
+        - {line: "RestartSec=10"}
+        - {line: "Restart=on-failure"}
+        - {line: "RuntimeDirectory=nginx"}
+        - {line: "AmbientCapabilities=CAP_NET_BIND_SERVICE"}
+        - {line: "User=www-data"}
+        - {line: "Group=www-data"}
+        - {line: "NoNewPrivileges=true"}
+        - {line: "LockPersonality=true"}
+        - {line: "SystemCallErrorNumber=EPERM"}
+
+      become: yes
+
+    - name: Move PID file
+      lineinfile:
+        path: /etc/systemd/system/nginx.service
+        regexp: "PIDFile="
+        line: "PIDFile=/run/nginx/nginx.pid"
+      become: yes
+
+    - name: Deploy nginx configs
+      copy:
+        src: "{{ item.file }}"
+        dest: "/etc/nginx/{{ item.path }}"
+        force: yes
+      with_items:
+        - {file: "nginx.conf", path: ""}
+        - {file: "zapisy.conf", path: "sites-available/"}
+        - {file: "ssl-params.conf", path: "snippets/"}
+        - {file: "ssl-signed.conf", path: "snippets/"}
+      become: yes
+
+    - name: Replace a pattern with username in nginx file - zapisy.conf
+      become: yes
+      replace:
+        path: /etc/nginx/sites-avaible/zapisy.conf
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Create ssl directory
+      file:
+        path: /etc/nginx/ssl
+        state: directory
+      become: yes
+
+    - name: Deploy ssl selfsigned files genereted by OpenSSL
+      copy:
+        src: "{{ item.file }}"
+        dest: "{{ item.path }}"
+        force: yes
+      with_items:
+        - {file: "ssl/nginx-selfsigned.crt", path: "/etc/ssl/certs/"}
+        - {file: "ssl/nginx-selfsigned.key", path: "/etc/ssl/private/"}
+        - {file: "ssl/dhparam.pem", path: "/etc/nginx/"}
+      become: yes
 
     #Configure other services
     - name: Deploy Django Runserver
       copy:
         src: runserver.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy gunicorn_zapisy service
+      copy:
+        src: gunicorn_zapisy.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
@@ -152,6 +254,13 @@
       become: yes
       replace:
         path: /etc/systemd/system/runserver.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in gunicorn_zapisy service
+      become: yes
+      replace:
+        path: /etc/systemd/system/gunicorn_zapisy.service
         regexp: '\$user\$'
         replace: "{{ ansible_user }}"
 
