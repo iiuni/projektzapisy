@@ -13,7 +13,7 @@ DJANGO_WSGI_MODULE=zapisy.wsgi                      # WSGI module name
 echo "Starting $NAME as `whoami`"
 
 # Create link to socket for Nginx
-ln -sf ~/env3/run /vagrant/zapisy/socket
+ln -sf /home/*user*/deploy/current/env3/run /home/*user*/deploy/current/zapisy/socket
 
 # Activate the virtual environment
 

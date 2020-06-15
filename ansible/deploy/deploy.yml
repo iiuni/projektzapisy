@@ -15,7 +15,7 @@
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
-        version: master
+        version: ansible-deploy
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: true
@@ -38,6 +38,11 @@
     - name: Create static directory
       file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/static"
+        state: directory
+
+    - name: Create compiled_assets directory
+      file:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/compiled_assets"
         state: directory
 
     - stat:
