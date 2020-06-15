@@ -86,8 +86,11 @@
         template: template0
 
 
+    #Configure and sandbox nginx
+    - stat:
+        path: /lib/systemd/system/nginx.service
+      register: lib_nginx_status
 
-    #Configure nginx
     - name: Configure nginx service restart conditions
       lineinfile:
         path: /lib/systemd/system/nginx.service
@@ -97,20 +100,8 @@
         - {line: "RestartSec=10"}
         - {line: "Restart=on-failure"}
       become: yes
+      when: lib_nginx_status.stat.exists
 
-    - name: Deploy nginx configuration
-      copy:
-        src: nginx.conf
-        dest: /etc/nginx/
-        force: yes
-      become: yes
-
-    - name: Reload nginx configuration
-      shell:
-        cmd: nginx -s reload
-      become: yes
-
-    # Sandboxing nginx
     - name: Stop nginx service
       systemd:
         name: nginx
@@ -139,6 +130,7 @@
         dest: "/etc/systemd/system/nginx.service"
         force: yes
       become: yes
+      when: lib_nginx_status.stat.exists
 
     - name: Delete nginx service file from /lib
       file:
@@ -161,7 +153,6 @@
         - {line: "NoNewPrivileges=true"}
         - {line: "LockPersonality=true"}
         - {line: "SystemCallErrorNumber=EPERM"}
-
       become: yes
 
     - name: Move PID file
@@ -169,6 +160,13 @@
         path: /etc/systemd/system/nginx.service
         regexp: "PIDFile="
         line: "PIDFile=/run/nginx/nginx.pid"
+      become: yes
+      
+    - name: Deploy nginx configuration
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/
+        force: yes
       become: yes
 
     - name: Deploy nginx configs
@@ -186,7 +184,7 @@
     - name: Replace a pattern with username in nginx file - zapisy.conf
       become: yes
       replace:
-        path: /etc/nginx/sites-avaible/zapisy.conf
+        path: /etc/nginx/sites-available/zapisy.conf
         regexp: '\$user\$'
         replace: "{{ ansible_user }}"
 
@@ -205,6 +203,11 @@
         - {file: "ssl/nginx-selfsigned.crt", path: "/etc/ssl/certs/"}
         - {file: "ssl/nginx-selfsigned.key", path: "/etc/ssl/private/"}
         - {file: "ssl/dhparam.pem", path: "/etc/nginx/"}
+      become: yes
+
+    - name: Reload nginx configuration
+      shell:
+        cmd: nginx -s reload
       become: yes
 
     #Configure other services
