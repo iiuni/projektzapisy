@@ -30,15 +30,14 @@
         - npm
         - git
         - redis-server
+        - nginx
       become: yes
-      become_user: root
 
     - name: Instal yarn
       npm:
         name: yarn
         global: yes
       become: yes
-      become_user: root
 
     - name: Install python3, pip and psycopg2
       apt:
@@ -49,7 +48,6 @@
         - python3-psycopg2
         update_cache: yes
       become: yes
-
 
     # Configure postgres
 
@@ -88,4 +86,105 @@
         template: template0
 
 
+
+    #Configure nginx
+    - name: Configure nginx service restart conditions
+      lineinfile:
+        path: /lib/systemd/system/nginx.service
+        insertafter: "^KillMode=mixed$"
+        line: "{{ item.line }}"
+      with_items:
+        - {line: "RestartSec=10"}
+        - {line: "Restart=on-failure"}
+      become: yes
+
+    - name: Deploy nginx configuration
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/
+        force: yes
+      become: yes
+
+    - name: Reload nginx configuration
+      shell:
+        cmd: nginx -s reload
+      become: yes
+
+
+
+    #Configure other services
+    - name: Deploy Django Runserver
+      copy:
+        src: runserver.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn
+      copy:
+        src: yarn.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy yarn build
+      copy:
+        src: yarn_build.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker1
+      copy:
+        src: rqworker1.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker2
+      copy:
+        src: rqworker2.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Replace a pattern with username in runserver service
+      become: yes
+      replace:
+        path: /etc/systemd/system/runserver.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in yarn service
+      become: yes
+      replace:
+        path: /etc/systemd/system/yarn.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in yarn build service
+      become: yes
+      replace:
+        path: /etc/systemd/system/yarn_build.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in rqworker1 service
+      become: yes
+      replace:
+        path: /etc/systemd/system/rqworker1.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Replace a pattern with username in rqworker2 service
+      become: yes
+      replace:
+        path: /etc/systemd/system/rqworker2.service
+        regexp: '\$user\$'
+        replace: "{{ ansible_user }}"
+
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes
 
