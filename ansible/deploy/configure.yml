@@ -201,13 +201,6 @@
       become: yes
 
     #Configure other services
-    - name: Deploy Django Runserver
-      copy:
-        src: runserver.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
     - name: Deploy gunicorn_zapisy service
       copy:
         src: gunicorn_zapisy.service
@@ -242,13 +235,6 @@
         dest: /etc/systemd/system/
         force: yes
       become: yes
-
-    - name: Replace a pattern with username in runserver service
-      become: yes
-      replace:
-        path: /etc/systemd/system/runserver.service
-        regexp: '\$user\$'
-        replace: "{{ ansible_user }}"
 
     - name: Replace a pattern with username in gunicorn_zapisy service
       become: yes

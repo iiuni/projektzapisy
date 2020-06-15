@@ -47,26 +47,9 @@
         path: "{{ deploy_helper.new_release_path }}/zapisy/compiled_assets"
         state: directory
 
-    - stat:
-        path: /etc/systemd/system/runserver.service
-      register: service_status
-
-    - name: Stop Django Runserver service
-      service:
-        name: runserver
-        state: stopped
-      become: yes
-      when: service_status.stat.exists
-
     - name: Apply migrates
       django_manage:
         command: migrate
-        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
-        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
-
-    - name: Django collect static files
-      django_manage:
-        command: collectstatic
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
 
@@ -77,7 +60,6 @@
         regexp: '\*user\*'
         replace: "{{ ansible_user }}"
 
-
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       deploy_helper:
         path: ~/deploy
@@ -85,13 +67,6 @@
         state: finalize
         clean: true
         keep_releases: 2
-
-    # - name: Enable and run Django Runserver service
-    #   service:
-    #     name: runserver
-    #     enabled: yes
-    #     state: restarted
-    #   become: yes
 
     - name: Start yarn
       systemd:
@@ -106,6 +81,12 @@
         enabled: no
         state: restarted
       become: yes
+
+    - name: Django collect static files
+      django_manage:
+        command: collectstatic
+        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
 
     - name: Enable and run gunicorn_zapisy service
       become: yes
