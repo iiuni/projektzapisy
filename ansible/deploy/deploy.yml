@@ -34,6 +34,8 @@
       file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
         state: directory
+        group: "www-data"
+        mode: '1775'
 
     - name: Create static directory
       file:
@@ -106,8 +108,16 @@
       become: yes
 
     - name: Enable and run gunicorn_zapisy service
+      become: yes
       service:
         name: gunicorn_zapisy
+        enabled: yes
+        state: restarted
+
+    - name: Enable and run nginx service
+      become: yes
+      service:
+        name: nginx
         enabled: yes
         state: restarted
 

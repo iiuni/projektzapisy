@@ -117,14 +117,14 @@
         append: yes
       become: yes
 
-    - name: Create /run/nginx folder
-      file:
-        path: /run/nginx
-        state: directory
-        owner: "www-data"
-        group: "www-data"
-        mode: '1775'
-      become: yes
+    # - name: Create /run/nginx folder
+    #   file:
+    #     path: /run/nginx
+    #     state: directory
+    #     owner: "www-data"
+    #     group: "www-data"
+    #     mode: '1775'
+    #   become: yes
 
     - name: Copy nginx service file to /etc
       copy:
