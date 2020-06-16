@@ -6,7 +6,13 @@ Restart=always
 Type=simple
 User=$user$
 Group=$user$
-ExecStart=/home/$user$/deploy/current/ansible/deploy/gunicorn_start.sh
+ExecStart=/home/*user*/deploy/current/env3/bin/gunicorn zapisy.wsgi:application \
+  --name zapisy \
+  --workers $NUM_WORKERS$ \
+  --user=$user$ --group=$user$ \
+  --bind=unix:/home/$user$/deploy/current/env3/run/gunicorn.sock \
+  --log-level=debug \
+  --log-file=-
 
 [Install]
 WantedBy=vagrant.mount

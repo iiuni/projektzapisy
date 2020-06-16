@@ -18,7 +18,7 @@
         version: ansible-deploy
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
-      become: true
+      become: yes
       file:
         path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
         state: touch
@@ -31,8 +31,10 @@
         requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.development.txt"
 
     - name: Create logs directory
+      become: yes
       file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
+        owner: "{{ ansible_user }}"
         state: directory
         group: "www-data"
         mode: '1775'
@@ -52,6 +54,19 @@
         command: migrate
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+
+    #Configure gunicorn
+    - name: Create link to socket for Nginx
+      file:
+        src: "/home/{{ ansible_user }}/deploy/current/env3/run"
+        dest: "/home/{{ ansible_user }}/deploy/current/zapisy/socket"
+        force: yes
+        state: link
+
+    - name: Make sure that directory for gunicorn exists
+      file:
+        path: "/home/{{ ansible_user }}/deploy/current/env3/run/"
+        state: directory
 
     - name: Replace a pattern with username in gunicorn_start script
       become: yes
