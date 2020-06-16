@@ -1,16 +1,17 @@
 [Unit]
 Description=Zapisy gunicorn daemon
+After=network.target
 
 [Service]
 Restart=always
 Type=simple
 User=$user$
-Group=$user$
-ExecStart=/home/*user*/deploy/current/env3/bin/gunicorn zapisy.wsgi:application \
-  --name zapisy \
-  --workers $NUM_WORKERS$ \
-  --user=$user$ --group=$user$ \
-  --bind=unix:/home/$user$/deploy/current/env3/run/gunicorn.sock \
+Group=www-data
+WorkingDirectory=/home/$user$/deploy/current/zapisy
+ExecStart=/home/$user$/deploy/current/env3/bin/gunicorn \
+  --name "zapisy" \
+  --workers $num_proc$ \
+  --bind=unix:/home/$user$/deploy/current/env3/run/gunicorn.sock zapisy.wsgi:application \
   --log-level=debug \
   --log-file=-
 

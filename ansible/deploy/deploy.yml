@@ -56,17 +56,17 @@
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
 
     #Configure gunicorn
+    - name: Make sure that directory for gunicorn exists
+      file:
+        path: "/home/{{ ansible_user }}/deploy/current/env3/run/"
+        state: directory
+
     - name: Create link to socket for Nginx
       file:
         src: "/home/{{ ansible_user }}/deploy/current/env3/run"
         dest: "/home/{{ ansible_user }}/deploy/current/zapisy/socket"
         force: yes
         state: link
-
-    - name: Make sure that directory for gunicorn exists
-      file:
-        path: "/home/{{ ansible_user }}/deploy/current/env3/run/"
-        state: directory
 
     - name: Replace a pattern with username in gunicorn_start script
       become: yes
