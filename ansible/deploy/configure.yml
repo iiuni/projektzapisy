@@ -10,10 +10,17 @@
 
   tasks:
 
-  - name: Add the deploy_user to remote machine
-    user:
-      name: "{{ deploy_user }}"
-      group: "{{ deploy_user }}"
+    - name: Ensure group for deploy_user exists
+      become: yes
+      group:
+        name: "{{ deploy_user }}"
+        state: present
+
+    - name: Add the deploy_user to remote machine
+      become: yes
+      user:
+        name: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
 
     # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
     - name: Wait for any possibly running unattended upgrade to finish

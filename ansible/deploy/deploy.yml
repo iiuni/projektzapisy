@@ -28,6 +28,8 @@
         state: touch
 
     - name: Set up virtualenv and get requirements
+      become: yes
+      become_user: "{{ deploy_user }}"
       pip:
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
@@ -57,12 +59,16 @@
         state: directory
 
     - name: Apply migrates
+      become: yes
+      become_user: "{{ deploy_user }}"
       django_manage:
         command: migrate
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
 
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
+      become: yes
+      become_user: "{{ deploy_user }}"
       deploy_helper:
         path: "/home/{{ deploy_user }}/deploy"
         release: "{{ deploy_helper.new_release }}"
@@ -71,6 +77,8 @@
         keep_releases: 2
 
     - name: Create link to socket for Nginx
+      become: yes
+      become_user: "{{ deploy_user }}"
       file:
         src: "/home/{{ deploy_user }}/deploy/current/env3/run"
         dest: "/home/{{ deploy_user }}/deploy/current/zapisy/socket"
@@ -78,10 +86,10 @@
         state: link
 
     - name: Make sure that directory for gunicorn exists
+      become: yes
+      become_user: "{{ deploy_user }}"
       file:
         path: "/home/{{ deploy_user }}/deploy/current/env3/run/"
-        owner: "{{ deploy_user }}"
-        group: "{{ deploy_user }}"
         state: directory
 
     - name: Start yarn
@@ -99,6 +107,8 @@
       become: yes
 
     - name: Django collect static files
+      become: yes
+      become_user: "{{ deploy_user }}"
       django_manage:
         command: collectstatic
         app_path: "/home/{{ deploy_user }}/deploy/current/zapisy"
