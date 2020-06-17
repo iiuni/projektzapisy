@@ -55,13 +55,6 @@
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
 
-    - name: Replace a pattern with username in gunicorn_start script
-      become: yes
-      replace:
-        path: "{{ deploy_helper.new_release_path }}/ansible/deploy/gunicorn_start.sh"
-        regexp: '\*user\*'
-        replace: "{{ ansible_user }}"
-
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       deploy_helper:
         path: ~/deploy
