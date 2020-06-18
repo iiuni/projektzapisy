@@ -6,7 +6,7 @@ UPDATE auth_user SET first_name=CONCAT(SUBSTRING(first_name, 1, 1), '_', id);
 UPDATE auth_user SET last_name=CONCAT(SUBSTRING(last_name, 1, 1), '_', id);
 
 -- Delete api tokens
-UPDATE authtoken_token SET key='niepoprawnytoken';
+DELETE FROM authtoken_token;
 
 -- Anonymize/remove email addresses
 UPDATE auth_user SET email='email@example.org';
