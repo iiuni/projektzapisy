@@ -49,9 +49,6 @@ class SemesterAdmin(admin.ModelAdmin):
                 'records_closing'
             ]
         }),
-        ('Czas trwania dezyderat', {
-            'fields': ['desiderata_opening', 'desiderata_closing']
-        }),
     ]
     list_editable = ('visible',)
 
