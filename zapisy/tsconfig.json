@@ -12,21 +12,13 @@
     "baseUrl": "./common/assets",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "types": [
-      "jquery",
-      "lodash",
-      "bootstrap",
-      "popper.js"
-    ],
+    "types": ["jquery", "lodash", "bootstrap", "popper.js"]
   },
-  "files": [
-    "./webpack_resources/typescript_decls.d.ts",
-  ],
   "exclude": [
     "./node_modules",
     // Config files are compiled separately, see tsconfig.webpack-config
     "./webpack_resources/webpack-utils.ts",
     "./webpack_resources/webpack.config.ts",
-    "./compiled_assets",
+    "./compiled_assets"
   ]
 }

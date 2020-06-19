@@ -1,26 +1,26 @@
 import Vue from "vue";
-import ThesesList from "./components/ThesesList";
+import ThesesList from "./components/ThesesList.vue";
 import ThesisFilter from "./components/ThesisFilter.vue";
 import store from "./store";
 
 let theses_filter_app = new Vue({
   el: "#theses-filter",
   components: {
-    ThesisFilter
+    ThesisFilter,
   },
-  render: function(h) {
+  render: function (h) {
     return h(ThesisFilter);
   },
-  store
+  store,
 });
 
 let theses_list_app = new Vue({
   el: "#theses-list",
   components: {
-    ThesesList
+    ThesesList,
   },
-  render: function(h) {
+  render: function (h) {
     return h(ThesesList);
   },
-  store
+  store,
 });

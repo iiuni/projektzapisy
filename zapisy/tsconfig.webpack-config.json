@@ -5,12 +5,6 @@
     "esModuleInterop": true,
     "lib": ["esnext"]
   },
-  "include": [
-	  "./webpack_resources"
-  ],
-  "types": [
-    "node",
-    "webpack",
-    "glob"
-  ]
+  "include": ["./webpack_resources"],
+  "types": ["node", "webpack", "glob"]
 }
