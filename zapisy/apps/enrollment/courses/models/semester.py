@@ -157,12 +157,13 @@ class Semester(models.Model):
         """Get semester for a specified date. More versatile than get_current_semester.
 
         :param date: datetime.date
+        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
         :return: Semester or None
         """
         try:
             return Semester.objects.get(semester_beginning__lte=date,
                                         semester_ending__gte=date)
-        except ObjectDoesNotExist:
+        except Semester.DoesNotExist:
             return None
         except MultipleObjectsReturned:
             raise
@@ -241,16 +242,21 @@ class Semester(models.Model):
         Upcoming semester is the one, enrolment into which has already
         been scheduled. It may be useful when students want to plan their
         timetables.
+
+        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
         """
         try:
             return Semester.objects.filter(
                 visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
-        except (Semester.DoesNotExist):
+        except Semester.DoesNotExist:
             return Semester.get_current_semester()
 
     @staticmethod
     def get_current_semester():
-        """If exists, it returns current semester, otherwise return None."""
+        """If exists, it returns current semester, otherwise return None.
+        
+        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
+        """
         return Semester.get_semester(datetime.today())
 
     def desiderata_is_open(self):
