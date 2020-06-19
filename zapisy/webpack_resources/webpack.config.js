@@ -68,6 +68,15 @@ const RULES = [
     ],
   },
 
+  // Less files rule
+  {
+    test: /\.less$/,
+    use: [
+      { loader: "css-loader" },
+      { loader: "less-loader" },
+    ],
+  },
+
   // Other file assets rule
   {
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
