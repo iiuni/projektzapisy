@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
 from django.conf import settings
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.validators import ValidationError
 from django.db import models
 
@@ -254,7 +254,7 @@ class Semester(models.Model):
     @staticmethod
     def get_current_semester():
         """If exists, it returns current semester, otherwise return None.
-        
+
         :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
         """
         return Semester.get_semester(datetime.today())
