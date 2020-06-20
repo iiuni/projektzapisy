@@ -4,7 +4,7 @@ Description=Start rqworker default
 User=$user$
 Group=$user$
 WorkingDirectory=/home/$user$/deploy/current/zapisy/
-ExecStart=/home/$user$/env3/bin/python3 /home/$user$/deploy/current/zapisy/manage.py rqworker default
+ExecStart=/home/$user$/deploy/current/env3/bin/python3 /home/$user$/deploy/current/zapisy/manage.py rqworker default
 Type=simple
 
 [Install]

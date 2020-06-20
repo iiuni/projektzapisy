@@ -5,22 +5,9 @@
     APP_DB_USER: fereol
     APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
-    PG_VERSION: 10
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
-
-    - name: Ensure group for deploy_user exists
-      become: yes
-      group:
-        name: "{{ deploy_user }}"
-        state: present
-
-    - name: Add the deploy_user to remote machine
-      become: yes
-      user:
-        name: "{{ deploy_user }}"
-        group: "{{ deploy_user }}"
 
     # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
     - name: Wait for any possibly running unattended upgrade to finish
@@ -35,9 +22,11 @@
         force_apt_get: true
       become: yes
 
+    # installation acl: https://github.com/georchestra/ansible/issues/55#issuecomment-588313638
     - name: Install tools
       apt:
         pkg:
+        - acl
         - nodejs
         - npm
         - git
@@ -51,7 +40,7 @@
         global: yes
       become: yes
 
-    - name: Install python3, pip and psycopg2
+    - name: Install python tools
       apt:
         pkg:
         - python3
@@ -61,6 +50,18 @@
         update_cache: yes
       become: yes
 
+    - name: Ensure group for deploy_user exists
+      become: yes
+      group:
+        name: "{{ deploy_user }}"
+        state: present
+
+    - name: Add the deploy_user to remote machine
+      become: yes
+      user:
+        name: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+
     # Configure postgres
 
     - name: Ensure a locale exists
@@ -69,11 +70,11 @@
         state: present
       become: yes
 
-    - name: Install postgresql-{{ PG_VERSION }} and postgresql-contrib-{{ PG_VERSION }}
+    - name: Install postgresql and postgresql-contrib
       apt:
         pkg:
-        - postgresql-{{ PG_VERSION }}
-        - postgresql-contrib-{{ PG_VERSION }}
+        - postgresql
+        - postgresql-contrib
         state: present
       become: yes
 
@@ -97,9 +98,8 @@
         lc_ctype: pl_PL.UTF-8
         template: template0
 
-
-
     #Configure and sandbox nginx
+
     - stat:
         path: /lib/systemd/system/nginx.service
       register: lib_nginx_status
@@ -133,6 +133,7 @@
         src: "/lib/systemd/system/nginx.service"
         dest: "/etc/systemd/system/nginx.service"
         force: yes
+        remote_src: yes
       become: yes
       when: lib_nginx_status.stat.exists
 
@@ -203,6 +204,7 @@
       become: yes
 
     #Configure other services
+
     - name: Deploy gunicorn_zapisy service
       copy:
         src: gunicorn_zapisy.service
