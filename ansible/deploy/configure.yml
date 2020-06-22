@@ -186,6 +186,13 @@
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
 
+    - name: Replace a pattern with username in nginx file - zapisy.conf
+      become: yes
+      replace:
+        path: /etc/nginx/sites-available/zapisy.conf
+        regexp: '\$domain\$'
+        replace: "{{ deploy_server_name }}"
+
     - name: Create ssl directory
       file:
         path: /etc/nginx/ssl
@@ -264,13 +271,6 @@
         path: /etc/systemd/system/gunicorn.service
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
-
-    - name: Replace a pattern with domain in gunicorn service
-      become: yes
-      replace:
-        path: /etc/systemd/system/gunicorn.service
-        regexp: '\$domain\$'
-        replace: "{{ deploy_server_name }}"
 
     - name: Replace a pattern with number of workers in gunicorn service
       become: yes
