@@ -67,20 +67,22 @@
     "autoprefixer": "^9.8.0",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^6.0.2",
+    "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^3.5.3",
-    "less-loader": "^6.1.1",
+    "file-loader": "^1.1.11",
+    "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.9.0",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^8.0.2",
     "spicery": "^1.1.0",
-    "ts-loader": "^7.0.5",
+    "ts-loader": "^6.0.4",
     "typescript": "^3.9.5",
     "vue-class-component": "^7.2.3",
     "vue-loader": "^15.9.2",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
     "webpack": "^4.43.0",
-    "webpack-bundle-tracker": "^1.0.0-alpha.1"
+    "webpack-bundle-tracker": "^0.4.3",
+    "webpack-cli": "^3.3.12"
   }
 }
