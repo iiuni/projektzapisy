@@ -145,6 +145,9 @@ const WEBPACK_CONFIG = {
   plugins: PLUGINS,
   mode: DEV_MODE ? "development" : "production",
   devtool: DEV_MODE ? "cheap-eval-source-map" : false,
+  watchOptions: {
+    poll: 2000,
+  },
 };
 
 module.exports = WEBPACK_CONFIG;
