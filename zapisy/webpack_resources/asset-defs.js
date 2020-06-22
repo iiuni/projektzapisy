@@ -2,6 +2,7 @@ const path = require("path");
 
 const AssetDefs = {
   // Common app
+
   "common-main": [
     path.resolve("apps/common/assets/main/expose_libs.ts"),
     path.resolve("apps/common/assets/main/_variables.scss"),
@@ -14,7 +15,6 @@ const AssetDefs = {
     ),
     path.resolve("apps/common/assets/main/sidebar-fold.js"),
   ],
-
   "common-render-markdown": [
     path.resolve(
       "apps/common/assets/markdown/render-markdown.ts"
@@ -23,7 +23,6 @@ const AssetDefs = {
       "apps/common/assets/markdown/render-markdown.scss"
     ),
   ],
-
   "common-markdown-editor": [
     path.resolve(
       "apps/common/assets/markdown/markdown-editor.js"
@@ -58,18 +57,18 @@ const AssetDefs = {
 
   // Poll app
 
-  // "poll-bokeh-plotting": [
-  //   path.resolve("apps/grade/poll/assets/bokeh.js"),
-  //   path.resolve("apps/grade/poll/assets/bokeh.scss"),
-  // ],
+  "poll-bokeh-plotting": [
+    path.resolve("apps/grade/poll/assets/bokeh.js"),
+    path.resolve("apps/grade/poll/assets/bokeh.scss"),
+  ],
 
-  // // Ticket_create app
+  // Ticket_create app
 
-  // "ticket_create-katex": [
-  //   path.resolve(
-  //     "apps/grade/ticket_create/assets/katex.ts"
-  //   ),
-  // ],
+  "ticket_create-katex": [
+    path.resolve(
+      "apps/grade/ticket_create/assets/katex.ts"
+    ),
+  ],
   "ticket_create-ticketsgenerate": [
     path.resolve(
       "apps/grade/ticket_create/assets/ticketsgenerate_main.js"
