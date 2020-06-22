@@ -16,7 +16,8 @@ from apps.users.models import Student
 @login_required
 def list_all(request):
     """Display list of all visible theses."""
-    visible_theses = Thesis.objects.visible(request.user)
+    visible_theses = Thesis.objects.visible(request.user).select_related(
+        'advisor', 'advisor__user').prefetch_related('students', 'students__user')
     board_member = is_theses_board_member(request.user)
 
     theses_list = []
@@ -30,11 +31,23 @@ def list_all(request):
             request.user) or p.is_supporting_advisor_assigned(request.user)
         advisor = p.advisor.__str__()
         advisor_last_name = p.advisor.user.last_name if p.advisor else p.advisor.__str__()
+        students = ", ".join(s.get_full_name() for s in p.students.all())
         url = reverse('theses:selected_thesis', None, [str(p.id)])
 
-        record = {"id": p.id, "title": title, "is_available": is_available, "kind": kind,
-                  "status": status, "has_been_accepted": has_been_accepted, "is_mine": is_mine, "url": url,
-                  "advisor": advisor, "advisor_last_name": advisor_last_name, "modified": p.modified.timestamp()}
+        record = {
+            "id": p.id,
+            "title": title,
+            "is_available": is_available,
+            "kind": kind,
+            "status": status,
+            "has_been_accepted": has_been_accepted,
+            "is_mine": is_mine,
+            "url": url,
+            "advisor": advisor,
+            "advisor_last_name": advisor_last_name,
+            "students": students,
+            "modified": p.modified.timestamp()
+        }
 
         theses_list.append(record)
 

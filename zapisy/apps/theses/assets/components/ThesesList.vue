@@ -68,7 +68,6 @@ export default class ThesesList extends Vue {
   <table class="table table-hover selection-none">
     <thead id="table-header">
       <tr class="text-center">
-        <th>Rezerwacja</th>
         <th>
           <SorterField property="title" label="Tytuł" />
         </th>
@@ -81,17 +80,11 @@ export default class ThesesList extends Vue {
             label="Promotor"
           />
         </th>
+        <th>Rezerwacja</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="t of visibleTheses" :key="t.id">
-        <td class="text-center align-middle">
-          <input
-            type="checkbox"
-            disabled
-            v-bind:checked="!t.is_available"
-          />
-        </td>
         <td class="align-middle">
           <a class="btn-link" :href="t.url">{{
             t.title
@@ -105,6 +98,9 @@ export default class ThesesList extends Vue {
         </td>
         <td class="align-middle text-nowrap">
           {{ t.advisor }}
+        </td>
+        <td class="align-middle" :class="{'text-muted': t.is_available}">
+          {{ t.students }}
         </td>
       </tr>
       <tr v-if="!visibleTheses.length" class="text-center">
