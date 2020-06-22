@@ -205,9 +205,16 @@
 
     #Configure other services
 
-    - name: Deploy gunicorn_zapisy service
+    - name: Deploy gunicorn socket
       copy:
-        src: gunicorn_zapisy.service
+        src: gunicorn.socket
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy gunicorn service
+      copy:
+        src: gunicorn.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
@@ -244,17 +251,31 @@
       shell: nproc
       register: nproc_out
 
-    - name: Replace a pattern with username in gunicorn_zapisy service
+    - name: Replace a pattern with username in gunicorn socket
       become: yes
       replace:
-        path: /etc/systemd/system/gunicorn_zapisy.service
+        path: /etc/systemd/system/gunicorn.socket
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with number of workers in gunicorn_zapisy service
+    - name: Replace a pattern with username in gunicorn service
       become: yes
       replace:
-        path: /etc/systemd/system/gunicorn_zapisy.service
+        path: /etc/systemd/system/gunicorn.service
+        regexp: '\$user\$'
+        replace: "{{ deploy_user }}"
+
+    - name: Replace a pattern with domain in gunicorn service
+      become: yes
+      replace:
+        path: /etc/systemd/system/gunicorn.service
+        regexp: '\$domain\$'
+        replace: "{{ deploy_server_name }}"
+
+    - name: Replace a pattern with number of workers in gunicorn service
+      become: yes
+      replace:
+        path: /etc/systemd/system/gunicorn.service
         regexp: '\$num_proc\$'
         replace: "{{ nproc_out.stdout|int * 2 + 1 }}"
 

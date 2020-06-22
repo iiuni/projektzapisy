@@ -114,10 +114,17 @@
         app_path: "/home/{{ deploy_user }}/deploy/current/zapisy"
         virtualenv: "/home/{{ deploy_user }}/deploy/current/env3"
 
-    - name: Enable and run gunicorn_zapisy service
+    - name: Enable and run gunicorn socket
       become: yes
       service:
-        name: gunicorn_zapisy
+        name: gunicorn.socket
+        enabled: yes
+        state: restarted
+
+    - name: Enable and run gunicorn service
+      become: yes
+      service:
+        name: gunicorn
         enabled: yes
         state: restarted
 

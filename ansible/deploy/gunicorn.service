@@ -1,5 +1,6 @@
 [Unit]
 Description=Zapisy gunicorn daemon
+Requires=gunicorn.socket
 After=network.target
 
 [Service]
@@ -16,4 +17,4 @@ ExecStart=/home/$user$/deploy/current/env3/bin/gunicorn \
   --log-file=-
 
 [Install]
-WantedBy=vagrant.mount
+WantedBy=multi-user.target
