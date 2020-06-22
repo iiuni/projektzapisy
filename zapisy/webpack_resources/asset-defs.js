@@ -145,12 +145,12 @@ const AssetDefs = {
 
   // User app
 
-  "user-user-filter": [
+  "users-user-filter": [
     path.resolve(
       "apps/users/assets/user-filter-list-index.js"
     ),
   ],
-  "user-consent-dialog": [
+  "users-consent-dialog": [
     path.resolve("apps/users/assets/consent-dialog.ts"),
   ],
 };
