@@ -356,6 +356,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
+    os.path.join(BASE_DIR, "static_assets"),
 )
 
 STATICFILES_FINDERS = (
