@@ -7,6 +7,7 @@ const {
 } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
 
@@ -14,7 +15,7 @@ const BUNDLE_OUTPUT_DIR = "compiled_assets";
 const ASSET_DEF_SEARCH_DIR = "apps";
 const STATS_DIR = "webpack_resources";
 
-const AssetDefs = require(path.resolve(
+const ASSET_DEFS = require(path.resolve(
   "webpack_resources/asset-defs.js"
 ));
 
@@ -92,10 +93,13 @@ const PLUGINS = [
     filename: "webpack-stats.json",
   }),
   new MiniCssExtractPlugin(),
+  new MomentLocalesPlugin({
+    localesToKeep: ["pl"],
+  }),
 ];
 
 const WEBPACK_CONFIG = {
-  entry: AssetDefs,
+  entry: ASSET_DEFS,
   output: {
     path: path.resolve(BUNDLE_OUTPUT_DIR),
     filename: DEV_MODE
