@@ -187,7 +187,7 @@ class Semester(models.Model):
             weeks.append((week_start, week_end))
             week_start += timedelta(days=7)
         return weeks
-    
+
     @staticmethod
     def get_semester(date):
         """Get semester for a specified date. More versatile than get_current_semester.
@@ -208,7 +208,7 @@ class Semester(models.Model):
             return None
         except MultipleObjectsReturned:
             raise
-    
+
     @staticmethod
     def get_upcoming_semester():
         """Returns either upcomming or current semester or None.
