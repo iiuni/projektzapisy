@@ -121,53 +121,6 @@ class Semester(models.Model):
             return False
         return self.semester_beginning <= datetime.now().date() <= self.semester_ending
 
-    def get_previous_semester(self):
-        year = self.year
-        if self.type == 'l':
-            try:
-                return Semester.objects.filter(year=year, type='z')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-        else:
-            prev_year = str(int(year[0:4]) - 1)
-            year = prev_year + '/' + year[2:4]
-            try:
-                return Semester.objects.filter(year=year, type='l')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-
-    @staticmethod
-    def get_list(user=None):
-        if not user:
-            return Semester.objects.filter(visible=True)
-
-        semesters = Semester.objects.filter(visible=True, semester_beginning__gte=user.date_joined)
-
-        if semesters:
-            return semesters
-
-        return Semester.objects.filter(visible=True)[0]
-
-    @staticmethod
-    def get_semester(date):
-        """Get semester for a specified date. More versatile than get_current_semester.
-
-        :param date: datetime.date
-        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
-        :return: Semester or None
-        """
-        try:
-            return Semester.objects.get(semester_beginning__lte=date,
-                                        semester_ending__gte=date)
-        except Semester.DoesNotExist:
-            return None
-        except MultipleObjectsReturned:
-            raise
-
     def get_all_days_of_week(self, day_of_week, start_date=None):
         """Get all dates when the specifies day of week schedule is valid.
 
@@ -234,7 +187,28 @@ class Semester(models.Model):
             weeks.append((week_start, week_end))
             week_start += timedelta(days=7)
         return weeks
+    
+    @staticmethod
+    def get_semester(date):
+        """Get semester for a specified date. More versatile than get_current_semester.
 
+        Args:
+            date: Choose semester with date included
+
+        Returns:
+            Semester or None
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
+        try:
+            return Semester.objects.get(semester_beginning__lte=date,
+                                        semester_ending__gte=date)
+        except Semester.DoesNotExist:
+            return None
+        except MultipleObjectsReturned:
+            raise
+    
     @staticmethod
     def get_upcoming_semester():
         """Returns either upcomming or current semester or None.
@@ -243,7 +217,8 @@ class Semester(models.Model):
         been scheduled. It may be useful when students want to plan their
         timetables.
 
-        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
         """
         try:
             return Semester.objects.filter(
@@ -255,7 +230,8 @@ class Semester(models.Model):
     def get_current_semester():
         """If exists, it returns current semester, otherwise return None.
 
-        :raises: MultipleObjectsReturned if semesters' dates were set incorrectly
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
         """
         return Semester.get_semester(datetime.today())
 
