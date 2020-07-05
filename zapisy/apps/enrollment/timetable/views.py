@@ -1,15 +1,14 @@
 """Views for timetable and prototype."""
+import collections
 import csv
 import json
 from typing import List
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import Http404, HttpResponse, redirect, render
+from django.shortcuts import Http404, HttpResponse, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -82,7 +81,7 @@ def list_courses_in_semester(semester: Semester):
             'url': reverse('prototype-get-course', args=(course.id,)),
         })
         courses.append(course_dict)
-    return json.dumps(list(courses))
+    return courses
 
 
 def student_timetable_data(student: Student):
@@ -103,7 +102,7 @@ def student_timetable_data(student: Student):
     data = {
         'groups': groups,
         'sum_points': sum(points_for_courses.values()),
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'groups_dicts': group_dicts,
     }
     return data
 
@@ -116,7 +115,7 @@ def employee_timetable_data(employee: Employee):
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
     group_dicts = build_group_list(groups)
     data = {
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+        'groups_dicts': group_dicts,
     }
     return data
 
@@ -124,15 +123,13 @@ def employee_timetable_data(employee: Employee):
 @login_required
 def my_timetable(request):
     """Shows the student/employee his own timetable page."""
+    # Counter will add elements key-wise. Numbers will be added, lists will be
+    # extended.
+    data = collections.Counter()
     if request.user.student:
-        data = student_timetable_data(request.user.student)
-    elif request.user.employee:
-        data = employee_timetable_data(request.user.employee)
-    else:
-        messages.error(
-            request,
-            "Nie masz planu zajęć, ponieważ nie jesteś ani studentem ani pracownikiem.")
-        return redirect("course-list")
+        data.update(student_timetable_data(request.user.student))
+    if request.user.employee:
+        data.update(employee_timetable_data(request.user.employee))
 
     return render(request, 'timetable/timetable.html', data)
 
@@ -178,8 +175,8 @@ def my_prototype(request):
         CourseInstance.objects.filter(semester=semester))
     courses_json = list_courses_in_semester(semester)
     data = {
-        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
-        'filters_json': json.dumps(filters_dict, cls=DjangoJSONEncoder),
+        'groups_json': group_dicts,
+        'filters_json': filters_dict,
         'courses_json': courses_json,
     }
     return render(request, 'timetable/prototype.html', data)

@@ -28,7 +28,9 @@ class PollType(models.IntegerChoices):
 
 class PollManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related('group', 'course', 'semester')
+        return super().get_queryset().select_related(
+            'group', 'group__teacher__user', 'course', 'course__owner__user', 'semester'
+        )
 
 
 class Poll(models.Model):
@@ -335,7 +337,10 @@ class Schema(models.Model):
 
 class SubmissionManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related('poll')
+        return super().get_queryset().select_related(
+            'poll', 'poll__group', 'poll__group__teacher__user', 'poll__course',
+            'poll__course__owner__user', 'poll__semester'
+        )
 
 
 class Submission(models.Model):
@@ -377,14 +382,12 @@ class Submission(models.Model):
         return self.__str__()
 
     @classmethod
-    def get_or_create(cls, poll_with_ticket_id) -> "Submission":
-        """Makes sure that there exists only submission for a poll and ticket id.
+    def get_or_create(cls, poll: Poll, ticket: int) -> "Submission":
+        """Makes sure that there exists only submission for a poll and ticket.
 
-        :param poll_with_ticket_id: a tuple of poll instance and ticket
-            id received from grade/tickets_create app
-        :returns: an instance of `Submission` class.
+        Returns:
+          An instance of `Submission` class. Either existing or a new one.
         """
-        ticket, poll = poll_with_ticket_id
         submission = cls.objects.filter(ticket=ticket).first()
         if not submission:
             schema = Schema.get_latest(poll_type=poll.type)

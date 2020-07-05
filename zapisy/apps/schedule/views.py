@@ -296,7 +296,7 @@ def get_terms(request, year, month, day):
     # Some of the course terms fail to be represented by Event Terms which leads
     # to conflicts. Once this mess is fixed we can remove this lines below.
     semester = Semester.get_semester(date)
-    if semester.lectures_beginning <= date <= semester.lectures_ending:
+    if semester and semester.lectures_beginning <= date <= semester.lectures_ending:
         course_terms = CourseTerm.get_terms_for_semester(
             semester=semester, day=date, classrooms=rooms
         )

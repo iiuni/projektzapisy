@@ -1,5 +1,5 @@
-from collections import defaultdict, namedtuple
-from typing import Dict, List, Tuple
+from collections import defaultdict
+from typing import Dict, List
 
 import bokeh.embed
 import bokeh.models.sources
@@ -9,20 +9,6 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
 from apps.users.models import Student
 
-SubmissionWithStatus = namedtuple('SubmissionWithStatus', ['submission', 'submitted'])
-
-GroupedSubmissions = namedtuple(
-    'GroupedSubmissions',
-    [
-        'with_categories',
-        'statuses',
-        'submitted',
-        'total',
-        'progress',
-        'progress_numerical',
-    ],
-)
-
 
 def check_grade_status() -> bool:
     """Checks whether any of the semesters has grade enabled."""
@@ -30,42 +16,34 @@ def check_grade_status() -> bool:
     return current_semester.is_grade_active
 
 
+class SubmissionStats:
+    """Holds statistics for poll submissions."""
+    def __init__(self, submissions: List[Submission]):
+        self.submitted = 0
+        self.submitted_by_category = defaultdict(int)
+        self.total = len(submissions)
+        for s in submissions:
+            if s.submitted:
+                self.submitted += 1
+                self.submitted_by_category[s.category] += 1
+
+    @property
+    def progress(self) -> str:
+        return f"{self.submitted} / {self.total}"
+
+    @property
+    def progress_numerical(self) -> float:
+        return self.submitted / self.total
+
+    def all(self) -> bool:
+        return self.submitted == self.total
+
+
 def get_grouped_polls(student: Student) -> Dict:
     """Groups polls into a format used by the grade/ticket_create app."""
     polls = Poll.get_all_polls_for_student(student)
 
     return group_submissions(polls)
-
-
-def group_submissions_with_statuses(
-    submissions: List[SubmissionWithStatus]
-) -> Tuple[dict, dict]:
-    """Groups submissions into a structure that is useful for templating.
-
-    Fields are defined in a `GroupedSubmissions` namedtuple.
-    """
-    grouped_submissions = defaultdict(list)
-    submitted_statuses = defaultdict(int)
-    submitted_count = 0
-
-    for submission_with_status in submissions:
-        submission, status = submission_with_status
-        category = submission.category
-        if category not in submitted_statuses:
-            submitted_statuses[category] = 0
-        grouped_submissions[category].append(submission_with_status)
-        if status:
-            submitted_statuses[category] += 1
-            submitted_count += 1
-
-    return GroupedSubmissions(
-        with_categories=dict(grouped_submissions),
-        statuses=dict(submitted_statuses),
-        submitted=submitted_count,
-        total=len(submissions),
-        progress=f"{submitted_count} / {len(submissions)}",
-        progress_numerical=submitted_count / len(submissions),
-    )
 
 
 def group_submissions(submissions: List[Submission]) -> dict:

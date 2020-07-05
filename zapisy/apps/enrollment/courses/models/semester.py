@@ -302,13 +302,6 @@ class Semester(models.Model):
             else:
                 return None
 
-    def desiderata_is_open(self):
-        if self.desiderata_opening is None:
-            return False
-        now = datetime.now()
-        return (self.desiderata_opening <= now and self.desiderata_closing is None) or\
-            (self.desiderata_opening <= now and self.desiderata_closing >= now)
-
     def serialize_for_json(self):
         return {
             "id": self.pk,

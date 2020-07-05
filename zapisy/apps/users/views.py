@@ -127,7 +127,6 @@ def email_change(request):
         form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            logger.info(f"{request.user} changed email to {form.cleaned_data['email']}")
             messages.success(request, message="Twój adres e-mail został zmieniony.")
             return redirect('my-profile')
     else:

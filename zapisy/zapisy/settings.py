@@ -289,10 +289,6 @@ SESSION_COOKIE_PATH = '/;HttpOnly'
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-# Since Django 1.6 the default session serializer is json, which
-# doesn't have as many features, in particular it cannot serialize
-# custom objects, and we need this behavior.
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Attach X-XSS-Protection header to all outgoing HTTP responses.
 # It tells conformant browsers to activate their built-in

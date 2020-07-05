@@ -1,6 +1,8 @@
 import itertools
 import json
 from collections import defaultdict
+from operator import attrgetter
+from typing import List
 
 from django.contrib import messages
 from django.shortcuts import redirect, render, reverse
@@ -9,8 +11,8 @@ from django.views.generic import TemplateView, UpdateView, View
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
-from apps.grade.poll.utils import (PollSummarizedResults, SubmissionWithStatus, check_grade_status,
-                                   group, group_submissions_with_statuses)
+from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
+                                   group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
 
 
@@ -53,12 +55,9 @@ class TicketsEntry(TemplateView):
                 return redirect('grade-poll-tickets-enter')
 
             entries = []
-            for poll_with_ticket_id in correct_polls:
-                submission = Submission.get_or_create(poll_with_ticket_id)
-                entry = SubmissionWithStatus(
-                    submission=submission, submitted=submission.submitted
-                )
-                entries.append(entry)
+            for ticket, poll in correct_polls:
+                _ = Submission.get_or_create(poll, ticket)
+                entries.append(ticket)
 
             if failed_polls:
                 failed_polls = map(lambda x: f"- {x}", failed_polls)
@@ -68,8 +67,8 @@ class TicketsEntry(TemplateView):
                     "<br>".join(failed_polls)
                 )
 
-            if entries != []:
-                self.request.session['grade_poll_submissions'] = entries
+            if entries:
+                self.request.session['grade_poll_tickets'] = entries
 
         return redirect('grade-poll-submissions')
 
@@ -84,20 +83,21 @@ class SubmissionEntry(UpdateView):
 
     def get(self, *args, **kwargs):
         """Checks whether any submissions are present in the session."""
-        if 'grade_poll_submissions' in self.request.session:
+        if 'grade_poll_tickets' in self.request.session:
             return super(SubmissionEntry, self).get(*args, **kwargs)
         return redirect('grade-poll-tickets-enter')
 
     def get_context_data(self, **kwargs):
         """Sets the variables used for templating."""
         context = super().get_context_data(**kwargs)
-        context['is_grade_active'] = check_grade_status()
-        context['active_submission'] = self.active_submission
-        context['current_index'] = self.current_index
-        context['grouped_submissions'] = group_submissions_with_statuses(
-            self.submissions
-        )
-        context['iterator'] = itertools.count()
+        context.update({
+            'is_grade_active': check_grade_status(),
+            'active_submission': self.active_submission,
+            'current_index': self.current_index,
+            'stats': SubmissionStats(self.submissions),
+            'polls': self.submissions,
+            'iterator': itertools.count(),
+        })
 
         return context
 
@@ -124,17 +124,21 @@ class SubmissionEntry(UpdateView):
     @property
     def active_submission(self):
         """Translates an index to the instance of requested Submission."""
-        submission_pk = self.submissions[
-            self.current_index % len(self.submissions)
-        ].submission.pk
-
-        submission = Submission.objects.filter(pk=submission_pk).first()
-
-        return submission
+        return self.submissions[self.current_index]
 
     @property
-    def submissions(self):
-        return self.request.session['grade_poll_submissions']
+    def submissions(self) -> List[Submission]:
+        """Fetches submissions from the database.
+
+        This should be simplified by @cached_property decorator once we reach Python 3.8.
+        """
+        if hasattr(self, '_submissions'):
+            return getattr(self, '_submissions')
+        tickets = self.request.session['grade_poll_tickets']
+        submissions = Submission.objects.filter(ticket__in=tickets)
+        submissions = sorted(submissions, key=attrgetter('category'))
+        setattr(self, '_submissions', submissions)
+        return submissions
 
     @property
     def current_index(self):
@@ -148,26 +152,18 @@ class SubmissionEntry(UpdateView):
 
         By default, when the form is validated successfully, the user
         is redirected to the next unfinished submission in the list.
-        When no submissions are left, the general one is assumed.
+        When no submissions are left, 0 is returned.
         """
         submissions = self.submissions
-        submissions[self.current_index] = SubmissionWithStatus(
-            submission=self.active_submission, submitted=True
-        )
-        self.request.session['grade_poll_submissions'] = submissions
+        submissions[self.current_index].submitted = True
         next_index = 0
-
-        for index in range(
-            self.current_index + 1, len(submissions) + self.current_index + 1
-        ):
-            mod_index = index % len(submissions)
-            if not submissions[mod_index].submitted:
-                next_index = mod_index
+        indexed = list(enumerate(submissions))
+        for i, s in itertools.chain(indexed[self.current_index:], indexed[:self.current_index]):
+            if not s.submitted:
+                next_index = i
                 break
 
-        return reverse(
-            'grade-poll-submissions', kwargs={'submission_index': next_index}
-        )
+        return reverse('grade-poll-submissions', kwargs={'submission_index': next_index})
 
 
 class PollResults(TemplateView):

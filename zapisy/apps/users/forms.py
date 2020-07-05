@@ -7,12 +7,13 @@ from .models import Employee
 class EmailChangeForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ['email']
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
             raise forms.ValidationError("Adres jest już użyty przez innego użytkownika")
+        return email
 
 
 class EmployeeDataForm(forms.ModelForm):

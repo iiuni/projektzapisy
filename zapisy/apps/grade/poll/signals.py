@@ -47,5 +47,5 @@ def create_poll_for_semester(
 @receiver(user_logged_in)
 def clear_saved_submissions(sender, request, **kwargs):
     """Removes submissions from the active session when user logs in."""
-    if 'grade_poll_submissions' in request.session:
-        del request.session['grade_poll_submissions']
+    if 'grade_poll_tickets' in request.session:
+        del request.session['grade_poll_tickets']

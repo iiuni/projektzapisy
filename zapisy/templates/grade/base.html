@@ -23,7 +23,7 @@
   <a class="nav-link" href="{% url 'grade-poll-results' %}">Wyniki oceny</a>
 </li>
 {% endif %}
-{% if request.session.grade_poll_submissions and not user.is_authenticated %}
+{% if request.session.grade_poll_tickets and not user.is_authenticated %}
 <li class="{% block nav-grade-poll-submissions %}{% endblock %}">
   <a class="nav-link" href="{% url 'grade-poll-submissions' %}">Ankiety</a>
 </li>

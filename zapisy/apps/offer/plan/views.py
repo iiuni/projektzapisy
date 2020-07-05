@@ -6,7 +6,6 @@ import environ
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
@@ -21,6 +20,7 @@ from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData, Employe
                                    sort_subject_groups_by_type)
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.system_state import SystemState
+from apps.users.decorators import employee_required
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
@@ -30,9 +30,8 @@ CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 
+@employee_required
 def plan_view(request):
-    if not request.user.is_superuser and not request.user.employee:
-        raise PermissionDenied
     year = SystemState.get_current_state().year
     employees_from_sheet = read_entire_sheet(
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
@@ -49,7 +48,7 @@ def plan_view(request):
     hours_winter = 0
     hours_summer = 0
 
-    def make_stats_dict():
+    def make_stats_dict() -> Statistics:
         return {'w': 0, 'ćw': 0, 'prac': 0, 'ćw_prac': 0, 'rep': 0, 'sem': 0, 'admin': 0}
 
     def make_teachers_dict():
@@ -77,14 +76,16 @@ def plan_view(request):
         name = employee[2] + ' ' + employee[3]
         code = employee[4]
         balance = float(employee[11]) if employee[11] else 0
-        ed: EmployeeData(status, name, pensum, balance) = {
-            'status': status,
-            'name': name,
-            'pensum': pensum,
-            'balance': balance,
-            'courses_winter': [],
-            'courses_summer': []
-        }
+        ed = EmployeeData(
+            status=status,
+            name=name,
+            pensum=pensum,
+            balance=balance,
+            weekly_winter=0,
+            weekly_summer=0,
+            courses_winter=[],
+            courses_summer=[],
+        )
         if status == 'pracownik':
             staff[code] = copy.copy(ed)
         elif status == 'doktorant':
@@ -252,6 +253,7 @@ def plan_vote(request):
     return HttpResponseRedirect(reverse('plan-create'))
 
 
+@staff_member_required
 def plan_create_voting_sheet(request):
     years = get_last_years(3)
     voting = get_votes(years)
@@ -400,9 +402,11 @@ def generate_scheduler_file(request, slug, format):
         return response
 
 
+@staff_member_required
 def generate_scheduler_file_json(request, slug):
     return generate_scheduler_file(request, slug, 'json')
 
 
+@staff_member_required
 def generate_scheduler_file_csv(request, slug):
     return generate_scheduler_file(request, slug, 'csv')
