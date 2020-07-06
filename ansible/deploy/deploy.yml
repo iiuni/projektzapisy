@@ -144,6 +144,13 @@
         enabled: yes
         state: restarted
 
+    - name: Enable and run postfix service
+      become: yes
+      service:
+        name: postfix
+        enabled: yes
+        state: restarted
+
     - name: Enable and run rqworker1 service
       service:
         name: rqworker1

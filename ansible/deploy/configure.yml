@@ -32,6 +32,7 @@
         - git
         - redis-server
         - nginx
+        - postfix
       become: yes
 
     - name: Instal yarn
@@ -231,6 +232,15 @@
         - {file: "ssl/nginx-selfsigned.crt", path: "/etc/ssl/certs/"}
         - {file: "ssl/nginx-selfsigned.key", path: "/etc/ssl/private/"}
         - {file: "ssl/dhparam.pem", path: "/etc/nginx/"}
+      become: yes
+
+    #Configure postfix
+    
+    - name: Configure nginx service
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: "inet_interfaces"
+        line: "inet_interfaces = loopback-only"
       become: yes
 
     #Configure other services
