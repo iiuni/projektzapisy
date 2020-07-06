@@ -19,13 +19,21 @@
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
-        version: ansible-deploy
+        version: "{{ deploy_version }}"
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: yes
       file:
         path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
         state: touch
+
+    - name: Copy .env file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      copy:
+        src: .env
+        dest: "{{ deploy_helper.new_release_path }}/env"
+        force: yes
 
     - name: Set up virtualenv and get requirements
       become: yes
