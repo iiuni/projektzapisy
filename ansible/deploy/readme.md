@@ -3,15 +3,15 @@
 ### Change sudo configuration on the remote machine
 1. Log in into remote machine with `ssh`
 2. Open *sudoers* file with `sudo visudo` command
-3. Add following line to end of the file:
-    `user ALL=(ALL:ALL) NOPASSWD: ALL`
+3. Add following line to end of the file:\
+    `user ALL=(ALL:ALL) NOPASSWD: ALL`\
     where `user` is your username on the remote machine
 4. Save changes
 5. Log out
 
 ### Prepare ssh connection
  1. If you don't have *private_key_file*, you must generate it with `ssh-keygen` command.
- 2. Copy your file into the remote machine with `ssh-copy-id user@host`
+ 2. Copy your file into the remote machine with `ssh-copy-id user@host`\
     where `user` is your username on the remote host and `host` is your hostname.
  3. Edit *production* or/and *staging* file. Add the path to your ssh *private_key_file*.
  4. If it's necessary to change other variables with your data.
@@ -65,9 +65,8 @@ Run this command in *deploy* directory:
 ansible-playbook deploy.yml -i hosts -T 60 -c paramiko
 ```
 ---
-`hosts` is inventory file like *staging* or *production*
+`hosts` is inventory file like *staging* or *production*\
 Configuration/deployment starts on every machine from the inventory file that is in `deploy:children` section.
-
 
 ## Restore database
 To restore database, put the dump file to the `dump.7z` archive in *deploy* directory and run this command:
@@ -77,4 +76,4 @@ ansible-playbook restore_db.yml -i hosts -T 60 -c paramiko
 `hosts` is inventory file like above.
 
 ## Debugging
- To display additional information during configuration, deployment or restoring database add the flag `-vvv` to ansible-playbook commands.
+To display additional information during configuration, deployment or restoring database add the flag `-vvv` to ansible-playbook commands.
