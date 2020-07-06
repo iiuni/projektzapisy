@@ -1,5 +1,3 @@
-
-
 # Instruction - System Zapisów Deployment
 
 ### Change sudo configuration on the remote machine
@@ -70,7 +68,13 @@ ansible-playbook deploy.yml -i hosts -T 60 -c paramiko
 `hosts` is inventory file like *staging* or *production*
 Configuration/deployment starts on every machine from the inventory file that is in `deploy:children` section.
 
-### Debug
-To display additional information during configuration or deployment add the flag `-vvv` to commands above.
 
+## Restore database
+To restore database, put the dump file to the `dump.7z` archive in *deploy* directory and run this command:
+```
+ansible-playbook restore_db.yml -i hosts -T 60 -c paramiko
+```
+`hosts` is inventory file like above.
 
+## Debugging
+ To display additional information during configuration, deployment or restoring database add the flag `-vvv` to ansible-playbook commands.

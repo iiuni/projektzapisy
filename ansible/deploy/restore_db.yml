@@ -79,3 +79,8 @@
       file:
         path: "/tmp/ii_zapisy_dump_dev.sql"
         state: absent
+
+    - name: Remove a copy of archive
+      file:
+        path: "/tmp/dump.7z"
+        state: absent
