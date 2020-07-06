@@ -75,6 +75,7 @@
     - name: Generate password
       set_fact:
         APP_DB_PASS: "{{ pwd_alias }}"
+      no_log: True
 
     - name: Edit .env file
       become: yes
