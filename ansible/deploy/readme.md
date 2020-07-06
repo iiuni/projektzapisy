@@ -5,14 +5,14 @@
 2. Open *sudoers* file with `sudo visudo` command
 3. Add following line to end of the file:
     `user ALL=(ALL:ALL) NOPASSWD: ALL`
-    which `user` is your username on the remote machine
+    where `user` is your username on the remote machine
 4. Save changes
 5. Log out
 
 ### Prepare ssh connection
  1. If you don't have *private_key_file*, you must generate it with `ssh-keygen` command.
  2. Copy your file into the remote machine with `ssh-copy-id user@host`
-    which `user` is your username on the remote host and `host` is your hostname.
+    where `user` is your username on the remote host and `host` is your hostname.
  3. Edit *production* or/and *staging* file. Add the path to your ssh *private_key_file*.
  4. If it's necessary to change other variables with your data.
     Dictionary:
