@@ -17,9 +17,9 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     """Loads up data from enviorement, creates credentials and connects to appropriate spreadsheet."""
     env = environ.Env()
     environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
-    creds = {"type": env('SERVICE_TYPE'),
-             "project_id": env('PROJECT_ID'),
-             "private_key_id": env('PRIVATE_KEY_ID'),
+    creds = {"type": env('GDRIVE_SERVICE_TYPE'),
+             "GDRIVE_PROJECT_ID": env('GDRIVE_PROJECT_ID'),
+             "GDRIVE_PRIVATE_KEY_ID": env('GDRIVE_PRIVATE_KEY_ID'),
              "private_key": env('PRIVATE_KEY').replace('\\n', '\n'),
              "client_email": env('CLIENT_EMAIL'),
              "client_id": env('CLIENT_ID'),

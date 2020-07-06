@@ -31,9 +31,10 @@
       become: yes
       become_user: "{{ deploy_user }}"
       copy:
-        src: .env
+        src: "/home/{{ deploy_user }}/.env"
         dest: "{{ deploy_helper.new_release_path }}/env"
         force: yes
+        remote_src: yes
 
     - name: Set up virtualenv and get requirements
       become: yes

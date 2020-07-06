@@ -3,9 +3,9 @@
 
   vars:
     APP_DB_USER: fereol
-    APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
     ansible_python_interpreter: "/usr/bin/python3"
+    pwd_alias: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
 
   tasks:
 
@@ -61,6 +61,28 @@
       user:
         name: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
+        create_home: yes
+
+    # Generate passwords and edit .env file
+    - name: Copy .env file to deploy_user's home
+      become: yes
+      become_user: "{{ deploy_user }}"
+      copy:
+        src: .env
+        dest: "/home/{{ deploy_user }}/"
+        force: yes
+
+    - name: Generate password
+      set_fact:
+        APP_DB_PASS: "{{ pwd_alias }}"
+
+    - name: Edit .env file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      replace:
+        path: "/home/{{ deploy_user }}/.env"
+        regexp: 'DATABASE_PASSWORD='
+        replace: "DATABASE_PASSWORD={{ APP_DB_PASS }}"
 
     # Configure postgres
 
