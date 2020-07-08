@@ -36,11 +36,23 @@ dump_db_to_file () {
 
 
 setup_temp_db () {
-	sudo -su postgres psql -c "CREATE DATABASE \"$TEMP_DB_NAME\";"
+	PGPASSWORD="$II_ZAPISY_DB_BACKUP_DB_PASS" psql \
+	-U "$II_ZAPISY_DB_BACKUP_DB_USER" \
+	-h localhost \
+	-p "$II_ZAPISY_DB_BACKUP_DB_PORT" \
+	-f "$1" \
+	-c "CREATE DATABASE \"$TEMP_DB_NAME\";"
+	# sudo -su postgres psql -c "CREATE DATABASE \"$TEMP_DB_NAME\";"
 }
 
 teardown_temp_db () {
-	sudo -su postgres psql -c "DROP DATABASE IF EXISTS \"$TEMP_DB_NAME\";"
+	PGPASSWORD="$II_ZAPISY_DB_BACKUP_DB_PASS" psql \
+	-U "$II_ZAPISY_DB_BACKUP_DB_USER" \
+	-h localhost \
+	-p "$II_ZAPISY_DB_BACKUP_DB_PORT" \
+	-f "$1" \
+	-c "DROP DATABASE IF EXISTS \"$TEMP_DB_NAME\";"
+	# sudo -su postgres psql -c "DROP DATABASE IF EXISTS \"$TEMP_DB_NAME\";"
 }
 
 run_script_on_temp_db () {
@@ -74,10 +86,10 @@ teardown_temp_db
 # $2 - pass
 # $3... - filenames
 compress_with_7z () {
-	if [ -z "$2" ]; then		
+	if [ -z "$2" ]; then
 		7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on "$1" "${@:3}"
 	else
-		7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -p"$2" "$1" "${@:3}"	
+		7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -p"$2" "$1" "${@:3}"
 	fi
 }
 compress_with_7z "$OUTFILE_PATH_DEV" "" "$TEMP_DUMP_PATH_DEV"

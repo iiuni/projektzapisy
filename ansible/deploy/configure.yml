@@ -66,8 +66,13 @@
         create_home: yes
 
     - name: Get requirements to manage database backups
+      become: yes
+      become_user: "{{ deploy_user }}"
       pip:
-        requirements: "{{ deploy_helper.new_release_path }}/db_backups/requirements.txt"
+        name:
+          - slackclient==2.7.2
+          - dropbox==10.2.0
+          - django-environ==0.4.5
 
     # Generate passwords and edit .env file
     - name: Copy .env file to deploy_user's home
@@ -240,7 +245,7 @@
       become: yes
 
     #Configure postfix
-    
+
     - name: Configure nginx service
       lineinfile:
         path: /etc/postfix/main.cf
@@ -281,6 +286,13 @@
     - name: Deploy backup service
       copy:
         src: backup.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
+    - name: Deploy backup timer
+      copy:
+        src: backup.timer
         dest: /etc/systemd/system/
         force: yes
       become: yes
