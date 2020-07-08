@@ -33,6 +33,7 @@
         - redis-server
         - nginx
         - postfix
+        - p7zip-full
       become: yes
 
     - name: Instal yarn
@@ -63,6 +64,10 @@
         name: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
         create_home: yes
+
+    - name: Get requirements to manage database backups
+      pip:
+        requirements: "{{ deploy_helper.new_release_path }}/db_backups/requirements.txt"
 
     # Generate passwords and edit .env file
     - name: Copy .env file to deploy_user's home
@@ -273,6 +278,13 @@
         force: yes
       become: yes
 
+    - name: Deploy backup service
+      copy:
+        src: backup.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+
     - name: Deploy rqworker1
       copy:
         src: rqworker1.service
@@ -337,6 +349,13 @@
       become: yes
       replace:
         path: /etc/systemd/system/rqworker2.service
+        regexp: '\$user\$'
+        replace: "{{ deploy_user }}"
+
+    - name: Replace a pattern with username in backup service
+      become: yes
+      replace:
+        path: /etc/systemd/system/backup.service
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
 

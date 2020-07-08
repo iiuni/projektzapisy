@@ -143,10 +143,11 @@ def main():
         shared_link = perform_full_backup(secrets_env)
         end_time = datetime.now()
         seconds_elapsed = (end_time - start_time).seconds
-        send_success_notification(slack, shared_link.url, seconds_elapsed)
+        send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'))
     except Exception:
         err_desc = traceback.format_exc()
-        send_error_notification(slack, err_desc)
+        print(err_desc)
+        send_error_notification(slack, err_desc, secrets_env.str('SLACK_CHANNEL_ID'))
 
 
 if __name__ == '__main__':
