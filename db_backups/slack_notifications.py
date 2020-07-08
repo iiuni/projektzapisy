@@ -18,6 +18,7 @@ def _send_slack_msg(slack_client, channel_id: str, msg: str):
         text=msg
     )
 
+
 def send_success_notification(slack_client, dev_db_link: str, seconds_elapsed: int, channel_id: str):
     msg = f'Databases backed up successfully in {seconds_elapsed} seconds. *Dev DB download link:* {dev_db_link}'
     _send_slack_msg(slack_client, channel_id, msg)
