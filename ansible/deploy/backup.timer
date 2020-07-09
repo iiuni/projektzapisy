@@ -3,7 +3,7 @@ Description=Make a database backup
 
 [Timer]
 OnCalendar=*-*-* 01:00:00
-Persistant=true
+Persistent=true
 
 [Install]
 WantedBy=timers.target

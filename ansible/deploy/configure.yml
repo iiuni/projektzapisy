@@ -49,7 +49,6 @@
         - python3-pip
         - python3-venv
         - python3-psycopg2
-        update_cache: yes
       become: yes
 
     - name: Ensure group for deploy_user exists
@@ -132,7 +131,7 @@
         lc_ctype: pl_PL.UTF-8
         template: template0
 
-    #Configure and sandbox nginx
+    # Configure and sandbox Nginx
 
     - stat:
         path: /lib/systemd/system/nginx.service
@@ -244,7 +243,7 @@
         - {file: "ssl/dhparam.pem", path: "/etc/nginx/"}
       become: yes
 
-    #Configure postfix
+    # Configure Postfix
 
     - name: Configure nginx service
       lineinfile:
@@ -253,7 +252,7 @@
         line: "inet_interfaces = loopback-only"
       become: yes
 
-    #Configure other services
+    # Configure other services
 
     - name: Deploy gunicorn socket
       copy:
