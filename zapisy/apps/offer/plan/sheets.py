@@ -18,15 +18,15 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     env = environ.Env()
     environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
     creds = {"type": env('GDRIVE_SERVICE_TYPE'),
-             "GDRIVE_PROJECT_ID": env('GDRIVE_PROJECT_ID'),
-             "GDRIVE_PRIVATE_KEY_ID": env('GDRIVE_PRIVATE_KEY_ID'),
-             "private_key": env('PRIVATE_KEY').replace('\\n', '\n'),
-             "client_email": env('CLIENT_EMAIL'),
-             "client_id": env('CLIENT_ID'),
-             "auth_uri": env('AUTH_URI'),
-             "token_uri": env('TOKEN_URI'),
-             "auth_provider_x509_cert_url": env('AUTH_PROVIDER'),
-             "client_x509_cert_url": env('CLIENT_CERT_URL')
+             "project_id": env('GDRIVE_PROJECT_ID'),
+             "private_key_id": env('GDRIVE_PRIVATE_KEY_ID'),
+             "private_key": env('GDRIVE_PRIVATE_KEY').replace('\\n', '\n'),
+             "client_email": env('GDRIVE_CLIENT_EMAIL'),
+             "client_id": env('GDRIVE_CLIENT_ID'),
+             "auth_uri": env('GDRIVE_AUTH_URI'),
+             "token_uri": env('GDRIVE_TOKEN_URI'),
+             "auth_provider_x509_cert_url": env('GDRIVE_AUTH_PROVIDER'),
+             "client_x509_cert_url": env('GDRIVE_CLIENT_CERT_URL')
              }
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(
         creds, SCOPES)
