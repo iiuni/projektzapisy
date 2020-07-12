@@ -16,9 +16,8 @@
 
     - name: Upgrade all packages to the latest version
       apt:
-        name: "*"
+        upgrade: full
         update_cache: yes
-        state: latest
         force_apt_get: true
       become: yes
 
@@ -95,8 +94,16 @@
         regexp: 'DATABASE_PASSWORD='
         replace: "DATABASE_PASSWORD={{ APP_DB_PASS }}"
 
-    # Configure postgres
+    # Edit allowed hosts in .env file
+    - name: Add host to .env file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      replace:
+        path: "/home/{{ deploy_user }}/.env"
+        regexp: 'ALLOWED_HOSTS='
+        replace: 'ALLOWED_HOSTS={{ deploy_server_name }}'
 
+    # Configure postgres
     - name: Ensure a locale exists
       locale_gen:
         name: pl_PL.UTF-8
@@ -132,7 +139,6 @@
         template: template0
 
     # Configure and sandbox Nginx
-
     - stat:
         path: /lib/systemd/system/nginx.service
       register: lib_nginx_status
@@ -244,7 +250,6 @@
       become: yes
 
     # Configure Postfix
-
     - name: Configure nginx service
       lineinfile:
         path: /etc/postfix/main.cf
@@ -253,7 +258,6 @@
       become: yes
 
     # Configure other services
-
     - name: Deploy gunicorn socket
       copy:
         src: gunicorn.socket
