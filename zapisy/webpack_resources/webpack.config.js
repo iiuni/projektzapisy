@@ -141,6 +141,7 @@ const WEBPACK_CONFIG = {
       vuex$: "vuex/dist/vuex.esm.js",
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
     },
+    mainFields: ["main", "module"],
   },
   plugins: PLUGINS,
   mode: DEV_MODE ? "development" : "production",
