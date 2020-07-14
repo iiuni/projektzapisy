@@ -10,7 +10,7 @@ from apps.grade.poll.models import Poll
 from apps.grade.ticket_create.models import RSAKeys, StudentGraded
 from apps.users.tests import factories as users
 
-grade_client = importlib.import_module('static_files.ticket_create.assets.grade-client')
+grade_client = importlib.import_module('static_assets.ticket-create.grade-client')
 
 
 class TicketsTest(test.TestCase):
