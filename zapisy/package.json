@@ -7,9 +7,9 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=development TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --progress --colors --config webpack_resources/webpack.config.js",
-    "devw": "NODE_ENV=development TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --progress --colors --watch --config webpack_resources/webpack.config.js",
-    "build": "NODE_ENV=production TS_NODE_PROJECT=\"tsconfig.webpack-config.json\" webpack --config webpack_resources/webpack.config.js"
+    "dev": "NODE_ENV=development webpack --progress --colors --config webpack_resources/webpack.config.js",
+    "devw": "NODE_ENV=development webpack --progress --colors --watch --config webpack_resources/webpack.config.js",
+    "build": "NODE_ENV=production webpack --config webpack_resources/webpack.config.js"
   },
   "repository": {
     "type": "git",

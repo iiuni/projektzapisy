@@ -14,11 +14,5 @@
     "noUnusedLocals": true,
     "types": ["jquery", "lodash", "bootstrap", "popper.js"]
   },
-  "exclude": [
-    "./node_modules",
-    // Config files are compiled separately, see tsconfig.webpack-config
-    "./webpack_resources/webpack-utils.ts",
-    "./webpack_resources/webpack.config.ts",
-    "./compiled_assets"
-  ]
+  "exclude": ["./node_modules", "./compiled_assets"]
 }
