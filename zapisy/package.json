@@ -2,9 +2,6 @@
   "name": "ii-zapisy",
   "version": "1.0.0",
   "description": "",
-  "browserslist": [
-    "last 2 versions"
-  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development webpack --progress --colors --config webpack_resources/webpack.config.js",
