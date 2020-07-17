@@ -63,15 +63,6 @@
         group: "{{ deploy_user }}"
         create_home: yes
 
-    - name: Get requirements to manage database backups
-      become: yes
-      become_user: "{{ deploy_user }}"
-      pip:
-        name:
-          - slackclient==2.7.2
-          - dropbox==10.2.0
-          - django-environ==0.4.5
-
     # Generate passwords and edit .env file
     - name: Copy .env file to deploy_user's home
       become: yes

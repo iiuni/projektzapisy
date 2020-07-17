@@ -40,7 +40,6 @@ setup_temp_db () {
 	-U "$II_ZAPISY_DB_BACKUP_DB_USER" \
 	-h localhost \
 	-p "$II_ZAPISY_DB_BACKUP_DB_PORT" \
-	-f "$1" \
 	-c "CREATE DATABASE \"$TEMP_DB_NAME\";"
 }
 
@@ -49,7 +48,6 @@ teardown_temp_db () {
 	-U "$II_ZAPISY_DB_BACKUP_DB_USER" \
 	-h localhost \
 	-p "$II_ZAPISY_DB_BACKUP_DB_PORT" \
-	-f "$1" \
 	-c "DROP DATABASE IF EXISTS \"$TEMP_DB_NAME\";"
 }
 

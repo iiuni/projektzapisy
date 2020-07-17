@@ -5,5 +5,5 @@ Description=Make a database backup
 User=$user$
 Group=$user$
 WorkingDirectory=/home/$user$/deploy/current/zapisy/
-ExecStart=/usr/bin/python3 /home/$user$/deploy/current/db_backups/backup.py
+ExecStart=/home/$user$/deploy/current/env3/bin/python3 /home/$user$/deploy/current/db_backups/backup.py
 Type=oneshot

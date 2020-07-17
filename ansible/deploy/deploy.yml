@@ -42,7 +42,7 @@
       pip:
         virtualenv: "{{ deploy_helper.new_release_path }}/env3"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
-        requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.development.txt"
+        requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
 
     - name: Create logs directory
       become: yes
