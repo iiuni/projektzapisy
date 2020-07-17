@@ -3,4 +3,3 @@
 psycopg2~=2.8
 slackclient~=2.7.2
 dropbox~=10.2.0
-django-environ~=0.4.5
