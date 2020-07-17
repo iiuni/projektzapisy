@@ -263,13 +263,6 @@
         force: yes
       become: yes
 
-    - name: Deploy yarn build service
-      copy:
-        src: yarn_build.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
     - name: Deploy backup service
       copy:
         src: backup.service
@@ -322,13 +315,6 @@
         path: /etc/systemd/system/gunicorn.service
         regexp: '\$num_proc\$'
         replace: "{{ nproc_out.stdout|int * 2 + 1 }}"
-
-    - name: Replace a pattern with username in yarn build service
-      become: yes
-      replace:
-        path: /etc/systemd/system/yarn_build.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
     - name: Replace a pattern with username in rqworker1 service
       become: yes

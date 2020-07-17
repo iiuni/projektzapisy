@@ -101,18 +101,18 @@
         path: "/home/{{ deploy_user }}/deploy/current/env3/run/"
         state: directory
 
-    - name: Install packages based on package.json
+    - name: Install dependencies based on package.json
       become: yes
       become_user: "{{ deploy_user }}"
       yarn:
         path: "/home/{{ deploy_user }}/deploy/current/zapisy/"
 
-    - name: Enable and run yarn_build service
-      service:
-        name: yarn_build
-        enabled: no
-        state: restarted
+    - name: Build project
       become: yes
+      become_user: "{{ deploy_user }}"
+      command: yarn build
+      args:
+        chdir: "/home/{{ deploy_user }}/deploy/current/zapisy/"
 
     - name: Django collect static files
       become: yes
@@ -126,20 +126,6 @@
       become: yes
       service:
         name: gunicorn.socket
-        enabled: yes
-        state: restarted
-
-    - name: Enable and run gunicorn service
-      become: yes
-      service:
-        name: gunicorn
-        enabled: yes
-        state: restarted
-
-    - name: Enable and run nginx service
-      become: yes
-      service:
-        name: nginx
         enabled: yes
         state: restarted
 
@@ -163,6 +149,20 @@
         enabled: yes
         state: restarted
       become: yes
+
+    - name: Enable and run gunicorn service
+      become: yes
+      service:
+        name: gunicorn
+        enabled: yes
+        state: restarted
+
+    - name: Enable and run nginx service
+      become: yes
+      service:
+        name: nginx
+        enabled: yes
+        state: restarted
 
     - name: Enable timer for backup service
       service:
