@@ -7,6 +7,3 @@ Group=$user$
 WorkingDirectory=/home/$user$/deploy/current/zapisy/
 ExecStart=/usr/bin/python3 /home/$user$/deploy/current/db_backups/backup.py
 Type=oneshot
-
-[Install]
-WantedBy=default.target
