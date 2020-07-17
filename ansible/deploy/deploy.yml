@@ -101,12 +101,11 @@
         path: "/home/{{ deploy_user }}/deploy/current/env3/run/"
         state: directory
 
-    - name: Start yarn
-      systemd:
-        name: yarn
-        state: restarted
-        enabled: no
+    - name: Install packages based on package.json
       become: yes
+      become_user: "{{ deploy_user }}"
+      yarn:
+        path: "/home/{{ deploy_user }}/deploy/current/zapisy/"
 
     - name: Enable and run yarn_build service
       service:

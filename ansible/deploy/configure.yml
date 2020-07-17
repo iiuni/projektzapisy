@@ -263,14 +263,7 @@
         force: yes
       become: yes
 
-    - name: Deploy yarn
-      copy:
-        src: yarn.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy yarn build
+    - name: Deploy yarn build service
       copy:
         src: yarn_build.service
         dest: /etc/systemd/system/
@@ -329,13 +322,6 @@
         path: /etc/systemd/system/gunicorn.service
         regexp: '\$num_proc\$'
         replace: "{{ nproc_out.stdout|int * 2 + 1 }}"
-
-    - name: Replace a pattern with username in yarn service
-      become: yes
-      replace:
-        path: /etc/systemd/system/yarn.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
     - name: Replace a pattern with username in yarn build service
       become: yes
