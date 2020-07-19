@@ -136,16 +136,16 @@
         enabled: yes
         state: restarted
 
-    - name: Enable and run rqworker1 service
+    - name: Enable and run rqworker-default service
       service:
-        name: rqworker1
+        name: rqworker-default
         enabled: yes
         state: restarted
       become: yes
 
-    - name: Enable and run rqworker2 service
+    - name: Enable and run rqworker-notifications service
       service:
-        name: rqworker2
+        name: rqworker-notifications
         enabled: yes
         state: restarted
       become: yes

@@ -277,16 +277,16 @@
         force: yes
       become: yes
 
-    - name: Deploy rqworker1
+    - name: Deploy rqworker-default
       copy:
-        src: rqworker1.service
+        src: rqworker-default.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
 
-    - name: Deploy rqworker2
+    - name: Deploy rqworker to dispatching notifications
       copy:
-        src: rqworker2.service
+        src: rqworker-notifications.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
@@ -316,17 +316,17 @@
         regexp: '\$num_proc\$'
         replace: "{{ nproc_out.stdout|int * 2 + 1 }}"
 
-    - name: Replace a pattern with username in rqworker1 service
+    - name: Replace a pattern with username in rqworker-default service
       become: yes
       replace:
-        path: /etc/systemd/system/rqworker1.service
+        path: /etc/systemd/system/rqworker-default.service
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with username in rqworker2 service
+    - name: Replace a pattern with username in rqworker-notifications service
       become: yes
       replace:
-        path: /etc/systemd/system/rqworker2.service
+        path: /etc/systemd/system/rqworker-notifications.service
         regexp: '\$user\$'
         replace: "{{ deploy_user }}"
 
