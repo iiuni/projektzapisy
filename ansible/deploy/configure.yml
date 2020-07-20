@@ -165,27 +165,15 @@
       with_items:
         - {file: "nginx.conf", path: ""}
         - {file: "ssl-params.conf", path: "snippets/"}
-        - {file: "ssl-signed.conf", path: "snippets/"}
 
-    - name: Deploy zapisy.conf
+    - name: Deploy nginx configs with templating
       become: yes
       template:
-        src: templates/zapisy.conf.j2
-        dest: /etc/nginx/sites-available/zapisy.conf
-
-    - name: Replace a pattern with username in nginx file - zapisy.conf
-      become: yes
-      replace:
-        path: /etc/nginx/sites-available/zapisy.conf
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
-
-    - name: Replace a pattern with username in nginx file - zapisy.conf
-      become: yes
-      replace:
-        path: /etc/nginx/sites-available/zapisy.conf
-        regexp: '\$domain\$'
-        replace: "{{ deploy_server_name }}"
+        src: "templates/{{ item.file }}.j2"
+        dest: "/etc/nginx/{{ item.path }}/{{ item.file }}"
+      with_items:
+        - {file: "zapisy.conf", path: "sites-available"}
+        - {file: "ssl-signed.conf", path: "snippets"}
 
     - name: Create ssl directory
       file:
@@ -193,16 +181,32 @@
         state: directory
       become: yes
 
-    - name: Deploy ssl selfsigned files genereted by OpenSSL
-      copy:
-        src: "{{ item.file }}"
-        dest: "{{ item.path }}"
-        force: yes
-      with_items:
-        - {file: "ssl/nginx-selfsigned.crt", path: "/etc/ssl/certs/"}
-        - {file: "ssl/nginx-selfsigned.key", path: "/etc/ssl/private/"}
-        - {file: "ssl/dhparam.pem", path: "/etc/nginx/"}
+    - name: Generate an OpenSSL private key
       become: yes
+      openssl_privatekey:
+        path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        group: ssl-cert
+
+    - name: Generate an OpenSSL CSR
+      become: yes
+      openssl_csr:
+        path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
+        privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        common_name: "{{ deploy_server_name }}"
+
+    - name: Generate a Self Signed OpenSSL certificate
+      become: yes
+      openssl_certificate:
+        path: "/etc/ssl/certs/{{ deploy_server_name }}.crt"
+        privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        csr_path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
+        provider: selfsigned
+
+    - name: Generate Diffie-Hellman parameters
+      become: yes
+      openssl_dhparam:
+        path: /etc/nginx/dhparam.pem
+        size: 2048
 
     # Configure Postfix
     - name: Configure nginx service
