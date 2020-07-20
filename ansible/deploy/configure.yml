@@ -130,21 +130,6 @@
         template: template0
 
     # Configure and sandbox Nginx
-    - stat:
-        path: /lib/systemd/system/nginx.service
-      register: lib_nginx_status
-
-    - name: Configure nginx service restart conditions
-      lineinfile:
-        path: /lib/systemd/system/nginx.service
-        insertafter: "^KillMode=mixed$"
-        line: "{{ item.line }}"
-      with_items:
-        - {line: "RestartSec=10"}
-        - {line: "Restart=on-failure"}
-      become: yes
-      when: lib_nginx_status.stat.exists
-
     - name: Stop nginx service
       systemd:
         name: nginx
@@ -160,41 +145,15 @@
 
     - name: Copy nginx service file to /etc
       copy:
-        src: "/lib/systemd/system/nginx.service"
+        src: "nginx.service"
         dest: "/etc/systemd/system/nginx.service"
         force: yes
-        remote_src: yes
       become: yes
-      when: lib_nginx_status.stat.exists
 
     - name: Delete nginx service file from /lib
       file:
         path: /lib/systemd/system/nginx.service
         state: absent
-      become: yes
-
-    - name: Configure nginx service
-      lineinfile:
-        path: /etc/systemd/system/nginx.service
-        insertafter: "^KillMode=mixed$"
-        line: "{{ item.line }}"
-      with_items:
-        - {line: "RestartSec=10"}
-        - {line: "Restart=on-failure"}
-        - {line: "RuntimeDirectory=nginx"}
-        - {line: "AmbientCapabilities=CAP_NET_BIND_SERVICE"}
-        - {line: "User=www-data"}
-        - {line: "Group=www-data"}
-        - {line: "NoNewPrivileges=true"}
-        - {line: "LockPersonality=true"}
-        - {line: "SystemCallErrorNumber=EPERM"}
-      become: yes
-
-    - name: Move PID file
-      lineinfile:
-        path: /etc/systemd/system/nginx.service
-        regexp: "PIDFile="
-        line: "PIDFile=/run/nginx/nginx.pid"
       become: yes
 
     - name: Deploy nginx configs
