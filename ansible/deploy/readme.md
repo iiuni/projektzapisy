@@ -85,7 +85,7 @@ After run `configure.yml` playbook, self-signed OpenSSL certificates will be cre
 2. Place your OpenSSL certificate file in the *ssl* folder and rename it as `zapisy.crt`.
 3. Place your DH parameters file (`dhparam.pem`) in the *ssl* directory.
 4. Run this command: \
-	`ansible-playbook replace-ssl.yml -i hosts -T 60 -c paramiko`\
+	`ansible-playbook update_ssl.yml -i hosts -T 60 -c paramiko`\
 	where `hosts` is inventory file like *staging* or *production*
 
 ## Deployment
