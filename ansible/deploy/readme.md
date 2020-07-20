@@ -37,12 +37,16 @@ where `user` is your username on the remote host and `host` is your hostname.
 	- `deploy_user` - special user what will be created for our development
 	- `deploy-version` - name of branch from __projektzapisy__ repository
 	- `deploy_server_name` - name of domain what points on remote machine
+	- `rollbar_token` - *post_server_item* token from Rollbar settings or __none__ value
 5. For add another server to deployment edit your hosts (*staging*/*production*) like this:
 
 ```
 [deploy:children]
 server1
 server2
+
+[deploy:vars]
+deploy_env=staging
 
 [server1]
 webserver
@@ -58,6 +62,7 @@ ansible_ssh_private_key_file=/home/bart/.ssh/id_rsa
 deploy_user=zapisy
 deploy_version=master-dev
 deploy_server_name=examplezapisy.pl
+rollbar_token=none
 
 [server2:vars]
 ansible_host=secondexamplezapisy.pl
@@ -67,6 +72,7 @@ ansible_ssh_private_key_file=/home/bart/.ssh/id_rsa
 deploy_user=zapisy
 deploy_version=master
 deploy_server_name=secondexamplezapisy.pl
+rollbar_token=893748923424832894234234
 ```
  Configuration/deployment/restoring starts on every machine from the inventory file that is in the `deploy:children` section.
 
