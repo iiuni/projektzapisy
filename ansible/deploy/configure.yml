@@ -217,12 +217,6 @@
       shell: nproc
       register: nproc_out
 
-    - name: Deploy gunicorn socket
-      template:
-        src: templates/gunicorn.socket.j2
-        dest: /etc/systemd/system/gunicorn.socket
-      become: yes
-
     - name: Deploy gunicorn service
       template:
         src: templates/gunicorn.service.j2
