@@ -250,7 +250,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
 def get_last_years(n: int) -> List[str]:
     """Lists last n academic years, current included."""
     current_year = SystemState.get_current_state().year
-    last_states = SystemState.objects.filter(year__lte=current_year)[:n]
+    last_states = SystemState.objects.filter(year__lte=current_year).order_by('-year')[:n]
     return [s.year for s in last_states]
 
 
