@@ -1,8 +1,11 @@
 [deploy:children]
 server1
 
+[deploy:vars]
+deploy_env=staging
+
 [server1]
-webserver
+webserver1
 
 [server1:vars]
 ansible_host=zapisy-staging.ii.uni.wroc.pl

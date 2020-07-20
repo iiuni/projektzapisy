@@ -113,6 +113,21 @@
         clean: true
         keep_releases: 2
 
+    - name: Get revision
+      shell: git rev-parse HEAD
+      register: git_rev
+      args:
+        chdir: "/home/{{ ansible_user }}/deploy/current/"
+
+    - name: Rollbar deployment notification
+      rollbar_deployment:
+        token: "{{ rollbar_token }}"
+        environment: "{{ deploy_env }}"
+        user: "{{ ansible_user }}"
+        revision: "{{ git_rev.stdout }}"
+        comment: "Deploy {{ deploy_version }} on {{ ansible_host }}"
+      when: rollbar_token != "none"
+
     - name: Create link to socket for Nginx
       become: yes
       become_user: "{{ deploy_user }}"

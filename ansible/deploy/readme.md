@@ -1,4 +1,3 @@
-
 # System Zapisów Deployment
 
 ## Setting up the machine
@@ -49,10 +48,10 @@ server2
 deploy_env=staging
 
 [server1]
-webserver
+webserver1
 
 [server2]
-webserver
+webserver2
 
 [server1:vars]
 ansible_host=examplezapisy.pl
