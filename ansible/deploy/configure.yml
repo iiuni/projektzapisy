@@ -186,6 +186,7 @@
       openssl_privatekey:
         path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         group: ssl-cert
+        mode: 0640
 
     - name: Generate an OpenSSL CSR
       become: yes
