@@ -145,8 +145,8 @@
 
     - name: Copy nginx service file to /etc
       copy:
-        src: "nginx.service"
-        dest: "/etc/systemd/system/nginx.service"
+        src: templates/nginx.service
+        dest: /etc/systemd/system/nginx.service
         force: yes
       become: yes
 
@@ -159,14 +159,19 @@
     - name: Deploy nginx configs
       become: yes
       copy:
-        src: "{{ item.file }}"
+        src: "templates/{{ item.file }}"
         dest: "/etc/nginx/{{ item.path }}"
         force: yes
       with_items:
         - {file: "nginx.conf", path: ""}
-        - {file: "zapisy.conf", path: "sites-available/"}
         - {file: "ssl-params.conf", path: "snippets/"}
         - {file: "ssl-signed.conf", path: "snippets/"}
+
+    - name: Deploy zapisy.conf
+      become: yes
+      template:
+        src: templates/zapisy.conf.j2
+        dest: /etc/nginx/sites-available/zapisy.conf
 
     - name: Replace a pattern with username in nginx file - zapisy.conf
       become: yes
@@ -208,93 +213,46 @@
       become: yes
 
     # Configure other services
-    - name: Deploy gunicorn socket
-      copy:
-        src: gunicorn.socket
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy gunicorn service
-      copy:
-        src: gunicorn.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy backup service
-      copy:
-        src: backup.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy backup timer
-      copy:
-        src: backup.timer
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy rqworker-default
-      copy:
-        src: rqworker-default.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
-    - name: Deploy rqworker to dispatching notifications
-      copy:
-        src: rqworker-notifications.service
-        dest: /etc/systemd/system/
-        force: yes
-      become: yes
-
     - name: Get number of CPUs
       shell: nproc
       register: nproc_out
 
-    - name: Replace a pattern with username in gunicorn socket
+    - name: Deploy gunicorn socket
+      template:
+        src: templates/gunicorn.socket.j2
+        dest: /etc/systemd/system/gunicorn.socket
       become: yes
-      replace:
-        path: /etc/systemd/system/gunicorn.socket
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with username in gunicorn service
+    - name: Deploy gunicorn service
+      template:
+        src: templates/gunicorn.service.j2
+        dest: /etc/systemd/system/gunicorn.service
       become: yes
-      replace:
-        path: /etc/systemd/system/gunicorn.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with number of workers in gunicorn service
+    - name: Deploy backup service
+      template:
+        src: templates/backup.service.j2
+        dest: /etc/systemd/system/backup.service
       become: yes
-      replace:
-        path: /etc/systemd/system/gunicorn.service
-        regexp: '\$num_proc\$'
-        replace: "{{ nproc_out.stdout|int * 2 + 1 }}"
 
-    - name: Replace a pattern with username in rqworker-default service
+    - name: Deploy backup timer
+      copy:
+        src: templates/backup.timer
+        dest: /etc/systemd/system/backup.timer
+        force: yes
       become: yes
-      replace:
-        path: /etc/systemd/system/rqworker-default.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with username in rqworker-notifications service
+    - name: Deploy rqworker-default
+      template:
+        src: templates/rqworker-default.service.j2
+        dest: /etc/systemd/system/rqworker-default.service
       become: yes
-      replace:
-        path: /etc/systemd/system/rqworker-notifications.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
-    - name: Replace a pattern with username in backup service
+    - name: Deploy rqworker to dispatching notifications
+      template:
+        src: templates/rqworker-notifications.service.j2
+        dest: /etc/systemd/system/rqworker-notifications.service
       become: yes
-      replace:
-        path: /etc/systemd/system/backup.service
-        regexp: '\$user\$'
-        replace: "{{ deploy_user }}"
 
     - name: Systemd daemon reload
       systemd:

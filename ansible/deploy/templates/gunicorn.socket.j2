@@ -1,0 +1,8 @@
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/home/{{ deploy_user }}/deploy/current/env3/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target

@@ -1,8 +1,0 @@
-[Unit]
-Description=gunicorn socket
-
-[Socket]
-ListenStream=/home/$user$/deploy/current/env3/run/gunicorn.sock
-
-[Install]
-WantedBy=sockets.target
