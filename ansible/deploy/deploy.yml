@@ -117,7 +117,7 @@
       shell: git rev-parse HEAD
       register: git_rev
       args:
-        chdir: "/home/{{ ansible_user }}/deploy/current/"
+        chdir: "/home/{{ deploy_user }}/deploy/current/"
 
     - name: Rollbar deployment notification
       rollbar_deployment:
