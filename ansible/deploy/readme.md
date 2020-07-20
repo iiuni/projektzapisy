@@ -1,3 +1,4 @@
+
 # System Zapisów Deployment
 
 ## Setting up the machine
@@ -74,12 +75,18 @@ deploy_server_name=secondexamplezapisy.pl
 1. Edit `.env` in *deploy* file. Replace these fields with correct values:
 `DROPBOX_OAUTH2_TOKEN`, `SLACK_TOKEN`, `SLACK_CHANNEL_ID` (id of channel where slackbot will push notifications), `SCHEDULER_USERNAME`, `SCHEDULER_PASSWORD`, `VOTING_RESULTS_SPREADSHEET_ID`, `CLASS_ASSIGNMENT_SPREADSHEET_ID`, `EMPLOYEES_SPREADSHEET_ID` and all fields with __GDRIVE\___ prefix.
 
-2. Run this command in *deploy* directory:
-`ansible-playbook configure.yml -i hosts -T 60 -c paramiko`
+2. Run this command in *deploy* directory:\
+`ansible-playbook configure.yml -i hosts -T 60 -c paramiko` \
+where `hosts` is inventory file like *staging* or *production*
 
-
-`hosts` is inventory file like *staging* or *production*
-
+### Update configuration with your own OpenSSL certificates
+After run `configure.yml` playbook, self-signed OpenSSL certificates will be created on the remote machine. To replace these files with your certificates:
+1. Place your OpenSSL private key in the *ssl* folder and rename it as `zapisy.key`.
+2. Place your OpenSSL certificate file in the *ssl* folder and rename it as `zapisy.crt`.
+3. Place your DH parameters file (`dhparam.pem`) in the *ssl* directory.
+4. Run this command: \
+	`ansible-playbook replace-ssl.yml -i hosts -T 60 -c paramiko`\
+	where `hosts` is inventory file like *staging* or *production*
 
 ## Deployment
 
