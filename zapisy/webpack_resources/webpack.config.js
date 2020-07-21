@@ -45,9 +45,25 @@ const RULES = [
   // Javascript files rule
   {
     test: /\.js$/,
-    loader: "babel-loader",
-    include: path.resolve("./static/src/js"),
     exclude: /node_modules/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        presets: [
+          [
+            "@babel/preset-env",
+            {
+              targets: {
+                browsers: ["last 2 versions"],
+              },
+            },
+          ],
+        ],
+        plugins: [
+          "@babel/plugin-proposal-object-rest-spread",
+        ],
+      },
+    },
   },
 
   // Styling files rule
@@ -66,15 +82,6 @@ const RULES = [
         },
       },
       "sass-loader",
-    ],
-  },
-
-  // Less files rule
-  {
-    test: /\.less$/,
-    use: [
-      { loader: "css-loader" },
-      { loader: "less-loader" },
     ],
   },
 
