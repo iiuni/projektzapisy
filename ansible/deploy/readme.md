@@ -115,9 +115,9 @@ where `hosts` is inventory file like *staging* or *production*
 ## Debugging
 To display additional information during configuration, deployment, or restoring database add the flag `-vvv` to ansible-playbook commands.
 
-Logs are stored in the *logs* folder in every deployment release. All releases can be found in `/home/zapisy/deploy/releases` directory.
+Logs are stored in the *logs* folder in every deployment release. All releases can be found in `/home/deploy_user/deploy/releases` directory on the remote machine, where `deploy_user` is value from inventory file.
 
-Other useful commands:
+Other useful commands for use on the remote machine:
 - `journalctl -xe` - shows the latest logs from all services
 - `journalctl -u example.service -fe`- shows and follows the latest logs from example service
 - `systemctl status example.service` - shows the status of example service
