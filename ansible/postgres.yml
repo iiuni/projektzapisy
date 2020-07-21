@@ -81,11 +81,10 @@
         target: "/vagrant/ii_zapisy_dump_dev.sql"
       when: dumpsql.stat.exists
 
-    - name: Apply migrates to empty database
+    - name: Apply migrates
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       django_manage:
         command: migrate
         app_path: "/vagrant/zapisy"
         virtualenv: "/home/vagrant/env3"
-
