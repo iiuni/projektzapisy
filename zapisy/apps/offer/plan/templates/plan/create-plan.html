@@ -22,18 +22,26 @@
         Przykład:<br>
         Niech wykład z Metod Programowania prowadząc trzej nauczyciele. Każdy wpis z wykładem powinien być oznaczony tą samą liczbą w kolumnie "Wielu prowadzących",
         np.<br>
-        |Metody Programowania|Wykład|...|(kod prowadzącego)|2|<br>
+        <code>|Metody Programowania|Wykład|...|(kod prowadzącego)|2|</code><br>
         Ważne, aby liczba ta była unikalna w kontekście danego przedmiotu. To znaczy, jeżeli np. dodatkowo dwóch prowadzących zostaje przypisanych do jednej grupy
         ćwiczeniowej z Metod Programowania, należy te wpisy oznaczyć inną liczbą, np. <br>
-        |Metody Programowania|Ćwiczenia|...|(kod prowadzącego)|3|.<br>
+        <code>|Metody Programowania|Ćwiczenia|...|(kod prowadzącego)|3|.</code><br>
         W przypadku innych przedmiotów, liczby te mogą się powtarzać. Gdyby dodatkowo do jednej pracownii Rozwoju schedulera przypisano dwóch nauczycieli, można ten wpis opisać
         np. tak: <br>
-        |Projekt: Rozwój schedulera|...|(kod prowadzącego)|2|
+        <code>|Projekt: Rozwój schedulera|...|(kod prowadzącego)|2|</code>
     </li>
 </ol>
-<a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">>> Wyniki głosowania - arkusz Google</a>
-<a href="https://docs.google.com/spreadsheets/d/{{ employees_sheet_id }}" target="_blank" class="d-block mb-1">>> Pracownicy - arkusz Google</a>
-<a href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank" class="d-block mb-5">>> Przydział zajęć - arkusz Google</a>
+<ul>
+    <li>
+        <a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">Wyniki głosowania - arkusz Google</a>
+    </li>
+    <li>
+        <a href="https://docs.google.com/spreadsheets/d/{{ employees_sheet_id }}" target="_blank" class="d-block mb-1">Pracownicy - arkusz Google</a>
+    </li>
+    <li>
+        <a href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank" class="d-block mb-5">Przydział zajęć - arkusz Google</a>
+    </li>
+</ul>
 
 <p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
 <a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
