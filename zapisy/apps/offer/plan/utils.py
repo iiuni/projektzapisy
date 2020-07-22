@@ -44,7 +44,7 @@ class SingleAssignmentData(NamedTuple):
     # l (summer) or z (winter)
     semester: str
     teacher: str
-    teacher_code: str
+    teacher_username: str
     # if other assignment from the same course has the same value in multiple teachers
     # field, then multiple teachers were assigned to the same group.
     multiple_teachers: Optional[int]
@@ -53,7 +53,9 @@ class SingleAssignmentData(NamedTuple):
 class EmployeeData(TypedDict):
     # 'pracownik' for full employee, 'doktorant' for PhD student, 'inny' for others.
     status: str
-    name: str
+    username: str
+    first_name: str
+    last_name: str
     pensum: float
     balance: float
     weekly_winter: int
@@ -112,7 +114,7 @@ class SingleGroupData(TypedDict):
     name: str
     semester: str
     teacher: str
-    teacher_code: int
+    teacher_username: str
     # One of GROUP_TYPE_SHEETS.
     group_type: str
     # Hours per week.
@@ -189,7 +191,8 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
             semester = proposal_info.semester
 
         if data['instance']:
-            previous_groups = Group.objects.filter(course=data['instance'])
+            previous_groups = Group.objects.filter(course=data['instance']).select_related(
+                'teacher', 'teacher__user')
             hours = {'Wykład': proposal_info.hours_lecture,
                      'Ćwiczenia': proposal_info.hours_exercise,
                      'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab,
@@ -208,7 +211,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
                     'name': course,
                     'semester': semester,
                     'teacher': teacher_name,
-                    'teacher_code': teacher_code,
+                    'teacher_username': teacher_code,
                     'group_type': group_type,
                     'hours': course_hours
                 }
@@ -239,7 +242,7 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
                 'name': course,
                 'semester': semester,
                 'teacher': teacher_name,
-                'teacher_code': teacher_code,
+                'teacher_username': teacher_code,
                 'group_type': group_type,
                 'hours': course_hours
             }
@@ -321,12 +324,15 @@ class GroupOrder:
 
     def __lt__(self, other):
         if self.sgd['name'] == other.sgd['name']:
-            types = {'Wykład': 1,
-                     'Repetytorium': 2,
-                     'Ćwiczenia': 3,
-                     'Ćwiczenio-pracownia': 4,
-                     'Pracownia': 5,
-                     'Seminarium': 6
-                     }
+            types = {
+                'Wykład': 1,
+                'Repetytorium': 2,
+                'Ćwiczenia': 3,
+                'Ćwiczenio-pracownia': 4,
+                'Pracownia': 5,
+                'Seminarium': 6,
+            }
+            if self.sgd['group_type'] not in types or other.sgd['group_type'] not in types:
+                return self.sgd['group_type'] < self.sgd['group_type']
             return types[self.sgd['group_type']] < types[other.sgd['group_type']]
         return self.sgd['name'] < other.sgd['name']

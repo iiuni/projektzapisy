@@ -4,10 +4,12 @@ from typing import List, Optional
 import environ
 import gspread
 from django.conf import settings
+from django.contrib.auth.models import User
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apps.offer.plan.utils import (ProposalSummary, ProposalVoteSummary, SingleYearVoteSummary,
+from apps.offer.plan.utils import (EmployeeData, EmployeesSummary, ProposalSummary, ProposalVoteSummary, SingleAssignmentData, SingleYearVoteSummary,
                                    VotingSummaryPerYear)
+from apps.users.models import Employee
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -201,12 +203,122 @@ def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: Prop
         }
     )
 
+
+def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
+    """Reads confirmed assignments from the spreadsheet."""
+    data = read_entire_sheet(sheet)
+    assignments = []
+    for row in data:
+        assignment_confirmed = row[12] == 'TRUE'
+        # Continue to next assignment if this assignment not confirmed.
+        if not assignment_confirmed:
+            continue
+
+        sad = SingleAssignmentData(
+            index=int(row[0]),
+            name=row[1],
+            group_type=row[2].lower(),
+            group_type_short=row[3],
+            semester=row[9],
+            teacher=row[10],
+            teacher_username=row[11],
+            hours_weekly=float(row[5]) if row[5] else 0,
+            hours_semester=float(row[7]) if row[7] else 0,
+            multiple_teachers=row[13] if row[13] else None,
+        )
+        assignments.append(sad)
+    return assignments
+
 ##################################################
 # END PLAN PROPOSAL SHEET LOGIC
 ##################################################
 
 ##################################################
-# START READING ASSIGNMENTS SHEET LOGIC
+# BEGIN PLAN EMPLOYEES SHEET LOGIC
+##################################################
+
+
+def employee_row(employee: EmployeeData) -> List[str]:
+    return [
+        employee['status'],
+        employee['first_name'],
+        employee['last_name'],
+        employee['username'],
+        str(employee['pensum']),
+    ]
+
+
+def update_employees_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
+    usernames = set(p['teacher_username'] for p in proposal)
+    employees = Employee.objects.filter(user__username__in=usernames)
+    all_contractors = set(
+        User.objects.filter(groups='external_contractors').values_list('username', flat=True))
+    all_phd_students = set(
+        User.objects.filter(groups='phd_students').values_list('username', flat=True))
+    data = [['Status', 'Imię', 'Nazwisko', 'Username', 'Pensum']]
+    for e in employees:
+        username = e.user.username
+        if username in all_contractors:
+            status = 'inny'
+        elif username in all_phd_students:
+            status = 'doktorant'
+        else:
+            status = 'pracownik'
+        summary = EmployeeData(
+            status=status,
+            username=username,
+            first_name=e.user.first_name,
+            last_name=e.user.last_name,
+            pensum=0,
+            balance=0.0,
+            weekly_winter=0,
+            weekly_summer=0,
+            courses_winter=[],
+            courses_summer=[],
+        )
+        data.append(employee_row(summary))
+    sheet.sheet1.clear()
+    sheet.values_update(
+        range='A:E',
+        params={
+            'valueInputOption': 'USER_ENTERED'
+        },
+        body={
+            'values': data
+        }
+    )
+
+
+def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
+    """Reads Employee data from the Spreadsheet."""
+    emp_sum = EmployeesSummary()
+    data = read_entire_sheet(sheet)
+    for row in data:
+        try:
+            ed = EmployeeData(
+                status=row[0].lower(),
+                username=row[3],
+                first_name=row[1],
+                last_name=row[2],
+                pensum=float(row[4]),
+                balance=0,
+                weekly_winter=0,
+                weekly_summer=0,
+                courses_winter=[],
+                courses_summer=[],
+            )
+            emp_sum[ed['username']] = ed
+        except ValueError:
+            # Skip incorrectly formatted rows (header included).
+            continue
+    return emp_sum
+
+##################################################
+# END PLAN EMPLOYEES SHEET LOGIC
+##################################################
+
+##################################################
+# BEGIN READING ASSIGNMENTS SHEET LOGIC
 ##################################################
 
 

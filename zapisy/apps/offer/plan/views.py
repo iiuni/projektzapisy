@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models.group import GroupType
-from apps.offer.plan.sheets import (create_sheets_service, read_entire_sheet,
+from apps.offer.plan.sheets import (create_sheets_service, read_assignments_sheet, read_entire_sheet, read_employees_sheet,
                                     update_plan_proposal_sheet, update_voting_results_sheet)
 from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData, EmployeesSummary,
                                    SingleAssignmentData, Statistics, TeacherInfo, get_last_years,
@@ -32,10 +32,11 @@ EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 @employee_required
 def plan_view(request):
+    """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
-    employees_from_sheet = read_entire_sheet(
+    employees_from_sheet = read_employees_sheet(
         create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
-    assignments_from_sheet = read_entire_sheet(
+    assignments_from_sheet = read_assignments_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
 
     assignments_winter: AssignmentsViewSummary = {}
@@ -61,66 +62,17 @@ def plan_view(request):
         messages.error(request, "Arkusz nie istnieje")
         return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
 
-    for employee in employees_from_sheet:
-        # Skip header
-        try:
-            pensum = float(employee[0])
-        except ValueError:
-            continue
-        status = employee[1].lower()
-        if status == 'prac':
-            status = 'pracownik'
-        elif status != 'doktorant':
-            status = 'inny'
-
-        name = employee[2] + ' ' + employee[3]
-        code = employee[4]
-        balance = float(employee[11]) if employee[11] else 0
-        ed = EmployeeData(
-            status=status,
-            name=name,
-            pensum=pensum,
-            balance=balance,
-            weekly_winter=0,
-            weekly_summer=0,
-            courses_winter=[],
-            courses_summer=[],
-        )
-        if status == 'pracownik':
-            staff[code] = copy.copy(ed)
-        elif status == 'doktorant':
-            phds[code] = copy.copy(ed)
+    for username, ed in employees_from_sheet.items():
+        if ed['status'] == 'pracownik':
+            staff[username] = copy.copy(ed)
+        elif ed['status'] == 'doktorant':
+            phds[username] = copy.copy(ed)
         else:
-            others[code] = copy.copy(ed)
-        pensum_global += pensum
+            others[username] = copy.copy(ed)
+        pensum_global += ed['pensum']
 
     for assignment in assignments_from_sheet:
-        if assignment[-2] == 'TRUE':
-            assignment_confirmed = True
-        else:
-            assignment_confirmed = False
-        # continue to next assignment if this assignment not confirmed
-        if not assignment_confirmed:
-            continue
-        # if index is not castable to int, skip
-        try:
-            index = int(assignment[0])
-        except ValueError:
-            continue
-        name = assignment[1]
-        group_type = assignment[2].lower()
-        group_type_short = assignment[3]
-        if not group_type_short:
-            continue
-        semester = assignment[9]
-        teacher = assignment[10]
-        code = assignment[11]
-        hours_weekly = float(assignment[5]) if assignment[5] else 0
-        hours_semester = float(assignment[7]) if assignment[7] else 0
-        multiple_teachers = int(assignment[-1]) if assignment[-1] else None
-
-        assignmentData = SingleAssignmentData(name, index, group_type, group_type_short,
-                                              hours_weekly, hours_semester, semester, teacher, code, multiple_teachers)
+        
         if semester == 'l':
             if name not in assignments_summer:
                 assignments_summer[name] = {
@@ -177,6 +129,7 @@ def plan_view(request):
 
 @staff_member_required
 def plan_create(request):
+    """Displays the 'assignments creator' view."""
     courses_proposal = get_votes(get_last_years(3))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
@@ -219,13 +172,12 @@ def plan_create(request):
 @require_POST
 @staff_member_required
 def plan_vote(request):
+    """Generates assignments and employees sheets for picked courses."""
     picked_courses = []
     for course in request.POST:
         if course[:4] == 'asgn':
             picked_courses.append(course[4:])
     picked_courses.sort()
-    for a in picked_courses:
-        print(a)
     all_courses = get_votes(get_last_years(1))
     picked_courses_accurate_info_z = []
     picked_courses_accurate_info_l = []
