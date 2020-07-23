@@ -45,12 +45,6 @@
 
 <p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
 <a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
-<p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file-json' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
-<a href="{% url 'generate-scheduler-file-json' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
-<p class="lead">Aby wygenerować dane z pliku do schedulera w formacie csv kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file-csv' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
-<a href="{% url 'generate-scheduler-file-csv' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
 
 <h4>Przedmioty na następny rok:</h4>
 <p class="lead">
@@ -59,7 +53,7 @@
 </p>
 
 
-<form class="mt-5" action="{% url 'plan-vote' %}" method="post">
+<form class="my-5" action="{% url 'plan-vote' %}" method="post">
     {% csrf_token %}
     <div class="row">
         <div class="col">
@@ -108,4 +102,11 @@
     </div>
     <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty</button>
 </form>
+
+<p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
+<a href="{% url 'generate-scheduler-file-json' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
+<a href="{% url 'generate-scheduler-file-json' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
+<p class="lead">Aby wygenerować dane z pliku do schedulera w formacie csv kliknij guzik pod spodem:</p>
+<a href="{% url 'generate-scheduler-file-csv' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
+<a href="{% url 'generate-scheduler-file-csv' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
 {% endblock %}
