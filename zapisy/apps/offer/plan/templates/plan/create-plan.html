@@ -1,7 +1,7 @@
 {% extends "offer/base.html" %}
 {% block main-subtitle %}Kreator przydziałów{% endblock %}
 {% block offer_menu_plan %} class="active"{% endblock %}
-{% block content %}
+{% block all-content %}
 <h1>Stwórz przydział zajęć</h1>
 <h3>Instrukcja:</h3>
 <ol>
@@ -61,8 +61,8 @@
 
 <form class="mt-5" action="{% url 'plan-vote' %}" method="post">
     {% csrf_token %}
-    <div class="d-flex justify-content-between">
-        <div class="mr-2">
+    <div class="row">
+        <div class="col">
             <h4>Przedmioty zimowe:</h4>
             <table class="table">
                 <thead class="bg-primary">
@@ -75,11 +75,8 @@
                     {% for course, name, semester, is_set in courses_proposal %}
                         {% if semester == 'z' %}
                             <tr>
-                                {% if is_set %}
-                                    <th scope="row"><input type="checkbox" name="{{ name }}" checked></th>
-                                {% else %}
-                                    <th scope="row"><input type="checkbox" name="{{ name }}"></th>
-                                {% endif %}
+                                
+                                <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
                                 <td>{{ course }}</td>
                             </tr>
                         {% endif %}
@@ -87,7 +84,7 @@
                 </tbody>
             </table>
         </div>
-        <div>
+        <div class="col">
             <h4>Przedmioty letnie:</h4>
             <table class="table">
                 <thead class="bg-primary">
@@ -100,11 +97,7 @@
                     {% for course, name, semester, is_set in courses_proposal %}
                         {% if semester == 'l' %}
                             <tr>
-                                {% if is_set %}
-                                    <th scope="row"><input type="checkbox" name="{{ name }}" checked></th>
-                                {% else %}
-                                    <th scope="row"><input type="checkbox" name="{{ name }}"></th>
-                                {% endif %}
+                                <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
                                 <td>{{ course }}</td>
                             </tr>
                         {% endif %}

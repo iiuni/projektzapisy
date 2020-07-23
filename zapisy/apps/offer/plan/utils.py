@@ -34,6 +34,7 @@ class Statistics(TypedDict):
 
 
 class SingleAssignmentData(NamedTuple):
+    """Represents a row in the Assignments sheet."""
     name: str
     index: int
     # full name, as in GROUP_TYPES
@@ -45,6 +46,7 @@ class SingleAssignmentData(NamedTuple):
     semester: str
     teacher: str
     teacher_username: str
+    confirmed: bool
     # if other assignment from the same course has the same value in multiple teachers
     # field, then multiple teachers were assigned to the same group.
     multiple_teachers: Optional[int]

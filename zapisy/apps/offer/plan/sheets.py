@@ -212,24 +212,24 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     data = read_entire_sheet(sheet)
     assignments = []
     for row in data:
-        assignment_confirmed = row[12] == 'TRUE'
-        # Continue to next assignment if this assignment not confirmed.
-        if not assignment_confirmed:
+        try:
+            sad = SingleAssignmentData(
+                index=int(row[0]),
+                name=row[1],
+                group_type=row[2].lower(),
+                group_type_short=row[3],
+                semester=row[9],
+                teacher=row[10],
+                teacher_username=row[11],
+                hours_weekly=float(row[5]) if row[5] else 0,
+                hours_semester=float(row[7]) if row[7] else 0,
+                confirmed=row[12] == 'TRUE',
+                multiple_teachers=row[13] if row[13] else None,
+            )
+            assignments.append(sad)
+        except ValueError:
+            # Skip header row and incorrectly formatted rows.
             continue
-
-        sad = SingleAssignmentData(
-            index=int(row[0]),
-            name=row[1],
-            group_type=row[2].lower(),
-            group_type_short=row[3],
-            semester=row[9],
-            teacher=row[10],
-            teacher_username=row[11],
-            hours_weekly=float(row[5]) if row[5] else 0,
-            hours_semester=float(row[7]) if row[7] else 0,
-            multiple_teachers=row[13] if row[13] else None,
-        )
-        assignments.append(sad)
     return assignments
 
 ##################################################

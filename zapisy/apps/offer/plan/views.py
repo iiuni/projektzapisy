@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -128,11 +128,16 @@ def plan_view(request):
 
 
 @staff_member_required
-def plan_create(request):
-    """Displays the 'assignments creator' view."""
+def plan_creator(request):
+    """Displays the 'assignments creator' view.
+
+    The main logic of this function is devoted to suggesting which proposals
+    should be picked.
+    """
     courses_proposal = get_votes(get_last_years(3))
-    assignments = read_entire_sheet(
+    assignments = read_assignments_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    courses_in_assignments_sheet = set(a.name for a in assignments)
 
     courses = []
 
@@ -142,20 +147,15 @@ def plan_create(request):
             # Second is name for the input
             # Third value is the semester when the course is planned to be
             # Fourth value says if this course is proposed
-            name = 'asgn' + key
+            name = f'asgn-{value.proposal.pk}-{value.semester}'
             courses.append(
                 [key, name, value.semester, propose(value)]
             )
     else:
         for key, value in courses_proposal.items():
-            checked = False
+            checked = key in courses_in_assignments_sheet
 
-            for item in assignments:
-                if key in item:
-                    checked = True
-                    break
-
-            name = 'asgn' + key
+            name = f'asgn-{value.proposal.pk}-{value.semester}'
             courses.append(
                 [key, name, value.semester, checked]
             )
@@ -202,16 +202,17 @@ def plan_vote(request):
     proposal = proposal_z + proposal_l
 
     update_plan_proposal_sheet(sheet, proposal)
-    return HttpResponseRedirect(reverse('plan-create'))
+    return redirect(reverse('plan-creator'))
 
 
 @staff_member_required
 def plan_create_voting_sheet(request):
+    """Prepares the voting sheet."""
     years = get_last_years(3)
     voting = get_votes(years)
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     update_voting_results_sheet(sheet, voting, years)
-    return HttpResponseRedirect(reverse('plan-create'))
+    return redirect(reverse('plan-creator'))
 
 
 @staff_member_required
