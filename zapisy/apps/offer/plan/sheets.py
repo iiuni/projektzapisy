@@ -7,7 +7,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apps.offer.plan.utils import (EmployeeData, EmployeesSummary, ProposalSummary, ProposalVoteSummary, SingleAssignmentData, SingleYearVoteSummary,
+from apps.offer.plan.utils import (EmployeeData, EmployeesSummary, ProposalSummary,
+                                   ProposalVoteSummary, SingleAssignmentData, SingleYearVoteSummary,
                                    VotingSummaryPerYear)
 from apps.users.models import Employee
 
@@ -17,22 +18,23 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     """Creates a Google Sheets connection.
 
-    Loads up data from enviorement, creates credentials and connects to
+    Loads up data from environment, creates credentials and connects to
     appropriate spreadsheet.
     """
     env = environ.Env()
     environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
-    creds = {"type": env('SERVICE_TYPE'),
-             "project_id": env('PROJECT_ID'),
-             "private_key_id": env('PRIVATE_KEY_ID'),
-             "private_key": env('PRIVATE_KEY').replace('\\n', '\n'),
-             "client_email": env('CLIENT_EMAIL'),
-             "client_id": env('CLIENT_ID'),
-             "auth_uri": env('AUTH_URI'),
-             "token_uri": env('TOKEN_URI'),
-             "auth_provider_x509_cert_url": env('AUTH_PROVIDER'),
-             "client_x509_cert_url": env('CLIENT_CERT_URL')
-             }
+    creds = {
+        "type": env('SERVICE_TYPE'),
+        "project_id": env('PROJECT_ID'),
+        "private_key_id": env('PRIVATE_KEY_ID'),
+        "private_key": env('PRIVATE_KEY').replace('\\n', '\n'),
+        "client_email": env('CLIENT_EMAIL'),
+        "client_id": env('CLIENT_ID'),
+        "auth_uri": env('AUTH_URI'),
+        "token_uri": env('TOKEN_URI'),
+        "auth_provider_x509_cert_url": env('AUTH_PROVIDER'),
+        "client_x509_cert_url": env('CLIENT_CERT_URL')
+    }
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(
         creds, SCOPES)
     gc = gspread.authorize(credentials)
@@ -69,18 +71,18 @@ def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> Li
     if sy is None:
         return [""] * 5
     return [
-        sy['total'],
-        sy['votes'],
-        sy['count_max'],
-        sy['enrolled'] is not None,
-        sy['enrolled'],
+        str(sy['total']),
+        str(sy['votes']),
+        str(sy['count_max']),
+        str(sy['enrolled'] is not None),
+        str(sy['enrolled']),
     ]
 
 
-def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str]) -> List[str]:
+def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str]) -> List[List[str]]:
     """Creates a single spreadsheet row summarising voting for the proposal."""
     proposal = pvs.proposal
-    beg = [
+    beg: List[str] = [
         proposal.name,
         proposal.course_type.name,
         proposal.semester,
@@ -97,7 +99,8 @@ def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> Lis
     return legend_rows + sum(proposal_rows, [])
 
 
-def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear, years: List[str]):
+def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear,
+                                years: List[str]):
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
     sheet.values_update(
@@ -164,7 +167,7 @@ def proposal_to_sheets_format(proposal: ProposalSummary):
             '',                                         # do pensum
             value['semester'],                          # semestr
             value['teacher'],                           # przydział
-            value['teacher_code'],                      # kod prowadzącego
+            value['teacher_username'],                  # kod prowadzącego
             'FALSE',                                    # potwierdzony
             ''                                          # wielu prowadzących
         ]
