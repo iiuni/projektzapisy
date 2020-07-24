@@ -1,0 +1,33 @@
+<table id="by-employee-{{ type }}" class="table">
+    <tbody>
+        {% for teacher in teachers.values %}
+        {% if teacher.status == type %}
+            <tr id="teacher-{{ teacher.username }}">
+                <th scope="col" class="table-dark">{{ teacher.first_name }} {{ teacher.last_name }}</th>
+                <td class="table-dark">Pensum: {{ teacher.pensum|floatformat }}</td>
+                <td class="table-dark">Bilans: {{ teacher.balance|floatformat }}</td>
+            </tr>
+            <tr class="table-sm">
+                <th scope="col" colspan="3" class="table-light">Semestr zimowy ({{ teacher.hours_winter|floatformat }}h)</th>
+            </tr>
+            {% for sa in teacher.courses_winter %}
+                <tr>
+                    <td>{{ sa.name }}</td>
+                    <td>{{ sa.group_type }}</td>
+                    <td>({% if sa.multiple_teachers > 1 %}* {% endif %}{{sa.hours_semester|floatformat}}h/semestr)</td>
+                </tr>
+            {% endfor %}
+            <tr class="table-sm">
+                <th scope="col" colspan="3" class="table-light">Semestr letni ({{ teacher.hours_summer|floatformat }}h)</th>
+            </tr>
+            {% for sa in teacher.courses_summer %}
+                <tr>
+                    <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
+                    <td>{{ sa.group_type }}</td>
+                    <td>({% if sa.multiple_teachers > 1 %}* {% endif %}{{sa.hours_semester|floatformat}}h/semestr)</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>

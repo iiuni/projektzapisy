@@ -1,6 +1,7 @@
 from collections import defaultdict
+import collections
 import copy
-from operator import attrgetter, itemgetter
+from operator import itemgetter
 import sys
 
 from django.db.models import Avg, Count, Q, Sum, Max
@@ -12,21 +13,10 @@ from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
 
 if sys.version_info >= (3, 8):
-    from typing import List, Tuple, Dict, NamedTuple, TypedDict, Optional
+    from typing import List, Dict, NamedTuple, TypedDict, Optional, Set
 else:
-    from typing import List, Tuple, Dict, NamedTuple, Optional
+    from typing import List, Dict, NamedTuple, Optional, Set
     from typing_extensions import TypedDict
-
-
-# For creating plan-view:
-class Statistics(TypedDict):
-    w: float
-    ćw: float
-    prac: float
-    ćw_prac: float
-    sem: float
-    rep: float
-    admin: float
 
 
 class SingleAssignmentData(NamedTuple):
@@ -36,16 +26,15 @@ class SingleAssignmentData(NamedTuple):
     # full name, as in GROUP_TYPES
     group_type: str
     group_type_short: str
-    hours_weekly: float
+    hours_weekly: int
     hours_semester: float
     # l (summer) or z (winter)
     semester: str
     teacher: str
     teacher_username: str
     confirmed: bool
-    # if other assignment from the same course has the same value in multiple teachers
-    # field, then multiple teachers were assigned to the same group.
-    multiple_teachers: Optional[int]
+    # How many teachers assigned to the same group.
+    multiple_teachers: int
 
 
 class EmployeeData(TypedDict):
@@ -56,8 +45,8 @@ class EmployeeData(TypedDict):
     last_name: str
     pensum: float
     balance: float
-    weekly_winter: int
-    weekly_summer: int
+    hours_winter: float
+    hours_summer: float
     courses_winter: List[SingleAssignmentData]
     courses_summer: List[SingleAssignmentData]
 
@@ -67,17 +56,17 @@ EmployeesSummary = Dict[str, EmployeeData]
 
 
 class TeacherInfo(NamedTuple):
-    code: str
+    username: str
     name: str
 
 
-class AssignmentsCourseInfo(TypedDict):
-    index: int
-    stats: Statistics
-    # List of teachers assigned to a certain group in this course.
-    # Indexed by short name of group type, as in GROUP_TYPES.
-    teachers: Dict[str, List[TeacherInfo]]
+class CourseGroupTypeSummary(TypedDict):
+    hours: float
+    teachers: Set[TeacherInfo]
 
+
+# Indexed by group type.
+AssignmentsCourseInfo = Dict[str, CourseGroupTypeSummary]
 
 # Indexed by course name.
 AssignmentsViewSummary = Dict[str, AssignmentsCourseInfo]

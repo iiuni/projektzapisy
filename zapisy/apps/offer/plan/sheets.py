@@ -193,22 +193,16 @@ def proposal_to_sheets_format(groups: ProposalSummary):
 
 def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
-    sheet.sheet1.clear()
-    sheet.sheet1.update_title("Przydziały")
-    sheet.values_update(
-        range='A:O',
-        params={
-            'valueInputOption': 'USER_ENTERED'
-        },
-        body={
-            'values': data
-        }
-    )
+    worksheet = sheet.get_worksheet(0)
+    worksheet.clear()
+    worksheet.update_title("Przydziały")
+    sheet.update('A:O', data, raw=False)
 
 
 def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
     """Reads confirmed assignments from the spreadsheet."""
-    data = read_entire_sheet(sheet)
+    worksheet = sheet.worksheet("Przydziały")
+    data = read_entire_sheet(worksheet)
     assignments = []
     for row in data:
         try:
@@ -220,10 +214,10 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
                 semester=row[9],
                 teacher=row[10],
                 teacher_username=row[11],
-                hours_weekly=float(row[5]) if row[5] else 0,
+                hours_weekly=int(row[5]) if row[5] else 0,
                 hours_semester=float(row[7]) if row[7] else 0,
                 confirmed=row[12] == 'TRUE',
-                multiple_teachers=row[13] if row[13] else None,
+                multiple_teachers=int(row[14]),
             )
             assignments.append(sad)
         except ValueError:
@@ -273,35 +267,28 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, usernames: Iterabl
             # Balance.
             f'=$H{i+2}-$E{i+2}',
         ])
-    worksheet = sheet.get_worksheet(1)
+    worksheet: gspread.models.Worksheet = sheet.get_worksheet(1)
     worksheet.clear()
     worksheet.update_title("Pracownicy")
-    sheet.values_update(
-        range='Pracownicy!A:I',
-        params={
-            'valueInputOption': 'USER_ENTERED'
-        },
-        body={
-            'values': data
-        }
-    )
+    worksheet.update('A:I', data, raw=False)
 
 
 def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
     """Reads Employee data from the Spreadsheet."""
-    emp_sum = EmployeesSummary()
-    data = read_entire_sheet(sheet)
+    emp_sum: EmployeesSummary = {}
+    worksheet = sheet.worksheet("Pracownicy")
+    data = read_entire_sheet(worksheet)
     for row in data:
         try:
             ed = EmployeeData(
-                status=row[0].lower(),
-                username=row[3],
-                first_name=row[1],
-                last_name=row[2],
+                first_name=row[0],
+                last_name=row[1],
+                username=row[2],
+                status=row[3].lower(),
                 pensum=float(row[4]),
-                balance=0,
-                weekly_winter=0,
-                weekly_summer=0,
+                hours_winter=float(row[5]),
+                hours_summer=float(row[6]),
+                balance=float(row[8]),
                 courses_winter=[],
                 courses_summer=[],
             )
@@ -320,12 +307,13 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
 ##################################################
 
 
-def read_entire_sheet(sheet: gspread.models.Spreadsheet):
+def read_entire_sheet(worksheet: gspread.models.Worksheet):
     try:
-        sh = sheet.sheet1.get_all_values()
+        sh = worksheet.get_all_values()
     except gspread.exceptions.APIError:
         return []
     return sh
+
 ##################################################
 # END READING ASSIGNMENTS SHEET LOGIC
 ##################################################

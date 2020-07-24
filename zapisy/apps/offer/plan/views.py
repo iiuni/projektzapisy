@@ -1,7 +1,8 @@
-import copy
+from collections import defaultdict
 import csv
 import os
 import re
+from typing import Dict
 
 import environ
 from django.conf import settings
@@ -14,10 +15,10 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models.group import GroupType
 from apps.offer.plan.sheets import (create_sheets_service, read_assignments_sheet,
-                                    read_entire_sheet, update_employees_sheet,
+                                    read_employees_sheet, read_entire_sheet, update_employees_sheet,
                                     update_plan_proposal_sheet, update_voting_results_sheet)
-from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeesSummary,
-                                   Statistics, TeacherInfo, get_last_years,
+from apps.offer.plan.utils import (AssignmentsViewSummary, CourseGroupTypeSummary,
+                                   TeacherInfo, get_last_years,
                                    get_votes, propose,
                                    sort_subject_groups_by_type, suggest_teachers)
 from apps.offer.proposal.models import Proposal, ProposalStatus
@@ -26,105 +27,56 @@ from apps.users.decorators import employee_required
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
-
 VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
 CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
-EMPLOYEES_SPREADSHEET_ID = env('EMPLOYEES_SPREADSHEET_ID')
 
 
 @employee_required
 def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
-    employees_from_sheet = read_employees_sheet(
-        create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
-    assignments_from_sheet = read_assignments_sheet(
-        create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+    teachers = read_employees_sheet(assignments_spreadsheet)
+    assignments_from_sheet = read_assignments_sheet(assignments_spreadsheet)
 
-    assignments_winter: AssignmentsViewSummary = {}
-    assignments_summer: AssignmentsViewSummary = {}
-    staff: EmployeesSummary = {}
-    phds: EmployeesSummary = {}
-    others: EmployeesSummary = {}
+    courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
 
-    pensum_global = 0
-    hours_winter = 0
-    hours_summer = 0
+    # The counters will count total hours per group type.
+    stats = {'z': defaultdict(float), 'l': defaultdict(float)}
 
-    def make_stats_dict() -> Statistics:
-        return {'w': 0, 'ćw': 0, 'prac': 0, 'ćw_prac': 0, 'rep': 0, 'sem': 0, 'admin': 0}
-
-    def make_teachers_dict():
-        return {'w': [], 'ćw': [], 'prac': [], 'ćw_prac': [], 'rep': [], 'sem': [], 'admin': []}
-
-    stats_summer: Statistics = make_stats_dict()
-    stats_winter: Statistics = make_stats_dict()
-
-    if employees_from_sheet is None or assignments_from_sheet is None:
+    if not teachers or not assignments_from_sheet:
         messages.error(request, "Arkusz nie istnieje")
         return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
 
-    for username, ed in employees_from_sheet.items():
-        if ed['status'] == 'pracownik':
-            staff[username] = copy.copy(ed)
-        elif ed['status'] == 'doktorant':
-            phds[username] = copy.copy(ed)
-        else:
-            others[username] = copy.copy(ed)
-        pensum_global += ed['pensum']
-
+    hours_global = defaultdict(float)
+    pensum_global = sum(e['pensum'] for e in teachers.values())
     for assignment in assignments_from_sheet:
+        if not assignment.confirmed:
+            continue
+        if assignment.name not in courses[assignment.semester]:
+            courses[assignment.semester][assignment.name] = {}
+        if assignment.group_type not in courses[assignment.semester][assignment.name]:
+            courses[assignment.semester][assignment.name][
+                assignment.group_type] = CourseGroupTypeSummary(hours=0, teachers=set())
+        courses[assignment.semester][assignment.name][
+            assignment.group_type]['hours'] = assignment.hours_semester
+        courses[assignment.semester][assignment.name][assignment.group_type]['teachers'].add(
+            TeacherInfo(username=assignment.teacher_username, name=assignment.teacher))
+        key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
+        teachers[assignment.teacher_username][key].append(assignment)
+        stats[assignment.semester][assignment.group_type] += assignment.hours_semester/assignment.multiple_teachers
+        hours_global[assignment.semester] += assignment.hours_semester/assignment.multiple_teachers
 
-        if semester == 'l':
-            if name not in assignments_summer:
-                assignments_summer[name] = {
-                    'index': index, 'teachers': make_teachers_dict(), 'stats': make_stats_dict()}
-            if code in staff:
-                staff[code]['courses_summer'].append(assignmentData)
-            elif code in phds:
-                phds[code]['courses_summer'].append(assignmentData)
-            elif code in others:
-                others[code]['courses_summer'].append(assignmentData)
-
-            assignments_summer[name]['stats'][group_type_short] = hours_weekly
-            assignments_summer[name]['teachers'][group_type_short].append(
-                TeacherInfo(code, teacher))
-            hours_summer += hours_semester
-            stats_summer[group_type_short] += hours_semester
-        else:
-            if name not in assignments_winter:
-                assignments_winter[name] = {
-                    'index': index, 'teachers': make_teachers_dict(), 'stats': make_stats_dict()}
-
-            if code in staff:
-                staff[code]['courses_winter'].append(assignmentData)
-            elif code in phds:
-                phds[code]['courses_winter'].append(assignmentData)
-            elif code in others:
-                others[code]['courses_winter'].append(assignmentData)
-
-            assignments_winter[name]['stats'][group_type_short] = hours_weekly
-            assignments_winter[name]['teachers'][group_type_short].append(
-                TeacherInfo(code, teacher))
-            stats_winter[group_type_short] += hours_semester
-            hours_winter += hours_semester
-
-    is_empty = False if assignments_winter or assignments_summer else True
     context = {
         'error': False,
         'year': year,
-        'is_empty': is_empty,
-        'winter': assignments_winter,
-        'summer': assignments_summer,
-        'staff': staff,
-        'phds': phds,
-        'others': others,
-        'hours_summer': hours_summer,
-        'hours_winter': hours_winter,
+        'courses': courses,
+        'teachers': teachers,
+        'hours_total': hours_global['z'] + hours_global['l'],
+        'hours': hours_global,
         'pensum': pensum_global,
-        'stats_winter': stats_winter,
-        'stats_summer': stats_summer,
-        'balance': hours_summer + hours_winter - pensum_global
+        'stats_z': dict(stats['z']),
+        'stats_l': dict(stats['l']),
     }
     return render(request, 'plan/view-plan.html', context)
 
@@ -166,7 +118,6 @@ def plan_creator(request):
         'courses_proposal': courses,
         'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID,
         'class_assignment_sheet_id': CLASS_ASSIGNMENT_SPREADSHEET_ID,
-        'employees_sheet_id': EMPLOYEES_SPREADSHEET_ID
     }
     return render(request, 'plan/create-plan.html', context)
 
@@ -223,7 +174,7 @@ def generate_scheduler_file(request, slug, format):
     """
     current_year = SystemState.get_current_state().year
     employees = read_entire_sheet(
-        create_sheets_service(EMPLOYEES_SPREADSHEET_ID))
+        create_sheets_service(None))
     assignments = read_entire_sheet(
         create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
 
