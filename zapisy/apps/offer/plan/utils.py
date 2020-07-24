@@ -1,10 +1,11 @@
+from collections import defaultdict
 import copy
+from operator import attrgetter, itemgetter
 import sys
 
-from django.db.models import Avg, Count, Q, Sum
+from django.db.models import Avg, Count, Q, Sum, Max
 
-from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.single_vote import SingleVote
@@ -15,11 +16,6 @@ if sys.version_info >= (3, 8):
 else:
     from typing import List, Tuple, Dict, NamedTuple, Optional
     from typing_extensions import TypedDict
-
-
-# First value represents full name of group type, second represents short name.
-GROUP_TYPES = [('wykład', 'w'), ('ćwiczenia', 'ćw'), ('pracownia', 'prac'),
-               ('ćwiczenio-pracownia', 'ćw_prac'), ('repetytorium' 'rep'), ('seminarium' 'sem'), ('sekretarz', 'admin')]
 
 
 # For creating plan-view:
@@ -152,8 +148,8 @@ def propose(vote: ProposalVoteSummary):
     return False
 
 
-def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) -> ProposalSummary:
-    """Function prepares data to create a csv.
+def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
+    """Suggests teachers based on the past instances of the course.
 
     Data returned by this function will be presented in a spreadsheet, where it
     will help with assigning classes. Given a course, it will look for previous
@@ -162,93 +158,52 @@ def get_subjects_data(subjects: List[Tuple[str, str, int]], years: List[str]) ->
     the owner of the course.
 
     Args:
-        subjects: list of tuples (course name, course semester, course
-            proposal). Each tuple represents single course.
-        years: list of years to look for data in.
+        picked: Dictionary of proposals selected to be taught in the upcoming
+        year. The dictionary is keyed by Proposal ID and the value is 'z' or
+        'l'.
     """
-    course_data = {}
-
-    for course_name, course_semester, course_proposal in subjects:
-        course_data[course_name] = {
-            'proposal':
-            course_proposal,
-            'semester':
-            course_semester,
-            'instance':
-            CourseInstance.objects.filter(
-                semester__year__in=years, offer=course_proposal,
-                semester__type=course_semester).order_by('-semester__year').first()
-        }
-
     groups: ProposalSummary = []
-    # Prepares data necessary to create csv.
-    for course, data in course_data.items():
-        proposal_info = data['proposal']
-        semester = ''
-        if course.endswith('(lato)'):
-            semester = 'l'
-        elif course.endswith('(zima)'):
-            semester = 'z'
+    proposals = {
+        p.id: p for p in Proposal.objects.filter(
+            id__in=picked.keys()).select_related('owner', 'owner__user').annotate(
+                last_instance=Max('courseinstance__id'))
+    }
+    past_instances = [p.last_instance for p in proposals.values()]
+    past_groups = Group.objects.filter(course__in=past_instances).select_related(
+        'course', 'teacher', 'teacher__user')
+    past_groups_by_proposal = defaultdict(list)
+    for group in past_groups:
+        past_groups_by_proposal[group.course.offer_id].append(group)
+
+    for pid, semester in picked.items():
+        proposal: Proposal = proposals[pid]
+        hours = defaultdict(int)
+        hours.update({
+            GroupType.LECTURE: proposal.hours_lecture,
+            GroupType.EXERCISES: proposal.hours_exercise,
+            GroupType.LAB: proposal.hours_lab,
+            GroupType.EXERCISES_LAB: proposal.hours_exercise_lab,
+            GroupType.SEMINAR: proposal.hours_seminar,
+            GroupType.COMPENDIUM: proposal.hours_recap,
+        })
+        if pid in past_groups_by_proposal:
+            groups.extend((SingleGroupData(
+                name=proposal.name,
+                semester=semester,
+                teacher=g.teacher.get_full_name(),
+                teacher_username=g.teacher.user.username,
+                group_type=g.type,
+                hours=hours[GroupType(g.type)]
+            ) for g in past_groups_by_proposal[pid]))
         else:
-            semester = proposal_info.semester
-
-        if data['instance']:
-            previous_groups = Group.objects.filter(course=data['instance']).select_related(
-                'teacher', 'teacher__user')
-            hours = {'Wykład': proposal_info.hours_lecture,
-                     'Ćwiczenia': proposal_info.hours_exercise,
-                     'Ćwiczenio-pracownia': proposal_info.hours_exercise_lab,
-                     'Repetytorium': proposal_info.hours_recap,
-                     'Seminarium': proposal_info.hours_seminar,
-                     'Pracownia': proposal_info.hours_lab
-                     }
-
-            for group in previous_groups:
-                course_hours = hours[group.human_readable_type(
-                )] if group.human_readable_type() in hours else 0
-                group_type = group.human_readable_type()
-                teacher_code = group.teacher.user.username
-                teacher_name = group.teacher.get_full_name()
-                sgd: SingleGroupData = {
-                    'name': course,
-                    'semester': semester,
-                    'teacher': teacher_name,
-                    'teacher_username': teacher_code,
-                    'group_type': group_type,
-                    'hours': course_hours
-                }
-                groups.append(sgd)
-        else:
-            teacher_code = proposal_info.owner.user.username
-            teacher_name = proposal_info.owner.get_full_name()
-
-            if proposal_info.hours_lecture:
-                course_hours = proposal_info.hours_lecture
-                group_type = 'Wykład'
-            if proposal_info.hours_exercise_lab:
-                course_hours = proposal_info.hours_exercise_lab
-                group_type = 'Ćwiczenio-pracownia'
-            if proposal_info.hours_seminar:
-                course_hours = proposal_info.hours_seminar
-                group_type = 'Seminarium'
-            if proposal_info.hours_exercise:
-                course_hours = proposal_info.hours_exercise
-                group_type = 'Ćwiczenia'
-            if proposal_info.hours_lab:
-                course_hours = proposal_info.hours_lab
-                group_type = 'Pracownia'
-            if proposal_info.hours_recap:
-                course_hours = proposal_info.hours_recap
-                group_type = 'Repetytorium'
-            sgd: SingleGroupData = {
-                'name': course,
-                'semester': semester,
-                'teacher': teacher_name,
-                'teacher_username': teacher_code,
-                'group_type': group_type,
-                'hours': course_hours
-            }
-            groups.append(sgd)
+            groups.extend((SingleGroupData(
+                name=proposal.name,
+                semester=semester,
+                teacher=proposal.owner.get_full_name(),
+                teacher_username=proposal.owner.user.username,
+                group_type=t.value,
+                hours=h,
+            ) for (t, h) in hours.items() if h))
     return groups
 
 
@@ -271,12 +226,13 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
     for p in in_vote:
         if p.semester == SemesterChoices.UNASSIGNED:
             proposals.update({
-                f'{p.name} (zima)': ProposalVoteSummary(p, SemesterChoices.WINTER, p.course_type.name, {}),
-                f'{p.name} (lato)': ProposalVoteSummary(p, SemesterChoices.SUMMER, p.course_type.name, {}),
+                f'{p.name} (zima)':
+                    ProposalVoteSummary(p, SemesterChoices.WINTER, p.course_type.name, {}),
+                f'{p.name} (lato)':
+                    ProposalVoteSummary(p, SemesterChoices.SUMMER, p.course_type.name, {}),
             })
         else:
-            proposals.update({p.name: ProposalVoteSummary(
-                p, p.semester, p.course_type.name, {})})
+            proposals.update({p.name: ProposalVoteSummary(p, p.semester, p.course_type.name, {})})
 
     # Collect voting history for these proposals.
     votes = SingleVote.objects.filter(
@@ -286,9 +242,11 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
             count_max=Count('value', filter=Q(value=max_vote_value)),
             votes=Count('value', filter=Q(value__gt=0))).order_by('proposal_id', '-state__year')
 
-    votes_dict = {(v['proposal_id'], v['state__year']): SingleYearVoteSummary(
-        total=v['total'], count_max=v['count_max'], votes=v['votes'], enrolled=None)
-        for v in votes}
+    votes_dict = {(v['proposal_id'], v['state__year']):
+                  SingleYearVoteSummary(total=v['total'],
+                                        count_max=v['count_max'],
+                                        votes=v['votes'],
+                                        enrolled=None) for v in votes}
 
     # Collect enrolment numbers.
     records = Record.objects.filter(
@@ -298,16 +256,14 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
                 # The number of distinct students enrolled into a course.
                 enrolled=Count('student_id', distinct=True))
     records_summary = {(r['group__course__offer_id'], r['group__course__semester__year'],
-                        r['group__course__semester__type']): r['enrolled']
-                       for r in records}
+                        r['group__course__semester__type']): r['enrolled'] for r in records}
 
     # Put all information into proposals.
     for pvs in proposals.values():
         for year in years:
             try:
                 syv = copy.copy(votes_dict[(pvs.proposal.id, year)])
-                syv['enrolled'] = records_summary.get(
-                    (pvs.proposal.id, year, pvs.semester), None)
+                syv['enrolled'] = records_summary.get((pvs.proposal.id, year, pvs.semester), None)
                 pvs.voting[year] = syv
             except KeyError:
                 # The proposal was not put to vote that year.
@@ -317,24 +273,4 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
 
 def sort_subject_groups_by_type(semester: ProposalSummary) -> ProposalSummary:
     """Sorts subjects by their name and then group type."""
-    return sorted(semester, key=GroupOrder)
-
-
-class GroupOrder:
-    def __init__(self, sgd):
-        self.sgd = sgd
-
-    def __lt__(self, other):
-        if self.sgd['name'] == other.sgd['name']:
-            types = {
-                'Wykład': 1,
-                'Repetytorium': 2,
-                'Ćwiczenia': 3,
-                'Ćwiczenio-pracownia': 4,
-                'Pracownia': 5,
-                'Seminarium': 6,
-            }
-            if self.sgd['group_type'] not in types or other.sgd['group_type'] not in types:
-                return self.sgd['group_type'] < self.sgd['group_type']
-            return types[self.sgd['group_type']] < types[other.sgd['group_type']]
-        return self.sgd['name'] < other.sgd['name']
+    return sorted(semester, key=itemgetter('semester', 'name', 'group_type'))

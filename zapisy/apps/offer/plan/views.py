@@ -1,6 +1,7 @@
 import copy
 import csv
 import os
+import re
 
 import environ
 from django.conf import settings
@@ -12,12 +13,13 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models.group import GroupType
-from apps.offer.plan.sheets import (create_sheets_service, read_assignments_sheet, read_entire_sheet, read_employees_sheet,
+from apps.offer.plan.sheets import (create_sheets_service, read_assignments_sheet,
+                                    read_entire_sheet, update_employees_sheet,
                                     update_plan_proposal_sheet, update_voting_results_sheet)
-from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeeData, EmployeesSummary,
-                                   SingleAssignmentData, Statistics, TeacherInfo, get_last_years,
-                                   get_subjects_data, get_votes, propose,
-                                   sort_subject_groups_by_type)
+from apps.offer.plan.utils import (AssignmentsViewSummary, EmployeesSummary,
+                                   Statistics, TeacherInfo, get_last_years,
+                                   get_votes, propose,
+                                   sort_subject_groups_by_type, suggest_teachers)
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
@@ -72,7 +74,7 @@ def plan_view(request):
         pensum_global += ed['pensum']
 
     for assignment in assignments_from_sheet:
-        
+
         if semester == 'l':
             if name not in assignments_summer:
                 assignments_summer[name] = {
@@ -173,35 +175,24 @@ def plan_creator(request):
 @staff_member_required
 def plan_vote(request):
     """Generates assignments and employees sheets for picked courses."""
-    picked_courses = []
-    for course in request.POST:
-        if course[:4] == 'asgn':
-            picked_courses.append(course[4:])
-    picked_courses.sort()
-    all_courses = get_votes(get_last_years(1))
-    picked_courses_accurate_info_z = []
-    picked_courses_accurate_info_l = []
-    for course in picked_courses:
-        if course in all_courses:
-            semester = all_courses[course].semester
-            proposal = all_courses[course].proposal
-            subject = (course, semester, proposal)
-            if semester == 'z':
-                picked_courses_accurate_info_z.append(subject)
-            else:
-                picked_courses_accurate_info_l.append(subject)
-
+    regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-    proposal_z = get_subjects_data(
-        picked_courses_accurate_info_z, get_last_years(3))
-    proposal_l = get_subjects_data(
-        picked_courses_accurate_info_l, get_last_years(3))
 
-    proposal_z = sort_subject_groups_by_type(proposal_z)
-    proposal_l = sort_subject_groups_by_type(proposal_l)
-    proposal = proposal_z + proposal_l
+    picked_courses = {}
+    for course in request.POST:
+        # Filter out fields other than courses.
+        match = regex.fullmatch(course)
+        if not match:
+            continue
+        picked_courses[int(match.group('proposal_id'))] = match.group('semester')
 
-    update_plan_proposal_sheet(sheet, proposal)
+    suggested_groups = suggest_teachers(picked_courses)
+    suggested_groups = sort_subject_groups_by_type(suggested_groups)
+
+    update_plan_proposal_sheet(sheet, suggested_groups)
+
+    teachers = set(g['teacher_username'] for g in suggested_groups)
+    update_employees_sheet(sheet, teachers)
     return redirect(reverse('plan-creator'))
 
 
