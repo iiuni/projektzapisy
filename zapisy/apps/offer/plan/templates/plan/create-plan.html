@@ -101,9 +101,9 @@
 </form>
 
 <p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file-json' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
-<a href="{% url 'generate-scheduler-file-json' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
+<a href="{% url 'generate-scheduler-file' semester="z" fmt="json" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
+<a href="{% url 'generate-scheduler-file' semester="l" fmt="json" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
 <p class="lead">Aby wygenerować dane z pliku do schedulera w formacie csv kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file-csv' slug="zima" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
-<a href="{% url 'generate-scheduler-file-csv' slug="lato" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
+<a href="{% url 'generate-scheduler-file' semester="z" fmt="csv" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
+<a href="{% url 'generate-scheduler-file' semester="l" fmt="csv" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
 {% endblock %}

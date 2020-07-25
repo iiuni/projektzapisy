@@ -156,7 +156,7 @@ def plan_create_voting_sheet(request):
 
 
 @staff_member_required
-def generate_scheduler_file(request, slug, format):
+def generate_scheduler_file(request, semester, fmt):
     """Creates a file for scheduler system to use.
 
     Generates a json file used by scheduler or puts the very same data in csv
@@ -170,118 +170,75 @@ def generate_scheduler_file(request, slug, format):
     Returns:
         File in the desired format in a response.
     """
+    if semester not in ['z', 'l']:
+        messages.error(f"Niepoprawny semestr: '{ semester }'")
+        redirect('plan-creator')
+    if fmt not in ['csv', 'json']:
+        messages.error(f"Niepoprawny format: '{ fmt }'")
     current_year = SystemState.get_current_state().year
-    employees = read_entire_sheet(
-        create_sheets_service(None))
-    assignments = read_entire_sheet(
-        create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+    teachers = read_employees_sheet(assignments_spreadsheet)
+    assignments = read_assignments_sheet(assignments_spreadsheet)
 
     content = []
-    semester = ""
     multiple_teachers = {}
-    if slug == 'zima':
-        semester = 'z'
-    elif slug == 'lato':
-        semester = 'l'
-    else:
-        return render(request, '404.html')
 
-    groups = {}
-    for group in GroupType:
-        groups[group.label] = group.value
-
-    for employee in employees:
-        # if pensum is not castable to float, just skip this row
-        try:
-            pensum = float(employee[0])
-        except ValueError:
-            continue
-        code = employee[4]
-        first_name = employee[2]
-        last_name = employee[3]
-        entry_type = 'employee'
-        scheduler_employee = {'type': entry_type, 'id': code,
-                              'first_name': first_name, 'last_name': last_name, 'pensum': pensum}
+    for employee in teachers.values():
+        scheduler_employee = {
+            'type': 'employee',
+            'id': employee['username'],
+            'first_name': employee['first_name'],
+            'last_name': employee['last_name'],
+            'pensum': employee['pensum'],
+        }
         content.append(scheduler_employee)
 
     index = 1
     for assignment in assignments:
-        confirmed_assignment = assignment[12]
-        # if assignment is not confirmed or if cell has value other than TRUE/FALSE, skip this row
-        if confirmed_assignment == 'FALSE' or confirmed_assignment != 'TRUE':
+        if not assignment.confirmed:
             continue
-        assignment_semester = assignment[9]
-        # if it's assignment for different semester, skip it
-        if assignment_semester != semester:
+        if assignment.semester != semester:
             continue
-
-        id = -1
-        course_id = -1
-        group_type = assignment[2].lower()
-        assignment_multiple_teachers = assignment[-1]
-        course_name = assignment[1]
-        # skip if hours per week is not float castable
-        try:
-            hours = float(assignment[5])
-        except ValueError:
-            continue
-        # if group type is invalid, skip
-        if group_type not in groups:
-            continue
-        group_type = int(groups[group_type])
-        code = assignment[11]
-        # find proposal id of course
-        try:
-            proposal = Proposal.objects.filter(name=assignment[1])
-            for p in proposal:
-                if p.status != ProposalStatus.WITHDRAWN:
-                    course_id = p.id
-                    break
-        except Proposal.ObjectDoesNotExist:
-            course_id = -1
-
-        # If single group is taught by few teachers, remember the index number
+        # If single group is taught by several teachers, remember the index number
         # that points to that group.
-        if assignment_multiple_teachers:
-            if (course_name, assignment_multiple_teachers) in multiple_teachers:
-                id = multiple_teachers[(
-                    course_name, assignment_multiple_teachers)]
+        if assignment.multiple_teachers_id:
+            if (assignment.proposal_id, assignment.multiple_teachers_id) in multiple_teachers:
+                id = multiple_teachers[(assignment.proposal_id, assignment.multiple_teachers_id)]
             else:
                 id = index
-                multiple_teachers[(
-                    course_name, assignment_multiple_teachers)] = index
+                multiple_teachers[(assignment.proposal_id, assignment.multiple_teachers_id)] = index
         else:
             id = index
 
         scheduler_assignment = {
             'type': 'course',
             'semester': semester,
-            'course_id': course_id,
-            'course_name': course_name,
+            'course_id': assignment.proposal_id,
+            'course_name': assignment.name,
             'id': id,
-            'group_type': group_type,
-            'hours': hours,
-            'teacher_id': code
+            'group_type': assignment.group_type_short,
+            'hours': assignment.hours_weekly,
+            'teacher_id': assignment.teacher_username
         }
         content.append(scheduler_assignment)
         index += 1
 
-    if format == 'json':
+    if fmt == 'json':
         response = JsonResponse(content, safe=False)
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + "_" + slug + "_" + str(current_year) + ".json")
+            "przydzial" + "_" + semester + "_" + str(current_year) + ".json")
         return response
-    elif format == 'csv':
+    elif fmt == 'csv':
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + "_" + slug + "_" + str(current_year) + ".csv")
-        writer = csv.writer(response)
+            "przydzial" + "_" + semester + "_" + str(current_year) + ".csv")
+        writer = csv.writer(response, delimiter="|")
         writer.writerow(['Typ', 'ID', 'Imię', 'Nazwisko', 'Pensum'])
         reached_courses = False
         for c in content:
             if not reached_courses and c['type'] != 'employee':
                 # if c[0] != 'employee' and not reached_courses:
-                writer.writerow([''])
+                writer.writerow([])
                 writer.writerow(
                     ['Typ', 'Semestr', 'ID kursu', 'Nazwa kursu', 'ID grupy', 'Typ grupy', 'Godziny', 'ID nauczyciela'])
                 reached_courses = True
@@ -293,13 +250,3 @@ def generate_scheduler_file(request, slug, format):
                        c['last_name'], c['pensum']]
             writer.writerow(row)
         return response
-
-
-@staff_member_required
-def generate_scheduler_file_json(request, slug):
-    return generate_scheduler_file(request, slug, 'json')
-
-
-@staff_member_required
-def generate_scheduler_file_csv(request, slug):
-    return generate_scheduler_file(request, slug, 'csv')

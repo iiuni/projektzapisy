@@ -22,7 +22,7 @@ else:
 class SingleAssignmentData(NamedTuple):
     """Represents a row in the Assignments sheet."""
     name: str
-    index: int
+    proposal_id: int
     # full name, as in GROUP_TYPES
     group_type: str
     group_type_short: str
@@ -35,6 +35,7 @@ class SingleAssignmentData(NamedTuple):
     confirmed: bool
     # How many teachers assigned to the same group.
     multiple_teachers: int
+    multiple_teachers_id: str
 
 
 class EmployeeData(TypedDict):
@@ -99,6 +100,7 @@ VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 # For get_subjects_data:
 class SingleGroupData(TypedDict):
     name: str
+    proposal: int
     semester: str
     teacher: str
     teacher_username: str
@@ -177,6 +179,7 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
         })
         if pid in past_groups_by_proposal:
             groups.extend((SingleGroupData(
+                proposal=proposal.pk,
                 name=proposal.name,
                 semester=semester,
                 teacher=g.teacher.get_full_name(),
@@ -186,6 +189,7 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
             ) for g in past_groups_by_proposal[pid]))
         else:
             groups.extend((SingleGroupData(
+                proposal=proposal.pk,
                 name=proposal.name,
                 semester=semester,
                 teacher=proposal.owner.get_full_name(),

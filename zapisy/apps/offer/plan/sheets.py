@@ -141,7 +141,7 @@ def proposal_to_sheets_format(groups: ProposalSummary):
 
     data = [
         [
-            'Lp',
+            'Proposal ID',
             'Przedmiot',
             'Forma zajęć',
             'Skrót f.z.',
@@ -159,16 +159,11 @@ def proposal_to_sheets_format(groups: ProposalSummary):
         ]
     ]
 
-    lp = 0
-    prev_name = ''
     for i, group in enumerate(groups):
-        if group['name'] != prev_name:
-            lp += 1
-        prev_name = group['name']
         human_readable_type = GroupType(group['group_type']).label
 
         row = [
-            lp,
+            group['proposal'],                          # A. proposal_id
             group['name'],                              # B. course name
             human_readable_type,                        # C. group type
             REVERSE_GROUP_TYPES[group['group_type']],   # D. abbr. group type (as in Scheduler)
@@ -210,7 +205,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     for row in data:
         try:
             sad = SingleAssignmentData(
-                index=int(row[0]),
+                proposal_id=int(row[0]),
                 name=row[1],
                 group_type=row[2].lower(),
                 group_type_short=row[3],
@@ -221,6 +216,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
                 hours_semester=float(row[7]) if row[7] else 0,
                 confirmed=row[12] == 'TRUE',
                 multiple_teachers=int(row[14]),
+                multiple_teachers_id=row[13],
             )
             assignments.append(sad)
         except ValueError:
