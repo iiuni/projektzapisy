@@ -4,7 +4,6 @@ import os
 import re
 from typing import Dict
 
-import environ
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -12,16 +11,26 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+import environ
 
-from apps.enrollment.courses.models.group import GroupType
-from apps.offer.plan.sheets import (create_sheets_service, read_assignments_sheet,
-                                    read_employees_sheet, read_entire_sheet, update_employees_sheet,
-                                    update_plan_proposal_sheet, update_voting_results_sheet)
-from apps.offer.plan.utils import (AssignmentsViewSummary, CourseGroupTypeSummary,
-                                   TeacherInfo, get_last_years,
-                                   get_votes, propose,
-                                   sort_subject_groups_by_type, suggest_teachers)
-from apps.offer.proposal.models import Proposal, ProposalStatus
+from apps.offer.plan.sheets import (
+    create_sheets_service,
+    read_assignments_sheet,
+    read_employees_sheet,
+    update_employees_sheet,
+    update_plan_proposal_sheet,
+    update_voting_results_sheet,
+)
+from apps.offer.plan.utils import (
+    AssignmentsViewSummary,
+    CourseGroupTypeSummary,
+    TeacherInfo,
+    get_last_years,
+    get_votes,
+    propose,
+    sort_subject_groups_by_type,
+    suggest_teachers,
+)
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 
@@ -63,8 +72,10 @@ def plan_view(request):
             TeacherInfo(username=assignment.teacher_username, name=assignment.teacher))
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
         teachers[assignment.teacher_username][key].append(assignment)
-        stats[assignment.semester][assignment.group_type] += assignment.hours_semester/assignment.multiple_teachers
-        hours_global[assignment.semester] += assignment.hours_semester/assignment.multiple_teachers
+        stats[assignment.semester][
+            assignment.group_type] += assignment.hours_semester / assignment.multiple_teachers
+        hours_global[
+            assignment.semester] += assignment.hours_semester / assignment.multiple_teachers
 
     context = {
         'year': year,
@@ -87,8 +98,7 @@ def plan_creator(request):
     should be picked.
     """
     courses_proposal = get_votes(get_last_years(3))
-    assignments = read_assignments_sheet(
-        create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
     courses_in_assignments_sheet = set(a.name for a in assignments)
 
     courses = []
@@ -100,17 +110,13 @@ def plan_creator(request):
             # Third value is the semester when the course is planned to be
             # Fourth value says if this course is proposed
             name = f'asgn-{value.proposal.pk}-{value.semester}'
-            courses.append(
-                [key, name, value.semester, propose(value)]
-            )
+            courses.append([key, name, value.semester, propose(value)])
     else:
         for key, value in courses_proposal.items():
             checked = key in courses_in_assignments_sheet
 
             name = f'asgn-{value.proposal.pk}-{value.semester}'
-            courses.append(
-                [key, name, value.semester, checked]
-            )
+            courses.append([key, name, value.semester, checked])
 
     context = {
         'courses_proposal': courses,
@@ -225,13 +231,13 @@ def generate_scheduler_file(request, semester, fmt):
 
     if fmt == 'json':
         response = JsonResponse(content, safe=False)
-        response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + "_" + semester + "_" + str(current_year) + ".json")
+        response[
+            'Content-Disposition'] = f'attachment; filename=przydzial_{semester}_{str(current_year)}.json'
         return response
     elif fmt == 'csv':
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename={0}'.format(
-            "przydzial" + "_" + semester + "_" + str(current_year) + ".csv")
+        response[
+            'Content-Disposition'] = f'attachment; filename=przydzial_{semester}_{str(current_year)}.csv'
         writer = csv.writer(response, delimiter="|")
         writer.writerow(['Typ', 'ID', 'Imię', 'Nazwisko', 'Pensum'])
         reached_courses = False
@@ -239,14 +245,17 @@ def generate_scheduler_file(request, semester, fmt):
             if not reached_courses and c['type'] != 'employee':
                 # if c[0] != 'employee' and not reached_courses:
                 writer.writerow([])
-                writer.writerow(
-                    ['Typ', 'Semestr', 'ID kursu', 'Nazwa kursu', 'ID grupy', 'Typ grupy', 'Godziny', 'ID nauczyciela'])
+                writer.writerow([
+                    'Typ', 'Semestr', 'ID kursu', 'Nazwa kursu', 'ID grupy', 'Typ grupy', 'Godziny',
+                    'ID nauczyciela'
+                ])
                 reached_courses = True
             if reached_courses:
-                row = [c['type'], c['semester'], c['course_id'],
-                       c['course_name'], c['id'], c['group_type'], c['hours'], c['teacher_id']]
+                row = [
+                    c['type'], c['semester'], c['course_id'], c['course_name'], c['id'],
+                    c['group_type'], c['hours'], c['teacher_id']
+                ]
             else:
-                row = [c['type'], c['id'], c['first_name'],
-                       c['last_name'], c['pensum']]
+                row = [c['type'], c['id'], c['first_name'], c['last_name'], c['pensum']]
             writer.writerow(row)
         return response
