@@ -98,7 +98,7 @@
                     {% endfor %}
                     <tr>
                         <th scope="col" class="table-dark">- w semestrze letnim</th>
-                        <td class="table-dark">{{ hours.l }}</td>
+                        <td class="table-dark">{{ hours.l|floatformat }} h</td>
                     </tr>
                     {% for group_type, hs in stats_l.items %}
                         <tr>

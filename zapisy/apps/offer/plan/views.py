@@ -128,7 +128,7 @@ def plan_creator(request):
 
 @require_POST
 @staff_member_required
-def plan_vote(request):
+def create_assignments_sheet(request):
     """Generates assignments and employees sheets for picked courses."""
     regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
@@ -152,7 +152,7 @@ def plan_vote(request):
 
 
 @staff_member_required
-def plan_create_voting_sheet(request):
+def create_voting_sheet(request):
     """Prepares the voting sheet."""
     years = get_last_years(3)
     voting = get_votes(years)
