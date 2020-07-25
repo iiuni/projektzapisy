@@ -168,7 +168,7 @@ def proposal_to_sheets_format(groups: ProposalSummary):
             human_readable_type,                        # C. group type
             REVERSE_GROUP_TYPES[group['group_type']],   # D. abbr. group type (as in Scheduler)
             '',                                         # E. non-standard hours
-            '',                                         # F. h/week
+            f'=H{i+2}/15',                              # F. h/week
             '',                                         # G. przelicznik
             group['hours'],                             # H. h/semester
             f'=H{i+2}*IF(ISBLANK($G{i+2});1;$G{i+2})/O{i+2}',  # I. formula counting the hours into pensum.

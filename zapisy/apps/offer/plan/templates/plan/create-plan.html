@@ -2,108 +2,128 @@
 {% block main-subtitle %}Kreator przydziałów{% endblock %}
 {% block offer_menu_plan %} class="active"{% endblock %}
 {% block all-content %}
-<h1>Stwórz przydział zajęć</h1>
-<h3>Instrukcja:</h3>
-<ol>
-    <li>Wygeneruj arkusz z wynikami głosowania.</li>
-    <li>Na jego podstawie wybierz przedmioty z listy i wygeneruj arkusz z proponowanym przydziałem zajęć.</li>
-    <li>W razie potrzeby, dokonaj zmian w arkuszu z pracownikami. Dla poprawnego działania, ważne jest poprawne wypełnienie kolumn: pensum, status, imię, nazwisko, kod pracownika
-        oraz balans. Kolumna status powinna mieć wartość 'prac' dla pracownika, 'doktorant' dla doktoranta lub pozostać puste dla pracownika spoza wydziału. Kolumna imię może pozostać
-        pusta w przypadku pracownika, który nie jest osobą fizyczną (np. firma zewnętrzna). Kolumna balans powinna stanowić różnicę pensum i liczby godzin w semestrze pracownika 
-        (liczba dodatnia oznacza nadmiar godzin).
-    </li>
-    <li>Wypełnij arkusz z przydziałem zajęć. Każdy dodany przedmiot powinien mieć unikalny numer 'Lp', zaś grupy należące do tego samego przedmiotu powinny mieć ten sam numer.
-        Statystyki generują się automatycznie. Kolumna "Potwierdzone" powinna mieć wartość "TRUE" lub "FALSE". Przy dodawaniu nowych przedmiotów, pamiętaj o zachowaniu
-        posortowanego porządku.
-    </li>
-    <li>
-        Jeżeli do jednej grupy przypisany jest więcej niż jeden prowadzący, należy każdy wpis oznaczyć jednakową liczbą w kolumnie
-        "Wielu prowadzących". <br>
-        Przykład:<br>
-        Niech wykład z Metod Programowania prowadząc trzej nauczyciele. Każdy wpis z wykładem powinien być oznaczony tą samą liczbą w kolumnie "Wielu prowadzących",
-        np.<br>
-        <code>|Metody Programowania|Wykład|...|(kod prowadzącego)|2|</code><br>
-        Ważne, aby liczba ta była unikalna w kontekście danego przedmiotu. To znaczy, jeżeli np. dodatkowo dwóch prowadzących zostaje przypisanych do jednej grupy
-        ćwiczeniowej z Metod Programowania, należy te wpisy oznaczyć inną liczbą, np. <br>
-        <code>|Metody Programowania|Ćwiczenia|...|(kod prowadzącego)|3|.</code><br>
-        W przypadku innych przedmiotów, liczby te mogą się powtarzać. Gdyby dodatkowo do jednej pracownii Rozwoju schedulera przypisano dwóch nauczycieli, można ten wpis opisać
-        np. tak: <br>
-        <code>|Projekt: Rozwój schedulera|...|(kod prowadzącego)|2|</code>
-    </li>
-</ol>
-<ul>
-    <li>
-        <a href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank" class="d-block mb-1 mt-4">Wyniki głosowania - arkusz Google</a>
-    </li>
-    <li>
-        <a href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank" class="d-block mb-5">Przydział zajęć - arkusz Google</a>
-    </li>
-</ul>
+<h1>Kreator przydziałów zajęć</h1>
 
-<p class="lead">Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat kliknij guzik pod spodem:</p>
-<a href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h2 class="display-2">Krok I: Arkusz głosowania</h2>
+        <p>Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat, kliknij guzik pod spodem:</p>
+        <a class="btn btn-primary" href="{% url 'plan-create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
+        <a class="btn btn-success" href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank">Otwórz arkusz</a>
+        <p class="mt-3">Arkusz ten ma wartość pomocniczą &mdash; powinien on
+        pomóc podjąć decyzję, które przedmioty warto prowadzić w nadchodzącym
+        roku.</p>
+    </div>
+</div>
 
-<h4>Przedmioty na następny rok:</h4>
-<p class="lead">
-    Proponowane przedmioty są już zaznaczone. Aby je usunąć lub dodać inne prosimy zaznaczyć/odznaczyć checkboxy.
-    <br>(Aby wygenerować arkusz trzeba najpierw zaakceptować przedmioty)
-</p>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h2 class="display-2">Krok II: Przedmioty na następny rok</h2>
+        <p>Sugerowane przedmioty są już zaznaczone. Aby je usunąć lub dodać inne
+        prosimy zaznaczyć/odznaczyć checkboxy. Dla zaznaczonych przedmiotów
+        zostanie wygenerowany arkusz przydziałów na podstawie poprzednich
+        instancji tych przedmiotów.</p>
 
-
-<form class="my-5" action="{% url 'plan-vote' %}" method="post">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col">
-            <h4>Przedmioty zimowe:</h4>
-            <table class="table">
-                <thead class="bg-primary">
-                    <tr>
-                        <th scope="col" class="text-white"></th>
-                        <th scope="col" class="text-white">Przedmiot</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for course, name, semester, is_set in courses_proposal %}
-                        {% if semester == 'z' %}
+        <form class="my-5" action="{% url 'plan-vote' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <h4>Przedmioty zimowe:</h4>
+                    <table class="table">
+                        <thead class="bg-primary">
                             <tr>
-                                
-                                <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
-                                <td>{{ course }}</td>
+                                <th scope="col" class="text-white"></th>
+                                <th scope="col" class="text-white">Przedmiot</th>
                             </tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="col">
-            <h4>Przedmioty letnie:</h4>
-            <table class="table">
-                <thead class="bg-primary">
-                    <tr>
-                        <th scope="col" class="text-white"></th>
-                        <th scope="col" class="text-white">Przedmiot</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for course, name, semester, is_set in courses_proposal %}
-                        {% if semester == 'l' %}
+                        </thead>
+                        <tbody>
+                            {% for course, name, semester, is_set in courses_proposal %}
+                                {% if semester == 'z' %}
+                                    <tr>
+                                        
+                                        <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
+                                        <td>{{ course }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <h4>Przedmioty letnie:</h4>
+                    <table class="table">
+                        <thead class="bg-primary">
                             <tr>
-                                <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
-                                <td>{{ course }}</td>
+                                <th scope="col" class="text-white"></th>
+                                <th scope="col" class="text-white">Przedmiot</th>
                             </tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            {% for course, name, semester, is_set in courses_proposal %}
+                                {% if semester == 'l' %}
+                                    <tr>
+                                        <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
+                                        <td>{{ course }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty (generuj arkusz przydziałów)</button>
+        </form>
+    </div>
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h2 class="display-2">Krok III: Przydzielanie przedmiotów</h2>
+        <p>W wygenerowanym arkuszu przydziałów należy uzupełnić przydziały pracowników
+        do grup.</p>
+        <dl>
+            <dt>Potwierdzanie grup</dt>
+            <dd>Wyeksportowane zostaną jedynie potwierdzone grupy (z wartością
+            <code>TRUE</code> w kolumnie <code>Potwierdzone</code>).</dd>
+            <dt>Godziny</dt>
+            <dd>Pole to wypełnia się automatycznie wartością z pola
+            <code>h/semestr</code> podzieloną przez <var>15</var>. Czasem (na przykład
+            dla przedmiotów półsemestralnych) należy ją nadpisać odpowiednią wartością.
+            Pole <code>h/semestr</code> ma znaczenia dla wyliczania pensum. Pole
+            <code>h/tydzień</code> jest potrzebne do układania planu.</dd>
+            <dt>Wielu prowadzących</dt>
+            <dd>Jeśli grupa jakiegoś przedmiotu ma mieć wielu prowadzących, należy
+            stworzyć dla niej odpowiednią liczbę rekordów, a w kolumnie <code>Wielu
+            prowadzących</code> umieścić unikalną (wewnątrz tego przedmiotu) wartość
+            (może być tekstowa).</dd>
+            <dt>Dane pracownika</dt>
+            <dd>W arkuszu <code>Pracownicy</code> należy wypełnić pola
+            <code>Status</code> (najlepiej wcześniej poprosić, by administrator Systemu
+            Zapisów umieścił użytkowników w odpowiednich grupach) oraz
+            <code>Pensum</code>.</dd>
+        </dl>
+        <a class="btn btn-success mb-2" href="https://docs.google.com/spreadsheets/d/{{
+        class_assignment_sheet_id }}" target="_blank">Otwórz arkusz</a>
+        <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane na stronie
+        <strong><a href="{% url 'plan-view' %}">Planowanie</a></strong>. Jest ona
+        dostępna dla wszystkich pracowników.</p> 
+    </div>
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h2 class="display-2">Krok IV: Eksport do Schedulera</h2>
+        <p>Przydziały można wyeksportować do systemu układającego plan zajęć.</p>
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'generate-scheduler-file' semester="z" fmt="json" %}" class="btn btn-primary">Generuj plik schedulera (zima)</a>
+                <a href="{% url 'generate-scheduler-file' semester="z" fmt="csv" %}" class="btn btn-secondary">Generuj csv (zima)</a>
+            </div>
+            <div class="col">
+                <a href="{% url 'generate-scheduler-file' semester="l" fmt="json" %}" class="btn btn-primary">Generuj plik schedulera (lato)</a>
+                <a href="{% url 'generate-scheduler-file' semester="l" fmt="csv" %}" class="btn btn-secondary">Generuj csv (lato)</a>
+            </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty</button>
-</form>
-
-<p class="lead">Aby wygenerować plik do schedulera kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file' semester="z" fmt="json" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (zima)</a>
-<a href="{% url 'generate-scheduler-file' semester="l" fmt="json" %}" class="btn btn-primary btn-lg mb-5">Generuj plik schedulera (lato)</a>
-<p class="lead">Aby wygenerować dane z pliku do schedulera w formacie csv kliknij guzik pod spodem:</p>
-<a href="{% url 'generate-scheduler-file' semester="z" fmt="csv" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (zima)</a>
-<a href="{% url 'generate-scheduler-file' semester="l" fmt="csv" %}" class="btn btn-primary btn-lg mb-5">Generuj csv (lato)</a>
+</div>
 {% endblock %}
