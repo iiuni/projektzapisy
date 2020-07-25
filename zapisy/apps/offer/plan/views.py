@@ -132,13 +132,13 @@ def create_assignments_sheet(request):
     regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
 
-    picked_courses = {}
+    picked_courses = []
     for course in request.POST:
         # Filter out fields other than courses.
         match = regex.fullmatch(course)
         if not match:
             continue
-        picked_courses[int(match.group('proposal_id'))] = match.group('semester')
+        picked_courses.append((int(match.group('proposal_id')), match.group('semester')))
 
     suggested_groups = suggest_teachers(picked_courses)
     suggested_groups = sort_subject_groups_by_type(suggested_groups)

@@ -1,11 +1,11 @@
-from apps.enrollment.courses.models.course_information import Language
 from collections import defaultdict
 import copy
 from operator import attrgetter
 import sys
 
-from django.db.models import Avg, Count, Q, Sum, Max
+from django.db.models import Avg, Count, Max, Q, Sum
 
+from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
@@ -14,9 +14,9 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.schedulersync.management.commands.scheduler_data import GROUP_TYPES
 
 if sys.version_info >= (3, 8):
-    from typing import List, Dict, NamedTuple, TypedDict, Optional, Set
+    from typing import List, Dict, NamedTuple, Optional, Set, Tuple, TypedDict
 else:
-    from typing import List, Dict, NamedTuple, Optional, Set
+    from typing import List, Dict, NamedTuple, Optional, Set, Tuple
     from typing_extensions import TypedDict
 
 
@@ -127,7 +127,7 @@ def propose(vote: ProposalVoteSummary):
     return False
 
 
-def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
+def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
     """Suggests teachers based on the past instances of the course.
 
     Data returned by this function will be presented in a spreadsheet, where it
@@ -147,9 +147,10 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
         Language.POLISH: 1.0,
         Language.ENGLISH: 1.5,
     }
+    proposal_ids = set(p for (p, _s) in picked)
     proposals = {
         p.id: p for p in Proposal.objects.filter(
-            id__in=picked.keys()).select_related('owner', 'owner__user').annotate(
+            id__in=proposal_ids).select_related('owner', 'owner__user').annotate(
                 last_instance=Max('courseinstance__id'))
     }
     past_instances = [p.last_instance for p in proposals.values()]
@@ -159,7 +160,7 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
     for group in past_groups:
         past_groups_by_proposal[group.course.offer_id].append(group)
 
-    for pid, semester in picked.items():
+    for pid, semester in picked:
         proposal: Proposal = proposals[pid]
         hours = defaultdict(int)
         hours.update({
