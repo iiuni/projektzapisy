@@ -45,8 +45,7 @@ def plan_view(request):
     stats = {'z': defaultdict(float), 'l': defaultdict(float)}
 
     if not teachers or not assignments_from_sheet:
-        messages.error(request, "Arkusz nie istnieje")
-        return render(request, 'plan/view-plan.html', {'error': True, 'year': year})
+        return render(request, 'plan/view-plan.html', {'year': year})
 
     hours_global = defaultdict(float)
     pensum_global = sum(e['pensum'] for e in teachers.values())
@@ -68,7 +67,6 @@ def plan_view(request):
         hours_global[assignment.semester] += assignment.hours_semester/assignment.multiple_teachers
 
     context = {
-        'error': False,
         'year': year,
         'courses': courses,
         'teachers': teachers,

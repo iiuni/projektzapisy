@@ -1,4 +1,4 @@
-<table id="by-course-{{ season }}" class="table">
+<table class="table">
     <tbody>
         {% for name, course_info in courses.items %}
             <tr id="course-{{ name|slugify }}">
@@ -11,8 +11,8 @@
                     <td>
                         {% for teacher in group_summary.teachers %}
                             <span class="teacher">
-                                <a href="#teacher-{{ teacher.username }}">{{ teacher.name }}</a>
-                            </span>
+                                <a href="#teacher-{{ teacher.username }}">{{ teacher.name }}</a></span>{% if not forloop.last %},
+                                {% endif %}
                         {% endfor %}
                     </td>
                 </tr>

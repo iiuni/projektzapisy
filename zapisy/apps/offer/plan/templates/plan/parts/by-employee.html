@@ -1,4 +1,4 @@
-<table id="by-employee-{{ type }}" class="table">
+<table class="table">
     <tbody>
         {% for teacher in teachers.values %}
         {% if teacher.status == type %}
@@ -12,9 +12,10 @@
             </tr>
             {% for sa in teacher.courses_winter %}
                 <tr>
-                    <td>{{ sa.name }}</td>
+                    <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
                     <td>{{ sa.group_type }}</td>
-                    <td>({% if sa.multiple_teachers > 1 %}* {% endif %}{{sa.hours_semester|floatformat}}h/semestr)</td>
+                    <td>({{sa.hours_semester|floatformat}}{% if sa.multiple_teachers > 1 %}÷{{ sa.multiple_teachers }}{% endif %}
+                         h/semestr)</td>
                 </tr>
             {% endfor %}
             <tr class="table-sm">
@@ -24,7 +25,8 @@
                 <tr>
                     <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
                     <td>{{ sa.group_type }}</td>
-                    <td>({% if sa.multiple_teachers > 1 %}* {% endif %}{{sa.hours_semester|floatformat}}h/semestr)</td>
+                    <td>({{sa.hours_semester|floatformat}}{% if sa.multiple_teachers > 1 %}÷{{ sa.multiple_teachers }}{% endif %}
+                        h/semestr)</td>
                 </tr>
             {% endfor %}
         {% endif %}

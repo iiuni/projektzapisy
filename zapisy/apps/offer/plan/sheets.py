@@ -196,12 +196,15 @@ def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: Prop
     worksheet = sheet.get_worksheet(0)
     worksheet.clear()
     worksheet.update_title("Przydziały")
-    sheet.update('A:O', data, raw=False)
+    worksheet.update('A:O', data, raw=False)
 
 
 def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
     """Reads confirmed assignments from the spreadsheet."""
-    worksheet = sheet.worksheet("Przydziały")
+    try:
+        worksheet = sheet.worksheet("Przydziały")
+    except gspread.WorksheetNotFound:
+        return []
     data = read_entire_sheet(worksheet)
     assignments = []
     for row in data:
@@ -267,7 +270,10 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, usernames: Iterabl
             # Balance.
             f'=$H{i+2}-$E{i+2}',
         ])
+
     worksheet: gspread.models.Worksheet = sheet.get_worksheet(1)
+    if worksheet is None:
+        worksheet = sheet.add_worksheet("Arkusz1", 2, 10)
     worksheet.clear()
     worksheet.update_title("Pracownicy")
     worksheet.update('A:I', data, raw=False)
@@ -276,7 +282,10 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, usernames: Iterabl
 def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
     """Reads Employee data from the Spreadsheet."""
     emp_sum: EmployeesSummary = {}
-    worksheet = sheet.worksheet("Pracownicy")
+    try:
+        worksheet = sheet.worksheet("Pracownicy")
+    except gspread.WorksheetNotFound:
+        return emp_sum
     data = read_entire_sheet(worksheet)
     for row in data:
         try:

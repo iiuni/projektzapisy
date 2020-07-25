@@ -13,27 +13,35 @@
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
                 <ul>
-                    <li><a href="#section-by-course">Przydział według przedmiotów</a></li>
-                    <li><a href="#section-by-teacher">Przydział według prowadzących</a></li>
+                    <li>
+                        <a href="#section-by-course">Przydział według przedmiotów</a>
+                        (<a href="#by-course-winter">zimowy</a>, <a href="#by-course-summer">letni</a>)
+                    </li>
+                    <li>
+                        <a href="#section-by-teacher">Przydział według prowadzących</a>
+                        (<a href="#by-employee-pracownik">pracownicy</a>, 
+                        <a href="#by-employee-doktorant">doktoranci</a>,
+                        <a href="#by-employee-inny">inni</a>)
+                    </li>
                     <li><a href="#section-statistics">Statystyki</a></li>
                 </ul>
             </div>
         </div>
         <section id="section-by-course">
             <h2>Przydział według przedmiotów</h2>
-            <h3>Semestr zimowy</h3>
-            {% include "plan/parts/by-course.html" with season="winter" courses=courses.z only %}
-            <h3>Semestr letni</h3>
-            {% include "plan/parts/by-course.html" with season="summer" courses=courses.l only %}
+            <h3 id="by-course-winter">Semestr zimowy</h3>
+            {% include "plan/parts/by-course.html" with courses=courses.z only %}
+            <h3 id="by-course-summer">Semestr letni</h3>
+            {% include "plan/parts/by-course.html" with courses=courses.l only %}
         </section>
 
         <section id="section-by-teacher">
             <h2>Przydział według prowadzących</h2>
-            <h3>Pracownicy</h3>
+            <h3 id="by-employee-pracownik">Pracownicy</h3>
             {% include "plan/parts/by-employee.html" with teachers=teachers type="pracownik" only %}
-            <h3>Doktoranci</h3>
+            <h3 id="by-employee-doktorant">Doktoranci</h3>
             {% include "plan/parts/by-employee.html" with teachers=teachers type="doktorant" only %}
-            <h3>Inni</h3>
+            <h3 id=by-employee-inny>Inni</h3>
             {% include "plan/parts/by-employee.html" with teachers=teachers type="inny" only %}
         </section>
 
@@ -102,7 +110,9 @@
             </table>
         </section>
     {% else %}
-        <h3>Brak danych do wyświetlenia</h3>
+        <div class="alert alert-warning">
+            Brak danych do wyświetlenia.
+        </div>
     {% endif %}
 
 {% endblock %}
