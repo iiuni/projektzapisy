@@ -1,0 +1,25 @@
+<div class="col">
+    <h4>Przedmioty {{ semester }}:</h4>
+    <table class="table table-hover" >
+        <thead class="bg-primary">
+            <tr>
+                <th scope="col" class="text-white"></th>
+                <th scope="col" class="text-white">Przedmiot</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course, name, semester, is_set in courses_proposal %}
+                {% if semester == semester_code %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" id="check-{{ name|slugify }}" name="{{ name }}" {% if is_set %}checked{% endif %}>
+                        </td>
+                        <td class="d-flex">
+                            <label class="mb-0 flex-fill" for="check-{{ name|slugify }}">{{ course }}</label>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

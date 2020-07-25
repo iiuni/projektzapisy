@@ -27,49 +27,8 @@
         <form class="my-5" action="{% url 'plan-vote' %}" method="post">
             {% csrf_token %}
             <div class="row">
-                <div class="col">
-                    <h4>Przedmioty zimowe:</h4>
-                    <table class="table">
-                        <thead class="bg-primary">
-                            <tr>
-                                <th scope="col" class="text-white"></th>
-                                <th scope="col" class="text-white">Przedmiot</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for course, name, semester, is_set in courses_proposal %}
-                                {% if semester == 'z' %}
-                                    <tr>
-                                        
-                                        <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
-                                        <td>{{ course }}</td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col">
-                    <h4>Przedmioty letnie:</h4>
-                    <table class="table">
-                        <thead class="bg-primary">
-                            <tr>
-                                <th scope="col" class="text-white"></th>
-                                <th scope="col" class="text-white">Przedmiot</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for course, name, semester, is_set in courses_proposal %}
-                                {% if semester == 'l' %}
-                                    <tr>
-                                        <th scope="row"><input type="checkbox" name="{{ name }}" {% if is_set %}checked{% endif %}></th>
-                                        <td>{{ course }}</td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                {% include "plan/parts/form-semester.html" with semester="zimowe" semester_code="z" courses_proposal=courses_proposal only %}
+                {% include "plan/parts/form-semester.html" with semester="letnie" semester_code="l" courses_proposal=courses_proposal only %}
             </div>
             <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty (generuj arkusz przydziałów)</button>
         </form>
