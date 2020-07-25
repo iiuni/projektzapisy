@@ -1,5 +1,4 @@
 from collections import defaultdict
-import collections
 import copy
 from operator import itemgetter
 import sys
