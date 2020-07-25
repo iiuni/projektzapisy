@@ -1,6 +1,7 @@
+from apps.enrollment.courses.models.course_information import Language
 from collections import defaultdict
 import copy
-from operator import itemgetter
+from operator import attrgetter
 import sys
 
 from django.db.models import Avg, Count, Q, Sum, Max
@@ -10,6 +11,7 @@ from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
+from apps.schedulersync.management.commands.scheduler_data import GROUP_TYPES
 
 if sys.version_info >= (3, 8):
     from typing import List, Dict, NamedTuple, TypedDict, Optional, Set
@@ -25,8 +27,9 @@ class SingleAssignmentData(NamedTuple):
     # full name, as in GROUP_TYPES
     group_type: str
     group_type_short: str
-    hours_weekly: int
+    hours_weekly: Optional[int]
     hours_semester: float
+    equivalent: float
     # l (summer) or z (winter)
     semester: str
     teacher: str
@@ -95,21 +98,7 @@ class ProposalVoteSummary(NamedTuple):
 # Indexed by the Proposal name.
 VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 
-
-# For get_subjects_data:
-class SingleGroupData(TypedDict):
-    name: str
-    proposal: int
-    semester: str
-    teacher: str
-    teacher_username: str
-    # One of GROUP_TYPE_SHEETS.
-    group_type: str
-    # Hours per week.
-    hours: int
-
-
-ProposalSummary = List[SingleGroupData]
+ProposalSummary = List[SingleAssignmentData]
 
 
 def propose(vote: ProposalVoteSummary):
@@ -153,6 +142,11 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
         'l'.
     """
     groups: ProposalSummary = []
+    REVERSE_GROUP_TYPES = {v: k for k, v in GROUP_TYPES.items()}
+    EQUIVALENTS = {
+        Language.POLISH: 1.0,
+        Language.ENGLISH: 1.5,
+    }
     proposals = {
         p.id: p for p in Proposal.objects.filter(
             id__in=picked.keys()).select_related('owner', 'owner__user').annotate(
@@ -177,24 +171,36 @@ def suggest_teachers(picked: Dict[int, str]) -> ProposalSummary:
             GroupType.COMPENDIUM: proposal.hours_recap,
         })
         if pid in past_groups_by_proposal:
-            groups.extend((SingleGroupData(
-                proposal=proposal.pk,
+            groups.extend((SingleAssignmentData(
+                proposal_id=proposal.pk,
                 name=proposal.name,
                 semester=semester,
                 teacher=g.teacher.get_full_name(),
                 teacher_username=g.teacher.user.username,
                 group_type=g.type,
-                hours=hours[GroupType(g.type)]
+                group_type_short=REVERSE_GROUP_TYPES[g.type],
+                hours_semester=hours[GroupType(g.type)],
+                hours_weekly=None,
+                equivalent=EQUIVALENTS[proposal.language],
+                confirmed=False,
+                multiple_teachers=1,
+                multiple_teachers_id='',
             ) for g in past_groups_by_proposal[pid]))
         else:
-            groups.extend((SingleGroupData(
-                proposal=proposal.pk,
+            groups.extend((SingleAssignmentData(
+                proposal_id=proposal.pk,
                 name=proposal.name,
                 semester=semester,
                 teacher=proposal.owner.get_full_name(),
                 teacher_username=proposal.owner.user.username,
                 group_type=t.value,
-                hours=h,
+                group_type_short=REVERSE_GROUP_TYPES[t.value],
+                hours_semester=h,
+                hours_weekly=None,
+                equivalent=EQUIVALENTS[proposal.language],
+                confirmed=False,
+                multiple_teachers=1,
+                multiple_teachers_id='',
             ) for (t, h) in hours.items() if h))
     return groups
 
@@ -265,4 +271,4 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
 
 def sort_subject_groups_by_type(semester: ProposalSummary) -> ProposalSummary:
     """Sorts subjects by their name and then group type."""
-    return sorted(semester, key=itemgetter('semester', 'name', 'group_type'))
+    return sorted(semester, key=attrgetter('semester', 'name', 'group_type'))

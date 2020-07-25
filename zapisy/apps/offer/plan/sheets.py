@@ -7,7 +7,6 @@ import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apps.enrollment.courses.models.group import GroupType
 from apps.offer.plan.utils import (
     EmployeeData,
     EmployeesSummary,
@@ -17,7 +16,6 @@ from apps.offer.plan.utils import (
     SingleYearVoteSummary,
     VotingSummaryPerYear,
 )
-from apps.schedulersync.management.commands.scheduler_data import GROUP_TYPES
 from apps.users.models import Employee
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -137,15 +135,12 @@ def proposal_to_sheets_format(groups: ProposalSummary):
     Returns:
         List of lists, where each inner list represents a single row in spreadsheet.
     """
-    REVERSE_GROUP_TYPES = {v: k for k, v in GROUP_TYPES.items()}
-
     data = [
         [
             'Proposal ID',
             'Przedmiot',
             'Forma zajęć',
             'Skrót f.z.',
-            'Niestandardowa liczba godzin/semestr',
             'h/tydzień',
             'Przelicznik',
             'h/semestr',
@@ -160,26 +155,23 @@ def proposal_to_sheets_format(groups: ProposalSummary):
     ]
 
     for i, group in enumerate(groups):
-        human_readable_type = GroupType(group['group_type']).label
-
         row = [
-            group['proposal'],                          # A. proposal_id
-            group['name'],                              # B. course name
-            human_readable_type,                        # C. group type
-            REVERSE_GROUP_TYPES[group['group_type']],   # D. abbr. group type (as in Scheduler)
-            '',                                         # E. non-standard hours
-            f'=H{i+2}/15',                              # F. h/week
-            '',                                         # G. przelicznik
-            group['hours'],                             # H. h/semester
-            f'=H{i+2}*IF(ISBLANK($G{i+2});1;$G{i+2})/O{i+2}',  # I. formula counting the hours into pensum.
-            group['semester'],                          # J. semester
-            group['teacher'],                           # K. assigned teacher
-            group['teacher_username'],                  # L. assigned teacher username
-            'FALSE',                                    # M. confirmed
-            '',                                         # N. multiple teachers
-            f'=IF(ISBLANK(N{i+2}); 1; COUNTIFS(B:B; B{i+2}; N:N; N{i+2}))',
-                                                        # O. formula computing the denominator per
-                                                        # multiple teachers
+            group.proposal_id,  # A. proposal_id
+            group.name,  # B. course name
+            group.group_type,  # C. group type
+            group.group_type_short,  # D. abbr. group type (as in Scheduler)
+            group.hours_weekly or f'=QUOTIENT(G{i+2};15)',  # E. h/week
+            group.equivalent,  # F. hours equivalent (towards pensum)
+            group.hours_semester,  # G. h/semester
+            f'=G{i+2}*$F{i+2}/N{i+2}',  # H. formula counting the hours into pensum.
+            group.semester,  # I. semester
+            group.teacher,  # J. assigned teacher
+            group.teacher_username,  # K. assigned teacher username
+            group.confirmed,  # L. confirmed
+            group.multiple_teachers_id,  # M. multiple teachers
+            f'=IF(ISBLANK(M{i+2}); 1; COUNTIFS(B:B; B{i+2}; M:M; M{i+2}))',
+            # N. formula computing the denominator per
+            # multiple teachers
         ]
 
         data.append(row)
@@ -209,14 +201,15 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
                 name=row[1],
                 group_type=row[2].lower(),
                 group_type_short=row[3],
-                semester=row[9],
-                teacher=row[10],
-                teacher_username=row[11],
-                hours_weekly=int(row[5]) if row[5] else 0,
-                hours_semester=float(row[7]) if row[7] else 0,
-                confirmed=row[12] == 'TRUE',
-                multiple_teachers=int(row[14]),
-                multiple_teachers_id=row[13],
+                hours_weekly=int(row[4]),
+                equivalent=float(row[5]),
+                hours_semester=float(row[6]),
+                semester=row[8],
+                teacher=row[9],
+                teacher_username=row[10],
+                confirmed=row[11] == 'TRUE',
+                multiple_teachers_id=row[12],
+                multiple_teachers=int(row[13]),
             )
             assignments.append(sad)
         except ValueError:
@@ -259,8 +252,8 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, usernames: Iterabl
             status,
             str(0),
             # Formulas computing winter and summer hours.
-            f'=SUMIFS(Przydziały!$I:$I; Przydziały!$J:$J; "z"; Przydziały!$L:$L; $C{i+2}; Przydziały!$M:$M;True)',
-            f'=SUMIFS(Przydziały!$I:$I; Przydziały!$J:$J; "l"; Przydziały!$L:$L; $C{i+2}; Przydziały!$M:$M;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
             # Total hours.
             f'=$F{i+2}+$G{i+2}',
             # Balance.

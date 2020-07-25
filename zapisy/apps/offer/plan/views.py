@@ -46,7 +46,8 @@ def plan_view(request):
     year = SystemState.get_current_state().year
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     teachers = read_employees_sheet(assignments_spreadsheet)
-    assignments_from_sheet = read_assignments_sheet(assignments_spreadsheet)
+    assignments_from_sheet = list(
+        filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
 
@@ -59,8 +60,6 @@ def plan_view(request):
     hours_global = defaultdict(float)
     pensum_global = sum(e['pensum'] for e in teachers.values())
     for assignment in assignments_from_sheet:
-        if not assignment.confirmed:
-            continue
         if assignment.name not in courses[assignment.semester]:
             courses[assignment.semester][assignment.name] = {}
         if assignment.group_type not in courses[assignment.semester][assignment.name]:
@@ -146,7 +145,7 @@ def create_assignments_sheet(request):
 
     update_plan_proposal_sheet(sheet, suggested_groups)
 
-    teachers = set(g['teacher_username'] for g in suggested_groups)
+    teachers = set(g.teacher_username for g in suggested_groups)
     update_employees_sheet(sheet, teachers)
     return redirect(reverse('plan-creator'))
 
