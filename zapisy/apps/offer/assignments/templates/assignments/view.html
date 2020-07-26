@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between mb-5">
         <h1>Przydział zajęć {{ year }}</h1>
         {% if request.user.is_superuser %}
-            <a href="{% url 'plan-creator' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
+            <a href="{% url 'assignments-wizard' %}" class="btn btn-primary btn-lg">Kreator przydziałów</a>
         {% endif %}
     </div>
     {% if teachers %}
@@ -30,19 +30,19 @@
         <section id="section-by-course">
             <h2>Przydział według przedmiotów</h2>
             <h3 id="by-course-winter">Semestr zimowy</h3>
-            {% include "plan/parts/by-course.html" with courses=courses.z only %}
+            {% include "assignments/parts/by-course.html" with courses=courses.z only %}
             <h3 id="by-course-summer">Semestr letni</h3>
-            {% include "plan/parts/by-course.html" with courses=courses.l only %}
+            {% include "assignments/parts/by-course.html" with courses=courses.l only %}
         </section>
 
         <section id="section-by-teacher">
             <h2>Przydział według prowadzących</h2>
             <h3 id="by-employee-pracownik">Pracownicy</h3>
-            {% include "plan/parts/by-employee.html" with teachers=teachers type="pracownik" only %}
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="pracownik" only %}
             <h3 id="by-employee-doktorant">Doktoranci</h3>
-            {% include "plan/parts/by-employee.html" with teachers=teachers type="doktorant" only %}
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="doktorant" only %}
             <h3 id=by-employee-inny>Inni</h3>
-            {% include "plan/parts/by-employee.html" with teachers=teachers type="inny" only %}
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="inny" only %}
         </section>
 
         <section id="section-statistics">

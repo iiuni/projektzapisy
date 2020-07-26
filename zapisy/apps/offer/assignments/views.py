@@ -1,10 +1,11 @@
-from collections import defaultdict
 import csv
-from operator import attrgetter, itemgetter
 import os
 import re
+from collections import defaultdict
+from operator import attrgetter, itemgetter
 from typing import Dict
 
+import environ
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -13,28 +14,18 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-import environ
 
-from apps.offer.plan.sheets import (
-    create_sheets_service,
-    read_assignments_sheet,
-    read_employees_sheet,
-    read_opening_recommendations,
-    update_employees_sheet,
-    update_plan_proposal_sheet,
-    update_voting_results_sheet,
-)
-from apps.offer.plan.utils import (
-    AssignmentsViewSummary,
-    CourseGroupTypeSummary, EmployeeData,
-    TeacherInfo,
-    get_last_years,
-    get_votes,
-    suggest_teachers,
-)
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 from apps.users.models import Employee
+
+from .sheets import (create_sheets_service, read_assignments_sheet,
+                     read_employees_sheet, read_opening_recommendations,
+                     update_employees_sheet, update_plan_proposal_sheet,
+                     update_voting_results_sheet)
+from .utils import (AssignmentsViewSummary, CourseGroupTypeSummary,
+                    EmployeeData, TeacherInfo, get_last_years, get_votes,
+                    suggest_teachers)
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
@@ -57,7 +48,7 @@ def plan_view(request):
     stats = {'z': defaultdict(float), 'l': defaultdict(float)}
 
     if not teachers or not assignments_from_sheet:
-        return render(request, 'plan/view-plan.html', {'year': year})
+        return render(request, 'assignments/view.html', {'year': year})
 
     hours_global = defaultdict(float)
     pensum_global = sum(e['pensum'] for e in teachers.values())
@@ -88,11 +79,11 @@ def plan_view(request):
         'stats_z': dict(stats['z']),
         'stats_l': dict(stats['l']),
     }
-    return render(request, 'plan/view-plan.html', context)
+    return render(request, 'assignments/view.html', context)
 
 
 @staff_member_required
-def plan_creator(request):
+def assignments_wizard(request):
     """Displays the 'assignments creator' view.
 
     The main logic of this function is devoted to suggesting which proposals
@@ -121,7 +112,7 @@ def plan_creator(request):
         'voting_results_sheet_id': VOTING_RESULTS_SPREADSHEET_ID,
         'class_assignment_sheet_id': CLASS_ASSIGNMENT_SPREADSHEET_ID,
     }
-    return render(request, 'plan/create-plan.html', context)
+    return render(request, 'assignments/wizard.html', context)
 
 
 @require_POST
@@ -187,7 +178,7 @@ def create_assignments_sheet(request):
         )
     teachers = sorted(teachers.values(), key=itemgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
-    return redirect(reverse('plan-creator'))
+    return redirect(reverse('assignments-wizard'))
 
 
 @staff_member_required
@@ -197,7 +188,7 @@ def create_voting_sheet(request):
     voting = get_votes(years)
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     update_voting_results_sheet(sheet, voting, years)
-    return redirect(reverse('plan-creator'))
+    return redirect(reverse('assignments_wizard'))
 
 
 @staff_member_required
@@ -217,7 +208,7 @@ def generate_scheduler_file(request, semester, fmt):
     """
     if semester not in ['z', 'l']:
         messages.error(f"Niepoprawny semestr: '{ semester }'")
-        redirect('plan-creator')
+        redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
         messages.error(f"Niepoprawny format: '{ fmt }'")
     current_year = SystemState.get_current_state().year

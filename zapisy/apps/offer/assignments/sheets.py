@@ -6,7 +6,7 @@ import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apps.offer.plan.utils import (
+from .utils import (
     EmployeeData,
     EmployeesSummary,
     ProposalSummary,

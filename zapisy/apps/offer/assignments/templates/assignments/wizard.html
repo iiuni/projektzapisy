@@ -30,8 +30,8 @@
         <form class="my-5" action="{% url 'create-assignments-sheet' %}" method="post">
             {% csrf_token %}
             <div class="row">
-                {% include "plan/parts/form-semester.html" with semester="zimowe" semester_code="z" courses_proposal=courses_proposal only %}
-                {% include "plan/parts/form-semester.html" with semester="letnie" semester_code="l" courses_proposal=courses_proposal only %}
+                {% include "assignments/parts/form-semester.html" with semester="zimowe" semester_code="z" courses_proposal=courses_proposal only %}
+                {% include "assignments/parts/form-semester.html" with semester="letnie" semester_code="l" courses_proposal=courses_proposal only %}
             </div>
             <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty (generuj arkusz przydziałów)</button>
         </form>
@@ -71,7 +71,7 @@
             Otwórz arkusz
         </a>
         <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane na stronie
-        <strong><a href="{% url 'plan-view' %}">Planowanie</a></strong>. Jest ona
+        <strong><a href="{% url 'assignments-view' %}">Planowanie</a></strong>. Jest ona
         dostępna dla wszystkich pracowników.</p> 
     </div>
 </div>
