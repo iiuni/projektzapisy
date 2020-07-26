@@ -23,6 +23,9 @@
         zaznaczyć/odznaczyć checkboxy. Dla zaznaczonych przedmiotów zostanie
         wygenerowany arkusz z proponowanymi przydziałami na podstawie
         poprzednich instancji tych przedmiotów.</p>
+        <p>Arkusz można generować wielokrotnie. Umieszczone w nim informacje o
+        grupach nie zostaną utracone, o ile przedmiot pozostaje wybrany. Również
+        informacje o pracownikach nie znikną.</p>
 
         <form class="my-5" action="{% url 'create-assignments-sheet' %}" method="post">
             {% csrf_token %}
@@ -61,8 +64,10 @@
             Zapisów umieścił użytkowników w odpowiednich grupach) oraz
             <code>Pensum</code>.</dd>
         </dl>
-        <a class="btn btn-success mb-2" href="https://docs.google.com/spreadsheets/d/{{
-        class_assignment_sheet_id }}" target="_blank">Otwórz arkusz</a>
+        <a class="btn btn-success mb-2" 
+           href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank">
+            Otwórz arkusz
+        </a>
         <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane na stronie
         <strong><a href="{% url 'plan-view' %}">Planowanie</a></strong>. Jest ona
         dostępna dla wszystkich pracowników.</p> 

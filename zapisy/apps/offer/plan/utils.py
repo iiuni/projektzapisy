@@ -1,9 +1,8 @@
 from collections import defaultdict
 import copy
-from operator import attrgetter
 import sys
 
-from django.db.models import Avg, Count, Max, Q, Sum
+from django.db.models import Count, Max, Q, Sum
 
 from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
@@ -46,7 +45,7 @@ class EmployeeData(TypedDict):
     username: str
     first_name: str
     last_name: str
-    pensum: float
+    pensum: int
     balance: float
     hours_winter: float
     hours_summer: float
@@ -152,7 +151,7 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
                 semester=semester,
                 teacher=g.teacher.get_full_name(),
                 teacher_username=g.teacher.user.username,
-                group_type=g.type,
+                group_type=g.get_type_display(),
                 group_type_short=REVERSE_GROUP_TYPES[g.type],
                 hours_semester=hours[GroupType(g.type)],
                 hours_weekly=None,
@@ -168,7 +167,7 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
                 semester=semester,
                 teacher=proposal.owner.get_full_name(),
                 teacher_username=proposal.owner.user.username,
-                group_type=t.value,
+                group_type=t.label,
                 group_type_short=REVERSE_GROUP_TYPES[t.value],
                 hours_semester=h,
                 hours_weekly=None,
@@ -242,8 +241,3 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
                 # The proposal was not put to vote that year.
                 pass
     return proposals
-
-
-def sort_subject_groups_by_type(semester: ProposalSummary) -> ProposalSummary:
-    """Sorts subjects by their name and then group type."""
-    return sorted(semester, key=attrgetter('semester', 'name', 'group_type'))

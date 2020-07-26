@@ -1,8 +1,7 @@
 import os
-from typing import Iterable, List, Optional, Set
+from typing import List, Optional, Set
 
 from django.conf import settings
-from django.contrib.auth.models import User
 import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -16,7 +15,6 @@ from apps.offer.plan.utils import (
     SingleYearVoteSummary,
     VotingSummaryPerYear,
 )
-from apps.users.models import Employee
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -106,7 +104,7 @@ def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) -
         proposal.course_type.obligatory,
         proposal.recommended_for_first_year,
         f'=J{row}>AVERAGE(J$3:J)',
-        f'=IFERROR(J{row}>0,8*AVERAGEIF($2:$2; "Głosów";K{row}:{row}))',
+        f'=IFERROR(J{row}>0.8*AVERAGEIF($2:$2; "Głosów";K{row}:{row}))',
         f'=OR(E{row}; F{row}; G{row}; H{row})',
     ]
     per_year = (prepare_annual_voting_part_of_row(
@@ -258,31 +256,19 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
 ##################################################
 
 
-def update_employees_sheet(sheet: gspread.models.Spreadsheet, usernames: Iterable[str]):
-    employees = Employee.objects.filter(user__username__in=usernames).select_related('user')
-    all_contractors = set(
-        User.objects.filter(groups__name='external_contractors').values_list('username', flat=True))
-    all_phd_students = set(
-        User.objects.filter(groups__name='phd_students').values_list('username', flat=True))
+def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
     data = [[
         'Imię', 'Nazwisko', 'Username', 'Status', 'Pensum', 'Godziny (z)', 'Godziny (l)',
         'Godziny razem', 'Bilans'
     ]]
 
-    for i, e in enumerate(employees):
-        username = e.user.username
-        if username in all_contractors:
-            status = 'inny'
-        elif username in all_phd_students:
-            status = 'doktorant'
-        else:
-            status = 'pracownik'
+    for i, t in enumerate(teachers):
         data.append([
-            e.user.first_name,
-            e.user.last_name,
-            e.user.username,
-            status,
-            str(0),
+            t['first_name'],
+            t['last_name'],
+            t['username'],
+            t['status'],
+            str(t['pensum']),
             # Formulas computing winter and summer hours.
             f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
             f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
@@ -315,7 +301,7 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
                 last_name=row[1],
                 username=row[2],
                 status=row[3].lower(),
-                pensum=float(row[4]),
+                pensum=int(row[4]),
                 hours_winter=float(row[5]),
                 hours_summer=float(row[6]),
                 balance=float(row[8]),

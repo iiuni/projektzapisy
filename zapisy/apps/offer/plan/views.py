@@ -1,5 +1,6 @@
 from collections import defaultdict
 import csv
+from operator import attrgetter, itemgetter
 import os
 import re
 from typing import Dict
@@ -7,6 +8,7 @@ from typing import Dict
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
@@ -24,15 +26,15 @@ from apps.offer.plan.sheets import (
 )
 from apps.offer.plan.utils import (
     AssignmentsViewSummary,
-    CourseGroupTypeSummary,
+    CourseGroupTypeSummary, EmployeeData,
     TeacherInfo,
     get_last_years,
     get_votes,
-    sort_subject_groups_by_type,
     suggest_teachers,
 )
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
+from apps.users.models import Employee
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
@@ -125,24 +127,65 @@ def plan_creator(request):
 @require_POST
 @staff_member_required
 def create_assignments_sheet(request):
-    """Generates assignments and employees sheets for picked courses."""
+    """Generates assignments and employees sheets for picked courses.
+
+    Makes sure that modifications made to the assignments sheet so far are not
+    overridden.
+    """
     regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
 
-    picked_courses = []
+    # Read the current contents of the sheet.
+    current_assignments = defaultdict(list)
+    for assignment in read_assignments_sheet(sheet):
+        current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
+
+    # Read selections from the form.
+    picked_courses = set()
     for course in request.POST:
         # Filter out fields other than courses.
         match = regex.fullmatch(course)
         if not match:
             continue
-        picked_courses.append((int(match.group('proposal_id')), match.group('semester')))
+        picked_courses.add((int(match.group('proposal_id')), match.group('semester')))
 
-    suggested_groups = suggest_teachers(picked_courses)
-    suggested_groups = sort_subject_groups_by_type(suggested_groups)
+    # Drop newly unselected assignments.
+    for pick in list(current_assignments.keys()):
+        if pick not in picked_courses:
+            del current_assignments[pick]
 
+    # Filter new picks, so they don't override existing data in the sheet.
+    new_picks = [pick for pick in picked_courses if pick not in current_assignments]
+
+    suggested_groups = suggest_teachers(new_picks)
+    all_groups = sum(current_assignments.values(), []) + suggested_groups
+    suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
     update_plan_proposal_sheet(sheet, suggested_groups)
 
-    teachers = set(g.teacher_username for g in suggested_groups)
+    teachers = read_employees_sheet(sheet)
+    new_usernames = set(
+        g.teacher_username for g in suggested_groups if g.teacher_username not in teachers)
+    is_external_contractor = models.Count(
+        'user__groups', filter=models.Q(user__groups__name='external_contractors'))
+    is_phd_student = models.Count('user__groups',
+                                  filter=models.Q(user__groups__name='phd_students'))
+    employees = Employee.objects.filter(
+        user__username__in=new_usernames).select_related('user').annotate(
+            is_external_contractor=is_external_contractor).annotate(is_phd_student=is_phd_student)
+    for e in employees:
+        teachers[e.user.username] = EmployeeData(
+            username=e.user.username,
+            first_name=e.user.first_name,
+            last_name=e.user.last_name,
+            status='inny' if e.is_external_contractor else 'doktorant' if e.is_phd_student else 'pracownik',
+            pensum=0,
+            balance=0,
+            hours_winter=0,
+            hours_summer=0,
+            courses_winter=[],
+            courses_summer=[],
+        )
+    teachers = sorted(teachers.values(), key=itemgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
     return redirect(reverse('plan-creator'))
 
