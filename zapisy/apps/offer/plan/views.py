@@ -225,19 +225,16 @@ def generate_scheduler_file(request, semester, fmt):
     teachers = read_employees_sheet(assignments_spreadsheet)
     assignments = read_assignments_sheet(assignments_spreadsheet)
 
-    content = []
+    content_teachers = [{
+        'type': 'employee',
+        'id': employee['username'],
+        'first_name': employee['first_name'],
+        'last_name': employee['last_name'],
+        'pensum': employee['pensum'],
+    } for employee in teachers.values()]
+
+    content_assignments = []
     multiple_teachers = {}
-
-    for employee in teachers.values():
-        scheduler_employee = {
-            'type': 'employee',
-            'id': employee['username'],
-            'first_name': employee['first_name'],
-            'last_name': employee['last_name'],
-            'pensum': employee['pensum'],
-        }
-        content.append(scheduler_employee)
-
     index = 1
     for assignment in assignments:
         if not assignment.confirmed:
@@ -265,36 +262,25 @@ def generate_scheduler_file(request, semester, fmt):
             'hours': assignment.hours_weekly,
             'teacher_id': assignment.teacher_username
         }
-        content.append(scheduler_assignment)
+        content_assignments.append(scheduler_assignment)
         index += 1
 
     if fmt == 'json':
-        response = JsonResponse(content, safe=False)
+        response = JsonResponse(content_teachers + content_assignments, safe=False)
         response[
             'Content-Disposition'] = f'attachment; filename=przydzial_{semester}_{str(current_year)}.json'
-        return response
-    elif fmt == 'csv':
+    else:
         response = HttpResponse(content_type='text/csv')
         response[
             'Content-Disposition'] = f'attachment; filename=przydzial_{semester}_{str(current_year)}.csv'
-        writer = csv.writer(response, delimiter="|")
-        writer.writerow(['Typ', 'ID', 'Imię', 'Nazwisko', 'Pensum'])
-        reached_courses = False
-        for c in content:
-            if not reached_courses and c['type'] != 'employee':
-                # if c[0] != 'employee' and not reached_courses:
-                writer.writerow([])
-                writer.writerow([
-                    'Typ', 'Semestr', 'ID kursu', 'Nazwa kursu', 'ID grupy', 'Typ grupy', 'Godziny',
-                    'ID nauczyciela'
-                ])
-                reached_courses = True
-            if reached_courses:
-                row = [
-                    c['type'], c['semester'], c['course_id'], c['course_name'], c['id'],
-                    c['group_type'], c['hours'], c['teacher_id']
-                ]
-            else:
-                row = [c['type'], c['id'], c['first_name'], c['last_name'], c['pensum']]
-            writer.writerow(row)
-        return response
+        writer = csv.DictWriter(response, fieldnames=['type', 'id', 'first_name', 'last_name', 'pensum'])
+        writer.writeheader()
+        writer.writerows(content_teachers)
+        writer = csv.DictWriter(response,
+                                fieldnames=[
+                                    'type', 'semester', 'course_id', 'course_name', 'id',
+                                    'group_type', 'hours', 'teacher_id'
+                                ])
+        writer.writeheader()
+        writer.writerows(content_assignments)
+    return response
