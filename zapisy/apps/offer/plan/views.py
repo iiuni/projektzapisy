@@ -17,6 +17,7 @@ from apps.offer.plan.sheets import (
     create_sheets_service,
     read_assignments_sheet,
     read_employees_sheet,
+    read_opening_recommendations,
     update_employees_sheet,
     update_plan_proposal_sheet,
     update_voting_results_sheet,
@@ -27,7 +28,6 @@ from apps.offer.plan.utils import (
     TeacherInfo,
     get_last_years,
     get_votes,
-    propose,
     sort_subject_groups_by_type,
     suggest_teachers,
 )
@@ -98,24 +98,21 @@ def plan_creator(request):
     """
     courses_proposal = get_votes(get_last_years(3))
     assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
-    courses_in_assignments_sheet = set(a.name for a in assignments)
 
     courses = []
-
-    if not assignments:
-        for key, value in courses_proposal.items():
-            # First value is the name of course
-            # Second is name for the input
-            # Third value is the semester when the course is planned to be
-            # Fourth value says if this course is proposed
-            name = f'asgn-{value.proposal.pk}-{value.semester}'
-            courses.append([key, name, value.semester, propose(value)])
+    if assignments:
+        picks = set(a.proposal_id for a in assignments)
     else:
-        for key, value in courses_proposal.items():
-            checked = key in courses_in_assignments_sheet
+        picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
 
-            name = f'asgn-{value.proposal.pk}-{value.semester}'
-            courses.append([key, name, value.semester, checked])
+    for key, value in courses_proposal.items():
+        # First value is the name of course
+        # Second is name for the input
+        # Third value is the semester when the course is planned to be
+        # Fourth value says if this course is proposed
+        name = f'asgn-{value.proposal.pk}-{value.semester}'
+        checked = value.proposal.pk in picks
+        courses.append([key, name, value.semester, checked])
 
     context = {
         'courses_proposal': courses,

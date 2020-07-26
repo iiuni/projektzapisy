@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Set
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -58,8 +58,18 @@ def prepare_legend_rows(years: List[str]) -> List[List[str]]:
 
     The length of a single row is 3+4*len(years).
     """
-    row1 = ["", "", ""] + sum(([y, "", "", "", ""] for y in years), [])
-    row2 = ["Nazwa", "Typ kursu", "Semestr"] + [
+    row1 = [""]*9 + sum(([y, "", "", "", ""] for y in years), [])
+    row2 = [
+        "Proposal ID",
+        "Nazwa",
+        "Typ kursu",
+        "Semestr",
+        "Obowiązkowy",
+        "Rekomendowany dla I roku",
+        "Punktów pow. średniej",
+        "Utrzymana popularność",
+        "Heurystyka",
+    ] + [
         "Głosów",
         "Głosujących",
         "Za 3pkt",
@@ -85,13 +95,19 @@ def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> Li
     ]
 
 
-def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str]) -> List[List[str]]:
+def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) -> List[List[str]]:
     """Creates a single spreadsheet row summarising voting for the proposal."""
     proposal = pvs.proposal
     beg: List[str] = [
+        proposal.id,
         proposal.name,
         proposal.course_type.name,
         proposal.semester,
+        proposal.course_type.obligatory,
+        proposal.recommended_for_first_year,
+        f'=J{row}>AVERAGE(J$3:J)',
+        f'=IFERROR(J{row}>0,8*AVERAGEIF($2:$2; "Głosów";K{row}:{row}))',
+        f'=OR(E{row}; F{row}; G{row}; H{row})',
     ]
     per_year = (prepare_annual_voting_part_of_row(
         pvs.voting.get(y, None)) for y in years)
@@ -100,8 +116,8 @@ def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str]) -> List[Lis
 
 def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> List[List[str]]:
     legend_rows = prepare_legend_rows(years)
-    proposal_rows = (prepare_proposal_row(pvs, years)
-                     for pvs in votes.values())
+    proposal_rows = (prepare_proposal_row(pvs, years, i+3)
+                     for i, pvs in enumerate(votes.values()))
     return legend_rows + sum(proposal_rows, [])
 
 
@@ -110,7 +126,7 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
     sheet.values_update(
-        range='A:' + gspread.utils.rowcol_to_a1(1, 3 + 5 * len(years))[:-1],
+        range='A:' + gspread.utils.rowcol_to_a1(1, 9 + 5 * len(years))[:-1],
         params={
             'valueInputOption': 'USER_ENTERED'
         },
@@ -118,6 +134,22 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
             'values': data
         }
     )
+
+
+def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
+    """Reads recommendations (whether to open course) from the voting sheet."""
+    worksheet = sheet.sheet1
+    try:
+        data = worksheet.batch_get(['A3:A', 'I3:I'], major_dimension='COLUMNS')
+    except KeyError:
+        return set()
+    ids = data[0][0]
+    rec = data[1][0]
+    pick = set()
+    for proposal_id, recommendation in zip(ids, rec):
+        if recommendation == 'TRUE':
+            pick.add(int(proposal_id))
+    return pick
 
 
 ##################################################

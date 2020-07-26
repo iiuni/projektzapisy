@@ -101,32 +101,6 @@ VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 ProposalSummary = List[SingleAssignmentData]
 
 
-def propose(vote: ProposalVoteSummary):
-    """A heuristic suggesting, whether to teach the course in upcoming year."""
-    current_year = SystemState.get_current_state().year
-    proposal = vote.proposal
-    avg = SingleVote.objects.filter(
-        state__year=current_year,
-        value__gt=0).values('proposal').annotate(total=Sum('value')).aggregate(Avg('total'))
-    previous_avg = 0
-    years = 0
-    percentage = 0.8
-
-    for year, values in vote.voting.items():
-        if not year == current_year:
-            years += 1
-            previous_avg = values['total']
-    if proposal.course_type.obligatory:
-        return True
-    if proposal.recommended_for_first_year:
-        return True
-    if vote.voting[current_year]['total'] >= avg['total__avg']:
-        return True
-    if years > 0 and vote.voting[current_year]['total'] >= percentage * (previous_avg / years):
-        return True
-    return False
-
-
 def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
     """Suggests teachers based on the past instances of the course.
 
