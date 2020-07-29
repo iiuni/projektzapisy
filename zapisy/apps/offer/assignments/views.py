@@ -178,7 +178,7 @@ def create_assignments_sheet(request):
         )
     teachers = sorted(teachers.values(), key=itemgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
-    return redirect(reverse('assignments-wizard'))
+    return redirect(reverse('assignments-wizard')+'#step-3')
 
 
 @staff_member_required
@@ -188,7 +188,7 @@ def create_voting_sheet(request):
     voting = get_votes(years)
     sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     update_voting_results_sheet(sheet, voting, years)
-    return redirect(reverse('assignments_wizard'))
+    return redirect(reverse('assignments-wizard')+'#step-1')
 
 
 @staff_member_required

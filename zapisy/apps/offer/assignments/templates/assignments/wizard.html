@@ -5,7 +5,7 @@
 <h1>Kreator przydziałów zajęć</h1>
 
 <div class="jumbotron jumbotron-fluid">
-    <div class="container">
+    <div class="container" id="step-1">
         <h2 class="display-2">Krok I: Arkusz głosowania</h2>
         <p>Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat, kliknij guzik pod spodem:</p>
         <a class="btn btn-primary" href="{% url 'create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
@@ -16,7 +16,7 @@
 </div>
 
 <div class="jumbotron jumbotron-fluid">
-    <div class="container">
+    <div class="container" id="step-2">
         <h2 class="display-2">Krok II: Przedmioty na następny rok</h2>
         <p>Sugerowane przedmioty są już zaznaczone na podstawie heurystyki z
         arkusza głosowania. Aby je usunąć lub dodać inne należy
@@ -39,7 +39,7 @@
 </div>
 
 <div class="jumbotron jumbotron-fluid">
-    <div class="container">
+    <div class="container" id="step-3">
         <h2 class="display-2">Krok III: Przydzielanie przedmiotów</h2>
         <p>W wygenerowanym arkuszu przydziałów należy uzupełnić przydziały pracowników
         do grup.</p>
@@ -77,7 +77,7 @@
 </div>
 
 <div class="jumbotron jumbotron-fluid">
-    <div class="container">
+    <div class="container" id="step-4">
         <h2 class="display-2">Krok IV: Eksport do Schedulera</h2>
         <p>Przydziały można wyeksportować do systemu układającego plan zajęć.</p>
         <div class="row">
