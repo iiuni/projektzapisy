@@ -2,8 +2,10 @@ from collections import defaultdict
 import copy
 import sys
 
-from django.db.models import Count, Max, Q, Sum
+from django.db.models import Count, F, Q, Sum, Window
+from django.db.models.functions import FirstValue
 
+from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
@@ -122,10 +124,16 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
     proposal_ids = set(p for (p, _s) in picked)
     proposals = {
         p.id: p for p in Proposal.objects.filter(
-            id__in=proposal_ids).select_related('owner', 'owner__user').annotate(
-                last_instance=Max('courseinstance__id'))
+            id__in=proposal_ids).select_related('owner', 'owner__user')
     }
-    past_instances = [p.last_instance for p in proposals.values()]
+    # We use an SQL Window function to get the most recent instance of each
+    # course.
+    past_instances = CourseInstance.objects.filter(offer__in=proposal_ids).annotate(
+        last_instance=Window(
+            expression=FirstValue('id'),
+            partition_by=[F('offer')],
+            order_by=F('semester').desc(),
+        )).values_list('last_instance', flat=True).distinct()
     past_groups = Group.objects.filter(course__in=past_instances).select_related(
         'course', 'teacher', 'teacher__user')
     past_groups_by_proposal = defaultdict(list)
