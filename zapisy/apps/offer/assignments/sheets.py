@@ -80,11 +80,11 @@ def voting_annual_part_of_row(sy: Optional[SingleYearVoteSummary]) -> List[str]:
     if sy is None:
         return [""] * 5
     return [
-        str(sy['total']),
-        str(sy['votes']),
-        str(sy['count_max']),
-        str(sy['enrolled'] is not None),
-        str(sy['enrolled']),
+        str(sy.total),
+        str(sy.votes),
+        str(sy.count_max),
+        str(sy.enrolled is not None),
+        str(sy.enrolled or ''),
     ]
 
 
@@ -127,6 +127,7 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
             'values': data
         }
     )
+    sheet.sheet1.freeze(rows=2)
 
 
 def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
@@ -250,11 +251,11 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
 
     for i, t in enumerate(teachers):
         data.append([
-            t['username'],
-            t['first_name'],
-            t['last_name'],
-            t['status'],
-            str(t['pensum']),
+            t.username,
+            t.first_name,
+            t.last_name,
+            t.status,
+            str(t.pensum),
             # Formulas computing winter and summer hours.
             f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
             f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
@@ -306,5 +307,5 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
         except ValueError as e:
             raise ValueError(
                 f"Błąd czytania arkusza pracowników (wiersz {i}): {str(e).capitalize()}.")
-        emp_sum[ed['username']] = ed
+        emp_sum[ed.username] = ed
     return emp_sum

@@ -1,6 +1,5 @@
 from collections import defaultdict
-import copy
-import sys
+from typing import List, Dict, NamedTuple, Optional, Set, Tuple
 
 from django.db.models import Count, F, Q, Sum, Window
 from django.db.models.functions import FirstValue
@@ -9,16 +8,10 @@ from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
-from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
+from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
 from apps.schedulersync.management.commands.scheduler_data import GROUP_TYPES
-
-if sys.version_info >= (3, 8):
-    from typing import List, Dict, NamedTuple, Optional, Set, Tuple, TypedDict
-else:
-    from typing import List, Dict, NamedTuple, Optional, Set, Tuple
-    from typing_extensions import TypedDict
 
 
 class SingleAssignmentData(NamedTuple):
@@ -40,7 +33,7 @@ class SingleAssignmentData(NamedTuple):
     multiple_teachers_id: str
 
 
-class EmployeeData(TypedDict):
+class EmployeeData(NamedTuple):
     # 'pracownik' for full employee, 'doktorant' for PhD student, 'inny' for others.
     status: str
     username: str
@@ -63,7 +56,7 @@ class TeacherInfo(NamedTuple):
     name: str
 
 
-class CourseGroupTypeSummary(TypedDict):
+class CourseGroupTypeSummary(NamedTuple):
     hours: float
     teachers: Set[TeacherInfo]
 
@@ -76,7 +69,7 @@ AssignmentsViewSummary = Dict[str, AssignmentsCourseInfo]
 
 
 # For get_votes function:
-class SingleYearVoteSummary(TypedDict):
+class SingleYearVoteSummary(NamedTuple):
     # Total of points awarded in a vote.
     total: int
     # Number of voters who awarded this course with maximum number of votes.
@@ -201,15 +194,7 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
         status=ProposalStatus.IN_VOTE).order_by('name').select_related('course_type')
     proposals: VotingSummaryPerYear = {}
     for p in in_vote:
-        if p.semester == SemesterChoices.UNASSIGNED:
-            proposals.update({
-                f'{p.name} (zima)':
-                    ProposalVoteSummary(p, SemesterChoices.WINTER, p.course_type.name, {}),
-                f'{p.name} (lato)':
-                    ProposalVoteSummary(p, SemesterChoices.SUMMER, p.course_type.name, {}),
-            })
-        else:
-            proposals.update({p.name: ProposalVoteSummary(p, p.semester, p.course_type.name, {})})
+        proposals.update({p.name: ProposalVoteSummary(p, p.semester, p.course_type.name, {})})
 
     # Collect voting history for these proposals.
     votes = SingleVote.objects.filter(
@@ -239,9 +224,8 @@ def get_votes(years: List[str]) -> VotingSummaryPerYear:
     for pvs in proposals.values():
         for year in years:
             try:
-                syv = copy.copy(votes_dict[(pvs.proposal.id, year)])
-                syv['enrolled'] = records_summary.get((pvs.proposal.id, year, pvs.semester), None)
-                pvs.voting[year] = syv
+                enrolled = records_summary.get((pvs.proposal.id, year, pvs.semester), None)
+                pvs.voting[year] = votes_dict[(pvs.proposal.id, year)]._replace(enrolled=enrolled)
             except KeyError:
                 # The proposal was not put to vote that year.
                 pass

@@ -2,7 +2,7 @@ import csv
 import os
 import re
 from collections import defaultdict
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 from typing import Dict
 
 import environ
@@ -15,6 +15,7 @@ from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 from apps.users.models import Employee
@@ -55,21 +56,20 @@ def plan_view(request):
         return render(request, 'assignments/view.html', {'year': year})
 
     hours_global = defaultdict(float)
-    pensum_global = sum(e['pensum'] for e in teachers.values())
+    pensum_global = sum(e.pensum for e in teachers.values())
     for assignment in assignments_from_sheet:
         if assignment.name not in courses[assignment.semester]:
             courses[assignment.semester][assignment.name] = {}
         if assignment.group_type not in courses[assignment.semester][assignment.name]:
             courses[assignment.semester][assignment.name][
-                assignment.group_type] = CourseGroupTypeSummary(hours=0, teachers=set())
-        courses[assignment.semester][assignment.name][
-            assignment.group_type]['hours'] = assignment.hours_semester
+                assignment.group_type] = CourseGroupTypeSummary(hours=assignment.hours_semester,
+                                                                teachers=set())
         teacher = teachers[assignment.teacher_username]
-        courses[assignment.semester][assignment.name][assignment.group_type]['teachers'].add(
+        courses[assignment.semester][assignment.name][assignment.group_type].teachers.add(
             TeacherInfo(username=assignment.teacher_username,
-                        name=f"{teacher['first_name']} {teacher['last_name']}"))
+                        name=f"{teacher.first_name} {teacher.last_name}"))
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
-        teacher[key].append(assignment)
+        getattr(teacher, key).append(assignment)
         stats[assignment.semester][
             assignment.group_type] += assignment.hours_semester / assignment.multiple_teachers
         hours_global[
@@ -95,7 +95,7 @@ def assignments_wizard(request):
     The main logic of this function is devoted to suggesting which proposals
     should be picked.
     """
-    courses_proposal = get_votes(get_last_years(3))
+    proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
         assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
     except (KeyError, ValueError) as error:
@@ -108,14 +108,19 @@ def assignments_wizard(request):
     else:
         picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
 
-    for key, value in courses_proposal.items():
+    for proposal in proposals:
+        checked = proposal.pk in picks
         # First value is the name of course
         # Second is name for the input
         # Third value is the semester when the course is planned to be
         # Fourth value says if this course is proposed
-        name = f'asgn-{value.proposal.pk}-{value.semester}'
-        checked = value.proposal.pk in picks
-        courses.append([key, name, value.semester, checked])
+        if proposal.semester == SemesterChoices.UNASSIGNED:
+            for apx, s in [('zima', 'z'), ('lato', 'l')]:
+                name = f'asgn-{proposal.pk}-{s}'
+                courses.append([f"{proposal.name} ({apx})", name, s, checked])
+        else:
+            name = f'asgn-{proposal.pk}-{proposal.semester}'
+            courses.append([proposal.name, name, proposal.semester, checked])
 
     context = {
         'courses_proposal': courses,
@@ -195,7 +200,7 @@ def create_assignments_sheet(request):
             courses_winter=[],
             courses_summer=[],
         )
-    teachers = sorted(teachers.values(), key=itemgetter('status', 'last_name', 'first_name'))
+    teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
@@ -241,10 +246,10 @@ def generate_scheduler_file(request, semester, fmt):
 
     content_teachers = [{
         'type': 'employee',
-        'id': employee['username'],
-        'first_name': employee['first_name'],
-        'last_name': employee['last_name'],
-        'pensum': employee['pensum'],
+        'id': employee.username,
+        'first_name': employee.first_name,
+        'last_name': employee.last_name,
+        'pensum': employee.pensum,
     } for employee in teachers.values()]
 
     content_assignments = []
