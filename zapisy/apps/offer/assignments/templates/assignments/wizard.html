@@ -23,9 +23,11 @@
         zaznaczyć/odznaczyć checkboxy. Dla zaznaczonych przedmiotów zostanie
         wygenerowany arkusz z proponowanymi przydziałami na podstawie
         poprzednich instancji tych przedmiotów.</p>
-        <p>Arkusz można generować wielokrotnie. Umieszczone w nim informacje o
-        grupach nie zostaną utracone, o ile przedmiot pozostaje wybrany. Również
-        informacje o pracownikach nie znikną.</p>
+        <p>Arkusz przydziałów można generować wielokrotnie. Umieszczone w nim
+        informacje o grupach nie zostaną utracone, o ile przedmiot pozostaje
+        wybrany. Również informacje o pracownikach nie znikną. Jeśli arkusz
+        został już wygenerowany, to checkboxy poniżej odpowiadają liście
+        przedmiotów w tym arkuszu.</p>
 
         <form class="my-5" action="{% url 'create-assignments-sheet' %}" method="post">
             {% csrf_token %}
@@ -60,19 +62,20 @@
             prowadzących</code> umieścić unikalną (wewnątrz tego przedmiotu) wartość
             (może być tekstowa).</dd>
             <dt>Dane pracownika</dt>
-            <dd>W arkuszu <code>Pracownicy</code> należy wypełnić pola
-            <code>Status</code> (najlepiej wcześniej upewnić się, że
-            administrator Systemu Zapisów umieścił użytkowników w odpowiednich
-            grupach: doktoranci mają być w grupie <em>phd_students</em>,
-            pracownicy zewnętrzni w <em>external_contractors</em>) oraz
-            <code>Pensum</code>.</dd>
+            <dd>W arkuszu <code>Pracownicy</code> należy wypełnić pole
+            <code>Pensum</code>. Przed wygenerowaniem arkusza warto też upewnić
+            się, że administrator Systemu Zapisów umieścił użytkowników w
+            odpowiednich grupach: doktoranci mają być w grupie
+            <em>phd_students</em>, pracownicy zewnętrzni w
+            <em>external_contractors</em>. Wtedy pole <code>Status</code> będzie
+            poprawnie wypełnione.</dd>
         </dl>
-        <a class="btn btn-success mb-2" 
+        <a class="btn btn-success mb-3" 
            href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank">
             Otwórz arkusz
         </a>
-        <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane na stronie
-        <strong><a href="{% url 'assignments-view' %}">Planowanie</a></strong>. Jest ona
+        <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane w karcie
+        <strong><a href="{% url 'assignments-view' %}">Przydziały</a></strong>. Jest ona
         dostępna dla wszystkich pracowników.</p> 
     </div>
 </div>
