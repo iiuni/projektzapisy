@@ -46,12 +46,7 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     return sh
 
 
-##################################################
-# BEGIN VOTING RESULT SHEET LOGIC
-##################################################
-
-
-def prepare_legend_rows(years: List[str]) -> List[List[str]]:
+def voting_legend_rows(years: List[str]) -> List[List[str]]:
     """Creates two top rows with a legend.
 
     The length of a single row is 3+4*len(years).
@@ -77,7 +72,7 @@ def prepare_legend_rows(years: List[str]) -> List[List[str]]:
     return [row1, row2]
 
 
-def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> List[str]:
+def voting_annual_part_of_row(sy: Optional[SingleYearVoteSummary]) -> List[str]:
     """Dumps voting summary to five spreadsheet cells.
 
     If sy is None, empty cells will be produced.
@@ -93,7 +88,7 @@ def prepare_annual_voting_part_of_row(sy: Optional[SingleYearVoteSummary]) -> Li
     ]
 
 
-def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) -> List[List[str]]:
+def voting_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) -> List[List[str]]:
     """Creates a single spreadsheet row summarising voting for the proposal."""
     proposal = pvs.proposal
     beg: List[str] = [
@@ -107,15 +102,15 @@ def prepare_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) -
         f'=IFERROR(J{row}>0.8*AVERAGEIF($2:$2; "Głosów";K{row}:{row}))',
         f'=OR(E{row}; F{row}; G{row}; H{row})',
     ]
-    per_year = (prepare_annual_voting_part_of_row(
+    per_year = (voting_annual_part_of_row(
         pvs.voting.get(y, None)) for y in years)
     return [beg + sum(per_year, [])]
 
 
 def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> List[List[str]]:
-    legend_rows = prepare_legend_rows(years)
-    proposal_rows = (prepare_proposal_row(pvs, years, i+3)
-                     for i, pvs in enumerate(votes.values()))
+    legend_rows = voting_legend_rows(years)
+    proposal_rows = (voting_proposal_row(pvs, years, i)
+                     for i, pvs in enumerate(votes.values(), start=3))
     return legend_rows + sum(proposal_rows, [])
 
 
@@ -150,15 +145,6 @@ def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
     return pick
 
 
-##################################################
-# END VOTING RESULT SHEET LOGIC
-##################################################
-
-##################################################
-# BEGIN PLAN PROPOSAL SHEET LOGIC
-##################################################
-
-
 def proposal_to_sheets_format(groups: ProposalSummary):
     """Function prepares data for Assignments spreadsheet.
 
@@ -184,30 +170,30 @@ def proposal_to_sheets_format(groups: ProposalSummary):
         ]
     ]
 
-    for i, group in enumerate(groups):
+    for i, group in enumerate(groups, start=2):
         row = [
             group.proposal_id,  # A. proposal_id
             group.name,  # B. course name
             group.group_type,  # C. group type
             group.group_type_short,  # D. abbr. group type (as in Scheduler)
-            group.hours_weekly or f'=QUOTIENT(G{i+2};15)',  # E. h/week
+            group.hours_weekly or f'=QUOTIENT(G{i};15)',  # E. h/week
             group.equivalent,  # F. hours equivalent (towards pensum)
             group.hours_semester,  # G. h/semester
-            f'=G{i+2}*$F{i+2}/M{i+2}',  # H. formula counting the hours into pensum.
+            f'=G{i}*$F{i}/M{i}',  # H. formula counting the hours into pensum.
             group.semester,  # I. semester
             group.teacher_username,  # J. assigned teacher username
             group.confirmed,  # K. confirmed
             group.multiple_teachers_id,  # L. multiple teachers
-            f'=IF(ISBLANK(L{i+2}); 1; COUNTIFS(B:B; B{i+2}; L:L; L{i+2}))',
+            f'=IF(ISBLANK(L{i}); 1; COUNTIFS(B:B; B{i}; L:L; L{i}))',
             # M. formula computing the denominator per multiple teachers
-            f'=NOT(ISFORMULA(E{i+2}))',  # N. Has the h/semester be overridden.
+            f'=NOT(ISFORMULA(E{i}))',  # N. Has the h/semester be overridden.
         ]
 
         data.append(row)
     return data
 
 
-def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
+def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
     worksheet = sheet.get_worksheet(0)
     worksheet.clear()
@@ -221,7 +207,8 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     """Reads confirmed assignments from the spreadsheet.
 
     Raises:
-        KeyError: When a column is missing from the worksheet.
+        KeyError: When a value is missing in the spreadsheet.
+        ValueError: When a value is incorrectly formatted.
     """
     try:
         worksheet = sheet.worksheet("Przydziały")
@@ -229,7 +216,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
         return []
     data = worksheet.get_all_records()
     assignments = []
-    for row in data:
+    for i, row in enumerate(data, start=2):
         try:
             hours_w_overridden = row['Nadpisano h/tydzień'] == 'TRUE'
             sad = SingleAssignmentData(
@@ -246,19 +233,13 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
                 multiple_teachers_id=row['Wielu prowadzących'],
                 multiple_teachers=int(row['Dzielnik (wielu prow.)']),
             )
-            assignments.append(sad)
-        except ValueError:
-            # Skip header row and incorrectly formatted rows.
-            continue
+        except KeyError as e:
+            raise KeyError(f"Błąd czytania arkusza przydziałów. Brakuje wartości w kolumnie {e}.")
+        except ValueError as e:
+            raise ValueError(
+                f"Błąd czytania arkusza przydziałów (wiersz {i}): {str(e).capitalize()}.")
+        assignments.append(sad)
     return assignments
-
-##################################################
-# END PLAN PROPOSAL SHEET LOGIC
-##################################################
-
-##################################################
-# BEGIN PLAN EMPLOYEES SHEET LOGIC
-##################################################
 
 
 def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
@@ -297,7 +278,8 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
     """Reads Employee data from the Spreadsheet.
 
     Raises:
-        KeyError: When a column is missing from the worksheet.
+        KeyError: When a value is missing in the spreadsheet.
+        ValueError: When a value is incorrectly formatted.
     """
     emp_sum: EmployeesSummary = {}
     try:
@@ -305,7 +287,7 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
     except gspread.WorksheetNotFound:
         return emp_sum
     data = worksheet.get_all_records()
-    for row in data:
+    for i, row in enumerate(data, start=2):
         try:
             ed = EmployeeData(
                 username=row['Username'],
@@ -319,12 +301,10 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
                 courses_winter=[],
                 courses_summer=[],
             )
-            emp_sum[ed['username']] = ed
-        except ValueError:
-            # Skip incorrectly formatted rows (header included).
-            continue
+        except KeyError as e:
+            raise KeyError(f"Błąd czytania arkusza pracowników. Brakuje wartości w kolumnie {e}.")
+        except ValueError as e:
+            raise ValueError(
+                f"Błąd czytania arkusza pracowników (wiersz {i}): {str(e).capitalize()}.")
+        emp_sum[ed['username']] = ed
     return emp_sum
-
-##################################################
-# END PLAN EMPLOYEES SHEET LOGIC
-##################################################

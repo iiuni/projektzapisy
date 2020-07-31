@@ -21,7 +21,7 @@ from apps.users.models import Employee
 
 from .sheets import (create_sheets_service, read_assignments_sheet,
                      read_employees_sheet, read_opening_recommendations,
-                     update_employees_sheet, update_plan_proposal_sheet,
+                     update_employees_sheet, update_assignments_sheet,
                      update_voting_results_sheet)
 from .utils import (AssignmentsViewSummary, CourseGroupTypeSummary,
                     EmployeeData, TeacherInfo, get_last_years, get_votes,
@@ -40,14 +40,10 @@ def plan_view(request):
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
         teachers = read_employees_sheet(assignments_spreadsheet)
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}.")
-        return render(request, 'assignments/view.html', {'year': year})
-    try:
         assignments_from_sheet = list(
             filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+    except (KeyError, ValueError) as error:
+        messages.error(request, error)
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -102,8 +98,8 @@ def assignments_wizard(request):
     courses_proposal = get_votes(get_last_years(3))
     try:
         assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+    except (KeyError, ValueError) as error:
+        messages.error(request, error)
         assignments = []
 
     courses = []
@@ -145,8 +141,15 @@ def create_assignments_sheet(request):
     try:
         for assignment in read_assignments_sheet(sheet):
             current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+        teachers = read_employees_sheet(sheet)
+    except (KeyError, ValueError) as error:
+        messages.error(
+            request, f"""<p>
+        Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
+        została wygenerowana w obawie przed nadpisaniem istniejących
+        przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
+        {error}""")
+        return redirect(reverse('assignments-wizard'))
 
     # Read selections from the form.
     picked_courses = set()
@@ -168,13 +171,8 @@ def create_assignments_sheet(request):
     suggested_groups = suggest_teachers(new_picks)
     all_groups = sum(current_assignments.values(), []) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
-    update_plan_proposal_sheet(sheet, suggested_groups)
+    update_assignments_sheet(sheet, suggested_groups)
 
-    try:
-        teachers = read_employees_sheet(sheet)
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}")
-        teachers = {}
     new_usernames = set(
         g.teacher_username for g in suggested_groups if g.teacher_username not in teachers)
     is_external_contractor = models.Count(
@@ -236,13 +234,9 @@ def generate_scheduler_file(request, semester, fmt):
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
         teachers = read_employees_sheet(assignments_spreadsheet)
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}.")
-        return redirect('assignments-wizard')
-    try:
         assignments = read_assignments_sheet(assignments_spreadsheet)
-    except KeyError as err:
-        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+    except (KeyError, ValueError) as error:
+        messages.error(request, error)
         return redirect('assignments-wizard')
 
     content_teachers = [{
