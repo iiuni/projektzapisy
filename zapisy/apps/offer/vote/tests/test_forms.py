@@ -2,6 +2,7 @@ from datetime import date
 
 from django import test
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 from freezegun import freeze_time
 
 from apps.enrollment.courses.tests.factories import CourseInstanceFactory, SemesterFactory
@@ -142,7 +143,7 @@ class VoteFormsetTest(test.TestCase):
         # I have inspected the queries and they look ok, so this is just
         # supposed to test that no one breaks performance in the future.
         with self.assertNumQueries(11):
-            response = c.get('/vote/vote/')
+            response = c.get(reverse('vote'))
         self.assertContains(response, '<select', count=6)
 
         # Ensure no queries are skipped due to cached content type for Group.
@@ -151,7 +152,7 @@ class VoteFormsetTest(test.TestCase):
         # Number of queries should not change when we add one more proposal.
         ProposalFactory(status=ProposalStatus.IN_VOTE)
         with self.assertNumQueries(11):
-            response = c.get('/vote/vote/')
+            response = c.get(reverse('vote'))
         self.assertContains(response, '<select', count=7)
 
     @freeze_time(date(2011, 9, 10))
