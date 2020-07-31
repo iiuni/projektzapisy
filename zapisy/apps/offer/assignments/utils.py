@@ -31,7 +31,6 @@ class SingleAssignmentData(NamedTuple):
     equivalent: float
     # l (summer) or z (winter)
     semester: str
-    teacher: str
     teacher_username: str
     confirmed: bool
     # How many teachers assigned to the same group.
@@ -149,7 +148,6 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
                 proposal_id=proposal.pk,
                 name=proposal.name,
                 semester=semester,
-                teacher=g.teacher.get_full_name(),
                 teacher_username=g.teacher.user.username,
                 group_type=g.get_type_display(),
                 group_type_short=REVERSE_GROUP_TYPES[g.type],
@@ -165,7 +163,6 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
                 proposal_id=proposal.pk,
                 name=proposal.name,
                 semester=semester,
-                teacher=proposal.owner.get_full_name(),
                 teacher_username=proposal.owner.user.username,
                 group_type=t.label,
                 group_type_short=REVERSE_GROUP_TYPES[t.value],

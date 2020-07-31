@@ -176,7 +176,6 @@ def proposal_to_sheets_format(groups: ProposalSummary):
             'h/semestr',
             'Do pensum',
             'Semestr',
-            'Przydział',
             'Kod prowadzącego',
             'Potwierdzone',
             'Wielu prowadzących',
@@ -193,15 +192,13 @@ def proposal_to_sheets_format(groups: ProposalSummary):
             group.hours_weekly or f'=QUOTIENT(G{i+2};15)',  # E. h/week
             group.equivalent,  # F. hours equivalent (towards pensum)
             group.hours_semester,  # G. h/semester
-            f'=G{i+2}*$F{i+2}/N{i+2}',  # H. formula counting the hours into pensum.
+            f'=G{i+2}*$F{i+2}/M{i+2}',  # H. formula counting the hours into pensum.
             group.semester,  # I. semester
-            group.teacher,  # J. assigned teacher
-            group.teacher_username,  # K. assigned teacher username
-            group.confirmed,  # L. confirmed
-            group.multiple_teachers_id,  # M. multiple teachers
-            f'=IF(ISBLANK(M{i+2}); 1; COUNTIFS(B:B; B{i+2}; M:M; M{i+2}))',
-            # N. formula computing the denominator per
-            # multiple teachers
+            group.teacher_username,  # J. assigned teacher username
+            group.confirmed,  # K. confirmed
+            group.multiple_teachers_id,  # L. multiple teachers
+            f'=IF(ISBLANK(L{i+2}); 1; COUNTIFS(B:B; B{i+2}; L:L; L{i+2}))',
+            # M. formula computing the denominator per multiple teachers
         ]
 
         data.append(row)
@@ -217,29 +214,32 @@ def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: Prop
 
 
 def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
-    """Reads confirmed assignments from the spreadsheet."""
+    """Reads confirmed assignments from the spreadsheet.
+
+    Raises:
+        KeyError: When a column is missing from the worksheet.
+    """
     try:
         worksheet = sheet.worksheet("Przydziały")
     except gspread.WorksheetNotFound:
         return []
-    data = read_entire_sheet(worksheet)
+    data = worksheet.get_all_records()
     assignments = []
     for row in data:
         try:
             sad = SingleAssignmentData(
-                proposal_id=int(row[0]),
-                name=row[1],
-                group_type=row[2].lower(),
-                group_type_short=row[3],
-                hours_weekly=int(row[4]),
-                equivalent=float(row[5]),
-                hours_semester=float(row[6]),
-                semester=row[8],
-                teacher=row[9],
-                teacher_username=row[10],
-                confirmed=row[11] == 'TRUE',
-                multiple_teachers_id=row[12],
-                multiple_teachers=int(row[13]),
+                proposal_id=int(row['Proposal ID']),
+                name=row['Przedmiot'],
+                group_type=row['Forma zajęć'].lower(),
+                group_type_short=row['Skrót f.z.'],
+                hours_weekly=int(row['h/tydzień']),
+                equivalent=float(row['Przelicznik']),
+                hours_semester=float(row['h/semestr']),
+                semester=row['Semestr'],
+                teacher_username=row['Kod prowadzącego'],
+                confirmed=row['Potwierdzone'] == 'TRUE',
+                multiple_teachers_id=row['Wielu prowadzących'],
+                multiple_teachers=int(row['Dzielnik (wielu prow.)']),
             )
             assignments.append(sad)
         except ValueError:
@@ -258,20 +258,20 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
 
 def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
     data = [[
-        'Imię', 'Nazwisko', 'Username', 'Status', 'Pensum', 'Godziny (z)', 'Godziny (l)',
+        'Username', 'Imię', 'Nazwisko', 'Status', 'Pensum', 'Godziny (z)', 'Godziny (l)',
         'Godziny razem', 'Bilans'
     ]]
 
     for i, t in enumerate(teachers):
         data.append([
+            t['username'],
             t['first_name'],
             t['last_name'],
-            t['username'],
             t['status'],
             str(t['pensum']),
             # Formulas computing winter and summer hours.
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$K:$K; $C{i+2}; Przydziały!$L:$L;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
             # Total hours.
             f'=$F{i+2}+$G{i+2}',
             # Balance.
@@ -287,24 +287,28 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
 
 
 def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
-    """Reads Employee data from the Spreadsheet."""
+    """Reads Employee data from the Spreadsheet.
+
+    Raises:
+        KeyError: When a column is missing from the worksheet.
+    """
     emp_sum: EmployeesSummary = {}
     try:
         worksheet = sheet.worksheet("Pracownicy")
     except gspread.WorksheetNotFound:
         return emp_sum
-    data = read_entire_sheet(worksheet)
+    data = worksheet.get_all_records()
     for row in data:
         try:
             ed = EmployeeData(
-                first_name=row[0],
-                last_name=row[1],
-                username=row[2],
-                status=row[3].lower(),
-                pensum=int(row[4]),
-                hours_winter=float(row[5]),
-                hours_summer=float(row[6]),
-                balance=float(row[8]),
+                username=row['Username'],
+                first_name=row['Imię'],
+                last_name=row['Nazwisko'],
+                status=row['Status'].lower(),
+                pensum=int(row['Pensum']),
+                hours_winter=float(row['Godziny (z)']),
+                hours_summer=float(row['Godziny (l)']),
+                balance=float(row['Bilans']),
                 courses_winter=[],
                 courses_summer=[],
             )
@@ -316,20 +320,4 @@ def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
 
 ##################################################
 # END PLAN EMPLOYEES SHEET LOGIC
-##################################################
-
-##################################################
-# BEGIN READING ASSIGNMENTS SHEET LOGIC
-##################################################
-
-
-def read_entire_sheet(worksheet: gspread.models.Worksheet):
-    try:
-        sh = worksheet.get_all_values()
-    except gspread.exceptions.APIError:
-        return []
-    return sh
-
-##################################################
-# END READING ASSIGNMENTS SHEET LOGIC
 ##################################################

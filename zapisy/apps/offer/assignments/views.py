@@ -38,9 +38,17 @@ def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-    teachers = read_employees_sheet(assignments_spreadsheet)
-    assignments_from_sheet = list(
-        filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
+    try:
+        teachers = read_employees_sheet(assignments_spreadsheet)
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}.")
+        return render(request, 'assignments/view.html', {'year': year})
+    try:
+        assignments_from_sheet = list(
+            filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+        return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
 
@@ -60,10 +68,12 @@ def plan_view(request):
                 assignment.group_type] = CourseGroupTypeSummary(hours=0, teachers=set())
         courses[assignment.semester][assignment.name][
             assignment.group_type]['hours'] = assignment.hours_semester
+        teacher = teachers[assignment.teacher_username]
         courses[assignment.semester][assignment.name][assignment.group_type]['teachers'].add(
-            TeacherInfo(username=assignment.teacher_username, name=assignment.teacher))
+            TeacherInfo(username=assignment.teacher_username,
+                        name=f"{teacher['first_name']} {teacher['last_name']}"))
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
-        teachers[assignment.teacher_username][key].append(assignment)
+        teacher[key].append(assignment)
         stats[assignment.semester][
             assignment.group_type] += assignment.hours_semester / assignment.multiple_teachers
         hours_global[
@@ -90,7 +100,11 @@ def assignments_wizard(request):
     should be picked.
     """
     courses_proposal = get_votes(get_last_years(3))
-    assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    try:
+        assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+        assignments = []
 
     courses = []
     if assignments:
@@ -128,8 +142,11 @@ def create_assignments_sheet(request):
 
     # Read the current contents of the sheet.
     current_assignments = defaultdict(list)
-    for assignment in read_assignments_sheet(sheet):
-        current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
+    try:
+        for assignment in read_assignments_sheet(sheet):
+            current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
 
     # Read selections from the form.
     picked_courses = set()
@@ -153,7 +170,11 @@ def create_assignments_sheet(request):
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
     update_plan_proposal_sheet(sheet, suggested_groups)
 
-    teachers = read_employees_sheet(sheet)
+    try:
+        teachers = read_employees_sheet(sheet)
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}")
+        teachers = {}
     new_usernames = set(
         g.teacher_username for g in suggested_groups if g.teacher_username not in teachers)
     is_external_contractor = models.Count(
@@ -213,8 +234,16 @@ def generate_scheduler_file(request, semester, fmt):
         messages.error(f"Niepoprawny format: '{ fmt }'")
     current_year = SystemState.get_current_state().year
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-    teachers = read_employees_sheet(assignments_spreadsheet)
-    assignments = read_assignments_sheet(assignments_spreadsheet)
+    try:
+        teachers = read_employees_sheet(assignments_spreadsheet)
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza pracowników. Brakuje kolumny {err}.")
+        return redirect('assignments-wizard')
+    try:
+        assignments = read_assignments_sheet(assignments_spreadsheet)
+    except KeyError as err:
+        messages.error(request, f"Błąd czytania arkusza przydziałów. Brakuje kolumny {err}.")
+        return redirect('assignments-wizard')
 
     content_teachers = [{
         'type': 'employee',
