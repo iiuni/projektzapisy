@@ -212,7 +212,9 @@ def update_plan_proposal_sheet(sheet: gspread.models.Spreadsheet, proposal: Prop
     worksheet = sheet.get_worksheet(0)
     worksheet.clear()
     worksheet.update_title("Przydziały")
-    worksheet.update('A:O', data, raw=False)
+    worksheet.update('A:N', data, raw=False)
+    worksheet.format('M:N', {'textFormat': {'italic': True}})
+    worksheet.freeze(rows=1)
 
 
 def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
@@ -287,6 +289,8 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
     worksheet.clear()
     worksheet.update_title("Pracownicy")
     worksheet.update('A:I', data, raw=False)
+    worksheet.format('F:I', {'textFormat': {'italic': True}})
+    worksheet.freeze(rows=1)
 
 
 def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
