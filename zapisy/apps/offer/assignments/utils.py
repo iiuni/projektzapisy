@@ -8,7 +8,7 @@ from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
-from apps.offer.proposal.models import Proposal, ProposalStatus
+from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
 from apps.schedulersync.management.commands.scheduler_data import GROUP_TYPES
@@ -144,10 +144,15 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
             GroupType.SEMINAR: proposal.hours_seminar,
             GroupType.COMPENDIUM: proposal.hours_recap,
         })
+        if proposal.semester == SemesterChoices.UNASSIGNED:
+            apx = 'zima' if semester == 'z' else 'lato'
+            name = f"{proposal.name} ({apx})"
+        else:
+            name = proposal.name
         if pid in past_groups_by_proposal:
             groups.extend((SingleAssignmentData(
                 proposal_id=proposal.pk,
-                name=proposal.name,
+                name=name,
                 semester=semester,
                 teacher_username=g.teacher.user.username,
                 group_type=g.get_type_display(),
@@ -162,7 +167,7 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
         else:
             groups.extend((SingleAssignmentData(
                 proposal_id=proposal.pk,
-                name=proposal.name,
+                name=name,
                 semester=semester,
                 teacher_username=proposal.owner.user.username,
                 group_type=t.label,

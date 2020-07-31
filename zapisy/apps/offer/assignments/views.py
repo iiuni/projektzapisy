@@ -24,7 +24,7 @@ from .sheets import (create_sheets_service, read_assignments_sheet,
                      read_employees_sheet, read_opening_recommendations,
                      update_employees_sheet, update_assignments_sheet,
                      update_voting_results_sheet)
-from .utils import (AssignmentsViewSummary, CourseGroupTypeSummary,
+from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary,
                     EmployeeData, TeacherInfo, get_last_years, get_votes,
                     suggest_teachers)
 
@@ -58,22 +58,22 @@ def plan_view(request):
     hours_global = defaultdict(float)
     pensum_global = sum(e.pensum for e in teachers.values())
     for assignment in assignments_from_sheet:
-        if assignment.name not in courses[assignment.semester]:
-            courses[assignment.semester][assignment.name] = {}
-        if assignment.group_type not in courses[assignment.semester][assignment.name]:
-            courses[assignment.semester][assignment.name][
-                assignment.group_type] = CourseGroupTypeSummary(hours=assignment.hours_semester,
-                                                                teachers=set())
+        semester, name, group_type = assignment.semester, assignment.name, assignment.group_type
+        if name not in courses[semester]:
+            courses[semester][name] = {}
+        # Per-group type assignments for a single course.
+        assignments_course_info: AssignmentsCourseInfo = courses[semester][name]
+        if group_type not in assignments_course_info:
+            assignments_course_info[group_type] = CourseGroupTypeSummary(
+                hours=assignment.hours_semester, teachers=set())
         teacher = teachers[assignment.teacher_username]
-        courses[assignment.semester][assignment.name][assignment.group_type].teachers.add(
+        assignments_course_info[group_type].teachers.add(
             TeacherInfo(username=assignment.teacher_username,
                         name=f"{teacher.first_name} {teacher.last_name}"))
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
         getattr(teacher, key).append(assignment)
-        stats[assignment.semester][
-            assignment.group_type] += assignment.hours_semester / assignment.multiple_teachers
-        hours_global[
-            assignment.semester] += assignment.hours_semester / assignment.multiple_teachers
+        stats[semester][group_type] += assignment.hours_semester / assignment.multiple_teachers
+        hours_global[semester] += assignment.hours_semester / assignment.multiple_teachers
 
     context = {
         'year': year,
