@@ -180,6 +180,7 @@ def proposal_to_sheets_format(groups: ProposalSummary):
             'Potwierdzone',
             'Wielu prowadzących',
             'Dzielnik (wielu prow.)',
+            'Nadpisano h/tydzień',
         ]
     ]
 
@@ -199,6 +200,7 @@ def proposal_to_sheets_format(groups: ProposalSummary):
             group.multiple_teachers_id,  # L. multiple teachers
             f'=IF(ISBLANK(L{i+2}); 1; COUNTIFS(B:B; B{i+2}; L:L; L{i+2}))',
             # M. formula computing the denominator per multiple teachers
+            f'=NOT(ISFORMULA(E{i+2}))',  # N. Has the h/semester be overridden.
         ]
 
         data.append(row)
@@ -227,12 +229,13 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     assignments = []
     for row in data:
         try:
+            hours_w_overridden = row['Nadpisano h/tydzień'] == 'TRUE'
             sad = SingleAssignmentData(
                 proposal_id=int(row['Proposal ID']),
                 name=row['Przedmiot'],
                 group_type=row['Forma zajęć'].lower(),
                 group_type_short=row['Skrót f.z.'],
-                hours_weekly=int(row['h/tydzień']),
+                hours_weekly=int(row['h/tydzień']) if hours_w_overridden else None,
                 equivalent=float(row['Przelicznik']),
                 hours_semester=float(row['h/semestr']),
                 semester=row['Semestr'],
