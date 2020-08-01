@@ -35,8 +35,18 @@
                 {% include "assignments/parts/form-semester.html" with semester="zimowe" semester_code="z" courses_proposal=courses_proposal only %}
                 {% include "assignments/parts/form-semester.html" with semester="letnie" semester_code="l" courses_proposal=courses_proposal only %}
             </div>
-            <button type="submit" class="btn btn-primary m-auto">Zaakceptuj przedmioty (generuj arkusz przydziałów)</button>
+            <button type="submit" class="btn btn-primary m-auto">Generuj arkusz przydziałów</button>
         </form>
+        <script>
+            function deselectAll(e, tableId) {
+                e.preventDefault();
+                const table = document.getElementById(tableId);
+                let checkboxes = table.querySelectorAll("input[type='checkbox']");
+                for (let checkbox of checkboxes) {
+                    checkbox.checked = false;
+                }
+            }
+        </script>
     </div>
 </div>
 
