@@ -6,7 +6,7 @@
 
 1. Log in into remote machine with `ssh`
 
-__for the first time:__
+__For the first time:__
 
 2. Create group `zapisy-admin`: `sudo groupadd zapisy-admin`
 3. Open *sudoers* file with `sudo visudo` command
@@ -14,7 +14,7 @@ __for the first time:__
 `%zapisy-admin ALL=(ALL:ALL) NOPASSWD: ALL`
 5. Save changes
 
-__for each time:__
+__Each time:__
 
 6. Add your user to the `zapisy-admin` group:\
 `sudo usermod -a -G zapisy-admin username`\
@@ -37,7 +37,7 @@ where `user` is your username and `host` is your hostname on the remote host.
 	- `deploy-version` - name of branch from __projektzapisy__ repository
 	- `deploy_server_name` - name of domain what points on remote machine
 	- `rollbar_token` - *post_server_item* token from Rollbar settings or __none__ value
-5. For add another server to deployment edit your hosts (*staging*/*production*) like this:
+5. To add another server to deployment edit your hosts (*staging*/*production*) like this:
 
 ```
 [deploy:children]
