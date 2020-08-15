@@ -1,0 +1,95 @@
+---
+- hosts: all
+
+  vars:
+    PYTHON: "/usr/bin/python3"
+
+  tasks:
+
+    # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+      become: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
+        update_cache: yes
+        state: latest
+      become: yes
+
+    - name: Install nodejs and npm
+      apt:
+        pkg:
+        - nodejs
+        - npm
+      become: yes
+      become_user: root
+
+    - name: Instal yarn
+      npm:
+        name: yarn
+        global: yes
+      become: yes
+      become_user: root
+
+    - name: Install python3
+      apt:
+        name: python3
+      become: yes
+
+    - name: Install python3-venv
+      apt:
+        name: python3-venv
+      become: yes
+
+    - name: Install redis
+      apt:
+        name: redis-server
+      become: yes
+
+    - name: Add source command to .bashrc
+      lineinfile:
+        path: ~/.bashrc
+        line: "source ~/env3/bin/activate"
+        regex: "^source ~/env3/bin/activate$"
+        state: present
+        insertafter: EOF
+        create: yes
+
+    - name: Install pip
+      apt:
+        pkg:
+        - python3-pip
+        - python3-venv
+        update_cache: yes
+      become: yes
+
+    - name: Set up virtualenv and get requirements
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      pip:
+        virtualenv: ~/env3
+        virtualenv_command: "{{ PYTHON }} -m venv"
+        requirements: /vagrant/zapisy/requirements.development.txt
+
+    # Vagrant file node_modules mounting
+    - name: Create vagrant_node_modules folder
+      file:
+        path: /vagrant_node_modules
+        state: directory
+        owner: vagrant
+        group: vagrant
+      become: yes
+
+    - name: Create logs directory
+      file:
+        path: /vagrant/zapisy/logs
+        state: directory
+      become: yes
+
+- name: Include playbook with postgres configuration
+  import_playbook: postgres.yml
+
+- name: Include playbook with services configuration
+  import_playbook: services.yml

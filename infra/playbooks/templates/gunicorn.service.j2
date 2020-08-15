@@ -1,0 +1,19 @@
+[Unit]
+Description=Zapisy gunicorn daemon
+After=network.target
+
+[Service]
+Restart=always
+Type=simple
+User={{ deploy_user }}
+Group=www-data
+WorkingDirectory=/home/{{ deploy_user }}/deploy/current/zapisy
+ExecStart=/home/{{ deploy_user }}/deploy/current/env3/bin/gunicorn \
+  --name "zapisy" \
+  --workers {{ nproc_out.stdout|int * 2 + 1 }} \
+  --bind=unix:/home/{{ deploy_user }}/deploy/current/env3/run/gunicorn.sock zapisy.wsgi:application \
+  --log-level=debug \
+  --log-file=-
+
+[Install]
+WantedBy=multi-user.target

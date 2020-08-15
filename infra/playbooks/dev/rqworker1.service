@@ -1,0 +1,12 @@
+[Unit]
+Description=Start rqworker default
+
+[Service]
+User=vagrant
+Group=vagrant
+WorkingDirectory=/vagrant/zapisy/
+ExecStart=/home/vagrant/env3/bin/python3 /vagrant/zapisy/manage.py rqworker default
+Type=simple
+
+[Install]
+WantedBy=vagrant.mount

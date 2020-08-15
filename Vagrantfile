@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/bionic64"
   config.vm.box_url = "https://app.vagrantup.com/ubuntu/boxes/bionic64"
   config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "ansible/playbook.yml"
+    ansible.playbook = "infra/playbooks/dev/playbook.yml"
   end
   config.vm.network :forwarded_port, guest: 80, host: 8001
   config.vm.network :forwarded_port, guest: 8000, host: 8000

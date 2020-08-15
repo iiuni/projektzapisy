@@ -1,0 +1,42 @@
+upstream gunicorn{
+    server unix:/home/{{ deploy_user }}/deploy/current/zapisy/socket/gunicorn.sock fail_timeout=0;
+}
+server {
+
+    listen 443 ssl;
+    server_name {{ deploy_server_name }};
+
+	client_max_body_size 4G;
+
+    access_log /home/{{ deploy_user }}/deploy/current/zapisy/logs/nginx-access.log;
+    error_log /home/{{ deploy_user }}/deploy/current/zapisy/logs/nginx-error.log warn;
+
+    include /etc/nginx/snippets/ssl-signed.conf;
+    include /etc/nginx/snippets/ssl-params.conf;
+
+    # path for static files
+    root /home/{{ deploy_user }}/deploy/current/zapisy;
+
+    location / {
+      # checks for static file, if not found proxy to app
+      try_files $uri @proxy_to_app;
+    }
+
+    location @proxy_to_app {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+
+        proxy_pass http://gunicorn;
+    }
+
+}
+
+server {
+
+	listen 80;
+	server_name {{ deploy_server_name }};
+	return 301 https://{{ deploy_server_name }}$request_uri;
+
+}

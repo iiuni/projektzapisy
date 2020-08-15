@@ -1,0 +1,38 @@
+---
+- hosts: deploy
+
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+    - name: Deploy new OpenSSL private key
+      copy:
+        src: ssl/zapisy.key
+        dest: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        force: yes
+        group: ssl-cert
+        mode: 0640
+      become: yes
+
+    - name: Deploy new OpenSSL certificate
+      copy:
+        src: ssl/zapisy.crt
+        dest: "/etc/ssl/certs/{{ deploy_server_name }}.crt"
+        force: yes
+        mode: 0644
+      become: yes
+
+    - name: Deploy new DH parameters
+      copy:
+        src: ssl/dhparam.pem
+        dest: /etc/nginx/dhparam.pem
+        force: yes
+        mode: 0644
+      become: yes
+
+    - name: Restart nginx service
+      service:
+        name: nginx
+        enabled: yes
+        state: restarted
+      become: yes

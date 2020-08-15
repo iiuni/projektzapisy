@@ -1,0 +1,11 @@
+[Unit]
+Description=Start rqworker default
+[Service]
+User={{ deploy_user }}
+Group={{ deploy_user }}
+WorkingDirectory=/home/{{ deploy_user }}/deploy/current/zapisy/
+ExecStart=/home/{{ deploy_user }}/deploy/current/env3/bin/python3 /home/{{ deploy_user }}/deploy/current/zapisy/manage.py rqworker default
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
