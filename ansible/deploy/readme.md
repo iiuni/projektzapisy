@@ -1,6 +1,10 @@
 # System Zapisów Deployment
 
+This manual will allow you to configure the remote machine with the Ubuntu system and deploy System Zapisów on it. 
+
 ## Setting up the machine
+
+Every admin has its account with no sudo privileges on the remote machine. For security, the admin has to use public-key authentication to log in to the server.
 
 ### Change sudo configuration on the remote machine
 
