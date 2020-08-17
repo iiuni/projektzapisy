@@ -66,6 +66,11 @@ def plan_view(request):
         if group_type not in assignments_course_info:
             assignments_course_info[group_type] = CourseGroupTypeSummary(
                 hours=assignment.hours_semester, teachers=set())
+        if assignment.teacher_username not in teachers:
+            messages.warning(
+                request, f"Użytkownik <strong>{assignment.teacher_username}</strong> "
+                "nie występuje w arkuszu <em>Pracownicy</em>. Przydział został pominięty.")
+            continue
         teacher = teachers[assignment.teacher_username]
         assignments_course_info[group_type].teachers.add(
             TeacherInfo(username=assignment.teacher_username,
