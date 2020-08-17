@@ -11,7 +11,7 @@ const AssetDefs = {
       "apps/common/assets/cookieconsent/display-cookieconsent.ts"
     ),
     path.resolve(
-      "apps/common/assets/main/icons-library.ts"
+      "apps/common/assets/main/icons-library.js"
     ),
     path.resolve("apps/common/assets/main/sidebar-fold.js"),
   ],
@@ -126,14 +126,14 @@ const AssetDefs = {
     path.resolve("apps/schedule/assets/reservation.js"),
   ],
   "schedule-fullcalendar": [
-    path.resolve("apps/schedule/assets/fullcalendar.ts"),
+    path.resolve("apps/schedule/assets/fullcalendar.js"),
   ],
   "schedule-report": [
     path.resolve("apps/schedule/assets/report.js"),
     path.resolve("apps/schedule/assets/report.css"),
   ],
   "schedule-report-editor": [
-    path.resolve("apps/schedule/assets/report-editor.ts"),
+    path.resolve("apps/schedule/assets/report-editor.js"),
     path.resolve("apps/schedule/assets/report-editor.scss"),
   ],
 

@@ -15,6 +15,7 @@ import { Group, GroupJSON } from "../models";
 import CourseList, { CourseObject } from "./CourseList.vue";
 import PrototypeTimetable from "./PrototypeTimetable.vue";
 
+// @ts-expect-error: timers is not part of Vue Component type.
 @Component({
   components: {
     CourseList,

@@ -27,6 +27,10 @@ export default class ThesesList extends Vue {
   // filters and sorting whenever they update.
   visibleTheses: ThesisInfo[] = [];
 
+  theses!: ThesisInfo[]
+  tester!: (ThesisInfo) => boolean
+  compare!: (a: ThesisInfo, b: ThesisInfo) => number
+
   created() {
     this.$store.dispatch("theses/initFromJSONTag");
   }

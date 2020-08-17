@@ -2,17 +2,18 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "sourceMap": true,
-    "target": "esnext",
-    "alwaysStrict": true,
-    "strictNullChecks": true,
-    "strict": true,
-    "jsx": "react",
-    "module": "esnext",
-    "baseUrl": "./common/assets",
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "types": ["jquery", "lodash", "bootstrap", "popper.js"]
+    // "sourceMap": true,
+    "target": "ESNext",
+    // "alwaysStrict": true,
+    // "strictNullChecks": true,
+    // "strict": true,
+    // "jsx": "react",
+    // "module": "esnext",
+    "esModuleInterop": true,
+    // "baseUrl": "./common/assets",
+    // "noUnusedParameters": true,
+    // "noUnusedLocals": true,
+    // "types": ["jquery", "lodash", "bootstrap", "popper.js"]
   },
-  "exclude": ["./node_modules", "./compiled_assets"]
+  // "exclude": ["./node_modules", "./compiled_assets"]
 }

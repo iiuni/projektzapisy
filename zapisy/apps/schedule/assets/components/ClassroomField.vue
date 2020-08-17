@@ -4,7 +4,7 @@ import Component from "vue-class-component";
 import $ from "jquery";
 import { TermDisplay } from "../terms";
 
-@Component({
+const ClassroomFieldProps = Vue.extend({
   props: {
     label: String,
     type: String,
@@ -22,11 +22,14 @@ import { TermDisplay } from "../terms";
         return [];
       }
     }
-  },
-  methods: {
-    // When changing location using widget we have to change values of room and place
+  }, 
+});
+
+@Component
+export default class ClassroomField extends ClassroomFieldProps {
+   // When changing location using widget we have to change values of room and place
     // fields of currently edited term. We do it using JQuery.
-    onClick: function() {
+    onClick() {
       $(".active-term")
         .find(".form-room")
         .val(this.id);
@@ -41,8 +44,6 @@ import { TermDisplay } from "../terms";
       );
     }
   }
-})
-export default class ClassroomField extends Vue {}
 </script>
 
 

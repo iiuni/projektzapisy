@@ -3,7 +3,7 @@
 
 import axios from "axios";
 import { safeLoad } from "js-yaml";
-import * as $ from "jquery";
+import $ from "jquery";
 
 const EXAMPLE_SYLLABUS_URL = "/static/proposal/example-syllabus.yaml";
 

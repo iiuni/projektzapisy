@@ -13,28 +13,65 @@ import ClassroomField from "./ClassroomField.vue";
   },
   data: () => {
     return {
-      showOccupied: true
+      showOccupied: true,
     };
   },
-  methods: {
-    getUnoccupied: function() {
+  watch: {
+    showOccupied: function(newShow: boolean) {
+      this.showOccupied = newShow;
+    }
+  }
+})
+export default class ClassroomPicker extends Vue {
+  classrooms: Classroom[] = [];
+  unoccupiedClassrooms: Classroom[] = [];
+  reservationLayer: TermDisplay[] = [];
+
+  // Attaches handlers to change of active term form.
+  mounted() {
+    let self = this;
+
+    // Sets handlers to change of time and date for currently
+    // active term.
+    let f = event => {
+      self.onChangedTime();
+      self.onChangedDate();
+
+      $(".active-term")
+        .find(".form-time")
+        .on("change", self.onChangedTime);
+
+      $(".active-term")
+        .find(".form-day")
+        .on("change", self.onChangedDate);
+    };
+
+    // The only two ways to change active term is clicking on
+    // edit term form or new term form, so we set handlers to
+    // the click events on all of these buttons in the document.
+    $(document).on("click", ".edit-term-form", f);
+    $(document).on("click", "#new-term-form", f);
+  }
+
+  getUnoccupied() {
       let begin = $(".active-term")
         .find(".form-start")
-        .val();
+        .val() as string;
       let end = $(".active-term")
         .find(".form-end")
-        .val();
+        .val() as string;
       this.unoccupiedClassrooms = this.classrooms.filter(item => {
         return isFree(item.rawOccupied, begin, end);
       });
-    },
-    onChangedTime: function() {
+    }
+
+    onChangedTime() {
       let start = $(".active-term")
         .find(".form-start")
-        .val();
+        .val() as string;
       let end = $(".active-term")
         .find(".form-end")
-        .val();
+        .val() as string;
 
       if (start > end || end < "08:00" || start > "22:00") {
         this.reservationLayer = [];
@@ -59,8 +96,9 @@ import ClassroomField from "./ClassroomField.vue";
         width: calculateLength(end, "22:00"),
         occupied: false
       });
-    },
-    onChangedDate: function() {
+    }
+
+    onChangedDate() {
       var self = this;
       var date = $(".active-term")
         .find(".form-day")
@@ -113,43 +151,6 @@ import ClassroomField from "./ClassroomField.vue";
         self.getUnoccupied();
       });
     }
-  },
-  watch: {
-    showOccupied: function(newShow: boolean) {
-      this.showOccupied = newShow;
-    }
-  }
-})
-export default class ClassroomPicker extends Vue {
-  classrooms: Classroom[] = [];
-  unoccupiedClassrooms: Classroom[] = [];
-  reservationLayer: TermDisplay[] = [];
-
-  // Attaches handlers to change of active term form.
-  mounted() {
-    let self = this;
-
-    // Sets handlers to change of time and date for currently
-    // active term.
-    let f = event => {
-      self.onChangedTime();
-      self.onChangedDate();
-
-      $(".active-term")
-        .find(".form-time")
-        .on("change", self.onChangedTime);
-
-      $(".active-term")
-        .find(".form-day")
-        .on("change", self.onChangedDate);
-    };
-
-    // The only two ways to change active term is clicking on
-    // edit term form or new term form, so we set handlers to
-    // the click events on all of these buttons in the document.
-    $(document).on("click", ".edit-term-form", f);
-    $(document).on("click", "#new-term-form", f);
-  }
 }
 </script>
 

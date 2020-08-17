@@ -1,3 +1,4 @@
+'use strict'
 const path = require("path");
 const autoprefixer = require("autoprefixer");
 
@@ -33,12 +34,8 @@ const RULES = [
   // Typescript files rule
   {
     test: /\.tsx?$/,
-    use: [
-      {
-        loader: "ts-loader",
-        query: { transpileOnly: true },
-      },
-    ],
+    loader: "ts-loader",
+    options: { appendTsSuffixTo: [/\.vue$/] },
     exclude: /node_modules/,
   },
 

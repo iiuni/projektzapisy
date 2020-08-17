@@ -28,6 +28,10 @@ export type CourseObject = { id: number; name: string; url: string };
 export default class CourseList extends Vue {
   // The computed property selectionState comes from store.
   selectionState!: number[];
+  // The same goes for courses and tester.
+  courses!: CourseInfo[];
+  tester!: (CourseInfo) => boolean;
+
   get selection(): number[] {
     return this.selectionState;
   }
