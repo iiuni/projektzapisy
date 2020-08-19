@@ -4,7 +4,7 @@ import ContentTools from "ContentTools";
 // build.
 const __hasProp = {}.hasOwnProperty;
 const __extends = function(child, parent) {
-    for (var key in parent) {
+    for (const key in parent) {
         if (__hasProp.call(parent, key)) child[key] = parent[key];
     }
     function ctor() {
