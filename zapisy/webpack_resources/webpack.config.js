@@ -3,11 +3,8 @@ const path = require("path");
 const autoprefixer = require("autoprefixer");
 
 const BundleTracker = require("webpack-bundle-tracker");
-const {
-  CleanWebpackPlugin,
-} = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
@@ -45,21 +42,7 @@ const RULES = [
     exclude: /node_modules/,
     use: {
       loader: "babel-loader",
-      options: {
-        presets: [
-          [
-            "@babel/preset-env",
-            {
-              targets: {
-                browsers: ["last 2 versions"],
-              },
-            },
-          ],
-        ],
-        plugins: [
-          "@babel/plugin-proposal-object-rest-spread",
-        ],
-      },
+      options: { presets: ["@babel/preset-env"] },
     },
   },
 
@@ -67,7 +50,7 @@ const RULES = [
   {
     test: /\.(sa|sc|c)ss$/,
     use: [
-      MiniCssExtractPlugin.loader,
+      'vue-style-loader',
       {
         loader: "css-loader",
         options: { sourceMap: true },
@@ -96,7 +79,6 @@ const PLUGINS = [
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",
   }),
-  new MiniCssExtractPlugin(),
   new MomentLocalesPlugin({
     localesToKeep: ["pl"],
   }),
@@ -112,20 +94,6 @@ const WEBPACK_CONFIG = {
   },
   module: {
     rules: RULES,
-  },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendors: {
-          test: /node_modules/,
-          chunks: "initial",
-          name: "vendors",
-          priority: 10,
-          enforce: true,
-        },
-      },
-      minChunks: 2,
-    },
   },
   resolve: {
     modules: [path.resolve("./node_modules")],
