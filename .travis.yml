@@ -1,6 +1,7 @@
 language: python
 python:
   - "3.6"
+dist: bionic
 
 addons:
   apt:
@@ -15,6 +16,7 @@ services:
   - redis-server
 
 install:
+  - (cd zapisy && yarn) || exit 1
   - pip install -r zapisy/requirements.test.txt
 
 
@@ -30,13 +32,7 @@ jobs:
   include:
     - stage: lint
       script: 
-        - |
-          echo "travis_fold:start:yarn"
-          # Installs Yarn/NPM dependencies.
-          (cd zapisy && yarn) || exit 1
-          rm -rf zapisy/node_modules/.cache-loader-*
-          echo "travis_fold:end:yarn"
-          (cd zapisy && yarn lint) || exit 1
+        - (cd zapisy && yarn lint) || exit 1
         - python -m flake8 --statistics .
 
     - stage: test
@@ -55,10 +51,6 @@ jobs:
           - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
       script: 
         - |
-          echo "travis_fold:start:yarn"
-          # Installs Yarn/NPM dependencies.
-          (cd zapisy && yarn) || exit 1
-          # Builds assets.
           (cd zapisy && yarn build) || exit 1
           # Don't store the build cache; it changes after each build, Travis then
           # picks that change up and repacks the cache archive which takes forever
