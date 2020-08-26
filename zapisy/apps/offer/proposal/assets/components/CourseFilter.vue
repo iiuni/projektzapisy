@@ -6,7 +6,7 @@ import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFil
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
-import { FilterDataJSON, KVDict } from "@/enrollment/timetable/assets/models";
+import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
 
 export default Vue.extend({
   components: {

@@ -7,7 +7,7 @@
 // group information.
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Group, Term, Hour, Minute, TimeTuple, nameDay } from "../models";
+import { Group, Term, TimeTuple, nameDay } from "../models";
 
 // This is a way to make TypeScript recognise the props and their types.
 const TermProps = Vue.extend({

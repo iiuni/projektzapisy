@@ -5,14 +5,13 @@
 // list of available courses and selecting ones to present on the timemtable.
 // The other one is the timetable itself. The set of currently displayed groups
 // is maintained by the Vuex store (`../store/index.ts`).
-import { values } from "lodash";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
-import VueTimers from "vue-timers/mixin";
+// @ts-expect-error: No definitions for this module.
+import {mixin as VueTimers} from "vue-timers";
 
-import { Group, GroupJSON } from "../models";
-import CourseList, { CourseObject } from "./CourseList.vue";
+import CourseList from "./CourseList.vue";
 import PrototypeTimetable from "./PrototypeTimetable.vue";
 
 // @ts-expect-error: timers is not part of Vue Component type.

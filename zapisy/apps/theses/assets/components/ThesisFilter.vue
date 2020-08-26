@@ -1,6 +1,5 @@
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 
 import TextFilter from "./filters/TextFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
@@ -14,7 +13,8 @@ export default Vue.extend({
   },
   data: function () {
     return {
-      allKinds: {},
+      allKinds: [] as [string, string][],
+      allStatuses: [] as [number, string][],
     };
   },
   created: function () {

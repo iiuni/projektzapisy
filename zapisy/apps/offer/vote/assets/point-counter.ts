@@ -13,7 +13,7 @@ function setValueMapFromInput(
   map: { [key: string]: number },
   input: HTMLInputElement
 ) {
-  const name: string = input.getAttribute("name");
+  const name: string = input.getAttribute("name")!;
   const val: number = parseInt(input.value, 10);
   map[name] = val;
 }
@@ -25,7 +25,7 @@ function setValueMapFromInput(
 // correction and had voted for the course in the primary voting, we put a
 // colour on the course).
 function highlightVotedRow(select: HTMLSelectElement) {
-  let tableRow = select.closest("tr");
+  let tableRow = select.closest("tr")!;
   if (select.value !== select.options[0].text) {
     tableRow.classList.remove("table-success");
     tableRow.classList.add("table-primary");
@@ -40,7 +40,7 @@ function highlightVotedRow(select: HTMLSelectElement) {
 
 function setUpCounter() {
   const limit = parseInt(
-    document.getElementById("point-counter").innerHTML,
+    document.getElementById("point-counter")!.innerHTML,
     10
   );
   const inputs = document.querySelectorAll(".limit select");
@@ -84,9 +84,9 @@ document.addEventListener("DOMContentLoaded", function () {
   for (const input of inputs) {
     (input as HTMLElement).addEventListener("input", function (_) {
       const row = this.closest("tr");
-      if (row.classList.contains("limit")) {
+      if (row!.classList.contains("limit")) {
         // Update the map.
-        setValueMapFromInput(comp.inputs, this as HTMLInputElement);
+        setValueMapFromInput(comp!.inputs, this as HTMLInputElement);
       }
 
       // If the value is different than minimum, add a highlight.

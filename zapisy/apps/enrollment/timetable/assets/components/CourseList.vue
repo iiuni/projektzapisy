@@ -9,8 +9,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 
-import { Group } from "../models";
-import courses, { CourseInfo } from "../store/courses";
+import { CourseInfo } from "../store/courses";
 
 export type CourseObject = { id: number; name: string; url: string };
 
@@ -30,7 +29,7 @@ export default class CourseList extends Vue {
   selectionState!: number[];
   // The same goes for courses and tester.
   courses!: CourseInfo[];
-  tester!: (CourseInfo) => boolean;
+  tester!: (_: CourseInfo) => boolean;
 
   get selection(): number[] {
     return this.selectionState;

@@ -1,5 +1,4 @@
 <script lang="ts">
-import { property } from "lodash";
 import Vue from "vue";
 import { mapMutations, mapGetters } from "vuex";
 

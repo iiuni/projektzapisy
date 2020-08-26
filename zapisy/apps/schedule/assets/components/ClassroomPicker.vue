@@ -1,13 +1,12 @@
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 import $ from "jquery";
 import { min, max } from "lodash";
 import axios from "axios";
 import { TermDisplay, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
 
-@Component({
+const ClassroomPickerDefinition = Vue.extend({
   components: {
     ClassroomField,
   },
@@ -21,8 +20,9 @@ import ClassroomField from "./ClassroomField.vue";
       this.showOccupied = newShow;
     },
   },
-})
-export default class ClassroomPicker extends Vue {
+});
+
+export default class ClassroomPicker extends ClassroomPickerDefinition {
   classrooms: Classroom[] = [];
   unoccupiedClassrooms: Classroom[] = [];
   reservationLayer: TermDisplay[] = [];
@@ -33,7 +33,7 @@ export default class ClassroomPicker extends Vue {
 
     // Sets handlers to change of time and date for currently
     // active term.
-    let f = (event) => {
+    let f = (event: Event) => {
       self.onChangedTime();
       self.onChangedDate();
 
@@ -66,8 +66,8 @@ export default class ClassroomPicker extends Vue {
       return;
     }
 
-    start = max(["08:00", start]);
-    end = min(["22:00", end]);
+    start = max(["08:00", start]) as string;
+    end = min(["22:00", end]) as string;
 
     this.getUnoccupied();
 

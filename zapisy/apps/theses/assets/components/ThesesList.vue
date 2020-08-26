@@ -28,7 +28,7 @@ export default class ThesesList extends Vue {
   visibleTheses: ThesisInfo[] = [];
 
   theses!: ThesisInfo[];
-  tester!: (ThesisInfo) => boolean;
+  tester!: (_: ThesisInfo) => boolean;
   compare!: (a: ThesisInfo, b: ThesisInfo) => number;
 
   created() {

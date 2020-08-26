@@ -15,13 +15,6 @@ import Vue from "vue";
 import { Term, DayOfWeek, nameDay } from "../models";
 import TermComponent from "./Term.vue";
 
-interface DayData {
-  key: string;
-  d: DayOfWeek;
-  dayName: string;
-  terms: Array<Term>;
-}
-
 const DayProps = Vue.extend({
   props: {
     d: Number as () => DayOfWeek,

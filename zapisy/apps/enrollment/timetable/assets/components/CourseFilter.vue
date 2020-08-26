@@ -6,7 +6,7 @@ import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
-import { FilterDataJSON, KVDict } from "./../models";
+import { FilterDataJSON } from "./../models";
 
 export default Vue.extend({
   components: {

@@ -36,7 +36,7 @@ export default class ClassroomField extends ClassroomFieldProps {
       .val("Sala " + this.label);
     $([document.documentElement, document.body]).animate(
       {
-        scrollTop: $("#term-forms").offset().top,
+        scrollTop: $("#term-forms").offset()!.top,
       },
       500
     );

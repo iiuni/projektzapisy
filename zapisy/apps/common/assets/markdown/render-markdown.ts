@@ -1,8 +1,8 @@
 import marked from "marked";
 
-let callback = function (mutations, observer) {
+let callback = function (_mutations: any, _observer: any) {
   for (const element of document.querySelectorAll(".markdown")) {
-    const raw = element.textContent;
+    const raw = element.textContent || "";
     const rendered = marked(raw);
     element.innerHTML = rendered;
     // This way Markdown is not rendered twice.
@@ -17,6 +17,6 @@ const config = { attributes: false, childList: true, subtree: false };
 // #main-content-container (a full-page view like my-proposals).
 const targetNode =
   document.getElementById("main-content") ||
-  document.getElementById("main-content-container");
+  document.getElementById("main-content-container")!;
 let observer = new MutationObserver(callback);
 observer.observe(targetNode, config);

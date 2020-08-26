@@ -10,7 +10,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 
 import Day from "./Day.vue";
-import { Group, Term, nameDay } from "../models";
+import { Group, nameDay } from "../models";
 
 const SimpleTimetableProps = Vue.extend({
   props: {

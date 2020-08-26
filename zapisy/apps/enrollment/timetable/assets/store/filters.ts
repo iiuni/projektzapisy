@@ -2,7 +2,6 @@
 // filters.
 import { every, invokeMap, values } from "lodash";
 
-import { ActionContext } from "vuex";
 import { CourseInfo } from "./courses";
 
 export interface Filter {
