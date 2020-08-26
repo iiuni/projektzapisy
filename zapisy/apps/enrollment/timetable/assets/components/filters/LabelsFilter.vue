@@ -1,11 +1,5 @@
 <script lang="ts">
-import {
-  property,
-  intersection,
-  isEmpty,
-  keys,
-  fromPairs,
-} from "lodash";
+import { property, intersection, isEmpty, keys, fromPairs } from "lodash";
 import Vue from "vue";
 import { mapMutations } from "vuex";
 
