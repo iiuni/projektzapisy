@@ -14,6 +14,6 @@
     // "noUnusedParameters": true,
     // "noUnusedLocals": true,
     // "types": ["jquery", "lodash", "bootstrap", "popper.js"]
-  },
+  }
   // "exclude": ["./node_modules", "./compiled_assets"]
 }

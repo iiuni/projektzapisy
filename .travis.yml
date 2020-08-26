@@ -51,6 +51,7 @@ jobs:
           - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
       script: 
         - |
+          echo "travis_fold:start:yarn"
           (cd zapisy && yarn build) || exit 1
           # Don't store the build cache; it changes after each build, Travis then
           # picks that change up and repacks the cache archive which takes forever
