@@ -67,6 +67,9 @@ const RULES = [
   {
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
     loader: "file-loader",
+    options: {
+      publicPath: "static",
+    },
   },
 ];
 
