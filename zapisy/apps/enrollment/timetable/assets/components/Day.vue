@@ -26,20 +26,19 @@ const DayProps = Vue.extend({
   props: {
     d: Number as () => DayOfWeek,
     terms: Array as () => Array<Term>,
-  }
+  },
 });
 
 @Component({
   components: {
-    Term: TermComponent
-  }
+    Term: TermComponent,
+  },
 })
 export default class DayComponent extends DayProps {
-
   // Monday will always have hour labels shown on the left side.
   isMonday: boolean = this.d === DayOfWeek.Monday;
 
-  dayName: string = nameDay(this.d)
+  dayName: string = nameDay(this.d);
 
   // In which column to put the day wrapper
   dayStyle = {
@@ -49,50 +48,53 @@ export default class DayComponent extends DayProps {
   // For every full hour we have a label with it on the left side of the
   // timetable.
   get hourLabels() {
-    return [...Array(16).keys()].map(k => ({
+    return [...Array(16).keys()].map((k) => ({
       key: "hour-label-" + k,
       hour: k + 8 + ":00",
       style: {
-        gridRow: k * 4 + 2 + "/" + (k * 4 + 2)
-      }
+        gridRow: k * 4 + 2 + "/" + (k * 4 + 2),
+      },
     }));
   }
 
   // Horizontal rules with alternating solid/dotted style will be drawn
   // every half hour.
   get halfHourRules() {
-    return range(0, 61, 2).map(k => ({
+    return range(0, 61, 2).map((k) => ({
       key: `hour-rule-${k}`,
       style: {
-        gridRow: `${k+3} / ${k+3}`,
+        gridRow: `${k + 3} / ${k + 3}`,
         borderTopStyle: k % 4 === 0 ? "solid" : "dotted",
-      }
+      },
     }));
   }
 }
 </script>
 
 <template>
-  <div class='day' :class="{monday: isMonday}" :style="dayStyle">
+  <div class="day" :class="{ monday: isMonday }" :style="dayStyle">
     <span class="day-label">{{ dayName }}</span>
 
-    <div class="hour-label" v-for="h of hourLabels" :style="h.style" :key="h.key">
+    <div
+      class="hour-label"
+      v-for="h of hourLabels"
+      :style="h.style"
+      :key="h.key"
+    >
       <span>{{ h.hour }}</span>
     </div>
 
     <template v-for="r of halfHourRules">
-      <div class="gridline-row" :key="r.key" :style="r.style" ></div>
+      <div class="gridline-row" :key="r.key" :style="r.style"></div>
     </template>
 
     <div class="day-wrapper">
-
       <template v-for="t of terms">
         <Term :key="t.id" :term="t" />
       </template>
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .day {

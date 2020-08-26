@@ -10,22 +10,22 @@ import { Term, Group } from "../models";
 
 const TermControlsProps = Vue.extend({
   props: {
-    term: Term
-  }
+    term: Term,
+  },
 });
 
 @Component({
   components: {
-    Term: TermComponent
-  }
+    Term: TermComponent,
+  },
 })
 export default class TermControlsComponent extends TermControlsProps {
   controlsVisible: boolean = false;
 
   get group(): Group {
-    return  this.term.group;
+    return this.term.group;
   }
-  
+
   // Determines if a new enrollment record can be created into the group.
   get canEnqueue(): boolean {
     if (this.term.group.isEnrolled) return false;
@@ -56,7 +56,7 @@ export default class TermControlsComponent extends TermControlsProps {
       "zostanie dokonana próba wciągnięcia do niej studentów z kolejki. Jeśli ",
       "w momencie wciągania do grupy student nie spełnia warunków zapisu ",
       "(np. przekracza limit ECTS, nie jest zapisany na wykład do ",
-      "przedmiotu), jego rekord zostaje usunięty."
+      "przedmiotu), jego rekord zostaje usunięty.",
     ].join("");
 
     if (confirm(confirmMessage)) {
@@ -74,17 +74,41 @@ export default class TermControlsComponent extends TermControlsProps {
 </script>
 
 <template>
-    <Term :term="term" @mouseover.native="controlsVisible=true" @mouseout.native="controlsVisible=false">
-        <transition name="fade">
-            <div class="controls" v-if="controlsVisible">
-                <span v-if="group.isPinned" class="unpin" title="Odepnij grupę od planu." @click="unpin()"></span>
-                <span v-else class="pin" title="Przypnij grupę do planu." @click="pin()"></span>
+  <Term
+    :term="term"
+    @mouseover.native="controlsVisible = true"
+    @mouseout.native="controlsVisible = false"
+  >
+    <transition name="fade">
+      <div class="controls" v-if="controlsVisible">
+        <span
+          v-if="group.isPinned"
+          class="unpin"
+          title="Odepnij grupę od planu."
+          @click="unpin()"
+        ></span>
+        <span
+          v-else
+          class="pin"
+          title="Przypnij grupę do planu."
+          @click="pin()"
+        ></span>
 
-                <span v-if="canEnqueue" class="enqueue" title="Zapisz do grupy/kolejki." @click="enqueue()"></span>
-                <span v-if="canDequeue" class="dequeue" title="Wypisz z grupy/kolejki." @click="dequeue()"></span>
-            </div>
-        </transition>
-    </Term>
+        <span
+          v-if="canEnqueue"
+          class="enqueue"
+          title="Zapisz do grupy/kolejki."
+          @click="enqueue()"
+        ></span>
+        <span
+          v-if="canDequeue"
+          class="dequeue"
+          title="Wypisz z grupy/kolejki."
+          @click="dequeue()"
+        ></span>
+      </div>
+    </transition>
+  </Term>
 </template>
 
 <style lang="scss" scoped>
@@ -139,5 +163,3 @@ span.dequeue {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4ggOEhs2PtkFxgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAE5SURBVCjPfZCxSlxhEIW/M/Pf+7uSXddFcEkTSBXClmks7ISgpLBIKSwoAYsEwSLkPdJISJmUpgo+QbBIIalELANuG1ACbvTeSeEim0v0lMOcM+cbACEt49oFetwjd9zBHGyN0AbSQ7ATiPP/7A8knju4QC0sCfkqUT8pLUZVMALAmMXyOlFvRehoYu4WUCyitInSN+FfMZag3QHbQX6A0gqAmjWhHKB4d8MTv7DoQvpANf5yD14aoPwDpUNUvmkkNvRgdp4r3kPVIVSjeIYYQZzeIE1L1uf39UeoH6PYAxuCHYO/xHO/0b7s4nkPyz9R8fZ2PjM/h4rPeH5Fe2HCnHG8tY21zlCxD7nzT5iVT5Hvg/oJgDE9uHoBdgl8QtUFMWWo/xyDf8fj0eRCO6M0BL0G2nd8LpGwv420RBxssgl5AAAAAElFTkSuQmCC);
 }
 </style>
-
-

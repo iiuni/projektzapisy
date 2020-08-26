@@ -3,5 +3,5 @@ import $ from "jquery";
 import "bootstrap";
 
 $(document).ready(() => {
-    $("#consentDialog").modal('show');
+  $("#consentDialog").modal("show");
 });

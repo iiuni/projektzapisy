@@ -2,7 +2,7 @@
   pk: 1
   fields:
     visible: true
-    type: z  # Semester.TYPE_WINTER
+    type: z # Semester.TYPE_WINTER
     year: 2018/19
     records_opening: 2018-10-01 00:00:00
     records_closing: 2090-12-21 23:59:59
@@ -32,7 +32,7 @@
   pk: 1
   fields:
     limit: 20
-    type: 2  # 'cwiczenia'
+    type: 2 # 'cwiczenia'
     teacher: 2
     course: 1
 
@@ -40,6 +40,6 @@
   pk: 2
   fields:
     limit: 20
-    type: 2  # 'cwiczenia'
+    type: 2 # 'cwiczenia'
     teacher: 3
     course: 1

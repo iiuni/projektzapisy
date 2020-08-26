@@ -29,7 +29,15 @@ script: skip
 jobs:
   include:
     - stage: lint
-      script: python -m flake8 --statistics .
+      script: 
+        - |
+          echo "travis_fold:start:yarn"
+          # Installs Yarn/NPM dependencies.
+          (cd zapisy && yarn) || exit 1
+          rm -rf zapisy/node_modules/.cache-loader-*
+          echo "travis_fold:end:yarn"
+          (cd zapisy && yarn lint) || exit 1
+        - python -m flake8 --statistics .
 
     - stage: test
       cache:

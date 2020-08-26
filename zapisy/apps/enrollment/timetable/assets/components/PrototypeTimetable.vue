@@ -8,8 +8,8 @@ import PrototypeDay from "./PrototypeDay.vue";
 
 @Component({
   components: {
-    Day: PrototypeDay
-  }
+    Day: PrototypeDay,
+  },
 })
 export default class PrototypeTimetable extends SimpleTimetable {}
 </script>

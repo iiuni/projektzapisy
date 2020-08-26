@@ -1,9 +1,11 @@
 <template>
-    <ul>
-        <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
-            <a :href="userLinkUrl+user.id">{{user.first_name}} {{user.last_name}}</a>
-        </li>
-    </ul>
+  <ul>
+    <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
+      <a :href="userLinkUrl + user.id"
+        >{{ user.first_name }} {{ user.last_name }}</a
+      >
+    </li>
+  </ul>
 </template>
 <script lang="js">
 import { EventBus } from './event-bus';

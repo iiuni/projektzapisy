@@ -26,24 +26,24 @@ export default Vue.extend({
     // Every filter needs a unique identifier.
     filterKey: String,
     options: Array as () => [number, string][],
-    placeholder: String
+    placeholder: String,
   },
   data: () => {
     return {
-      selected: undefined
+      selected: undefined,
     };
   },
   methods: {
-    ...mapMutations("filters", ["registerFilter"])
+    ...mapMutations("filters", ["registerFilter"]),
   },
   watch: {
-    selected: function(newSelected: number | undefined) {
+    selected: function (newSelected: number | undefined) {
       this.registerFilter({
         k: this.filterKey,
-        f: new ExactFilter(newSelected, this.property)
+        f: new ExactFilter(newSelected, this.property),
       });
-    }
-  }
+    },
+  },
 });
 </script>
 

@@ -36,16 +36,11 @@ export function isFree(
   return isFree;
 }
 
-export function calculateLength(
-  startTime: string,
-  endTime: string
-) {
+export function calculateLength(startTime: string, endTime: string) {
   let momentStartTime = moment(startTime, "HH:mm");
   let momentEndTime = moment(endTime, "HH:mm");
 
-  var duration = moment
-    .duration(momentEndTime.diff(momentStartTime))
-    .asHours();
+  var duration = moment.duration(momentEndTime.diff(momentStartTime)).asHours();
 
   return String((duration / 14) * 100) + "%";
 }

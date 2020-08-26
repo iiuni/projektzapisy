@@ -9,7 +9,7 @@
     // "strict": true,
     // "jsx": "react",
     // "module": "esnext",
-    "esModuleInterop": true,
+    "esModuleInterop": true
     // "baseUrl": "./common/assets",
     // "noUnusedParameters": true,
     // "noUnusedLocals": true,

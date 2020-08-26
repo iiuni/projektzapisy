@@ -16,29 +16,29 @@ const SimpleTimetableProps = Vue.extend({
   props: {
     groups: {
       type: Array as () => Array<Group>,
-      default: []
-    }
-  }
+      default: [],
+    },
+  },
 });
 
 @Component({
   components: {
-    Day: Day
-  }
+    Day: Day,
+  },
 })
 export default class SimpleTimetable extends SimpleTimetableProps {
   // Populates timetable data to the day components. The terms are extracted
   // from provided groups and distributed by their respective weekday.
   get daysData() {
-    const groupTerms = this.groups.map(g => g.terms);
+    const groupTerms = this.groups.map((g) => g.terms);
     const allTerms = flatten(groupTerms);
     const terms_by_day = groupBy(allTerms, "weekday");
 
-    return range(1, 6).map(d => ({
+    return range(1, 6).map((d) => ({
       key: `day-${d}`,
       d: d,
       dayName: nameDay(d),
-      terms: terms_by_day[d]
+      terms: terms_by_day[d],
     }));
   }
 }
@@ -46,7 +46,7 @@ export default class SimpleTimetable extends SimpleTimetableProps {
 
 <template>
   <div class="week">
-    <Day v-for="dd of daysData" :key="dd.key" :d="dd.d" :terms="dd.terms"/>
+    <Day v-for="dd of daysData" :key="dd.key" :d="dd.d" :terms="dd.terms" />
   </div>
 </template>
 
@@ -67,5 +67,3 @@ export default class SimpleTimetable extends SimpleTimetableProps {
   }
 }
 </style>
-
-

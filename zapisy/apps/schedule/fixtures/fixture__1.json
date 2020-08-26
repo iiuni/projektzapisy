@@ -1,1 +1,112 @@
-[{"pk": 9, "model": "courses.semester", "fields": {"records_opening": "2016-02-24T00:00:00", "records_ects_limit_abolition": "2016-03-01T00:00:00", "desiderata_closing": null, "semester_beginning": "2016-02-22", "semester_ending": "2016-09-10", "first_grade_semester": null, "t0_are_ready": false, "second_grade_semester": null, "visible": true, "lectures_beginning": "2016-02-22", "year": "2015/16", "desiderata_opening": null, "lectures_ending": "2016-06-16", "type": "l", "records_closing": "2016-03-14T00:00:00", "is_grade_active": false}}, {"pk": 10, "model": "courses.semester", "fields": {"records_opening": "2015-09-20T00:00:00", "records_ects_limit_abolition": "2015-10-01T00:00:00", "desiderata_closing": null, "semester_beginning": "2015-10-01", "semester_ending": "2016-02-21", "first_grade_semester": null, "t0_are_ready": false, "second_grade_semester": null, "visible": true, "lectures_beginning": "2015-10-01", "year": "2015/16", "desiderata_opening": null, "lectures_ending": "2016-02-03", "type": "z", "records_closing": "2015-10-14T00:00:00", "is_grade_active": false}}, {"pk": 12, "model": "courses.classroom", "fields": {"building": "Instytut Informatyki", "capacity": 20, "description": "Pracownia z najszybszymi komputerami w instytucie", "floor": 1, "number": "110", "slug": "110", "can_reserve": true, "type": 3, "order": null}}, {"pk": 13, "model": "courses.classroom", "fields": {"building": "Instytut Informatyki", "capacity": 32, "description": "Sala cwiczeniowa", "floor": 1, "number": "104", "slug": "104", "can_reserve": true, "type": 1, "order": null}}, {"pk": 13, "model": "schedule.specialreservation", "fields": {"classroom": 12, "dayOfWeek": "3", "title": "A reservation", "start_time": "15:00:00", "semester": 9, "end_time": "16:00:00"}}, {"pk": 14, "model": "schedule.specialreservation", "fields": {"classroom": 12, "dayOfWeek": "4", "title": "Anoter reservation", "start_time": "15:00:00", "semester": 9, "end_time": "16:00:00"}}, {"pk": 15, "model": "schedule.specialreservation", "fields": {"classroom": 12, "dayOfWeek": "1", "title": "Reserve whole monday", "start_time": "08:00:00", "semester": 10, "end_time": "21:00:00"}}]
+[
+  {
+    "pk": 9,
+    "model": "courses.semester",
+    "fields": {
+      "records_opening": "2016-02-24T00:00:00",
+      "records_ects_limit_abolition": "2016-03-01T00:00:00",
+      "desiderata_closing": null,
+      "semester_beginning": "2016-02-22",
+      "semester_ending": "2016-09-10",
+      "first_grade_semester": null,
+      "t0_are_ready": false,
+      "second_grade_semester": null,
+      "visible": true,
+      "lectures_beginning": "2016-02-22",
+      "year": "2015/16",
+      "desiderata_opening": null,
+      "lectures_ending": "2016-06-16",
+      "type": "l",
+      "records_closing": "2016-03-14T00:00:00",
+      "is_grade_active": false
+    }
+  },
+  {
+    "pk": 10,
+    "model": "courses.semester",
+    "fields": {
+      "records_opening": "2015-09-20T00:00:00",
+      "records_ects_limit_abolition": "2015-10-01T00:00:00",
+      "desiderata_closing": null,
+      "semester_beginning": "2015-10-01",
+      "semester_ending": "2016-02-21",
+      "first_grade_semester": null,
+      "t0_are_ready": false,
+      "second_grade_semester": null,
+      "visible": true,
+      "lectures_beginning": "2015-10-01",
+      "year": "2015/16",
+      "desiderata_opening": null,
+      "lectures_ending": "2016-02-03",
+      "type": "z",
+      "records_closing": "2015-10-14T00:00:00",
+      "is_grade_active": false
+    }
+  },
+  {
+    "pk": 12,
+    "model": "courses.classroom",
+    "fields": {
+      "building": "Instytut Informatyki",
+      "capacity": 20,
+      "description": "Pracownia z najszybszymi komputerami w instytucie",
+      "floor": 1,
+      "number": "110",
+      "slug": "110",
+      "can_reserve": true,
+      "type": 3,
+      "order": null
+    }
+  },
+  {
+    "pk": 13,
+    "model": "courses.classroom",
+    "fields": {
+      "building": "Instytut Informatyki",
+      "capacity": 32,
+      "description": "Sala cwiczeniowa",
+      "floor": 1,
+      "number": "104",
+      "slug": "104",
+      "can_reserve": true,
+      "type": 1,
+      "order": null
+    }
+  },
+  {
+    "pk": 13,
+    "model": "schedule.specialreservation",
+    "fields": {
+      "classroom": 12,
+      "dayOfWeek": "3",
+      "title": "A reservation",
+      "start_time": "15:00:00",
+      "semester": 9,
+      "end_time": "16:00:00"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "schedule.specialreservation",
+    "fields": {
+      "classroom": 12,
+      "dayOfWeek": "4",
+      "title": "Anoter reservation",
+      "start_time": "15:00:00",
+      "semester": 9,
+      "end_time": "16:00:00"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "schedule.specialreservation",
+    "fields": {
+      "classroom": 12,
+      "dayOfWeek": "1",
+      "title": "Reserve whole monday",
+      "start_time": "08:00:00",
+      "semester": 10,
+      "end_time": "21:00:00"
+    }
+  }
+]

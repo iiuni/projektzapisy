@@ -7,36 +7,34 @@
 
 import Vue from "vue";
 import SimpleTimetable from "./components/SimpleTimetable.vue";
-import {Group} from "./models";
+import { Group } from "./models";
 
 Vue.config.productionTip = false;
 
 new Vue({
-    el: "#timetable",
-    components: {SimpleTimetable},
-    data: {
-        groups: [],
+  el: "#timetable",
+  components: { SimpleTimetable },
+  data: {
+    groups: [],
+  },
+  render: function (h) {
+    return h(SimpleTimetable, {
+      props: {
+        groups: this.groups,
+      },
+    });
+  },
+  created: function () {
+    this.update_groups();
+  },
+  methods: {
+    update_groups: function () {
+      const groupsDump = JSON.parse(
+        document.getElementById("timetable-data").innerHTML
+      );
+      for (const groupDump of groupsDump) {
+        this.groups.push(new Group(groupDump));
+      }
     },
-    render: function(h) {
-        return h(SimpleTimetable, {
-            props: {
-                groups: this.groups,
-            },
-        });
-    },
-    created: function() {
-        this.update_groups();
-    },
-    methods: {
-        update_groups: function() {
-            const groupsDump = JSON.parse(
-                document.getElementById("timetable-data").innerHTML
-            );
-            for (const groupDump of groupsDump) {
-                this.groups.push(new Group(groupDump));
-            }
-        },
-    },
+  },
 });
-
-

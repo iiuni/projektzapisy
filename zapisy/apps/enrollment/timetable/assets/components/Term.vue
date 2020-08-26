@@ -12,8 +12,8 @@ import { Group, Term, Hour, Minute, TimeTuple, nameDay } from "../models";
 // This is a way to make TypeScript recognise the props and their types.
 const TermProps = Vue.extend({
   props: {
-    term: Term
-  }
+    term: Term,
+  },
 });
 
 @Component
@@ -56,7 +56,7 @@ export default class TermComponent extends TermProps {
     const startRow: number = this.timeTupleToRow(this.term.startTime);
     const endRow: number = this.timeTupleToRow(this.term.endTime);
     return {
-      gridRow: `${startRow} / ${endRow}`
+      gridRow: `${startRow} / ${endRow}`,
     };
   }
 
@@ -88,25 +88,24 @@ export default class TermComponent extends TermProps {
 </script>
 
 <template>
-<div
-    class="term-box"
-    :style="boxStyle"
-    :class="boxClass">
-  <div class="term-info" :title="title" @click="showPopup()">
-    <span class="short-name">{{ courseShortName }}</span>
-    <span class="teacher">{{ group.teacher.name }}</span>
-    <span class="classrooms">s. {{ term.classrooms }}</span>
-    <span class="group-type">{{ group.type }}</span>
-  </div>
+  <div class="term-box" :style="boxStyle" :class="boxClass">
+    <div class="term-info" :title="title" @click="showPopup()">
+      <span class="short-name">{{ courseShortName }}</span>
+      <span class="teacher">{{ group.teacher.name }}</span>
+      <span class="classrooms">s. {{ term.classrooms }}</span>
+      <span class="group-type">{{ group.type }}</span>
+    </div>
 
-  <transition name="fade">
-    <div v-if="popupVisible" class="popup" @mouseleave="hidePopup()">
+    <transition name="fade">
+      <div v-if="popupVisible" class="popup" @mouseleave="hidePopup()">
         <span class="popup-name">
           <a :href="group.course.url">{{ group.course.name }}</a>
         </span>
         <p class="popup-info">
-            {{ group.type }}
-            ({{ weekday.toLocaleLowerCase() }} {{ term.startTimeString }}-{{ term.endTimeString }})
+          {{ group.type }}
+          ({{ weekday.toLocaleLowerCase() }} {{ term.startTimeString }}-{{
+            term.endTimeString
+          }})
         </p>
         <p class="popup-info">
           Prowadzący:
@@ -114,15 +113,17 @@ export default class TermComponent extends TermProps {
         </p>
         <p class="popup-info">Sala: {{ term.classrooms }}</p>
         <a class="group-link" :href="group.url">
-          lista studentów zapisanych do grupy
-          ({{ group.numEnrolled }}/{{ group.limit }}<span v-for="gs of group.guaranteedSpots" :key="gs.role" title="">+{{ gs.limit }}</span>)
+          lista studentów zapisanych do grupy ({{ group.numEnrolled }}/{{
+            group.limit
+          }}<span v-for="gs of group.guaranteedSpots" :key="gs.role" title=""
+            >+{{ gs.limit }}</span
+          >)
         </a>
-    </div>
-  </transition>
+      </div>
+    </transition>
 
-  <slot></slot>
-
-</div>
+    <slot></slot>
+  </div>
 </template>
 
 <style lang="scss">

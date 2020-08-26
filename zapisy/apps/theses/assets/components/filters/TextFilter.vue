@@ -25,32 +25,43 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    placeholder: String
+    placeholder: String,
   },
   data: () => {
     return {
-      pattern: ""
+      pattern: "",
     };
   },
   methods: {
-    ...mapMutations("filters", ["registerFilter"])
+    ...mapMutations("filters", ["registerFilter"]),
   },
   watch: {
-    pattern: function(newPattern: string, _) {
+    pattern: function (newPattern: string, _) {
       this.registerFilter({
         k: this.filterKey,
-        f: new TextFilter(newPattern, this.property)
+        f: new TextFilter(newPattern, this.property),
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
 <template>
   <div class="input-group mb-2">
-    <input class="form-control" type="text" v-model="pattern" :placeholder="placeholder" />
+    <input
+      class="form-control"
+      type="text"
+      v-model="pattern"
+      :placeholder="placeholder"
+    />
     <div class="input-group-append">
-      <button class="btn btn-outline-secondary" type="button" @click="pattern = ''">&times;</button>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        @click="pattern = ''"
+      >
+        &times;
+      </button>
     </div>
   </div>
 </template>

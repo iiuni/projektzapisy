@@ -1,158 +1,116 @@
 const path = require("path");
 
 const AssetDefs = {
-    // Common app
+  // Common app
 
-    "common-main": [
-        path.resolve("apps/common/assets/main/expose_libs.ts"),
-        path.resolve("apps/common/assets/main/_variables.scss"),
-        path.resolve("apps/common/assets/main/index.scss"),
-        path.resolve(
-            "apps/common/assets/cookieconsent/display-cookieconsent.ts"
-        ),
-        path.resolve(
-            "apps/common/assets/main/icons-library.js"
-        ),
-        path.resolve("apps/common/assets/main/sidebar-fold.js"),
-    ],
-    "common-render-markdown": [
-        path.resolve(
-            "apps/common/assets/markdown/render-markdown.ts"
-        ),
-        path.resolve(
-            "apps/common/assets/markdown/render-markdown.scss"
-        ),
-    ],
-    "common-markdown-editor": [
-        path.resolve(
-            "apps/common/assets/markdown/markdown-editor.js"
-        ),
-    ],
+  "common-main": [
+    path.resolve("apps/common/assets/main/expose_libs.ts"),
+    path.resolve("apps/common/assets/main/_variables.scss"),
+    path.resolve("apps/common/assets/main/index.scss"),
+    path.resolve("apps/common/assets/cookieconsent/display-cookieconsent.ts"),
+    path.resolve("apps/common/assets/main/icons-library.js"),
+    path.resolve("apps/common/assets/main/sidebar-fold.js"),
+  ],
+  "common-render-markdown": [
+    path.resolve("apps/common/assets/markdown/render-markdown.ts"),
+    path.resolve("apps/common/assets/markdown/render-markdown.scss"),
+  ],
+  "common-markdown-editor": [
+    path.resolve("apps/common/assets/markdown/markdown-editor.js"),
+  ],
 
-    // Courses app
+  // Courses app
 
-    "courses-course-list": [
-        path.resolve(
-            "apps/enrollment/courses/assets/course-list-index.js"
-        ),
-    ],
+  "courses-course-list": [
+    path.resolve("apps/enrollment/courses/assets/course-list-index.js"),
+  ],
 
-    // Timetable app
+  // Timetable app
 
-    "timetable-timetable-component": [
-        path.resolve(
-            "apps/enrollment/timetable/assets/simple-timetable-index.js"
-        ),
-    ],
-    "timetable-prototype-component": [
-        path.resolve(
-            "apps/enrollment/timetable/assets/prototype-index.js"
-        ),
-    ],
-    "timetable-prototype-legend-stylesheet": [
-        path.resolve(
-            "apps/enrollment/timetable/assets/prototype-legend.scss"
-        ),
-    ],
+  "timetable-timetable-component": [
+    path.resolve("apps/enrollment/timetable/assets/simple-timetable-index.js"),
+  ],
+  "timetable-prototype-component": [
+    path.resolve("apps/enrollment/timetable/assets/prototype-index.js"),
+  ],
+  "timetable-prototype-legend-stylesheet": [
+    path.resolve("apps/enrollment/timetable/assets/prototype-legend.scss"),
+  ],
 
-    // Poll app
+  // Poll app
 
-    "poll-bokeh-plotting": [
-        path.resolve("apps/grade/poll/assets/bokeh.js"),
-        path.resolve("apps/grade/poll/assets/bokeh.scss"),
-    ],
+  "poll-bokeh-plotting": [
+    path.resolve("apps/grade/poll/assets/bokeh.js"),
+    path.resolve("apps/grade/poll/assets/bokeh.scss"),
+  ],
 
-    // Ticket_create app
+  // Ticket_create app
 
-    "ticket_create-katex": [
-        path.resolve(
-            "apps/grade/ticket_create/assets/katex.ts"
-        ),
-    ],
-    "ticket_create-ticketsgenerate": [
-        path.resolve(
-            "apps/grade/ticket_create/assets/ticketsgenerate_main.js"
-        ),
-    ],
+  "ticket_create-katex": [
+    path.resolve("apps/grade/ticket_create/assets/katex.ts"),
+  ],
+  "ticket_create-ticketsgenerate": [
+    path.resolve("apps/grade/ticket_create/assets/ticketsgenerate_main.js"),
+  ],
 
-    // Notification app
+  // Notification app
 
-    "notifications-notifications-widget": [
-        path.resolve(
-            "apps/notifications/assets/notifications-widget.js"
-        ),
-    ],
+  "notifications-notifications-widget": [
+    path.resolve("apps/notifications/assets/notifications-widget.js"),
+  ],
 
-    // Desiderata app
+  // Desiderata app
 
-    "desiderata-checkboxes": [
-        path.resolve(
-            "apps/offer/desiderata/assets/checkboxes-toggling.js"
-        ),
-    ],
+  "desiderata-checkboxes": [
+    path.resolve("apps/offer/desiderata/assets/checkboxes-toggling.js"),
+  ],
 
-    // Proposal app
+  // Proposal app
 
-    "proposal-fill-placeholders": [
-        path.resolve(
-            "apps/offer/proposal/assets/fill-placeholders.ts"
-        ),
-    ],
-    "proposal-course-list": [
-        path.resolve(
-            "apps/offer/proposal/assets/course-list-index.js"
-        ),
-    ],
+  "proposal-fill-placeholders": [
+    path.resolve("apps/offer/proposal/assets/fill-placeholders.ts"),
+  ],
+  "proposal-course-list": [
+    path.resolve("apps/offer/proposal/assets/course-list-index.js"),
+  ],
 
-    // Vote app
+  // Vote app
 
-    "vote-point-counter": [
-        path.resolve("apps/offer/vote/assets/point-counter.ts"),
-    ],
-    "vote-bootstrap-table": [
-        path.resolve(
-            "apps/offer/vote/assets/bootstrap-table.js"
-        ),
-    ],
+  "vote-point-counter": [
+    path.resolve("apps/offer/vote/assets/point-counter.ts"),
+  ],
+  "vote-bootstrap-table": [
+    path.resolve("apps/offer/vote/assets/bootstrap-table.js"),
+  ],
 
-    // Schedule app
+  // Schedule app
 
-    "schedule-reservation-widget": [
-        path.resolve(
-            "apps/schedule/assets/reservation-widget.js"
-        ),
-    ],
-    "schedule-reservation": [
-        path.resolve("apps/schedule/assets/reservation.js"),
-    ],
-    "schedule-fullcalendar": [
-        path.resolve("apps/schedule/assets/fullcalendar.js"),
-    ],
-    "schedule-report": [
-        path.resolve("apps/schedule/assets/report.js"),
-        path.resolve("apps/schedule/assets/report.css"),
-    ],
-    "schedule-report-editor": [
-        path.resolve("apps/schedule/assets/report-editor.js"),
-        path.resolve("apps/schedule/assets/report-editor.scss"),
-    ],
+  "schedule-reservation-widget": [
+    path.resolve("apps/schedule/assets/reservation-widget.js"),
+  ],
+  "schedule-reservation": [path.resolve("apps/schedule/assets/reservation.js")],
+  "schedule-fullcalendar": [
+    path.resolve("apps/schedule/assets/fullcalendar.js"),
+  ],
+  "schedule-report": [
+    path.resolve("apps/schedule/assets/report.js"),
+    path.resolve("apps/schedule/assets/report.css"),
+  ],
+  "schedule-report-editor": [
+    path.resolve("apps/schedule/assets/report-editor.js"),
+    path.resolve("apps/schedule/assets/report-editor.scss"),
+  ],
 
-    // Theses app
+  // Theses app
 
-    "theses-theses-widget": [
-        path.resolve("apps/theses/assets/theses-widget.js"),
-    ],
+  "theses-theses-widget": [path.resolve("apps/theses/assets/theses-widget.js")],
 
-    // User app
+  // User app
 
-    "users-user-filter": [
-        path.resolve(
-            "apps/users/assets/user-filter-list-index.js"
-        ),
-    ],
-    "users-consent-dialog": [
-        path.resolve("apps/users/assets/consent-dialog.ts"),
-    ],
+  "users-user-filter": [
+    path.resolve("apps/users/assets/user-filter-list-index.js"),
+  ],
+  "users-consent-dialog": [path.resolve("apps/users/assets/consent-dialog.ts")],
 };
 
 module.exports = AssetDefs;

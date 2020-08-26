@@ -4,8 +4,6 @@ import "./katex.css";
 import renderMathInElement from "katex/dist/contrib/auto-render";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const element = document.getElementById(
-    "od-vote-main-rules"
-  )!;
+  const element = document.getElementById("od-vote-main-rules")!;
   renderMathInElement(element);
 });

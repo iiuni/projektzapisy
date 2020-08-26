@@ -8,13 +8,13 @@ import filters from "../../timetable/assets/store/filters";
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-    modules: {
-        filters,
-    },
+  modules: {
+    filters,
+  },
 });
 
 if (document.getElementById("course-filter") !== null) {
-    new Vue({el: "#course-filter", render: (h) => h(CourseFilter), store});
+  new Vue({ el: "#course-filter", render: (h) => h(CourseFilter), store });
 }
 
-new Vue({el: "#course-list", render: (h) => h(CourseList), store});
+new Vue({ el: "#course-list", render: (h) => h(CourseList), store });

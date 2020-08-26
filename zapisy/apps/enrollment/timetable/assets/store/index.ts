@@ -13,9 +13,9 @@ import filters from "./filters";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    modules: {
-        groups,
-        courses,
-        filters,
-    },
+  modules: {
+    groups,
+    courses,
+    filters,
+  },
 });

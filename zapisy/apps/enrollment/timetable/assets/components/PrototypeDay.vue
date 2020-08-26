@@ -9,9 +9,8 @@ import TermControlsComponent from "./TermControls.vue";
 
 @Component({
   components: {
-    Term: TermControlsComponent
-  }
+    Term: TermControlsComponent,
+  },
 })
 export default class PrototypeDayComponent extends DayComponent {}
 </script>
-

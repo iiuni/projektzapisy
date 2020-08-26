@@ -25,31 +25,36 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    label: String
+    label: String,
   },
   data: () => {
     return {
-      on: false
+      on: false,
     };
   },
   methods: {
-    ...mapMutations("filters", ["registerFilter"])
+    ...mapMutations("filters", ["registerFilter"]),
   },
   watch: {
-    on: function(newOn: boolean) {
+    on: function (newOn: boolean) {
       this.registerFilter({
         k: this.filterKey,
-        f: new BooleanFilter(newOn, this.property)
+        f: new BooleanFilter(newOn, this.property),
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
 <template>
   <div class="input-group">
     <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" :id="filterKey" v-model="on" />
+      <input
+        type="checkbox"
+        class="custom-control-input"
+        :id="filterKey"
+        v-model="on"
+      />
       <label class="custom-control-label" :for="filterKey">{{ label }}</label>
     </div>
   </div>

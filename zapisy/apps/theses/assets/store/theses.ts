@@ -19,13 +19,13 @@ interface State {
   theses: ThesisInfo[];
 }
 const state: State = {
-  theses: []
+  theses: [],
 };
 
 const getters = {
   theses(state: State): Array<ThesisInfo> {
     return sortBy(values(state.theses), "title");
-  }
+  },
 };
 
 const actions = {
@@ -34,7 +34,7 @@ const actions = {
       document.getElementById("theses-data")!.innerHTML
     ) as ThesisInfo;
     commit("setTheses", thesesDump);
-  }
+  },
 };
 
 const mutations = {
@@ -42,7 +42,7 @@ const mutations = {
     theses.forEach((c, id) => {
       state.theses[id] = c;
     });
-  }
+  },
 };
 
 export default {
@@ -50,5 +50,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

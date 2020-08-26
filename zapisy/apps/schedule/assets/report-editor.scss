@@ -1,80 +1,79 @@
 @import "~ContentTools/build/content-tools.min.css";
 @import "~@fortawesome/fontawesome-free/css/solid.css";
 
-
 // Uses Font Awesome to display tool icon.
 // This is a strikethrough icon.
 .ct-tool--strike::before {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f0cc";
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f0cc";
 }
 
 // This is a _font_ icon coloured red.
 .ct-tool--red::before {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f031";
-    color: var(--red);
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f031";
+  color: var(--red);
 }
 
 .ct-tool--red.ct-tool--disabled {
-    &::before {
-        color: rgba(220, 53, 69, 0.33);
-    }
+  &::before {
+    color: rgba(220, 53, 69, 0.33);
+  }
 }
 
 // We introduce an artificial HTML tag for red text.
 red {
-    color: var(--red);
+  color: var(--red);
 }
 
 // This is a _font_ icon painted green.
 .ct-tool--green::before {
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f031";
-    color: var(--green);
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f031";
+  color: var(--green);
 }
 
 .ct-tool--green.ct-tool--disabled {
-    &::before {
-        color: rgba(40, 167, 69, 0.33);
-    }
+  &::before {
+    color: rgba(40, 167, 69, 0.33);
+  }
 }
 
 // HTML tag for green text.
 green {
-    color: var(--green);
+  color: var(--green);
 }
 
 // The _edit_ button should be very visible, so we colour it pink to contrast
 // with our blue layout. We also move it a bit lower.
 .ct-widget {
-    .ct-ignition__button--edit,
-    .ct-ignition__button--confirm,
-    .ct-ignition__button--cancel {
-        top: 200px !important;
+  .ct-ignition__button--edit,
+  .ct-ignition__button--confirm,
+  .ct-ignition__button--cancel {
+    top: 200px !important;
+  }
+  .ct-ignition__button--edit {
+    background: var(--pink);
+    &:hover {
+      background: var(--pink);
     }
-    .ct-ignition__button--edit {
-        background: var(--pink);
-        &:hover {
-            background: var(--pink);
-        }
-    }
+  }
 }

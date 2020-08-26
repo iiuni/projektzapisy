@@ -18,11 +18,11 @@ export type CourseObject = { id: number; name: string; url: string };
   computed: {
     ...mapGetters("courses", {
       selectionState: "selection",
-      courses: "courses"
+      courses: "courses",
     }),
     ...mapGetters("filters", {
-      tester: "visible"
-    })
+      tester: "visible",
+    }),
   },
 })
 export default class CourseList extends Vue {
@@ -46,7 +46,7 @@ export default class CourseList extends Vue {
     this.visibleCourses = this.courses;
 
     this.$store.subscribe((mutation, state) => {
-      switch(mutation.type) {
+      switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
           break;
@@ -58,11 +58,23 @@ export default class CourseList extends Vue {
 
 <template>
   <div class="course-list-wrapper">
-    <a class="btn btn-small btn-light" @click="selection = []">Odznacz wszystkie</a>
+    <a class="btn btn-small btn-light" @click="selection = []"
+      >Odznacz wszystkie</a
+    >
     <div class="course-list-sidebar">
       <ul class="course-list-sidebar-inner">
-        <li v-for="c of visibleCourses" :key="c.id" class="custom-control custom-checkbox">
-          <input type="checkbox" :id="c.id" :value="c.id" v-model="selection" class="custom-control-input">
+        <li
+          v-for="c of visibleCourses"
+          :key="c.id"
+          class="custom-control custom-checkbox"
+        >
+          <input
+            type="checkbox"
+            :id="c.id"
+            :value="c.id"
+            v-model="selection"
+            class="custom-control-input"
+          />
           <label :for="c.id" class="custom-control-label">{{ c.name }}</label>
         </li>
       </ul>

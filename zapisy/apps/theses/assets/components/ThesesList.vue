@@ -7,29 +7,29 @@ import Component from "vue-class-component";
 
 @Component({
   components: {
-    SorterField
+    SorterField,
   },
   computed: {
     ...mapGetters("theses", {
-      theses: "theses"
+      theses: "theses",
     }),
     ...mapGetters("filters", {
-      tester: "visible"
+      tester: "visible",
     }),
     ...mapGetters("sorting", {
       compare: "compare",
-      isEmpty: "isEmpty"
-    })
-  }
+      isEmpty: "isEmpty",
+    }),
+  },
 })
 export default class ThesesList extends Vue {
   // The list should be initialised to contain all the theses and then apply
   // filters and sorting whenever they update.
   visibleTheses: ThesisInfo[] = [];
 
-  theses!: ThesisInfo[]
-  tester!: (ThesisInfo) => boolean
-  compare!: (a: ThesisInfo, b: ThesisInfo) => number
+  theses!: ThesisInfo[];
+  tester!: (ThesisInfo) => boolean;
+  compare!: (a: ThesisInfo, b: ThesisInfo) => number;
 
   created() {
     this.$store.dispatch("theses/initFromJSONTag");
@@ -42,15 +42,11 @@ export default class ThesesList extends Vue {
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.visibleTheses = this.theses.filter(
-            this.tester
-          );
+          this.visibleTheses = this.theses.filter(this.tester);
           this.visibleTheses.sort(this.compare);
           break;
         case "sorting/changeSorting":
-          this.visibleTheses = this.theses.filter(
-            this.tester
-          );
+          this.visibleTheses = this.theses.filter(this.tester);
           this.visibleTheses.sort(this.compare);
           break;
       }
@@ -79,10 +75,7 @@ export default class ThesesList extends Vue {
           <SorterField property="kind" label="Typ" />
         </th>
         <th>
-          <SorterField
-            property="advisor_last_name"
-            label="Promotor"
-          />
+          <SorterField property="advisor_last_name" label="Promotor" />
         </th>
         <th>Rezerwacja</th>
       </tr>
@@ -90,9 +83,7 @@ export default class ThesesList extends Vue {
     <tbody>
       <tr v-for="t of visibleTheses" :key="t.id">
         <td class="align-middle">
-          <a class="btn-link" :href="t.url">{{
-            t.title
-          }}</a>
+          <a class="btn-link" :href="t.url">{{ t.title }}</a>
           <em v-if="!t.has_been_accepted" class="text-muted"
             >({{ t.status }})</em
           >
@@ -103,7 +94,7 @@ export default class ThesesList extends Vue {
         <td class="align-middle text-nowrap">
           {{ t.advisor }}
         </td>
-        <td class="align-middle" :class="{'text-muted': t.is_available}">
+        <td class="align-middle" :class="{ 'text-muted': t.is_available }">
           {{ t.students }}
         </td>
       </tr>

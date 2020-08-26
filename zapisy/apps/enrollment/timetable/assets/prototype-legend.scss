@@ -2,29 +2,29 @@
 // component.
 
 ul.schedule-legend {
-    list-style: none;
+  list-style: none;
 
-    .legend-box {
-        float: left;
-        height: 12px;
-        width: 12px;
-        vertical-align: middle;
-        margin-right: 6px;
-        
-        // Colours are copied from `components/Term.vue`.
-        &.enrolled {
-            background: #e0eeee;
-        }
-        &.enqueued {
-            background: #f5e5c4;
-        }
-        &.pinned {
-            background: #fae8f8;
-        }
+  .legend-box {
+    float: left;
+    height: 12px;
+    width: 12px;
+    vertical-align: middle;
+    margin-right: 6px;
+
+    // Colours are copied from `components/Term.vue`.
+    &.enrolled {
+      background: #e0eeee;
     }
-    
-    // Colours will be presented in divs, icons in spans.
-    div.legend-box {
-        border: 1px solid;
+    &.enqueued {
+      background: #f5e5c4;
     }
+    &.pinned {
+      background: #fae8f8;
+    }
+  }
+
+  // Colours will be presented in divs, icons in spans.
+  div.legend-box {
+    border: 1px solid;
+  }
 }

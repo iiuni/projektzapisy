@@ -20,7 +20,7 @@ footer {
     background-color: var(--light);
     padding: 1rem 0;
     p {
-      margin: .5rem 0;
+      margin: 0.5rem 0;
     }
   }
 }
@@ -48,7 +48,7 @@ a {
 }
 
 div.header {
- /* Old browsers */
+  /* Old browsers */
   height: 96px;
 }
 
@@ -65,7 +65,7 @@ body.debug {
 
 div.top .topbar .inline-inputs label {
   float: none;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 #login-dropdown {
@@ -109,9 +109,10 @@ div.top .topbar .inline-inputs label {
           width: 100%;
           content: "";
           // Bootstrap light colour.
-          background: linear-gradient(to top,
-              rgba(255,255,255, 1) 0%, 
-              rgba(255,255,255, 0) 100%
+          background: linear-gradient(
+            to top,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0) 100%
           );
           pointer-events: none; /* so the text is still selectable */
         }
@@ -149,12 +150,12 @@ div.loginbox {
       margin: 0 2px;
       a {
         background-color: #005f92;
-        color: #FFFFFF;
+        color: #ffffff;
         margin-right: 1px;
       }
 
       &.active a {
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         color: #005f92;
         margin-right: 1px;
       }
@@ -162,13 +163,13 @@ div.loginbox {
   }
 }
 
-colgroup col.table-info-type  {
-	background-color: #F9F9F9;
+colgroup col.table-info-type {
+  background-color: #f9f9f9;
 }
 
 // Required field marker in forms.
 .asteriskField {
-  padding-left: .25em;
+  padding-left: 0.25em;
   color: var(--red);
 }
 

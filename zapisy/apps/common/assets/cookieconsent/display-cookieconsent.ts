@@ -7,23 +7,24 @@ import "./cookieconsent.min.js";
 import "./cookieconsent.min.css";
 
 window.addEventListener("load", function () {
-    (window as any).cookieconsent.initialise({
-        "palette": {
-            "popup": {
-                "background": "#222222"
-            },
-            "button": {
-                "background": "#00709e"
-            }
-        },
-        "showLink": false,
-        "theme": "classic",
-        "position": "bottom",
-        "content": {
-            "message": ("System zapisów wykorzystuje pliki cookies. Korzystanie"
-                + " z witryny oznacza zgodę na ich zapis lub odczyt według"
-                + " ustawień przeglądarki."),
-            "dismiss": "OK"
-        }
-    });
+  (window as any).cookieconsent.initialise({
+    palette: {
+      popup: {
+        background: "#222222",
+      },
+      button: {
+        background: "#00709e",
+      },
+    },
+    showLink: false,
+    theme: "classic",
+    position: "bottom",
+    content: {
+      message:
+        "System zapisów wykorzystuje pliki cookies. Korzystanie" +
+        " z witryny oznacza zgodę na ich zapis lub odczyt według" +
+        " ustawień przeglądarki.",
+      dismiss: "OK",
+    },
+  });
 });

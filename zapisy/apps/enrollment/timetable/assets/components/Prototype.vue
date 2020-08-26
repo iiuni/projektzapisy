@@ -19,24 +19,24 @@ import PrototypeTimetable from "./PrototypeTimetable.vue";
 @Component({
   components: {
     CourseList,
-    PrototypeTimetable
+    PrototypeTimetable,
   },
   computed: {
     ...mapGetters("courses", {
-      courses: "courses"
+      courses: "courses",
     }),
     ...mapGetters("groups", {
-      groupsGetter: "visibleGroups"
-    })
+      groupsGetter: "visibleGroups",
+    }),
   },
   mixins: [VueTimers],
   timers: {
-    update: { 
-      time: 60*1000,  // run every minute
+    update: {
+      time: 60 * 1000, // run every minute
       autostart: true,
       repeat: true,
-      isSwitchTab: true,  // deactivate when tab is inactive.
-    }
+      isSwitchTab: true, // deactivate when tab is inactive.
+    },
   },
 })
 export default class Prototype extends Vue {
@@ -52,7 +52,7 @@ export default class Prototype extends Vue {
 </script>
 
 <template>
-    <div class="col">
-        <PrototypeTimetable :groups="groupsGetter"/>
-    </div>
+  <div class="col">
+    <PrototypeTimetable :groups="groupsGetter" />
+  </div>
 </template>
