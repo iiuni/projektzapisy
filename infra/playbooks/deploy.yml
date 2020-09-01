@@ -36,6 +36,13 @@
         force: yes
         remote_src: yes
 
+    - name: Add execute permission to perform_dump.sh file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
+        mode: '0754'
+
     - name: Set up virtualenv and get requirements
       become: yes
       become_user: "{{ deploy_user }}"
