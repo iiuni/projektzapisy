@@ -41,7 +41,7 @@
       become_user: "{{ deploy_user }}"
       file:
         path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
-        mode: '0754'
+        mode: '0774'
 
     - name: Set up virtualenv and get requirements
       become: yes
