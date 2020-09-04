@@ -12,18 +12,17 @@ Every admin has his own account with no-password sudo privileges on the remote m
 
 __For the first time:__
 
-2. Create group `zapisy-admin`: `sudo groupadd zapisy-admin`
-3. Open *sudoers* file with `sudo visudo` command
-4. Add following line to the end of the file:\
-`%zapisy-admin ALL=(ALL:ALL) NOPASSWD: ALL`
-5. Save changes
+2. Open *sudoers* file with `sudo visudo` command
+3. Add following line to the end of the file:\
+`%adm ALL=(ALL:ALL) NOPASSWD: ALL`
+4. Save changes
 
 __Each time:__
 
-6. Add your user to the `zapisy-admin` group:\
-`sudo usermod -a -G zapisy-admin username`\
+5. Add your user to the `adm` group:\
+`sudo usermod -a -G adm username`\
 where `username` is your username on the remote machine
-8. Log out
+6. Log out
 
 
 ### Prepare ssh connection
@@ -117,7 +116,7 @@ where `hostfile` is inventory file like *staging* or *production*
 
 
 ## Debugging
-To display additional information during configuration, deployment, or restoring database add the flag `-vvv` to ansible-playbook commands.
+To display additional information during configuration, deployment, or restoring database add the flag `-vvv` to ansible-playbook commands and set environment variable `ANSIBLE_STDOUT_CALLBACK=debug` to more readable output.
 
 Logs are stored in the *logs* folder in every deployment release. All releases can be found in `/home/deploy_user/deploy/releases` directory on the remote machine, where `deploy_user` is value from inventory file.
 
@@ -125,3 +124,14 @@ Other useful commands for use on the remote machine:
 - `journalctl -xe` - shows the latest logs from all services
 - `journalctl -u example.service -fe`- shows and follows the latest logs from example service
 - `systemctl status example.service` - shows the status of example service
+
+
+## Example
+To test deployment on your machine follow the instructions below.
+
+1. Install VirtualBox and Vagrant.
+2. Run `vagrant up` command in the *hosts* directory.
+3. Run these commands in turn in the *infra* directory:
+	- `ansible-playbook playbooks/configure.yml -i hosts/example -T 60 -c paramiko`
+	- `ansible-playbook playbooks/deploy.yml -i hosts/example -T 60 -c paramiko`
+4. Check the `192.168.33.10` address in your web browser.
