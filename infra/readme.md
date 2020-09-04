@@ -28,8 +28,8 @@ where `username` is your username on the remote machine
 
 ### Prepare ssh connection
 
-1. If you don't have *private_key_file*, you must generate it with the `ssh-keygen` command.
-2. Copy your file into the remote machine with `ssh-copy-id user@host`\
+1. If you don't have *private_key_file*, you must generate it with the `ssh-keygen` command (on your own machine).
+2. Copy your public key into the remote machine with `ssh-copy-id user@host`\
 where `user` is your username and `host` is your hostname on the remote host.
 3. Edit *production* or/and *staging* file in *hosts* directory. Add the path to your ssh *private_key_file*.
 4. If it's necessary, change other variables with your data. \
@@ -38,7 +38,7 @@ where `user` is your username and `host` is your hostname on the remote host.
 	- `ansible_host` - address ip or public hostname of remote machine
 	- `ansible_port` - ssh port
 	- `deploy_user` - special user what will be created for our development
-	- `deploy-version` - name of branch from __projektzapisy__ repository
+	- `deploy_version` - name of branch from __projektzapisy__ repository
 	- `deploy_server_name` - name of domain what points on remote machine
 	- `rollbar_token` - *post_server_item* token from Rollbar settings or __none__ value
 5. To add another server to deployment edit your hosts (*staging*/*production*) like this:
