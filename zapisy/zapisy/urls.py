@@ -22,12 +22,8 @@ urlpatterns = [
 
     url(r'^grade/', include('apps.grade.urls')),
 
-    url(r'^offer/', include('apps.offer.proposal.urls')),
-    url(r'^prefs/', include('apps.offer.preferences.urls')),
-    url(r'^desiderata/', include('apps.offer.desiderata.urls')),
+    path('offer/', include('apps.offer.urls')),
     url(r'^', include(('apps.schedule.urls', 'events'), namespace='events')),
-    url(r'^vote/', include('apps.offer.vote.urls')),
-    url(r'^plan/', include('apps.offer.plan.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^fereol_admin/', admin.site.urls),
 

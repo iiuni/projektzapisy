@@ -1,30 +1,18 @@
-from typing import Optional, List, Tuple
+from datetime import datetime, timedelta
+from typing import List, Optional, Tuple
 
+from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned
+from django.core.validators import ValidationError
 from django.db import models
 
-from apps.enrollment.courses.exceptions import MoreThanOneCurrentSemesterException, \
-    MoreThanOneSemesterWithOpenRecordsException
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db.models import Q
-from django.core.validators import ValidationError
-from datetime import datetime, timedelta
-from django.conf import settings
 from apps.common import days_of_week
 
 from .term import Term
 
 
-class GetterManager(models.Manager):
-
-    def get_next(self):
-        try:
-            return self.get(visible=True, records_closing__gte=datetime.now())
-        except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return self.filter(visible=True).order_by('records_closing').last()
-
-
 class Semester(models.Model):
-    """semester in academic year"""
+    """Semester in academic year."""
     TYPE_WINTER = 'z'
     TYPE_SUMMER = 'l'
     TYPE_CHOICES = [(TYPE_WINTER, 'zimowy'), (TYPE_SUMMER, 'letni')]
@@ -49,10 +37,6 @@ class Semester(models.Model):
 
     semester_beginning = models.DateField(null=False, verbose_name='Data rozpoczęcia semestru')
     semester_ending = models.DateField(null=False, verbose_name='Data zakończenia semestru')
-    desiderata_opening = models.DateTimeField(
-        null=True, blank=True, verbose_name='Czas otwarcia dezyderat')
-    desiderata_closing = models.DateTimeField(
-        null=True, blank=True, verbose_name='Czas zamknięcia dezyderat')
 
     is_grade_active = models.BooleanField(verbose_name='Ocena aktywna', default=False)
     records_ects_limit_abolition = models.DateTimeField(
@@ -82,13 +66,11 @@ class Semester(models.Model):
         max_length=20,
         verbose_name='Kod semestru w systemie USOS')
 
-    objects = GetterManager()
-
     def clean(self):
-        """
-        Overloaded clean method. Checks for any conflicts between this SpecialReservation
-        and other SpecialReservations, Terms of Events and Terms of Course Groups
+        """Overloaded clean method.
 
+        Checks for any conflicts between this SpecialReservation and other
+        SpecialReservations, Terms of Events and Terms of Course Groups.
         """
         if self.records_ending and not (
                 self.records_opening <= self.records_ending <= self.records_closing):
@@ -121,7 +103,7 @@ class Semester(models.Model):
         return settings.ECTS_FINAL_LIMIT
 
     def get_name(self):
-        """ returns name of semester """
+        """Returns name of semester."""
         # TODO: wymuszanie formatu roku "XXXX/YY" zamiast "XXXX"
         if len(self.year) != 7:
             return '(BŁĄD) {0} {1}'.format(self.year, self.get_type_display())
@@ -135,73 +117,12 @@ class Semester(models.Model):
         return self.year
 
     def is_current_semester(self):
-        """ Answers to question: is semester current semester"""
         if self.semester_beginning is None or self.semester_ending is None:
             return False
         return self.semester_beginning <= datetime.now().date() <= self.semester_ending
 
-    def get_previous_semester(self):
-        """ returns previous semester """
-        year = self.year
-        if self.type == 'l':
-            try:
-                return Semester.objects.filter(year=year, type='z')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-        else:
-            prev_year = str(int(year[0:4]) - 1)
-            year = prev_year + '/' + year[2:4]
-            try:
-                return Semester.objects.filter(year=year, type='l')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-
-    @staticmethod
-    def get_list(user=None):
-        if not user:
-            return Semester.objects.filter(visible=True)
-
-        semesters = Semester.objects.filter(visible=True, semester_beginning__gte=user.date_joined)
-
-        if semesters:
-            return semesters
-
-        return Semester.objects.filter(visible=True)[0]
-
-    @staticmethod
-    def get_by_id(id):
-        return Semester.objects.get(id=id)
-
-    @staticmethod
-    def get_by_id_or_default(id=None):
-        if id:
-            return Semester.get_by_id(id)
-
-        return Semester.get_current_semester()
-
-    @staticmethod
-    def get_semester(date):
-        """
-        Get semester for a specified date. More versatile than get_current_semester
-
-        :param date: datetime.date
-        :return: Semester or None
-        """
-        try:
-            return Semester.objects.get(semester_beginning__lte=date,
-                                        semester_ending__gte=date)
-        except Semester.DoesNotExist:
-            return None
-        except MultipleObjectsReturned:
-            raise MoreThanOneCurrentSemesterException()
-
     def get_all_days_of_week(self, day_of_week, start_date=None):
-        """
-        Get all dates when the specifies day of week schedule is valid
+        """Get all dates when the specifies day of week schedule is valid.
 
         :param day_of_week: DAYS_OF_WEEK
         :param start_date: datetime.date
@@ -237,12 +158,13 @@ class Semester(models.Model):
         return dates
 
     def get_all_added_days_of_week(self, day_of_week, start_date=None):
-        """
-        Gets dates of all weekdays changed from another weekday to specvified weekday in this semester, starting from
-        the specified date or the beggining of the semester
+        """Finds all days with switched weekday.
 
-        :param day_of_week: DAYS_OF_WEEK
-        :param start_date: datetime.date
+        Args:
+            day_of_week: Filters by day of week the date is switched to.
+            start_date: If provided, the switched days starting with this date
+                are returned. Otherwise the search is limited to the current
+                semester.
         """
         from_date = self.lectures_beginning
         if start_date:
@@ -267,54 +189,51 @@ class Semester(models.Model):
         return weeks
 
     @staticmethod
-    def get_current_semester():
-        """ if exist, it returns current semester. otherwise return None """
+    def get_semester(date):
+        """Get semester for a specified date. More versatile than get_current_semester.
+
+        Args:
+            date: Choose semester with date included
+
+        Returns:
+            Semester or None
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
         try:
-            return Semester.objects.get(
-                semester_beginning__lte=datetime.now().date(),
-                semester_ending__gte=datetime.now().date())
+            return Semester.objects.get(semester_beginning__lte=date,
+                                        semester_ending__gte=date)
         except Semester.DoesNotExist:
             return None
         except MultipleObjectsReturned:
-            raise MoreThanOneCurrentSemesterException()
+            raise
 
     @staticmethod
-    def get_default_semester():
-        """
-        Jeżeli istnieje semestr na który zapisy są otwarte, zwracany jest ten semestr,
-        jeżeli taki nie istnieje zwracany jest semestr, który obecnie trwa.
-        W przypadku gdy nie trwa żaden semestr, zwracany jest najbliższy semestr na
-        który będzie można się zapisać lub None w przypadku braku takiego semestru
-        """
-        now = datetime.now()
-        now_date = now.date()
-        semesters = list(Semester.objects.filter(
-            Q(semester_beginning__lte=now_date, semester_ending__gte=now_date) |
-            Q(records_opening__lte=now, records_closing__gte=now)))
+    def get_upcoming_semester():
+        """Returns either upcomming or current semester or None.
 
-        if len(semesters) > 1:
-            semesters_with_open_records = [
-                s for s in semesters if s.semester_beginning <= now_date and s.semester_ending <= now_date]
-            if len(semesters_with_open_records) == 1:
-                return semesters_with_open_records[0]
-            else:
-                raise MoreThanOneSemesterWithOpenRecordsException()
-        elif len(semesters) == 1:
-            return semesters[0]
-        else:
-            next_semester = Semester.objects.filter(
-                records_opening__gte=now).order_by('records_opening')
-            if next_semester.exists():
-                return next_semester[0]
-            else:
-                return None
+        Upcoming semester is the one, enrolment into which has already
+        been scheduled. It may be useful when students want to plan their
+        timetables.
 
-    def desiderata_is_open(self):
-        if self.desiderata_opening is None:
-            return False
-        now = datetime.now()
-        return (self.desiderata_opening <= now and self.desiderata_closing is None) or\
-            (self.desiderata_opening <= now and self.desiderata_closing >= now)
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
+        try:
+            return Semester.objects.filter(
+                visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
+        except Semester.DoesNotExist:
+            return Semester.get_current_semester()
+
+    @staticmethod
+    def get_current_semester():
+        """If exists, it returns current semester, otherwise return None.
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
+        return Semester.get_semester(datetime.today())
 
     def serialize_for_json(self):
         return {
@@ -325,15 +244,16 @@ class Semester(models.Model):
 
     @staticmethod
     def is_visible(id):
-        """ Answers if course is sat as visible (displayed on course lists) """
+        """Answers if semester is set as visible (displayed on course lists)."""
         param = id
         return Semester.objects.get(id=param).visible
 
     @staticmethod
     def get_semester_year_from_raw_year(raw_year):
-        """
-        Convert a numeric year to the string format used in the Semester model,
-        e.g. 2017/18
+        """Converts a numeric year to the string format used in the Semester model.
+
+        Example:
+            2017 is converted to 2017/18.
         """
         return "{}/{}".format(raw_year, raw_year % 100 + 1)
 
@@ -353,8 +273,7 @@ class Freeday(models.Model):
 
     @classmethod
     def is_free(cls, date):
-        """
-        Returns true if date is a free day
+        """Returns true if date is an extra holiday.
 
         :param date: datetime.date
         """
@@ -382,13 +301,14 @@ class ChangedDay(models.Model):
 
     def clean(self):
         if Term.get_day_of_week(self.day) == self.weekday:
-            raise ValidationError(
-                message={'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]}, code='invalid')
+            raise ValidationError(message={
+                'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]
+            },
+                                  code='invalid')
 
     @classmethod
     def get_day_of_week(cls, date):
-        """
-        Returns actual schedule day, with respect to ChangedDays
+        """Returns actual schedule day, with respect to ChangedDays.
 
         :param date:
         """

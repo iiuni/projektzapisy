@@ -31,7 +31,7 @@
     {% endif %}
     {% if user.employee or request.user.is_superuser %}
     <li {% block offer_menu_plan %} {% endblock %}>
-            <a class="nav-link" href="{% url 'plan-view' %}">Planowanie</a>
+            <a class="nav-link" href="{% url 'assignments-view' %}">Przydziały</a>
     </li>
     {% endif %}
 {% endblock %}

@@ -1,9 +1,11 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Column, Div, Layout, Row, Submit
 from django import forms
 from django.utils import timezone
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column, HTML, Field, Div
-from apps.theses.models import Thesis, Remark, Vote, MAX_THESIS_TITLE_LEN, MAX_ASSIGNED_STUDENTS
+
+from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
+from apps.theses.models import MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.theses.system_settings import change_status
 from apps.users.models import Employee, Student
 
@@ -31,20 +33,24 @@ class ThesisFormBase(forms.ModelForm):
         model = Thesis
         fields = '__all__'
 
-    title = forms.CharField(label="Tytuł pracy",
-                            max_length=MAX_THESIS_TITLE_LEN)
-    advisor = forms.ModelChoiceField(
-        queryset=Employee.objects.none(), label="Promotor", required=True)
+    title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN)
+    advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
+                                     label="Promotor",
+                                     required=True)
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
-                                                label="Promotor wspierający", required=False)
+                                                label="Promotor wspierający",
+                                                required=False)
     kind = forms.ChoiceField(choices=ThesisKind.choices, label="Typ")
-    students = forms.ModelMultipleChoiceField(queryset=Student.objects.all(), required=False, label="Przypisani studenci",
+    students = forms.ModelMultipleChoiceField(queryset=Student.objects.all(),
+                                              required=False,
+                                              label="Przypisani studenci",
                                               widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
-                                     label="Zarezerwowana do", required=False)
+                                     label="Zarezerwowana do",
+                                     required=False)
     description = forms.CharField(
-        label="Opis", widget=forms.Textarea, required=False)
+        label="Opis", widget=common_widgets.MarkdownArea, required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
@@ -92,15 +98,15 @@ class ThesisForm(ThesisFormBase):
 
         self.helper.layout = Layout(
             'title',
-            Row(
-                Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor',
-                       css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
+            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
+                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'),
             row_1,
             Div('students',
-                HTML('<small class="form-text text-muted ">Przytrzymaj wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby zaznaczyć więcej niż jeden wybór.</small>'), css_class='mb-3'),
+                HTML(('<small class="form-text text-muted ">Przytrzymaj '
+                      'wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby '
+                      'zaznaczyć więcej niż jeden wybór.</small>')),
+                css_class='mb-3'),
             'description',
         )
 
@@ -143,15 +149,15 @@ class EditThesisForm(ThesisFormBase):
 
         self.helper.layout = Layout(
             'title',
-            Row(
-                Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor',
-                       css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
+            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
+                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'),
             special_row,
             Div('students',
-                HTML('<small class="form-text text-muted ">Przytrzymaj wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby zaznaczyć więcej niż jeden wybór.</small>'), css_class='mb-3'),
+                HTML(('<small class="form-text text-muted ">Przytrzymaj '
+                      'wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby '
+                      'zaznaczyć więcej niż jeden wybór.</small>')),
+                css_class='mb-3'),
             'description',
         )
         if self.instance.is_returned and self.instance.is_mine(user):

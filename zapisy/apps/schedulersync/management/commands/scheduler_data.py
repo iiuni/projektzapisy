@@ -1,4 +1,4 @@
-""" Get data from scheduler API.
+"""Gets data from scheduler API.
 
 Get data from scheduler API urls and lays out that data to list of SZTerm.
 Szterm contains all necessary data to update or create term.
@@ -7,13 +7,13 @@ and courses to map in seperate dict and set.
 Data is stored within object (.self).
 
 """
-
 import collections
 from datetime import time
+from typing import Dict, List, Set
 
 import requests
-from apps.enrollment.courses.models.classroom import Classroom
 
+from apps.enrollment.courses.models.classroom import Classroom
 
 URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
 
@@ -46,29 +46,29 @@ class SchedulerData:
         self._scheduler_terms = {}
 
     def _map_scheduler_types(self, term: SchedulerAPIGroup) -> SZTerm:
-        """ Change SZTerm data with data in SZ format. Does not map course and employee """
+        """Change SZTerm data with data in SZ format. Does not map course and employee."""
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
-            """ map scheduler numbers of days of week to SZ numbers """
+            """Map scheduler numbers of days of week to SZ numbers."""
             day = scheduler_term.day
             return str(day + 1)
 
-        def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
-            """ Returns earliest starting time among the SchedulerAPITerms."""
+        def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
+            """Returns earliest starting time among the SchedulerAPITerms."""
             hour = min(term.start_hour for term in scheduler_terms)
             return time(hour=hour)
 
-        def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time(hour)':
-            """ Returns latest starting time among the SchedulerAPITerms."""
+        def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
+            """Returns latest starting time among the SchedulerAPITerms."""
             hour = max(term.end_hour for term in scheduler_terms)
             return time(hour=hour)
 
         def get_classrooms(rooms: 'List[str]') -> 'Set[Classroom]':
-            """ Finds Classroom objects from with given room numbers. """
+            """Finds Classroom objects from with given room numbers."""
             return set(Classroom.objects.filter(number__in=rooms))
 
         def get_group_type(group_type: 'str') -> 'str':
-            """ map scheduler group type to SZ group type"""
+            """Map scheduler group type to SZ group type."""
             return GROUP_TYPES[group_type]
 
         scheduler_rooms = self._scheduler_results[term.id].rooms
@@ -85,13 +85,13 @@ class SchedulerData:
                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 
     def get_scheduler_data(self):
-        """ Get data from scheduler API
+        """Gets data from scheduler API.
 
-            Gets data from scheduler API and lays out that data to list of SZTerm
-            in self.terms. This list contains all necessary data to update or
-            create term in SZ. That data lacks employee and course mapping.
-            Fills self.teachers and self.courses with teachers and courses
-            names for future mapping.
+        Gets data from scheduler API and lays out that data to list of SZTerm in
+        self.terms. This list contains all necessary data to update or create
+        term in SZ. That data lacks employee and course mapping. Fills
+        self.teachers and self.courses with teachers and courses names for
+        future mapping.
         """
         def get_logged_client():
             client = requests.session()
@@ -102,8 +102,8 @@ class SchedulerData:
             client.post(URL_LOGIN, data=login_data)
             return client
 
-        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerApiResult]':
-            """ Lays out (room x term) data coming from scheduler """
+        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':
+            """Lays out (room x term) data coming from scheduler."""
             data = {}
             for id in results:
                 rooms = set(rec['room'] for rec in results[id])
@@ -112,7 +112,7 @@ class SchedulerData:
             return data
 
         def get_groups_data(groups: 'List[int, List, Dict]') -> 'List[SchedulerAPIGroup]':
-            """ Lays out (id, teachers, extra) data coming from scheduler """
+            """Lays out (id, teachers, extra) data coming from scheduler."""
             data = []
             for rec in groups:
                 id = int(rec['id'])
@@ -124,7 +124,7 @@ class SchedulerData:
             return data
 
         def get_terms_data(terms: 'List[int, int, Dict, Dict]') -> 'Dict[int, SchedulerAPITerm]':
-            """ Lays out (id, day, start, end) data coming from scheduler """
+            """Lays out (id, day, start, end) data coming from scheduler."""
             data = {}
             for rec in terms:
                 day = rec['day']
@@ -135,7 +135,7 @@ class SchedulerData:
             return data
 
         def get_teachers_data(teachers: 'List[str, Dict]') -> 'Dict[str, str]':
-            """ Lays out (first_name, last_name) data coming from scheduler """
+            """Lays out (first_name, last_name) data coming from scheduler."""
             data = {}
             for teacher in teachers:
                 first_name = teacher['extra']['first_name']

@@ -37,8 +37,7 @@ class SingleVoteQuerySet(models.QuerySet):
 
 
 class SingleVote(models.Model):
-    """Student's single vote for a course proposal in an academic cycle (year).
-    """
+    """Student's single vote for a course proposal in an academic cycle (year)."""
     VALUE_CHOICES = [(0, '0'), (1, '1'), (2, '2'), (3, '3')]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="głosujący")

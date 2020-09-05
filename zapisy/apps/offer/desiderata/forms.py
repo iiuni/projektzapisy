@@ -1,8 +1,7 @@
 from django import forms
-from django.forms.formsets import formset_factory, BaseFormSet
+from django.forms.formsets import BaseFormSet, formset_factory
 
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
-
 
 REVERSE_DAY = {
     '1': 'Poniedziałek',
@@ -19,9 +18,6 @@ class DesiderataOtherForm(forms.ModelForm):
     class Meta:
         model = DesiderataOther
         fields = ('comment', )
-        widgets = {
-            'comment': forms.Textarea(attrs={'cols': 400, 'rows': 10}),
-        }
 
 
 class DesiderataForm(forms.Form):
@@ -48,7 +44,7 @@ class BaseDesiderataFormSet(BaseFormSet):
     def hours(self):
         return range(8, 22)
 
-    def save(self, desiderata, employee, semester):
+    def save(self, desiderata, employee):
         for form in self.forms:
             if form.is_valid():
                 day = form.cleaned_data['day']
@@ -56,10 +52,10 @@ class BaseDesiderataFormSet(BaseFormSet):
                 value = form.cleaned_data['value']
                 if value is False and desiderata[day][hour] is None:
                     Desiderata.objects.create(
-                        employee=employee, semester=semester, day=day, hour=hour)
+                        employee=employee, day=day, hour=hour)
                 elif value and desiderata[day][hour] is not None:
                     Desiderata.objects.filter(
-                        employee=employee, semester=semester, day=day, hour=hour).delete()
+                        employee=employee, day=day, hour=hour).delete()
 
 
 DesiderataFormSet = formset_factory(DesiderataForm, formset=BaseDesiderataFormSet, extra=0)

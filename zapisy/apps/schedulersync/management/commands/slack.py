@@ -9,6 +9,7 @@ import json
 
 import requests
 
+from .import_schedule import Summary
 
 DAYS_OF_WEEK = {'1': 'monday',
                 '2': 'tuesday',

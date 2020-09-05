@@ -1,16 +1,15 @@
-from datetime import time, date, datetime
-import string
 import random
+from datetime import date, time
 
 import factory
 from factory.django import DjangoModelFactory
 
 from apps.common import days_of_week
-from apps.users.tests.factories import UserFactory
-from apps.enrollment.courses.tests.factories import GroupFactory, ClassroomFactory
+from apps.enrollment.courses.tests.factories import ClassroomFactory, GroupFactory
 from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term
 from apps.schedule.models.specialreservation import SpecialReservation
+from apps.schedule.models.term import Term
+from apps.users.tests.factories import UserFactory
 
 
 class EventCourseFactory(DjangoModelFactory):

@@ -1,10 +1,9 @@
-from inspect import signature, Parameter
 import functools
+from inspect import Parameter, signature
 
 
 def auto_assign(func):
-    """Assigns values to instance variables automatically
-    based on function signature.
+    """Auto-assigns values to instance variables based on function signature.
 
     Example:
         # without auto_assign

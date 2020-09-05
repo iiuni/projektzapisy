@@ -1,23 +1,24 @@
+import uuid
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
-import uuid
-from datetime import datetime
 
-from apps.users.models import Student, Employee
-from apps.notifications.datatypes import Notification
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
+from apps.notifications.api import notify_selected_users, notify_user
+from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
+                                               thesis_voting_activated)
+from apps.notifications.datatypes import Notification
+from apps.notifications.templates import NotificationType
+from apps.theses.enums import ThesisVote
 from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
-from apps.theses.enums import ThesisVote
-from apps.theses.views import view_thesis
-from apps.notifications.api import notify_user, notify_selected_users
-from apps.notifications.custom_signals import teacher_changed, student_pulled, student_not_pulled, thesis_voting_activated
-from apps.notifications.templates import NotificationType
+from apps.users.models import Employee, Student
 
 
 def get_id() -> str:

@@ -1,11 +1,11 @@
-from datetime import time, date
+import logging
+from datetime import date, time
 
+from django.core.cache import cache as mcache
 from django.db import models
 from django.db.models import signals
-from django.core.cache import cache as mcache
 
 from apps.common import days_of_week
-import logging
 
 backup_logger = logging.getLogger('project.backup')
 
@@ -13,7 +13,6 @@ HOURS = [(str(hour), "%s.00" % hour) for hour in range(8, 23)]
 
 
 class Term(models.Model):
-    """terms of groups"""
 
     dayOfWeek = models.CharField(
         max_length=1,
@@ -51,15 +50,15 @@ class Term(models.Model):
             (self.end_time.minute - self.start_time.minute)
 
     def time_from_in_minutes(self):
-        "Returns number of minutes from start of day (midnight) to term beggining"""
+        """Returns number of minutes from start of day (midnight) to term beggining."""
         return (self.start_time.hour) * 60 + (self.start_time.minute)
 
     def time_from(self):
-        "Returns hourFrom in time format"""
+        """Returns hourFrom in time format."""
         return self.start_time
 
     def time_to(self):
-        "Returns hourTo in time format"""
+        """Returns hourTo in time format."""
         return self.end_time
 
     def _convert_string_to_time(self, str):
@@ -110,8 +109,7 @@ class Term(models.Model):
             classrooms=None,
             start_time=None,
             end_time=None):
-        """
-        A versatile function returning Terms. day is either datetime.date or string
+        """A versatile function returning Terms. day is either datetime.date or string.
 
         :param semester: enrollment.courses.model.Semester
         :param day: DAYS_OF_WEEK or datetime.date
@@ -136,7 +134,7 @@ class Term(models.Model):
         if start_time and end_time:
             query = query.filter(start_time__lt=end_time, end_time__gt=start_time)
 
-        return query.select_related('group__course')
+        return query.select_related('group__course').prefetch_related('classrooms')
 
     def serialize_for_json(self):
         return {

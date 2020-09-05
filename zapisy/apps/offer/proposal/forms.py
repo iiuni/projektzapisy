@@ -73,8 +73,7 @@ class EditProposalForm(forms.ModelForm):
 
     def status_choices(self):
         def choices_pair(c: ProposalStatus):
-            """Generates a tuple like `.choices()` but with single choice only.
-            """
+            """Generates a tuple like `.choices()` but with single choice only."""
             return (c, c.label)
 
         current_status = None if not self.instance else self.instance.status
@@ -95,8 +94,7 @@ class EditProposalForm(forms.ModelForm):
         self.fields['status'].choices = self.status_choices()
 
     def clean_status(self):
-        """Verifies that the status change does not violate allowed transitions.
-        """
+        """Verifies that the status change does not violate allowed transitions."""
         status = self.cleaned_data.get('status')
         status = ProposalStatus(status)
         old_status = None if not self.instance else self.instance.status
@@ -282,7 +280,8 @@ class CollapsableFieldset(layout.Fieldset):
     """Renders fieldset with a _collapse_ button.
 
     It uses Bootstrap 4 collapse class. It is vital to provide css_id for it, if
-    many such fieldsets are going to be used on the same page."""
+    many such fieldsets are going to be used on the same page.
+    """
     template = 'proposal/fields/collapsable-fieldset.html'
 
 

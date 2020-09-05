@@ -1,6 +1,6 @@
+from django.contrib.syndication.views import Feed
 from django.urls import reverse
 
-from django.contrib.syndication.views import Feed
 from apps.schedule.models.event import Event
 
 

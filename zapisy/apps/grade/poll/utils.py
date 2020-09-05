@@ -1,33 +1,42 @@
+from collections import defaultdict
+from typing import Dict, List
+
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
 
-from collections import defaultdict, namedtuple
-from typing import Dict, List
-
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
 from apps.users.models import Student
-
-SubmissionWithStatus = namedtuple('SubmissionWithStatus', ['submission', 'submitted'])
-
-GroupedSubmissions = namedtuple(
-    'GroupedSubmissions',
-    [
-        'with_categories',
-        'statuses',
-        'submitted',
-        'total',
-        'progress',
-        'progress_numerical',
-    ],
-)
 
 
 def check_grade_status() -> bool:
     """Checks whether any of the semesters has grade enabled."""
     current_semester = Semester.get_current_semester()
     return current_semester.is_grade_active
+
+
+class SubmissionStats:
+    """Holds statistics for poll submissions."""
+    def __init__(self, submissions: List[Submission]):
+        self.submitted = 0
+        self.submitted_by_category = defaultdict(int)
+        self.total = len(submissions)
+        for s in submissions:
+            if s.submitted:
+                self.submitted += 1
+                self.submitted_by_category[s.category] += 1
+
+    @property
+    def progress(self) -> str:
+        return f"{self.submitted} / {self.total}"
+
+    @property
+    def progress_numerical(self) -> float:
+        return self.submitted / self.total
+
+    def all(self) -> bool:
+        return self.submitted == self.total
 
 
 def get_grouped_polls(student: Student) -> Dict:
@@ -37,40 +46,11 @@ def get_grouped_polls(student: Student) -> Dict:
     return group_submissions(polls)
 
 
-def group_submissions_with_statuses(
-    submissions: List[SubmissionWithStatus]
-) -> (dict, dict):
-    """Groups submissions into a structure that is useful for templating.
-
-    Fields are defined in a `GroupedSubmissions` namedtuple.
-    """
-    grouped_submissions = defaultdict(list)
-    submitted_statuses = defaultdict(int)
-    submitted_count = 0
-
-    for submission_with_status in submissions:
-        submission, status = submission_with_status
-        category = submission.category
-        if category not in submitted_statuses:
-            submitted_statuses[category] = 0
-        grouped_submissions[category].append(submission_with_status)
-        if status:
-            submitted_statuses[category] += 1
-            submitted_count += 1
-
-    return GroupedSubmissions(
-        with_categories=dict(grouped_submissions),
-        statuses=dict(submitted_statuses),
-        submitted=submitted_count,
-        total=len(submissions),
-        progress=f"{submitted_count} / {len(submissions)}",
-        progress_numerical=submitted_count / len(submissions),
-    )
-
-
 def group_submissions(submissions: List[Submission]) -> dict:
-    """Groups a list of submissions into a dictionary of nested
-    categories and subcategories.
+    """Groups a list of submissions into a dictionary.
+
+    The submissions are transformed into a dictionary of nested categories and
+    subcategories.
 
     This method is structuring data that allows for easy displaying
     handly tables in views such as the one responsible for summarizing
@@ -90,7 +70,9 @@ def group_submissions(submissions: List[Submission]) -> dict:
 
 
 def group(entries: List[Poll], sort=False) -> dict:
-    """Groups a list of polls/submissions into a dictionary of nested
+    """Groups a list of polls/submissions into a dictionary.
+
+    The polls and submissions are combined into a dictionary of nested
     categories and original entries.
 
     This method is structuring data that allows for easy displaying
@@ -133,8 +115,7 @@ class PollSummarizedResultsEntry:
 
     @property
     def field_choices(self):
-        """Lists all possible answers that could be selected for
-        radio fields."""
+        """Lists all possible answers that could be selected for radio fields."""
         if self.field_type == 'radio':
             return self._choices
         if self.field_type == 'checkbox':
@@ -197,8 +178,7 @@ class PollSummarizedResultsEntry:
 
 
 class PollSummarizedResults:
-    """Acts as a container for all sections (entries) in the summary
-    results view of the Poll.
+    """Container for all sections (entries) in the summary results view of the Poll.
 
     A single section is also a self-contained entry, defined by
     the `PollSummarizedResultsEntry` class.

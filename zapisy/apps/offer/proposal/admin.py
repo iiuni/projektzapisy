@@ -1,5 +1,3 @@
-"""Proposal admin configuration.
-"""
 from datetime import date
 
 from django.contrib import admin, messages

@@ -2,8 +2,7 @@ import json
 
 from django.contrib import messages
 from django.db import transaction
-from django.http import (HttpResponseBadRequest, HttpResponseForbidden,
-                         JsonResponse)
+from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 
 from apps.enrollment.courses.models.semester import Semester
@@ -121,10 +120,10 @@ def sign_tickets(request):
         return HttpResponseForbidden(
             f"Student nie jest upoważniony do tych ankiet: {request_polls - student_polls}.")
     if student_polls - request_polls:
-        return HttpResponseForbidden(f"Student powinien również wygenerować bilety dla tych "
+        return HttpResponseForbidden("Student powinien również wygenerować bilety dla tych "
                                      "ankiet: {student_polls - request_polls}.")
     if len(request_polls) != len(signing_requests):
-        return HttpResponseForbidden(f"Próbowano podpisać wiele biletów do jednej ankiety.")
+        return HttpResponseForbidden("Próbowano podpisać wiele biletów do jednej ankiety.")
     # Now we made sure that student_polls == request_polls
 
     # We obtain a lock on RSA keys.
@@ -134,7 +133,7 @@ def sign_tickets(request):
     _, created = StudentGraded.objects.get_or_create(student=request.user.student,
                                                      semester=semester)
     if not created:
-        return HttpResponseForbidden(f"Student już podpisywał bilety w tym semestrze.")
+        return HttpResponseForbidden("Student już podpisywał bilety w tym semestrze.")
 
     response = []
     for signing_request in signing_requests:

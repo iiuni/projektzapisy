@@ -1,16 +1,19 @@
-"""Custom Django admin validators for theses system-related admin pages"""
+"""Custom Django admin validators for theses system-related admin pages."""
 from typing import Optional
 
 from django.core.exceptions import ValidationError
 
 from apps.users.models import Employee
+
 from .users import get_num_board_members, is_theses_board_member
 
 
 def validate_num_required_votes(value: int):
-    """Validate that the number of required "accepted" votes
-    is in range, that is, not negative and not more than the number
-    of theses board members."""
+    """Validates the number of required votes.
+
+    The number of required "accepted" votes must be non-negative and not larger
+    than the number of theses board members.
+    """
     max_value = get_num_board_members()
     if not 1 <= value <= max_value:
         raise ValidationError(

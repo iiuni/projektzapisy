@@ -1,13 +1,13 @@
 # tests marked by comment "TIME DEPENDENCY" should be free from this dependency
 
 
+from datetime import datetime, timedelta
+from random import randint
+
 from django.test import TestCase
 from django.urls import reverse
 
-from random import randint
 from apps.enrollment.courses.models.semester import Semester
-from datetime import datetime, timedelta
-
 from apps.users.tests.factories import StudentFactory
 
 

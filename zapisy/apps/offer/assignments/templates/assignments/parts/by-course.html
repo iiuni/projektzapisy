@@ -1,0 +1,22 @@
+<table class="table">
+    <tbody>
+        {% for name, course_info in courses.items %}
+            <tr id="course-{{ name|slugify }}">
+                <th scope="col" colspan="3" class="table-dark">{{ name }}</th>
+            </tr>
+            {% for group_type, group_summary in course_info.items %}
+                <tr>
+                    <th scope="row">{{ group_type }}</th>
+                    <td>{{ group_summary.hours|floatformat }} h/semestr </td>
+                    <td>
+                        {% for teacher in group_summary.teachers %}
+                            <span class="teacher">
+                                <a href="#teacher-{{ teacher.username }}">{{ teacher.name }}</a></span>{% if not forloop.last %},
+                                {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

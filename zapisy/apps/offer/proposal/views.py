@@ -1,11 +1,10 @@
-"""Proposal views"""
 import copy
 import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.users.decorators import employee_required

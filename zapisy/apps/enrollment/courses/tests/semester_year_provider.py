@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from faker.providers import BaseProvider
 from faker import Faker
+from faker.providers import BaseProvider
 
 from apps.enrollment.courses.models.semester import Semester
 

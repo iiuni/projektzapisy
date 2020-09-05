@@ -18,40 +18,40 @@
 <div class="row">
   <div class="col-lg-8 col-12 mb-5">
     <div
-      class="card mb-3 {% if grouped_submissions.submitted == grouped_submissions.total%}border-success{% else %}border-danger{% endif %}">
+      class="card mb-3 {% if stats.all %}border-success{% else %}border-danger{% endif %}">
       <div class="card-body">
-        {% if grouped_submissions.submitted == grouped_submissions.total %}
-        <h5 class="card-title">Wypełniłeś wszystkie ankiety!</h5>
-        <p class="card-text">Możesz modyfikować przesłane odpowiedzi przez cały okres trwania oceny wprowadzając pobrane wcześniej klucze dostępu. Jeżeli nie chcesz wprowadzać żadnych poprawek, kliknij poniższy przycisk aby wyczyścić sesję i zakończyć ocenianie.</p>
+        {% if stats.all %}
+          <h5 class="card-title">Wypełniłeś wszystkie ankiety!</h5>
+          <p class="card-text">Możesz modyfikować przesłane odpowiedzi przez cały okres trwania oceny wprowadzając pobrane wcześniej klucze dostępu. Jeżeli nie chcesz wprowadzać żadnych poprawek, kliknij poniższy przycisk aby wyczyścić sesję i zakończyć ocenianie.</p>
         {% else %}
-        <h5 class="card-title">Zadbaj o anonimowość!</h5>
-        <p class="card-text">Ankiety, które właśnie edytujesz są przechowywane w aktywnej sesji. Nie pozwól aby ktoś nieupoważniony uzyskał do nich dostęp –
-          aby tego uniknąć, wystarczy, że wyczyścisz sesję po zakończeniu oceniania.<br>Nie musisz wypełniać od razu wszystkich ankiet. Przez cały okres trwania oceny możesz modyfikować przesłane odpowiedzi wprowadzając pobrane wcześniej klucze dostępu.</p>
+          <h5 class="card-title">Zadbaj o anonimowość!</h5>
+          <p class="card-text">Ankiety, które właśnie edytujesz są przechowywane w aktywnej sesji. Nie pozwól aby ktoś nieupoważniony uzyskał do nich dostęp –
+            aby tego uniknąć, wystarczy, że wyczyścisz sesję po zakończeniu oceniania.<br>Nie musisz wypełniać od razu wszystkich ankiet. Przez cały okres trwania oceny możesz modyfikować przesłane odpowiedzi wprowadzając pobrane wcześniej klucze dostępu.</p>
         {% endif %}
         <div class="row">
           <div class="col">
-            {% if grouped_submissions.submitted %}
-            <div class="progress h-100">
-              <div
-                class="progress-bar {% if grouped_submissions.submitted == grouped_submissions.total%}bg-success{% endif %}"
-                role="progressbar" style="width: calc(100% * ({{ grouped_submissions.progress_numerical|max:0.1 }}))"
-                aria-valuenow="{{ grouped_submissions.submitted }}" aria-valuemin="0"
-                aria-valuemax="{{ grouped_submissions.total }}">
-                <strong>
-                  {{ grouped_submissions.progress }}
-                </strong>
+            {% if stats.submitted %}
+              <div class="progress h-100">
+                <div
+                  class="progress-bar {% if stats.all %}bg-success{% endif %}"
+                  role="progressbar" style="width: calc(100% * {{ stats.progress_numerical|max:0.1 }})"
+                  aria-valuenow="{{ stats.submitted }}" aria-valuemin="0"
+                  aria-valuemax="{{ stats.total }}">
+                  <strong>
+                    {{ stats.progress }}
+                  </strong>
+                </div>
               </div>
-            </div>
             {% else %}
-            <div class="align-middle h-100">Nie wypełniłeś jeszcze żadnej ankiety.</div>
+              <div class="align-middle h-100">Nie wypełniłeś jeszcze żadnej ankiety.</div>
             {% endif %}
           </div>
           <div class="col-auto">
-            {% if grouped_submissions.submitted == grouped_submissions.total%}
-            <a href="{% url 'grade-poll-clear-session' %}" class="btn btn-primary">Zakończ ocenę i wyczyść sesję</a>
+            {% if stats.all %}
+              <a href="{% url 'grade-poll-clear-session' %}" class="btn btn-primary">Zakończ ocenę i wyczyść sesję</a>
             {% else %}
-            <a href="{% url 'grade-poll-clear-session' %}" class="btn btn-dark">Przerwij ocenę i wyczyść
-              sesję</a>
+              <a href="{% url 'grade-poll-clear-session' %}" class="btn btn-dark">Przerwij ocenę i wyczyść
+                sesję</a>
             {% endif %}
           </div>
         </div>
@@ -66,31 +66,33 @@
     </form>
   </div>
   <div class="col-lg-4 col-12">
-    {% for group_name, submissions in grouped_submissions.with_categories.items %}
-    <div
-      class="card {% if grouped_submissions.statuses|lookup:group_name == submissions|length %}list-group-item-success{%else%}text-white bg-secondary{% endif %} mb-3">
-      <div class="card-header">
-        <div class="d-flex w-100 justify-content-between">
-          <span>{{ group_name }}</span>
-          <span class="text-right text-nowrap">{{ grouped_submissions.statuses|lookup:group_name }} /
-            {{ submissions|length }}</span>
+    {% regroup polls by category as polls_by_category %}
+    {% for category, submissions in polls_by_category %}
+      {% with category_submitted=stats.submitted_by_category|lookup:category category_total=submissions|length %}
+        <div
+          class="card {% if category_submitted == category_total %}list-group-item-success{%else%}text-white bg-secondary{% endif %} mb-3">
+          <div class="card-header">
+            <div class="d-flex w-100 justify-content-between">
+              <span>{{ category }}</span>
+              <span class="text-right text-nowrap">{{ category_submitted }} / {{ category_total }}</span>
+            </div>
+          </div>
+          
+          <div class="list-group list-group-flush">
+            {% for entry in submissions %}
+            {% with index=iterator|next %}
+            <a href="{% url 'grade-poll-submissions' submission_index=index %}" type="button"
+            class="list-group-item list-group-item-action {% if current_index == index %} active{% elif entry.submitted %} list-group-item-light{% endif %}">
+            <div class="d-flex w-100 justify-content-between">
+              <span>{{ entry }}</span>
+              <span>{% if entry.submitted %}zapisane{% endif %}</span>
+            </div>
+          </a>
+          {% endwith %}
+          {% endfor %}
         </div>
       </div>
-
-      <div class="list-group list-group-flush">
-        {% for entry in submissions %}
-        {% with index=iterator|next %}
-        <a href="{% url 'grade-poll-submissions' submission_index=index %}" type="button"
-          class="list-group-item list-group-item-action {% if current_index == index %} active{% elif entry.submitted %} list-group-item-light{% endif %}">
-          <div class="d-flex w-100 justify-content-between">
-            <span>{{ entry.submission }}</span>
-            <span>{% if entry.submitted %}zapisane{% endif %}</span>
-          </div>
-        </a>
-        {% endwith %}
-        {% endfor %}
-      </div>
-    </div>
+      {% endwith %}
     {% endfor %}
   </div>
 </div>

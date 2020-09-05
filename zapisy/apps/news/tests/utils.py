@@ -1,6 +1,5 @@
-from random import randint
-
 from datetime import datetime, timedelta
+from random import randint
 
 from apps.news.models import News, PriorityChoices
 from apps.users.tests.factories import UserFactory

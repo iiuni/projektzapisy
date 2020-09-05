@@ -11,6 +11,7 @@ export interface ThesisInfo {
   has_been_accepted: boolean;
   advisor: string;
   advisor_last_name: string;
+  students: string;
   url: string;
 }
 

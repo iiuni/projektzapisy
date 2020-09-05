@@ -1,33 +1,36 @@
 import datetime
+import operator
+import json
+from functools import reduce
+from itertools import groupby
 from typing import List, NamedTuple, Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.views.decorators.http import require_POST
-import operator
+
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
-from apps.schedule.models.event import Event
-from apps.schedule.models.term import Term
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.filters import EventFilter, ExamFilter
-from apps.schedule.forms import EventForm, TermFormSet, DecisionForm, \
-    EventModerationMessageForm, EventMessageForm, ConflictsForm
+from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
+                                 EventModerationMessageForm, EditTermFormSet, NewTermFormSet,
+                                 ExtraTermsNumber)
+from apps.schedule.models.event import Event
+from apps.schedule.models.specialreservation import SpecialReservation
+from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
-from .fullcalendar import FullCalendarView
-from .forms import DoorChartForm, TableReportForm
-from itertools import groupby
-from .models.message import EventModerationMessage
 
-from functools import reduce
+from .forms import DoorChartForm, TableReportForm
+from .fullcalendar import FullCalendarView
+from .models.message import EventModerationMessage
 
 
 @login_required
@@ -52,31 +55,35 @@ def classroom(request, slug):
 
 
 @login_required
-def reservation(request, event_id=None):
-    form = EventForm(data=request.POST or None, user=request.user)
+def new_reservation(request, event_id=None):
+    if request.method == "POST":
+        form = EventForm(request.user, request.POST)
+        formset = NewTermFormSet(request.POST, form_kwargs={'user': request.user})
+        if form.is_valid():
+            event = form.save(commit=False)
+            formset = NewTermFormSet(request.POST, instance=event, form_kwargs={'user': request.user})
 
-    if form.is_valid():
-        event = form.save(commit=False)
-        event.author = request.user
-        formset = TermFormSet(request.POST or None, instance=event)
-        if formset.is_valid():
-            event.save()
-            formset.save()
+            if formset.is_valid():
+                event.save()
+                formset.save()
 
-            return redirect(event)
-        errors = True
+                return redirect(event)
     else:
-        formset = TermFormSet(data=request.POST or None, instance=Event())
-
-    return TemplateResponse(request, 'schedule/reservation.html', locals())
+        form = EventForm(request.user)
+        formset = NewTermFormSet(form_kwargs={'user': request.user})
+    return render(request,
+                  'schedule/reservation.html',
+                  {'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
 
 
 @login_required
-def edit_event(request, event_id=None):
+def edit_reservation(request, event_id=None):
     is_edit = True
     event = Event.get_event_for_moderation_or_404(event_id, request.user)
-    form = EventForm(data=request.POST or None, instance=event, user=request.user)
-    formset = TermFormSet(request.POST or None, instance=event)
+    form = EventForm(data=request.POST or None,
+                     instance=event, user=request.user)
+    formset = EditTermFormSet(request.POST or None, instance=event, form_kwargs={
+                              'user': request.user})
     reservation = event.reservation
 
     if form.is_valid():
@@ -84,6 +91,7 @@ def edit_event(request, event_id=None):
         if not event.id:
             event.author = request.user
         event.reservation = reservation
+
         if formset.is_valid():
             event.save()
             formset.save()
@@ -95,9 +103,13 @@ def edit_event(request, event_id=None):
 
             messages.success(request, 'Zmieniono zdarzenie')
             return redirect(event)
-    errors = True
 
-    return TemplateResponse(request, 'schedule/reservation.html', locals())
+    return TemplateResponse(request,
+                            'schedule/reservation.html',
+                            {'is_edit': is_edit,
+                             'form': form,
+                             'formset': formset,
+                             'extra_terms_number': ExtraTermsNumber})
 
 
 def session(request, semester=None):
@@ -106,7 +118,7 @@ def session(request, semester=None):
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
     if semester:
-        semester = Semester.get_by_id(semester)
+        semester = Semester.objects.get(pk=semester)
     else:
         semester = Semester.get_current_semester()
 
@@ -127,12 +139,11 @@ def reservations(request):
 @login_required
 @permission_required('schedule.manage_events')
 def conflicts(request):
-    """
-    Finds conflicts in given daterange and pass into template.
+    """Finds conflicts in given daterange and pass into template.
+
     Implemented as 3D dictionary (ordered by day,classroom,hour).
     Works better than naive regroup in template (O(nlog(n)) vs O(n^2)).
     """
-
     form = ConflictsForm(request.GET)
     if form.is_valid():
         beg_date = form.cleaned_data['beg_date']
@@ -253,12 +264,57 @@ def change_interested(request, event_id):
 
 
 @login_required
-def ajax_get_terms(request, year, month, day):
-    from apps.enrollment.courses.models.classroom import Classroom
+def get_terms(request, year, month, day):
+    date = datetime.date(int(year), int(month), int(day))
 
-    time = datetime.date(int(year), int(month), int(day))
-    terms = Classroom.get_terms_in_day(time, ajax=True)
-    return HttpResponse(terms, content_type="application/json")
+    def make_dict(start_time, end_time):
+        return {
+            'begin': ':'.join(str(start_time).split(':')[:2]),
+            'end': ':'.join(str(end_time).split(':')[:2])
+        }
+
+    result = {}
+
+    rooms = Classroom.get_in_institute(reservation=True)
+
+    for room in rooms:
+        if room.number not in result:
+            result[room.number] = {
+                'id': room.id,
+                'number': room.number,
+                'capacity': room.capacity,
+                'type': room.get_type_display(),
+                'title': room.number,
+                'occupied': []
+            }
+
+    terms = Term.objects.filter(day=date, room__in=rooms,
+                                event__status='1').select_related('room', 'event')
+    for term in terms:
+        result[term.room.number]['occupied'].append(make_dict(term.start, term.end))
+
+    # Some of the course terms fail to be represented by Event Terms which leads
+    # to conflicts. Once this mess is fixed we can remove this lines below.
+    semester = Semester.get_semester(date)
+    if semester and semester.lectures_beginning <= date <= semester.lectures_ending:
+        course_terms = CourseTerm.get_terms_for_semester(
+            semester=semester, day=date, classrooms=rooms
+        )
+        for ct in course_terms:
+            for room in ct.classrooms.all():
+                result[room.number]['occupied'].append(make_dict(ct.start_time, ct.end_time))
+
+    for key in result:
+        array = sorted(result[key]['occupied'], key=lambda k: k['begin'])
+        out = []
+        for t in array:
+            if out and out[-1]['begin'] <= t['begin'] <= out[-1]['end']:
+                out[-1]['end'] = max(out[-1]['end'], t['end'])
+            else:
+                out.append(t)
+        result[key]['occupied'] = out
+
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 class ClassroomTermsAjaxView(FullCalendarView):
@@ -331,7 +387,7 @@ def events_report(request):
 
 @login_required
 @permission_required('schedule.manage_events')
-def display_report(request, form, report_type: 'Literal["table", "doors"]'):
+def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # noqa: F821
     class ListEvent(NamedTuple):
         date: Optional[datetime.datetime]
         weekday: int  # Monday is 1, Sunday is 7 like in
@@ -352,7 +408,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):
     if form.cleaned_data.get('week', None) == 'currsem':
         semester = Semester.get_current_semester()
     elif form.cleaned_data.get('week', None) == 'nextsem':
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
     if semester:
         terms = CourseTerm.objects.filter(
             group__course__semester=semester, classrooms__in=rooms).distinct().select_related(

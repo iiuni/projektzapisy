@@ -1,9 +1,10 @@
-from django.db import models
 import json
+
+from django.db import models
 
 
 class Type(models.Model):
-    """types of courses"""
+    """Types of courses."""
     name = models.CharField(max_length=30, verbose_name='rodzaj zajec', default="", unique=False)
     short_name = models.CharField(
         max_length=5,
@@ -47,9 +48,7 @@ class Type(models.Model):
 
     @staticmethod
     def get_types_for_syllabus():
-        """
-            Zwraca wszystkie typy wraz z informacją o typie zajęć (JSON).
-        """
+        """Zwraca wszystkie typy wraz z informacją o typie zajęć (JSON)."""
         types = Type.objects.all()
         types_dict = {}
         for t in types:

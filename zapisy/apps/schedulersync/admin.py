@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import EmployeeMap, CourseMap
+
+from .models import CourseMap, EmployeeMap
 
 
 class CourseMapAdmin(admin.ModelAdmin):

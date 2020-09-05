@@ -1,13 +1,11 @@
 export default {
    bundles: {
+      "reservation-widget": ["reservation-widget.js"],
       "reservation": [
          "reservation.js",
       ],
       "fullcalendar": [
          "fullcalendar.ts"
-      ],
-      "classroom-chooser": [
-         "classroomchooser.js",
       ],
       "report": [
          "report.js",

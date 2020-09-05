@@ -1,17 +1,16 @@
-from rest_framework import viewsets, pagination, response
-from rest_framework.permissions import IsAdminUser
+from rest_framework import pagination, response, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
 
-from apps.enrollment.courses.models.classroom import Classroom
+from apps.api.rest.v1 import serializers
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
-from apps.offer.vote.models import SystemState, SingleVote
+from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Student
-
-from apps.api.rest.v1 import serializers
 
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
@@ -154,8 +153,7 @@ class SingleVoteViewSet(viewsets.ModelViewSet):
 
 
 class SystemStateViewSet(viewsets.ModelViewSet):
-    """Get all vote system states"""
-
+    """Get all vote system states."""
     http_method_names = ['get']
     permission_classes = (IsAdminUser,)
     queryset = SystemState.objects.all()

@@ -1,4 +1,4 @@
-""" Maps teachers and courses in SchedulerData to objects in database.
+"""Maps teachers and courses in SchedulerData to objects in database.
 
 Object SchedulerMapper maps SchedulerData.teachers and SchedulerData.courses,
 which contain teachers and courses names, to objects in database.
@@ -8,15 +8,14 @@ then user will be asked for proper input.
 Fills summary object given in constructor.
 
 """
-
-import collections
+from typing import Dict, Optional, Set
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-from .scheduler_data import SZTerm
+from .scheduler_data import SchedulerData, SZTerm
 
 
 class SchedulerMapper:
@@ -92,8 +91,11 @@ class SchedulerMapper:
         return teachers
 
     def _map_courses(self, courses: 'Set(str)') -> 'Dict[str, CourseInstance]':
-        """ Map courses by scheduler names to object in database. If corresponding proposal cannot be found, in
-            interactive mode user will be asked for proper proposal name"""
+        """Maps courses by scheduler names to object in database.
+
+        If corresponding proposal cannot be found, in interactive mode user will
+        be asked for proper proposal name.
+        """
 
         def get_proposal(course_name: str, interactive: bool = True) -> 'Optional[Proposal]':
             """Finds a proposal in offer with a given name.
@@ -141,7 +143,7 @@ class SchedulerMapper:
                                     "Type 'None' to mark the course to be ignored.".format(error, name))
 
         def get_course(proposal: 'Proposal') -> 'CourseInstance':
-            """ return CourseInstance object from SZ database"""
+            """Return CourseInstance object from SZ database."""
             course = None
             try:
                 course = CourseInstance.objects.get(semester=self.semester, offer=proposal)
@@ -162,7 +164,7 @@ class SchedulerMapper:
         return mapped_courses
 
     def map_scheduler_data(self, scheduler_data: 'SchedulerData'):
-        """ Maps teachers and courses in given scheduler_data.
+        """Maps teachers and courses in given scheduler_data.
 
         In given scheduler_data map teachers and courses names to
         objects in database. First in scheduler_data.teachers and

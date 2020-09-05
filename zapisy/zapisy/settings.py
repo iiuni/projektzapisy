@@ -1,7 +1,7 @@
 import os
+
 import environ
 from django.contrib.messages import constants as messages
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -222,7 +222,7 @@ INSTALLED_APPS = (
     'apps.offer.proposal',
     'apps.offer.vote',
     'apps.offer.desiderata',
-    'apps.offer.plan',
+    'apps.offer.assignments',
 
     'apps.common',
     'apps.schedule',
@@ -289,10 +289,6 @@ SESSION_COOKIE_PATH = '/;HttpOnly'
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-# Since Django 1.6 the default session serializer is json, which
-# doesn't have as many features, in particular it cannot serialize
-# custom objects, and we need this behavior.
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Attach X-XSS-Protection header to all outgoing HTTP responses.
 # It tells conformant browsers to activate their built-in
@@ -394,6 +390,7 @@ REST_FRAMEWORK = {
         # Limit the number of rest calls made by unauthenticated users.
         'anon': '100/day',
     },
-    # default filter backends for views - enables querying/filtering after specifying `filterset_fields` in a view
+    # default filter backends for views - enables querying/filtering after
+    # specifying `filterset_fields` in a view
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

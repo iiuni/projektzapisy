@@ -42,22 +42,22 @@ Record Lifetime:
     filled by an asynchronous process, so the GROUP_CHANGE_SIGNAL is sent.
 """
 
-from collections import defaultdict
 import logging
+from collections import defaultdict
 from datetime import datetime
+from enum import Enum
 from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
-from enum import Enum
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import DatabaseError, models, transaction
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.group import GuaranteedSpots, GroupType
+from apps.enrollment.courses.models.group import GroupType, GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
+from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.users.models import Student
-from apps.notifications.custom_signals import student_pulled, student_not_pulled
 
 LOGGER = logging.getLogger(__name__)
 
@@ -443,13 +443,17 @@ class Record(models.Model):
 
     @classmethod
     def pull_record_into_group(cls, group_id: int) -> bool:
-        """Checks if there are vacancies in the group and pulls the first
-        student from the queue if possible.
+        """Checks for vacancies and pulls first student from queue if possible.
 
-        The function will return False if the group is already full, or the
-        queue is empty or the enrollment is closed for the semester. True value
-        will mean, that it should be run again on that group. The function may
-        throw DatabaseError if transaction fails.
+        If there is free spot in the group, this function will pick the first
+        record from the queue and try to enroll it into the group. The first
+        record may be removed if the student is not eligible for enrollment.
+
+        Returns:
+          The function will return False if the group is already full, or the
+          queue is empty or the enrollment is closed for the semester. True
+          value will mean, that it should be run again on that group. The
+          function may throw DatabaseError if transaction fails.
 
         Concurrency:
           This function may be run concurrently. A data race could potentially
@@ -527,8 +531,7 @@ class Record(models.Model):
                     raise
 
     def enroll_or_remove(self, group: Group) -> List[int]:
-        """This function takes a single QUEUED record and tries to change its
-        status into ENROLLED.
+        """Takes a single QUEUED record and tries to change its status to ENROLLED.
 
         The operation might fail under certain circumstances (the student is not
         enrolled in the lecture group, enrolling would exceed his ECTS limit).
@@ -574,7 +577,7 @@ class Record(models.Model):
                 self.status = RecordStatus.REMOVED
                 self.save()
 
-                #Send notifications
+                # Send notifications
                 if can_enroll_status == EnrollStatus.ECTS_ERR:
                     student_not_pulled.send_robust(
                         sender=self.__class__,

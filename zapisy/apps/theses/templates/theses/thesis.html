@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load render_bundle from webpack_loader %}
-
+{% load filters %}
 {% load crispy_forms_tags %}
 
 {% block main-subtitle %}System prac dyplomowych{% endblock %}
@@ -112,7 +112,7 @@
     </table>
     <h2>Opis pracy dyplomowej</h2>
     {% if thesis.description %}
-        {{ thesis.description }}
+        {% markdown thesis.description %}
     {% else %}
         Brak opisu.
     {% endif %}

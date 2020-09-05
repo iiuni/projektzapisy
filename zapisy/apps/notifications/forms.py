@@ -1,5 +1,6 @@
-from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from django.forms import ModelForm
+
+from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 
 
 class PreferencesFormStudent(ModelForm):

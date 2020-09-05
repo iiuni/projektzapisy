@@ -51,7 +51,6 @@ class GroupExtra(models.TextChoices):
 
 
 class Group(models.Model):
-    """group for course"""
     course = models.ForeignKey(
         CourseInstance,
         verbose_name='przedmiot',
@@ -82,14 +81,14 @@ class Group(models.Model):
         help_text='UWAGA! Nie edytuj tego pola sam!')
 
     def get_teacher_full_name(self):
-        """return teacher's full name of current group"""
+        """Return teacher's full name for current group."""
         if self.teacher is None:
             return '(nieznany prowadzący)'
         else:
             return self.teacher.user.get_full_name()
 
     def get_all_terms(self):
-        """return all terms of current group"""
+        """Return all terms of current group."""
         return self.term.all()
 
     def human_readable_type(self):
@@ -188,7 +187,10 @@ class Group(models.Model):
             return None
 
     def save(self, *args, **kwargs):
-        """Overloaded save method - during save check changes and send signals to notifications app"""
+        """Overloaded save method.
+
+        During save check changes and send signals to notifications app.
+        """
         old = type(self).objects.get(pk=self.pk) if self.pk else None
         super(Group, self).save(*args, **kwargs)
         if old:

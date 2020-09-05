@@ -1,19 +1,20 @@
 from django.contrib.auth.models import User
-from apps.users.models import Employee, is_user_in_group, is_employee
+
 from apps.theses.system_settings import get_master_rejecter
+from apps.users.models import Employee, is_employee, is_user_in_group
 
 THESIS_BOARD_GROUP_NAME = "Komisja prac dyplomowych"
 
 
 def get_theses_board():
-    """Return all members of the theses board"""
+    """Returns all members of the theses board."""
     return Employee.objects.select_related(
         'user'
     ).filter(user__groups__name=THESIS_BOARD_GROUP_NAME)
 
 
 def get_num_board_members() -> int:
-    """Return the number of theses board members"""
+    """Returns the number of theses board members."""
     return get_theses_board().count()
 
 

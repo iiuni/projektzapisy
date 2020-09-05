@@ -2,14 +2,11 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
 
-from django.contrib.auth.models import User
 import redis
+from django.contrib.auth.models import User
 
 from apps.notifications.datatypes import Notification
-from apps.notifications.serialization import (
-    JsonNotificationSerializer,
-    NotificationSerializer,
-)
+from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
 
 
 class NotificationsRepository(ABC):
@@ -142,11 +139,11 @@ class RedisNotificationsRepository(NotificationsRepository):
 
 
 def get_notifications_repository() -> NotificationsRepository:
-    """
+    """Returns a default implementation of NotificationsRepository.
+
     Return an object implementing NotificationsRepository interface,
     thus providing access to _some_ notifications storage.
     Client code should always call this method instead of
     instantiating such classes directly.
     """
-
     return RedisNotificationsRepository(JsonNotificationSerializer())

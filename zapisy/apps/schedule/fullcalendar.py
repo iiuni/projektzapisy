@@ -79,48 +79,39 @@ class FullCalendarAdapter(object):
         return result
 
     def get_id(self, item):
-        """
-        String/Integer. Optional
+        """Uniquely identifies the given event.
 
-        Uniquely identifies the given event. Different instances of repeating events
-        should all have the same id.
+        Different instances of repeating events should all have the same id.
         """
         return item.event_id
 
     def get_title(self, item):
-        """
-        String. Required.
-
-        The text on an event's element
-        """
+        """The text on an event's element."""
         return item.event.title
 
     def get_allDay(self, item):
-        """
-        true or false. Optional.
+        """Whether an event occurs at a specific time-of-day.
 
-        Whether an event occurs at a specific time-of-day. This property affects whether
-        an event's time is shown. Also, in the agenda views, determines if it is displayed
-        in the "all-day" section. If this value is not explicitly specified, allDayDefault
-        will be used if it is defined. If all else fails, FullCalendar will try to guess.
-        If either the start or end value has a "T" as part of the ISO8601 date string,
-        allDay will become false. Otherwise, it will be true. Don't include quotes around
-        your true/false. This value is a boolean, not a string!
+        This property affects whether an event's time is shown. Also, in the
+        agenda views, determines if it is displayed in the "all-day" section. If
+        this value is not explicitly specified, allDayDefault will be used if it
+        is defined. If all else fails, FullCalendar will try to guess. If either
+        the start or end value has a "T" as part of the ISO8601 date string,
+        allDay will become false. Otherwise, it will be true. Don't include
+        quotes around your true/false. This value is a boolean, not a string!
         """
         return False
 
     def get_start(self, item):
-        """
-        The date/time an event begins. Required.
+        """The date/time an event begins.
 
-        A Moment-ish input, like an ISO8601 string. Throughout the API this will become
-        a real Moment object.
+        A Moment-ish input, like an ISO8601 string. Throughout the API this will
+        become a real Moment object.
         """
         return datetime.datetime.combine(item.day, item.start).isoformat()
 
     def get_end(self, item):
-        """
-        The exclusive date/time an event ends. Optional.
+        """The exclusive date/time an event ends.
 
         A Moment-ish input, like an ISO8601 string. Throughout the API this will become
         a real Moment object. It is the moment immediately after the event has ended.
@@ -133,52 +124,40 @@ class FullCalendarAdapter(object):
         return item.event.description
 
     def get_url(self, item):
-        """
-        String. Optional.
-
-        A URL that will be visited when this event is clicked by the user.
-        For more information on controlling this behavior, see the eventClick callback.
-        """
+        """A URL that will be visited when this event is clicked by the user."""
         return item.event.get_absolute_url()
 
     def get_className(self, item):
-        """
-        String/Array. Optional.
-
-        A CSS class (or array of classes) that will be attached to this event's element.
-        """
+        """A CSS class that will be attached to this event's element."""
         return None
 
     def get_editable(self, item):
-        """
-        true or false. Optional.
-
-        Overrides the master editable option for this single event.
-        """
+        """Overrides the master editable option for this single event."""
         return False
 
     def get_color(self, item):
-        """
-        Sets an event's background and border color just like the calendar-wide eventColor option.
+        """Sets an event's background and border color.
+
+        Just like the calendar-wide eventColor option.
         """
         return None
 
     def get_backgroundColor(self, item):
-        """
-        Sets an event's background color just like the calendar-wide eventBackgroundColor option.
+        """Sets an event's background color.
+
+        Just like the calendar-wide eventBackgroundColor option.
         """
         return None
 
     def get_borderColor(self, item):
-        """
-        Sets an event's border color just like the the calendar-wide eventBorderColor option.
+        """Sets an event's border color.
+
+        Just like the the calendar-wide eventBorderColor option.
         """
         return None
 
     def get_textColor(self, item):
-        """
-        Sets an event's text color just like the calendar-wide eventTextColor option.
-        """
+        """Sets an event's text color just like the calendar-wide eventTextColor option."""
         return None
 
 

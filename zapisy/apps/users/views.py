@@ -8,13 +8,11 @@ from django.shortcuts import Http404, redirect, render, reverse
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
-from apps.enrollment.records.models import (
-    GroupOpeningTimes, Record, RecordStatus, T0Times)
+from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
-from apps.users.decorators import (
-    employee_required, external_contractor_forbidden)
+from apps.users.decorators import employee_required, external_contractor_forbidden
 
 from .forms import EmailChangeForm, EmployeeDataForm
 from .models import Employee, PersonalDataConsent, Student
@@ -25,7 +23,7 @@ logger = logging.getLogger()
 @login_required
 @external_contractor_forbidden
 def students_view(request, user_id: int = None):
-    """View for students list and student profile if user id in URL is provided"""
+    """View for students list and student profile if user id in URL is provided."""
     students_queryset = Student.get_active_students().select_related('user')
     if not request.user.employee:
         students_queryset = students_queryset.filter(consent__granted=True)
@@ -55,7 +53,7 @@ def students_view(request, user_id: int = None):
             messages.warning(request, "Student ukrył swój profil")
             return redirect('students-list')
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
 
         records = Record.objects.filter(
             student=student,
@@ -79,7 +77,7 @@ def students_view(request, user_id: int = None):
 
 
 def employees_view(request, user_id: int = None):
-    """View for employees list and employee profile if user id in URL is provided"""
+    """View for employees list and employee profile if user id in URL is provided."""
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
         e.pk: {
@@ -102,7 +100,7 @@ def employees_view(request, user_id: int = None):
         except Employee.DoesNotExist:
             raise Http404
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
         groups = Group.objects.filter(
             course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
@@ -129,7 +127,6 @@ def email_change(request):
         form = EmailChangeForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            logger.info(f"{request.user} changed email to {form.cleaned_data['email']}")
             messages.success(request, message="Twój adres e-mail został zmieniony.")
             return redirect('my-profile')
     else:
@@ -160,7 +157,7 @@ def my_profile(request):
     employee, the page allows him to modify his public information (office,
     consultations).
     """
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
 
     data = {
         'semester': semester,

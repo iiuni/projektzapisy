@@ -17,7 +17,7 @@ class Model:
             raise ModelInitalizationError(f"{cls.__name__}")
 
     def to_dict(self):
-        """Converts model to dict recursively"""
+        """Converts model to dict recursively."""
         data = {}
         for key, value in self.__dict__.items():
             try:

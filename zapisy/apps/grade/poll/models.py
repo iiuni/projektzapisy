@@ -1,12 +1,12 @@
 import json
 import os.path
-
 from typing import List, Union
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
 from apps.users.models import Student
@@ -28,7 +28,9 @@ class PollType(models.IntegerChoices):
 
 class PollManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related('group', 'course', 'semester')
+        return super().get_queryset().select_related(
+            'group', 'group__teacher__user', 'course', 'course__owner__user', 'semester'
+        )
 
 
 class Poll(models.Model):
@@ -58,8 +60,8 @@ class Poll(models.Model):
         verbose_name_plural = 'ankiety'
 
     @property
-    def type(self) -> Union[PollType, 'CourseGroupType']:
-        """Determines the PollType by checking foreign keys references"""
+    def type(self) -> Union[PollType, GroupType]:
+        """Determines the PollType by checking foreign keys references."""
         if self.group:
             return self.group.type
         if self.course:
@@ -68,7 +70,7 @@ class Poll(models.Model):
 
     @property
     def get_semester(self):
-        """Determines the semester of the poll"""
+        """Determines the semester of the poll."""
         if self.semester:
             return self.semester
         if self.course:
@@ -77,8 +79,7 @@ class Poll(models.Model):
             return self.group.course.semester
 
     def __str__(self):
-        """Provides a human-readable string that serves as the title
-            of the Poll."""
+        """Provides a human-readable string that serves as the title of the Poll."""
         if self.group:
             group_type = self.group.get_type_display().capitalize()
             teacher_name = self.group.get_teacher_full_name()
@@ -273,7 +274,6 @@ class Schema(models.Model):
         :param schema_path: path to the file containing the schema. (optional)
         :returns: a dictionary containing a schema and it's version.
         """
-
         if schema_path is None:
             schema_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), 'assets/default_schema.json'
@@ -297,7 +297,7 @@ class Schema(models.Model):
 
     @classmethod
     def get_latest(cls, poll_type):
-        """Retrieves the most recent schema defined for a given `poll_type`
+        """Retrieves the most recent schema defined for a given `poll_type`.
 
         :param poll_type: PollType
         :returns: an instance of `Schema`
@@ -312,8 +312,7 @@ class Schema(models.Model):
         return schema
 
     def get_schema_with_default_answers(self):
-        """Fetches the Submission's schema and populates it with
-            default answers.
+        """Fetches the Submission's schema and populates it with default answers.
 
         :returns: a schema with additional `answer` keys.
         """
@@ -338,7 +337,10 @@ class Schema(models.Model):
 
 class SubmissionManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related('poll')
+        return super().get_queryset().select_related(
+            'poll', 'poll__group', 'poll__group__teacher__user', 'poll__course',
+            'poll__course__owner__user', 'poll__semester'
+        )
 
 
 class Submission(models.Model):
@@ -380,15 +382,12 @@ class Submission(models.Model):
         return self.__str__()
 
     @classmethod
-    def get_or_create(cls, poll_with_ticket_id) -> "Submission":
-        """Makes sure that there exists only submission for a specific
-        poll and ticket id.
+    def get_or_create(cls, poll: Poll, ticket: int) -> "Submission":
+        """Makes sure that there exists only submission for a poll and ticket.
 
-        :param poll_with_ticket_id: a tuple of poll instance and ticket
-            id received from grade/tickets_create app
-        :returns: an instance of `Submission` class.
+        Returns:
+          An instance of `Submission` class. Either existing or a new one.
         """
-        ticket, poll = poll_with_ticket_id
         submission = cls.objects.filter(ticket=ticket).first()
         if not submission:
             schema = Schema.get_latest(poll_type=poll.type)

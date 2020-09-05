@@ -1,175 +1,196 @@
-import "./reservation.css";
+// The following code is responsible for display of reservation form
+// and management of terms formset, including adding, removing and
+// editing reservation terms.
 
 import "jquery";
 const $ = jQuery;
 
-// przejdz do danego elementu
-var scroll = function(id) {
-    $('html, body').animate({
-        scrollTop: $(id).offset().top
-    }, 0);
-};
+var formsetCounter = 0;
+var maxFormsetNumber = 0;
+var extraTermsNumber = 0;
 
-// wyczyść formularz dodawania terminu
-var resetAddTermForm = function() {
-    $('#inputplace').val('');
-    $('#addterm').text('Dodaj termin');
-};
+// List of positions of empty term forms that are available
+// to add to the formset as new term forms. If list contains
+// number n, it means, that the nth form from the top is
+// available. List is in ascending order.
+var listOfEmpty = [];
 
-// sprawdź poprawność dodawanego terminu
-var validateAddTermForm = function() {
-    let valid = $('#addtermform')[0].checkValidity();
-    let begin = $('#begin');
-    let end = $('#end'); 
-    if( begin.val() > end.val() ) {
-        valid = false;
-        begin.addClass('is-invalid');
-        end.addClass('is-invalid');
-    }
-    else{
-        begin.removeClass('is-invalid');
-        end.removeClass('is-invalid');
-    }
-    let location = $('#location');
-    if( location.val().length == 0 ){
-        valid = false;
-        location.addClass('is-invalid');
-    }
-    else
-        location.removeClass('is-invalid');
-    return valid;
-};
+// Changes display of the form regarding to chosen reservation
+// type. For event it displays title and visibility fields.
+// For exams it displays course choice field.
+function setFormDisplay() {
+  if ($("#form-type").val() === "2") {
+    $("#form-course").addClass("d-none");
+    $(".form-event").removeClass("d-none");
+  } else {
+    $("#form-course").removeClass("d-none");
+    $(".form-event").addClass("d-none");
+  }
+}
 
+// Disables edition of currently active terms.
+function setTermsToDefault() {
+  $(".active-term").removeClass("active-term");
+  $(".term-form")
+    .find("input")
+    .prop("disabled", true);
+  $(".term-form")
+    .find(".form-place")
+    .removeClass("bg-light");
+}
+
+// Enables edition of given term.
+function setEdited(object) {
+  setTermsToDefault();
+  $(object)
+    .closest(".term-form")
+    .addClass("active-term");
+  $(object)
+    .closest(".term-form")
+    .find("input")
+    .prop("disabled", false);
+  $(object)
+    .closest(".term-form")
+    .find(".form-place")
+    .addClass("bg-light");
+
+  // Unmarks term as planned to be deleted.
+  $(object)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", false);
+}
+
+// Deletes term
+function deleteTermClick(event) {
+  event.preventDefault();
+
+  $(event.target)
+    .closest(".term-form")
+    .addClass("d-none");
+
+  $(event.target)
+    .closest(".term-form")
+    .find('input[name$="-DELETE"]')
+    .prop("checked", true);
+
+  // If the term is not in the database (has empty id value), then the form
+  // can be reused, so we append it to the listOfEmpty.
+  if (
+    !$(event.target)
+      .closest(".term-form")
+      .find('input[name$="-id"]')
+      .val()
+  ) {
+    formsetCounter -= 1;
+
+    // Form is moved to the end of the list of forms to make sure it will not
+    // appear between existing forms when reused.
+    $(event.target)
+      .closest(".term-form")
+      .insertAfter($(".term-form").last());
+
+    // As we moved our form to the end of the list, we need to extend listOfEmpty.
+    // As in list we keep only positions of empty forms, we only have to append new
+    // position to the beginning of the list.
+    let newPos =
+      listOfEmpty.length != 0
+        ? listOfEmpty[0] - 1
+        : maxFormsetNumber - 1;
+    listOfEmpty.unshift(newPos);
+  }
+}
+
+function newTermClick(event) {
+  event.preventDefault();
+  if (formsetCounter === maxFormsetNumber) return;
+
+  if (!listOfEmpty) return;
+
+  formsetCounter += 1;
+
+  // We choose position of the first empty term form and remove it from listOfEmpty.
+  var first = listOfEmpty.shift();
+
+  // We find chosen element, display it and mark as active.
+  var newTermForm = $(".term-form").eq(first);
+  newTermForm.removeClass("d-none");
+  setEdited(newTermForm);
+}
+
+function editTermClick(event) {
+  event.preventDefault();
+  setEdited(event.target);
+}
+
+// Handles setting outside location. The place field is
+// set as outside location field value, and room field is cleaned.
+function addOutsideLocation(event) {
+  $(".active-term")
+    .find(".form-room")
+    .val("");
+  $(".active-term")
+    .find(".form-place")
+    .val($("#inputplace").val());
+}
+
+function saveEvent(event) {
+  event.preventDefault();
+  $(".term-form")
+    .find("input")
+    .prop("disabled", false);
+  $("#main-form").submit();
+}
 
 $(document).ready(() => {
+  // We get number of term forms received from server.
+  maxFormsetNumber = parseInt(
+    $('input[name="term_set-TOTAL_FORMS"]').val()
+  );
 
-    // dodawanie terminu do listy
-    $('#addtermform').submit((event) => {
-        event.preventDefault();
+  // We get number of extra term forms (empty ones) received from server
+  extraTermsNumber = parseInt(
+    $("#extra-terms-number").val()
+  );
 
-        if( !validateAddTermForm() ){
-            return false;
-        }
+  // Extra terms in formset should remain hidden, as they are empty.
+  // The rest is either one basic term form or terms that are already in
+  // database, so they should be displayed.
+  formsetCounter = maxFormsetNumber - extraTermsNumber;
 
-        let isNew = false;
-        if ($('#hiddenid').val()) {
-            var counter = parseInt($('#hiddenid').val());
-        } else {
-            isNew = true;
-            var counter = parseInt($('input[name="term_set-TOTAL_FORMS"]').val());
-        }
-
-        let namePrefix = 'term_set-'+ counter +'-';
-        let template = $('.termstable-template'); 
-        let tr = template.clone(true).removeClass("termstable-template d-none");
-        let value;
-        
-        value = $('#term').val();
-        tr.find('.termstable-template-term > strong').append(value);
-        tr.find('.termstable-template-term > input')
-            .attr('name', namePrefix + 'day').val(value);
-
-        value = $('#begin').val();
-        tr.children('.termstable-template-begin').append(value);
-        tr.find('.termstable-template-begin > input')
-            .attr('name', namePrefix + 'start').val(value);
-
-        value = $('#end').val();
-        tr.children('.termstable-template-end').append(value);
-        tr.find('.termstable-template-end > input')
-            .attr('name', namePrefix + 'end').val(value);
-
-        value = $('#location').val();
-        tr.children('.termstable-template-location').append(value);
-        tr.find('.termstable-template-location > .termstable-template-place')
-            .attr('name', namePrefix + 'place').val(value);
-        tr.find('.termstable-template-location > .termstable-template-room')
-            .attr('name', namePrefix + 'room').val($("#hiddenroom").val());
-
-        if ( !isNew && $('#termstable tbody tr').eq(counter).find('input[name$="-id"]').length > 0) {
-            tr.append($('#termstable tbody tr').eq(counter).find('input[name$="-id"]').clone(true));
-        }
-
-        tr.find(".termstable-template-delete")
-            .attr('name', namePrefix + 'DELETE')
-            .attr('id', 'id_' + namePrefix + 'DELETE');
-
-        if ( !isNew ) {
-            let old = $('#termstable tbody tr').eq(counter);
-            tr.insertAfter(old);
-            old.remove();
-        } else {
-            tr.insertBefore(template);
-            $('input[name="term_set-TOTAL_FORMS"]').val(parseInt(counter) + 1);
-        }
-
-
-        resetAddTermForm();
-        return false;
+  // Displaying term forms that are invalid.
+  $(".term-form")
+    .slice(formsetCounter, maxFormsetNumber)
+    .each((id, el) => {
+      if ($(el).find(".is-invalid")[0]) formsetCounter += 1;
     });
 
-    // rozpoczęcie edycji istniejącego terminu
-    $('.editterm').click((event) => {
-        event.preventDefault();
+  // We add position of available term forms to listOfEmpty.
+  $(".term-form")
+    .slice(0, formsetCounter)
+    .removeClass("d-none");
+  for (let i = formsetCounter; i < maxFormsetNumber; i++) {
+    listOfEmpty.push(i);
+  }
 
-        let tr = $(event.target).parent().parent().addClass('edited bg-light');
-        let room = tr.find('input[name$="-room"]').val();
-        $('#addterm').text('Zmień termin');
-        $('#term').val(tr.find('input[name$="-day"]').val()).change();
-        $('#begin').val(tr.find('input[name$="-start"]').val());
-        $('#end').val(tr.find('input[name$="-end"]').val());
-        $('#location').val(tr.find('input[name$="-place"]').val());
+  setFormDisplay();
+  $(document).on("change", "#form-type", setFormDisplay);
 
-        $('#hiddenroom').val(room);
-        $('#hiddenid').val(tr.index());
+  $(document).on(
+    "click",
+    "#add-outside-location",
+    addOutsideLocation
+  );
 
-        if("" === room) {
-            $('#inputplace').val($('#location').val());
-        }
+  $(document).on("click", "#new-term-form", newTermClick);
 
-       scroll('#addtermform');
-    });
+  $(document).on(
+    "click",
+    ".delete-term-form",
+    deleteTermClick
+  );
 
-    // zapisz formularz
-    $('#save_event').click((event) => {
-        if ($('#termstable tbody').find('tr:not(.removed, .d-none)').length == 0 ) {
-            if (window.confirm("Czy na pewno chcesz usunąć to wydarzenie?"))
-                $('#mainform').submit();                          
-        } else {
-            $('#mainform').submit();
-        }
-    });
+  $(document).on("click", ".edit-term-form", editTermClick);
 
-    // ustaw ignorowanie konfliktów
-    $('#ignore_all_conflicts').change((event) => {
-        let checked = event.target.checked;
-        $('input[name$="-ignore_conflicts"]').val(+checked);
-    });
-
-    // ustaw zewnętrzną lokalizację
-    $('#addoutsidelocation').click((event) => {
-        $('#hiddenroom').val('');
-        $('#location').val($('#inputplace').val());
-        scroll('#location');
-    });
-
-    // ustaw termin w stan do usunięcia
-    $('.removeterm').click((event) => {
-        var tr = $(event.target).parent().parent();
-        tr.find('input[name$="-DELETE"]').prop('checked', true);
-        tr.find('.unremoveterm').removeClass('d-none');
-        tr.find('.editterm').addClass('d-none');
-        tr.addClass('removed text-danger');
-        $(event.target).addClass('d-none');
-    })
-
-    // anuluj ustawienie terminu w stan do usunięcia
-    $('.unremoveterm').click((event) => {
-        var tr = $(event.target).parent().parent();
-        tr.find('input[name$="-DELETE"]').prop('checked', false);
-        tr.find('.removeterm').removeClass('d-none');
-        tr.find('.editterm').removeClass('d-none');
-        tr.removeClass('removed text-danger');
-        $(event.target).addClass('d-none');
-    });
+  $(document).on("click", "#save-event", saveEvent);
 });

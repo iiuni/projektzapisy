@@ -3,8 +3,8 @@
 Voting cycle spans two semesters in one academic year. Thus the system state
 corresponds to a single academic year.
 """
-from datetime import date
 import re
+from datetime import date
 from typing import Optional
 
 from django.core.exceptions import ValidationError
@@ -16,8 +16,8 @@ from apps.enrollment.courses.models.semester import Semester
 def _get_default_semester_for_season(season):
     """Finds a semester for upcoming year with specified type.
 
-    Parameters:
-      Season is supposed to be one of Semester.TYPE_CHOICES.
+    Args:
+      season: Season is supposed to be one of Semester.TYPE_CHOICES.
     """
     query = Semester.objects.filter(year=_get_default_year, type=season)
     try:
@@ -134,7 +134,7 @@ class SystemState(models.Model):
             raise
 
         # Edge case. Try current semester.
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
         return SystemState.get_state_for_semester(semester)
 
     def is_vote_active(self, day: Optional[date] = None) -> bool:

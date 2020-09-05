@@ -25,7 +25,7 @@
     </p>
     <div class="row m-0" id="timetable">
     </div>
-    <script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
+    {{ groups_dicts|json_script:"timetable-data" }}
     {% render_bundle 'timetable-timetable-component' %}
     
     {% if user.student %}

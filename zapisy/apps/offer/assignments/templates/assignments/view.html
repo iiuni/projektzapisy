@@ -1,0 +1,118 @@
+{% extends "offer/base.html" %}
+{% block main-subtitle %}Przydziały{% endblock %}
+{% block offer_menu_plan %} class="active"{% endblock %}
+
+{% block all-content %}
+    <div class="d-flex justify-content-between align-items-start mb-5">
+        <h1>Przydział zajęć {{ year }}</h1>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'assignments-wizard' %}" class="btn btn-info">Kreator przydziałów</a>
+        {% endif %}
+    </div>
+    {% if teachers %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <ul>
+                    <li>
+                        <a href="#section-by-course">Przydział według przedmiotów</a>
+                        (<a href="#by-course-winter">zimowy</a>, <a href="#by-course-summer">letni</a>)
+                    </li>
+                    <li>
+                        <a href="#section-by-teacher">Przydział według prowadzących</a>
+                        (<a href="#by-employee-pracownik">pracownicy</a>, 
+                        <a href="#by-employee-doktorant">doktoranci</a>,
+                        <a href="#by-employee-inny">inni</a>)
+                    </li>
+                    <li><a href="#section-statistics">Statystyki</a></li>
+                </ul>
+            </div>
+        </div>
+        <section id="section-by-course">
+            <h2>Przydział według przedmiotów</h2>
+            <h3 id="by-course-winter">Semestr zimowy</h3>
+            {% include "assignments/parts/by-course.html" with courses=courses.z only %}
+            <h3 id="by-course-summer">Semestr letni</h3>
+            {% include "assignments/parts/by-course.html" with courses=courses.l only %}
+        </section>
+
+        <section id="section-by-teacher">
+            <h2>Przydział według prowadzących</h2>
+            <h3 id="by-employee-pracownik">Pracownicy</h3>
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="pracownik" only %}
+            <h3 id="by-employee-doktorant">Doktoranci</h3>
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="doktorant" only %}
+            <h3 id=by-employee-inny>Inni</h3>
+            {% include "assignments/parts/by-employee.html" with teachers=teachers type="inny" only %}
+        </section>
+
+        <section id="section-statistics">
+            <h2>Statystyki</h2>
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col" colspan="2" class="table-danger">Osoby niedociążone</th>
+                    </tr>
+                    {% for teacher in teachers.values %}
+                    {% if teacher.balance < 0 %}
+                        <tr>
+                            <td>
+                                <a href="#teacher-{{ teacher.username }}">
+                                    {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.balance|floatformat }}h)
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                    <tr>
+                        <th scope="col" colspan="2" class="table-danger">Osoby przeciążone</th>
+                    </tr>
+                    {% for teacher in teachers.values %}
+                    {% if teacher.balance > 0 %}
+                        <tr>
+                            <td>
+                                <a href="#teacher-{{ teacher.username }}">
+                                    {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.balance|floatformat }}h)
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                    <tr class="table-primary">
+                        <th scope="row">Suma pensów pracowników</th>
+                        <td>{{ pensum|floatformat }} h</td>
+                    </tr>
+                    <tr class="table-primary">
+                        <th scope="row">Liczba zaplanowanych godzin</th>
+                        <td>{{ hours_total|floatformat }} h</td>
+                    </tr>
+                    <tr>
+                        <th scope="col" class="table-dark">- w semestrze zimowym</th>
+                        <td class="table-dark">{{ hours.z|floatformat }} h</td>
+                    </tr>
+                    
+                    {% for group_type, hs in stats_z.items %}
+                        <tr>
+                            <th scope="row">{{ group_type }}</th>
+                            <td>{{ hs|floatformat }} h</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <th scope="col" class="table-dark">- w semestrze letnim</th>
+                        <td class="table-dark">{{ hours.l|floatformat }} h</td>
+                    </tr>
+                    {% for group_type, hs in stats_l.items %}
+                        <tr>
+                            <th scope="row">{{ group_type }}</th>
+                            <td>{{ hs|floatformat }} h</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% else %}
+        <div class="alert alert-warning">
+            Brak danych do wyświetlenia.
+        </div>
+    {% endif %}
+
+{% endblock %}

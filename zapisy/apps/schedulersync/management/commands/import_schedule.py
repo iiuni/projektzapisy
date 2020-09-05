@@ -29,38 +29,43 @@ The --dry_run flag causes all changes to the database to be undone at the end
     It can be safely used for testing.
 
 Instructions for using flags:
-    First use (manual): Never set --slack on first use in semester, use later,
+    First use (manual): Never set --slack on first use in semester, use later,
         always --interactive, you shouldn't use --dont_delete_terms,
         --dry_run freely for testing - recommended on first use
-    During the semester (automatic): always --slack, never --interactive,
-        never --dont_delete_terms, never --dry_run
+    During the semester (automatic): always --slack, never --interactive,
+        never --dont_delete_terms, never --dry_run
 
 Example usage:
     python manage.py import_schedule http://scheduler.gtch.eu/scheduler/api/config/wiosna-2019-2/
-    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/ --dry_run --interactive
+    http://scheduler.gtch.eu/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/
+    --dry_run --interactive
 
 """
 
 import collections
 import os
 
+import environ
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import environ
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
 from apps.schedulersync.models import TermSyncData
 
-from .scheduler_data import SchedulerData
+from .scheduler_data import SchedulerData, SZTerm
 from .scheduler_mapper import SchedulerMapper
 from .slack import Slack
 
 
 class Summary:
-    """Stores information which objects to delete and what to write to Slack and at the end of script"""
+    """Holds importing summary.
+
+    Stores information which objects to delete and what to write to Slack and at
+    the end of script.
+    """
     def __init__(self):
         self.created_courses = 0
         self.used_courses = 0
@@ -124,6 +129,7 @@ class Command(BaseCommand):
                 """Updates selected fields of a with b.
 
                 Both objects must have the fields specified in `props` defined.
+
                 Returns:
                     List of SlackUpdate objects describing the updates.
                 """
@@ -218,7 +224,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.semester = (Semester.objects.get_next() if options['semester'] == 0
+        self.semester = (Semester.get_upcoming_semester() if options['semester'] == 0
                          else Semester.objects.get(pk=int(options['semester'])))
         self.api_config_url = options['api_config_url']
         self.api_task_url = options['api_task_url']

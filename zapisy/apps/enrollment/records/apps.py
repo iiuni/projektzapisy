@@ -10,5 +10,5 @@ class RecordsAppConfig(AppConfig):
     name = 'apps.enrollment.records'
 
     def ready(self):
-        import apps.enrollment.records.signals
-        import apps.enrollment.records.tasks
+        import apps.enrollment.records.signals  # noqa
+        import apps.enrollment.records.tasks  # noqa

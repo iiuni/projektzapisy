@@ -27,7 +27,10 @@ class Employee(models.Model):
         related_name='employee_ptr',
         related_query_name='employee',
         on_delete=models.CASCADE)
-    consultations = models.TextField(verbose_name="konsultacje", null=True, blank=True, validators=[MaxLengthValidator(4200)])
+    consultations = models.TextField(verbose_name="konsultacje",
+                                     null=True,
+                                     blank=True,
+                                     validators=[MaxLengthValidator(4200)])
     homepage = models.URLField(verbose_name='strona domowa', default="", null=True, blank=True)
     room = models.CharField(max_length=20, verbose_name="pokój", null=True, blank=True)
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
@@ -55,9 +58,7 @@ class Employee(models.Model):
         )
 
     def get_full_name_with_academic_title(self) -> str:
-        """Same as `get_full_name`, but prepends the employee's academic title
-        if one is defined.
-        """
+        """Prepends the employee's academic title (if specified) to the name."""
         base_name = self.get_full_name()
         return f'{self.title} {base_name}' if self.title else base_name
 
@@ -127,9 +128,7 @@ class Program(models.Model):
 
 
 class PersonalDataConsent(models.Model):
-    """
-        Model przechowuje zgody dotyczące udostępniania danych osobowych studentów
-    """
+    """Stores students' data processing consents."""
     student = models.OneToOneField(Student, related_name='consent', on_delete=models.CASCADE)
     granted = models.NullBooleanField(verbose_name="zgoda udzielona")
 

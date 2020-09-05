@@ -71,17 +71,23 @@
         <div class="pagination justify-content-center">
             <ul class="pagination">
                 <li class="page-item prev {% if not items.has_previous %}disabled{% endif %}">
-                    <a class="page-link" {% if items.has_previous %}href="?page={{ items.previous_page_number }}"{% endif %}>Poprzednia</a>
+                    <a class="page-link" 
+                        {% if items.has_previous %}
+                            href="{{ self_url }}page={{ items.previous_page_number }}"
+                        {% endif %}>Poprzednia</a>
                 </li>
                 {% for index in page_range %}
                     {% if index <= items.number|add:3 and index >= items.number|add:-3 %}
                         <li class="page-item {% if forloop.counter == items.number %}active{% endif %}">
-                            <a class="page-link" href="?page={{ forloop.counter }}"> {{ forloop.counter }}</a>
+                            <a class="page-link" href="{{ self_url }}page={{ forloop.counter }}"> {{ forloop.counter }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
                 <li class="page-item next {% if not items.has_next %}disabled{% endif %}">
-                    <a class="page-link" {%if items.has_next %}href="?page={{ items.next_page_number }}"{% endif %}>Następna</a>
+                    <a class="page-link"
+                        {%if items.has_next %}
+                            href="{{ self_url }}page={{ items.next_page_number }}"
+                        {% endif %}>Następna</a>
                 </li>
             </ul>
         </div>
