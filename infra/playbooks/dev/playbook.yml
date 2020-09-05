@@ -24,7 +24,6 @@
         - nodejs
         - npm
       become: yes
-      become_user: root
 
     - name: Instal yarn
       npm:
@@ -35,12 +34,10 @@
 
     - name: Install python3
       apt:
-        name: python3
-      become: yes
-
-    - name: Install python3-venv
-      apt:
-        name: python3-venv
+        pkg:
+        - python3
+        - python3-venv
+        - python3-pip
       become: yes
 
     - name: Install redis
@@ -56,14 +53,6 @@
         state: present
         insertafter: EOF
         create: yes
-
-    - name: Install pip
-      apt:
-        pkg:
-        - python3-pip
-        - python3-venv
-        update_cache: yes
-      become: yes
 
     - name: Set up virtualenv and get requirements
       vars:

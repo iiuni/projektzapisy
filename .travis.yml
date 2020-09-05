@@ -1,22 +1,21 @@
+dist: bionic
 language: python
 python:
-  - "3.6"
+  - "3.8"
 
 addons:
   apt:
-    sources:
-      - sourceline: 'deb http://dl.yarnpkg.com/debian/ stable main'
-        key_url: 'http://dl.yarnpkg.com/debian/pubkey.gpg'
     packages:
-      - yarn
-  postgresql: '9.6'
+      - nodejs
+      - npm
+    postgresql: "12"
 services:
   - postgresql
   - redis-server
 
 install:
   - pip install -r zapisy/requirements.test.txt
-
+  - npm install -g yarn
 
 before_script:
   - psql -c 'CREATE DATABASE fereol_test;' -U postgres
@@ -37,15 +36,15 @@ jobs:
         # This caches yarn/.cache, which mostly means we don't need to redownload packages
         - yarn
         - directories:
-          # And this caches the packages themselves, so we don't spend time installing
-          # them unnecesarily. This mostly supersedes the option above, except for cases
-          # where the branch is switched and packages need to be added; then the cache
-          # above can be used
-          - zapisy/node_modules
-          # Cache the virtualenv packages folder so virtualenv doesn't waste
-          # time installing locally cached packages
-          - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
-      script: 
+            # And this caches the packages themselves, so we don't spend time installing
+            # them unnecesarily. This mostly supersedes the option above, except for cases
+            # where the branch is switched and packages need to be added; then the cache
+            # above can be used
+            - zapisy/node_modules
+            # Cache the virtualenv packages folder so virtualenv doesn't waste
+            # time installing locally cached packages
+            - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
+      script:
         - |
           echo "travis_fold:start:yarn"
           # Installs Yarn/NPM dependencies.
@@ -61,9 +60,9 @@ jobs:
 cache:
   - pip
   - directories:
-    # Cache the virtualenv packages folder so virtualenv doesn't waste
-    # time installing locally cached packages
-    - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
+      # Cache the virtualenv packages folder so virtualenv doesn't waste
+      # time installing locally cached packages
+      - "/home/travis/virtualenv/python3.8.3/lib/python3.8/site-packages"
 
 notifications:
   email: false

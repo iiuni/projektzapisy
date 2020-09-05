@@ -7,8 +7,12 @@
 # you're doing.
 Vagrant.configure(2) do |config|
   config.ssh.shell = "bash"
-  config.vm.box = "ubuntu/bionic64"
-  config.vm.box_url = "https://app.vagrantup.com/ubuntu/boxes/bionic64"
+  config.vm.box = "ubuntu/focal64"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update -qq
+    sudo apt-get install ansible acl -qq > /dev/null
+  SHELL
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "infra/playbooks/dev/playbook.yml"
   end
@@ -23,5 +27,7 @@ Vagrant.configure(2) do |config|
     # Enable "IO APIC" for better multicore performance, see
     # https://serverfault.com/questions/74672/why-should-i-enable-io-apic-in-virtualbox
     vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    # Fix Ubuntu Focal box issue: https://bugs.launchpad.net/cloud-images/+bug/1829625
+    vb.customize [ "modifyvm", :id, "--uartmode1", "file", File::NULL ]
   end
 end
