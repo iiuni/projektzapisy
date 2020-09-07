@@ -9,9 +9,11 @@ Vagrant.configure(2) do |config|
   config.ssh.shell = "bash"
   config.vm.box = "ubuntu/focal64"
 
+  # Installs ansible as it is not yet provided for focal.
+  # https://github.com/ansible/ansible/issues/69203
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update -qq
-    sudo apt-get install ansible acl -qq > /dev/null
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install ansible acl -qq > /dev/null
   SHELL
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "infra/playbooks/dev/playbook.yml"
