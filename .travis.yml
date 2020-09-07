@@ -1,71 +1,75 @@
 dist: focal
 language: python
 python:
-  - "3.8"
+    - "3.8"
 
 addons:
-  apt:
-    packages:
-      - nodejs
-      - npm
-    postgresql: "12"
+    apt:
+        packages:
+            - nodejs
+            - npm
+        postgresql: "12"
 services:
-  - postgresql
-  - redis-server
+    - postgresql
+    - redis-server
 
 install:
-  - pip install -r zapisy/requirements.test.txt
-  - npm install -g yarn
+    - pip install -r zapisy/requirements.test.txt
+    - npm install -g yarn
 
 before_script:
-  - psql -c 'CREATE DATABASE fereol_test;' -U postgres
-  - psql -c "ALTER ROLE postgres WITH PASSWORD 'fereolpass'"
-  - mv env/.env_travis env/.env
-  - mkdir zapisy/logs
+    - psql -c 'CREATE DATABASE fereol_test;' -U postgres
+    # Ubuntu by default forbids paswordless connections to Postgres. Travis
+    # usually changes it, but for Focal it is not yet done.
+    - psql -c "ALTER ROLE postgres WITH PASSWORD 'fereolpass'"
+    - mv env/.env_travis env/.env
+    - mkdir zapisy/logs
 
 # Run scripts specified in Jobs rather than one global script.
 script: skip
 
 jobs:
-  include:
-    - stage: lint
-      script: python -m flake8 --statistics .
+    include:
+        - stage: lint
+          script: python -m flake8 --statistics .
 
-    - stage: test
-      cache:
-        - pip
-        # This caches yarn/.cache, which mostly means we don't need to redownload packages
-        - yarn
-        - directories:
-            # And this caches the packages themselves, so we don't spend time installing
-            # them unnecesarily. This mostly supersedes the option above, except for cases
-            # where the branch is switched and packages need to be added; then the cache
-            # above can be used
-            - zapisy/node_modules
-            # Cache the virtualenv packages folder so virtualenv doesn't waste
-            # time installing locally cached packages
-            - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
-      script:
-        - |
-          echo "travis_fold:start:yarn"
-          # Installs Yarn/NPM dependencies.
-          (cd zapisy && yarn) || exit 1
-          # Builds assets.
-          (cd zapisy && yarn build) || exit 1
-          # Don't store the build cache; it changes after each build, Travis then
-          # picks that change up and repacks the cache archive which takes forever
-          rm -rf zapisy/node_modules/.cache-loader-*
-          echo "travis_fold:end:yarn"
-        - cd zapisy && python manage.py test apps --failfast --parallel
+        - stage: test
+          cache:
+              - pip
+              # This caches yarn/.cache, which mostly means we don't need to
+              # re-download packages
+              - yarn
+              - directories:
+                    # And this caches the packages themselves, so we don't spend
+                    # time installing them unnecessarily. This mostly supersedes
+                    # the option above, except for cases where the branch is
+                    # switched and packages need to be added; then the cache
+                    # above can be used
+                    - zapisy/node_modules
+                    # Cache the virtualenv packages folder so virtualenv doesn't
+                    # waste time installing locally cached packages
+                    - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
+          script:
+              - |
+                  echo "travis_fold:start:yarn"
+                  # Installs Yarn/NPM dependencies.
+                  (cd zapisy && yarn) || exit 1
+                  # Builds assets.
+                  (cd zapisy && yarn build) || exit 1
+                  # Don't store the build cache; it changes after each build, Travis then
+                  # picks that change up and repacks the cache archive which takes forever
+                  rm -rf zapisy/node_modules/.cache-loader-*
+                  echo "travis_fold:end:yarn"
+              - cd zapisy && python manage.py test apps --failfast --parallel
 
 cache:
-  - pip
-  - directories:
-      # Cache the virtualenv packages folder so virtualenv doesn't waste
-      # time installing locally cached packages
-      - "/home/travis/virtualenv/python3.8.3/lib/python3.8/site-packages"
+    - pip
+    - directories:
+          # Cache the virtualenv packages folder so virtualenv doesn't waste
+          # time installing locally cached packages
+          - "/home/travis/virtualenv/python3.8.3/lib/python3.8/site-packages"
 
 notifications:
-  email: false
-  slack:
-    secure: TxxFzsD0xTpqgNfzWWreV13LNiI2DVQMLVpkLCJdukUj/53eiwrVV52nOBVXgPKYUCmZTJbYWR25SR179rbY0E+mlp/fY4kqrU1quu/bOoqfxLYYWnlKunMWHtilGZJhbsVsH7U/3WTr4Gw6LeGU3JY3EXrFidcVikm9lLNvqoZpQ+uHhEtcgDUXevCq7dsRRY1X2EWM260/bkMRWhbn0U2d21o2e/7JyIlLvT3CcdWsd3TcUeYCajiW8QZNwJOOuQJtM79bCfDeY2KG9qZHLcQvw7JGKbdANOtlUHeqIEPXJFTf2iGXKOQ9i4wmAdOGDQb6j/i3JjcFTBz1kRtuOWer6ZP56oRGLFK0qkoYNiiumJGIq4eN6rr71cQrN4H9FtKlibcv2l1RrwyJKhizWt8ewhDUkA9fG9QXLlqnnXWMCa1pcHQ3ifewpRWdr/vdMc0r/PZUb1dcUSOAlDREiEO6MAR0WDGRz+4rYn/ckTjZZYCT+fFmJ4I6HLLuNXaH2WLzoSx/QVT2Lt35NuAN5LZmkKc0CXMW7CmbVA7DXfxV23v/eHKmj3/c/yP1BjS1nDxAHNZMHxgy8kglnqJctyh+/6GqAunne0gb/DfEjKkQQGBPjlSD8kJCd+ybgKMVfIqoQhCkPZqwztzi5OWakxZJxnWbUwjnY27LGr8g/VM=
+    email: false
+    slack:
+        secure: TxxFzsD0xTpqgNfzWWreV13LNiI2DVQMLVpkLCJdukUj/53eiwrVV52nOBVXgPKYUCmZTJbYWR25SR179rbY0E+mlp/fY4kqrU1quu/bOoqfxLYYWnlKunMWHtilGZJhbsVsH7U/3WTr4Gw6LeGU3JY3EXrFidcVikm9lLNvqoZpQ+uHhEtcgDUXevCq7dsRRY1X2EWM260/bkMRWhbn0U2d21o2e/7JyIlLvT3CcdWsd3TcUeYCajiW8QZNwJOOuQJtM79bCfDeY2KG9qZHLcQvw7JGKbdANOtlUHeqIEPXJFTf2iGXKOQ9i4wmAdOGDQb6j/i3JjcFTBz1kRtuOWer6ZP56oRGLFK0qkoYNiiumJGIq4eN6rr71cQrN4H9FtKlibcv2l1RrwyJKhizWt8ewhDUkA9fG9QXLlqnnXWMCa1pcHQ3ifewpRWdr/vdMc0r/PZUb1dcUSOAlDREiEO6MAR0WDGRz+4rYn/ckTjZZYCT+fFmJ4I6HLLuNXaH2WLzoSx/QVT2Lt35NuAN5LZmkKc0CXMW7CmbVA7DXfxV23v/eHKmj3/c/yP1BjS1nDxAHNZMHxgy8kglnqJctyh+/6GqAunne0gb/DfEjKkQQGBPjlSD8kJCd+ybgKMVfIqoQhCkPZqwztzi5OWakxZJxnWbUwjnY27LGr8g/VM=
