@@ -19,6 +19,7 @@ install:
 
 before_script:
   - psql -c 'CREATE DATABASE fereol_test;' -U postgres
+  - psql -c "ALTER ROLE postgres WITH PASSWORD 'fereolpass'"
   - mv env/.env_travis env/.env
   - mkdir zapisy/logs
 
@@ -45,7 +46,6 @@ jobs:
             # time installing locally cached packages
             - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
       script:
-        - pg_isready -d fereol_test
         - |
           echo "travis_fold:start:yarn"
           # Installs Yarn/NPM dependencies.
