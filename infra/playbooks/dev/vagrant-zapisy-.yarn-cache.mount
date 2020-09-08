@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount bind yarn cache
+
+[Mount]
+What=/vagrant_yarn_cache
+Where=/vagrant/zapisy/.yarn/cache
+Type=none
+Options=bind
+
+[Install]
+WantedBy=vagrant.mount

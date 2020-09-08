@@ -44,8 +44,11 @@ const RULES = [
       loader: require.resolve("babel-loader"),
       options: {
         presets: ["@babel/preset-env"],
-        plugins: ["@babel/plugin-proposal-export-namespace-from"],
-        
+        plugins: [
+          "@babel/plugin-proposal-export-namespace-from",
+          ["@babel/plugin-transform-runtime", { regenerator: true }],
+        ],
+        sourceType: "unambiguous",
       },
     },
   },
@@ -77,7 +80,7 @@ const RULES = [
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
     loader: require.resolve("file-loader"),
     options: {
-      publicPath: "static",
+      publicPath: "/static/",
     },
   },
 ];

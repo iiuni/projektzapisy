@@ -10,4 +10,4 @@ ExecStart=/usr/bin/yarnpkg
 Type=oneshot
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
+WantedBy=vagrant.mount vagrant-zapisy-yarn_cache.mount
