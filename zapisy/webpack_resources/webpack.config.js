@@ -6,6 +6,7 @@ const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
@@ -54,6 +55,7 @@ const RULES = [
     test: /\.(sa|sc|c)ss$/,
     use: [
       require.resolve("vue-style-loader"),
+      MiniCssExtractPlugin.loader,
       {
         loader: require.resolve("css-loader"),
         options: { sourceMap: true },
@@ -83,6 +85,12 @@ const RULES = [
 const PLUGINS = [
   new CleanWebpackPlugin(),
   new VueLoaderPlugin(),
+  new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // both options are optional
+    filename: "[name].css",
+    chunkFilename: "[id].css",
+  }),
   new BundleTracker({
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",

@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development yarn webpack-cli --progress --colors --config webpack_resources/webpack.config.js",
-    "devw": "NODE_ENV=development yarn webpack-cli --progress --colors --watch --config webpack_resources/webpack.config.js",
+    "devw": "NODE_ENV=production yarn webpack-cli --progress --colors --watch --config webpack_resources/webpack.config.js",
     "build": "NODE_ENV=production yarn webpack-cli --config webpack_resources/webpack.config.js",
     "lint": "prettier --check ."
   },
@@ -70,6 +70,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^4.2.2",
     "file-loader": "^6.1.0",
+    "mini-css-extract-plugin": "^0.11.1",
     "moment-locales-webpack-plugin": "^1.2.0",
     "pnp-webpack-plugin": "^1.6.4",
     "postcss": "^7.0.0",
