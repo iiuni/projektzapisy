@@ -27,27 +27,14 @@ class GroupType(models.TextChoices):
     PRO_SEMINAR = '12', 'proseminarium'
 
 
-class GroupExtra(models.TextChoices):
-    EMPTY = '', ''
-    FIRST_SEV_WEEKS = 'pierwsze 7 tygodni', 'pierwsze 7 tygodni'
-    SEC_SEV_WEEKS = 'drugie 7 tygodni', 'drugie 7 tygodni'
-    BACKUP_GROUP = 'grupa rezerwowa', 'grupa rezerwowa'
-    BACHELOR_GROUP = 'grupa licencjacka', 'grupa licencjacka'
-    MASTERS_GROUP = 'grupa magisterska', 'grupa magisterska'
-    ADVANCED_GROUP = 'grupa zaawansowana', 'grupa zaawansowana'
-    MATH_DEP_CLASS = 'zajęcia na mat.', 'zajęcia na matematyce'
-    STRIPPLED_LECTURE = 'wykład okrojony', 'wykład okrojony'
-    GROUP_ONE = 'grupa 1', 'grupa 1'
-    GROUP_TWO = 'grupa 2', 'grupa 2'
-    GROUP_THREE = 'grupa 3', 'grupa 3'
-    GROUP_FOUR = 'grupa 4', 'grupa 4'
-    GROUP_FIVE = 'grupa 5', 'grupa 5'
-    LINUX_LAB = 'pracownia linuksowa', 'pracownia linuksowa'
-    ENGLISH_GROUP = 'grupa anglojęzyczna', 'grupa anglojęzyczna'
-    FIRST_YEAR = 'I rok', 'I rok'
-    SEC_YEAR = 'II rok', 'II rok'
-    ISIM = 'ISIM', 'ISIM'
-    HIDDEN_GROUP = 'hidden', 'grupa ukryta'
+GroupTooltips = {
+    'Q1': "pierwsze 7 tygodni",
+    'Q2': "drugie 7 tygodni",
+    'zaaw': "grupa zaawansowana",
+    'mat': "zajęcia na matematyce",
+    'english': "grupa anglojęzyczna",
+    'zdalna': "zajęcia prowadzone zdalnie",
+}
 
 
 class Group(models.Model):
@@ -65,11 +52,13 @@ class Group(models.Model):
     type = models.CharField(max_length=2, choices=GroupType.choices, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
     extra = models.CharField(
-        max_length=20,
-        choices=GroupExtra.choices,
-        verbose_name='dodatkowe informacje',
+        "dodatkowe informacje",
+        max_length=255,
         default='',
-        blank=True)
+        blank=True,
+        help_text=("Można wpisywać tagi oddzielone przecinkami. Zostaną one wyświetlone na stronie "
+                   "przedmiotu. Nie ma żadnych dozwolonych tagów, ale dla wybranych tagów zostanie "
+                   f"dodany tooltip z wyjaśnieniem: {GroupTooltips}"))
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
 
     disable_update_signal = False
@@ -139,6 +128,9 @@ class Group(models.Model):
 
     def get_absolute_url(self):
         return reverse('group-view', args=[self.pk])
+
+    def get_extra_tags(self):
+        return [(k, GroupTooltips.get(k, None)) for k in self.extra.split(',')]
 
     @classmethod
     @transaction.atomic
