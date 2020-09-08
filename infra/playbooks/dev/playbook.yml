@@ -11,18 +11,12 @@
       raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
-    - name: Upgrade all packages to the latest version
-      apt:
-        name: "*"
-        update_cache: yes
-        state: latest
-      become: yes
-
     - name: Install nodejs and npm
       apt:
         pkg:
         - nodejs
         - npm
+        update_cache: yes
       become: yes
 
     - name: Instal yarn
