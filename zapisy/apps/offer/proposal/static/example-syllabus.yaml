@@ -1,0 +1,104 @@
+name: Sztuczna inteligencja
+name_en: Artificial Intelligence
+hours_lecture: 30
+hours_exercise: 0
+hours_lab: 0
+hours_exercise_lab: 30
+hours_seminar: 0
+hours_recap: 0
+teaching_methods: |
+    Wykład, prezentacja, rozwiązywanie zadań z  komentowaniem, dyskusja,
+    konsultowanie pomysłów na rozwiązywanie zadań programistycznych, samodzielna
+    praca przy komputerze, indywidualny projekt programistyczny
+preconditions: |
+    ## Zrealizowane przedmioty:
+    * Logika dla informatyków
+    * Wstęp do informatyki lub Algorytmy i struktury danych
+    * Analiza matematyczna
+    ## Niezbędne kompetencje:
+    * Umiejętność programowania w języku wyższego poziomu
+    * Pożądana wstępna znajomość języka Python
+objectives: |
+    Podstawowym celem przedmiotu jest zapoznanie studentów z technikami
+    stosowanymi do rozwiązywania problemów, które są z jednej strony trudne do
+    rozwiązania przy użyciu standardowych technik algorytmicznych, a z drugiej
+    są efektywnie rozwiązywane przez ludzi, korzystających ze swojej
+    inteligencji. Zajęcia koncentrują się na następujących pojęciach:
+    modelowanie świata, przeszukiwanie przestrzeni rozwiązań, wnioskowanie i
+    uczenie się z przykładów bądź z symulacji.
+contents: |
+     1. Modelowanie rzeczywistości za pomocą przestrzeni stanów.
+     2. Przeszukiwanie w przestrzeni stanów: przeszukiwanie wszerz i w głąb, 
+        iteracyjne pogłębianie, przeszukiwanie dwustronne, algorytm A*,
+        właściwości i tworzenie funkcji heurystycznych wspomagających
+        przeszukiwanie.
+     3. Przeszukiwanie metaheurystyczne: hill climbing, symulowane wyżarzanie,
+        beam search, algorytmy ewolucyjne.
+     4. Rozwiązywanie więzów: modelowanie za pomocą więzów, spójność więzów i
+        algorytm AC-3, łączenie propagacji więzów z przeszukiwaniem z nawrotami,
+        specjalistyczne języki programowania z więzami na przykładzie Prologa z
+        więzami.
+     5. Strategie w grach: gry dwuosobowe, algorytm minimax, odcięcia alfa-beta,
+        przykłady heurystycznej oceny sytuacji na planszy w wybranych grach,
+        losowość w grach, algorytm Monte Carlo Tree Search.
+     6. Elementy teorii gier: strategie czyste i mieszane, rozwiązywanie prostych
+        gier typu dylemat więźnia.
+     7. Modelowanie za pomocą logiki zdaniowej, wnioskowanie forward-chaining i
+        backward-chaining, rozwiązywanie problemów spełnialności formuły w CNF
+        (WalkSAT, DPLL).
+     8. Modelowanie niepewności świata: sieci bayesowskie, procesy decyzyjne
+        Markowa, algorytmy value iteration oraz policy iteration. Elementy
+        uczenia ze wzmocnieniem: TD-learning oraz Q-learning.
+     9. Podstawy uczenia maszynowego: idea uczenia się z przykładów,
+        generalizacja, niebezpieczeństwo przeuczenia. Wybrane metody: regresja
+        liniowa i logistyczna, wielowarstwowe sieci neuronowe (MLP), algorytm
+        k-NN, drzewa decyzyjne i lasy losowe.
+teaching_effects: |
+    ## Wiedza
+      * rozumie, czym zajmuje się Sztuczna inteligencja, rozumie również, na
+        czym polega specyficzność metod tej dziedziny
+      * posiada przeglądową wiedzę o różnych dziedzinach sztucznej inteligencji
+      * zna różne metody modelowania świata, z uwzględnieniem niepewności
+      * zna algorytmy przeszukiwania przestrzeni stanów oraz przeszukiwania 
+        drzew gry
+      * zna podstawowe algorytmy wnioskowania
+      * zna podstawowe metody uczenia maszynowego (z nadzorem oraz ze
+        wzmocnieniem)
+    ## Umiejętności
+      * umie modelować różne zagadnienia jako zadania przeszukiwania (lub 
+        przeszukiwania z więzami)
+      * umie stosować i modyfikować różne algorytmy przeszukiwania (w tym
+        również przeszukiwania w grach)
+      * umie modelować niepewność świata za pomocą narzędzi z rachunku 
+        prawdopodobieństwa (ze szczególnym uwzględnieniem metod Monte Carlo)
+      * umie stosować podstawowe metody uczenia maszynowego (w tym również 
+        metody uczenia ze wzmocnieniem)
+    ## Kompetencje społeczne
+      * rozumie znaczenie algorytmów sztucznej inteligencji dla funkcjonowania 
+        współczesnego społeczeństwa, rozumie możliwości i niebezpieczeństwa z
+        tym związane
+      * umie prezentować swoje idee w sposób dostosowany do wiedzy słuchaczy
+literature: |
+  * Stuart Russell and Peter Norvig, Artificial Intelligence: A Modern Approach.
+  * Richard S. Sutton and Andrew G. Barto, Reinforcement Learning: An
+    Introduction.
+  * Prateek Joshi, Artificial Intelligence with Python.
+verification_methods: |
+    egzamin pisemny, prezentacja projektu, prezentacja rozwiązania zadania,
+    napisanie i prezentacja programu komputerowego
+passing_means: |
+    Do zaliczenia ćwiczenio-pracowni należy zdobyć wymaganą, podaną w
+    regulaminie przedmiotu liczbę punktów za zadania ćwiczeniowe, pracowniowe i
+    opcjonalny projekt. Punkty za wszystkie wyżej wymienione aktywności liczą
+    się łącznie.
+    
+    Egzamin ma formę pisemną, aby go zaliczyć konieczne jest zdobycie wymaganej
+    liczby punktów. Osoby, które osiągnęły bardzo dobre wyniki na ćwiczeniach i
+    zdobyły ustaloną liczbę punktów za rozwiązanie dodatkowych, trudniejszych
+    zadań mogą uzyskać zwolnienie z egzaminu.
+student_labour: |
+    ## Praca własna studenta:
+      * przygotowywanie się do ćwiczeń (w tym czytanie materiałów dodatkowych)
+        30
+      * samodzielne rozwiązywanie zadań pracowniowych i projektowych 60
+      * przygotowanie do egzaminu lub rozwiązywanie dodatkowych zadań 20
