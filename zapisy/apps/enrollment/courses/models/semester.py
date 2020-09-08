@@ -189,7 +189,7 @@ class Semester(models.Model):
         return weeks
 
     @staticmethod
-    def get_semester(date):
+    def get_semester(date) -> Optional['Semester']:
         """Get semester for a specified date. More versatile than get_current_semester.
 
         Args:
@@ -210,7 +210,7 @@ class Semester(models.Model):
             raise
 
     @staticmethod
-    def get_upcoming_semester():
+    def get_upcoming_semester() -> Optional['Semester']:
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
@@ -227,7 +227,7 @@ class Semester(models.Model):
             return Semester.get_current_semester()
 
     @staticmethod
-    def get_current_semester():
+    def get_current_semester() -> Optional['Semester']:
         """If exists, it returns current semester, otherwise return None.
 
         Raises:
