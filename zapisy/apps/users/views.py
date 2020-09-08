@@ -120,7 +120,7 @@ def employees_view(request, user_id: int = None):
     return render(request, 'users/users_view.html', data)
 
 
-@login_required
+@employee_required
 def email_change(request):
     """Allows users to change email address."""
     if request.method == 'POST':

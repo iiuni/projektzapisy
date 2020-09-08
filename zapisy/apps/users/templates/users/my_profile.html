@@ -63,7 +63,9 @@
         </table>
 
         <a class="btn btn-light" href="{% url 'password_change' %}" role="button">Zmień hasło</a>
-        <a class="btn btn-light" href="{% url 'email-change' %}" role="button">Zmień adres email</a>
+        {% if not user.student %}
+            <a class="btn btn-light" href="{% url 'email-change' %}" role="button">Zmień adres email</a>
+        {% endif %}
         {% if user.employee %}
             <a class="btn btn-light" href="{% url 'employee-data-change' %}" role="button">Zmień inne dane</a>
         {% endif %}
