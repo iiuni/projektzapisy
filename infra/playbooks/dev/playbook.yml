@@ -11,20 +11,12 @@
       raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
-    - name: Install nodejs and npm
+    - name: Install yarn
       apt:
         pkg:
-        - nodejs
-        - npm
+        - yarnpkg
         update_cache: yes
       become: yes
-
-    - name: Instal yarn
-      npm:
-        name: yarn
-        global: yes
-      become: yes
-      become_user: root
 
     - name: Install python3
       apt:
@@ -55,21 +47,6 @@
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
         requirements: /vagrant/zapisy/requirements.development.txt
-
-    # Vagrant file node_modules mounting
-    - name: Create vagrant_node_modules folder
-      file:
-        path: /vagrant_node_modules
-        state: directory
-        owner: vagrant
-        group: vagrant
-      become: yes
-
-    - name: Create logs directory
-      file:
-        path: /vagrant/zapisy/logs
-        state: directory
-      become: yes
 
 - name: Include playbook with postgres configuration
   import_playbook: postgres.yml

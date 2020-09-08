@@ -7,7 +7,7 @@ User=vagrant
 Group=vagrant
 TimeoutStartSec=900
 WorkingDirectory=/vagrant/zapisy/
-ExecStart=/usr/local/bin/yarn devw
+ExecStart=/usr/bin/yarnpkg devw
 Type=simple
 
 [Install]

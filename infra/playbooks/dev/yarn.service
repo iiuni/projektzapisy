@@ -6,7 +6,7 @@ User=vagrant
 Group=vagrant
 TimeoutStartSec=900
 WorkingDirectory=/vagrant/zapisy/
-ExecStart=/usr/local/bin/yarn
+ExecStart=/usr/bin/yarnpkg
 Type=oneshot
 
 [Install]
