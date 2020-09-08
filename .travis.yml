@@ -1,27 +1,27 @@
+dist: focal
 language: python
 python:
-  - "3.6"
-dist: bionic
+  - "3.8"
 
 addons:
   apt:
-    sources:
-      - sourceline: 'deb http://dl.yarnpkg.com/debian/ stable main'
-        key_url: 'http://dl.yarnpkg.com/debian/pubkey.gpg'
     packages:
-      - yarn
-  postgresql: '9.6'
+      - nodejs
+      - npm
+    postgresql: "12"
 services:
   - postgresql
   - redis-server
 
 install:
-  - (cd zapisy && yarn) || exit 1
   - pip install -r zapisy/requirements.test.txt
-
+  - npm install -g yarn
 
 before_script:
   - psql -c 'CREATE DATABASE fereol_test;' -U postgres
+  # Ubuntu by default forbids paswordless connections to Postgres. Travis
+  # usually changes it, but for Focal it is not yet done.
+  - psql -c "ALTER ROLE postgres WITH PASSWORD 'fereolpass'"
   - mv env/.env_travis env/.env
   - mkdir zapisy/logs
 
@@ -31,27 +31,32 @@ script: skip
 jobs:
   include:
     - stage: lint
-      script: 
-        - (cd zapisy && yarn lint) || exit 1
+      script:
         - python -m flake8 --statistics .
+        - (cd zapisy && yarn lint) || exit 1
 
     - stage: test
       cache:
         - pip
-        # This caches yarn/.cache, which mostly means we don't need to redownload packages
+        # This caches yarn/.cache, which mostly means we don't need to
+        # re-download packages
         - yarn
         - directories:
-          # And this caches the packages themselves, so we don't spend time installing
-          # them unnecesarily. This mostly supersedes the option above, except for cases
-          # where the branch is switched and packages need to be added; then the cache
-          # above can be used
-          - zapisy/node_modules
-          # Cache the virtualenv packages folder so virtualenv doesn't waste
-          # time installing locally cached packages
-          - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
-      script: 
+            # And this caches the packages themselves, so we don't spend
+            # time installing them unnecessarily. This mostly supersedes
+            # the option above, except for cases where the branch is
+            # switched and packages need to be added; then the cache
+            # above can be used
+            - zapisy/node_modules
+            # Cache the virtualenv packages folder so virtualenv doesn't
+            # waste time installing locally cached packages
+            - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
+      script:
         - |
           echo "travis_fold:start:yarn"
+          # Installs Yarn/NPM dependencies.
+          (cd zapisy && yarn) || exit 1
+          # Builds assets.
           (cd zapisy && yarn build) || exit 1
           # Don't store the build cache; it changes after each build, Travis then
           # picks that change up and repacks the cache archive which takes forever
@@ -62,9 +67,9 @@ jobs:
 cache:
   - pip
   - directories:
-    # Cache the virtualenv packages folder so virtualenv doesn't waste
-    # time installing locally cached packages
-    - '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages'
+      # Cache the virtualenv packages folder so virtualenv doesn't waste
+      # time installing locally cached packages
+      - "/home/travis/virtualenv/python3.8.3/lib/python3.8/site-packages"
 
 notifications:
   email: false

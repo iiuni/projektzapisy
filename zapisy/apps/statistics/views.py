@@ -12,7 +12,7 @@ from apps.users.models import Student
 
 @permission_required('courses.view_stats')
 def students(request):
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
     t0_time_agg = models.Min('t0times__time', filter=models.Q(t0times__semester=semester))
     group_opening_agg = models.Min(
         'groupopeningtimes__time',
@@ -27,7 +27,7 @@ def students(request):
 
 @permission_required('courses.view_stats')
 def groups(request):
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
     enrolled_agg = models.Count(
         'record', filter=models.Q(record__status=RecordStatus.ENROLLED), distinct=True)
     queued_agg = models.Count(

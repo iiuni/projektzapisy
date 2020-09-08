@@ -1,0 +1,242 @@
+---
+- hosts: deploy
+
+  vars:
+    APP_DB_USER: fereol
+    APP_DB_NAME: fereol
+    ansible_python_interpreter: "/usr/bin/python3"
+    pwd_alias: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
+
+  tasks:
+
+    # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+      become: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        upgrade: full
+        update_cache: yes
+        force_apt_get: true
+      become: yes
+
+    # installation acl: https://github.com/georchestra/ansible/issues/55#issuecomment-588313638
+    - name: Install tools
+      apt:
+        pkg:
+        - acl
+        - nodejs
+        - npm
+        - git
+        - redis-server
+        - nginx
+        - postfix
+        - p7zip-full
+      become: yes
+
+    - name: Instal yarn
+      npm:
+        name: yarn
+        global: yes
+      become: yes
+
+    - name: Install python tools
+      apt:
+        pkg:
+        - python3
+        - python3-pip
+        - python3-venv
+        - libpq-dev
+        - python3-psycopg2
+      become: yes
+
+    - name: Ensure group for deploy_user exists
+      become: yes
+      group:
+        name: "{{ deploy_user }}"
+        state: present
+
+    - name: Add the deploy_user to remote machine
+      become: yes
+      user:
+        name: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        create_home: yes
+
+    # Generate passwords and edit .env file
+    - name: Generate password
+      set_fact:
+        APP_DB_PASS: "{{ pwd_alias }}"
+      no_log: True
+
+    - name: Copy .env file to deploy_user's home and edit
+      become: yes
+      become_user: "{{ deploy_user }}"
+      template:
+        src: .env
+        dest: "/home/{{ deploy_user }}/.env"
+
+    # Configure postgres
+    - name: Ensure a locale exists
+      locale_gen:
+        name: pl_PL.UTF-8
+        state: present
+      become: yes
+
+    - name: Install postgresql and postgresql-contrib
+      apt:
+        pkg:
+        - postgresql
+        - postgresql-contrib
+        state: present
+      become: yes
+
+    - name: Create the database user
+      become: yes
+      become_user: postgres
+      postgresql_user:
+        name: "{{ APP_DB_USER }}"
+        password: "{{ APP_DB_PASS }}"
+        role_attr_flags: CREATEDB
+        encrypted: yes
+
+    - name: Create the database
+      become: yes
+      become_user: postgres
+      postgresql_db:
+        name: "{{ APP_DB_NAME }}"
+        owner: "{{ APP_DB_USER }}"
+        encoding: UTF-8
+        lc_collate: pl_PL.UTF-8
+        lc_ctype: pl_PL.UTF-8
+        template: template0
+
+    # Configure and sandbox Nginx
+    - name: Stop nginx service
+      systemd:
+        name: nginx
+        state: stopped
+      become: yes
+
+    - name: Adding user www-data to group ssl-cert
+      user:
+        name: "www-data"
+        groups: "ssl-cert"
+        append: yes
+      become: yes
+
+    - name: Copy nginx service file to /etc
+      copy:
+        src: templates/nginx.service
+        dest: /etc/systemd/system/nginx.service
+        force: yes
+      become: yes
+
+    - name: Delete nginx service file from /lib
+      file:
+        path: /lib/systemd/system/nginx.service
+        state: absent
+      become: yes
+
+    - name: Deploy nginx configs
+      become: yes
+      copy:
+        src: "templates/{{ item.file }}"
+        dest: "/etc/nginx/{{ item.path }}"
+        force: yes
+      with_items:
+        - {file: "nginx.conf", path: ""}
+        - {file: "ssl-params.conf", path: "snippets/"}
+
+    - name: Deploy nginx configs with templating
+      become: yes
+      template:
+        src: "templates/{{ item.file }}.j2"
+        dest: "/etc/nginx/{{ item.path }}/{{ item.file }}"
+      with_items:
+        - {file: "zapisy.conf", path: "sites-available"}
+        - {file: "ssl-signed.conf", path: "snippets"}
+
+    - name: Create ssl directory
+      file:
+        path: /etc/nginx/ssl
+        state: directory
+      become: yes
+
+    - name: Generate an OpenSSL private key
+      become: yes
+      openssl_privatekey:
+        path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        group: ssl-cert
+        mode: 0640
+
+    - name: Generate an OpenSSL CSR
+      become: yes
+      openssl_csr:
+        path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
+        privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        common_name: "{{ deploy_server_name }}"
+
+    - name: Generate a Self Signed OpenSSL certificate
+      become: yes
+      openssl_certificate:
+        path: "/etc/ssl/certs/{{ deploy_server_name }}.crt"
+        privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
+        csr_path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
+        provider: selfsigned
+
+    - name: Generate Diffie-Hellman parameters
+      become: yes
+      openssl_dhparam:
+        path: /etc/nginx/dhparam.pem
+        size: 2048
+
+    # Configure Postfix
+    - name: Configure nginx service
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: "inet_interfaces"
+        line: "inet_interfaces = loopback-only"
+      become: yes
+
+    # Configure other services
+    - name: Get number of CPUs
+      shell: nproc
+      register: nproc_out
+
+    - name: Deploy gunicorn service
+      template:
+        src: templates/gunicorn.service.j2
+        dest: /etc/systemd/system/gunicorn.service
+      become: yes
+
+    - name: Deploy backup service
+      template:
+        src: templates/backup.service.j2
+        dest: /etc/systemd/system/backup.service
+      become: yes
+
+    - name: Deploy backup timer
+      copy:
+        src: templates/backup.timer
+        dest: /etc/systemd/system/backup.timer
+        force: yes
+      become: yes
+
+    - name: Deploy rqworker-default
+      template:
+        src: templates/rqworker-default.service.j2
+        dest: /etc/systemd/system/rqworker-default.service
+      become: yes
+
+    - name: Deploy rqworker to dispatching notifications
+      template:
+        src: templates/rqworker-notifications.service.j2
+        dest: /etc/systemd/system/rqworker-notifications.service
+      become: yes
+
+    - name: Systemd daemon reload
+      systemd:
+        daemon_reload: yes
+      become: yes

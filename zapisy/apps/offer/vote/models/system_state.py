@@ -134,7 +134,7 @@ class SystemState(models.Model):
             raise
 
         # Edge case. Try current semester.
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
         return SystemState.get_state_for_semester(semester)
 
     def is_vote_active(self, day: Optional[date] = None) -> bool:

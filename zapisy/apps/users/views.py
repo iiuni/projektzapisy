@@ -53,7 +53,7 @@ def students_view(request, user_id: int = None):
             messages.warning(request, "Student ukrył swój profil")
             return redirect('students-list')
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
 
         records = Record.objects.filter(
             student=student,
@@ -100,7 +100,7 @@ def employees_view(request, user_id: int = None):
         except Employee.DoesNotExist:
             raise Http404
 
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
         groups = Group.objects.filter(
             course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
@@ -157,7 +157,7 @@ def my_profile(request):
     employee, the page allows him to modify his public information (office,
     consultations).
     """
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
 
     data = {
         'semester': semester,

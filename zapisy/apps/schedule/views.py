@@ -118,7 +118,7 @@ def session(request, semester=None):
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
     if semester:
-        semester = Semester.get_by_id(semester)
+        semester = Semester.objects.get(pk=semester)
     else:
         semester = Semester.get_current_semester()
 
@@ -408,7 +408,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # 
     if form.cleaned_data.get('week', None) == 'currsem':
         semester = Semester.get_current_semester()
     elif form.cleaned_data.get('week', None) == 'nextsem':
-        semester = Semester.objects.get_next()
+        semester = Semester.get_upcoming_semester()
     if semester:
         terms = CourseTerm.objects.filter(
             group__course__semester=semester, classrooms__in=rooms).distinct().select_related(

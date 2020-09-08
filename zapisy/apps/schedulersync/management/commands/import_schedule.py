@@ -224,7 +224,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.semester = (Semester.objects.get_next() if options['semester'] == 0
+        self.semester = (Semester.get_upcoming_semester() if options['semester'] == 0
                          else Semester.objects.get(pk=int(options['semester'])))
         self.api_config_url = options['api_config_url']
         self.api_task_url = options['api_task_url']

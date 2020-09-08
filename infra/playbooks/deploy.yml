@@ -1,0 +1,187 @@
+---
+- hosts: deploy
+
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+
+    - name: Initialize the deploy root and gather facts
+      become: yes
+      become_user: "{{ deploy_user }}"
+      deploy_helper:
+        path: "/home/{{ deploy_user }}/deploy"
+        state: present
+
+    - name: Clone the project to the new release folder
+      become: yes
+      become_user: "{{ deploy_user }}"
+      git:
+        repo: 'https://github.com/iiuni/projektzapisy.git'
+        dest: "{{ deploy_helper.new_release_path }}"
+        version: "{{ deploy_version }}"
+
+    - name: Add an unfinished file, to allow cleanup on successful finalize
+      become: yes
+      file:
+        path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
+        state: touch
+
+    - name: Copy .env file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      copy:
+        src: "/home/{{ deploy_user }}/.env"
+        dest: "{{ deploy_helper.new_release_path }}/env"
+        force: yes
+        remote_src: yes
+
+    - name: Add execute permission to perform_dump.sh file
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
+        mode: '0774'
+
+    - name: Set up virtualenv and get requirements
+      become: yes
+      become_user: "{{ deploy_user }}"
+      pip:
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+        virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+        requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
+
+    - name: Create logs directory
+      become: yes
+      file:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
+        owner: "{{ deploy_user }}"
+        state: directory
+        group: "www-data"
+        mode: '1775'
+
+    - name: Create static directory
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/static"
+        state: directory
+
+    - name: Create compiled_assets directory
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/compiled_assets"
+        state: directory
+
+    - name: Apply migrates
+      become: yes
+      become_user: "{{ deploy_user }}"
+      django_manage:
+        command: migrate
+        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+
+    - name: Make sure that directory for gunicorn exists
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        path: "{{ deploy_helper.new_release_path }}/env3/run/"
+        state: directory
+
+    - name: Install dependencies based on package.json
+      become: yes
+      become_user: "{{ deploy_user }}"
+      yarn:
+        path: "{{ deploy_helper.new_release_path }}/zapisy/"
+
+    - name: Build project
+      become: yes
+      become_user: "{{ deploy_user }}"
+      command: yarn build
+      args:
+        chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
+
+    - name: Django collect static files
+      become: yes
+      become_user: "{{ deploy_user }}"
+      django_manage:
+        command: collectstatic
+        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+
+    - name: Finalize the deploy, removing the unfinished file and switching the symlink
+      become: yes
+      become_user: "{{ deploy_user }}"
+      deploy_helper:
+        path: "/home/{{ deploy_user }}/deploy"
+        release: "{{ deploy_helper.new_release }}"
+        state: finalize
+        clean: true
+        keep_releases: 2
+
+    - name: Get revision
+      shell: git rev-parse HEAD
+      register: git_rev
+      args:
+        chdir: "/home/{{ deploy_user }}/deploy/current/"
+
+    - name: Rollbar deployment notification
+      rollbar_deployment:
+        token: "{{ rollbar_token }}"
+        environment: "{{ deploy_env }}"
+        user: "{{ ansible_user }}"
+        revision: "{{ git_rev.stdout }}"
+        comment: "Deploy {{ deploy_version }} on {{ ansible_host }}"
+      when: rollbar_token != "none"
+
+    - name: Create link to socket for Nginx
+      become: yes
+      become_user: "{{ deploy_user }}"
+      file:
+        src: "/home/{{ deploy_user }}/deploy/current/env3/run"
+        dest: "/home/{{ deploy_user }}/deploy/current/zapisy/socket"
+        force: yes
+        state: link
+
+    - name: Enable and run postfix service
+      become: yes
+      service:
+        name: postfix
+        enabled: yes
+        state: restarted
+
+    - name: Enable and run rqworker-default service
+      service:
+        name: rqworker-default
+        enabled: yes
+        state: restarted
+      become: yes
+
+    - name: Enable and run rqworker-notifications service
+      service:
+        name: rqworker-notifications
+        enabled: yes
+        state: restarted
+      become: yes
+
+    - name: Enable and run gunicorn service
+      become: yes
+      service:
+        name: gunicorn
+        enabled: yes
+        state: restarted
+
+    - name: Enable and run nginx service
+      become: yes
+      service:
+        name: nginx
+        enabled: yes
+        state: restarted
+
+    - name: Enable timer for backup service
+      service:
+        name: backup.timer
+        enabled: yes
+        state: started
+      become: yes

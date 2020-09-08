@@ -1,0 +1,25 @@
+[Unit]
+Description=A high performance web server and a reverse proxy server
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t -q -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -g 'daemon on; master_process on;'
+ExecReload=/usr/sbin/nginx -g 'daemon on; master_process on;' -s reload
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx/nginx.pid
+TimeoutStopSec=5
+KillMode=mixed
+SystemCallErrorNumber=EPERM
+LockPersonality=true
+NoNewPrivileges=true
+Group=www-data
+User=www-data
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+RuntimeDirectory=nginx
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

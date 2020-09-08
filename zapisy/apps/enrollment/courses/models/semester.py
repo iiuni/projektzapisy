@@ -2,23 +2,13 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
 from django.conf import settings
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.validators import ValidationError
 from django.db import models
-from django.db.models import Q
 
 from apps.common import days_of_week
 
 from .term import Term
-
-
-class GetterManager(models.Manager):
-
-    def get_next(self):
-        try:
-            return self.get(visible=True, records_closing__gte=datetime.now())
-        except (ObjectDoesNotExist, MultipleObjectsReturned):
-            return self.filter(visible=True).order_by('records_closing').last()
 
 
 class Semester(models.Model):
@@ -76,8 +66,6 @@ class Semester(models.Model):
         max_length=20,
         verbose_name='Kod semestru w systemie USOS')
 
-    objects = GetterManager()
-
     def clean(self):
         """Overloaded clean method.
 
@@ -132,63 +120,6 @@ class Semester(models.Model):
         if self.semester_beginning is None or self.semester_ending is None:
             return False
         return self.semester_beginning <= datetime.now().date() <= self.semester_ending
-
-    def get_previous_semester(self):
-        year = self.year
-        if self.type == 'l':
-            try:
-                return Semester.objects.filter(year=year, type='z')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-        else:
-            prev_year = str(int(year[0:4]) - 1)
-            year = prev_year + '/' + year[2:4]
-            try:
-                return Semester.objects.filter(year=year, type='l')[0]
-            except KeyError:
-                return None
-            except IndexError:
-                return None
-
-    @staticmethod
-    def get_list(user=None):
-        if not user:
-            return Semester.objects.filter(visible=True)
-
-        semesters = Semester.objects.filter(visible=True, semester_beginning__gte=user.date_joined)
-
-        if semesters:
-            return semesters
-
-        return Semester.objects.filter(visible=True)[0]
-
-    @staticmethod
-    def get_by_id(id):
-        return Semester.objects.get(id=id)
-
-    @staticmethod
-    def get_by_id_or_default(id=None):
-        if id:
-            return Semester.get_by_id(id)
-
-        return Semester.get_current_semester()
-
-    @staticmethod
-    def get_semester(date):
-        """Get semester for a specified date. More versatile than get_current_semester.
-
-        :param date: datetime.date
-        :return: Semester or None
-        """
-        try:
-            return Semester.objects.get(semester_beginning__lte=date,
-                                        semester_ending__gte=date)
-        except Semester.DoesNotExist:
-            return None
-        except MultipleObjectsReturned:
-            raise
 
     def get_all_days_of_week(self, day_of_week, start_date=None):
         """Get all dates when the specifies day of week schedule is valid.
@@ -258,49 +189,51 @@ class Semester(models.Model):
         return weeks
 
     @staticmethod
-    def get_current_semester():
-        """If exist, it returns current semester. otherwise returns None."""
+    def get_semester(date):
+        """Get semester for a specified date. More versatile than get_current_semester.
+
+        Args:
+            date: Choose semester with date included
+
+        Returns:
+            Semester or None
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
         try:
-            return Semester.objects.get(
-                semester_beginning__lte=datetime.now().date(),
-                semester_ending__gte=datetime.now().date())
+            return Semester.objects.get(semester_beginning__lte=date,
+                                        semester_ending__gte=date)
         except Semester.DoesNotExist:
             return None
         except MultipleObjectsReturned:
             raise
 
     @staticmethod
-    def get_default_semester():
-        """Heurestic to find the most suitable semester.
+    def get_upcoming_semester():
+        """Returns either upcomming or current semester or None.
 
-        Jeżeli istnieje semestr na który zapisy są otwarte, zwracany jest ten
-        semestr, jeżeli taki nie istnieje zwracany jest semestr, który obecnie
-        trwa. W przypadku gdy nie trwa żaden semestr, zwracany jest najbliższy
-        semestr na który będzie można się zapisać lub None w przypadku braku
-        takiego semestru
+        Upcoming semester is the one, enrolment into which has already
+        been scheduled. It may be useful when students want to plan their
+        timetables.
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
         """
-        now = datetime.now()
-        now_date = now.date()
-        semesters = list(Semester.objects.filter(
-            Q(semester_beginning__lte=now_date, semester_ending__gte=now_date) |
-            Q(records_opening__lte=now, records_closing__gte=now)))
+        try:
+            return Semester.objects.filter(
+                visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
+        except Semester.DoesNotExist:
+            return Semester.get_current_semester()
 
-        if len(semesters) > 1:
-            semesters_with_open_records = [
-                s for s in semesters if s.semester_beginning <= now_date and s.semester_ending <= now_date]
-            if len(semesters_with_open_records) == 1:
-                return semesters_with_open_records[0]
-            else:
-                raise Semester.MultipleObjectsReturned
-        elif len(semesters) == 1:
-            return semesters[0]
-        else:
-            next_semester = Semester.objects.filter(
-                records_opening__gte=now).order_by('records_opening')
-            if next_semester.exists():
-                return next_semester[0]
-            else:
-                return None
+    @staticmethod
+    def get_current_semester():
+        """If exists, it returns current semester, otherwise return None.
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
+        return Semester.get_semester(datetime.today())
 
     def serialize_for_json(self):
         return {

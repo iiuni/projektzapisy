@@ -1,0 +1,33 @@
+<div class="col">
+    <h4>Przedmioty {{ semester }}:</h4>
+    <table id="table-{{ semester }}" class="table table-hover" >
+        <thead class="bg-primary">
+            <tr>
+                <th scope="col" class="align-middle text-center">
+                    <a href="#"
+                       class="btn btn-sm btn-primary font-weight-bold"
+                       onclick="deselectAll(event, 'table-{{ semester }}')"
+                       title="Odznacz wszystkie">&mdash;</a>
+                </th>
+                <th scope="col" class="align-middle text-white">Przedmiot</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course, name, semester, is_set in courses_proposal %}
+                {% if semester == semester_code %}
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox"
+                                   id="check-{{ name|slugify }}"
+                                   name="{{ name }}" 
+                                   {% if is_set %}checked{% endif %}>
+                        </td>
+                        <td class="d-flex">
+                            <label class="mb-0 flex-fill" for="check-{{ name|slugify }}">{{ course }}</label>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

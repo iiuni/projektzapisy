@@ -86,7 +86,7 @@ def list_courses_in_semester(semester: Semester):
 
 def student_timetable_data(student: Student):
     """Collects the timetable data for a student."""
-    semester = Semester.objects.get_next()
+    semester = Semester.get_current_semester()
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
         student=student,
@@ -109,7 +109,7 @@ def student_timetable_data(student: Student):
 
 def employee_timetable_data(employee: Employee):
     """Collects the timetable data for an employee."""
-    semester = Semester.objects.get_next()
+    semester = Semester.get_current_semester()
     groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
         'teacher', 'teacher__user', 'course').prefetch_related(
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
@@ -138,7 +138,7 @@ def my_timetable(request):
 def my_prototype(request):
     """Renders the prototype with enrolled, enqueued, and pinned groups."""
     student = request.user.student
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
 
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
@@ -258,7 +258,7 @@ def prototype_update_groups(request):
     The list of groups ids to update will be sent in JSON body of the request.
     """
     student = request.user.student
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
     # Axios sends POST data in json rather than _Form-Encoded_.
     ids: List[int] = json.loads(request.body.decode('utf-8'))
     num_enrolled = Count('record', filter=Q(record__status=RecordStatus.ENROLLED))
@@ -294,7 +294,7 @@ def prototype_update_groups(request):
 @login_required
 def calendar_export(request):
     """Exports user's timetable for import in Google Calendar."""
-    semester = Semester.objects.get_next()
+    semester = Semester.get_upcoming_semester()
     groups = Group.objects.filter(course__semester=semester).filter(
         Q(teacher__user=request.user) | Q(record__student__user=request.user))
     terms = SchTerm.objects.filter(event__group__in=groups).select_related(

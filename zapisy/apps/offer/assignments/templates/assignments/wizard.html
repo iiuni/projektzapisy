@@ -1,0 +1,109 @@
+{% extends "offer/base.html" %}
+{% block main-subtitle %}Kreator przydziałów{% endblock %}
+{% block offer_menu_plan %} class="active"{% endblock %}
+{% block all-content %}
+<h1>Kreator przydziałów zajęć</h1>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container" id="step-1">
+        <h2 class="display-2">Krok I: Arkusz głosowania</h2>
+        <p>Aby wygenerować arkusz z wynikami głosowań z ostatnich 3 lat, kliknij guzik pod spodem:</p>
+        <a class="btn btn-primary" href="{% url 'create-voting-sheet' %}" class="btn btn-primary btn-lg mb-5">Generuj arkusz</a>
+        <a class="btn btn-success" href="https://docs.google.com/spreadsheets/d/{{ voting_results_sheet_id }}" target="_blank">Otwórz arkusz</a>
+        <p class="mt-3">Arkusz ten powinien pomóc podjąć decyzję, które
+        przedmioty warto prowadzić w nadchodzącym roku.</p>
+    </div>
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container" id="step-2">
+        <h2 class="display-2">Krok II: Przedmioty na następny rok</h2>
+        <p>Sugerowane przedmioty są już zaznaczone na podstawie heurystyki z
+        arkusza głosowania. Aby je usunąć lub dodać inne należy
+        zaznaczyć/odznaczyć checkboxy. Dla zaznaczonych przedmiotów zostanie
+        wygenerowany arkusz z proponowanymi przydziałami na podstawie
+        poprzednich instancji tych przedmiotów.</p>
+        <p>Arkusz przydziałów można generować wielokrotnie. Umieszczone w nim
+        informacje o grupach nie zostaną utracone, o ile przedmiot pozostaje
+        wybrany. Również informacje o pracownikach nie znikną. Jeśli arkusz
+        został już wygenerowany, to checkboxy poniżej odpowiadają liście
+        przedmiotów w tym arkuszu.</p>
+
+        <form class="my-5" action="{% url 'create-assignments-sheet' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                {% include "assignments/parts/form-semester.html" with semester="zimowe" semester_code="z" courses_proposal=courses_proposal only %}
+                {% include "assignments/parts/form-semester.html" with semester="letnie" semester_code="l" courses_proposal=courses_proposal only %}
+            </div>
+            <button type="submit" class="btn btn-primary m-auto">Generuj arkusz przydziałów</button>
+        </form>
+        <script>
+            function deselectAll(e, tableId) {
+                e.preventDefault();
+                const table = document.getElementById(tableId);
+                let checkboxes = table.querySelectorAll("input[type='checkbox']");
+                for (let checkbox of checkboxes) {
+                    checkbox.checked = false;
+                }
+            }
+        </script>
+    </div>
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container" id="step-3">
+        <h2 class="display-2">Krok III: Przydzielanie przedmiotów</h2>
+        <p>W wygenerowanym arkuszu przydziałów należy uzupełnić przydziały pracowników
+        do grup.</p>
+        <dl>
+            <dt>Potwierdzanie grup</dt>
+            <dd>Wyeksportowane zostaną jedynie potwierdzone grupy (z wartością
+            <code>TRUE</code> w kolumnie <code>Potwierdzone</code>).</dd>
+            <dt>Godziny</dt>
+            <dd>Pole <code>h/tydzień</code> wypełnia się automatycznie wartością
+            z pola <code>h/semestr</code> podzieloną przez <var>15</var>. Czasem
+            (na przykład dla przedmiotów półsemestralnych) należy ją nadpisać
+            odpowiednią wartością. Pole <code>h/semestr</code> ma znaczenia dla
+            wyliczania pensum. Pole <code>h/tydzień</code> jest potrzebne do
+            układania planu.</dd>
+            <dt>Wielu prowadzących</dt>
+            <dd>Jeśli grupa jakiegoś przedmiotu ma mieć wielu prowadzących, należy
+            stworzyć dla niej odpowiednią liczbę rekordów, a w kolumnie <code>Wielu
+            prowadzących</code> umieścić unikalną (wewnątrz tego przedmiotu) wartość
+            (może być tekstowa).</dd>
+            <dt>Dane pracownika</dt>
+            <dd>W arkuszu <code>Pracownicy</code> należy wypełnić pole
+            <code>Pensum</code>. Przed wygenerowaniem arkusza warto też upewnić
+            się, że administrator Systemu Zapisów umieścił użytkowników w
+            odpowiednich grupach: doktoranci mają być w grupie
+            <em>phd_students</em>, pracownicy zewnętrzni w
+            <em>external_contractors</em>. Wtedy pole <code>Status</code> będzie
+            poprawnie wypełnione.</dd>
+        </dl>
+        <a class="btn btn-success mb-3" 
+           href="https://docs.google.com/spreadsheets/d/{{ class_assignment_sheet_id }}" target="_blank">
+            Otwórz arkusz
+        </a>
+        <p>Przydziały oraz wyliczenia z arkusza są automatycznie wyświetlane w karcie
+        <strong><a href="{% url 'assignments-view' %}">Przydziały</a></strong>. Jest ona
+        dostępna dla wszystkich pracowników.</p> 
+    </div>
+</div>
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container" id="step-4">
+        <h2 class="display-2">Krok IV: Eksport do Schedulera</h2>
+        <p>Przydziały można wyeksportować do systemu układającego plan zajęć.</p>
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'generate-scheduler-file' semester="z" fmt="json" %}" class="btn btn-primary">Generuj plik schedulera (zima)</a>
+                <a href="{% url 'generate-scheduler-file' semester="z" fmt="csv" %}" class="btn btn-secondary">Generuj csv (zima)</a>
+            </div>
+            <div class="col">
+                <a href="{% url 'generate-scheduler-file' semester="l" fmt="json" %}" class="btn btn-primary">Generuj plik schedulera (lato)</a>
+                <a href="{% url 'generate-scheduler-file' semester="l" fmt="csv" %}" class="btn btn-secondary">Generuj csv (lato)</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

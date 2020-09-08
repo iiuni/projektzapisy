@@ -1,0 +1,9 @@
+[Unit]
+Description=Make a database backup
+
+[Service]
+User={{ deploy_user }}
+Group={{ deploy_user }}
+WorkingDirectory=/home/{{ deploy_user }}/deploy/current/zapisy/
+ExecStart=/home/{{ deploy_user }}/deploy/current/env3/bin/python3 /home/{{ deploy_user }}/deploy/current/infra/db_backups/backup.py
+Type=oneshot
