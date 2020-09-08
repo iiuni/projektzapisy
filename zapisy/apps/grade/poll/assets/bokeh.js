@@ -1,3 +1,3 @@
-import * as Bokeh from "bokehjs";
+import * as Bokeh from "@bokeh/bokehjs";
 
 window.Bokeh = Bokeh;

@@ -1,10 +1,10 @@
-import * as $ from "jquery";
-import "fullcalendar/dist/fullcalendar.css";
-import "fullcalendar";
+import { Calendar } from '@fullcalendar/core';
 
-$(document).ready(() => {
-  const data = JSON.parse($("#calendar-data")[0].innerHTML);
-  for (const calendar of data) {
-    $(calendar.selector).fullCalendar(calendar.settings);
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+
+  var calendar = new Calendar(calendarEl, {
+  });
+
+  calendar.render();
 });

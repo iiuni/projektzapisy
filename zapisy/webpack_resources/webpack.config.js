@@ -1,6 +1,7 @@
 "use strict";
 const path = require("path");
-const autoprefixer = require("autoprefixer");
+
+const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -22,14 +23,14 @@ const RULES = [
   // Vue files rule
   {
     test: /\.vue$/,
-    use: "vue-loader",
+    use: require.resolve("vue-loader"),
     exclude: /node_modules/,
   },
 
   // Typescript files rule
   {
     test: /\.tsx?$/,
-    loader: "ts-loader",
+    loader: require.resolve("ts-loader"),
     options: { appendTsSuffixTo: [/\.vue$/] },
     exclude: /node_modules/,
   },
@@ -37,10 +38,14 @@ const RULES = [
   // Javascript files rule
   {
     test: /\.js$/,
-    exclude: /node_modules/,
+    exclude: /node_modules\/(?!@bokeh\/)/,
     use: {
-      loader: "babel-loader",
-      options: { presets: ["@babel/preset-env"] },
+      loader: require.resolve("babel-loader"),
+      options: {
+        presets: ["@babel/preset-env"],
+        plugins: ["@babel/plugin-proposal-export-namespace-from"],
+        
+      },
     },
   },
 
@@ -48,25 +53,27 @@ const RULES = [
   {
     test: /\.(sa|sc|c)ss$/,
     use: [
-      "vue-style-loader",
+      require.resolve("vue-style-loader"),
       {
-        loader: "css-loader",
+        loader: require.resolve("css-loader"),
         options: { sourceMap: true },
       },
       {
-        loader: "postcss-loader",
+        loader: require.resolve("postcss-loader"),
         options: {
-          plugins: () => [autoprefixer()],
+          postcssOptions: {
+            plugins: [require.resolve("autoprefixer")],
+          },
         },
       },
-      "sass-loader",
+      require.resolve("sass-loader"),
     ],
   },
 
   // Other file assets rule
   {
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
-    loader: "file-loader",
+    loader: require.resolve("file-loader"),
     options: {
       publicPath: "static",
     },
@@ -95,7 +102,7 @@ const WEBPACK_CONFIG = {
     rules: RULES,
   },
   resolve: {
-    modules: [path.resolve("./node_modules")],
+    plugins: [PnpWebpackPlugin],
     extensions: [
       ".ts",
       ".js",
@@ -113,6 +120,9 @@ const WEBPACK_CONFIG = {
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
     },
     mainFields: ["main", "module"],
+  },
+  resolveLoader: {
+    plugins: [PnpWebpackPlugin.moduleLoader(module)],
   },
   plugins: PLUGINS,
   mode: DEV_MODE ? "development" : "production",
