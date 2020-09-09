@@ -5,6 +5,7 @@ const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
@@ -28,22 +29,22 @@ const RULES = [
     exclude: /node_modules/,
   },
 
-  // Typescript files rule
-  {
-    test: /\.tsx?$/,
-    loader: require.resolve("ts-loader"),
-    options: { appendTsSuffixTo: [/\.vue$/] },
-    exclude: /node_modules/,
-  },
-
   // Javascript files rule
   {
-    test: /\.js$/,
+    test: /\.(ts|js)$/,
     exclude: /node_modules/,
     use: {
       loader: require.resolve("babel-loader"),
       options: {
-        presets: ["@babel/preset-env"],
+        presets: [
+          "@babel/preset-env",
+          "@babel/preset-typescript",
+          "babel-preset-typescript-vue",
+        ],
+        plugins: [
+          ["@babel/plugin-proposal-decorators", { legacy: true }],
+          ["@babel/plugin-proposal-class-properties", { loose: true }],
+        ],
       },
     },
   },
@@ -104,6 +105,13 @@ const PLUGINS = [
     // both options are optional
     filename: "[name]_[hash].css",
     chunkFilename: "[id].css",
+  }),
+  new ForkTsCheckerWebpackPlugin({
+    typescript: {
+      extensions: {
+        vue: true,
+      },
+    },
   }),
   new BundleTracker({
     path: path.resolve(STATS_DIR),

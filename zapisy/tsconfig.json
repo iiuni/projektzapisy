@@ -5,6 +5,11 @@
     "target": "ESNext",
     "strict": true,
     "esModuleInterop": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "importsNotUsedAsValues": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/*"]
+    }
   }
 }
