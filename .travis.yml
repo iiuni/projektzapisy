@@ -46,13 +46,12 @@ jobs:
 
 cache:
   - pip
-  # This caches yarn/.cache, which mostly means we don't need to re-download
-  # packages
   - yarn
   - directories:
       # Cache the virtualenv packages folder so virtualenv doesn't waste
       # time installing locally cached packages
       - "/home/travis/virtualenv/python3.8.3/lib/python3.8/site-packages"
+      - "zapisy/.yarn/cache"
 
 notifications:
   email: false
