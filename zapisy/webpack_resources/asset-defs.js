@@ -41,7 +41,6 @@ const AssetDefs = {
 
   "poll-bokeh-plotting": [
     path.resolve("apps/grade/poll/assets/bokeh.js"),
-    path.resolve("apps/grade/poll/assets/bokeh.scss"),
   ],
 
   // Ticket_create app
