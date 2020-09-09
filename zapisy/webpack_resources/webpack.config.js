@@ -39,7 +39,18 @@ const RULES = [
   // Javascript files rule
   {
     test: /\.js$/,
-    exclude: /node_modules\/(?!@bokeh\/)/,
+    exclude: /node_modules/,
+    use: {
+      loader: require.resolve("babel-loader"),
+      options: {
+        presets: ["@babel/preset-env"],
+      },
+    }
+  },
+
+  // Heavier settings only to build bokeh.
+  {
+    test: /(@bokeh\/).*\.js/,
     use: {
       loader: require.resolve("babel-loader"),
       options: {
@@ -91,7 +102,7 @@ const PLUGINS = [
   new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
     // both options are optional
-    filename: "[name].css",
+    filename: "[name]_[hash].css",
     chunkFilename: "[id].css",
   }),
   new BundleTracker({
@@ -140,6 +151,9 @@ const WEBPACK_CONFIG = {
   devtool: DEV_MODE ? "cheap-eval-source-map" : false,
   watchOptions: {
     poll: 2000,
+  },
+  stats: {
+    children: false,
   },
 };
 

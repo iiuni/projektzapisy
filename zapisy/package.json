@@ -24,7 +24,7 @@
   "homepage": "https://github.com/iiuni/projektzapisy#README",
   "dependencies": {
     "@babel/runtime": "^7.11.2",
-    "@bokeh/bokehjs": "2.2.0",
+    "@bokeh/bokehjs": "^2.2.0",
     "@fullcalendar/core": "^5.3.1",
     "ContentTools": "^1.6.12",
     "axios": "^0.20.0",
