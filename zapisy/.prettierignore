@@ -1,2 +1,4 @@
 templates/
 compiled_assets/
+.yarn/*
+.pnp*

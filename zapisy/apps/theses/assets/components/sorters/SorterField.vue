@@ -50,7 +50,7 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div style="cursor: pointer;" v-on:click="sort()">
+  <div style="cursor: pointer" v-on:click="sort()">
     {{ label }}
     <span v-if="order == 1">&darr;</span>
     <span v-if="order == 2">&uarr;</span>

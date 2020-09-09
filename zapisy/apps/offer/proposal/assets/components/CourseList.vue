@@ -53,13 +53,9 @@ export default Vue.extend({
     </ul>
 
     <ul id="proposal-legend" class="text-muted">
-      <li class="in_vote">
-        Przedmiot poddany pod głosowanie w tym cyklu.
-      </li>
+      <li class="in_vote">Przedmiot poddany pod głosowanie w tym cyklu.</li>
       <li class="in_offer">Przedmiot w ofercie ale nie w tym cyklu.</li>
-      <li class="withdrawn">
-        Przedmiot wycofany z oferty (zarchiwizowany).
-      </li>
+      <li class="withdrawn">Przedmiot wycofany z oferty (zarchiwizowany).</li>
     </ul>
   </div>
 </template>

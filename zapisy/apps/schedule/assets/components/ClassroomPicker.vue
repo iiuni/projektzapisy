@@ -157,7 +157,7 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
       </div>
     </div>
     <ClassroomField
-      v-for="item in (showOccupied ? this.classrooms : this.unoccupiedClassrooms)"
+      v-for="item in showOccupied ? this.classrooms : this.unoccupiedClassrooms"
       :key="item.id"
       :label="item.label"
       :capacity="item.capacity"

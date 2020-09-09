@@ -9,13 +9,11 @@ search_index/*
 *.log
 *~
 .idea/
-static/
 .vagrant/
 .DS_Store
 zapisy/logs/
 personal/
 .vscode/
-static/
 node_modules
 zapisy/.yarn/*
 !zapisy/.yarn/releases
@@ -23,6 +21,7 @@ zapisy/.yarn/*
 !zapisy/.yarn/sdks
 !zapisy/.yarn/versions
 .pnp*
+zapisy/static/
 compiled_assets/
 zapisy/webpack_resources/webpack-stats.json
 *.gz

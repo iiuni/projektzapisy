@@ -6,7 +6,7 @@ const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
@@ -45,7 +45,7 @@ const RULES = [
       options: {
         presets: ["@babel/preset-env"],
       },
-    }
+    },
   },
 
   // Heavier settings only to build bokeh.

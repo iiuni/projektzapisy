@@ -58,8 +58,8 @@ export default class ClassroomField extends ClassroomFieldProps {
           <div class="container p-0 m-0">
             <div class="row">
               <div class="col">
-                <div style="height: 35px;">
-                  <div class="progress bg-light" style="height: 35px;">
+                <div style="height: 35px">
+                  <div class="progress bg-light" style="height: 35px">
                     <div
                       role="progressbar"
                       v-for="(item, key) in termsLayer"
@@ -84,7 +84,7 @@ export default class ClassroomField extends ClassroomFieldProps {
                       width: 100%;
                     "
                   >
-                    <div class="progress bg-transparent" style="height: 35px;">
+                    <div class="progress bg-transparent" style="height: 35px">
                       <div
                         role="progressbar"
                         v-for="(item, key) in reservationLayer"
@@ -100,13 +100,10 @@ export default class ClassroomField extends ClassroomFieldProps {
                 </div>
               </div>
             </div>
-            <div
-              class="row"
-              style="font-family: monospace; position: relative;"
-            >
+            <div class="row" style="font-family: monospace; position: relative">
               <div
                 class="d-flex flex-row justify-content-between"
-                style="width: 100%;"
+                style="width: 100%"
               >
                 <div>08:00</div>
                 <div>10:00</div>

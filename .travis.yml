@@ -25,6 +25,10 @@ before_script:
   - mv env/.env_travis env/.env
   - mkdir zapisy/logs
 
+env:
+  # Silences Yarn complaining about Node revision.
+  - YARN_IGNORE_NODE=1
+
 # Run scripts specified in Jobs rather than one global script.
 script: skip
 
