@@ -1307,7 +1307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bokeh/bokehjs@npm:2.2.0":
+"@bokeh/bokehjs@npm:^2.2.0":
   version: 2.2.0
   resolution: "@bokeh/bokehjs@npm:2.2.0"
   dependencies:
@@ -4222,7 +4222,7 @@ fsevents@~2.1.2:
     "@babel/plugin-transform-runtime": ^7.11.5
     "@babel/preset-env": ^7.11.5
     "@babel/runtime": ^7.11.2
-    "@bokeh/bokehjs": 2.2.0
+    "@bokeh/bokehjs": ^2.2.0
     "@fortawesome/fontawesome-free": ^5.14.0
     "@fortawesome/fontawesome-svg-core": ^1.2.30
     "@fortawesome/free-brands-svg-icons": ^5.14.0
