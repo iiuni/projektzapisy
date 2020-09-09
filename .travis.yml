@@ -6,8 +6,7 @@ python:
 addons:
   apt:
     packages:
-      - nodejs
-      - npm
+      - yarnpkg
     postgresql: "12"
 services:
   - postgresql
@@ -15,8 +14,8 @@ services:
 
 install:
   - pip install -r zapisy/requirements.test.txt
-  - npm install -g yarn
-  - (cd zapisy && yarn install --immutable)
+  - nvm use system
+  - (cd zapisy && yarnpkg install --immutable)
 
 before_script:
   - psql -c 'CREATE DATABASE fereol_test;' -U postgres
@@ -26,10 +25,6 @@ before_script:
   - mv env/.env_travis env/.env
   - mkdir zapisy/logs
 
-env:
-  # Silences Yarn complaining about Node revision.
-  - YARN_IGNORE_NODE=1
-
 # Run scripts specified in Jobs rather than one global script.
 script: skip
 
@@ -38,34 +33,22 @@ jobs:
     - stage: lint
       script:
         - python -m flake8 --statistics .
-        - (cd zapisy && yarn lint) || exit 1
+        - (cd zapisy && yarnpkg lint) || exit 1
 
     - stage: test
-      cache:
-        - pip
-        # This caches yarn/.cache, which mostly means we don't need to
-        # re-download packages
-        - yarn
-        - directories:
-            # And this caches the packages themselves, so we don't spend
-            # time installing them unnecessarily. This mostly supersedes
-            # the option above, except for cases where the branch is
-            # switched and packages need to be added; then the cache
-            # above can be used
-            - zapisy/node_modules
-            # Cache the virtualenv packages folder so virtualenv doesn't
-            # waste time installing locally cached packages
-            - "/home/travis/virtualenv/python3.8.5/lib/python3.8/site-packages"
       script:
         - |
           echo "travis_fold:start:yarn"
           # Builds assets.
-          (cd zapisy && yarn build) || exit 1
+          (cd zapisy && yarnpkg build) || exit 1
           echo "travis_fold:end:yarn"
         - cd zapisy && python manage.py test apps --failfast --parallel
 
 cache:
   - pip
+  # This caches yarn/.cache, which mostly means we don't need to re-download
+  # packages
+  - yarn
   - directories:
       # Cache the virtualenv packages folder so virtualenv doesn't waste
       # time installing locally cached packages
