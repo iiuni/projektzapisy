@@ -6,62 +6,6 @@
     <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
 {% endblock %}
 
-{% block js %}{{ block.super }}
-    <script id="calendar-data" type="application/json">
-[{
-    "selector":"#calendar",
-    "settings":{
-        "header":{
-            "left":"prev,next today",
-            "center":"title",
-            "right":"month,agendaWeek,agendaDay"
-        },
-
-        "themeSystem":"bootstrap4",
-        "allDayDefault":false,
-        "buttonText":{
-            "prev": "<",
-            "next": ">",
-            "today":"dziś",
-            "month":"miesiąc",
-            "week":"tydzień",
-            "day":"dzień"
-        },
-
-        "locale":"pl",
-        "height":"auto",
-
-        "defaultView": "agendaWeek",
-        "views":{
-            "month":{
-                "titleFormat":"MMMM YYYY",
-                "columnFormat":"ddd",
-                "timeFormat":"HH(:mm)"
-            },
-            "week":{
-                "titleFormat":"DD MMM YYYY",
-                "columnFormat":"ddd DD.MM",
-                "timeFormat":"HH:mm"
-            },
-            "day":{
-                "titleFormat":"dddd, d MMM, YYYY",
-                "columnFormat":"dddd DD.MM",
-                "timeFormat":"HH:mm"
-            }
-        },
-
-        "minTime":"08:00:00",
-        "maxTime":"22:00:00",
-        "slotLabelFormat":"HH(:mm)",
-        "allDaySlot":false,
-
-        "events": "{% url "events:classroom_ajax" room.slug %}"
-    }
-}]
-    </script>
-    {% render_bundle "schedule-fullcalendar" %}
-{% endblock %}
-
 {% block classroomtitle %}Sala {{ room.number }}{% endblock %}
 
 {% block classroomview %}
@@ -87,4 +31,9 @@
     </table>
 
     <div id='calendar'></div>
+
+    <script>
+        window.eventsURL = "{% url 'events:classroom_ajax' room.slug %}";
+    </script>
+    {% render_bundle 'schedule-fullcalendar' %}
 {% endblock %}

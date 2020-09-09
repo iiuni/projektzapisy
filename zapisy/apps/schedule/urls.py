@@ -19,7 +19,6 @@ urlpatterns = [
     url(r'^events/feed$', feeds.LatestEvents(), name='events_feed'),
     url(r'^events$', views.events, name='event_show'),
     url(r'^events/ajax$', views.EventsTermsAjaxView.as_view(), name='events_ajax'),
-    url(r'^events/myschedule$', views.MyScheduleAjaxView.as_view(), name='my_schedule_ajax'),
     url(r'^events/(?P<event_id>[0-9]+)/decision$', views.decision, name='decision'),
     url(r'^events/history$', views.history, name='history'),
     url(r'^session$', views.session, name='session'),

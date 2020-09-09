@@ -10,61 +10,6 @@
     <li class="breadcrumb-item active" aria-current="page">Wydarzenia</li>
 {% endblock %}
 
-{% block js %}{{ block.super }}
-    <script id="calendar-data" type="application/json">
-[{
-    "selector":"#calendar",
-    "settings":{
-        "header":{
-            "left":"prev,next today",
-            "center":"title",
-            "right":"month,agendaWeek,agendaDay"
-        },
-
-        "themeSystem":"bootstrap4",
-        "allDayDefault":false,
-        "buttonText":{
-            "prev": "<",
-            "next": ">",
-            "today":"dziś",
-            "month":"miesiąc",
-            "week":"tydzień",
-            "day":"dzień"
-        },
-
-        "locale":"pl",
-        "height": "auto",
-
-        "views":{
-            "month":{
-                "titleFormat":"MMMM YYYY",
-                "columnFormat":"ddd",
-                "timeFormat":"HH(:mm)"
-            },
-            "week":{
-                "titleFormat":"DD MMM YYYY",
-                "columnFormat":"ddd DD.MM",
-                "timeFormat":"HH:mm"
-            },
-            "day":{
-                "titleFormat":"dddd, DD MMM, YYYY",
-                "columnFormat":"dddd DD.MM",
-                "timeFormat":"HH:mm"
-            }
-        },
-
-        "minTime":"08:00:00",
-        "maxTime":"22:00:00",
-        "slotLabelFormat":"HH(:mm)",
-        "allDaySlot":false,
-
-        "events": "{% url "events:events_ajax" %}"
-    }    
-}]
-    </script>
-    {% render_bundle "schedule-fullcalendar" %}
-{% endblock %}
-
 {% block all-content %}
     <div class="d-flex">
         <div class="mr-auto p-0">
@@ -83,4 +28,9 @@
     </div>
 
     <div id='calendar'></div>
+
+    <script>
+        window.eventsURL = "{% url 'events:events_ajax' %}";
+    </script>
+    {% render_bundle 'schedule-fullcalendar' %}
 {% endblock %}

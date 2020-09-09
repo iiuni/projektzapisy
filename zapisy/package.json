@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development yarn webpack-cli --progress --colors --config webpack_resources/webpack.config.js",
-    "devw": "NODE_ENV=production yarn webpack-cli --progress --colors --watch --config webpack_resources/webpack.config.js",
+    "devw": "NODE_ENV=development yarn webpack-cli --progress --colors --watch --config webpack_resources/webpack.config.js",
     "build": "NODE_ENV=production yarn webpack-cli --config webpack_resources/webpack.config.js",
     "lint": "prettier --check ."
   },
@@ -25,7 +25,11 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@bokeh/bokehjs": "^2.2.0",
+    "@fullcalendar/bootstrap": "^5.3.1",
     "@fullcalendar/core": "^5.3.1",
+    "@fullcalendar/daygrid": "^5.3.2",
+    "@fullcalendar/moment": "^5.3.1",
+    "@fullcalendar/timegrid": "^5.3.1",
     "ContentTools": "^1.6.12",
     "axios": "^0.20.0",
     "babel-runtime": "^6.26.0",

@@ -1472,6 +1472,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/bootstrap@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@fullcalendar/bootstrap@npm:5.3.1"
+  dependencies:
+    "@fullcalendar/common": ~5.3.1
+    tslib: ^2.0.0
+  checksum: 7429bd0f53cd12f8ca6c256746f4d9986dcce06845133e3e0ea14cf5a7d076559307ce1c86eb796703018e5f65a8287344eea1f510abe93c6b4f63ed8606528a
+  languageName: node
+  linkType: hard
+
 "@fullcalendar/common@npm:~5.3.1":
   version: 5.3.1
   resolution: "@fullcalendar/common@npm:5.3.1"
@@ -1489,6 +1499,39 @@ __metadata:
     preact: ^10.0.5
     tslib: ^2.0.0
   checksum: 7e944a8a8827d4d36d27c5daf3c56054f90c0bf55031d520315e8034cb7bf4abc2791471379327f1f08ebad3136444036f7b84f235d0b9ae37855586aef935aa
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/daygrid@npm:^5.3.2, @fullcalendar/daygrid@npm:~5.3.1":
+  version: 5.3.2
+  resolution: "@fullcalendar/daygrid@npm:5.3.2"
+  dependencies:
+    "@fullcalendar/common": ~5.3.1
+    tslib: ^2.0.0
+  checksum: c425b3c6a7565981ba03070acd24de71c6fcf29e81001734fced659845f1a93ee1a9833f4f5397965ccb724cd40d7be91a78a92330bea8d7dc7f5f6078e686af
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/moment@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@fullcalendar/moment@npm:5.3.1"
+  dependencies:
+    "@fullcalendar/common": ~5.3.1
+    tslib: ^2.0.0
+  peerDependencies:
+    moment: ^2.24.0
+  checksum: 365f03b20b9a6dd3849b9b293dabf07ed4b3bf5ffa669427ef7b2262e65723a88873925c6240e59c16c8b494af8a97458a51593b0c6724613a5f5e429346e0ab
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/timegrid@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@fullcalendar/timegrid@npm:5.3.1"
+  dependencies:
+    "@fullcalendar/common": ~5.3.1
+    "@fullcalendar/daygrid": ~5.3.1
+    tslib: ^2.0.0
+  checksum: e806799713b98322feee8663c340bbe5440da1099947de9ae520f4043af73e6fdeb9ef554a286f4d1f5453d2c920b1724578c096697ba5705406ad62bf05a26a
   languageName: node
   linkType: hard
 
@@ -4414,7 +4457,11 @@ fsevents@~2.1.2:
     "@fortawesome/free-regular-svg-icons": ^5.14.0
     "@fortawesome/free-solid-svg-icons": ^5.14.0
     "@fortawesome/vue-fontawesome": ^2.0.0
+    "@fullcalendar/bootstrap": ^5.3.1
     "@fullcalendar/core": ^5.3.1
+    "@fullcalendar/daygrid": ^5.3.2
+    "@fullcalendar/moment": ^5.3.1
+    "@fullcalendar/timegrid": ^5.3.1
     "@types/bootstrap": ^4.1.2
     "@types/glob": ^5.0.35
     "@types/jquery": ^3.3.1
