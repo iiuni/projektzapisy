@@ -9,6 +9,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
 
@@ -32,36 +33,22 @@ const RULES = [
   // Javascript files rule
   {
     test: /\.(ts|js)$/,
-    exclude: /node_modules/,
+    exclude: /node_modules\/(?!@bokeh\/)/,
     use: {
       loader: require.resolve("babel-loader"),
       options: {
         presets: [
-          "@babel/preset-env",
+          [
+            "@babel/preset-env",
+            { bugfixes: true, targets: { esmodules: true } },
+          ],
           "@babel/preset-typescript",
           "babel-preset-typescript-vue",
         ],
         plugins: [
           ["@babel/plugin-proposal-decorators", { legacy: true }],
           ["@babel/plugin-proposal-class-properties", { loose: true }],
-          ["@babel/plugin-transform-runtime", { regenerator: true }],
         ],
-      },
-    },
-  },
-
-  // Heavier settings only to build bokeh.
-  {
-    test: /(@bokeh\/).*\.js/,
-    use: {
-      loader: require.resolve("babel-loader"),
-      options: {
-        presets: ["@babel/preset-env"],
-        plugins: [
-          "@babel/plugin-proposal-export-namespace-from",
-          ["@babel/plugin-transform-runtime", { regenerator: true }],
-        ],
-        sourceType: "unambiguous",
       },
     },
   },
@@ -163,6 +150,18 @@ const WEBPACK_CONFIG = {
   },
   stats: {
     children: false,
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          ecma: 8,
+          compress: {
+            defaults: false,
+          },
+        },
+      }),
+    ],
   },
 };
 
