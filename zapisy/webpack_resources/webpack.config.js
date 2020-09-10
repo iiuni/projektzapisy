@@ -149,6 +149,7 @@ const WEBPACK_CONFIG = {
     poll: 2000,
   },
   stats: {
+    assets: false,
     children: false,
   },
   optimization: {
@@ -156,9 +157,8 @@ const WEBPACK_CONFIG = {
       new TerserPlugin({
         terserOptions: {
           ecma: 8,
-          compress: {
-            defaults: false,
-          },
+          comments: false,
+          compress: false,
         },
       }),
     ],
