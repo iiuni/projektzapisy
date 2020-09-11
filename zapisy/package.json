@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development yarn webpack-cli --progress --colors --config webpack_resources/webpack.config.js",
-    "devw": "NODE_ENV=development yarn webpack-cli --progress --colors --watch --config webpack_resources/webpack.config.js",
+    "dev:watch": "NODE_ENV=development yarn webpack-cli --watch --config webpack_resources/webpack.config.js",
+    "dev:tc": "NODE_ENV=test yarn webpack-cli --config webpack_resources/webpack.config.js",
     "build": "NODE_ENV=production yarn webpack-cli --config webpack_resources/webpack.config.js",
     "lint": "prettier --check ."
   },

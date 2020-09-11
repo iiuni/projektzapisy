@@ -40,7 +40,7 @@ jobs:
         - |
           echo "travis_fold:start:yarn"
           # Builds assets.
-          (cd zapisy && yarnpkg build) || exit 1
+          (cd zapisy && yarnpkg dev:tc) || exit 1
           echo "travis_fold:end:yarn"
         - cd zapisy && python manage.py test apps --failfast --parallel
 

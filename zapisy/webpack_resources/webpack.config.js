@@ -94,13 +94,15 @@ const PLUGINS = [
     filename: "[name]_[hash].css",
     chunkFilename: "[id].css",
   }),
-  new ForkTsCheckerWebpackPlugin({
-    typescript: {
-      extensions: {
-        vue: true,
-      },
-    },
-  }),
+  process.env.NODE_ENV === "test"
+    ? new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          extensions: {
+            vue: true,
+          },
+        },
+      })
+    : false,
   new BundleTracker({
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",
@@ -108,7 +110,7 @@ const PLUGINS = [
   new MomentLocalesPlugin({
     localesToKeep: ["pl"],
   }),
-];
+].filter(Boolean);
 
 const WEBPACK_CONFIG = {
   entry: ASSET_DEFS,
