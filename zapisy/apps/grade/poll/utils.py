@@ -13,7 +13,7 @@ from apps.users.models import Student
 def check_grade_status() -> bool:
     """Checks whether any of the semesters has grade enabled."""
     current_semester = Semester.get_current_semester()
-    return current_semester.is_grade_active
+    return current_semester is not None and current_semester.is_grade_active
 
 
 class SubmissionStats:
