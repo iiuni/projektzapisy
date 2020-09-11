@@ -18,7 +18,6 @@ node_modules
 zapisy/.yarn/*
 !zapisy/.yarn/releases
 !zapisy/.yarn/plugins
-!zapisy/.yarn/sdks
 !zapisy/.yarn/versions
 .pnp*
 zapisy/static/
