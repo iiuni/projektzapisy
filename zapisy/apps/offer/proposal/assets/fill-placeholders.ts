@@ -5,7 +5,7 @@ import axios from "axios";
 import { safeLoad } from "js-yaml";
 import $ from "jquery";
 
-const EXAMPLE_SYLLABUS_URL = "/static/proposal/example-syllabus.yaml";
+const EXAMPLE_SYLLABUS_URL = "/static/example-syllabus.yaml";
 
 type map = { [key: string]: string | number };
 
