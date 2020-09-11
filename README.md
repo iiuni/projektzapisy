@@ -1,33 +1,66 @@
-## Projekt Systemu Zapisów Instytutu Informatyki Uniwersytetu Wrocławskiego
+# System Zapisów Instytutu Informatyki Uniwersytetu Wrocławskiego
 
-### Rozpoczynanie pracy
+## Rozpoczynanie pracy
 
-Aby rozpocząć pracę w projekcie przejdź przez instrukcję:
-https://github.com/iiuni/projektzapisy/wiki/Developer's-environment-setup
+Do postawienia _developerskiej_ wersji systemu zapisów musimy mieć
+zainstalowanego [Vagranta](https://www.vagrantup.com/) oraz Virtualboxa.
+Klonujemy niniejsze repozytorium na nasz komputer i odpalamy z niego polecenie
+`vagrant up`. Na naszym komputerze zostanie skonfigurowana maszyna wirtualna z
+uruchomionym testowym serwerem, który można odwiedzić pod adresem
+[0.0.0.0:8000](http://0.0.0.0:8000). Folder `projektzapisy` na naszym
+komputerze jest współdzielony z maszyną wirtualną (folder `/vagrant`), więc
+serwer łapie na żywo wszystkie zmiany w robione przez nas w kodzie. Więcej
+informacji o maszynie developerskiej można przeczytać [w
+instrukcji](https://github.com/iiuni/projektzapisy/wiki/Developer's-environment-setup).
 
-Jeżeli zamierzasz zajmować się rzeczami związanymi z _frontendem_, warto zapoznać się też z systemem plików statycznych:
-https://github.com/iiuni/projektzapisy/wiki/Pliki-statyczne-w-Systemie-Zapisów
+Jeżeli zamierzasz zajmować się _frontendem_, warto zapoznać się też z [opisem
+systemu plików
+statycznych](https://github.com/iiuni/projektzapisy/wiki/Pliki-statyczne-w-Systemie-Zapisów).
 
-### Narzędzia
+### Zmiany w schemacie bazy danych
 
-* **Slack** - nasz główny komunikator: https://projektzapisy.slack.com/
-* **Redmine** - publiczny tracker błędów: https://tracker-zapisy.ii.uni.wroc.pl/projects/zapisy-tracker/issues
-* **Rollbar** - tracker błędów pojawiających się na produkcji: https://rollbar.com/IIUniversityofWroclaw/System-Zapisow/
-* **Travis CI** - continuous integration: https://travis-ci.org/iiuni/projektzapisy
+System oparty jest na framework'u [Django](https://www.djangoproject.com/).
+Każda zmiana w modelach musi zostać odzwierciedlona w schemacie bazy danych, co
+Django rozwiązuje _migracjami_ — małymi skryptami w Pythonie, które mówią, jak
+ma się zmienić schemat bazy danych. Migracje można automatycznie wygenerować
+poleceniem `python zapisy/manage.py makemigrations`, ale czasem trzeba je
+ręcznie przerobić, jeśli zmiana w modelach wymaga transformacji danych.
 
-### Workflow pracy
+## Maszyna produkcyjna
 
-1. Gdy decydujemy się zająć się jakąś funkcjonalnością/bugiem przypisujemy sobie odpowiedni Issue tutaj na Githubie (jeśli go nie ma to, tworzymy go).
-2. Pracujemy na swoim branchu - tworzymy go z brancha `master-dev`.
-3. Po ukończeniu tworzymy Pull Requesta z bazowym branchem `master-dev`.
-4. Wybieramy w PR dwie osoby, do zrobienia Code Review.
-5. Zaakceptowane Pull Requesty będą merge'owane przez prowadzących projekt.
-6. Co jakiś czas (około dwóch tygodni-miesiąca) robiony jest deploy na produkcję. Branch `master` przechowuje wersję produkcyjną.
+Proces instalacji i konfiguracji maszyny produkcyjnej jest mocno zautomatyzowany
+dzięki narzędziu _Ansible_. Instrukcje w katalogu [`infra/`](infra/).
 
-### Wskazówki
+## Zespół
 
-* Napotykając na problem warto napisać na Slacku. Jest szansa, że ktoś inny już natrafił na ten problem (a jeśli nie to przynajmniej inne osoby mogą być świadome trudności)
-* Starą wersję bazy danych, możesz aktualizować aplikując migracje komendą:
-`./manage.py migrate`
-* Zmieniając model, możesz zmienić strukturę bazy danych. Poniższą komendą możesz wygenerować automatycznie migrację:
-`./manage.py makemigrations`
+Zespół Systemu Zapisów tworzą w każdym semestrze studenci uczęszczający na
+przedmiot [Rozwój Systemu
+Zapisów](https://zapisy.ii.uni.wroc.pl/offer/895_projekt-rozwoj-systemu-zapisow/).
+Lider projektu jest zarazem prowadzącym przedmiot. W naszej pracy używamy
+następujących narzędzi:
+
+- **[Slack](https://projektzapisy.slack.com/)** — nasz główny komunikator.
+- **[Rollbar](https://rollbar.com/IIUniversityofWroclaw/System-Zapisow/)** —
+  tracker błędów pojawiających się na produkcji.
+- **[Travis CI](https://travis-ci.com/iiuni/projektzapisy)** — testowanie kodu.
+- **[New Relic](https://one.newrelic.com/)** — monitorowanie wydajności serwera.
+
+### Schemat pracy
+
+1. Gdy zaczynamy pracować nad jakimś projektem, tworzymy brancha, który
+   odgałęzia się od `master-dev`. W swoim własnym branchu możemy [_przepisywać
+   historię_](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History),
+   szczególnie jeśli ma nam to pomóc [zaktualizować się w stosunku do
+   `master-dev`](https://stackoverflow.com/a/29916361).
+2. Po ukończeniu tworzymy Pull Requesta z bazowym branchem `master-dev`.
+   Zaznaczamy lidera projektu do _code-review_. PR musi być ładnie i jasno
+   opisany — opis ten może w przyszłości pomóc komuś zrozumieć intencje stojące
+   za zmianą w kodzie.
+3. Proces _code-review_, dyskusji i nanoszenia poprawek zazwyczaj składa się z
+   więcej niż jednego etapu. Należy na niego zarezerwować z grubsza tyle czasu,
+   co na przygotowanie PR-a.
+4. Zaakceptowane Pull Requesty będą merge'owane przez lidera projektu za pomocą
+   `git merge --squash`. Nie musimy się zatem wstydzić commitów w naszym
+   branchu.
+5. Co jakiś czas (około dwóch tygodni-miesiąca) robiony jest deploy na
+   produkcję. Branch `master` przechowuje wersję produkcyjną.
