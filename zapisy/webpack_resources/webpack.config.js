@@ -1,7 +1,7 @@
 "use strict";
 const path = require("path");
 
-const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
+const PnpWebpackPlugin = require("pnp-webpack-plugin");
 
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -23,14 +23,16 @@ const ASSET_DEFS = require(path.resolve("webpack_resources/asset-defs.js"));
 // assets used in PZ. If needed, new rules can be easily appended
 // to the end of this list.
 const RULES = [
-  // Vue files rule
   {
     test: /\.vue$/,
     use: require.resolve("vue-loader"),
     exclude: /node_modules/,
   },
 
-  // Javascript files rule
+  // Javascript/Typescript files rule.
+  // Typescript is only stripped-down to JS, not type-checked.
+  // Bokeh needs to be translated by babel because it is compiled in a way that
+  // webpack is not able to understand.
   {
     test: /\.(ts|js)$/,
     exclude: /node_modules\/(?!@bokeh\/)/,
@@ -53,16 +55,13 @@ const RULES = [
     },
   },
 
-  // Styling files rule
+  // Styles are compiled, post-processed (vendor-prefixes) and extracted to
+  // separate css files.
   {
     test: /\.(sa|sc|c)ss$/,
     use: [
-      require.resolve("vue-style-loader"),
       MiniCssExtractPlugin.loader,
-      {
-        loader: require.resolve("css-loader"),
-        options: { sourceMap: true },
-      },
+      require.resolve("css-loader"),
       {
         loader: require.resolve("postcss-loader"),
         options: {
@@ -75,7 +74,7 @@ const RULES = [
     ],
   },
 
-  // Other file assets rule
+  // Other files are copied raw.
   {
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
     loader: require.resolve("file-loader"),
@@ -89,11 +88,10 @@ const PLUGINS = [
   new CleanWebpackPlugin(),
   new VueLoaderPlugin(),
   new MiniCssExtractPlugin({
-    // Options similar to the same options in webpackOptions.output
-    // both options are optional
     filename: "[name]_[hash].css",
     chunkFilename: "[id].css",
   }),
+  // Do type-checking in parallel, but only run it in tests.
   process.env.NODE_ENV === "test"
     ? new ForkTsCheckerWebpackPlugin({
         typescript: {
@@ -139,7 +137,6 @@ const WEBPACK_CONFIG = {
       vuex$: "vuex/dist/vuex.esm.js",
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
     },
-    mainFields: ["main", "module"],
   },
   resolveLoader: {
     plugins: [PnpWebpackPlugin.moduleLoader(module)],
@@ -156,6 +153,8 @@ const WEBPACK_CONFIG = {
   },
   optimization: {
     minimizer: [
+      // Skip part of minimization that takes the most time (compressing
+      // whitespace).
       new TerserPlugin({
         terserOptions: {
           ecma: 8,
