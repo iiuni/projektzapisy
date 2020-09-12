@@ -2806,7 +2806,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookieconsent@npm:3.1.1":
+"cookieconsent@npm:^3.1.1":
   version: 3.1.1
   resolution: "cookieconsent@npm:3.1.1"
   checksum: 4d6ab033d46da4246af0bdd9bffcfc43c4f0dd052cf568218126474c1f8aeef7c45f295362f3cae3d70430c476bb439d733d761b1a67b7363dc3abb5581a166a
@@ -2953,9 +2953,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "css-loader@npm:4.2.2"
+"css-loader@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "css-loader@npm:4.3.0"
   dependencies:
     camelcase: ^6.0.0
     cssesc: ^3.0.0
@@ -2967,11 +2967,11 @@ __metadata:
     postcss-modules-scope: ^2.2.0
     postcss-modules-values: ^3.0.0
     postcss-value-parser: ^4.1.0
-    schema-utils: ^2.7.0
+    schema-utils: ^2.7.1
     semver: ^7.3.2
   peerDependencies:
     webpack: ^4.27.0 || ^5.0.0
-  checksum: 73d83e7f4f0b6288802e654a108e2f7a0476d0504c41ac3718a92354cefa9c3fe25e462cdf262a3943efef73dc2ea12c1962f97bbda44807f6f81b4661717dcb
+  checksum: 1f441ac567e3c45dde1009860fcc0d2807d5af4e42e799c77070a121f91a8a8c0ce41d6aa19b664bd9fbc127c5375abefa8f871ba503e55f2ea27c3e1385f3fa
   languageName: node
   linkType: hard
 
@@ -4273,30 +4273,30 @@ fsevents@~2.1.2:
     bootstrap-sortable: "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: ^1.2.2
     clean-webpack-plugin: ^3.0.0
-    cookieconsent: 3.1.1
-    css-loader: ^4.2.2
+    cookieconsent: ^3.1.1
+    css-loader: ^4.3.0
     file-loader: ^6.1.0
     fork-ts-checker-webpack-plugin: ^5.1.0
-    jquery: 3.5.1
+    jquery: ^3.5.1
     js-cookie: ^2.2.1
     js-sha256: ^0.9.0
     js-yaml: ^3.14.0
     katex: ^0.12.0
     lodash: ^4.17.20
     marked: ^1.1.1
-    mini-css-extract-plugin: ^0.11.1
-    moment: ^2.24.0
+    mini-css-extract-plugin: ^0.11.2
+    moment: ^2.27.0
     moment-locales-webpack-plugin: ^1.2.0
     pnp-webpack-plugin: ^1.6.4
     popper.js: ^1.16.1
-    postcss: ^7.0.0
-    postcss-loader: ^4.0.0
+    postcss: ^7.0.32
+    postcss-loader: ^4.0.1
     prettier: ^2.1.1
     sass: ^1.26.10
     sass-loader: ^10.0.2
     spicery: ^1.1.0
-    terser-webpack-plugin: ^4.1.0
-    typescript: ^3.4.3
+    terser-webpack-plugin: ^4.2.0
+    typescript: ^4.0.2
     vue: ^2.6.12
     vue-class-component: ^7.2.5
     vue-loader: ^15.9.3
@@ -4694,7 +4694,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"jquery@npm:3.5.1, jquery@npm:>=3.4.0, jquery@npm:^3.3.1":
+"jquery@npm:>=3.4.0, jquery@npm:^3.3.1, jquery@npm:^3.5.1":
   version: 3.5.1
   resolution: "jquery@npm:3.5.1"
   checksum: c50818c84837902a60938c85786feb612f346a9918f7285409d605449460790b3815ad8aaf5806f19e89f1a79b27d327802b421ab354fe213f3fd1801e3562e6
@@ -5181,9 +5181,9 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:^0.11.1":
-  version: 0.11.1
-  resolution: "mini-css-extract-plugin@npm:0.11.1"
+"mini-css-extract-plugin@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "mini-css-extract-plugin@npm:0.11.2"
   dependencies:
     loader-utils: ^1.1.0
     normalize-url: 1.9.1
@@ -5191,7 +5191,7 @@ fsevents@~2.1.2:
     webpack-sources: ^1.1.0
   peerDependencies:
     webpack: ^4.4.0 || ^5.0.0
-  checksum: 2becaad094831672fbbdc2169dc182445b1b50e18742c4f1393a4912bad221f85735873fd6343a1d82c9ae826f5caae62e49b30aecc7cc6c9eef706cdcfd9985
+  checksum: 2dfedd9cb35f63e5e31cf05b6cc9ea180b9e1197a0ac113e7e9a2766b2e415d158797169387645eefca41173b2d2239d69a8d518fade22868ba270c741d75151
   languageName: node
   linkType: hard
 
@@ -5350,10 +5350,10 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.24.0":
-  version: 2.26.0
-  resolution: "moment@npm:2.26.0"
-  checksum: 67bf24cd08c7aa392981f37ce1802214bc39f0f269cb77d9c7b50d9548e936fd23eacab55615882aea13736dfdb89880f2ac998400962253991e9cb0e54e8d71
+"moment@npm:^2.27.0":
+  version: 2.27.0
+  resolution: "moment@npm:2.27.0"
+  checksum: 72d9a7d8dba59e3d538440cdc0b59fa895b123361e370be231896478aaf157a484355ce32bd8daf6f731d6d1636d3a67ecb67531e536e093ca18b43e0cbae194
   languageName: node
   linkType: hard
 
@@ -6045,9 +6045,9 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"postcss-loader@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "postcss-loader@npm:4.0.0"
+"postcss-loader@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "postcss-loader@npm:4.0.1"
   dependencies:
     cosmiconfig: ^7.0.0
     klona: ^2.0.3
@@ -6057,7 +6057,7 @@ fsevents@~2.1.2:
   peerDependencies:
     postcss: ^7.0.0
     webpack: ^4.0.0 || ^5.0.0
-  checksum: 8c8f900d7dda006f6a27ebea8bd1f6d20a72b037a9b087012836478fa6fa2525563e8212a3d9abed7035b8525fa9a11aefc6617514303877c420122e9e60fa88
+  checksum: e66d0c615ed29e1ea9388bdb7b6b863759037f71769eea41d022d6ef467a86e5001e36d3300d8f8efa5e5042af9329f44af3ad158787f645f8ac2eb93fc00ff4
   languageName: node
   linkType: hard
 
@@ -6120,7 +6120,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:^7.0.0, postcss@npm:^7.0.14, postcss@npm:^7.0.32, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
+"postcss@npm:^7.0.14, postcss@npm:^7.0.32, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
   version: 7.0.32
   resolution: "postcss@npm:7.0.32"
   dependencies:
@@ -6736,7 +6736,7 @@ resolve@^1.3.2:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^2.6.5, schema-utils@npm:^2.6.6, schema-utils@npm:^2.7.0, schema-utils@npm:^2.7.1":
+"schema-utils@npm:^2.6.5, schema-utils@npm:^2.7.1":
   version: 2.7.1
   resolution: "schema-utils@npm:2.7.1"
   dependencies:
@@ -7262,22 +7262,22 @@ resolve@^1.3.2:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "terser-webpack-plugin@npm:4.1.0"
+"terser-webpack-plugin@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "terser-webpack-plugin@npm:4.2.0"
   dependencies:
     cacache: ^15.0.5
     find-cache-dir: ^3.3.1
     jest-worker: ^26.3.0
     p-limit: ^3.0.2
-    schema-utils: ^2.6.6
+    schema-utils: ^2.7.1
     serialize-javascript: ^4.0.0
     source-map: ^0.6.1
-    terser: ^5.0.0
+    terser: ^5.3.0
     webpack-sources: ^1.4.3
   peerDependencies:
     webpack: ^4.0.0 || ^5.0.0
-  checksum: 87c3bffc707722895e3f6e742582ef50e0d28115df0257b54826d9f4c42b841ddcd87bb82ac944e6395541ae36fade2b8cf50609fce3f55c99080c6a580f5d10
+  checksum: 2e322629b717c207c0a936c3ca956bbb867c45d0bd02044d0ee757f13f125a79b005b480723f4f5ac5061a020bc170d4fe099be85a8b7943f77688f1bbda72e1
   languageName: node
   linkType: hard
 
@@ -7294,16 +7294,16 @@ resolve@^1.3.2:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.0.0":
-  version: 5.3.0
-  resolution: "terser@npm:5.3.0"
+"terser@npm:^5.3.0":
+  version: 5.3.1
+  resolution: "terser@npm:5.3.1"
   dependencies:
     commander: ^2.20.0
     source-map: ~0.6.1
     source-map-support: ~0.5.12
   bin:
     terser: bin/terser
-  checksum: 43f35f253f0fa1d4fd5f8629b433d5cf61957a921bf93c8990088348f636797aa2ff59e1b9a083bf01a178e4b65be48a2a58e70958f4f869525ca8c2bf02dd70
+  checksum: 383db380fec2beea487dc60321a867375c6505b3164ddb1b94d54d041d06f12f3170395127bd0fcc5e7a71824fa48f1d9b520f58761142ead82db6b0309052a9
   languageName: node
   linkType: hard
 
@@ -7465,23 +7465,23 @@ resolve@^1.3.2:
   languageName: node
   linkType: hard
 
-typescript@^3.4.3:
-  version: 3.9.7
-  resolution: "typescript@npm:3.9.7"
+typescript@^4.0.2:
+  version: 4.0.2
+  resolution: "typescript@npm:4.0.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10848a9c35fd8c70a8792b8bd9485317534bcd58768793d3b7d9c7486e9fd30cf345f83fa2a324e0bf6088bc8a4d8d061d58fda38b18c2ff187cf01fbbff6267
+  checksum: cc0e7806eee7997a1b4b2990badacc4a8d089893ed0a377f35c9658e2ac392503cb340d0187203ed82e36e427dda94b0fb7107e44a71cca99efac86be26e16ee
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^3.4.3#builtin<compat/typescript>":
-  version: 3.9.7
-  resolution: "typescript@patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"
+"typescript@patch:typescript@^4.0.2#builtin<compat/typescript>":
+  version: 4.0.2
+  resolution: "typescript@patch:typescript@npm%3A4.0.2#builtin<compat/typescript>::version=4.0.2&hash=5b02a2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: f0d3d9c987860c7c458229ab6dd7e3d322405db36b70abccba610b5efd9f9451e4e67a3fc7983c0d3741033c1f1a8d7aa859a1510caa8f20fad762fc39648bfa
+  checksum: b8b689ef994cce4fe59950d56ddfffce3c4bdda8edb85b72e752d4a6d27bf7df8a318e76ccde25cbe6e642058f2f4ccf47187db4b243bbc98278a2844db9461b
   languageName: node
   linkType: hard
 
