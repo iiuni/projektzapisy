@@ -94,7 +94,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-create-class-features-plugin@npm:^7.10.4, @babel/helper-create-class-features-plugin@npm:^7.10.5":
+"@babel/helper-create-class-features-plugin@npm:^7.10.4":
   version: 7.10.5
   resolution: "@babel/helper-create-class-features-plugin@npm:7.10.5"
   dependencies:
@@ -359,19 +359,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-decorators@npm:^7.10.5":
-  version: 7.10.5
-  resolution: "@babel/plugin-proposal-decorators@npm:7.10.5"
-  dependencies:
-    "@babel/helper-create-class-features-plugin": ^7.10.5
-    "@babel/helper-plugin-utils": ^7.10.4
-    "@babel/plugin-syntax-decorators": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 32be038dd283c82af2ccdd50df7ed9f7dd9d001bc7ebc797efe833181584b5e296b41c07e9f2645a64ca96f55edaa61888eca7fe30cdd4e3c26aaefbe1b3a298
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-proposal-dynamic-import@npm:^7.10.4":
   version: 7.10.4
   resolution: "@babel/plugin-proposal-dynamic-import@npm:7.10.4"
@@ -528,17 +515,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-decorators@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-syntax-decorators@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 61a68e950b42ab211b20483692b899daa7fe5622568ebdca427dff5f5bb7fba7c62da15f69219e2b5758429bfa11fa6891c6bb1cab24b242f007da0c461288d3
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-syntax-dynamic-import@npm:^7.8.0":
   version: 7.8.3
   resolution: "@babel/plugin-syntax-dynamic-import@npm:7.8.3"
@@ -646,17 +622,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 998d87fbd38a2c7d1b630ccd0a90430a70dec6b7fb23fc37c60cbc10de7112a094c786602d9c8e3093568f538eb2642705006682ce58eb922f2eda889af3ad48
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-typescript@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-syntax-typescript@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 9511691ac0d5bb1810055bc8528d217c9bb862097244259707bff96ae65137f1aa23c26df4069ae6b7a7ed0e93bc9c47ea9e50402a7c1576ee8d94ebd5ba3c73
   languageName: node
   linkType: hard
 
@@ -1016,19 +981,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-typescript@npm:^7.10.4, @babel/plugin-transform-typescript@npm:^7.3.2":
-  version: 7.11.0
-  resolution: "@babel/plugin-transform-typescript@npm:7.11.0"
-  dependencies:
-    "@babel/helper-create-class-features-plugin": ^7.10.5
-    "@babel/helper-plugin-utils": ^7.10.4
-    "@babel/plugin-syntax-typescript": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 0f2e43de8b8f43ad5c7ffb7c5f35531c471fad5eb6d454773f4bd08f0c3e2ea082d447f8666200696618169ff2035f9d1e26a7c8bd0ce0edddf978fa1362d79e
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-transform-unicode-escapes@npm:^7.10.4":
   version: 7.10.4
   resolution: "@babel/plugin-transform-unicode-escapes@npm:7.10.4"
@@ -1142,18 +1094,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 341c13de18779d682ec710c40e60e92285d9a557211c0448398b7308cffb7a1edaaaf4862c1dfe9b02c8b1184c3fdad73daead66cc48aa37b8e90602a49ac175
-  languageName: node
-  linkType: hard
-
-"@babel/preset-typescript@npm:^7.10.4, @babel/preset-typescript@npm:^7.3.3":
-  version: 7.10.4
-  resolution: "@babel/preset-typescript@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-    "@babel/plugin-transform-typescript": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: e14357988cfd69fea5c146bbe7782a1061e6f4ed4ccdaa7aaf6daa1b7c9b34f3502aa48674c877c68bcda44ad8ad5892c5babbf984f7be91eafa1e1417abc8e5
   languageName: node
   linkType: hard
 
@@ -2121,20 +2061,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-typescript-vue@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "babel-preset-typescript-vue@npm:1.1.1"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.0.0
-    "@babel/plugin-transform-typescript": ^7.3.2
-    "@babel/preset-typescript": ^7.3.3
-    vue-template-compiler: ^2.6.11
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 0ba79c64ed696feeebd52724ce6fcbb960e1f7ad0c70330ae9f635cdfa52bdc57c2cef0a4e7c0514bb11c7ac2ab84b9da08549c48827fc9e176ecac851599c6c
-  languageName: node
-  linkType: hard
-
 "babel-runtime@npm:^6.26.0":
   version: 6.26.0
   resolution: "babel-runtime@npm:6.26.0"
@@ -2286,7 +2212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:~3.0.2":
+"braces@npm:^3.0.1, braces@npm:~3.0.2":
   version: 3.0.2
   resolution: "braces@npm:3.0.2"
   dependencies:
@@ -2521,7 +2447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^2.0.0, chalk@npm:^2.4.2":
+"chalk@npm:^2.0.0, chalk@npm:^2.3.0, chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
   dependencies:
@@ -3248,7 +3174,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^4.1.1, enhanced-resolve@npm:^4.3.0":
+"enhanced-resolve@npm:^4.0.0, enhanced-resolve@npm:^4.1.1, enhanced-resolve@npm:^4.3.0":
   version: 4.3.0
   resolution: "enhanced-resolve@npm:4.3.0"
   dependencies:
@@ -4217,11 +4143,7 @@ fsevents@~2.1.2:
   resolution: "ii-zapisy@workspace:."
   dependencies:
     "@babel/core": ^7.11.6
-    "@babel/plugin-proposal-class-properties": ^7.10.4
-    "@babel/plugin-proposal-decorators": ^7.10.5
-    "@babel/plugin-proposal-export-namespace-from": ^7.10.4
     "@babel/preset-env": ^7.11.5
-    "@babel/preset-typescript": ^7.10.4
     "@bokeh/bokehjs": ^2.2.0
     "@fortawesome/fontawesome-free": ^5.14.0
     "@fortawesome/fontawesome-svg-core": ^1.2.30
@@ -4246,7 +4168,6 @@ fsevents@~2.1.2:
     autoprefixer: ^9.8.6
     axios: ^0.20.0
     babel-loader: ^8.1.0
-    babel-preset-typescript-vue: ^1.1.1
     babel-runtime: ^6.26.0
     big-integer: ^1.6.48
     bootstrap: ^4.5.2
@@ -4276,6 +4197,7 @@ fsevents@~2.1.2:
     sass-loader: ^10.0.2
     spicery: ^1.1.0
     terser-webpack-plugin: ^4.2.0
+    ts-loader: ^8.0.3
     typescript: ^4.0.2
     vue: ^2.6.12
     vue-class-component: ^7.2.5
@@ -5132,6 +5054,16 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"micromatch@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "micromatch@npm:4.0.2"
+  dependencies:
+    braces: ^3.0.1
+    picomatch: ^2.0.5
+  checksum: 0cb0e11d647cbb65e398a0a8a1340a7fb751ae2722346219c435704cfac8b3275a94a6464236fe867f52ad46a24046d3bc4ac11b3d21ddb73bc44e27cf1e4904
+  languageName: node
+  linkType: hard
+
 "miller-rabin@npm:^4.0.0":
   version: 4.0.1
   resolution: "miller-rabin@npm:4.0.1"
@@ -5867,7 +5799,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"picomatch@npm:^2.0.4, picomatch@npm:^2.2.1":
+"picomatch@npm:^2.0.4, picomatch@npm:^2.0.5, picomatch@npm:^2.2.1":
   version: 2.2.2
   resolution: "picomatch@npm:2.2.2"
   checksum: 20fa75e0a58b39d83425b3db68744d5f6f361fd4fd66ec7745d884036d502abba0d553a637703af79939b844164b13e60eea339ccb043d7fbd74c3da2592b864
@@ -7274,6 +7206,21 @@ resolve@^1.3.2:
   languageName: node
   linkType: hard
 
+"ts-loader@npm:^8.0.3":
+  version: 8.0.3
+  resolution: "ts-loader@npm:8.0.3"
+  dependencies:
+    chalk: ^2.3.0
+    enhanced-resolve: ^4.0.0
+    loader-utils: ^1.0.2
+    micromatch: ^4.0.0
+    semver: ^6.0.0
+  peerDependencies:
+    typescript: "*"
+  checksum: fe39e52d6f571889481e80586bf20006c15bc60670ec5f8c8d294e4b1a95c5d99bb6675ab5012aa1f2edbde7963fc8018a3fefded0b82e4fc23a3f1205e42671
+  languageName: node
+  linkType: hard
+
 "ts-pnp@npm:^1.1.6":
   version: 1.2.0
   resolution: "ts-pnp@npm:1.2.0"
@@ -7600,7 +7547,7 @@ typescript@^4.0.2:
   languageName: node
   linkType: hard
 
-"vue-template-compiler@npm:^2.6.11, vue-template-compiler@npm:^2.6.12":
+"vue-template-compiler@npm:^2.6.12":
   version: 2.6.12
   resolution: "vue-template-compiler@npm:2.6.12"
   dependencies:

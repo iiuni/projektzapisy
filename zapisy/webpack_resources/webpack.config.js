@@ -29,13 +29,19 @@ const RULES = [
     exclude: /node_modules/,
   },
 
-  // Javascript/Typescript files rule.
   // Typescript is only stripped-down to JS, not type-checked.
+  {
+    test: /\.ts$/,
+    use: {
+      loader: require.resolve("ts-loader"),
+      options: { transpileOnly: true, appendTsSuffixTo: [/\.vue$/] },
+    },
+  },
+
   // Bokeh needs to be translated by babel because it is compiled in a way that
   // webpack is not able to understand.
   {
-    test: /\.(ts|js)$/,
-    exclude: /node_modules\/(?!@bokeh\/)/,
+    test: /(@bokeh\/).*\.js$/,
     use: {
       loader: require.resolve("babel-loader"),
       options: {
@@ -44,12 +50,6 @@ const RULES = [
             "@babel/preset-env",
             { bugfixes: true, targets: { esmodules: true } },
           ],
-          "@babel/preset-typescript",
-          "babel-preset-typescript-vue",
-        ],
-        plugins: [
-          ["@babel/plugin-proposal-decorators", { legacy: true }],
-          ["@babel/plugin-proposal-class-properties", { loose: true }],
         ],
       },
     },
