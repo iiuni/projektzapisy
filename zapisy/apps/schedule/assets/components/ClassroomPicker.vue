@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
+import Component from "vue-class-component";
 import $ from "jquery";
 import { min, max } from "lodash";
 import axios from "axios";
@@ -15,13 +16,14 @@ const ClassroomPickerDefinition = Vue.extend({
       showOccupied: true,
     };
   },
-  watch: {
-    showOccupied: function (newShow: boolean) {
-      this.showOccupied = newShow;
-    },
-  },
+  // watch: {
+  //   showOccupied: function (newShow: boolean) {
+  //     this.showOccupied = newShow;
+  //   },
+  // },
 });
 
+@Component
 export default class ClassroomPicker extends ClassroomPickerDefinition {
   classrooms: Classroom[] = [];
   unoccupiedClassrooms: Classroom[] = [];
