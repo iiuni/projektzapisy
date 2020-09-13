@@ -1,5 +1,5 @@
 [Unit]
-Description=Yarn devw service
+Description=Yarn dev:watch service
 After=yarn.service
 
 [Service]
@@ -11,4 +11,4 @@ ExecStart=/usr/bin/yarnpkg dev:watch
 Type=simple
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-.yarn-cache.mount
+WantedBy=vagrant.mount

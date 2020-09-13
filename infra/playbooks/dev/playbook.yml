@@ -48,15 +48,6 @@
         virtualenv_command: "{{ PYTHON }} -m venv"
         requirements: /vagrant/zapisy/requirements.development.txt
 
-    # Vagrant file node_modules mounting
-    - name: Create vagrant_yarn_cache folder
-      file:
-        path: /vagrant_yarn_cache
-        state: directory
-        owner: vagrant
-        group: vagrant
-      become: yes
-
     - name: Create logs directory
       file:
         path: /vagrant/zapisy/logs

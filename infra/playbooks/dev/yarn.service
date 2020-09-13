@@ -1,5 +1,5 @@
 [Unit]
-Description=Yarn service
+Description=Yarn install service
 
 [Service]
 User=vagrant
@@ -10,4 +10,4 @@ ExecStart=/usr/bin/yarnpkg
 Type=oneshot
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-.yarn-cache.mount
+WantedBy=vagrant.mount
