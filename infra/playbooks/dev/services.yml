@@ -69,7 +69,7 @@
       systemd:
         name: yarn
         state: started
-        enabled: no
+        enabled: yes
       become: yes
 
     - name: Enable and run yarn_devw service

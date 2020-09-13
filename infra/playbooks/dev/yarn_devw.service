@@ -11,4 +11,4 @@ ExecStart=/usr/bin/yarnpkg dev:watch
 Type=simple
 
 [Install]
-WantedBy=vagrant.mount vagrant-zapisy-node_modules.mount
+WantedBy=vagrant.mount vagrant-zapisy-.yarn-cache.mount
