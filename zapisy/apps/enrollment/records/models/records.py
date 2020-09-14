@@ -201,7 +201,9 @@ class Record(models.Model):
         ret = {}
         groups = Record.is_recorded_in_groups(student, groups)
         for group in groups:
-            if group.course.records_end is not None:
+            if group.joint:
+                ret[group.id] = False
+            elif group.course.records_end is not None:
                 ret[group.id] = time <= group.course.records_end
             elif not group.course.semester.can_remove_record(time):
                 # When disenrolment is closed, QUEUED record can still be
@@ -493,6 +495,41 @@ class Record(models.Model):
                 num_transaction_errors += 1
                 if num_transaction_errors == 3:
                     raise
+
+    @classmethod
+    def update_records_in_joint_group(cls, group_id: int):
+        """Automatically enrolls, enqueues and removes students in a joint group.
+
+        Joint groups must always reflect the state of other groups in the
+        course: people enrolled to some other group must also be enrolled in the
+        joint group. People enqueued in other groups (but not enrolled in any)
+        will be enqueued in the joint group. Everyone else must be out.
+
+        Args:
+            group_id: Must be an id of a joint group.
+        """
+        other_groups = Group.objects.filter(course__groups=group_id, joint=False)
+        people_enrolled = set(
+            cls.objects.filter(group__in=other_groups, status=RecordStatus.ENROLLED).values_list(
+                'student_id', flat=True).distinct())
+        people_enqueued = set(
+            cls.objects.filter(group__in=other_groups, status=RecordStatus.QUEUED).values_list(
+                'student_id', flat=True).distinct())
+        people_recorded_in_group = set(
+            cls.objects.filter(group=group_id).exclude(status=RecordStatus.ENROLLED).values_list(
+                'student_id', flat=True).distinct())
+        # First we enqueue people who are in some groups but are completely absent in our group.
+        cls.objects.bulk_create([
+            Record(student_id=s, group_id=group_id, status=RecordStatus.QUEUED)
+            for s in ((people_enrolled | people_enqueued) - people_recorded_in_group)
+        ])
+        # We change the status from enrolled to enqueued for those, who should be enrolled.
+        cls.objects.filter(group_id=group_id,
+                           status=RecordStatus.QUEUED,
+                           student_id__in=people_enrolled).update(status=RecordStatus.ENROLLED)
+        # Drop records of people not in the group.
+        cls.objects.filter(group_id=group_id).exclude(status=RecordStatus.REMOVED).exclude(
+            student_id__in=(people_enrolled | people_enqueued)).update(status=RecordStatus.REMOVED)
 
     def enroll_or_remove(self, group: Group) -> List[int]:
         """Tries to change a single QUEUED record status to ENROLLED.
