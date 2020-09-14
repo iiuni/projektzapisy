@@ -1,6 +1,7 @@
 """Tests for enrolling and enqueuing students."""
 from datetime import datetime
 from unittest.mock import patch
+from unittest import skip
 
 from django.test import TestCase, override_settings
 
@@ -62,15 +63,14 @@ class EnrollmentTest(TestCase):
     def test_simple_enrollment(self):
         """Bolek will just enqueue into the group."""
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertListEqual(
-                Record.enqueue_student(self.bolek, self.knitting_lecture_group),
-                [self.knitting_lecture_group.pk])
+            self.assertTrue(Record.enqueue_student(self.bolek, self.knitting_lecture_group))
 
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.knitting_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
 
+    @skip("Just removed this feature.")
     def test_lecture_group_also_enrolled(self):
         """Tests automatic adding into the corresponding lecture group.
 
@@ -78,9 +78,7 @@ class EnrollmentTest(TestCase):
         enrolled into the lecture.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertCountEqual(
-                Record.enqueue_student(self.bolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk, self.cooking_lecture_group.pk])
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
 
         self.assertTrue(
             Record.objects.filter(
@@ -92,6 +90,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
 
+    @skip("Just removed this feature.")
     def test_exercise_group_also_removed(self):
         """Like above bolek will enqueue into exercise group. Then he'll leave.
 
@@ -100,9 +99,7 @@ class EnrollmentTest(TestCase):
         exercise group as well.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertCountEqual(
-                Record.enqueue_student(self.bolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk, self.cooking_lecture_group.pk])
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
 
         self.assertTrue(
             Record.objects.filter(
@@ -115,9 +112,7 @@ class EnrollmentTest(TestCase):
                 status=RecordStatus.ENROLLED).exists())
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 2, 12)):
-            self.assertCountEqual(
-                Record.remove_from_group(self.bolek, self.cooking_lecture_group),
-                [self.cooking_exercise_group_1.pk, self.cooking_lecture_group.pk])
+            self.assertTrue(Record.remove_from_group(self.bolek, self.cooking_lecture_group))
 
         self.assertFalse(
             Record.objects.filter(
@@ -137,40 +132,36 @@ class EnrollmentTest(TestCase):
         group.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertCountEqual(
-                Record.enqueue_student(self.bolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk, self.cooking_lecture_group.pk])
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 1)):
-            self.assertCountEqual(
-                Record.enqueue_student(self.lolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk, self.cooking_lecture_group.pk])
+            self.assertTrue(Record.enqueue_student(self.lolek, self.cooking_exercise_group_1))
 
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek,
                 group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
-        self.assertTrue(
-            Record.objects.filter(
-                student=self.bolek, group=self.cooking_lecture_group,
-                status=RecordStatus.ENROLLED).exists())
+        # self.assertTrue(
+        #     Record.objects.filter(
+        #         student=self.bolek, group=self.cooking_lecture_group,
+        #         status=RecordStatus.ENROLLED).exists())
         self.assertFalse(
             Record.objects.filter(
                 student=self.lolek,
                 group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
-        self.assertTrue(
-            Record.objects.filter(
-                student=self.lolek, group=self.cooking_lecture_group,
-                status=RecordStatus.ENROLLED).exists())
+        # self.assertTrue(
+        #     Record.objects.filter(
+        #         student=self.lolek, group=self.cooking_lecture_group,
+        #         status=RecordStatus.ENROLLED).exists())
         self.assertTrue(
             Record.objects.filter(
                 student=self.lolek, group=self.cooking_exercise_group_1,
                 status=RecordStatus.QUEUED).exists())
-        self.assertFalse(
-            Record.objects.filter(
-                student=self.lolek, group=self.cooking_lecture_group,
-                status=RecordStatus.QUEUED).exists())
+        # self.assertFalse(
+        #     Record.objects.filter(
+        #         student=self.lolek, group=self.cooking_lecture_group,
+        #         status=RecordStatus.QUEUED).exists())
 
     def test_student_autoremoved_from_group(self):
         """Bolek switches seminar group for "Mycie Naczyń".
@@ -280,13 +271,9 @@ class EnrollmentTest(TestCase):
         self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
-            self.assertCountEqual(
-                Record.remove_from_group(self.bolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk])
+            self.assertTrue(Record.remove_from_group(self.bolek, self.cooking_exercise_group_1))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
-            self.assertCountEqual(
-                Record.remove_from_group(self.lolek, self.cooking_exercise_group_2),
-                [self.cooking_exercise_group_2.pk])
+            self.assertTrue(Record.remove_from_group(self.lolek, self.cooking_exercise_group_2))
 
         self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
@@ -313,13 +300,9 @@ class EnrollmentTest(TestCase):
         self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
-            self.assertCountEqual(
-                Record.remove_from_group(self.lolek, self.cooking_exercise_group_2),
-                [self.cooking_exercise_group_2.pk])
+            self.assertTrue(Record.remove_from_group(self.lolek, self.cooking_exercise_group_2))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
-            self.assertCountEqual(
-                Record.remove_from_group(self.bolek, self.cooking_exercise_group_1),
-                [self.cooking_exercise_group_1.pk])
+            self.assertTrue(Record.remove_from_group(self.bolek, self.cooking_exercise_group_1))
 
         self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
