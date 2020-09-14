@@ -73,7 +73,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
-    student_status_groups = Record.is_recorded_in_groups(student, groups)
+    groups = Record.is_recorded_in_groups(student, groups)
     student_can_enqueue = Record.can_enqueue_groups(
         student, course.groups.all())
     student_can_dequeue = Record.can_dequeue_groups(
@@ -82,9 +82,6 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     for group in groups:
         group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
-        group.is_enrolled = student_status_groups.get(group.pk).get('enrolled')
-        group.is_enqueued = student_status_groups.get(group.pk).get('enqueued')
-        group.priority = student_status_groups.get(group.pk).get('priority')
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
 

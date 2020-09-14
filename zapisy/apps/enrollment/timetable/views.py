@@ -207,21 +207,18 @@ def prototype_action(request, group_id):
         Pin.objects.filter(student_id=student.pk, group_id=group_id).delete()
         return HttpResponse(status=204)
     if action == 'enqueue':
-        group_ids = Record.enqueue_student(student, group)
-        if group_ids:
-            # When the student joins the queue of a class, the accompanying
-            # lecture group might need to be displayed (if he is automatically
-            # enqueued in that). We hence send him the information about these
-            # groups.
-            groups = Group.objects.filter(pk__in=group_ids).select_related(
-                'teacher', 'teacher__user', 'course', 'course__semester').prefetch_related(
-                    'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
-            for group in groups:
-                group.is_enqueued = True
-            groups_dicts = build_group_list(groups)
-            return JsonResponse(groups_dicts, safe=False)
-        else:
+        success = Record.enqueue_student(student, group)
+        if not success:
             return HttpResponse(status=403)
+        # When the student joins the queue of a class, the accompanying lecture
+        # group might need to be displayed (if he is automatically enqueued in
+        # that). We hence send him the information about these groups.
+        groups = Group.objects.filter(course=group.course_id).select_related(
+            'teacher', 'teacher__user', 'course', 'course__semester').prefetch_related(
+                'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
+        groups = Record.is_recorded_in_groups(student, groups)
+        groups_dicts = build_group_list(groups)
+        return JsonResponse(groups_dicts, safe=False)
     if action == 'dequeue':
         group_ids = Record.remove_from_group(student, group)
         if group_ids:
