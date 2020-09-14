@@ -52,6 +52,14 @@ class Group(models.Model):
         on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=GroupType.choices, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
+    joint = models.BooleanField(
+        "grupa-suma zbiorów",
+        default=False,
+        help_text=(
+            "Blokuje zapisywanie do grupy. Zamiast tego, studenci są do niej automatycznie "
+            "zapisani jeśli zapiszą się do jakiejkolwiek innej grupy z tego przedmiotu. "
+            "Nie należy blokować wszystkich grup z przedmiotu ani grup, gdzie studenci powinni "
+            "mieć wybór (np. jest kilka równoległych grup ćwiczeniowych)."))
     extra = models.CharField(
         "dodatkowe informacje",
         max_length=255,
@@ -61,9 +69,6 @@ class Group(models.Model):
                    "przedmiotu. Nie ma żadnych dozwolonych tagów, ale dla wybranych tagów zostanie "
                    f"dodany tooltip z wyjaśnieniem: {GroupTooltips}"))
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
-
-    disable_update_signal = False
-
     usos_nr = models.IntegerField(
         null=True,
         blank=True,
