@@ -37,8 +37,9 @@ Instructions for using flags:
 
 Example usage:
     python manage.py import_schedule
-    http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/config/wiosna-2020-1/
-    http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/
+    http://scheduler.ii.uni.wroc.pl:8000
+    wiosna-2020-1
+    096a8260-5151-4491-82a0-f8e43e7be918
     --semester 1 --dry_run --interactive
 
 """
@@ -85,11 +86,12 @@ SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument('api_base_url', help='Should look like this: '
+                                                 'http://scheduler.ii.uni.wroc.pl:8000')
         parser.add_argument('api_config_url', help='Should look like this: '
-                                                   '/scheduler/api/config/2020-zima-1/')
+                                                   '2020-zima-1')
         parser.add_argument('api_task_url', help='Should look like this: '
-                                                 'http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/task/'
-                                                 '07164b02-de37-4ddc-b81b-ddedab533fec/')
+                                                 '07164b02-de37-4ddc-b81b-ddedab533fec')
         parser.add_argument('--semester', type=int, default=0)
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
@@ -198,7 +200,10 @@ class Command(BaseCommand):
 
     def import_from_api(self, dont_delete_terms_flag, write_to_slack_flag, interactive_flag):
         secrets_env = self.get_secrets_env()
-        scheduler_data = SchedulerData(self.api_config_url, self.api_task_url, secrets_env.str('SCHEDULER_USERNAME'),
+        scheduler_data = SchedulerData(self.api_login_url,
+                                       self.api_config_url,
+                                       self.api_task_url,
+                                       secrets_env.str('SCHEDULER_USERNAME'),
                                        secrets_env.str('SCHEDULER_PASSWORD'))
         scheduler_data.get_scheduler_data()
         scheduler_mapper = SchedulerMapper(interactive_flag, self.summary, self.semester)
@@ -227,8 +232,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.semester = (Semester.get_upcoming_semester() if options['semester'] == 0
                          else Semester.objects.get(pk=int(options['semester'])))
-        self.api_config_url = options['api_config_url']
-        self.api_task_url = options['api_task_url']
+        base = options['api_base_url']
+        self.api_login_url = f'{base}/admin/login/'
+        config = options['api_config_url']
+        self.api_config_url = f'{base}/scheduler/api/config/{config}/'
+        task = options['api_task_url']
+        self.api_task_url = f'{base}/scheduler/api/task/{task}/'
         self.summary = Summary()
         dont_delete_terms_flag = options['dont_delete_terms']
         dry_run_flag = options['dry_run']
