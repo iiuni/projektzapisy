@@ -1290,18 +1290,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/moment@npm:^5.3.1":
-  version: 5.3.1
-  resolution: "@fullcalendar/moment@npm:5.3.1"
-  dependencies:
-    "@fullcalendar/common": ~5.3.1
-    tslib: ^2.0.0
-  peerDependencies:
-    moment: ^2.24.0
-  checksum: 365f03b20b9a6dd3849b9b293dabf07ed4b3bf5ffa669427ef7b2262e65723a88873925c6240e59c16c8b494af8a97458a51593b0c6724613a5f5e429346e0ab
-  languageName: node
-  linkType: hard
-
 "@fullcalendar/timegrid@npm:^5.3.1":
   version: 5.3.1
   resolution: "@fullcalendar/timegrid@npm:5.3.1"
@@ -1350,17 +1338,6 @@ __metadata:
   version: 3.0.0
   resolution: "@types/events@npm:3.0.0"
   checksum: 1407d79d6d5291caa89f27ef0f180eb133bc5a12f11886bd68f9ef9cffb962a575571d1b4d02d30a7329fe9b85d29b7c10543ed6dc516ad20f9a1e89c1e9c9b8
-  languageName: node
-  linkType: hard
-
-"@types/glob@npm:^5.0.35":
-  version: 5.0.36
-  resolution: "@types/glob@npm:5.0.36"
-  dependencies:
-    "@types/events": "*"
-    "@types/minimatch": "*"
-    "@types/node": "*"
-  checksum: 968d8f22f1188cd1abfd145b990c2d411b10c277f9a89e5c725b0033d964c960b2253cff1978f3ad466bf75d37981dc5eeeb27e6317fcd00019ba360eff9ba3e
   languageName: node
   linkType: hard
 
@@ -2078,16 +2055,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-runtime@npm:^6.26.0":
-  version: 6.26.0
-  resolution: "babel-runtime@npm:6.26.0"
-  dependencies:
-    core-js: ^2.4.0
-    regenerator-runtime: ^0.11.0
-  checksum: 5010bf1d81e484d9c6a5b4e4c32564a0dc180c2dc5a65f999729c3cb63b9c6e805d3d10c19a4ccc2112bce084e39e51e52daf5c21df0141ce8e6e37727af2e0b
-  languageName: node
-  linkType: hard
-
 "balanced-match@npm:^1.0.0":
   version: 1.0.0
   resolution: "balanced-match@npm:1.0.0"
@@ -2801,13 +2768,6 @@ __metadata:
     browserslist: ^4.8.5
     semver: 7.0.0
   checksum: b263b5313f5b10807cbe2037bcff1d0abc3611d8600ca29a742695eb21411f76a8c762db00a04d684a3f80645252aeb74b24542c157ec24697edd3ae7afcce87
-  languageName: node
-  linkType: hard
-
-"core-js@npm:^2.4.0":
-  version: 2.6.11
-  resolution: "core-js@npm:2.6.11"
-  checksum: 39ad00b46deaecf344470ef940949b58c4b15e71608a98e8ac7429cd16e485b829f9720d44a44b5f4dee966ff04a18baf5283feb8aaba2cb59ce2c25fa72b88c
   languageName: node
   linkType: hard
 
@@ -4168,10 +4128,8 @@ fsevents@~2.1.2:
     "@fullcalendar/bootstrap": ^5.3.1
     "@fullcalendar/core": ^5.3.1
     "@fullcalendar/daygrid": ^5.3.2
-    "@fullcalendar/moment": ^5.3.1
     "@fullcalendar/timegrid": ^5.3.1
     "@types/bootstrap": ^4.1.2
-    "@types/glob": ^5.0.35
     "@types/jquery": ^3.3.1
     "@types/js-cookie": ^2.2.2
     "@types/js-yaml": ^3.12.1
@@ -4182,7 +4140,6 @@ fsevents@~2.1.2:
     autoprefixer: ^9.8.6
     axios: ^0.20.0
     babel-loader: ^8.1.0
-    babel-runtime: ^6.26.0
     big-integer: ^1.6.48
     bootstrap: ^4.5.2
     bootstrap-sortable: "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
@@ -4199,7 +4156,7 @@ fsevents@~2.1.2:
     lodash: ^4.17.20
     markdown-it: ^11.0.1
     mini-css-extract-plugin: ^0.11.2
-    moment: ^2.27.0
+    moment: ^2.28.0
     moment-locales-webpack-plugin: ^1.2.0
     pnp-webpack-plugin: ^1.6.4
     popper.js: ^1.16.1
@@ -5265,10 +5222,10 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.27.0":
-  version: 2.27.0
-  resolution: "moment@npm:2.27.0"
-  checksum: 72d9a7d8dba59e3d538440cdc0b59fa895b123361e370be231896478aaf157a484355ce32bd8daf6f731d6d1636d3a67ecb67531e536e093ca18b43e0cbae194
+"moment@npm:^2.28.0":
+  version: 2.28.0
+  resolution: "moment@npm:2.28.0"
+  checksum: f239dd93cec0560eb75467d987b6117cc074cfbef086c8e0e01aa93f4aff198ee1a3d13166bb01397542dced6b1b608f2bff95b7ded209c46b0593afacb2d916
   languageName: node
   linkType: hard
 
@@ -6271,13 +6228,6 @@ fsevents@~2.1.2:
   version: 1.4.0
   resolution: "regenerate@npm:1.4.0"
   checksum: d797b035730c0b5cbb7c230220b6a34610f84c1ea2369f0025292613c1ec88068cd87819fccf9c08f002670f26d59e63bbc309358181a6186f7fda185e93618a
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.11.0":
-  version: 0.11.1
-  resolution: "regenerator-runtime@npm:0.11.1"
-  checksum: d98d44b9f5c9c3c670dcb615c5f5374931f937f3075dc8338126f45231643aa8c47ed2bfdef6ae593e311be54ca02d25d943971ca86a3dc1fa99068c2e1b88b2
   languageName: node
   linkType: hard
 

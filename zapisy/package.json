@@ -1,38 +1,23 @@
 {
   "name": "ii-zapisy",
-  "version": "1.0.0",
-  "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development yarn webpack-cli --progress --colors --config webpack_resources/webpack.config.js",
     "dev:watch": "NODE_ENV=development yarn webpack-cli --watch --config webpack_resources/webpack.config.js",
     "dev:tc": "NODE_ENV=test yarn webpack-cli --config webpack_resources/webpack.config.js",
     "build": "NODE_ENV=production yarn webpack-cli --config webpack_resources/webpack.config.js",
     "lint": "prettier --check ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iiuni/projektzapisy.git"
-  },
   "installConfig": {
     "pnp": true
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/iiuni/projektzapisy/issues"
-  },
-  "homepage": "https://github.com/iiuni/projektzapisy#README",
   "dependencies": {
     "@bokeh/bokehjs": "^2.2.0",
     "@fullcalendar/bootstrap": "^5.3.1",
     "@fullcalendar/core": "^5.3.1",
     "@fullcalendar/daygrid": "^5.3.2",
-    "@fullcalendar/moment": "^5.3.1",
     "@fullcalendar/timegrid": "^5.3.1",
     "ContentTools": "^1.6.12",
     "axios": "^0.20.0",
-    "babel-runtime": "^6.26.0",
     "big-integer": "^1.6.48",
     "bootstrap": "^4.5.2",
     "bootstrap-sortable": "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
@@ -43,7 +28,7 @@
     "katex": "^0.12.0",
     "lodash": "^4.17.20",
     "markdown-it": "^11.0.1",
-    "moment": "^2.27.0",
+    "moment": "^2.28.0",
     "popper.js": "^1.16.1",
     "vue": "^2.6.12",
     "vue-timers": "^2.0.4",
@@ -59,7 +44,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/vue-fontawesome": "^2.0.0",
     "@types/bootstrap": "^4.1.2",
-    "@types/glob": "^5.0.35",
     "@types/jquery": "^3.3.1",
     "@types/js-cookie": "^2.2.2",
     "@types/js-yaml": "^3.12.1",
