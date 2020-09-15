@@ -44,7 +44,6 @@ Example usage:
 
 """
 
-import collections
 import os
 
 import environ
@@ -59,29 +58,7 @@ from apps.schedulersync.models import TermSyncData
 
 from .scheduler_data import SchedulerData, SZTerm
 from .scheduler_mapper import SchedulerMapper
-from .slack import Slack
-
-
-class Summary:
-    """Holds importing summary.
-
-    Stores information which objects to delete and what to write to Slack and at
-    the end of script.
-    """
-    def __init__(self):
-        self.created_courses = 0
-        self.used_courses = 0
-        self.deleted_courses = []
-        self.updated_terms = []
-        self.created_terms = []
-        self.deleted_terms = []
-        self.used_scheduler_ids = []
-        self.multiple_proposals = []
-        self.maps_added = []
-        self.maps_deleted = []
-
-
-SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
+from .slack import Slack, Summary, SlackUpdate
 
 
 class Command(BaseCommand):

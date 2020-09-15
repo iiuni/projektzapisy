@@ -34,7 +34,6 @@ GroupTooltips = {
     'mat': "zajęcia na matematyce",
     'english': "grupa anglojęzyczna",
     'zdalna': "zajęcia prowadzone zdalnie",
-    'hybrydowa': "zajęcia częściowo zdalne, częściowo stacjonarne",
 }
 
 
