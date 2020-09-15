@@ -36,11 +36,11 @@ Instructions for using flags:
         never --dont_delete_terms, never --dry_run
 
 Example usage:
-    python manage.py import_schedule
-    http://scheduler.ii.uni.wroc.pl:8000
-    wiosna-2020-1
-    096a8260-5151-4491-82a0-f8e43e7be918
-    --semester 1 --dry_run --interactive
+    python manage.py import_schedule \
+        http://scheduler.ii.uni.wroc.pl:8000 \
+        wiosna-2020-1 \
+        096a8260-5151-4491-82a0-f8e43e7be918 \
+        --semester 1 --dry_run --interactive
 
 """
 
@@ -69,7 +69,9 @@ class Command(BaseCommand):
                                                    '2020-zima-1')
         parser.add_argument('api_task_url', help='Should look like this: '
                                                  '07164b02-de37-4ddc-b81b-ddedab533fec')
-        parser.add_argument('--semester', type=int, default=0)
+        parser.add_argument('--semester', type=int, default=0, help='id of the semester to import the schedule'
+                                                                    ' for. If not provided, an upcoming semester'
+                                                                    ' will be guessed (not recommended)')
         parser.add_argument('--dry_run', action='store_true', help='no changes will be saved. Messages will'
                                                                    ' show up normally as without this flag')
         parser.add_argument('--slack', action='store_true', help='writes messages about changes to Slack')
