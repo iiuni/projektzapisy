@@ -64,24 +64,34 @@
                         <td>
                             {% if group.can_enqueue and not group.is_enrolled and not group.is_enqueued %}
                             <form action="{% url 'records-enqueue' %}" method="post" class="setEnrolled">{% csrf_token %}
-                                    <div>
-                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                        <button type="submit" class="btn btn-success btn-sm success setEnrolledButton"
-                                        onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                    <button type="submit" class="btn btn-success btn-sm success setEnrolledButton"
+                                    onclick="return confirm('Czy na pewno chcesz się dopisać do tej grupy?');">
                                         Zapisz
                                     </button>
-                                    </div>
-                                </form>
-                                {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
-                                <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
-                                    <div>
-                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                                        <button type="submit" class="btn btn-danger btn-sm danger setEnrolledButton"
-                                        onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
+                                </div>
+                            </form>
+                            {% elif group.can_dequeue and group.is_enrolled or group.can_dequeue and group.is_enqueued %}
+                            <form action="{% url 'records-dequeue' %}" method="post" class="setEnrolled">{% csrf_token %}
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                    <button type="submit" class="btn btn-danger btn-sm danger setEnrolledButton"
+                                    onclick="return confirm('Czy na pewno chcesz się wypisać z tej grupy?');">
                                         Wypisz
                                     </button>
                                 </div>
                             </form>
+                            {% elif group.joint %}
+                            <div class="d-inline-block"
+                                 data-toggle="popover" data-trigger="hover" tabindex="0"
+                                 data-content="Stan tej grupy jest automatycznie synchronizowany z innymi 
+                                               grupami tego przedmiotu. Zapisz się do innych grup, a 
+                                               automatycznie się w niej znajdziesz.">
+                                <button class="btn btn-light btn-sm" style="pointer-events: none;" disabled>
+                                    <i class="fa fa-users-cog"></i>
+                                </button>
+                                </div>
                             {% endif %}
                         </td>
                         <td class="priority ">
