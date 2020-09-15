@@ -1,13 +1,10 @@
 {% extends 'proposal/my-proposals.html' %}
 
 {% load crispy_forms_tags %}
-{% load render_bundle from webpack_loader %}
 
 {% block all-content %}
 
 <h1 class="mb-5">Edycja propozycji przedmiotu</h1>
 {% crispy form %}
-
-{% render_bundle 'proposal-fill-placeholders' %}
 
 {% endblock %}

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   for (const el of elements) {
     const attrName = el.getAttribute("name") || "";
     const attrValue = el.getAttribute("value") || "";
+    const attrPlaceholder = el.getAttribute("placeholder") || "";
     const attrIsInvalid = el.classList.contains("is-invalid");
 
     new Vue({
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
           props: {
             name: attrName,
             value: attrValue,
+            placeholder: attrPlaceholder,
             is_invalid: attrIsInvalid,
           },
         });

@@ -8,6 +8,7 @@
       rows="10"
       :value="input"
       :name="name"
+      :placeholder="placeholder"
       @input="update"
     ></textarea>
     <div class="preview">
@@ -37,6 +38,7 @@ export default {
       type: String,
       required: false,
     },
+    placeholder: String,
     is_invalid: {
       type: Boolean,
       default: false,

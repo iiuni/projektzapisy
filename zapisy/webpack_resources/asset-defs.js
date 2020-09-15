@@ -64,9 +64,6 @@ const AssetDefs = {
 
   // Proposal app
 
-  "proposal-fill-placeholders": [
-    path.resolve("apps/offer/proposal/assets/fill-placeholders.ts"),
-  ],
   "proposal-course-list": [
     path.resolve("apps/offer/proposal/assets/course-list-index.js"),
   ],
