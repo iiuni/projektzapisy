@@ -28,8 +28,14 @@
 <script>
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import marked from "marked";
 import { debounce, uniqueId } from "lodash";
+import MarkdownIt from "markdown-it";
+
+const md = MarkdownIt({
+  linkify: true,
+  typographer: true,
+  quotes: "„”«»",
+});
 
 export default {
   props: {
@@ -53,7 +59,7 @@ export default {
   },
   computed: {
     compiledMarkdown: function () {
-      return marked(this.input, { sanitize: true });
+      return md.render(this.input);
     },
   },
   methods: {

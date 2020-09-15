@@ -1,9 +1,15 @@
-import marked from "marked";
+import MarkdownIt from "markdown-it";
+
+const md = MarkdownIt({
+  linkify: true,
+  typographer: true,
+  quotes: "„”«»",
+});
 
 let callback = function (_mutations: any, _observer: any) {
   for (const element of document.querySelectorAll(".markdown")) {
     const raw = element.textContent || "";
-    const rendered = marked(raw);
+    const rendered = md.render(raw);
     element.innerHTML = rendered;
     // This way Markdown is not rendered twice.
     element.classList.remove("markdown");
