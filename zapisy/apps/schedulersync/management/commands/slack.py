@@ -9,6 +9,8 @@ import json
 
 import requests
 
+import apps.schedulersync.management.commands.import_schedule
+
 DAYS_OF_WEEK = {'1': 'monday',
                 '2': 'tuesday',
                 '3': 'wednesday',
@@ -31,7 +33,8 @@ class Slack:
         }
         self.attachments.append(attachment)
 
-    def prepare_message(self, summary: 'Summary'):
+    def prepare_message(self, summary:
+            'apps.schedulersync.management.commands.import_schedule.Summary'):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)

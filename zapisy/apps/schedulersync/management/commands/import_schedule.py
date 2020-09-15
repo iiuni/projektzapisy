@@ -36,7 +36,8 @@ Instructions for using flags:
         never --dont_delete_terms, never --dry_run
 
 Example usage:
-    python manage.py import_schedule http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/config/wiosna-2020-1/
+    python manage.py import_schedule
+    http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/config/wiosna-2020-1/
     http://scheduler.ii.uni.wroc.pl:8000/scheduler/api/task/096a8260-5151-4491-82a0-f8e43e7be918/
     --semester 1 --dry_run --interactive
 
