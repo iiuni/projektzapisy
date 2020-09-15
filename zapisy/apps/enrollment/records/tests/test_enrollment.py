@@ -125,6 +125,153 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
 
+    def test_join_group_queue(self):
+        """Tests that joint queue state reflects that of a course."""
+        # Bolek enrolls into one cooking exercise group. Lolek into the other.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(Record.enqueue_student(self.lolek, self.cooking_exercise_group_2))
+        self.assertCountEqual(Record.objects.all().values('group_id', 'student_id', 'status'), [
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+        ])
+        # Tola enqueues into the first group. She should also be in the queue
+        # for the lecture group even though there is space there.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
+            self.assertTrue(Record.enqueue_student(self.tola, self.cooking_exercise_group_1))
+        self.assertCountEqual(Record.objects.all().values('group_id', 'student_id', 'status'), [
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.QUEUED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.QUEUED
+            },
+        ])
+        # Bolek enqueues into the second group. He is still enrolled into the
+        # first, so he should be in the lecture group.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 14)):
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_2))
+        self.assertCountEqual(Record.objects.all().values('group_id', 'student_id', 'status'), [
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.QUEUED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.QUEUED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.QUEUED
+            },
+        ])
+        # Lolek leaves the second group. Bolek should pop into his spot, leaving
+        # place for Tola in the first group.
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 15)):
+            self.assertTrue(Record.remove_from_group(self.lolek, self.cooking_exercise_group_2))
+        self.assertCountEqual(Record.objects.all().values('group_id', 'student_id', 'status'), [
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.REMOVED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.REMOVED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.lolek.id,
+                'status': RecordStatus.REMOVED
+            },
+            {
+                'group_id': self.cooking_exercise_group_1.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_lecture_group.id,
+                'student_id': self.tola.id,
+                'status': RecordStatus.ENROLLED
+            },
+            {
+                'group_id': self.cooking_exercise_group_2.id,
+                'student_id': self.bolek.id,
+                'status': RecordStatus.ENROLLED
+            },
+        ])
+
     def test_bolek_comes_before_lolek(self):
         """Tests that the group limits are respected.
 

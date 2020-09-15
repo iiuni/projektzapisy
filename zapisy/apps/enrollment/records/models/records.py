@@ -516,7 +516,7 @@ class Record(models.Model):
             cls.objects.filter(group__in=other_groups, status=RecordStatus.QUEUED).values_list(
                 'student_id', flat=True).distinct())
         people_recorded_in_group = set(
-            cls.objects.filter(group=group_id).exclude(status=RecordStatus.ENROLLED).values_list(
+            cls.objects.filter(group=group_id).exclude(status=RecordStatus.REMOVED).values_list(
                 'student_id', flat=True).distinct())
         # First we enqueue people who are in some groups but are completely absent in our group.
         cls.objects.bulk_create([
