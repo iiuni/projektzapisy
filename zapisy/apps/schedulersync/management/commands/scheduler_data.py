@@ -15,7 +15,7 @@ import requests
 
 from apps.enrollment.courses.models.classroom import Classroom
 
-URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
+URL_LOGIN = 'http://scheduler.ii.uni.wroc.pl:8000/admin/login/'
 
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
