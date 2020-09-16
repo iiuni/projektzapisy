@@ -6,12 +6,9 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
 import { faUsersCog } from "@fortawesome/free-solid-svg-icons/faUsersCog";
 
 import { Term, Group } from "../models";
-
-library.add(faUsersCog);
 
 const TermControlsProps = Vue.extend({
   props: {
@@ -27,6 +24,7 @@ const TermControlsProps = Vue.extend({
 })
 export default class TermControlsComponent extends TermControlsProps {
   controlsVisible: boolean = false;
+  faUsersCog = faUsersCog;
 
   get group(): Group {
     return this.term.group;
