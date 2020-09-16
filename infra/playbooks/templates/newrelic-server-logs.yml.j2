@@ -1,0 +1,8 @@
+logs:
+  - name: django-zapisy-logs
+    file: /home/{{ deploy_user }}/deploy/current/zapisy/logs/djangoproject.log
+
+  - name: nginx-logs
+    systemd: nginx
+    attributes:
+      logtype: nginx

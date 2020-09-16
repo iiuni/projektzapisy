@@ -9,7 +9,7 @@ User={{ deploy_user }}
 Group=www-data
 WorkingDirectory=/home/{{ deploy_user }}/deploy/current/zapisy
 Environment=NEW_RELIC_ENVIRONMENT={{ deploy_env }}
-Environment=NEW_RELIC_CONFIG_FILE=/home/{{ deploy_user }}/deploy/current/env/newrelic.ini
+Environment=NEW_RELIC_CONFIG_FILE=/home/{{ deploy_user }}/newrelic.ini
 ExecStart=/home/{{ deploy_user }}/deploy/current/env3/bin/newrelic-admin run-program \
   /home/{{ deploy_user }}/deploy/current/env3/bin/gunicorn \
     --name "zapisy" \

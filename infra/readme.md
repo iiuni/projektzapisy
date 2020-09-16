@@ -40,6 +40,7 @@ where `user` is your username and `host` is your hostname on the remote host.
 	- `deploy_version` - name of branch from __projektzapisy__ repository
 	- `deploy_server_name` - name of domain what points on remote machine
 	- `rollbar_token` - *post_server_item* token from Rollbar settings or __none__ value
+	- `newrelic_license_key` - New Relic license key used for the monitoring agent.
 5. To add another server to deployment edit your hosts (*staging*/*production*) like this:
 
 ```

@@ -2,7 +2,7 @@
 server1
 
 [deploy:vars]
-deploy_env=development
+deploy_env=test
 
 [server1]
 webserver1
@@ -16,3 +16,4 @@ deploy_user=zapisy
 deploy_version=master-dev
 deploy_server_name=192.168.33.10
 rollbar_token=none
+newrelic_license_key=353cdfd3bfb301d97e37894a0f590f87dd5a91e4
