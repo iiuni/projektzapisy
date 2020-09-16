@@ -250,7 +250,7 @@ class Record(models.Model):
     def is_recorded(cls, student: Student, group: Group) -> bool:
         """Checks if the student is already enrolled or enqueued into the group."""
         entry = cls.is_recorded_in_groups(student, [group])[0]
-        return getattr(entry, 'enqueued', False) or getattr(entry, 'enrolled', False)
+        return getattr(entry, 'is_enqueued', False) or getattr(entry, 'is_enrolled', False)
 
     @classmethod
     def is_recorded_in_groups(cls, student: Optional[Student],
@@ -258,8 +258,8 @@ class Record(models.Model):
         """Checks, in which groups the student is already enrolled or enqueued.
 
         The function modifies provided groups by setting additional attributes:
-        'enrolled', 'enqueued' and 'priority'. The attributes must always be
-        checked with a default, because they are sometimes skipped.
+        'is_enrolled', 'is_enqueued' and 'priority'. The attributes must always
+        be checked with a default, because they are sometimes skipped.
         """
         groups = [copy.copy(g) for g in groups]
         if student is None:
@@ -272,10 +272,10 @@ class Record(models.Model):
                 continue
             record = by_group[group.id]
             if record.status == RecordStatus.QUEUED:
-                setattr(group, 'enqueued', True)
+                setattr(group, 'is_enqueued', True)
                 setattr(group, 'priority', record.priority)
             elif record.status == RecordStatus.ENROLLED:
-                setattr(group, 'enrolled', True)
+                setattr(group, 'is_enrolled', True)
         return groups
 
     @classmethod
