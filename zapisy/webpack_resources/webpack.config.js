@@ -8,7 +8,6 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV !== "production";
@@ -105,9 +104,6 @@ const PLUGINS = [
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",
   }),
-  new MomentLocalesPlugin({
-    localesToKeep: ["pl"],
-  }),
 ].filter(Boolean);
 
 const WEBPACK_CONFIG = {
@@ -135,6 +131,8 @@ const WEBPACK_CONFIG = {
     alias: {
       vue$: "vue/dist/vue.runtime.esm.js",
       vuex$: "vuex/dist/vuex.esm.js",
+      moment$: "dayjs",
+      lodash$: "lodash-es",
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
     },
   },

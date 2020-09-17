@@ -2930,6 +2930,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.8.36":
+  version: 1.8.36
+  resolution: "dayjs@npm:1.8.36"
+  checksum: 4e3eecfda9337f26e38f4eb0158592b6b8b171ccef6fbe0594e471bc8afda6043a4b61afb0d999b16e682367ed9c355bf162e336d1a56c000add1f3c8ab3897f
+  languageName: node
+  linkType: hard
+
 "de-indent@npm:^1.0.2":
   version: 1.0.2
   resolution: "de-indent@npm:1.0.2"
@@ -4147,17 +4154,16 @@ fsevents@~2.1.2:
     clean-webpack-plugin: ^3.0.0
     cookieconsent: ^3.1.1
     css-loader: ^4.3.0
+    dayjs: ^1.8.36
     file-loader: ^6.1.0
     fork-ts-checker-webpack-plugin: ^5.1.0
     jquery: ^3.5.1
     js-cookie: ^2.2.1
     js-sha256: ^0.9.0
     katex: ^0.12.0
-    lodash: ^4.17.20
+    lodash-es: ^4.17.15
     markdown-it: ^11.0.1
     mini-css-extract-plugin: ^0.11.2
-    moment: ^2.28.0
-    moment-locales-webpack-plugin: ^1.2.0
     pnp-webpack-plugin: ^1.6.4
     popper.js: ^1.16.1
     postcss: ^7.0.32
@@ -4840,14 +4846,14 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"lodash.difference@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.difference@npm:4.5.0"
-  checksum: 7a2c297cf5fb6cf6899825e620cb017694a1891b3b35e11aa7ddc503128222a84d851937c36584a9e690344ccaf84116f137d04fdd8949ee90918edd4637d3b6
+"lodash-es@npm:^4.17.15":
+  version: 4.17.15
+  resolution: "lodash-es@npm:4.17.15"
+  checksum: ee2871b76deefd1754527e659a8c8b688f2e427e67b30709296878e18ad9cb54b4f0fc16a7161298156b4e0ebc2a37dfe501a3ea8725f195763f9de8a7ba6da6
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.19, lodash@npm:^4.17.20":
+"lodash@npm:^4.17.19":
   version: 4.17.20
   resolution: "lodash@npm:4.17.20"
   checksum: c62101d2500c383b5f174a7e9e6fe8098149ddd6e9ccfa85f36d4789446195f5c4afd3cfba433026bcaf3da271256566b04a2bf2618e5a39f6e67f8c12030cb6
@@ -5207,25 +5213,6 @@ fsevents@~2.1.2:
   bin:
     mkdirp: bin/cmd.js
   checksum: 1aa3a6a2d7514f094a91329ec09994f5d32d2955a4985ecbb3d86f2aaeafc4aa11521f98d606144c1d49cd9835004d9a73342709b8c692c92e59eacf37412468
-  languageName: node
-  linkType: hard
-
-"moment-locales-webpack-plugin@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "moment-locales-webpack-plugin@npm:1.2.0"
-  dependencies:
-    lodash.difference: ^4.5.0
-  peerDependencies:
-    moment: ^2.8.0
-    webpack: ^1 || ^2 || ^3 || ^4 || ^5
-  checksum: a1613eaa41f44587378d32ccfa5dbd123545891a679aef1c5bfebe9aa2b3dafbb43ee915b15d7775993ee61c0610b350a1702931db8b11f2becfc1a07f1d80f4
-  languageName: node
-  linkType: hard
-
-"moment@npm:^2.28.0":
-  version: 2.28.0
-  resolution: "moment@npm:2.28.0"
-  checksum: f239dd93cec0560eb75467d987b6117cc074cfbef086c8e0e01aa93f4aff198ee1a3d13166bb01397542dced6b1b608f2bff95b7ded209c46b0593afacb2d916
   languageName: node
   linkType: hard
 

@@ -1,6 +1,8 @@
 <script lang="ts">
 import axios from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/pl";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
@@ -24,10 +26,13 @@ const notifications: ParseFn<Notification> = (x: any) =>
   );
 const notificationsArray = anArrayContaining(notifications);
 
+dayjs.extend(relativeTime);
+dayjs.locale("pl");
+
 @Component({
   filters: {
     Moment: function (str: string) {
-      return moment(str).locale("pl").fromNow();
+      return dayjs(str).fromNow();
     },
   },
 })
