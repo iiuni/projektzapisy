@@ -18,18 +18,18 @@ ipdb==0.11
 prompt-toolkit==3.0.5
 ipython==7.13.0
 pycryptodome==3.8.1
-rollbar==0.13.17
-newrelic==2.68.0.50
-gunicorn==19.7.1
+rollbar~=0.15.0
+newrelic~=5.18.0.148
+gunicorn~=20.0.4
 python-dateutil==2.7.3
 python-memcached==1.58
 xhtml2pdf==0.2.2
 # BBCode -> HTML
 postmarkup==1.2.2
 # PyYAML is used for fixtures.
-pyyaml==5.1
+pyyaml~=5.3
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==1.2.0
+bokeh~=1.2.0
 
 gspread~=3.6.0
 typing-extensions==3.7.4.1
