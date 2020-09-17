@@ -135,4 +135,4 @@ To test deployment on your machine follow the instructions below.
 3. Run these commands in turn in the *infra* directory:
 	- `ansible-playbook playbooks/configure.yml -i hosts/example -T 60 -c paramiko`
 	- `ansible-playbook playbooks/deploy.yml -i hosts/example -T 60 -c paramiko`
-4. Check the `192.168.33.10` address in your web browser.
+4. Check the [192.168.33.10](http://192.168.33.10/) address in your web browser.
