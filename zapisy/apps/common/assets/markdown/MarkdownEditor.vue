@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
+import { faMarkdown } from "@fortawesome/free-brands-svg-icons/faMarkdown";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { debounce, uniqueId } from "lodash";
 import MarkdownIt from "markdown-it";

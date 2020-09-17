@@ -1,11 +1,14 @@
 <script lang="ts">
+import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell";
+import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/pl";
+import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 
 class Notification {
   constructor(
@@ -30,6 +33,9 @@ dayjs.extend(relativeTime);
 dayjs.locale("pl");
 
 @Component({
+  components: {
+    FontAwesomeIcon,
+  },
   filters: {
     Moment: function (str: string) {
       return dayjs(str).fromNow();
@@ -42,6 +48,9 @@ export default class NotificationsComponent extends Vue {
   get n_counter(): number {
     return this.n_list.length;
   }
+
+  farBell = farBell;
+  fasBell = fasBell;
 
   getNotifications() {
     return axios
@@ -98,11 +107,11 @@ export default class NotificationsComponent extends Vue {
         aria-expanded="false"
       >
         <div v-if="n_counter !== 0">
-          <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+          <font-awesome-icon :icon="fasBell" size="lg" />
           <span class="counter-badge">{{ n_counter }}</span>
         </div>
         <div v-else>
-          <font-awesome-icon :icon="['far', 'bell']" size="lg" />
+          <font-awesome-icon :icon="farBell" size="lg" />
         </div>
       </a>
       <div class="dropdown-menu dropdown-menu-right">
