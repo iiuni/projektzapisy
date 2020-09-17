@@ -16,11 +16,6 @@ const ClassroomPickerDefinition = Vue.extend({
       showOccupied: true,
     };
   },
-  // watch: {
-  //   showOccupied: function (newShow: boolean) {
-  //     this.showOccupied = newShow;
-  //   },
-  // },
 });
 
 @Component

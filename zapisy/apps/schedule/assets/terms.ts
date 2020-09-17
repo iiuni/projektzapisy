@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
 
+dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 
 // This interface stores all data needed for proper display of term block
@@ -40,10 +42,10 @@ export function isFree(
 }
 
 export function calculateLength(startTime: string, endTime: string) {
-  let momentStartTime = dayjs(startTime, "HH:mm");
-  let momentEndTime = dayjs(endTime, "HH:mm");
-
-  var duration = dayjs.duration(momentEndTime.diff(momentStartTime)).asHours();
-
+  const momentStartTime = dayjs(startTime, "HH:mm");
+  const momentEndTime = dayjs(endTime, "HH:mm");
+  const duration = dayjs
+    .duration(momentEndTime.diff(momentStartTime))
+    .asHours();
   return String((duration / 14) * 100) + "%";
 }

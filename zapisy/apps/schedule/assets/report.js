@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const roomSelects = document.querySelectorAll("select[name=rooms]");
   roomSelects.forEach((el) => {
-    console.log(el);
     el.classList.add("form-control");
   });
 
