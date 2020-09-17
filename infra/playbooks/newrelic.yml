@@ -1,4 +1,3 @@
- 
 - name: Add New Relic APT Key
   apt_key:
     id: A758B3FBCD43BE8D123A3476BB29EE038ECCE87C
@@ -16,14 +15,14 @@
     src: templates/newrelic-infra.yml.j2
     dest: /etc/newrelic-infra.yml
 
+- name: Install the New Relic Agent
+  apt:
+    pkg: newrelic-infra
+
 - name: Add logs configuration to New Relic.
   template:
     src: templates/newrelic-server-logs.yml.j2
     dest: /etc/newrelic-infra/logging.d/server-logs.yml
-
-- name: Install the New Relic Agent
-  apt:
-    pkg: newrelic-infra
 
 - name: Reload the New Relic Agent as there may be a new configuration
   service:
