@@ -5,11 +5,10 @@ Then sends all collected attachments to Slack or writes onto screen.
 
 """
 
+import collections
 import json
 
 import requests
-
-from .import_schedule import Summary
 
 DAYS_OF_WEEK = {'1': 'monday',
                 '2': 'tuesday',
@@ -18,6 +17,27 @@ DAYS_OF_WEEK = {'1': 'monday',
                 '5': 'friday',
                 '6': 'saturday',
                 '7': 'sunday', }
+
+SlackUpdate = collections.namedtuple('Update', ['name', 'old', 'new'])
+
+
+class Summary:
+    """Holds importing summary.
+
+    Stores information which objects to delete and what to write to Slack and at
+    the end of script.
+    """
+    def __init__(self):
+        self.created_courses = 0
+        self.used_courses = 0
+        self.deleted_courses = []
+        self.updated_terms = []
+        self.created_terms = []
+        self.deleted_terms = []
+        self.used_scheduler_ids = []
+        self.multiple_proposals = []
+        self.maps_added = []
+        self.maps_deleted = []
 
 
 class Slack:
@@ -33,7 +53,7 @@ class Slack:
         }
         self.attachments.append(attachment)
 
-    def prepare_message(self, summary: 'Summary'):
+    def prepare_message(self, summary: Summary):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
                 DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)

@@ -15,8 +15,6 @@ import requests
 
 from apps.enrollment.courses.models.classroom import Classroom
 
-URL_LOGIN = 'http://scheduler.gtch.eu/admin/login/'
-
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
 # e (repetytorium), o (projekt), t (tutoring), m (proseminarium)
@@ -34,7 +32,8 @@ SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 't
 
 
 class SchedulerData:
-    def __init__(self, api_config_url, api_task_url, scheduler_username, scheduler_password):
+    def __init__(self, api_login_url, api_config_url, api_task_url, scheduler_username, scheduler_password):
+        self.api_login_url = api_login_url
         self.api_config_url = api_config_url
         self.api_task_url = api_task_url
         self.scheduler_username = scheduler_username
@@ -95,11 +94,11 @@ class SchedulerData:
         """
         def get_logged_client():
             client = requests.session()
-            client.get(URL_LOGIN)
+            client.get(self.api_login_url)
             cookie = client.cookies['csrftoken']
             login_data = {'username': self.scheduler_username, 'password': self.scheduler_password,
                           'csrfmiddlewaretoken': cookie}
-            client.post(URL_LOGIN, data=login_data)
+            client.post(self.api_login_url, data=login_data)
             return client
 
         def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':

@@ -40,6 +40,7 @@ where `user` is your username and `host` is your hostname on the remote host.
 	- `deploy_version` - name of branch from __projektzapisy__ repository
 	- `deploy_server_name` - name of domain what points on remote machine
 	- `rollbar_token` - *post_server_item* token from Rollbar settings or __none__ value
+	- `newrelic_license_key` - New Relic license key used for the monitoring agent.
 5. To add another server to deployment edit your hosts (*staging*/*production*) like this:
 
 ```
@@ -134,4 +135,4 @@ To test deployment on your machine follow the instructions below.
 3. Run these commands in turn in the *infra* directory:
 	- `ansible-playbook playbooks/configure.yml -i hosts/example -T 60 -c paramiko`
 	- `ansible-playbook playbooks/deploy.yml -i hosts/example -T 60 -c paramiko`
-4. Check the `192.168.33.10` address in your web browser.
+4. Check the [192.168.33.10](http://192.168.33.10/) address in your web browser.

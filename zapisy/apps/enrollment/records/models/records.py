@@ -124,9 +124,6 @@ class Record(models.Model):
         if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
-        for group in groups:
-            if group.extra == 'hidden':
-                ret[group.pk] = False
         return ret
 
     @classmethod

@@ -7,6 +7,7 @@
     APP_DB_NAME: fereol
     PG_VERSION: 12
     PYTHON: "/home/vagrant/env3/bin/python3"
+    ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
     - name: Ensure a locale exists

@@ -200,7 +200,7 @@ class TableReportForm(forms.Form):
         super().__init__(*args, **kwargs)
         classrooms = Classroom.objects.filter(can_reserve=True)
         by_floor = defaultdict(list)
-        floor_names = dict(Floors)
+        floor_names = dict(Floors.choices)
         for r in classrooms:
             by_floor[floor_names[r.floor]].append((r.pk, r.number))
         self.fields['rooms'].choices = by_floor.items()
@@ -216,7 +216,7 @@ class DoorChartForm(forms.Form):
         super().__init__(*args, **kwargs)
         classrooms = Classroom.objects.filter(can_reserve=True)
         by_floor = defaultdict(list)
-        floor_names = dict(Floors)
+        floor_names = dict(Floors.choices)
         for r in classrooms:
             by_floor[floor_names[r.floor]].append((r.pk, r.number))
         self.fields['rooms'].choices = by_floor.items()

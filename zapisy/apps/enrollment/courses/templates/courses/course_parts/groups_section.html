@@ -39,9 +39,10 @@
                         {% else %}
                             (nieznany prowadzący)
                         {% endif %}
-                        {% if group.extra %}
-                            <br/><span class="small">{{ group.get_extra_display }}</span>
-                        {% endif %}
+                        <br>
+                        {% for tag, tooltip in group.get_extra_tags %}
+                            <span class="badge badge-secondary" {% if tooltip %}title="{{ tooltip }}"{% endif %}>{{ tag }}</span>
+                        {% endfor %}
                     </td>
                     <td>
                         {% for term in group.term.all %}

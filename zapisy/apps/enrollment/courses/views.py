@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
@@ -17,7 +17,7 @@ from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
 
 
-def prepare_courses_list_data(semester: Semester):
+def prepare_courses_list_data(semester: Optional[Semester]):
     """Returns a dict used by course list and filter in various views."""
     qs = CourseInstance.objects.filter(semester=semester).order_by('name')
     courses = []
@@ -39,10 +39,11 @@ def prepare_courses_list_data(semester: Semester):
 
 def courses_list(request, semester_id: Optional[int] = None):
     """A basic courses view with courses listed on the right and no course selected."""
+    semester: Optional[Semester]
     if semester_id is None:
         semester = Semester.get_upcoming_semester()
     else:
-        semester = Semester.objects.get(pk=semester_id)
+        semester = get_object_or_404(Semester, pk=semester_id)
     data = prepare_courses_list_data(semester)
     return render(
         request, 'courses/courses.html', data)
@@ -53,18 +54,18 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     If course does not exist it returns two None objects.
     """
-    course: CourseInstance = None
+    course: CourseInstance
     try:
         course = CourseInstance.objects.filter(slug=slug).select_related(
             'semester', 'course_type').prefetch_related('tags', 'effects').get()
     except CourseInstance.DoesNotExist:
         return None, None
 
-    student: Student = None
+    student: Optional[Student] = None
     if request.user.is_authenticated and request.user.student:
         student = request.user.student
 
-    groups = course.groups.exclude(extra='hidden').select_related(
+    groups = course.groups.select_related(
         'teacher',
         'teacher__user',
     ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
@@ -125,7 +126,7 @@ def group_view(request, group_id):
 
     Presents list of all students enrolled and enqueued to group.
     """
-    group: Group = None
+    group: Group
     try:
         group = Group.objects.select_related(
             'course', 'course__semester', 'teacher', 'teacher__user'
