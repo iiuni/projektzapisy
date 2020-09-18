@@ -510,27 +510,33 @@ class Record(models.Model):
             group_id: Must be an id of a auto-enrollment group.
         """
         other_groups = Group.objects.filter(course__groups=group_id, auto_enrollment=False)
-        people_enrolled = set(
-            cls.objects.filter(group__in=other_groups, status=RecordStatus.ENROLLED).values_list(
-                'student_id', flat=True).distinct())
-        people_enqueued = set(
-            cls.objects.filter(group__in=other_groups, status=RecordStatus.QUEUED).values_list(
-                'student_id', flat=True).distinct())
-        people_recorded_in_group = set(
-            cls.objects.filter(group=group_id).exclude(status=RecordStatus.REMOVED).values_list(
-                'student_id', flat=True).distinct())
+
+        def get_all_students(**kwargs):
+            qs = cls.objects.filter(**kwargs)
+            return set(qs.values_list('student_id', flat=True).distinct())
+
+        enrolled_other = get_all_students(group__in=other_groups, status=RecordStatus.ENROLLED)
+        queued_other = get_all_students(group__in=other_groups, status=RecordStatus.QUEUED)
+        enrolled_in_group = get_all_students(group=group_id, status=RecordStatus.ENROLLED)
+        queued_in_group = get_all_students(group=group_id, status=RecordStatus.QUEUED)
         # First we enqueue people who are in some groups but are completely absent in our group.
+        missing_students = (enrolled_other | queued_other) - (enrolled_in_group | queued_in_group)
         cls.objects.bulk_create([
             Record(student_id=s, group_id=group_id, status=RecordStatus.QUEUED)
-            for s in ((people_enrolled | people_enqueued) - people_recorded_in_group)
+            for s in missing_students
         ])
-        # We change the status from enrolled to enqueued for those, who should be enrolled.
-        cls.objects.filter(group_id=group_id,
+        # We change the status from queued to enrolled for those, who should be enrolled.
+        cls.objects.filter(group=group_id,
                            status=RecordStatus.QUEUED,
-                           student_id__in=people_enrolled).update(status=RecordStatus.ENROLLED)
+                           student_id__in=enrolled_other).update(status=RecordStatus.ENROLLED)
+        # We change the status from enrolled to queued for those who should be queued.
+        cls.objects.filter(
+            group=group_id,
+            status=RecordStatus.ENROLLED,
+            student_id__in=(queued_other - enrolled_other)).update(status=RecordStatus.QUEUED)
         # Drop records of people not in the group.
         cls.objects.filter(group_id=group_id).exclude(status=RecordStatus.REMOVED).exclude(
-            student_id__in=(people_enrolled | people_enqueued)).update(status=RecordStatus.REMOVED)
+            student_id__in=(enrolled_other | queued_other)).update(status=RecordStatus.REMOVED)
 
     def enroll_or_remove(self, group: Group) -> List[int]:
         """Tries to change a single QUEUED record status to ENROLLED.
