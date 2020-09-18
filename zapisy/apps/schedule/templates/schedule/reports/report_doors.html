@@ -47,7 +47,7 @@
                 {% elif beg_date and end_date %}
                 <h3 class="display-3">{{ beg_date|date:"j E Y" }} &mdash; {{ end_date|date:"j E Y" }}</h3>
                 {% endif %}
-                <img src="{% static 'images/logo-uwr.svg' %}" class="logo" alt="uwrlogo">
+                <img src="{% static 'common/images/logo-uwr.svg' %}" class="logo" alt="uwrlogo">
             </header>
             <section data-editable data-name="report-page-{{ room }}" class="room-terms">
                 {% for term in terms %}
