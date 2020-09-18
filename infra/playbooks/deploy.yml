@@ -92,8 +92,9 @@
     - name: Install dependencies based on package.json
       become: yes
       become_user: "{{ deploy_user }}"
-      yarn:
-        path: "{{ deploy_helper.new_release_path }}/zapisy/"
+      command: yarn install --immutable
+      args:
+        chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
 
     - name: Build project
       become: yes
