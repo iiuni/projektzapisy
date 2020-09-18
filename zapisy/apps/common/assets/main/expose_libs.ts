@@ -1,5 +1,5 @@
-import * as $ from "jquery";
-import * as Popper from "popper.js";
+import $ from "jquery";
+import Popper from "popper.js";
 
 (window as any).$ = $;
 (window as any).jQuery = $;

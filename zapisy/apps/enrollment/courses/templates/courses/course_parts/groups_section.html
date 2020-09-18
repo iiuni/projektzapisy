@@ -49,7 +49,12 @@
                             <span>{{ term }}</span>
                         {% endfor %}
                     </td>
-                    <td>
+                    <td
+                        {% if group.auto_enrollment %}
+                        class="text-muted"
+                        title="W grupach z automatycznym zapisem limit nie ma wpływu na logikę zapisów."
+                        {% endif %}
+                    >
                         {{ group.limit }}
                         {% for gs in group.guaranteed_spots.all %}
                             + 
