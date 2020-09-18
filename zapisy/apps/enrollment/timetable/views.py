@@ -31,7 +31,7 @@ def build_group_list(groups: List[Group]):
     group_dicts = []
     group: Group
     for group in groups:
-        group_dict = model_to_dict(group, fields=['id', 'limit', 'extra', 'joint'])
+        group_dict = model_to_dict(group, fields=['id', 'limit', 'extra', 'auto_enrollment'])
         term_dicts = []
         for term in group.term.all():
             term_dict = model_to_dict(term, fields=['dayOfWeek', 'start_time', 'end_time'])

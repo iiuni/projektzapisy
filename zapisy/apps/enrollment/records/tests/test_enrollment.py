@@ -73,7 +73,7 @@ class EnrollmentTest(TestCase):
         """Tests automatic adding into the corresponding lecture group.
 
         Bolek will just enqueue into the exercises group. He should also be
-        enrolled into the lecture, since it is a joint group.
+        enrolled into the lecture, since it is an auto-enrollment group.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
@@ -93,7 +93,7 @@ class EnrollmentTest(TestCase):
 
         He first should be automatically pulled into the lecture group. Then he
         will unenroll from the group and he should be removed from the lecture
-        group as well, as the lecture group is a joint group.
+        group as well, as the lecture group is a auto-enrollment group.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
@@ -109,7 +109,7 @@ class EnrollmentTest(TestCase):
                 status=RecordStatus.ENROLLED).exists())
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 2, 12)):
-            # One cannot leave the joint group.
+            # One cannot leave the auto-enrollment group.
             self.assertFalse(Record.remove_from_group(self.bolek, self.cooking_lecture_group))
             # One cannot leave the group he is not in.
             self.assertFalse(Record.remove_from_group(self.bolek, self.cooking_exercise_group_2))
@@ -125,8 +125,8 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
 
-    def test_join_group_queue(self):
-        """Tests that joint queue state reflects that of a course."""
+    def test_auto_enrollment_group_queue(self):
+        """Tests that auto-enrollment queue state reflects that of a course."""
         # Bolek enrolls into one cooking exercise group. Lolek into the other.
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))

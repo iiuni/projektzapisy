@@ -50,8 +50,8 @@ class Group(models.Model):
         on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=GroupType.choices, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
-    joint = models.BooleanField(
-        "grupa-suma zbiorów",
+    auto_enrollment = models.BooleanField(
+        "grupa z auto-zapisem",
         default=False,
         help_text=(
             "Blokuje zapisywanie do grupy. Zamiast tego, studenci są do niej automatycznie "

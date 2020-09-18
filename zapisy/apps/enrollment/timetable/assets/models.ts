@@ -121,7 +121,7 @@ export interface GroupJSON {
   num_enrolled: number;
   limit: number;
   extra: string;
-  joint: boolean;
+  auto_enrollment: boolean;
   type: string;
   course: Course;
   teacher: Teacher;
@@ -143,7 +143,7 @@ export class Group {
   public numEnrolled: number;
   public limit: number;
   public extra: string;
-  public joint: boolean;
+  public autoEnrollment: boolean;
   public type: string;
   public course: Course;
   public teacher: Teacher;
@@ -166,7 +166,7 @@ export class Group {
     this.numEnrolled = json.num_enrolled;
     this.limit = json.limit;
     this.extra = json.extra;
-    this.joint = json.joint;
+    this.autoEnrollment = json.auto_enrollment;
     this.type = json.type;
     this.course = json.course;
     this.teacher = json.teacher;

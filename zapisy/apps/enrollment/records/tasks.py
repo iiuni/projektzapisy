@@ -23,14 +23,14 @@ def pull_from_queue(group_id: int):
 
 
 @job
-def update_joint_groups(group_id: int):
-    """Updates all joint groups that must reflect the given group's state.
+def update_auto_enrollment_groups(group_id: int):
+    """Updates all auto-enrollment groups that must reflect the given group's state.
 
     All groups with automatic enrollment in the same course as given group must
     have a state of enrollment reflecting the overall state of the course.
     """
-    for group in Group.objects.filter(course__groups=group_id, joint=True):
-        Record.update_records_in_joint_group(group.id)
+    for group in Group.objects.filter(course__groups=group_id, auto_enrollment=True):
+        Record.update_records_in_auto_enrollment_group(group.id)
 
 
 @receiver(GROUP_CHANGE_SIGNAL)
@@ -42,10 +42,10 @@ def pull_from_queue_signal_receiver(sender, **kwargs):
     group_id = kwargs.get('group_id')
     if not settings.RUN_ASYNC:
         pull_from_queue(group_id)
-        update_joint_groups(group_id)
+        update_auto_enrollment_groups(group_id)
     else:
         pull_from_queue.delay(group_id)
-        update_joint_groups.delay(group_id)
+        update_auto_enrollment_groups.delay(group_id)
 
 
 @receiver(post_save, sender=Group)

@@ -111,8 +111,8 @@ export default class TermControlsComponent extends TermControlsProps {
           @click="dequeue()"
         ></span>
         <span
-          v-if="term.group.joint"
-          class="joint"
+          v-if="term.group.autoEnrollment"
+          class="auto-enrollment"
           title="Grupa synchronizowana."
         >
           <font-awesome-icon
@@ -176,7 +176,7 @@ span.enqueue {
 span.dequeue {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4ggOEhs2PtkFxgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAE5SURBVCjPfZCxSlxhEIW/M/Pf+7uSXddFcEkTSBXClmks7ISgpLBIKSwoAYsEwSLkPdJISJmUpgo+QbBIIalELANuG1ACbvTeSeEim0v0lMOcM+cbACEt49oFetwjd9zBHGyN0AbSQ7ATiPP/7A8knju4QC0sCfkqUT8pLUZVMALAmMXyOlFvRehoYu4WUCyitInSN+FfMZag3QHbQX6A0gqAmjWhHKB4d8MTv7DoQvpANf5yD14aoPwDpUNUvmkkNvRgdp4r3kPVIVSjeIYYQZzeIE1L1uf39UeoH6PYAxuCHYO/xHO/0b7s4nkPyz9R8fZ2PjM/h4rPeH5Fe2HCnHG8tY21zlCxD7nzT5iVT5Hvg/oJgDE9uHoBdgl8QtUFMWWo/xyDf8fj0eRCO6M0BL0G2nd8LpGwv420RBxssgl5AAAAAElFTkSuQmCC);
 }
-span.joint {
+span.auto-enrollment {
   font-size: 12px;
 }
 </style>

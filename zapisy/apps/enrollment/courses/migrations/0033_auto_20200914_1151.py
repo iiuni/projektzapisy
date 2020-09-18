@@ -12,12 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='group',
-            name='joint',
-            field=models.BooleanField(default=False, help_text='Blokuje zapisywanie do grupy. Zamiast tego, studenci są do niej automatycznie zapisani jeśli zapiszą się\xa0do jakiejkolwiek innej grupy z tego przedmiotu. Nie należy blokować\xa0wszystkich grup z przedmiotu ani grup, gdzie studenci powinni mieć wybór (np. jest kilka równoległych grup ćwiczeniowych).', verbose_name='grupa-suma zbiorów'),
-        ),
-        migrations.AlterField(
-            model_name='group',
-            name='extra',
-            field=models.CharField(blank=True, default='', help_text="Można wpisywać tagi oddzielone przecinkami. Zostaną one wyświetlone na stronie przedmiotu. Nie ma żadnych dozwolonych tagów, ale dla wybranych tagów zostanie dodany tooltip z wyjaśnieniem: {'Q1': 'pierwsze 7 tygodni', 'Q2': 'drugie 7 tygodni', 'zaaw': 'grupa zaawansowana', 'mat': 'zajęcia na matematyce', 'english': 'grupa anglojęzyczna', 'zdalna': 'zajęcia prowadzone zdalnie'}", max_length=255, verbose_name='dodatkowe informacje'),
+            name='auto_enrollment',
+            field=models.BooleanField(default=False, help_text='Blokuje zapisywanie do grupy. Zamiast tego, studenci są do niej automatycznie zapisani jeśli zapiszą się\xa0do jakiejkolwiek innej grupy z tego przedmiotu. Nie należy blokować\xa0wszystkich grup z przedmiotu ani grup, gdzie studenci powinni mieć wybór (np. jest kilka równoległych grup ćwiczeniowych).', verbose_name='grupa z auto-zapisem'),
         ),
     ]

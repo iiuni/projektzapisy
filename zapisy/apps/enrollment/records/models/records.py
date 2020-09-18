@@ -122,7 +122,7 @@ class Record(models.Model):
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         for group in groups:
-            if group.joint:
+            if group.auto_enrollment:
                 ret[group.id] = False
         return ret
 
@@ -201,7 +201,7 @@ class Record(models.Model):
         ret = {}
         groups = Record.is_recorded_in_groups(student, groups)
         for group in groups:
-            if group.joint:
+            if group.auto_enrollment:
                 ret[group.id] = False
             elif group.course.records_end is not None:
                 ret[group.id] = time <= group.course.records_end
@@ -497,18 +497,19 @@ class Record(models.Model):
                     raise
 
     @classmethod
-    def update_records_in_joint_group(cls, group_id: int):
-        """Automatically enrolls, enqueues and removes students in a joint group.
+    def update_records_in_auto_enrollment_group(cls, group_id: int):
+        """Automatically syncs students in an auto-enrollment group.
 
-        Joint groups must always reflect the state of other groups in the
-        course: people enrolled to some other group must also be enrolled in the
-        joint group. People enqueued in other groups (but not enrolled in any)
-        will be enqueued in the joint group. Everyone else must be out.
+        Auto-enrollment groups must always reflect the state of other groups in
+        the course: people enrolled to some other group must also be enrolled in
+        the auto-enrollment group. People enqueued in other groups (but not
+        enrolled in any) will be enqueued in the auto-enrollment group. Everyone
+        else must be out.
 
         Args:
-            group_id: Must be an id of a joint group.
+            group_id: Must be an id of a auto-enrollment group.
         """
-        other_groups = Group.objects.filter(course__groups=group_id, joint=False)
+        other_groups = Group.objects.filter(course__groups=group_id, auto_enrollment=False)
         people_enrolled = set(
             cls.objects.filter(group__in=other_groups, status=RecordStatus.ENROLLED).values_list(
                 'student_id', flat=True).distinct())
