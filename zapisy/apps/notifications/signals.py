@@ -93,16 +93,16 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
 @receiver(teacher_changed, sender=Group)
 def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     group = kwargs['instance']
+    if group.teacher is None:
+        return
+    teacher = group.teacher.user
+    course_name = group.course.name
+    target = reverse(course_view, args=[group.course.slug])
 
-    if group.teacher is not None:
-        teacher = group.teacher.user
-        course_name = group.course.name
-        target = reverse(course_view, args=[group.course.slug])
-
-        notify_user(
-            teacher,
-            Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                         {'course_name': course_name}, target))
+    notify_user(
+        teacher,
+        Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
+                     {'course_name': course_name}, target))
 
     queued_users = User.objects.filter(
         student__record__group=group, student__record__status=RecordStatus.QUEUED)
