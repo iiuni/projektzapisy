@@ -73,9 +73,7 @@ class CanEnroll(Enum):
     OTHER = "Błąd programistyczny"
 
     def __bool__(self):
-        if self == self.OK:
-            return True
-        return False
+        return self == self.OK
 
 
 class Record(models.Model):
