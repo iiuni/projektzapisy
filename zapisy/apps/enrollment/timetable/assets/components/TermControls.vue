@@ -6,7 +6,7 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faUsersCog } from "@fortawesome/free-solid-svg-icons/faUsersCog";
+import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
 
 import { Term, Group } from "../models";
 
@@ -24,7 +24,7 @@ const TermControlsProps = Vue.extend({
 })
 export default class TermControlsComponent extends TermControlsProps {
   controlsVisible: boolean = false;
-  faUsersCog = faUsersCog;
+  faCarSide = faCarSide;
 
   get group(): Group {
     return this.term.group;
@@ -112,12 +112,9 @@ export default class TermControlsComponent extends TermControlsProps {
         <span
           v-if="term.group.autoEnrollment"
           class="auto-enrollment"
-          title="Grupa synchronizowana."
+          title="Grupa z auto-zapisem."
         >
-          <font-awesome-icon
-            icon="users-cog"
-            transform="shrink-2 left-1 up-1"
-          />
+          <font-awesome-icon icon="car-side" transform="shrink-3 left-2" />
         </span>
       </div>
     </transition>

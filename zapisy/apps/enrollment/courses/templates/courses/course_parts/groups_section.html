@@ -52,7 +52,7 @@
                     <td
                         {% if group.auto_enrollment %}
                         class="text-muted"
-                        title="W grupach z automatycznym zapisem limit nie ma wpływu na logikę zapisów."
+                        title="W grupach z auto-zapisem limit nie ma wpływu na logikę zapisów."
                         {% endif %}
                     >
                         {{ group.limit }}
@@ -90,11 +90,14 @@
                             {% elif group.auto_enrollment %}
                             <div class="d-inline-block"
                                  data-toggle="popover" data-trigger="hover" tabindex="0"
-                                 data-content="Stan tej grupy jest automatycznie synchronizowany z innymi 
-                                               grupami tego przedmiotu. Zapisz się do innych grup, a 
-                                               automatycznie się w niej znajdziesz.">
-                                <button class="btn btn-light btn-sm" style="pointer-events: none;" disabled>
-                                    <i class="fa fa-users-cog"></i>
+                            data-content="Grupa z auto-zapisem. Stan tej grupy
+                                          jest automatycznie synchronizowany z innymi grupami
+                                          tego przedmiotu. Zapisz się do innych grup, a
+                                          automatycznie się w niej znajdziesz.">
+                                <button 
+                                    class="btn btn-{% if group.is_enrolled %}danger{% else %}success{% endif %} btn-sm" 
+                                    style="pointer-events: none;" disabled>
+                                    <i class="fa fa-car-side"></i>
                                 </button>
                                 </div>
                             {% endif %}

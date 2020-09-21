@@ -21,8 +21,8 @@ library.add(faPlus);
 import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 library.add(faMinus);
 
-import { faUsersCog } from "@fortawesome/free-solid-svg-icons/faUsersCog";
-library.add(faUsersCog);
+import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
+library.add(faCarSide);
 
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();
