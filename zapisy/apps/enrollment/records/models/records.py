@@ -359,6 +359,14 @@ class Record(models.Model):
         The function triggers further actions, so the student will be pulled
         into the group as soon as there is vacancy and he is first in line.
 
+        Concurrency:
+            This function may lead to a race when run concurrently. The race
+            will result in a student enqueued multiple times in the same group.
+            This could be prevented with database locking, but was considered
+            not harmful enough: the student will only be pulled into the group
+            once. Upon second pulling his first ENROLLED record is going to be
+            removed.
+
         Returns:
             bool: Whether the student could be enqueued. Will return True if the
             student had already been enqueued in the group.
@@ -366,11 +374,10 @@ class Record(models.Model):
         cur_time = datetime.now()
         if not cls.can_enqueue(student, group, cur_time):
             return False
-        with transaction.atomic():
-            if cls.is_recorded(student, group):
-                return True
-            Record.objects.create(
-                group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
+        if cls.is_recorded(student, group):
+            return True
+        Record.objects.create(
+            group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
         LOGGER.info('User %s is enqueued into group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
         return True
@@ -385,19 +392,19 @@ class Record(models.Model):
         The function triggers further actions, so another student will be pulled
         into the group as there is a vacancy caused by the student's departure.
 
-        Returns: bool: Whether the removal was successfull.
+        Returns:
+            bool: Whether the removal was successfull.
         """
         record = None
         if not cls.can_dequeue(student, group):
             return False
-        with transaction.atomic():
-            try:
-                record = Record.objects.filter(
-                    student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
-            except cls.DoesNotExist:
-                return False
-            record.status = RecordStatus.REMOVED
-            record.save()
+        try:
+            record = Record.objects.filter(
+                student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
+        except cls.DoesNotExist:
+            return False
+        record.status = RecordStatus.REMOVED
+        record.save()
         LOGGER.info('User %s removed from group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=record.group_id)
         return True
