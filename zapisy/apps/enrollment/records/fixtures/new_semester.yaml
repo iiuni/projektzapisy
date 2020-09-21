@@ -164,7 +164,6 @@
     course: 3
     type: "1" # Lecture
     limit: 3
-    auto_enrollment: True
 - model: courses.Group
   pk: 32
   fields:

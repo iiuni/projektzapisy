@@ -72,9 +72,8 @@ class EnrollmentTest(TestCase):
     def test_bolek_comes_before_lolek(self):
         """Tests that the group limits are respected.
 
-        Bolek will be first to enroll into the groups. Lolek will remain in
-        the queue of the exercise group, yet he will fit in the lecture
-        group.
+        Bolek will be first to enroll into the groups. Lolek will remain in the
+        queue of the exercise group.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
@@ -86,7 +85,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek,
                 group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
-        self.assertTrue(
+        self.assertFalse(
             Record.objects.filter(
                 student=self.bolek, group=self.cooking_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
@@ -95,17 +94,9 @@ class EnrollmentTest(TestCase):
                 student=self.lolek,
                 group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
-        self.assertFalse(
-            Record.objects.filter(
-                student=self.lolek, group=self.cooking_lecture_group,
-                status=RecordStatus.ENROLLED).exists())
         self.assertTrue(
             Record.objects.filter(
                 student=self.lolek, group=self.cooking_exercise_group_1,
-                status=RecordStatus.QUEUED).exists())
-        self.assertTrue(
-            Record.objects.filter(
-                student=self.lolek, group=self.cooking_lecture_group,
                 status=RecordStatus.QUEUED).exists())
 
     def test_student_autoremoved_from_group(self):
@@ -167,7 +158,7 @@ class EnrollmentTest(TestCase):
             self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
         self.assertTrue(
             Record.objects.filter(
-                student=self.bolek, group=self.cooking_lecture_group,
+                student=self.bolek, group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
         self.assertEqual(
             Record.student_points_in_semester(self.bolek, self.semester), 35)
@@ -178,7 +169,7 @@ class EnrollmentTest(TestCase):
         # His enrollment with "Gotowanie" should still exist.
         self.assertTrue(
             Record.objects.filter(
-                student=self.bolek, group=self.cooking_lecture_group,
+                student=self.bolek, group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
         # His record with "Szydełkowanie" should be removed.
         self.assertFalse(
@@ -276,7 +267,6 @@ class EnrollmentTest(TestCase):
 
             expected_waiting = {
                 self.cooking_exercise_group_1.course_id: {
-                    self.cooking_lecture_group.type: 1,
                     self.cooking_exercise_group_1.type: 1,
                 }
             }
