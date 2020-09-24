@@ -51,7 +51,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from apps.enrollment.courses.models import CourseInstance
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
 from apps.schedulersync.models import TermSyncData
@@ -142,7 +142,7 @@ class Command(BaseCommand):
                 self.summary.updated_terms.append((term, diffs))
         except TermSyncData.DoesNotExist:
             # The lecture always has a single group but possibly many terms.
-            if term_data.type == 1:
+            if term_data.type == GroupType.LECTURE:
                 group, _ = Group.objects.get_or_create(course=term_data.course, teacher=term_data.teacher,
                                                        type=term_data.type, limit=term_data.limit)
             else:
