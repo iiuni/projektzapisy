@@ -15,4 +15,5 @@ ansible_ssh_private_key_file=
 deploy_user=zapisy
 deploy_version=master
 deploy_server_name=zapisy.ii.uni.wroc.pl
-rollbar_token=none
+rollbar_token=
+newrelic_license_key=
