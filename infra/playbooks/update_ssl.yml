@@ -22,14 +22,6 @@
         mode: 0644
       become: yes
 
-    - name: Deploy new DH parameters
-      copy:
-        src: ssl/dhparam.pem
-        dest: /etc/nginx/dhparam.pem
-        force: yes
-        mode: 0644
-      become: yes
-
     - name: Restart nginx service
       service:
         name: nginx
