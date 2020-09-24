@@ -1,4 +1,9 @@
 venv*/
+infra/hosts/*.conf
+infra/playbooks/*.env
+infra/playbooks/*.7z
+infra/playbooks/ssl/*.crt
+infra/playbooks/ssl/*.key
 *.pyc
 *.swp
 .project
