@@ -143,8 +143,12 @@ class Command(BaseCommand):
         except TermSyncData.DoesNotExist:
             # The lecture always has a single group but possibly many terms.
             if term_data.type == GroupType.LECTURE:
-                group, _ = Group.objects.get_or_create(course=term_data.course, teacher=term_data.teacher,
-                                                       type=term_data.type, limit=term_data.limit)
+                group, _ = Group.objects.get_or_create(course=term_data.course,
+                                                       type=term_data.type,
+                                                       defaults={
+                                                           'teacher': term_data.teacher,
+                                                           'limit': term_data.limit,
+                                                       })
             else:
                 group = Group.objects.create(course=term_data.course, teacher=term_data.teacher,
                                              type=term_data.type, limit=term_data.limit)
