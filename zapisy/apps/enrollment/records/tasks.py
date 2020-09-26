@@ -74,5 +74,7 @@ def group_save_signal_receiver(sender, instance, created, raw, using, **kwargs):
         return
     if not settings.RUN_ASYNC:
         pull_from_queue(group_id)
+        update_auto_enrollment_groups(group_id)
     else:
         pull_from_queue.delay(group_id)
+        update_auto_enrollment_groups.delay(group_id)
