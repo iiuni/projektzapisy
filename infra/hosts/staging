@@ -1,19 +1,15 @@
-[deploy:children]
+[deploy]
+server1
+
+[vault]
 server1
 
 [deploy:vars]
-deploy_env=staging
-
-[server1]
-webserver1
-
-[server1:vars]
 ansible_host=zapisy-staging.ii.uni.wroc.pl
 ansible_port=22
 ansible_user=
 ansible_ssh_private_key_file=
+deploy_env=staging
 deploy_user=zapisy
 deploy_version=master-dev
 deploy_server_name=zapisy-staging.ii.uni.wroc.pl
-rollbar_token=
-newrelic_license_key=

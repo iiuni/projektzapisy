@@ -1,0 +1,47 @@
+---
+# All variables that need to be set to get Zapisy running.
+#
+# This file only lists the variables, the values are sensitive data. They are
+# specified in an encrypted file.
+
+## Monitoring and error reporting
+#
+# Rollbar collects all errors from the servers. It is also informed of every
+# deployment.
+rollbar_token: placeholder
+# New Relic monitors our servers, applications and collects logs from the
+# machines.
+newrelic_license_key: placeholder
+
+## Backups
+#
+# Password used to secure the database dumps.
+database_dump_password: placeholder
+# Dropbox token is used to put our database dumps into cloud.
+dropbox_oauth2_token: placeholder
+# Backups (both successful and unsuccessful) are reported to Slack.
+backups_slack_token: placeholder
+
+## Fetching Schedule from Scheduler
+#
+# Credentials used to login to the Scheduler.
+scheduler_username: placeholder
+scheduler_password: placeholder
+# The import_schedule command reports to Slack.
+schedulersync_slack_webhook_url: placeholder
+
+## Assignments app
+## This app uses Google Spreadsheets API.
+#
+# Tokens used to connect to Google Drive API. See also:
+# https://github.com/iiuni/projektzapisy/wiki/Ustawianie-arkuszy-dla-funkcjonalności-tworzenia-propozycji-planu.
+gdrive_service_type: placeholder
+gdrive_project_id: placeholder
+gdrive_private_key_id: placeholder
+gdrive_private_key: placeholder
+gdrive_client_email: placeholder
+gdrive_client_id: placeholder
+gdrive_client_cert_url: placeholder
+# Spreadsheets where the data is exported to and read from.
+voting_results_spreadsheet_id: placeholder
+class_assignment_spreadsheet_id: placeholder
