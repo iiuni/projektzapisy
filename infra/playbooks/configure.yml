@@ -199,11 +199,23 @@
         size: 2048
 
     # Configure Postfix
-    - name: Configure nginx service
-      lineinfile:
-        path: /etc/postfix/main.cf
-        regexp: "inet_interfaces"
-        line: "inet_interfaces = loopback-only"
+    - name: Configure Postfix service
+      template:
+        src: templates/main.cf.j2
+        dest: /etc/postfix/main.cf
+      become: yes
+    
+
+    - name: Reload Postfix services
+      systemd:
+        name: postfix
+        state: restarted
+      become: yes
+    
+    - name: Reload Postfix worker
+      systemd:
+        name: postfix@-
+        state: restarted
       become: yes
 
     # Configure other services

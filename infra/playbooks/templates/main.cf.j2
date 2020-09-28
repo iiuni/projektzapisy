@@ -1,0 +1,13 @@
+myhostname = {{ ansible_host }}
+
+biff = no
+compatibility_level = 2
+
+smtp_tls_security_level = encrypt
+smtp_tls_CApath = /etc/ssl/certs
+
+# We are using GSuite SMTP Relay to make our emails more credible.
+# https://support.google.com/a/answer/2956491
+relayhost = [smtp-relay.gmail.com]:587
+
+inet_interfaces = loopback-only
