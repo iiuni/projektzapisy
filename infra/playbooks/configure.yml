@@ -164,11 +164,11 @@
         - {file: "zapisy.conf", path: "sites-available"}
         - {file: "ssl-signed.conf", path: "snippets"}
 
-    - name: Create ssl directory
-      file:
-        path: /etc/nginx/ssl
-        state: directory
-      become: yes
+    # Generate a self-signed certificate if none exists
+    - task: Check if certificate exists
+      stat:
+        path: /etc/ssl/private/{{ deploy_server_name }}.key
+      register: ssl_key
 
     - name: Generate an OpenSSL private key
       become: yes
@@ -176,6 +176,7 @@
         path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         group: ssl-cert
         mode: 0640
+      when: not ssl_key.stat.exists
 
     - name: Generate an OpenSSL CSR
       become: yes
@@ -183,6 +184,7 @@
         path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
         privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         common_name: "{{ deploy_server_name }}"
+      when: not ssl_key.stat.exists
 
     - name: Generate a Self Signed OpenSSL certificate
       become: yes
@@ -191,6 +193,7 @@
         privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         csr_path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
         provider: selfsigned
+      when: not ssl_key.stat.exists
 
     - name: Generate Diffie-Hellman parameters
       become: yes
