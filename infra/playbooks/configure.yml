@@ -5,7 +5,6 @@
     APP_DB_USER: fereol
     APP_DB_NAME: fereol
     ansible_python_interpreter: "/usr/bin/python3"
-    pwd_alias: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
 
   tasks:
 
@@ -60,17 +59,21 @@
         group: "{{ deploy_user }}"
         create_home: yes
 
-    # Generate passwords and edit .env file
-    - name: Generate password
+    - name: Generate Postgres password
       set_fact:
-        APP_DB_PASS: "{{ pwd_alias }}"
+        APP_DB_PASS: "{{ pwd_alias: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}" }}"
+      no_log: True
+
+    - name: Generate Django Secret key
+      set_fact:
+        DJANGO_SECRET_KEY: "{{ lookup('password', '/dev/null length=50 chars=printable') }}"
       no_log: True
 
     - name: Copy .env file to deploy_user's home and edit
       become: yes
       become_user: "{{ deploy_user }}"
       template:
-        src: .env
+        src: templates/env.j2
         dest: "/home/{{ deploy_user }}/.env"
 
     - name: Copy newrelic.ini to deploy_user's home
