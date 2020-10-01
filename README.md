@@ -7,24 +7,39 @@ zainstalowanego [Vagranta](https://www.vagrantup.com/) oraz Virtualboxa.
 Klonujemy niniejsze repozytorium na nasz komputer i odpalamy z niego polecenie
 `vagrant up`. Na naszym komputerze zostanie skonfigurowana maszyna wirtualna z
 uruchomionym testowym serwerem, który można odwiedzić pod adresem
-[0.0.0.0:8000](http://0.0.0.0:8000). Folder `projektzapisy` na naszym
-komputerze jest współdzielony z maszyną wirtualną (folder `/vagrant`), więc
-serwer łapie na żywo wszystkie zmiany w robione przez nas w kodzie. Więcej
-informacji o maszynie developerskiej można przeczytać [w
+[0.0.0.0:8000](http://0.0.0.0:8000). Folder `projektzapisy` na naszym komputerze
+jest współdzielony z maszyną wirtualną (folder `/vagrant`), więc serwer łapie na
+żywo wszystkie zmiany w robione przez nas w kodzie. Więcej informacji o maszynie
+developerskiej można przeczytać [w
 instrukcji](https://github.com/iiuni/projektzapisy/wiki/Developer's-environment-setup).
 
 Jeżeli zamierzasz zajmować się _frontendem_, warto zapoznać się też z [opisem
 systemu plików
 statycznych](https://github.com/iiuni/projektzapisy/wiki/Pliki-statyczne-w-Systemie-Zapisów).
 
+## Architektura systemu
+
+System Zapisów jest podzielony na moduły (zwane aplikacjami). Każda aplikacja
+definiuje swoje własne typy danych
+([_modele_](https://docs.djangoproject.com/en/3.1/intro/tutorial02/#creating-models)),
+którym odpowiadają automatycznie obsługiwane tabele w bazie danych. Każda
+aplikacja dba o swoje własne ścieżki
+([URL-e](https://docs.djangoproject.com/en/3.1/intro/tutorial01/#write-your-first-view))
+i implementuje funkcje odpowiadające na zapytania HTTP (zwane
+[_widokami_](https://docs.djangoproject.com/en/3.1/intro/tutorial03/#write-views-that-actually-do-something)).
+Powiązania między aplikacjami są realizowane poprzez importowanie kodu z jednego
+modułu do drugiego oraz przez klucze obce w bazie danych. Zwięzły opis
+wszystkich aplikacji w naszym systemie
+[tutaj](https://github.com/iiuni/projektzapisy/wiki/Opis-aplikacji).
+
 ### Zmiany w schemacie bazy danych
 
-System oparty jest na framework'u [Django](https://www.djangoproject.com/).
 Każda zmiana w modelach musi zostać odzwierciedlona w schemacie bazy danych, co
 Django rozwiązuje _migracjami_ — małymi skryptami w Pythonie, które mówią, jak
 ma się zmienić schemat bazy danych. Migracje można automatycznie wygenerować
-poleceniem `python zapisy/manage.py makemigrations`, ale czasem trzeba je
-ręcznie przerobić, jeśli zmiana w modelach wymaga transformacji danych.
+poleceniem `python zapisy/manage.py makemigrations` (w maszynie wirtualnej), ale
+czasem trzeba je ręcznie przerobić, jeśli zmiana w modelach wymaga transformacji
+danych.
 
 ## Maszyna produkcyjna
 
@@ -40,14 +55,14 @@ Lider projektu jest zarazem prowadzącym przedmiot. W naszej pracy używamy
 następujących narzędzi:
 
 - **[Slack](https://projektzapisy.slack.com/)** — nasz główny komunikator.
-- **[Rollbar](https://rollbar.com/IIUniversityofWroclaw/System-Zapisow/)** —
-  tracker błędów pojawiających się na produkcji.
+- **[Rollbar](https://rollbar.com/iiuni/projektzapisy/)** —
+  raportuje o błędach (wyjątkach) pojawiających się na produkcji.
 - **[Travis CI](https://travis-ci.com/iiuni/projektzapisy)** — testowanie kodu.
 - **[New Relic](https://one.newrelic.com/)** — monitorowanie wydajności serwera.
 
 ### Schemat pracy
 
-1. Gdy zaczynamy pracować nad jakimś projektem, tworzymy brancha, który
+1. Gdy zaczynamy pracować nad jakimś zadaniem, tworzymy brancha, który
    odgałęzia się od `master-dev`. W swoim własnym branchu możemy [_przepisywać
    historię_](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History),
    szczególnie jeśli ma nam to pomóc [zaktualizować się w stosunku do
