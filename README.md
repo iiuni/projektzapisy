@@ -70,20 +70,20 @@ następujących narzędzi:
 
 ### Schemat pracy
 
-1. Gdy zaczynamy pracować nad jakimś zadaniem, tworzymy brancha, który
-   odgałęzia się od `master-dev`. W swoim własnym branchu możemy [_przepisywać
+1. Gdy zaczynamy pracować nad jakimś zadaniem, tworzymy gałąź, która odgałęzia
+   się od `master-dev`. W swojej własnej gałęzi możemy [_przepisywać
    historię_](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History),
    szczególnie jeśli ma nam to pomóc [zaktualizować się w stosunku do
    `master-dev`](https://stackoverflow.com/a/29916361).
-2. Po ukończeniu tworzymy Pull Requesta z bazowym branchem `master-dev`.
+2. Po ukończeniu tworzymy Pull Requesta z bazową gałęzią `master-dev`.
    Zaznaczamy lidera projektu do _code-review_. PR musi być ładnie i jasno
    opisany — opis ten może w przyszłości pomóc komuś zrozumieć intencje stojące
    za zmianą w kodzie.
 3. Proces _code-review_, dyskusji i nanoszenia poprawek zazwyczaj składa się z
    więcej niż jednego etapu. Należy na niego zarezerwować z grubsza tyle czasu,
    co na przygotowanie PR-a.
-4. Zaakceptowane Pull Requesty będą merge'owane przez lidera projektu za pomocą
-   `git merge --squash`. Nie musimy się zatem wstydzić commitów w naszym
-   branchu.
+4. Zaakceptowane Pull Requesty będą scalane przez lidera projektu za pomocą `git
+   merge --squash`. Nie musimy się zatem wstydzić rewizji (commitów) w naszej
+   gałęzi.
 5. Co jakiś czas (około dwóch tygodni-miesiąca) robiony jest deploy na
-   produkcję. Branch `master` przechowuje wersję produkcyjną.
+   produkcję. Gałąź `master` przechowuje wersję produkcyjną.
