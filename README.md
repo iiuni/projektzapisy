@@ -1,4 +1,4 @@
-# System Zapisów Instytutu Informatyki Uniwersytetu Wrocławskiego
+# System Zapisów [Instytutu Informatyki UWr](https://ii.uni.wroc.pl/)
 
 ## Rozpoczynanie pracy
 
