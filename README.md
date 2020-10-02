@@ -1,6 +1,14 @@
 # System Zapisów [Instytutu Informatyki UWr](https://ii.uni.wroc.pl/)
 
-## Rozpoczynanie pracy
+System do obsługi _cyklu dydaktycznego_ w Instytucie Informatyki Uniwersystetu
+Wrocławskiego. Za pomocą tego systemu: Nauczyciele tworzą swoje propozycje
+nowych przedmiotów; Studenci kształtują ofertę dydaktyczną poprzez głosowanie na
+te propozycje; Dyrekcja Instytutu przydziela zajęcia prowadzącym; Studenci
+zapisują się na zajęcia; W końcu studenci oceniają swoich nauczycieli w
+anonimowych ankietach. System zarządza też tematami prac dyplomowych i pozwala
+studentom je rezerwować.
+
+## Uruchamianie
 
 Do postawienia _developerskiej_ wersji systemu zapisów musimy mieć
 zainstalowanego [Vagranta](https://www.vagrantup.com/) oraz Virtualboxa.
