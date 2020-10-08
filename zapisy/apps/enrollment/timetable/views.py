@@ -293,7 +293,7 @@ def calendar_export(request):
     """Exports user's timetable for import in Google Calendar."""
     semester = Semester.get_upcoming_semester()
     groups = Group.objects.filter(course__semester=semester).filter(
-        Q(teacher__user=request.user) | Q(record__student__user=request.user))
+        Q(teacher__user=request.user) | Q(record__student__user=request.user), Q(record__status='1'))
     terms = SchTerm.objects.filter(event__group__in=groups).select_related(
         'event__group', 'event__group__course', 'event__group__teacher',
         'event__group__teacher__user', 'room')
