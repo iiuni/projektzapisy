@@ -5,10 +5,16 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons/faThumbtack";
+import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { Term, Group } from "../models";
+
+library.add(faCarSide, faThumbtack, faBan, faPencilAlt);
 
 const TermControlsProps = Vue.extend({
   props: {
@@ -24,7 +30,6 @@ const TermControlsProps = Vue.extend({
 })
 export default class TermControlsComponent extends TermControlsProps {
   controlsVisible: boolean = false;
-  faCarSide = faCarSide;
 
   get group(): Group {
     return this.term.group;
@@ -89,26 +94,34 @@ export default class TermControlsComponent extends TermControlsProps {
           class="unpin"
           title="Odepnij grupę od planu."
           @click="unpin()"
-        ></span>
+        >
+          <font-awesome-icon icon="thumbtack" transform="right-2" rotation="90"/>
+        </span>
         <span
           v-else
           class="pin"
           title="Przypnij grupę do planu."
           @click="pin()"
-        ></span>
+        >
+          <font-awesome-icon icon="thumbtack" transform="right-2"/>
+        </span>
 
         <span
           v-if="canEnqueue"
           class="enqueue"
           title="Zapisz do grupy/kolejki."
           @click="enqueue()"
-        ></span>
+        >
+          <font-awesome-icon icon="pencil-alt" transform="shrink-2" />
+        </span>
         <span
           v-if="canDequeue"
           class="dequeue"
           title="Wypisz z grupy/kolejki."
           @click="dequeue()"
-        ></span>
+        >
+          <font-awesome-icon icon="ban" transform="shrink-2" />
+        </span>
         <span
           v-if="term.group.autoEnrollment"
           class="auto-enrollment"
@@ -148,8 +161,8 @@ export default class TermControlsComponent extends TermControlsProps {
 
 .controls span {
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   margin: 3px;
   overflow: hidden;
   cursor: pointer;
@@ -157,22 +170,23 @@ export default class TermControlsComponent extends TermControlsProps {
 </style>
 
 <style lang="scss">
+$icons-size: 18px;
 span.pin {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAi0lEQVQY032PMQoCUQxEg4iCdgoK2qlvDmLhWfYydl5AbLyXIh9stnKxSSw+f11FTCAE3gzDmP0f9SVNfwA2aji3sqFmbxCq2asicdWDKJoVoY81DRiz1JYg5HJCnkHiTsMT/3KYmbFoHSHPXwlfKxQE+bpKOCiU2DHhwJELtwLmOlF1eo263Xvdyi8RHEhw4FPwSQAAAABJRU5ErkJggg==);
+  font-size: $icons-size;
 }
 
 span.unpin {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAsUlEQVQY02NgQAKqpar/VXwZ0IGKh+p/MMxGFZZVeab6DwTVfqshpFQ5VLer/lf7D5T4rwbEqr4MqlwqhcouauWqEEGgMAiq/mdQCQQKfVb9pQYVhChQaWZQZlddpwbR/g8s+V/1jVos2Hx1NrW1UCGQ9Ck1FYSLWsHO/Kf6V7VLhQ8h7KD6QWWaKlCX6lcVH7iwspLKTuUABgYlNtUtQOPqET6YpqIHYalxqEar8sPEAdj8UUYH1HpBAAAAAElFTkSuQmCC);
+  font-size: $icons-size;
 }
 
 span.enqueue {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAoklEQVQY02XQLw6DMBiH4Q+FKeESS0UPMA+uYqS4Db+r9CrIZWZD04wjVMBI3c9PtWZjkn953SNfAq1KbHVx5o1iiRGYy29GhGMw/ZJTq2SrfT2JcHZLLmXHA5+0v7e22jEP0ow5kj13VoGBCARm1YJLpIhAhHjMpNkyiHB4NtpvGUTdSQz1T3vZWjUziPTAP6J/NC4DmxlE168eXgUOiNdz/lSxl2uEe8+QAAAAAElFTkSuQmCC);
+  font-size: $icons-size;
 }
 
 span.dequeue {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4ggOEhs2PtkFxgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAE5SURBVCjPfZCxSlxhEIW/M/Pf+7uSXddFcEkTSBXClmks7ISgpLBIKSwoAYsEwSLkPdJISJmUpgo+QbBIIalELANuG1ACbvTeSeEim0v0lMOcM+cbACEt49oFetwjd9zBHGyN0AbSQ7ATiPP/7A8knju4QC0sCfkqUT8pLUZVMALAmMXyOlFvRehoYu4WUCyitInSN+FfMZag3QHbQX6A0gqAmjWhHKB4d8MTv7DoQvpANf5yD14aoPwDpUNUvmkkNvRgdp4r3kPVIVSjeIYYQZzeIE1L1uf39UeoH6PYAxuCHYO/xHO/0b7s4nkPyz9R8fZ2PjM/h4rPeH5Fe2HCnHG8tY21zlCxD7nzT5iVT5Hvg/oJgDE9uHoBdgl8QtUFMWWo/xyDf8fj0eRCO6M0BL0G2nd8LpGwv420RBxssgl5AAAAAElFTkSuQmCC);
+  font-size: $icons-size;
 }
 span.auto-enrollment {
-  font-size: 12px;
+  font-size: $icons-size;
 }
 </style>
