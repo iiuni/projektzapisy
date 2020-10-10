@@ -3,7 +3,7 @@ from django.db import models
 
 
 class NotificationPreferencesStudent(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, verbose_name="użytkownik", on_delete=models.CASCADE)
     pulled_from_queue = models.BooleanField(
         "Zapisanie Cię do grupy", default=False)
@@ -25,7 +25,7 @@ class NotificationPreferencesStudent(models.Model):
 
 
 class NotificationPreferencesTeacher(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, verbose_name='użytkownik', on_delete=models.CASCADE)
     assigned_to_new_group_as_teacher = models.BooleanField(
         "Przydzielenie do grupy", default=True)
