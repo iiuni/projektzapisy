@@ -5,7 +5,7 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
 import { faThumbtack } from "@fortawesome/free-solid-svg-icons/faThumbtack";
 import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
@@ -95,11 +95,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Odepnij grupę od planu."
           @click="unpin()"
         >
-          <font-awesome-icon
-            icon="thumbtack"
-            transform="left-1 shrink-3"
-            rotation="90"
-          />
+          <font-awesome-icon icon="thumbtack" transform="right-2" rotation="90"/>
         </span>
         <span
           v-else
@@ -107,7 +103,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Przypnij grupę do planu."
           @click="pin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="right-1 shrink-2" />
+          <font-awesome-icon icon="thumbtack" transform="right-2"/>
         </span>
 
         <span
@@ -171,38 +167,33 @@ export default class TermControlsComponent extends TermControlsProps {
 }
 
 .controls span {
-  padding: 3px;
-  font-size: 20px;
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+  overflow: hidden;
   cursor: pointer;
 }
+</style>
 
-@media (max-width: 992px) {
-  .controls {
-    background: white;
+<style lang="scss">
+$icons-size: 18px;
+span.pin {
+  font-size: $icons-size;
+}
 
-    position: absolute;
-    top: 0;
-    left: 0;
-    max-height: 100%;
-    max-width: 100%;
+span.unpin {
+  font-size: $icons-size;
+}
 
-    display: inline-grid;
-    grid-auto-flow: row;
-    grid-template-rows: repeat(auto-fit, 33px);
+span.enqueue {
+  font-size: $icons-size;
+}
 
-    cursor: default;
-    border: 1px solid #666666;
-    border-top: 0;
-    border-left: 0;
-    border-radius: 4px 0;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-    z-index: 30;
-  }
-
-  .controls span {
-    padding: 3px;
-    font-size: 30px;
-    cursor: pointer;
-  }
+span.dequeue {
+  font-size: $icons-size;
+}
+span.auto-enrollment {
+  font-size: $icons-size;
 }
 </style>
