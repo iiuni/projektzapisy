@@ -254,16 +254,15 @@ def create_course_terms(**kwargs):
                                            author=instance.group.teacher.user)
     for day in dates:
         rooms = instance.classrooms.all()
+        for room in rooms:
+            Term.objects.create(event=event,
+                                day=day,
+                                start=instance.start_time,
+                                end=instance.end_time,
+                                room=room)
         if not rooms:
             Term.objects.create(event=event,
                                 day=day,
                                 start=instance.start_time,
                                 end=instance.end_time,
                                 room=None)
-        else:
-            for room in rooms:
-                Term.objects.create(event=event,
-                                    day=day,
-                                    start=instance.start_time,
-                                    end=instance.end_time,
-                                    room=room)
