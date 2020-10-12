@@ -305,10 +305,13 @@ def calendar_export(request):
         ['Subject', 'Start Date', 'Start Time', 'End Date', 'End Time', 'Location', 'Description'])
     for term in terms:
         group = term.event.group
-        room = term.room
+        if not term.room:
+            classroom = "Zajęcia zdalne"
+        else:
+            classroom = f"Sala {term.room}"
 
         name = f"{group.course.name} - {group.get_type_display()}"
-        location = f"Sala {room.number}, Instytut Informatyki Uniwersytetu Wrocławskiego"
+        location = f"{classroom}, Instytut Informatyki Uniwersytetu Wrocławskiego"
         description = f"Prowadzący: {group.get_teacher_full_name()}"
         writer.writerow([name, term.day, term.start, term.day, term.end, location, description])
     return response
