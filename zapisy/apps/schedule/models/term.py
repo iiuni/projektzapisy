@@ -231,8 +231,7 @@ def delete_course_terms(**kwargs):
     matching_terms = Term.objects.filter(event__group=instance.group,
                                          day__in=dates,
                                          start=instance.start_time,
-                                         end=instance.end_time,
-                                         room__in=instance.classrooms.all())
+                                         end=instance.end_time)
     matching_terms.delete()
 
 
