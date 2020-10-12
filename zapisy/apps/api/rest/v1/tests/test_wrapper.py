@@ -169,6 +169,14 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(res_course.course_type, course.course_type.short_name)
         self.assertEqual(res_course.usos_kod, course.usos_kod)
 
+    def test_courses_filter_semester(self):
+        """Tests filtering courses by semester."""
+        course1 = CourseInstanceFactory()
+        course2 = CourseInstanceFactory()
+        [res_course] = list(self.wrapper.courses(semester_id=course2.semester_id))
+        self.assertEqual(res_course.id, course2.id)
+        self.assertNotEqual(res_course.semester, course1.semester_id)
+
     def test_classroom(self):
         """Tests classroom handling.
 

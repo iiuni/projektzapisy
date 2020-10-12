@@ -92,7 +92,7 @@ class ZapisyApi:
             semester_id: Only courses for the semester are listed if provided.
         """
         return self._get_deserialized_data(
-            CourseInstance, params={"semester_id": semester_id})
+            CourseInstance, params={"semester": semester_id})
 
     def course(self, id: int) -> CourseInstance:
         """Returns course with a given id."""
