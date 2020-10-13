@@ -1,5 +1,5 @@
 # This migration is for removing redundant tables from database
-# It has nothing to do with schedulersync app and it's models
+# It has nothing to do with schedulersync app and its models
 
 from django.db import migrations
 
