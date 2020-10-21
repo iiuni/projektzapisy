@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
@@ -35,18 +36,18 @@ def list_all(request):
         url = reverse('theses:selected_thesis', None, [str(p.id)])
 
         record = {
-            "id": p.id,
-            "title": title,
-            "is_available": is_available,
-            "kind": kind,
-            "status": status,
-            "has_been_accepted": has_been_accepted,
-            "is_mine": is_mine,
-            "url": url,
-            "advisor": advisor,
-            "advisor_last_name": advisor_last_name,
-            "students": students,
-            "modified": p.modified.timestamp()
+            'id': p.id,
+            'title': title,
+            'is_available': is_available,
+            'kind': kind,
+            'status': status,
+            'has_been_accepted': has_been_accepted,
+            'is_mine': is_mine,
+            'url': url,
+            'advisor': advisor,
+            'advisor_last_name': advisor_last_name,
+            'students': students,
+            'modified': p.modified.timestamp()
         }
 
         theses_list.append(record)
@@ -180,15 +181,12 @@ def gen_form(request, id, studentid):
         })
 
 
-@login_required
 @employee_required
 def edit_thesis(request, id):
     """Show form for edit selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
-
     if not request.user.is_staff and not thesis.is_mine(request.user):
         raise PermissionDenied
-
     if request.method == "POST":
         form = EditThesisForm(request.user, request.POST, instance=thesis)
         # check whether it's valid:
@@ -196,7 +194,6 @@ def edit_thesis(request, id):
             form.save(commit=True)
             messages.success(request, 'Zapisano zmiany')
             return redirect('theses:selected_thesis', id=id)
-
     else:
         form = EditThesisForm(request.user, instance=thesis)
 
@@ -207,7 +204,6 @@ def edit_thesis(request, id):
     })
 
 
-@login_required
 @employee_required
 def new_thesis(request):
     """Show form for create new thesis."""
@@ -220,88 +216,67 @@ def new_thesis(request):
             return redirect('theses:main')
     else:
         form = ThesisForm(request.user)
-
     return render(request, 'theses/thesis_form.html', {'thesis_form': form, 'new_thesis': True})
 
 
-@login_required
 @employee_required
 def edit_remark(request, id):
     """Edit remark for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
-
     thesis = get_object_or_404(Thesis, id=id)
-
     if thesis.has_been_accepted:
         raise PermissionDenied
-
     if request.method == "POST":
         form = RemarkForm(request.POST, thesis=thesis, user=request.user)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
             messages.success(request, 'Zapisano uwagę')
-
     return redirect('theses:selected_thesis', id=id)
 
 
-@login_required
 @employee_required
 def vote_for_thesis(request, id):
     """Vote for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
-
     thesis = get_object_or_404(Thesis, id=id)
-
     if thesis.has_been_accepted:
         raise PermissionDenied
-
     if request.method == "POST":
         form = VoteForm(request.POST, thesis=thesis, user=request.user)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
             messages.success(request, 'Zapisano głos')
-
     return redirect('theses:selected_thesis', id=id)
 
 
-@login_required
 @employee_required
 def rejecter_decision(request, id):
     """Change status of selected thesis."""
     if not is_master_rejecter(request.user):
         raise PermissionDenied
-
     thesis = get_object_or_404(Thesis, id=id)
-
     if thesis.has_been_accepted:
         raise PermissionDenied
-
     if request.method == "POST":
         form = RejecterForm(request.POST, instance=thesis)
         if form.is_valid():
             post = form.save(commit=False)
             post.save()
             messages.success(request, 'Zapisano decyzję')
-
     return redirect('theses:selected_thesis', id=id)
 
 
-@login_required
+@require_POST
 @employee_required
 def delete_thesis(request, id):
     """Delete selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
-
-    if (request.method != "POST" or
-            (not request.user.is_staff and not thesis.is_mine(request.user))):
+    if not request.user.is_staff and not thesis.is_mine(request.user):
         raise PermissionDenied
-
     thesis.delete()
-
     messages.success(request, 'Pomyślnie usunięto pracę dyplomową')
-
     return redirect('theses:main')
