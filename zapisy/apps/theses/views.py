@@ -65,25 +65,18 @@ def view_thesis(request, id):
     not_has_been_accepted = not thesis.has_been_accepted
     board_member = is_theses_board_member(request.user)
 
-    if (not_has_been_accepted and
-        not request.user.is_staff and
-        not thesis.is_mine(request.user) and
-        not thesis.is_supporting_advisor_assigned(request.user) and
-            not board_member):
+    user_privileged_for_thesis = thesis.is_among_advisors(
+        request.user) or request.user.is_staff or board_member
+
+    if not_has_been_accepted and not user_privileged_for_thesis:
         raise PermissionDenied
-    can_see_remarks = (board_member or
-                       request.user.is_staff or
-                       thesis.is_mine(request.user) or
-                       thesis.is_supporting_advisor_assigned(request.user))
     can_edit_thesis = (request.user.is_staff or thesis.is_mine(request.user))
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
     can_vote = thesis.is_voting_active and board_member
     show_master_rejecter = is_master_rejecter(request.user) and (
         thesis.is_voting_active or thesis.is_returned)
-    can_download_declarations = (request.user.is_staff or
-                                 thesis.is_mine(request.user) or
-                                 thesis.is_student_assigned(request.user) or
-                                 thesis.is_supporting_advisor_assigned(request.user))
+    can_download_declarations = thesis.is_student_assigned(
+        request.user) or user_privileged_for_thesis
 
     students = thesis.students.all()
 
@@ -125,7 +118,7 @@ def view_thesis(request, id):
         remarks = thesis.thesis_remarks.all().exclude(
             author=request.user.employee).exclude(text="")
         remarkform = RemarkForm(thesis=thesis, user=request.user)
-    elif can_see_remarks:
+    elif user_privileged_for_thesis:
         remarks = thesis.thesis_remarks.all().exclude(text="")
 
     remarks_exist = not_has_been_accepted or remarks
@@ -134,7 +127,7 @@ def view_thesis(request, id):
                                                   'students': students,
                                                   'board_member': board_member,
                                                   'show_master_rejecter': show_master_rejecter,
-                                                  'can_see_remarks': can_see_remarks,
+                                                  'can_see_remarks': user_privileged_for_thesis,
                                                   'save_and_verify': save_and_verify,
                                                   'can_vote': can_vote,
                                                   'can_edit_thesis': can_edit_thesis,
@@ -160,9 +153,11 @@ def gen_form(request, id, studentid):
     except Student.DoesNotExist:
         raise Http404("No Student matches the given query.")
 
-    if not request.user.is_staff and not thesis.is_mine(request.user) and \
-       not thesis.is_student_assigned(request.user) and \
-       not thesis.is_supporting_advisor_assigned(request.user):
+    user_privileged_for_thesis = thesis.is_among_advisors(
+        request.user) or request.user.is_staff or is_theses_board_member(request.user)
+    user_allowed_to_generate = user_privileged_for_thesis or (
+        thesis.has_been_accepted and thesis.is_student_assigned(request.user))
+    if not user_allowed_to_generate:
         raise PermissionDenied
 
     students = []

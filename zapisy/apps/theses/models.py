@@ -119,6 +119,9 @@ class Thesis(models.Model):
     def is_supporting_advisor_assigned(self, user):
         return self.supporting_advisor is not None and user == self.supporting_advisor.user
 
+    def is_among_advisors(self, user):
+        return self.is_mine(user) or self.is_supporting_advisor_assigned(user)
+
     @property
     def has_no_students_assigned(self):
         return self.students is not None and not self.students.exists()
