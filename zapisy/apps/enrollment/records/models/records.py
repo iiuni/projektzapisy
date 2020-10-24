@@ -59,11 +59,11 @@ from apps.users.models import Student
 LOGGER = logging.getLogger(__name__)
 
 
-class RecordStatus(models.TextChoices):
+class RecordStatus(models.IntegerChoices):
     """RecordStatus describes a lifetime of a record."""
-    QUEUED = '0'
-    ENROLLED = '1'
-    REMOVED = '2'
+    QUEUED = 0
+    ENROLLED = 1
+    REMOVED = 2
 
 
 class CanEnroll(Enum):
@@ -85,7 +85,7 @@ class Record(models.Model):
     """
     group = models.ForeignKey(Group, verbose_name='grupa', on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=RecordStatus.choices)
+    status = models.IntegerField(choices=RecordStatus.choices)
     priority = models.IntegerField(
         verbose_name='priorytet',
         default=5,
