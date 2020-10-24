@@ -30,7 +30,7 @@ def list_all(request):
         has_been_accepted = p.has_been_accepted
         is_mine = p.is_mine(request.user) or p.is_student_assigned(
             request.user) or p.is_supporting_advisor_assigned(request.user)
-        advisor = p.advisor.__str__()
+        advisor = str(p.advisor) + (f" ({p.supporting_advisor})" if p.supporting_advisor else "")
         advisor_last_name = p.advisor.user.last_name if p.advisor else p.advisor.__str__()
         students = ", ".join(s.get_full_name() for s in p.students.all())
         url = reverse('theses:selected_thesis', None, [str(p.id)])

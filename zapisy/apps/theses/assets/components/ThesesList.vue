@@ -65,7 +65,7 @@ export default class ThesesList extends Vue {
 </style>
 
 <template>
-  <table class="table table-hover selection-none">
+  <table class="table table-hover selection-none table-responsive-md">
     <thead id="table-header">
       <tr class="text-center">
         <th>
@@ -91,7 +91,7 @@ export default class ThesesList extends Vue {
         <td class="text-center align-middle">
           {{ t.kind }}
         </td>
-        <td class="align-middle text-nowrap">
+        <td class="align-middle">
           {{ t.advisor }}
         </td>
         <td class="align-middle" :class="{ 'text-muted': t.is_available }">

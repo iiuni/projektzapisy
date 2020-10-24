@@ -14,7 +14,7 @@ export default Vue.extend({
   data: function () {
     return {
       allKinds: [] as [string, string][],
-      allStatuses: [] as [number, string][],
+      allStatuses: [] as [string, string][],
     };
   },
   created: function () {
@@ -27,8 +27,11 @@ export default Vue.extend({
       ["lic+inż+isim", "Licencjat+inżynierska+ISIM"],
     ];
     this.allStatuses = [
-      [0, "W trakcie weryfikacji"],
-      [1, "Zaakceptowane"],
+      ["weryfikowana przez komisję", "Weryfikowana przez komisję"],
+      ["zwrócona do poprawek", "Zwrócona do poprawek"],
+      ["zaakceptowana", "Zaakceptowana"],
+      ["w realizacji", "W realizacji"],
+      ["obroniona", "Obroniona"],
     ];
   },
 });
@@ -38,21 +41,14 @@ export default Vue.extend({
   <div class="card bg-light">
     <div class="card-body">
       <div class="row">
-        <div class="col-lg">
+        <div class="col-lg-6">
           <TextFilter
             filterKey="title-filter"
-            property="title"
-            placeholder="Nazwa pracy dyplomowej"
+            :properties="['title', 'advisor', 'students']"
+            placeholder="Nazwa, promotor, studenci"
           />
         </div>
-        <div class="col-lg">
-          <TextFilter
-            filterKey="advisor-filter"
-            property="advisor"
-            placeholder="Promotor"
-          />
-        </div>
-        <div class="col-lg">
+        <div class="col-lg-3">
           <SelectFilter
             filterKey="kind-filter"
             property="kind"
@@ -60,23 +56,31 @@ export default Vue.extend({
             placeholder="Typ pracy dyplomowej"
           />
         </div>
+        <div class="col-lg-3">
+          <SelectFilter
+            filterKey="status-filter"
+            property="status"
+            :options="allStatuses"
+            default="zaakceptowana"
+            placeholder="Status pracy dyplomowej"
+          />
+        </div>
       </div>
       <div class="row">
-        <div class="col-lg">
+        <div class="col-lg-3">
           <CheckFilter
             filterKey="available-filter"
             property="is_available"
             label="Pokaż tylko dostępne prace"
           />
         </div>
-        <div class="col-lg">
+        <div class="col-lg-3">
           <CheckFilter
             filterKey="mine-filter"
             property="is_mine"
             label="Pokaż tylko moje"
           />
         </div>
-        <div class="col-lg"></div>
       </div>
     </div>
   </div>

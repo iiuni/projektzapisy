@@ -6,7 +6,10 @@ import { mapMutations } from "vuex";
 import { Filter } from "../../store/filters";
 
 class ExactFilter implements Filter {
-  constructor(public option: number | undefined, public propertyName: string) {}
+  constructor(
+    public option: number | string | undefined,
+    public propertyName: string
+  ) {}
 
   visible(c: Object): boolean {
     if (this.option === undefined) {
@@ -25,19 +28,23 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    options: Array as () => [number, string][],
+    default: String as () => number | string | undefined,
+    options: Array as () => [number | string, string][],
     placeholder: String,
   },
   data: () => {
     return {
-      selected: undefined,
+      selected: undefined as number | string | undefined,
     };
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
   },
+  mounted: function () {
+    this.selected = this.default;
+  },
   watch: {
-    selected: function (newSelected: number | undefined) {
+    selected: function (newSelected: number | string | undefined) {
       this.registerFilter({
         k: this.filterKey,
         f: new ExactFilter(newSelected, this.property),

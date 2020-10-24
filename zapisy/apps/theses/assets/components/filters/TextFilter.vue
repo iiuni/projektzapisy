@@ -7,22 +7,30 @@ import { ThesisInfo } from "../../store/theses";
 import { Filter } from "../../store/filters";
 
 class TextFilter implements Filter {
-  constructor(public pattern: string = "", public propertyName: string) {}
+  propGetters: ((c: ThesisInfo) => string)[];
+
+  constructor(public pattern: string = "", public propertyNames: string[]) {
+    this.propGetters = [];
+    for (const propName of propertyNames) {
+      this.propGetters.push(property(propName));
+    }
+  }
 
   visible(c: ThesisInfo): boolean {
-    let propGetter = property(this.propertyName) as (c: ThesisInfo) => string;
-    let propValue = propGetter(c);
-    return propValue
-      .toLocaleLowerCase()
-      .includes(this.pattern.toLocaleLowerCase());
+    const patternWords = this.pattern.toLocaleLowerCase().split(" ");
+    const propValues = this.propGetters.map((f) => f(c).toLocaleLowerCase());
+    const patternWordMatches = patternWords.map((w) =>
+      propValues.some((v) => v.includes(w))
+    );
+    return patternWordMatches.every((b) => b);
   }
 }
 
 // TextFilter applies the string filtering on a property of a thesis.
 export default Vue.extend({
   props: {
-    // Property of a thesis on which we are filtering.
-    property: String,
+    // Properties of a thesis on which we are filtering.
+    properties: Array,
     // Every filter needs a unique identifier.
     filterKey: String,
     placeholder: String,
@@ -39,7 +47,7 @@ export default Vue.extend({
     pattern: function (newPattern: string, _) {
       this.registerFilter({
         k: this.filterKey,
-        f: new TextFilter(newPattern, this.property),
+        f: new TextFilter(newPattern, this.properties as string[]),
       });
     },
   },
