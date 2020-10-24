@@ -95,7 +95,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Odepnij grupę od planu."
           @click="unpin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="right-2" rotation="90"/>
+          <font-awesome-icon icon="thumbtack" transform="left-1 shrink-3" rotation="90"/>
         </span>
         <span
           v-else
@@ -103,7 +103,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Przypnij grupę do planu."
           @click="pin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="right-2"/>
+          <font-awesome-icon icon="thumbtack" transform="right-1 shrink-2"/>
         </span>
 
         <span
@@ -147,15 +147,14 @@ export default class TermControlsComponent extends TermControlsProps {
 .controls {
   background: white;
 
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   max-height: 100%;
 
-  display: inline-flex;
-  writing-mode: vertical-lr;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fit, 26px);
 
   cursor: default;
   border: 1px solid #666666;
@@ -167,33 +166,40 @@ export default class TermControlsComponent extends TermControlsProps {
 }
 
 .controls span {
-  display: block;
-  width: 18px;
-  height: 18px;
-  margin: 3px;
+  padding: 3px;
+  font-size: 20px;
   overflow: hidden;
   cursor: pointer;
 }
-</style>
 
-<style lang="scss">
-$icons-size: 18px;
-span.pin {
-  font-size: $icons-size;
-}
+@media(max-width: 992px) {
+  .controls {
+    background: white;
 
-span.unpin {
-  font-size: $icons-size;
-}
+    position: relative;
+    top: 0;
+    left: 0;
+    max-height: 100%;
+    max-width: 100%;
 
-span.enqueue {
-  font-size: $icons-size;
-}
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
-span.dequeue {
-  font-size: $icons-size;
-}
-span.auto-enrollment {
-  font-size: $icons-size;
+    cursor: default;
+    border: 1px solid #666666;
+    border-top: 0;
+    border-left: 0;
+    border-radius: 4px 0;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+  }
+
+  .controls span {
+    padding: 3px;
+    font-size: 28px;
+    overflow: hidden;
+    cursor: pointer;
+  }
 }
 </style>
