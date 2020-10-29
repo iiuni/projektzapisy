@@ -5,6 +5,7 @@ from apps.news.models import News, PriorityChoices
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 from ..models import NotificationPreferencesStudent, NotificationPreferencesTeacher
+from ..repositories import get_notifications_repository
 
 
 @test.override_settings(RUN_ASYNC=False)
@@ -21,6 +22,10 @@ class PreferencesTestCase(test.TestCase):
         NotificationPreferencesStudent.objects.create(user=self.s3.user, news_has_been_added=True)
         NotificationPreferencesTeacher.objects.create(user=self.t1.user, news_has_been_added=True)
         NotificationPreferencesTeacher.objects.create(user=self.t2.user, news_has_been_added=False)
+
+        # Delete all pending notifications from other tests.
+        repository = get_notifications_repository()
+        repository.flush()
 
     def inspect_outbox(self, outbox):
         """Lists recipients of outgoing e-mail notifications."""

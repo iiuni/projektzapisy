@@ -36,6 +36,10 @@ class NotificationsRepository(ABC):
         pass
 
     @abstractmethod
+    def flush(self) -> None:
+        pass
+
+    @abstractmethod
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         pass
 
@@ -90,6 +94,9 @@ class RedisNotificationsRepository(NotificationsRepository):
     def remove_all(self, user: User) -> None:
         self.redis_client.delete(self._generate_unsent_key_for_user(user))
         self.redis_client.delete(self._generate_sent_key_for_user(user))
+
+    def flush(self) -> None:
+        self.redis_client.flushdb()
 
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         self.removed_count = 0
