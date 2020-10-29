@@ -7,9 +7,7 @@ addons:
   apt:
     packages:
       - yarnpkg
-      - postgresql-12
-      - postgresql-client-12
-    postgresql: "12"
+  postgresql: "12"
 services:
   - postgresql
   - redis
