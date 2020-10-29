@@ -1,8 +1,7 @@
 import json
 
 from django.contrib import admin
-from django.contrib.postgres.fields import JSONField
-from django.forms import widgets
+from django.forms import widgets, JSONField
 
 from .models import Schema
 
