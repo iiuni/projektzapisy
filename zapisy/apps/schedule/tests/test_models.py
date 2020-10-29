@@ -341,7 +341,7 @@ class EventTestCase(TestCase):
 
     def test_get_absolute_url__no_group(self):
         event = Event.objects.all()[0]
-        self.assertEqual(event.get_absolute_url(), '/events/%d' % event.pk)
+        self.assertEqual(event.get_absolute_url(), '/events/%d/' % event.pk)
 
     def test_get_absolute_url__group(self):
         event = factories.EventCourseFactory.create()
