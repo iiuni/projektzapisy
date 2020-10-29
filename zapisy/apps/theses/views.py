@@ -24,7 +24,7 @@ def list_all(request):
     theses_list = []
     for p in visible_theses:
         title = p.title
-        is_available = not p.is_reserved
+        is_available = not p.is_reserved and p.status == ThesisStatus.ACCEPTED
         kind = p.get_kind_display()
         status = p.get_status_display()
         has_been_accepted = p.has_been_accepted
@@ -39,6 +39,7 @@ def list_all(request):
             'id': p.id,
             'title': title,
             'is_available': is_available,
+            'reserved_until': p.reserved_until,
             'kind': kind,
             'status': status,
             'has_been_accepted': has_been_accepted,

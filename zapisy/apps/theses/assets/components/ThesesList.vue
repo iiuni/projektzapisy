@@ -52,6 +52,13 @@ export default class ThesesList extends Vue {
       }
     });
   }
+
+  reservedUntilAltText(thesis: ThesisInfo): string | undefined {
+    if (!thesis.reserved_until) {
+      return undefined;
+    }
+    return `Zarezerwowana do ${thesis.reserved_until}`;
+  }
 }
 </script>
 
@@ -84,7 +91,7 @@ export default class ThesesList extends Vue {
       <tr v-for="t of visibleTheses" :key="t.id">
         <td class="align-middle">
           <a class="btn-link" :href="t.url">{{ t.title }}</a>
-          <em v-if="!t.has_been_accepted" class="text-muted"
+          <em v-if="t.status !== 'zaakceptowana'" class="text-muted"
             >({{ t.status }})</em
           >
         </td>
@@ -94,7 +101,11 @@ export default class ThesesList extends Vue {
         <td class="align-middle">
           {{ t.advisor }}
         </td>
-        <td class="align-middle" :class="{ 'text-muted': t.is_available }">
+        <td
+          class="align-middle"
+          :class="{ 'text-muted': t.is_available }"
+          :title="reservedUntilAltText(t)"
+        >
           {{ t.students }}
         </td>
       </tr>
