@@ -67,14 +67,14 @@ export default Vue.extend({
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-4">
           <CheckFilter
             filterKey="available-filter"
             property="is_available"
-            label="Pokaż tylko dostępne prace"
+            label="Pokaż tylko niezarezerwowane prace"
           />
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-4">
           <CheckFilter
             filterKey="mine-filter"
             property="is_mine"
