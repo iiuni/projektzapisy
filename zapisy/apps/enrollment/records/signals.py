@@ -6,4 +6,5 @@ the signal receiver.
 """
 from django.dispatch import Signal
 
-GROUP_CHANGE_SIGNAL = Signal(providing_args=['group_id'])
+# Signal senders must provide a `group_id` argument.
+GROUP_CHANGE_SIGNAL = Signal()
