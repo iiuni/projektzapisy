@@ -2,15 +2,14 @@ import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, JsonResponse
-from django.urls import reverse
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
-from apps.users import views
 
 
 @login_required
@@ -44,7 +43,7 @@ def preferences_save(request):
         messages.success(request, 'Zmieniono ustawienia powiadomień')
     else:
         messages.error(request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie")
-    return HttpResponseRedirect(reverse(views.my_profile))
+    return redirect('my-profile')
 
 
 def create_form(request):
