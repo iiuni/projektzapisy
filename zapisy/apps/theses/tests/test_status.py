@@ -35,9 +35,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                             status=ThesisStatus.IN_PROGRESS)
         test_edit_2.students.add(StudentFactory())
 
-        settings = ThesesSystemSettings.objects.get()
-        settings.num_required_votes = 1
-        settings.save()
+        ThesesSystemSettings.objects.create(num_required_votes=1)
 
     def test_vote(self):
         thesis_vote_0 = Thesis.objects.get(title="thesis_vote_0")

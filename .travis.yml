@@ -45,7 +45,7 @@ jobs:
           # Builds assets.
           (cd zapisy && yarnpkg dev:tc) || exit 1
           echo "travis_fold:end:yarn"
-        - cd zapisy && python manage.py test apps --failfast --parallel
+        - cd zapisy && python manage.py test apps --failfast --parallel --nomigrations
 
 cache:
   - pip
