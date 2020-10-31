@@ -33,12 +33,12 @@ script: skip
 
 jobs:
   include:
-    - stage: lint
+    - name: lint
       script:
         - python -m flake8 --statistics .
         - (cd zapisy && yarnpkg lint) || exit 1
 
-    - stage: test
+    - name: test
       script:
         - |
           echo "travis_fold:start:yarn"
