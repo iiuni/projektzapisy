@@ -27,7 +27,6 @@ def list_all(request):
         is_available = not p.is_reserved
         kind = p.get_kind_display()
         status = p.get_status_display()
-        has_been_accepted = p.has_been_accepted
         is_mine = p.is_mine(request.user) or p.is_student_assigned(
             request.user) or p.is_supporting_advisor_assigned(request.user)
         advisor = str(p.advisor) + (f" ({p.supporting_advisor})" if p.supporting_advisor else "")
@@ -42,7 +41,6 @@ def list_all(request):
             'reserved_until': p.reserved_until,
             'kind': kind,
             'status': status,
-            'has_been_accepted': has_been_accepted,
             'is_mine': is_mine,
             'url': url,
             'advisor': advisor,
@@ -63,13 +61,12 @@ def list_all(request):
 def view_thesis(request, id):
     """Show subpage for one thesis."""
     thesis = get_object_or_404(Thesis, id=id)
-    not_has_been_accepted = not thesis.has_been_accepted
     board_member = is_theses_board_member(request.user)
 
     user_privileged_for_thesis = thesis.is_among_advisors(
         request.user) or request.user.is_staff or board_member
 
-    if not_has_been_accepted and not user_privileged_for_thesis:
+    if not thesis.has_been_accepted and not user_privileged_for_thesis:
         raise PermissionDenied
     can_edit_thesis = (request.user.is_staff or thesis.is_mine(request.user))
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
@@ -115,34 +112,36 @@ def view_thesis(request, id):
     remarks = None
     remarkform = None
 
-    if board_member and not_has_been_accepted:
+    if board_member and not thesis.has_been_accepted:
         remarks = thesis.thesis_remarks.all().exclude(
             author=request.user.employee).exclude(text="")
         remarkform = RemarkForm(thesis=thesis, user=request.user)
     elif user_privileged_for_thesis:
         remarks = thesis.thesis_remarks.all().exclude(text="")
 
-    remarks_exist = not_has_been_accepted or remarks
+    remarks_exist = not thesis.has_been_accepted or remarks
 
-    return render(request, 'theses/thesis.html', {'thesis': thesis,
-                                                  'students': students,
-                                                  'board_member': board_member,
-                                                  'show_master_rejecter': show_master_rejecter,
-                                                  'can_see_remarks': user_privileged_for_thesis,
-                                                  'save_and_verify': save_and_verify,
-                                                  'can_vote': can_vote,
-                                                  'can_edit_thesis': can_edit_thesis,
-                                                  'can_download_declarations': can_download_declarations,
-                                                  'not_has_been_accepted': not_has_been_accepted,
-                                                  'remarks': remarks,
-                                                  'remark_form': remarkform,
-                                                  'remarks_exist': remarks_exist,
-                                                  'votes': votes,
-                                                  'vote_form_accepted': vote_form_accepted,
-                                                  'vote_form_rejected': vote_form_rejected,
-                                                  'vote_form_none': vote_form_none,
-                                                  'rejecter_accepted': rejecter_accepted,
-                                                  'rejecter_rejected': rejecter_rejected})
+    return render(
+        request, 'theses/thesis.html', {
+            'thesis': thesis,
+            'students': students,
+            'board_member': board_member,
+            'show_master_rejecter': show_master_rejecter,
+            'can_see_remarks': user_privileged_for_thesis,
+            'save_and_verify': save_and_verify,
+            'can_vote': can_vote,
+            'can_edit_thesis': can_edit_thesis,
+            'can_download_declarations': can_download_declarations,
+            'remarks': remarks,
+            'remark_form': remarkform,
+            'remarks_exist': remarks_exist,
+            'votes': votes,
+            'vote_form_accepted': vote_form_accepted,
+            'vote_form_rejected': vote_form_rejected,
+            'vote_form_none': vote_form_none,
+            'rejecter_accepted': rejecter_accepted,
+            'rejecter_rejected': rejecter_rejected
+        })
 
 
 @login_required

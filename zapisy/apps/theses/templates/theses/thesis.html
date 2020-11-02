@@ -183,7 +183,7 @@
 
         <h2 class="mt-4">Uwagi</h2>
         {% if board_member %}
-            {% if not_has_been_accepted %}
+            {% if not thesis.has_been_accepted %}
                 <h4>Edytuj swoją uwagę</h4>
                 <form action="{% url 'theses:remark_thesis' thesis.id %}" method="POST" class="post-form">
                     {% csrf_token %}
