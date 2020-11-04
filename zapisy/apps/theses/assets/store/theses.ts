@@ -5,7 +5,7 @@ export interface ThesisInfo {
   id: number;
   title: string;
   is_available: boolean;
-  reserved_until: string,
+  reserved_until: string;
   kind: string;
   status: string;
   modified: number;
