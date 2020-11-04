@@ -147,14 +147,15 @@ export default class TermControlsComponent extends TermControlsProps {
 .controls {
   background: white;
 
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   max-height: 100%;
 
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(auto-fit, 26px);
+  display: inline-flex;
+  writing-mode: vertical-lr;
+  flex-wrap: wrap;
+  align-content: flex-start;
 
   cursor: default;
   border: 1px solid #666666;
@@ -168,7 +169,6 @@ export default class TermControlsComponent extends TermControlsProps {
 .controls span {
   padding: 3px;
   font-size: 20px;
-  overflow: hidden;
   cursor: pointer;
 }
 
@@ -176,15 +176,15 @@ export default class TermControlsComponent extends TermControlsProps {
   .controls {
     background: white;
 
-    position: relative;
+    position: absolute;
     top: 0;
     left: 0;
     max-height: 100%;
     max-width: 100%;
 
-    display: inline-flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: inline-grid;
+    grid-auto-flow: row;
+    grid-template-rows: repeat(auto-fit, 33px);
 
     cursor: default;
     border: 1px solid #666666;
@@ -197,8 +197,7 @@ export default class TermControlsComponent extends TermControlsProps {
 
   .controls span {
     padding: 3px;
-    font-size: 28px;
-    overflow: hidden;
+    font-size: 30px;
     cursor: pointer;
   }
 }
