@@ -5,7 +5,7 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
 import { faThumbtack } from "@fortawesome/free-solid-svg-icons/faThumbtack";
 import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
@@ -95,7 +95,11 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Odepnij grupę od planu."
           @click="unpin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="left-1 shrink-3" rotation="90"/>
+          <font-awesome-icon
+            icon="thumbtack"
+            transform="left-1 shrink-3"
+            rotation="90"
+          />
         </span>
         <span
           v-else
@@ -103,7 +107,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Przypnij grupę do planu."
           @click="pin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="right-1 shrink-2"/>
+          <font-awesome-icon icon="thumbtack" transform="right-1 shrink-2" />
         </span>
 
         <span
@@ -172,7 +176,7 @@ export default class TermControlsComponent extends TermControlsProps {
   cursor: pointer;
 }
 
-@media(max-width: 992px) {
+@media (max-width: 992px) {
   .controls {
     background: white;
 
