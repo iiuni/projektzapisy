@@ -176,33 +176,18 @@ export default class TermControlsComponent extends TermControlsProps {
   cursor: pointer;
 }
 
+// For devices where days are displayed one below another
 @media (max-width: 992px) {
   .controls {
-    background: white;
+    position: relative;
+    max-height: unset;
 
-    position: absolute;
-    top: 0;
-    left: 0;
-    max-height: 100%;
-    max-width: 100%;
-
-    display: inline-grid;
-    grid-auto-flow: row;
-    grid-template-rows: repeat(auto-fit, 33px);
-
-    cursor: default;
-    border: 1px solid #666666;
-    border-top: 0;
-    border-left: 0;
-    border-radius: 4px 0;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-    z-index: 30;
+    writing-mode: unset;
+    flex-direction: row;
   }
 
   .controls span {
-    padding: 3px;
     font-size: 30px;
-    cursor: pointer;
   }
 }
 </style>
