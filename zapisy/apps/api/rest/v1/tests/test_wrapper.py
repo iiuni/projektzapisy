@@ -207,7 +207,7 @@ class WrapperTests(APILiveServerTestCase):
             group
         )
         self.assertEqual(res_group.human_readable_type,
-                         group.human_readable_type())
+                         group.get_type_display())
         self.assertEqual(res_group.teacher_full_name,
                          group.get_teacher_full_name())
 

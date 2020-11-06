@@ -11,18 +11,18 @@ from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
 
 
-class GroupType(models.TextChoices):
-    LECTURE = '1', 'wykład'
-    EXERCISES = '2', 'ćwiczenia'
-    LAB = '3', 'pracownia'
-    EXERCISES_LAB = '5', 'ćwiczenio-pracownia'
-    SEMINAR = '6', 'seminarium'
-    LANGUAGE_COURSE = '7', 'lektorat'
-    PE = '8', 'WF'
-    COMPENDIUM = '9', 'repetytorium'
-    PROJECT = '10', 'projekt'
-    TUTORING = '11', 'tutoring'
-    PRO_SEMINAR = '12', 'proseminarium'
+class GroupType(models.IntegerChoices):
+    LECTURE = 1, 'wykład'
+    EXERCISES = 2, 'ćwiczenia'
+    LAB = 3, 'pracownia'
+    EXERCISES_LAB = 5, 'ćwiczenio-pracownia'
+    SEMINAR = 6, 'seminarium'
+    LANGUAGE_COURSE = 7, 'lektorat'
+    PE = 8, 'WF'
+    COMPENDIUM = 9, 'repetytorium'
+    PROJECT = 10, 'projekt'
+    TUTORING = 11, 'tutoring'
+    PRO_SEMINAR = 12, 'proseminarium'
 
 
 GroupTooltips = {
@@ -48,7 +48,7 @@ class Group(models.Model):
         blank=True,
         verbose_name='prowadzący',
         on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=GroupType.choices, verbose_name='typ zajęć')
+    type = models.IntegerField(choices=GroupType.choices, verbose_name='typ zajęć')
     limit = models.PositiveSmallIntegerField(default=0, verbose_name='limit miejsc')
     auto_enrollment = models.BooleanField(
         "grupa z auto-zapisem",
@@ -83,21 +83,6 @@ class Group(models.Model):
     def get_all_terms(self):
         """Return all terms of current group."""
         return self.term.all()
-
-    def human_readable_type(self):
-        types = {
-            '1': 'Wykład',
-            '9': 'Repetytorium',
-            '2': 'Ćwiczenia',
-            '3': 'Pracownia',
-            '4': 'Ćwiczenia (poziom zaawansowany)',
-            '5': 'Ćwiczenio-pracownia',
-            '6': 'Seminarium',
-            '7': 'Lektorat',
-            '8': 'Zajęcia sportowe',
-            '10': 'Projekt',
-        }
-        return types[str(self.type)]
 
     def get_terms_as_string(self):
         return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(),
