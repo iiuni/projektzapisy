@@ -179,7 +179,7 @@ class GroupSerializer(serializers.ModelSerializer):
     teacher_full_name = serializers.SerializerMethodField()
 
     def get_human_readable_type(self, group_model):
-        return group_model.human_readable_type()
+        return group_model.get_type_display()
 
     def get_teacher_full_name(self, group_model):
         return group_model.get_teacher_full_name()
