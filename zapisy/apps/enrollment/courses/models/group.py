@@ -84,21 +84,6 @@ class Group(models.Model):
         """Return all terms of current group."""
         return self.term.all()
 
-    def human_readable_type(self):
-        types = {
-            1: 'Wykład',
-            9: 'Repetytorium',
-            2: 'Ćwiczenia',
-            3: 'Pracownia',
-            4: 'Ćwiczenia (poziom zaawansowany)',
-            5: 'Ćwiczenio-pracownia',
-            6: 'Seminarium',
-            7: 'Lektorat',
-            8: 'Zajęcia sportowe',
-            10: 'Projekt',
-        }
-        return types[self.type]
-
     def get_terms_as_string(self):
         return ",".join(["%s %s-%s" % (x.get_dayOfWeek_display(),
                                        x.start_time.hour, x.end_time.hour) for x in self.term.all()])

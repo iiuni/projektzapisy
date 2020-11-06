@@ -397,7 +397,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # 
                               end=term.end_time,
                               room=r,
                               title=term.group.course.name,
-                              type=term.group.human_readable_type(),
+                              type=term.group.get_type_display(),
                               author=term.group.teacher.get_full_name()))
         terms = SpecialReservation.objects.filter(semester=semester, classroom__in=rooms).select_related('classroom')
         for term in terms:
@@ -427,7 +427,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # 
                           end=term.end,
                           room=term.room,
                           title=term.event.title or str(term.event.course) or "",
-                          type=term.event.group.human_readable_type()
+                          type=term.event.group.get_type_display()
                           if term.event.group else term.event.get_type_display(),
                           author=term.event.author.get_full_name()))
 
