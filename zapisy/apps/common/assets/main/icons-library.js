@@ -24,5 +24,14 @@ library.add(faMinus);
 import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
 library.add(faCarSide);
 
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons/faThumbtack";
+library.add(faThumbtack)
+
+import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
+library.add(faBan)
+
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
+library.add(faPencilAlt)
+
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();
