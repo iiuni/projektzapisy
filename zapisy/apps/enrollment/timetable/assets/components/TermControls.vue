@@ -5,16 +5,9 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import TermComponent from "./Term.vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCarSide } from "@fortawesome/free-solid-svg-icons/faCarSide";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons/faThumbtack";
-import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
-import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import { Term, Group } from "../models";
-
-library.add(faCarSide, faThumbtack, faBan, faPencilAlt);
 
 const TermControlsProps = Vue.extend({
   props: {
@@ -97,8 +90,8 @@ export default class TermControlsComponent extends TermControlsProps {
         >
           <font-awesome-icon
             icon="thumbtack"
-            transform="left-1 shrink-3"
-            rotation="90"
+            transform="right-1 shrink-3"
+            class="fa-rotate-45"
           />
         </span>
         <span
@@ -107,7 +100,11 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Przypnij grupę do planu."
           @click="pin()"
         >
-          <font-awesome-icon icon="thumbtack" transform="right-1 shrink-2" />
+          <font-awesome-icon
+            icon="thumbtack"
+            transform="right-1 shrink-2"
+            rotation="90"
+          />
         </span>
 
         <span
@@ -176,7 +173,8 @@ export default class TermControlsComponent extends TermControlsProps {
   cursor: pointer;
 }
 
-// For devices where days are displayed one below another
+// For devices with large screens where days are displayed one below another.
+// Bootstrap's convention: https://getbootstrap.com/docs/4.5/layout/overview/#containers
 @media (max-width: 992px) {
   .controls {
     position: relative;
@@ -189,5 +187,15 @@ export default class TermControlsComponent extends TermControlsProps {
   .controls span {
     font-size: 30px;
   }
+}
+</style>
+
+<style lang="scss">
+.fa-rotate-45 {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 </style>
