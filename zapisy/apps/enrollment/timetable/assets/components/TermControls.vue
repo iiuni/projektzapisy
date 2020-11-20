@@ -90,8 +90,8 @@ export default class TermControlsComponent extends TermControlsProps {
         >
           <font-awesome-icon
             icon="thumbtack"
-            transform="right-1 shrink-3"
-            class="fa-rotate-45"
+            transform="shrink-1 right-2"
+            class="my-fa-rotate-45 unpin-margin-top"
           />
         </span>
         <span
@@ -102,7 +102,7 @@ export default class TermControlsComponent extends TermControlsProps {
         >
           <font-awesome-icon
             icon="thumbtack"
-            transform="right-1 shrink-2"
+            transform="shrink-1 right-2"
             rotation="90"
           />
         </span>
@@ -113,7 +113,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Zapisz do grupy/kolejki."
           @click="enqueue()"
         >
-          <font-awesome-icon icon="pencil-alt" transform="shrink-2" />
+          <font-awesome-icon icon="pencil-alt" transform="shrink-2 right-1" />
         </span>
         <span
           v-if="canDequeue"
@@ -121,14 +121,14 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Wypisz z grupy/kolejki."
           @click="dequeue()"
         >
-          <font-awesome-icon icon="ban" transform="shrink-2" />
+          <font-awesome-icon icon="ban" transform="shrink-1 right-1" />
         </span>
         <span
           v-if="term.group.autoEnrollment"
           class="auto-enrollment"
           title="Grupa z auto-zapisem."
         >
-          <font-awesome-icon icon="car-side" transform="shrink-3 left-2" />
+          <font-awesome-icon icon="car-side" transform="shrink-3 left-1" />
         </span>
       </div>
     </transition>
@@ -149,27 +149,22 @@ export default class TermControlsComponent extends TermControlsProps {
   background: white;
 
   position: absolute;
-  top: 0;
-  left: 0;
-  max-height: 100%;
-
-  display: inline-flex;
-  writing-mode: vertical-lr;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  top: -1px;
+  left: -1px;
 
   cursor: default;
   border: 1px solid #666666;
-  border-top: 0;
-  border-left: 0;
   border-radius: 4px 0;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   z-index: 30;
 }
 
 .controls span {
-  padding: 3px;
-  font-size: 20px;
+  display: block;
+  margin: 3px;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -177,21 +172,30 @@ export default class TermControlsComponent extends TermControlsProps {
 // Bootstrap's convention: https://getbootstrap.com/docs/4.5/layout/overview/#containers
 @media (max-width: 992px) {
   .controls {
-    position: relative;
-    max-height: unset;
+    position: absolute;
+    max-width: 100%;
 
-    writing-mode: unset;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 54px);
+    grid-template-rows: repeat(auto-fit, 47px);
   }
 
   .controls span {
-    font-size: 30px;
+    font-size: 40px;
+    margin: 5px;
+    margin-top: 3px;
+    width: unset;
+    height: unset;
+  }
+
+  .unpin-margin-top {
+    margin-top: 2px;
   }
 }
 </style>
 
 <style lang="scss">
-.fa-rotate-45 {
+.my-fa-rotate-45 {
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
