@@ -196,10 +196,6 @@ export default class TermControlsComponent extends TermControlsProps {
 
 <style lang="scss">
 .my-fa-rotate-45 {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
   transform: rotate(45deg);
 }
 </style>
