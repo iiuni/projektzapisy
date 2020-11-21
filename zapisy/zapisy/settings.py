@@ -3,6 +3,7 @@ import os
 import environ
 from django.contrib.messages import constants as messages
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -323,7 +324,8 @@ ROLLBAR = {
     'branch': env.str('ROLLBAR_BRANCH', default=''),
     'root': BASE_DIR,
     'exception_level_filters': [
-        (PermissionDenied, 'ignore')
+        (PermissionDenied, 'warning'),
+        (Http404, 'warning')
     ]
 }
 
