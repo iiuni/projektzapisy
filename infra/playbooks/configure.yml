@@ -28,7 +28,7 @@
         - redis-server
         - nginx
         - postfix
-        - p7zip-full
+        - bzip2
       become: yes
 
     - name: Instal yarn
