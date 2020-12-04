@@ -61,7 +61,7 @@
 
     - name: Generate Postgres password
       set_fact:
-        APP_DB_PASS: "{{ pwd_alias: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}" }}"
+        APP_DB_PASS: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
       no_log: True
 
     - name: Generate Django Secret key
@@ -165,7 +165,8 @@
         - {file: "ssl-signed.conf", path: "snippets"}
 
     # Generate a self-signed certificate if none exists
-    - task: Check if certificate exists
+    - name: Check if certificate exists
+      become: yes
       stat:
         path: /etc/ssl/private/{{ deploy_server_name }}.key
       register: ssl_key
