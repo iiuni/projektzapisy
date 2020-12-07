@@ -1,4 +1,4 @@
-venv*/
+env3/
 infra/hosts/*.conf
 infra/playbooks/*.env
 infra/playbooks/*.7z
@@ -31,3 +31,4 @@ zapisy/webpack_resources/webpack-stats.json
 *.gz
 *.sql
 *.sqlite3
+socket
