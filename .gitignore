@@ -1,4 +1,4 @@
-env3/
+venv/
 infra/hosts/*.conf
 infra/playbooks/*.env
 infra/playbooks/*.7z

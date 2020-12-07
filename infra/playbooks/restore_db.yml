@@ -54,7 +54,7 @@
       django_manage:
         command: migrate
         app_path: "/home/{{ deploy_user }}/deploy/current/zapisy"
-        virtualenv: "/home/{{ deploy_user }}/deploy/current/env3"
+        virtualenv: "/home/{{ deploy_user }}/deploy/current/venv"
 
     - name: Restart gunicorn service
       become: yes

@@ -47,7 +47,7 @@
       become: yes
       become_user: "{{ deploy_user }}"
       pip:
-        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
         requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
 
@@ -80,13 +80,13 @@
       django_manage:
         command: migrate
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
-        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
 
     - name: Make sure that directory for gunicorn exists
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        path: "{{ deploy_helper.new_release_path }}/env3/run/"
+        path: "{{ deploy_helper.new_release_path }}/venv/run/"
         state: directory
 
     - name: Install dependencies based on package.json
@@ -109,7 +109,7 @@
       django_manage:
         command: collectstatic
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
-        virtualenv: "{{ deploy_helper.new_release_path }}/env3"
+        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
 
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       become: yes
@@ -140,7 +140,7 @@
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        src: "/home/{{ deploy_user }}/deploy/current/env3/run"
+        src: "/home/{{ deploy_user }}/deploy/current/venv/run"
         dest: "/home/{{ deploy_user }}/deploy/current/zapisy/socket"
         force: yes
         state: link
