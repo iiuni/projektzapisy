@@ -22,18 +22,12 @@
         pkg:
         - acl
         - nodejs
-        - npm
+        - yarnpkg
         - git
         - redis-server
         - nginx
         - postfix
         - p7zip-full
-      become: yes
-
-    - name: Instal yarn
-      npm:
-        name: yarn
-        global: yes
       become: yes
 
     - name: Install python tools
