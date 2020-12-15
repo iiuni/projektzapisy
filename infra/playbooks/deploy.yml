@@ -134,7 +134,7 @@
         user: "{{ ansible_user }}"
         revision: "{{ git_rev.stdout }}"
         comment: "Deploy {{ deploy_version }} on {{ ansible_host }}"
-      when: rollbar_token != "none"
+      when: rollbar_token != "placeholder"
 
     - name: Create link to socket for Nginx
       become: yes
