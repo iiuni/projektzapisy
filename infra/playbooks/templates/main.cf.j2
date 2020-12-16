@@ -1,4 +1,4 @@
-myhostname = {{ deploy_hostname or deploy_server_name }}
+myhostname = {{ deploy_hostname | default(deploy_server_name) }}
 
 biff = no
 compatibility_level = 2
