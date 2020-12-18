@@ -11,6 +11,7 @@ from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Program, Student
+from apps.effects.models import CompletedCourses
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -217,3 +218,20 @@ class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = ('id', 'group', 'student')
+
+
+class CompletedCoursesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CompletedCourses
+        fields = ('id', 'student', 'courses')
+
+    @transaction.atomic
+    def create(self, validated_data):
+        # TODO
+        pass
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        # TODO
+        pass
