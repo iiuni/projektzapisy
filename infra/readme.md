@@ -138,7 +138,9 @@ Vault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) in file
 [`hosts/group_vars/vault`](hosts/group_vars/vault). All hosts in `vault` group
 (which applies to both _staging_ and _production_—but not _example_) will
 override placeholders from `hosts/group_vars/all` with these encrypted values
-(so using them will require the password).
+(so using them will require the password; [use `--ask-vault-pass` or
+`--vault-password-file` when running
+playbooks](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
 
 ## Example
 
