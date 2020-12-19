@@ -231,6 +231,7 @@ INSTALLED_APPS = (
     'apps.grade.ticket_create',
     'apps.schedulersync',
     'apps.theses',
+    'apps.effects',
     'django_extensions',
     'django_filters',
     'bootstrap_pagination',
