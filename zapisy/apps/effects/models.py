@@ -1,7 +1,8 @@
 from django.db import models
 
 from apps.users.models import Student
-from apps.enrollment.courses.models import CourseInstance, Effects
+from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.courses.models.effects import Effects
 
 
 # Model for completed courses

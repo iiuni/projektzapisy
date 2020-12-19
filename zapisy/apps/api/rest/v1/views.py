@@ -11,7 +11,7 @@ from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Student
-from apps.effects.model import CompletedCourses
+from apps.effects.models import CompletedCourses
 
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
@@ -168,4 +168,4 @@ class CompletedCoursesViewSet(viewsets.ModelViewSet):
     queryset = CompletedCourses.objects.select_related('user')  # ?
     serializer_class = serializers.CompletedCoursesSerializer
     pagination_class = StandardResultsSetPagination
-    filterset_fields = ['student']
+    # filterset_fields = ['student']
