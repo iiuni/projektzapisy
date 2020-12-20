@@ -165,7 +165,7 @@ class SystemStateViewSet(viewsets.ModelViewSet):
 class CompletedCoursesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
-    queryset = CompletedCourses.objects.select_related('student')  # ?
+    queryset = CompletedCourses.objects.select_related('student')
     serializer_class = serializers.CompletedCoursesSerializer
     pagination_class = StandardResultsSetPagination
     # filterset_fields = ['student']

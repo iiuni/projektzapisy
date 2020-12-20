@@ -220,18 +220,43 @@ class RecordSerializer(serializers.ModelSerializer):
         fields = ('id', 'group', 'student')
 
 
-class CompletedCoursesSerializer(serializers.ModelSerializer):
+class CoursesRelatedField(serializers.RelatedField):
+    def display_value(self, instance):
+        return instance
+    def to_representation(self, value):
+        return value.usos_kod
+    def to_internal_value(self, data):
+        return CourseInstance.objects.get(usos_kod=data)
+    
 
+class StudentRelatedField(serializers.RelatedField):
+    def display_value(self, instance):
+        return instance
+    def to_representation(self, value):
+        return value.usos_id
+    def to_internal_value(self, data):
+        return Student.objects.get(usos_id=data)
+        
+class CompletedCoursesSerializer(serializers.ModelSerializer):
+    student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
+    courses = CoursesRelatedField(queryset=CourseInstance.objects.all(), many=True)
     class Meta:
         model = CompletedCourses
         fields = ('id', 'student', 'courses')
 
-    @transaction.atomic
-    def create(self, validated_data):
-        # TODO
-        pass
 
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        # TODO
-        pass
+# class CompletedCoursesSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         model = CompletedCourses
+#         fields = ('id', 'student', 'courses')
+
+#     @transaction.atomic
+#     def create(self, validated_data):
+#         # TODO
+#         pass
+
+#     @transaction.atomic
+#     def update(self, instance, validated_data):
+#         # TODO
+#         pass
