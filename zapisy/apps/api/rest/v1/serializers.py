@@ -220,7 +220,7 @@ class RecordSerializer(serializers.ModelSerializer):
         fields = ('id', 'group', 'student')
 
 
-class CoursesRelatedField(serializers.RelatedField):
+class CourseRelatedField(serializers.RelatedField):
     def display_value(self, instance):
         return instance
     def to_representation(self, value):
@@ -239,10 +239,10 @@ class StudentRelatedField(serializers.RelatedField):
         
 class CompletedCoursesSerializer(serializers.ModelSerializer):
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
-    courses = CoursesRelatedField(queryset=CourseInstance.objects.all(), many=True)
+    course  = CourseRelatedField(queryset=CourseInstance.objects.all())
     class Meta:
         model = CompletedCourses
-        fields = ('id', 'student', 'courses')
+        fields = ('id', 'student', 'course')
 
 
 # class CompletedCoursesSerializer(serializers.ModelSerializer):
