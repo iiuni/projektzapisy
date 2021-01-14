@@ -1,0 +1,16 @@
+{% block effects %}
+    <div class="mb-5">
+        <h2>Efekty</h2>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
+            {% for effect in effects %}
+                <tr>
+                    <td>{{ effect }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock effects %}
