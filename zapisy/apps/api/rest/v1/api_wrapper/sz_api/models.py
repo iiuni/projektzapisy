@@ -180,3 +180,12 @@ class Term(Model):
     def __init__(self, id, dayOfWeek, start_time, end_time,
                  group, classrooms, usos_id):
         pass
+
+
+class CompletedCourse(Model):
+    redirect_key = "completed-courses"
+    is_paginated = True
+
+    @auto_assign
+    def __init__(self, id, student, course):
+        pass

@@ -243,20 +243,24 @@ class CompletedCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompletedCourses
         fields = ('id', 'student', 'course')
+    
+    # student = serializers.IntegerField()
+    # course = serializers.CharField()
+    # @transaction.atomic
+    # def create(self, validated_data):
+    #     student_usos_id = validated_data.pop('student', None)
+    #     student_id = Student.objects.get(usos_id = student_usos_id)
+    #     course_usos_kod = validated_data.pop('course', None)
+    #     course_id = CourseInstance.objects.get(usos_kod = course_usos_kod)
+        
+    #     completed_course = CompletedCourses.objects.create(
+    #         student=student_id, course=course_id)
+    #     return completed_course
 
-
-# class CompletedCoursesSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         model = CompletedCourses
-#         fields = ('id', 'student', 'courses')
-
-#     @transaction.atomic
-#     def create(self, validated_data):
-#         # TODO
-#         pass
-
-#     @transaction.atomic
-#     def update(self, instance, validated_data):
-#         # TODO
-#         pass
+    # @transaction.atomic
+    # def update(self, instance, validated_data):
+    #     # User field shouldn't be changed.
+    #     validated_data.pop('student', None)
+    #     # Matricula field shouldn't be changed.
+    #     validated_data.pop('course', None)
+    #     return super().update(instance, validated_data)

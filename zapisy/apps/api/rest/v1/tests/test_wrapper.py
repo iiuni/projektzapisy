@@ -290,6 +290,19 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(student.program.name, "Informatyka, dzienne I stopnia inżynierskie")
         self.assertEqual(student.semestr, 1)
 
+    def test_create_completed_course(self):
+        # AuthGroup.objects.create(name="students")
+
+        student = StudentFactory()
+        course_instance = CourseInstanceFactory()
+
+        completed_course_id = self.wrapper.create_completed_course(student.usos_id, "555")
+        completed_course = self.wrapper.completed_course(completed_course_id)
+
+        self.assertEqual(student.id, completed_course.student)
+        self.assertEqual(course_instance.id, completed_course.course)
+
+
     def test_change_program(self):
         """Test changing and removing student's program."""
         p1 = Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")

@@ -6,7 +6,7 @@ import requests
 
 from .models import (Classroom, CourseInstance, Desiderata, DesiderataOther, Employee, Group, Model,
                      Program, Record, Semester, SingleVote, SpecialReservation, Student,
-                     SystemState, Term, User)
+                     SystemState, Term, User, CompletedCourse)
 
 
 class ZapisyApi:
@@ -74,6 +74,14 @@ class ZapisyApi:
     def student(self, id: int) -> Student:
         """Returns Student with a given id."""
         return self._get_single_record(Student, id)
+    
+    def completed_courses(self) -> Iterator[CompletedCourse]:
+        """Returns an iterator over CompletedCourse objects."""
+        return self._get_deserialized_data(CompletedCourse)
+    
+    def completed_course(self, id: int) -> CompletedCourse:
+        """Returns CompletedCourse with a given id."""
+        return self._get_single_record(CompletedCourse, id)
 
     def employees(self) -> Iterator[Employee]:
         """Returns an iterator over Employee objects."""
@@ -221,6 +229,14 @@ class ZapisyApi:
             Program(None, program_name), semestr)
         resp = self._handle_post_request(
             self.redirect_map[Student.redirect_key], student.to_dict())
+        return resp.json()['id']
+
+    def create_completed_course(self, student, course) -> int:
+        """Adds new student - completed course record and returns its id."""
+        completed_course = CompletedCourse(None, student, course)
+        resp = self._handle_post_request(
+            self.redirect_map[CompletedCourse.redirect_key], completed_course.to_dict()
+        )
         return resp.json()['id']
 
     def _get_deserialized_data(self, model_class, params=None):
