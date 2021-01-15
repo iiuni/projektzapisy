@@ -293,7 +293,7 @@ class WrapperTests(APILiveServerTestCase):
     def test_create_completed_course(self):
         # AuthGroup.objects.create(name="students")
 
-        student = StudentFactory()
+        student = StudentFactory(usos_id=222)
         course_instance = CourseInstanceFactory(usos_kod="555")
 
         completed_course_id = self.wrapper.create_completed_course(student.usos_id, "555")
