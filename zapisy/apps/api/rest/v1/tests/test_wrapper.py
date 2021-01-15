@@ -296,11 +296,11 @@ class WrapperTests(APILiveServerTestCase):
         student = StudentFactory(usos_id=222)
         course_instance = CourseInstanceFactory(usos_kod="555")
 
-        completed_course_id = self.wrapper.create_completed_course(student.usos_id, "555")
+        completed_course_id = self.wrapper.create_completed_course(student.usos_id, course_instance.usos_kod)
         completed_course = self.wrapper.completed_course(completed_course_id)
 
-        self.assertEqual(student.id, completed_course.student)
-        self.assertEqual(course_instance.id, completed_course.course)
+        self.assertEqual(student.usos_id, completed_course.student)
+        self.assertEqual(course_instance.usos_kod, completed_course.course)
 
 
     def test_change_program(self):
