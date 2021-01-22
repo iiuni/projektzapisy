@@ -11,3 +11,16 @@ class CompletedCourses(models.Model):
     
     class Meta:
         unique_together = ('student', 'course')
+    
+    def get_completed_effects(student: Student):
+        completed_courses = CompletedCourses.objects.filter(
+            student=student.pk
+        )
+
+        done_effects = set() 
+        for course in completed_courses:
+            course_instance = CourseInstance.objects.get(id = course)
+            for effect in course_instance.effects:
+                done_effects.add(effect.group_name)
+
+        return done_effects
