@@ -19,8 +19,8 @@ class CompletedCourses(models.Model):
 
         done_effects = set() 
         for course in completed_courses:
-            course_instance = CourseInstance.objects.get(id = course)
-            for effect in course_instance.effects:
+            course_instance = CourseInstance.objects.get(id = course.course.id)
+            for effect in course_instance.effects.all():
                 done_effects.add(effect.group_name)
 
         return done_effects
