@@ -1,3 +1,5 @@
+from typing import Set
+
 from django.db import models
 
 from apps.users.models import Student
@@ -12,14 +14,14 @@ class CompletedCourses(models.Model):
     class Meta:
         unique_together = ('student', 'course')
 
-    def get_completed_effects(student: Student):
+    def get_completed_effects(student: Student) -> Set[str]:
         completed_courses = CompletedCourses.objects.filter(
             student=student.pk
         )
 
         done_effects = set()
-        for course in completed_courses:
-            course_instance = CourseInstance.objects.get(id=course.course.id)
+        for record in completed_courses:
+            course_instance = CourseInstance.objects.get(id=record.course.id)
             for effect in course_instance.effects.all():
                 done_effects.add(effect.group_name)
 

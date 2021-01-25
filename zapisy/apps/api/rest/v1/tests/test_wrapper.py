@@ -291,8 +291,10 @@ class WrapperTests(APILiveServerTestCase):
         self.assertEqual(student.semestr, 1)
 
     def test_create_completed_course(self):
-        # AuthGroup.objects.create(name="students")
+        """Tests creation of CompletedCourses record.
 
+        Adds the record via create_completed_course method and asserts it with new django model.
+        """
         student = StudentFactory(usos_id=222)
         course_instance = CourseInstanceFactory(usos_kod="555")
 

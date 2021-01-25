@@ -243,6 +243,12 @@ class StudentRelatedField(serializers.RelatedField):
 
 
 class CompletedCoursesSerializer(serializers.ModelSerializer):
+    """Serializes a CompletedCourses record.
+
+    StudentRelatedField and CourseRelatedField enable the API to use
+    usos_id and usos_kod to represent student and course fields in CompletedCourses
+    instead of internal django ids while also validating the input
+    """
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
     course = CourseRelatedField(queryset=CourseInstance.objects.all())
 
