@@ -223,27 +223,33 @@ class RecordSerializer(serializers.ModelSerializer):
 class CourseRelatedField(serializers.RelatedField):
     def display_value(self, instance):
         return instance
+
     def to_representation(self, value):
         return value.usos_kod
+
     def to_internal_value(self, data):
         return CourseInstance.objects.get(usos_kod=data)
-    
+
 
 class StudentRelatedField(serializers.RelatedField):
     def display_value(self, instance):
         return instance
+
     def to_representation(self, value):
         return value.usos_id
+
     def to_internal_value(self, data):
         return Student.objects.get(usos_id=data)
-        
+
+
 class CompletedCoursesSerializer(serializers.ModelSerializer):
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
-    course  = CourseRelatedField(queryset=CourseInstance.objects.all())
+    course = CourseRelatedField(queryset=CourseInstance.objects.all())
+
     class Meta:
         model = CompletedCourses
         fields = ('id', 'student', 'course')
-    
+
     # student = serializers.IntegerField()
     # course = serializers.CharField()
     # @transaction.atomic
@@ -252,7 +258,7 @@ class CompletedCoursesSerializer(serializers.ModelSerializer):
     #     student_id = Student.objects.get(usos_id = student_usos_id)
     #     course_usos_kod = validated_data.pop('course', None)
     #     course_id = CourseInstance.objects.get(usos_kod = course_usos_kod)
-        
+
     #     completed_course = CompletedCourses.objects.create(
     #         student=student_id, course=course_id)
     #     return completed_course

@@ -74,11 +74,11 @@ class ZapisyApi:
     def student(self, id: int) -> Student:
         """Returns Student with a given id."""
         return self._get_single_record(Student, id)
-    
+
     def completed_courses(self) -> Iterator[CompletedCourse]:
         """Returns an iterator over CompletedCourse objects."""
         return self._get_deserialized_data(CompletedCourse)
-    
+
     def completed_course(self, id: int) -> CompletedCourse:
         """Returns CompletedCourse with a given id."""
         return self._get_single_record(CompletedCourse, id)
