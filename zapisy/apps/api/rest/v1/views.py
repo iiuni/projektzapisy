@@ -168,4 +168,3 @@ class CompletedCoursesViewSet(viewsets.ModelViewSet):
     queryset = CompletedCourses.objects.select_related('student')
     serializer_class = serializers.CompletedCoursesSerializer
     pagination_class = StandardResultsSetPagination
-    # filterset_fields = ['student']
