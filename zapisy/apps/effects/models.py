@@ -15,12 +15,14 @@ class CompletedCourses(models.Model):
         unique_together = ('student', 'course')
 
     def get_completed_effects(student: Student) -> Set[str]:
-        completed_courses = CompletedCourses.objects.filter(student=student)
+        completed_courses = (
+            CompletedCourses.objects.filter(student=student)
+            .select_related('course').prefetch_related('course__effects')
+        )
 
         done_effects = set()
         for record in completed_courses:
-            course_instance = CourseInstance.objects.get(id=record.course.id)
-            for effect in course_instance.effects.all():
+            for effect in record.course.effects.all():
                 done_effects.add(effect.group_name)
 
         return done_effects
