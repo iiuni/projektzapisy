@@ -7,7 +7,6 @@ from rest_framework.test import APILiveServerTestCase, RequestsClient
 
 # from apps.schedule.tests.factories import TermFactory
 from apps.api.rest.v1.api_wrapper.sz_api import ZapisyApi
-from apps.api.rest.v1.api_wrapper.sz_api import models as api_models
 from apps.enrollment.courses.tests.factories import (ClassroomFactory, CourseInstanceFactory,
                                                      GroupFactory, SemesterFactory, TermFactory)
 from apps.enrollment.records.tests.factories import RecordFactory
@@ -299,7 +298,9 @@ class WrapperTests(APILiveServerTestCase):
         course_instance = CourseInstanceFactory(usos_kod="555")
         program = Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
 
-        completed_course_id = self.wrapper.create_completed_course(student.usos_id, course_instance.usos_kod, program.name)
+        completed_course_id = self.wrapper.create_completed_course(
+            student.usos_id, course_instance.usos_kod, program.name
+        )
         completed_course = self.wrapper.completed_course(completed_course_id)
 
         self.assertEqual(student.usos_id, completed_course.student)

@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import query
 from rest_framework import serializers
 
 from apps.effects.models import CompletedCourses

@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 
 from .models import (Classroom, CourseInstance, Desiderata, DesiderataOther, Employee, Group, Model,
-                     Program, Record, Semester, SingleVote, SpecialReservation, Student,
+                     Record, Semester, SingleVote, SpecialReservation, Student,
                      SystemState, Term, User, CompletedCourse)
 
 
