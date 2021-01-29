@@ -71,9 +71,8 @@ class Student(Model):
 
     @auto_assign
     def __init__(self, id, usos_id, matricula, ects, is_active,
-                 user: dict, program: dict, semestr):
+                 user: dict, program, semestr):
         self.user = User.from_dict(user)
-        self.program = Program.from_dict(program)
 
 
 class Employee(Model):
@@ -187,5 +186,5 @@ class CompletedCourse(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, student, course):
+    def __init__(self, id, student, course, program):
         pass

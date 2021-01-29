@@ -226,14 +226,14 @@ class ZapisyApi:
         student = Student(
             None, usos_id, indeks, ects, True,
             User(None, str(indeks), first_name, last_name, email),
-            Program(None, program_name), semestr)
+            program_name, semestr)
         resp = self._handle_post_request(
             self.redirect_map[Student.redirect_key], student.to_dict())
         return resp.json()['id']
 
-    def create_completed_course(self, student, course) -> int:
+    def create_completed_course(self, student, course, program) -> int:
         """Adds new student - completed course record and returns its id."""
-        completed_course = CompletedCourse(None, student, course)
+        completed_course = CompletedCourse(None, student, course, program)
         resp = self._handle_post_request(
             self.redirect_map[CompletedCourse.redirect_key], completed_course.to_dict()
         )
