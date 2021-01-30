@@ -101,7 +101,7 @@ class Classroom(Model):
     is_paginated = False
 
     @auto_assign
-    def __init__(self, id, type, description, number, order, building,
+    def __init__(self, id, type, description, number, building,
                  capacity, floor, can_reserve, slug, usos_id):
         pass
 

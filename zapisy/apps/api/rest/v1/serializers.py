@@ -49,9 +49,9 @@ class CourseSerializer(serializers.ModelSerializer):
 class ClassroomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classroom
-        fields = ('id', 'type', 'description', 'number', 'order', 'building', 'capacity', 'floor',
+        fields = ('id', 'type', 'description', 'number', 'building', 'capacity', 'floor',
                   'can_reserve', 'slug', 'usos_id')
-        read_only_fields = ('id', 'type', 'description', 'number', 'order', 'building', 'capacity',
+        read_only_fields = ('id', 'type', 'description', 'number', 'building', 'capacity',
                             'floor', 'can_reserve', 'slug')
 
 

@@ -24,16 +24,13 @@ class Classroom(models.Model):
     type = models.IntegerField(choices=Types.choices, default=Types.CLASSROOM, verbose_name='typ')
     description = models.TextField(null=True, blank=True, verbose_name='opis')
     number = models.CharField(max_length=20, verbose_name='numer sali')
-    # we don't use ordering properly
-    order = models.IntegerField(null=True, blank=True)
     building = models.CharField(max_length=75, verbose_name='budynek', blank=True, default='')
     capacity = models.PositiveSmallIntegerField(default=0, verbose_name='liczba miejsc')
     floor = models.IntegerField(choices=Floors.choices, null=True, blank=True)
     can_reserve = models.BooleanField(default=False)
     slug = AutoSlugField(populate_from='number')
 
-    usos_id = models.PositiveIntegerField(
-        blank=True, null=True, unique=True, verbose_name='ID sali w systemie USOS')
+    usos_id = models.PositiveIntegerField("ID sali w systemie USOS", blank=True, null=True)
 
     class Meta:
         verbose_name = 'sala'

@@ -186,7 +186,7 @@ class WrapperTests(APILiveServerTestCase):
         [res_classroom] = list(self.wrapper.classrooms())
 
         self.assert_declared_fields(
-            ('id', 'type', 'description', 'number', 'order', 'building',
+            ('id', 'type', 'description', 'number', 'building',
              'capacity', 'floor', 'can_reserve', 'slug', 'usos_id'),
             res_classroom,
             classroom

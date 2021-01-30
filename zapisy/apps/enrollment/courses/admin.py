@@ -128,7 +128,14 @@ class RecordInline(admin.TabularInline):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
+    fieldsets = (
+        (None, {
+            'fields': ('course', 'teacher', 'type', 'extra', 'export_usos'),
+        }),
+        ('Zapisy', {
+            'fields': ('limit', 'auto_enrollment'),
+        }),
+    )
     list_display = (
         'id',
         'course',

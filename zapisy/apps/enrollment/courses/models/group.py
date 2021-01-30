@@ -67,11 +67,7 @@ class Group(models.Model):
                    "przedmiotu. Nie ma żadnych dozwolonych tagów, ale dla wybranych tagów zostanie "
                    f"dodany tooltip z wyjaśnieniem: {GroupTooltips}"))
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
-    usos_nr = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name='Nr grupy w usos',
-        help_text='UWAGA! Nie edytuj tego pola sam!')
+    usos_nr = models.IntegerField("Nr grupy w usos", null=True, blank=True)
 
     def get_teacher_full_name(self):
         """Return teacher's full name for current group."""
