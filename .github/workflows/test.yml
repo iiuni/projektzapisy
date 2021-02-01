@@ -14,7 +14,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: fereolpass
+          POSTGRES_DB: fereol_test
         ports:
         - 5432:5432
         # Wait till Postgres sets up.
@@ -47,6 +49,7 @@ jobs:
         yarn dev:tc
     - name: Run Tests
       run: |
+        mv env/.env_travis env/.env
         cd zapisy
         mkdir logs
         python manage.py test --failfast --parallel --nomigrations
