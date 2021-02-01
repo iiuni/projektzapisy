@@ -46,4 +46,5 @@ jobs:
     - name: Run Tests
       run: |
         cd zapisy
-        python manage.py test
+        mkdir logs
+        python manage.py test --failfast --parallel --nomigrations
