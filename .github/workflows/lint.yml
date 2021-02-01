@@ -8,7 +8,9 @@ jobs:
   super-lint:
     name: Lint codebase
     runs-on: ubuntu-latest
-
+    env: 
+      PYTHON_VERSION: 3.8
+      NODE_VERSION: 12
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
