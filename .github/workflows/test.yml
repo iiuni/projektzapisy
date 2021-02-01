@@ -5,18 +5,17 @@ on:
   - pull_request
 
 jobs:
-  container-job:
-
+  build:
     runs-on: ubuntu-latest
-    container: ubuntu:focal
     env: 
       PYTHON_VERSION: 3.8
       NODE_VERSION: 12
     services:
       postgres:
-        image: postgres
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: fereolpass
+        # Wait till Postgres sets up.
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
