@@ -1,0 +1,50 @@
+name: Django CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  container-job:
+
+    runs-on: ubuntu-latest
+    container: ubuntu:focal
+    env: 
+      PYTHON_VERSION: 3.8
+      NODE_VERSION: 12
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: fereolpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: env.PYTHON_VERSION
+    - uses: actions/setup-node@v2
+      with:
+        node-version: env.NODE_VERSION
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r zapisy/requirements.test.txt
+    - name: Install Node Dependencies
+      run: |
+        cd zapisy
+        yarnpkg install --immutable
+    - name: Build Node assets
+      run: |
+        cd zapisy
+        yarn dev:tc
+    - name: Run Tests
+      run: |
+        cd zapisy
+        python manage.py test
