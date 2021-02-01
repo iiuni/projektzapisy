@@ -14,12 +14,22 @@ from typing import Dict, List, Set
 import requests
 
 from apps.enrollment.courses.models.classroom import Classroom
+from apps.enrollment.courses.models.group import GroupType
 
 # The mapping between group types in scheduler and enrollment system
 # w (wykład), p (pracownia), c (ćwiczenia), s (seminarium), r (ćwiczenio-pracownia),
 # e (repetytorium), o (projekt), t (tutoring), m (proseminarium)
-GROUP_TYPES = {'w': '1', 'e': '9', 'c': '2', 'p': '3',
-               'r': '5', 's': '6', 'o': '10', 't': '11', 'm': '12'}
+GROUP_TYPES = {
+    'w': GroupType.LECTURE,
+    'e': GroupType.COMPENDIUM,
+    'c': GroupType.EXERCISES,
+    'p': GroupType.LAB,
+    'r': GroupType.EXERCISES_LAB,
+    's': GroupType.SEMINAR,
+    'o': GroupType.PROJECT,
+    't': GroupType.TUTORING,
+    'm': GroupType.PRO_SEMINAR
+}
 
 # id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
 SchedulerAPIGroup = collections.namedtuple('Group', ['id', 'teacher', 'course', 'group_type', 'limit'])
