@@ -102,7 +102,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     """
     http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
-    queryset = Student.objects.select_related('user')
+    queryset = Student.objects.select_related('user', 'program')
     serializer_class = serializers.StudentSerializer
     pagination_class = StandardResultsSetPagination
     filterset_fields = ['is_active']
@@ -165,7 +165,7 @@ class SystemStateViewSet(viewsets.ModelViewSet):
 class CompletedCoursesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'patch', 'post']
     permission_classes = (IsAdminUser,)
-    queryset = CompletedCourses.objects.select_related('student')
+    queryset = CompletedCourses.objects.select_related('student', 'course', 'program')
     serializer_class = serializers.CompletedCoursesSerializer
     pagination_class = StandardResultsSetPagination
     filterset_fields = ['course__semester']

@@ -17,7 +17,7 @@ class CompletedCourses(models.Model):
 
     def get_completed_effects(student: Student) -> Set[str]:
         completed_courses = (
-            CompletedCourses.objects.filter(student=student)
+            CompletedCourses.objects.filter(student=student, program=student.program)
             .select_related('course').prefetch_related('course__effects')
         )
 

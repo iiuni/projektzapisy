@@ -95,7 +95,9 @@
                 <th>Aktualny semestr</th>
                 <td>{{ semester }}</td>
             </tr>
-            {% include "effects.html" with effects=effects only %}
+            {% if effects %}
+                {% include "effects.html" with effects=effects only %}
+            {% endif %}
         </table>
     </div>
     {% endif %}
