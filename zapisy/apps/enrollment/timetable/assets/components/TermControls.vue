@@ -173,6 +173,7 @@ export default class TermControlsComponent extends TermControlsProps {
 @media (max-width: 992px) {
   .controls {
     position: absolute;
+    min-width: 54px;
     max-width: 100%;
 
     display: grid;
