@@ -72,12 +72,15 @@ export default class TermControlsComponent extends TermControlsProps {
     }
   }
 
-  showControls(event: Event) {
+  showControls() {
     this.controlsVisible = true;
     window.addEventListener("touchend", this.hideControls);
   }
 
+  // Hides controls popup whenever there is a "mouseout" event on the Term
+  // component or any touch event outside of it.
   hideControls(event: Event) {
+    // Do not hide controls on touch events inside of the Term.
     if (
       event.type === "touchend" &&
       ((this.$refs.term as Vue).$refs.root as Element).contains(
