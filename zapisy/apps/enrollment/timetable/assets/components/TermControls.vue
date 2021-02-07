@@ -71,14 +71,33 @@ export default class TermControlsComponent extends TermControlsProps {
       this.$store.dispatch("groups/dequeue", this.term.group);
     }
   }
+
+  showControls(event: Event) {
+    this.controlsVisible = true;
+    window.addEventListener("touchend", this.hideControls);
+  }
+
+  hideControls(event: Event) {
+    if (
+      event.type === "touchend" &&
+      ((this.$refs.term as Vue).$refs.root as Element).contains(
+        event.target as Node
+      )
+    ) {
+      return;
+    }
+    this.controlsVisible = false;
+    window.removeEventListener("touchend", this.hideControls);
+  }
 }
 </script>
 
 <template>
   <Term
     :term="term"
-    @mouseover.native="controlsVisible = true"
-    @mouseout.native="controlsVisible = false"
+    @mouseover.native="showControls"
+    @mouseout.native="hideControls"
+    ref="term"
   >
     <transition name="fade">
       <div class="controls" v-if="controlsVisible">
@@ -90,8 +109,8 @@ export default class TermControlsComponent extends TermControlsProps {
         >
           <font-awesome-icon
             icon="thumbtack"
-            transform="shrink-1 right-2"
-            class="my-fa-rotate-45 unpin-margin-top"
+            :transform="{ rotate: 45 }"
+            fixed-width
           />
         </span>
         <span
@@ -100,11 +119,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Przypnij grupę do planu."
           @click="pin()"
         >
-          <font-awesome-icon
-            icon="thumbtack"
-            transform="shrink-1 right-2"
-            rotation="90"
-          />
+          <font-awesome-icon icon="thumbtack" rotation="90" fixed-width />
         </span>
 
         <span
@@ -113,7 +128,7 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Zapisz do grupy/kolejki."
           @click="enqueue()"
         >
-          <font-awesome-icon icon="pencil-alt" transform="shrink-2 right-1" />
+          <font-awesome-icon icon="pencil-alt" fixed-width />
         </span>
         <span
           v-if="canDequeue"
@@ -121,14 +136,14 @@ export default class TermControlsComponent extends TermControlsProps {
           title="Wypisz z grupy/kolejki."
           @click="dequeue()"
         >
-          <font-awesome-icon icon="ban" transform="shrink-1 right-1" />
+          <font-awesome-icon icon="ban" fixed-width />
         </span>
         <span
           v-if="term.group.autoEnrollment"
           class="auto-enrollment"
           title="Grupa z auto-zapisem."
         >
-          <font-awesome-icon icon="car-side" transform="shrink-3 left-1" />
+          <font-awesome-icon icon="car-side" fixed-width />
         </span>
       </div>
     </transition>
@@ -157,13 +172,16 @@ export default class TermControlsComponent extends TermControlsProps {
   border-radius: 4px 0;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   z-index: 30;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .controls span {
   display: block;
-  margin: 3px;
-  width: 16px;
-  height: 16px;
+  padding: 3px;
+  width: 22px;
+  height: 22px;
   font-size: 14px;
   cursor: pointer;
 }
@@ -173,30 +191,41 @@ export default class TermControlsComponent extends TermControlsProps {
 @media (max-width: 992px) {
   .controls {
     position: absolute;
-    min-width: 54px;
-    max-width: 100%;
+    top: -63px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 54px);
-    grid-template-rows: repeat(auto-fit, 47px);
+    min-width: 60px;
+    flex-direction: row;
+
+    // Tooltip arrow.
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      left: calc(50% - 10px);
+      top: 100%;
+      border: 10px solid transparent;
+      border-top-color: black;
+    }
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: calc(50% + 1px - 10px);
+      top: 100%;
+      border: 9px solid transparent;
+      border-top-color: white;
+    }
   }
 
   .controls span {
+    display: inline-block;
     font-size: 40px;
-    margin: 5px;
-    margin-top: 3px;
-    width: unset;
-    height: unset;
+    padding: 5px;
+    width: 60px;
+    height: 50px;
   }
-
-  .unpin-margin-top {
-    margin-top: 2px;
-  }
-}
-</style>
-
-<style lang="scss">
-.my-fa-rotate-45 {
-  transform: rotate(45deg);
 }
 </style>

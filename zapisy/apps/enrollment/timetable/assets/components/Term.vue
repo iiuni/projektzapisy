@@ -88,7 +88,7 @@ export default class TermComponent extends TermProps {
 </script>
 
 <template>
-  <div class="term-box" :style="boxStyle" :class="boxClass">
+  <div class="term-box" :style="boxStyle" :class="boxClass" ref="root">
     <div class="term-info" :title="title" @click="showPopup()">
       <span class="short-name">{{ courseShortName }}</span>
       <span class="teacher">{{ group.teacher.name }}</span>
@@ -97,7 +97,7 @@ export default class TermComponent extends TermProps {
     </div>
 
     <transition name="fade">
-      <div v-if="popupVisible" class="popup" @mouseleave="hidePopup()">
+      <div v-if="popupVisible" class="popup" @mouseleave="hidePopup">
         <span class="popup-name">
           <a :href="group.course.url">{{ group.course.name }}</a>
         </span>
@@ -238,6 +238,9 @@ export default class TermComponent extends TermProps {
   background: #f8f8f8;
   overflow: hidden;
   box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.15);
+  @media (max-width: 992px) {
+    top: 75%;
+  }
 }
 
 .popup-name {

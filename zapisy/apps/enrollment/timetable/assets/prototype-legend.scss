@@ -5,9 +5,9 @@ ul.schedule-legend {
   list-style: none;
 
   .legend-box {
-    float: left;
-    height: 12px;
-    width: 12px;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
     vertical-align: middle;
     margin-right: 6px;
 
