@@ -140,9 +140,8 @@ const actions = {
       .post(group.actionURL, {
         action: "enqueue",
       })
-      .then((response) => {
-        const groupsJSON = response.data as GroupJSON[];
-        groupsJSON.forEach((groupJSON) => commit("updateGroup", { groupJSON }));
+      .then((_) => {
+        commit("setEnqueued", { g: group.id });
       })
       .catch((reason) => {
         console.log("Enqueuing failed: ", reason);
@@ -155,12 +154,9 @@ const actions = {
       .post(group.actionURL, {
         action: "dequeue",
       })
-      .then((response) => {
-        const groupIDs = response.data as number[];
-        groupIDs.forEach((g) => {
-          commit("unsetEnrolled", { g });
-          commit("unsetEnqueued", { g });
-        });
+      .then((_) => {
+        commit("unsetEnrolled", { g: group.id });
+        commit("unsetEnqueued", { g: group.id });
       })
       .catch((reason) => {
         console.log("Dequeuing failed: ", reason);
