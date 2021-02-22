@@ -91,8 +91,8 @@ class CourseInstance(Model):
     is_paginated = True
 
     @auto_assign
-    def __init__(self, id, name, short_name, points, has_exam,
-                 description, semester, course_type, usos_kod):
+    def __init__(self, id, name, short_name, points, has_exam, description,
+                 language, semester, course_type, usos_kod):
         pass
 
 
