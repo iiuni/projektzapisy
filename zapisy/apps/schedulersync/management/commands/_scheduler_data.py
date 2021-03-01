@@ -8,8 +8,9 @@ Data is stored within object (.self).
 
 """
 import collections
+from dataclasses import dataclass
 from datetime import time
-from typing import Dict, List, NamedTuple, Optional, Set
+from typing import Dict, List, Optional, Set
 
 import requests
 
@@ -38,20 +39,21 @@ SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
 SchedulerAPITerm = collections.namedtuple('Term', ['day', 'start_hour', 'end_hour'])
 
 
-class SZTerm(NamedTuple):
+@dataclass
+class SchTerm:
     """Single term imported from the Scheduler.
 
     Attributes:
         teacher: String identifier. Key in config['teachers'].
         course: String name.
-        type: Group type as defined in `apps.enrollment.models.group`.
+        type: Group type as defined in `apps.enrollment.courses.models.group`.
         dayOfWeek: String as in `apps.common.days_of_week`.
     """
     scheduler_id: str
     teacher: str
     course: str
     type: GroupType
-    limit: str
+    limit: int
     dayOfWeek: Optional[str] = None
     start_time: Optional[time] = None
     end_time: Optional[time] = None
@@ -71,7 +73,7 @@ class SchedulerData:
         self._scheduler_results = {}
         self._scheduler_terms = {}
 
-    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> SZTerm:
+    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> SchTerm:
         """Change SZTerm data with data in SZ format. Does not map course and employee."""
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
@@ -100,7 +102,7 @@ class SchedulerData:
         type = get_group_type(term.group_type)
         if term.id not in self._scheduler_results:
             # For an unscheduled term only return group data.
-            return SZTerm(term.id, term.teacher, term.course, type, term.limit)
+            return SchTerm(term.id, term.teacher, term.course, type, term.limit)
         scheduler_rooms = self._scheduler_results[term.id].rooms
         scheduler_terms = []
         for id in self._scheduler_results[term.id].terms:
@@ -110,18 +112,11 @@ class SchedulerData:
         end_time = get_end_time(scheduler_terms)
         dayOfWeek = get_day_of_week(scheduler_terms[0])
         classrooms = get_classrooms(scheduler_rooms)
-        return SZTerm(term.id, term.teacher, term.course, type,
-                      term.limit, dayOfWeek, start_time, end_time, classrooms)
+        return SchTerm(term.id, term.teacher, term.course, type,
+                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 
-    def get_scheduler_data(self):
-        """Gets data from scheduler API.
-
-        Gets data from scheduler API and lays out that data to list of SZTerm in
-        self.terms. This list contains all necessary data to update or create
-        term in SZ. That data lacks employee and course mapping. Fills
-        self.teachers and self.courses with teachers and courses names for
-        future mapping.
-        """
+    def fetch_data_from_scheduler(self):
+        """Authenticates with Scheduler API and fethes the data."""
         def get_logged_client():
             client = requests.session()
             client.get(self.api_login_url)
@@ -131,6 +126,21 @@ class SchedulerData:
             client.post(self.api_login_url, data=login_data)
             return client
 
+        client = get_logged_client()
+        response = client.get(self.api_config_url)
+        api_config = response.json()
+        response = client.get(self.api_task_url)
+        api_task = response.json()
+        return api_config, api_task
+
+    def lay_out_scheduler_data(self, api_config, api_task):
+        """Lays out the data fetched from Scheduler in a useful manner.
+
+        Puts a list of SZTerm in self.terms. This list contains all necessary
+        data to update or create term in SZ. That data lacks employee and course
+        mapping. Fills self.teachers and self.courses with teachers and courses
+        names for future mapping.
+        """
         def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':
             """Lays out (room x term) data coming from scheduler."""
             data = {}
@@ -172,11 +182,6 @@ class SchedulerData:
                 data[teacher['id']] = first_name + " " + last_name
             return data
 
-        client = get_logged_client()
-        response = client.get(self.api_config_url)
-        api_config = response.json()
-        response = client.get(self.api_task_url)
-        api_task = response.json()
         self._scheduler_results = get_results_data(api_task['timetable']['results'])
         self._scheduler_terms = get_terms_data(api_config['terms'])
         scheduler_groups = get_groups_data(api_config['groups'])
@@ -190,3 +195,8 @@ class SchedulerData:
         for teacher in teachers:
             self.teachers[teacher] = teachers_names[teacher]
         self.courses = set(term.course for term in self.terms)
+
+    def get_scheduler_data(self):
+        """Combines fetching and laying out the Scheduler data."""
+        api_config, api_task = self.fetch_data_from_scheduler()
+        self.lay_out_scheduler_data(api_config, api_task)

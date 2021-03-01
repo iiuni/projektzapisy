@@ -8,14 +8,22 @@ then user will be asked for proper input.
 Fills summary object given in constructor.
 
 """
-from typing import Dict, Optional, Set
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-from .scheduler_data import SchedulerData, SZTerm
+from ._scheduler_data import SchedulerData, SchTerm
+
+
+@dataclass
+class SZTerm(SchTerm):
+    """SchTerm with teacher and course identified in the Zapisy database."""
+    teacher: Optional[Employee]
+    course: Optional[CourseInstance]
 
 
 class SchedulerMapper:
@@ -175,7 +183,7 @@ class SchedulerMapper:
         """
         scheduler_data.teachers = self._map_teachers(scheduler_data.teachers)
         scheduler_data.courses = self._map_courses(scheduler_data.courses)
-        mapped_terms = []
+        mapped_terms: List[SZTerm] = []
         for term in scheduler_data.terms:
             course = scheduler_data.courses[term.course]
             teacher = scheduler_data.teachers[term.teacher]
