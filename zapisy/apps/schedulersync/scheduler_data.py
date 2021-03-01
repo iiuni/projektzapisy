@@ -9,7 +9,7 @@ Data is stored within object (.self).
 """
 import collections
 from datetime import time
-from typing import Dict, List, Set
+from typing import Dict, List, NamedTuple, Optional, Set
 
 import requests
 
@@ -36,9 +36,26 @@ SchedulerAPIGroup = collections.namedtuple('Group', ['id', 'teacher', 'course', 
 # strings in terms list are id's of SchedulerAPITerm tuples
 SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
 SchedulerAPITerm = collections.namedtuple('Term', ['day', 'start_hour', 'end_hour'])
-# System Zapisow term data
-SZTerm = collections.namedtuple('Term', ['scheduler_id', 'teacher', 'course', 'type', 'limit',
-                                         'dayOfWeek', 'start_time', 'end_time', 'classrooms'])
+
+
+class SZTerm(NamedTuple):
+    """Single term imported from the Scheduler.
+
+    Attributes:
+        teacher: String identifier. Key in config['teachers'].
+        course: String name.
+        type: Group type as defined in `apps.enrollment.models.group`.
+        dayOfWeek: String as in `apps.common.days_of_week`.
+    """
+    scheduler_id: str
+    teacher: str
+    course: str
+    type: GroupType
+    limit: str
+    dayOfWeek: Optional[str] = None
+    start_time: Optional[time] = None
+    end_time: Optional[time] = None
+    classrooms: Optional[Set[Classroom]] = None
 
 
 class SchedulerData:
@@ -76,10 +93,14 @@ class SchedulerData:
             """Finds Classroom objects from with given room numbers."""
             return set(Classroom.objects.filter(number__in=rooms))
 
-        def get_group_type(group_type: 'str') -> 'str':
+        def get_group_type(group_type: 'str') -> 'GroupType':
             """Map scheduler group type to SZ group type."""
             return GROUP_TYPES[group_type]
 
+        type = get_group_type(term.group_type)
+        if term.id not in self._scheduler_results:
+            # For an unscheduled term only return group data.
+            return SZTerm(term.id, term.teacher, term.course, type, term.limit)
         scheduler_rooms = self._scheduler_results[term.id].rooms
         scheduler_terms = []
         for id in self._scheduler_results[term.id].terms:
@@ -89,7 +110,6 @@ class SchedulerData:
         end_time = get_end_time(scheduler_terms)
         dayOfWeek = get_day_of_week(scheduler_terms[0])
         classrooms = get_classrooms(scheduler_rooms)
-        type = get_group_type(term.group_type)
         return SZTerm(term.id, term.teacher, term.course, type,
                       term.limit, dayOfWeek, start_time, end_time, classrooms)
 

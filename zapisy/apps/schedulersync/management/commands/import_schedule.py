@@ -136,7 +136,10 @@ class Command(BaseCommand):
                 diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))
                 term.classrooms.set(term_data.classrooms)
 
-            if diffs:
+            if term_data.dayOfWeek is None:
+                # Term has been unscheduled (without deleting the group).
+                term.delete()
+            elif diffs:
                 term.save()
                 term.group.save()
                 self.summary.updated_terms.append((term, diffs))
@@ -152,12 +155,18 @@ class Command(BaseCommand):
             else:
                 group = Group.objects.create(course=term_data.course, teacher=term_data.teacher,
                                              type=term_data.type, limit=term_data.limit)
-            term = Term.objects.create(dayOfWeek=term_data.dayOfWeek, start_time=term_data.start_time,
-                                       end_time=term_data.end_time, group=group)
-            term.classrooms.set(term_data.classrooms)
-            TermSyncData.objects.create(term=term, scheduler_id=term_data.scheduler_id)
+            if term_data.dayOfWeek is not None:
+                term = Term.objects.create(dayOfWeek=term_data.dayOfWeek,
+                                           start_time=term_data.start_time,
+                                           end_time=term_data.end_time,
+                                           group=group)
+                term.classrooms.set(term_data.classrooms)
+                TermSyncData.objects.create(term=term, scheduler_id=term_data.scheduler_id)
+                self.summary.created_terms.append(term)
+            else:
+                # New group is created without term.
+                self.summary.created_terms.append(Term(group=group))
             self.summary.used_scheduler_ids.append(term_data.scheduler_id)
-            self.summary.created_terms.append(term)
 
     def remove_unused_terms_groups(self):
         groups_to_remove = set()
