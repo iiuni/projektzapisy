@@ -190,6 +190,21 @@ class Command(BaseCommand):
         environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         return env
 
+    def report_error(self, e: Exception, write_to_slack_flag, interactive_flag):
+        """Reports an error that occurred during an import."""
+        secrets_env = self.get_secrets_env()
+        slack = Slack(secrets_env.str('SLACK_WEBHOOK_URL'))
+        slack.add_attachment('danger', 'An error occurred during an import! <!channel>', e)
+        if write_to_slack_flag:
+            try:
+                slack.write_to_slack()
+            except ValueError:
+                # If the error is in writing to Slack, we don't really have a
+                # solution.
+                pass
+        if interactive_flag:
+            slack.write_to_screen()
+
     def import_from_api(self, dont_delete_terms_flag, write_to_slack_flag, interactive_flag):
         secrets_env = self.get_secrets_env()
         scheduler_data = SchedulerData(self.api_login_url,
@@ -241,12 +256,16 @@ class Command(BaseCommand):
         if dry_run_flag:
             self.stdout.write("Dry run is on. Nothing will be saved or deleted. All messages are informational.")
         try:
-            self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
+            try:
+                self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
+            except Exception as e:
+                self.report_error(e, write_to_slack_flag, interactive_flag)
+                raise
         except KeyboardInterrupt:
             self.stderr.write(self.style.ERROR("\nKeyboardInterrupt: Rolling back changes and exiting."))
             transaction.set_rollback(True)
         except SystemExit:
-            self.stderr.write(self.style.NOTICE("SystemExit: Commiting changes (unless --dry_run was on) and exiting."))
+            self.stderr.write(self.style.NOTICE("SystemExit: Committing changes (unless --dry_run was on) and exiting."))
             # Let the transaction finish gracefully.
             pass
         if dry_run_flag:
