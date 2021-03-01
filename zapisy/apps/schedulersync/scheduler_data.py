@@ -49,15 +49,15 @@ class SchTerm:
         type: Group type as defined in `apps.enrollment.courses.models.group`.
         dayOfWeek: String as in `apps.common.days_of_week`.
     """
-    scheduler_id: str
+    scheduler_id: int
     teacher: str
     course: str
     type: GroupType
     limit: int
-    dayOfWeek: Optional[str] = None
-    start_time: Optional[time] = None
-    end_time: Optional[time] = None
-    classrooms: Optional[Set[Classroom]] = None
+    dayOfWeek: str
+    start_time: time
+    end_time: time
+    classrooms: Set[Classroom]
 
 
 class SchedulerData:
@@ -73,7 +73,7 @@ class SchedulerData:
         self._scheduler_results = {}
         self._scheduler_terms = {}
 
-    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> SchTerm:
+    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> Optional[SchTerm]:
         """Change SZTerm data with data in SZ format. Does not map course and employee."""
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
@@ -101,8 +101,8 @@ class SchedulerData:
 
         type = get_group_type(term.group_type)
         if term.id not in self._scheduler_results:
-            # For an unscheduled term only return group data.
-            return SchTerm(term.id, term.teacher, term.course, type, term.limit)
+            # Group without term. Not imported.
+            return None
         scheduler_rooms = self._scheduler_results[term.id].rooms
         scheduler_terms = []
         for id in self._scheduler_results[term.id].terms:
@@ -188,7 +188,8 @@ class SchedulerData:
 
         for sh_group in scheduler_groups:
             term = self._map_scheduler_types(sh_group)
-            self.terms.append(term)
+            if term:
+                self.terms.append(term)
 
         teachers_names = get_teachers_data(api_config['teachers'])
         teachers = set(term.teacher for term in self.terms)

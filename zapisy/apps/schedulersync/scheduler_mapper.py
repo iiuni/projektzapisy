@@ -16,7 +16,7 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.schedulersync.models import CourseMap, EmployeeMap
 from apps.users.models import Employee
 
-from ._scheduler_data import SchedulerData, SchTerm
+from .scheduler_data import SchedulerData, SchTerm
 
 
 @dataclass

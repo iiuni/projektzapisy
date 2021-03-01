@@ -34,7 +34,7 @@ class Summary:
         self.updated_terms = []
         self.created_terms = []
         self.deleted_terms = []
-        self.used_scheduler_ids = []
+        self.used_scheduler_ids = set()
         self.multiple_proposals = []
         self.maps_added = []
         self.maps_deleted = []
@@ -56,7 +56,8 @@ class Slack:
     def prepare_message(self, summary: Summary):
         for term in summary.created_terms:
             text = "day: {}\nstart_time: {}\nend_time: {}\nteacher: {}".format(
-                DAYS_OF_WEEK[term.dayOfWeek], term.start_time, term.end_time, term.group.teacher)
+                DAYS_OF_WEEK.get(term.dayOfWeek, 'None'), term.start_time, term.end_time,
+                term.group.teacher)
             self.add_attachment('good', "Created: {}".format(term.group), text)
 
         for term, diffs in summary.updated_terms:

@@ -11,7 +11,7 @@ from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
-from apps.schedulersync.management.commands._scheduler_data import GROUP_TYPES
+from apps.schedulersync.scheduler_data import GROUP_TYPES
 
 
 class SingleAssignmentData(NamedTuple):
