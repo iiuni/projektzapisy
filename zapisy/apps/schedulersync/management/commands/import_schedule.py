@@ -56,9 +56,9 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term
 from apps.schedulersync.models import TermSyncData
 
-from .scheduler_data import SchedulerData, SZTerm
-from .scheduler_mapper import SchedulerMapper
-from .slack import Slack, Summary, SlackUpdate
+from apps.schedulersync.scheduler_data import SchedulerData, SZTerm
+from apps.schedulersync.scheduler_mapper import SchedulerMapper
+from apps.schedulersync.slack import Slack, Summary, SlackUpdate
 
 
 class Command(BaseCommand):
