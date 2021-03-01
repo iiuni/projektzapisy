@@ -47,9 +47,10 @@ Example usage:
 import os
 from typing import List
 
-import environ
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+import environ
+import rollbar
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
@@ -187,20 +188,13 @@ class Command(BaseCommand):
         environ.Env.read_env(os.path.join(BASE_DIR, os.pardir, 'env', '.env'))
         return env
 
-    def report_error(self, e: Exception, write_to_slack_flag, interactive_flag):
+    def report_error(self):
         """Reports an error that occurred during an import."""
-        secrets_env = self.get_secrets_env()
-        slack = Slack(secrets_env.str('SLACK_WEBHOOK_URL'))
-        slack.add_attachment('danger', 'An error occurred during an import! <!channel>', e)
-        if write_to_slack_flag:
-            try:
-                slack.write_to_slack()
-            except ValueError:
-                # If the error is in writing to Slack, we don't really have a
-                # solution.
-                pass
-        if interactive_flag:
-            slack.write_to_screen()
+        env = self.get_secrets_env()
+        rollbar.init(access_token=env.str('ROLLBAR_TOKEN'),
+                     environment=env.str('ROLLBAR_ENV'),
+                     branch=env.str('ROLLBAR_BRANCH'))
+        rollbar.report_exc_info(level='error')
 
     def update_terms(self, mapped_terms: List[SZTerm], dont_delete_terms_flag):
         for i, term in enumerate(mapped_terms):
@@ -257,8 +251,9 @@ class Command(BaseCommand):
         try:
             try:
                 self.import_from_api(dont_delete_terms_flag, write_to_slack_flag, interactive_flag)
-            except Exception as e:
-                self.report_error(e, write_to_slack_flag, interactive_flag)
+            except Exception:
+                if not interactive_flag:
+                    self.report_error()
                 raise
         except KeyboardInterrupt:
             self.stderr.write(self.style.ERROR("\nKeyboardInterrupt: Rolling back changes and exiting."))
