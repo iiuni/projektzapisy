@@ -4,10 +4,9 @@ Get data from scheduler API urls and lays out that data to list of SchTerm.
 SchTerm contains all necessary data to update or create term. That data is not
 yet mapped to the Zapisy database — that is a role of `scheduler_mapper`.
 """
-import collections
 from dataclasses import dataclass
 from datetime import time
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple, TypedDict, Set
 
 import requests
 
@@ -28,11 +27,43 @@ GROUP_TYPES = {
     'm': GroupType.PRO_SEMINAR
 }
 
-# id inside this touple refers to SchedulerAPIResult id, we treat this id as scheduler_id
-SchedulerAPIGroup = collections.namedtuple('Group', ['id', 'teacher', 'course', 'group_type', 'limit'])
-# strings in terms list are id's of SchedulerAPITerm tuples
-SchedulerAPIResult = collections.namedtuple('Result', ['rooms', 'terms'])
-SchedulerAPITerm = collections.namedtuple('Term', ['day', 'start_hour', 'end_hour'])
+# Scheduler API gives us two JSON files. The first is 'config' (an input to
+# Scheduler).
+GroupId = str
+TeacherId = str
+SchedulerAPIGroup = TypedDict('Group', {
+    'id': GroupId,
+    'extra': TypedDict('GroupExtra', {'course': str, 'group_type': str}),
+    'students_num': int,
+    'teachers': List[TeacherId],
+})
+SchedulerAPITeacher = TypedDict('Teacher', {
+    'id': str,
+    'extra': TypedDict('TeacherExtra', {
+        'first_name': str,
+        'last_name': str,
+    }),
+})
+SchedulerAPITermTime = TypedDict('TermTime', {'hour': int})
+TermId = str
+# Term corresponds to (usually an hour long) pre-defined time slot.
+SchedulerAPITerm = TypedDict('Term', {
+    'id': TermId,
+    'day': int,
+    'start': SchedulerAPITermTime,
+    'end': SchedulerAPITermTime,
+})
+SchedulerAPIConfig = TypedDict('Config', {
+    'teachers': List[SchedulerAPITeacher],
+    'groups': List[SchedulerAPIGroup],
+    'terms': List[SchedulerAPITerm],
+})
+
+# The second file is 'task': a product of a Scheduler run.
+SchedulerAPIResult = TypedDict('Result', {'room': str, 'term': TermId})
+SchedulerAPIResultMap = Dict[GroupId, List[SchedulerAPIResult]]
+SchedulerAPITask = TypedDict(
+    'Task', {'timetable': TypedDict('Timetable', {'results': SchedulerAPIResultMap})})
 
 
 @dataclass
@@ -47,7 +78,7 @@ class SchTerm:
         classrooms: List of room numbers.
     """
     scheduler_id: int
-    teacher: str
+    teacher: TeacherId
     course: str
     type: GroupType
     limit: int
@@ -68,11 +99,11 @@ class SchedulerData:
         self.teachers = {}
         self.courses = set()
         self.classrooms = set()
-        self._scheduler_results = {}
-        self._scheduler_terms = {}
+        self._scheduler_results: SchedulerAPIResultMap = {}
+        self._scheduler_terms: Dict[TermId, SchedulerAPITerm] = {}
 
-    def _map_scheduler_types(self, term: SchedulerAPIGroup) -> Optional[SchTerm]:
-        """Collects a single term from Scheduler's data.
+    def _map_scheduler_types(self, group: SchedulerAPIGroup) -> Optional[SchTerm]:
+        """Collects a single term (group) from Scheduler's data.
 
         A single term is described in Scheduler in different places: The group
         info (teacher, type, etc.) is in 'config'; The classroom is in
@@ -80,42 +111,46 @@ class SchedulerData:
         'results' point to.
         """
 
-        def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
+        def translate_day_of_week(scheduler_day: int) -> str:
             """Map scheduler numbers of days of week to SZ numbers."""
-            day = scheduler_term.day
-            return str(day + 1)
+            return str(scheduler_day + 1)
 
-        def get_start_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
+        def get_start_time(scheduler_terms: List[SchedulerAPITerm]) -> time:
             """Returns earliest starting time among the SchedulerAPITerms."""
-            hour = min(term.start_hour for term in scheduler_terms)
+            hour = min(term['start']['hour'] for term in scheduler_terms)
             return time(hour=hour)
 
-        def get_end_time(scheduler_terms: 'List[SchedulerAPITerm]') -> 'time':
+        def get_end_time(scheduler_terms: List[SchedulerAPITerm]) -> time:
             """Returns latest starting time among the SchedulerAPITerms."""
-            hour = max(term.end_hour for term in scheduler_terms)
+            hour = max(term['end']['hour'] for term in scheduler_terms)
             return time(hour=hour)
 
-        def get_group_type(group_type: 'str') -> 'GroupType':
-            """Map scheduler group type to SZ group type."""
+        def translate_group_type(group_type: 'str') -> 'GroupType':
+            """Translates scheduler group type to SZ group type."""
             return GROUP_TYPES[group_type]
 
-        type = get_group_type(term.group_type)
-        if term.id not in self._scheduler_results:
+        group_id = group['id']
+        if group_id not in self._scheduler_results:
             # Group without term. Not imported.
             return None
-        scheduler_rooms = self._scheduler_results[term.id].rooms
-        scheduler_terms = []
-        for id in self._scheduler_results[term.id].terms:
-            scheduler_terms.append(self._scheduler_terms[id])
+        rooms: Set[str] = set()
+        terms: List[SchedulerAPITerm] = []
+        for result in self._scheduler_results[group_id]:
+            rooms.add(result['room'])
+            terms.append(self._scheduler_terms[result['term']])
+        return SchTerm(
+            scheduler_id=int(group_id),
+            teacher=group['teachers'][0],
+            course=group['extra']['course'],
+            type=translate_group_type(group['extra']['group_type']),
+            limit=group['students_num'],
+            dayOfWeek=translate_day_of_week(terms[0]['day']),
+            start_time=get_start_time(terms),
+            end_time=get_end_time(terms),
+            classrooms=list(rooms),
+        )
 
-        start_time = get_start_time(scheduler_terms)
-        end_time = get_end_time(scheduler_terms)
-        dayOfWeek = get_day_of_week(scheduler_terms[0])
-        classrooms = list(scheduler_rooms)
-        return SchTerm(term.id, term.teacher, term.course, type,
-                       term.limit, dayOfWeek, start_time, end_time, classrooms)
-
-    def fetch_data_from_scheduler(self):
+    def fetch_data_from_scheduler(self) -> Tuple[SchedulerAPIConfig, SchedulerAPITask]:
         """Authenticates with Scheduler API and fetches the data."""
         def get_logged_client():
             client = requests.session()
@@ -133,7 +168,7 @@ class SchedulerData:
         api_task = response.json()
         return api_config, api_task
 
-    def lay_out_scheduler_data(self, api_config, api_task):
+    def lay_out_scheduler_data(self, api_config: SchedulerAPIConfig, api_task: SchedulerAPITask):
         """Lays out the data fetched from Scheduler in a useful manner.
 
         Puts a list of SchTerm in self.terms. This list contains all necessary
@@ -142,60 +177,35 @@ class SchedulerData:
         self.classrooms with teachers, courses names and classroom numbers for
         future mapping.
         """
-        def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':
-            """Lays out (room x term) data coming from scheduler."""
-            data = {}
-            for id in results:
-                rooms = set(rec['room'] for rec in results[id])
-                terms = set(int(rec['term']) for rec in results[id])
-                data[int(id)] = SchedulerAPIResult(rooms, terms)
-            return data
 
-        def get_groups_data(groups: 'List[int, List, Dict]') -> 'List[SchedulerAPIGroup]':
-            """Lays out (id, teachers, extra) data coming from scheduler."""
-            data = []
-            for rec in groups:
-                id = int(rec['id'])
-                teacher = rec['teachers'][0]
-                course = rec['extra']['course']
-                group_type = rec['extra']['group_type']
-                limit = rec['students_num']
-                data.append(SchedulerAPIGroup(id, teacher, course, group_type, limit))
-            return data
-
-        def get_terms_data(terms: 'List[int, int, Dict, Dict]') -> 'Dict[int, SchedulerAPITerm]':
+        def map_terms(terms: List[SchedulerAPITerm]) -> Dict[TermId, SchedulerAPITerm]:
             """Lays out (id, day, start, end) data coming from scheduler."""
-            data = {}
-            for rec in terms:
-                day = rec['day']
-                start_hour = rec['start']['hour']
-                end_hour = rec['end']['hour']
-                data[int(rec['id'])] = SchedulerAPITerm(
-                    day, start_hour, end_hour)
-            return data
+            return {t['id']: t for t in terms}
 
-        def get_teachers_data(teachers: 'List[str, Dict]') -> 'Dict[str, str]':
+        def map_teachers_names(teachers: List[SchedulerAPITeacher],
+                               filter: Set[TeacherId]) -> Dict[TeacherId, str]:
             """Lays out (first_name, last_name) data coming from scheduler."""
             data = {}
             for teacher in teachers:
+                if teacher['id'] not in filter:
+                    continue
                 first_name = teacher['extra']['first_name']
                 last_name = teacher['extra']['last_name']
                 data[teacher['id']] = first_name + " " + last_name
             return data
 
-        self._scheduler_results = get_results_data(api_task['timetable']['results'])
-        self._scheduler_terms = get_terms_data(api_config['terms'])
-        scheduler_groups = get_groups_data(api_config['groups'])
+        self._scheduler_results = api_task['timetable']['results']
+        self._scheduler_terms = map_terms(api_config['terms'])
+        scheduler_groups = api_config['groups']
 
+        active_teachers = set()
         for sh_group in scheduler_groups:
             term = self._map_scheduler_types(sh_group)
             if term:
                 self.terms.append(term)
+                active_teachers.add(term.teacher)
 
-        teachers_names = get_teachers_data(api_config['teachers'])
-        teachers = set(term.teacher for term in self.terms)
-        for teacher in teachers:
-            self.teachers[teacher] = teachers_names[teacher]
+        self.teachers = map_teachers_names(api_config['teachers'], active_teachers)
         self.courses = set(term.course for term in self.terms)
         self.classrooms.union(*(term.classrooms for term in self.terms))
 
