@@ -33,19 +33,21 @@ GROUP_TYPES = {
 GroupId = str
 TeacherId = str
 TermId = str
+GroupExtra = TypedDict('GroupExtra', course=str, group_type=str)
+TeacherExtra = TypedDict('TeacherExtra', first_name=str, last_name=str)
 
 
 class SchedulerAPIGroup(TypedDict):
     """Represents a single term (meeting)."""
     id: GroupId
-    extra: TypedDict('GroupExtra', course=str, group_type=str)
+    extra: GroupExtra
     students_num: int
     teachers: List[TeacherId]
 
 
 class SchedulerAPITeacher(TypedDict):
     id: str
-    extra: TypedDict('TeacherExtra', first_name=str, last_name=str)
+    extra: TeacherExtra
 
 
 SchedulerAPITermTime = TypedDict('TermTime', {'hour': int})
