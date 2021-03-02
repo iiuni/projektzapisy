@@ -27,40 +27,46 @@ GROUP_TYPES = {
     'm': GroupType.PRO_SEMINAR
 }
 
-# Scheduler API gives us two JSON files. The first is 'config' (an input to
-# Scheduler).
+# Type & format definitions for JSON files coming from the Scheduler API.
+# The first file, 'config', is an input to the scheduler. It contains the
+# description of classes (to be scheduled), teachers, time-slots, classrooms.
 GroupId = str
 TeacherId = str
-SchedulerAPIGroup = TypedDict('Group', {
-    'id': GroupId,
-    'extra': TypedDict('GroupExtra', {'course': str, 'group_type': str}),
-    'students_num': int,
-    'teachers': List[TeacherId],
-})
-SchedulerAPITeacher = TypedDict('Teacher', {
-    'id': str,
-    'extra': TypedDict('TeacherExtra', {
-        'first_name': str,
-        'last_name': str,
-    }),
-})
-SchedulerAPITermTime = TypedDict('TermTime', {'hour': int})
 TermId = str
-# Term corresponds to (usually an hour long) pre-defined time slot.
-SchedulerAPITerm = TypedDict('Term', {
-    'id': TermId,
-    'day': int,
-    'start': SchedulerAPITermTime,
-    'end': SchedulerAPITermTime,
-})
-SchedulerAPIConfig = TypedDict('Config', {
-    'teachers': List[SchedulerAPITeacher],
-    'groups': List[SchedulerAPIGroup],
-    'terms': List[SchedulerAPITerm],
-})
+
+
+class SchedulerAPIGroup(TypedDict):
+    """Represents a single term (meeting)."""
+    id: GroupId
+    extra: TypedDict('GroupExtra', course=str, group_type=str)
+    students_num: int
+    teachers: List[TeacherId]
+
+
+class SchedulerAPITeacher(TypedDict):
+    id: str
+    extra: TypedDict('TeacherExtra', first_name=str, last_name=str)
+
+
+SchedulerAPITermTime = TypedDict('TermTime', {'hour': int})
+
+
+class SchedulerAPITerm(TypedDict):
+    """Represents a (usually an hour long) pre-defined time slot."""
+    id: TermId
+    day: int
+    start: SchedulerAPITermTime
+    end: SchedulerAPITermTime
+
+
+class SchedulerAPIConfig(TypedDict):
+    teachers: List[SchedulerAPITeacher]
+    groups: List[SchedulerAPIGroup]
+    terms: List[SchedulerAPITerm]
+
 
 # The second file is 'task': a product of a Scheduler run.
-SchedulerAPIResult = TypedDict('Result', {'room': str, 'term': TermId})
+SchedulerAPIResult = TypedDict('Result', room=str, term=TermId)
 SchedulerAPIResultMap = Dict[GroupId, List[SchedulerAPIResult]]
 SchedulerAPITask = TypedDict(
     'Task', {'timetable': TypedDict('Timetable', {'results': SchedulerAPIResultMap})})
