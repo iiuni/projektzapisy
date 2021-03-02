@@ -4,7 +4,6 @@ from django.test import TestCase
 
 from apps.common import days_of_week
 from apps.enrollment.courses.models.group import GroupType
-from apps.enrollment.courses.tests.factories import ClassroomFactory
 from apps.schedulersync import scheduler_data
 
 # Config file is an input to the Scheduler.
@@ -84,9 +83,6 @@ config = {
 
 class SchedulerDataTestCase(TestCase):
     """Tests the data layer between Scheduler output and Zapisy."""
-    @classmethod
-    def setUpTestData(cls):
-        cls.r108 = ClassroomFactory(number='108')
 
     def test_standard_data(self):
         """This test provides the functions with a standard scheduler output."""
@@ -110,7 +106,7 @@ class SchedulerDataTestCase(TestCase):
                 dayOfWeek=days_of_week.TUESDAY,
                 start_time=time(hour=16),
                 end_time=time(hour=18),
-                classrooms=set((self.r108, )),
+                classrooms=['108'],
             )
         ])
         self.assertCountEqual(sd.teachers, {

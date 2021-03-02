@@ -1,20 +1,16 @@
 """Gets data from scheduler API.
 
-Get data from scheduler API urls and lays out that data to list of SZTerm.
-Szterm contains all necessary data to update or create term.
-That data lacks courses and teachers mapping, so it prepares all teachers
-and courses to map in seperate dict and set.
-Data is stored within object (.self).
-
+Get data from scheduler API urls and lays out that data to list of SchTerm.
+SchTerm contains all necessary data to update or create term. That data is not
+yet mapped to the Zapisy database — that is a role of `scheduler_mapper`.
 """
 import collections
 from dataclasses import dataclass
 from datetime import time
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 import requests
 
-from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.group import GroupType
 
 # The mapping between group types in scheduler and enrollment system
@@ -48,6 +44,7 @@ class SchTerm:
         course: String name.
         type: Group type as defined in `apps.enrollment.courses.models.group`.
         dayOfWeek: String as in `apps.common.days_of_week`.
+        classrooms: List of room numbers.
     """
     scheduler_id: int
     teacher: str
@@ -57,7 +54,7 @@ class SchTerm:
     dayOfWeek: str
     start_time: time
     end_time: time
-    classrooms: Set[Classroom]
+    classrooms: List[str]
 
 
 class SchedulerData:
@@ -70,11 +67,18 @@ class SchedulerData:
         self.terms = []
         self.teachers = {}
         self.courses = set()
+        self.classrooms = set()
         self._scheduler_results = {}
         self._scheduler_terms = {}
 
     def _map_scheduler_types(self, term: SchedulerAPIGroup) -> Optional[SchTerm]:
-        """Change SZTerm data with data in SZ format. Does not map course and employee."""
+        """Collects a single term from Scheduler's data.
+
+        A single term is described in Scheduler in different places: The group
+        info (teacher, type, etc.) is in 'config'; The classroom is in
+        'results'; The time is in 'SchedulerAPITerm's (time slots) which the
+        'results' point to.
+        """
 
         def get_day_of_week(scheduler_term: 'SchedulerAPITerm') -> 'str':
             """Map scheduler numbers of days of week to SZ numbers."""
@@ -90,10 +94,6 @@ class SchedulerData:
             """Returns latest starting time among the SchedulerAPITerms."""
             hour = max(term.end_hour for term in scheduler_terms)
             return time(hour=hour)
-
-        def get_classrooms(rooms: 'List[str]') -> 'Set[Classroom]':
-            """Finds Classroom objects from with given room numbers."""
-            return set(Classroom.objects.filter(number__in=rooms))
 
         def get_group_type(group_type: 'str') -> 'GroupType':
             """Map scheduler group type to SZ group type."""
@@ -111,12 +111,12 @@ class SchedulerData:
         start_time = get_start_time(scheduler_terms)
         end_time = get_end_time(scheduler_terms)
         dayOfWeek = get_day_of_week(scheduler_terms[0])
-        classrooms = get_classrooms(scheduler_rooms)
+        classrooms = list(scheduler_rooms)
         return SchTerm(term.id, term.teacher, term.course, type,
                        term.limit, dayOfWeek, start_time, end_time, classrooms)
 
     def fetch_data_from_scheduler(self):
-        """Authenticates with Scheduler API and fethes the data."""
+        """Authenticates with Scheduler API and fetches the data."""
         def get_logged_client():
             client = requests.session()
             client.get(self.api_login_url)
@@ -136,10 +136,11 @@ class SchedulerData:
     def lay_out_scheduler_data(self, api_config, api_task):
         """Lays out the data fetched from Scheduler in a useful manner.
 
-        Puts a list of SZTerm in self.terms. This list contains all necessary
-        data to update or create term in SZ. That data lacks employee and course
-        mapping. Fills self.teachers and self.courses with teachers and courses
-        names for future mapping.
+        Puts a list of SchTerm in self.terms. This list contains all necessary
+        data to update or create term in SZ. That data lacks employee, course
+        and classroom mapping. Fills self.teachers, self.courses and
+        self.classrooms with teachers, courses names and classroom numbers for
+        future mapping.
         """
         def get_results_data(results: 'Dict[int, Dict]') -> 'Dict[int, SchedulerAPIResult]':
             """Lays out (room x term) data coming from scheduler."""
@@ -196,6 +197,7 @@ class SchedulerData:
         for teacher in teachers:
             self.teachers[teacher] = teachers_names[teacher]
         self.courses = set(term.course for term in self.terms)
+        self.classrooms.union(*(term.classrooms for term in self.terms))
 
     def get_scheduler_data(self):
         """Combines fetching and laying out the Scheduler data."""
