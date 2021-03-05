@@ -173,7 +173,7 @@ class SchedulerMapper:
                 mapped_courses[course] = get_course(proposal)
         return mapped_courses
 
-    def _map_classrooms(rooms: Iterable[str]) -> Dict[str, Classroom]:
+    def _map_classrooms(self, rooms: Iterable[str]) -> Dict[str, Classroom]:
         """Maps classroom numbers to Zapisy Clasroom objects.
 
         Room numbers absent in the database will be ignored.
