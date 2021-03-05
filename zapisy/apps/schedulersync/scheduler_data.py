@@ -215,7 +215,7 @@ class SchedulerData:
 
         self.teachers = map_teachers_names(api_config['teachers'], active_teachers)
         self.courses = set(term.course for term in self.terms)
-        self.classrooms.union(*(term.classrooms for term in self.terms))
+        self.classrooms = set().union(*(term.classrooms for term in self.terms))
 
     def get_scheduler_data(self):
         """Combines fetching and laying out the Scheduler data."""
