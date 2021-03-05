@@ -113,6 +113,7 @@ class SchedulerDataTestCase(TestCase):
             'bchrobry': 'Bolesław Chrobry',
         })
         self.assertCountEqual(sd.courses, ['Lepienie garnków (lato)'])
+        self.assertCountEqual(sd.classrooms, ['108'])
 
     def test_unscheduled_group(self):
         """Gives group data in 'config' but no terms for it in 'task'."""
@@ -122,6 +123,7 @@ class SchedulerDataTestCase(TestCase):
         self.assertCountEqual(sd.terms, [])
         self.assertCountEqual(sd.teachers, {})
         self.assertCountEqual(sd.courses, [])
+        self.assertCountEqual(sd.classrooms, [])
 
     def test_incorrect_term(self):
         """Schedules group in an undefined term."""
