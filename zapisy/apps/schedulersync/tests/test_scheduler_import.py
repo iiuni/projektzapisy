@@ -41,7 +41,7 @@ class SchedulerImportTestCase(TestCase):
                    dayOfWeek=days_of_week.MONDAY,
                    start_time=time(hour=12),
                    end_time=time(hour=14),
-                   classrooms=set((self.r1, ))),
+                   classrooms=[self.r1]),
             SZTerm(scheduler_id=2,
                    teacher=self.bolek,
                    course=self.c1,
@@ -50,7 +50,7 @@ class SchedulerImportTestCase(TestCase):
                    dayOfWeek=days_of_week.THURSDAY,
                    start_time=time(hour=8),
                    end_time=time(hour=10),
-                   classrooms=set((self.r1, ))),
+                   classrooms=[self.r1]),
             SZTerm(scheduler_id=3,
                    teacher=self.bolek,
                    course=self.c1,
@@ -59,7 +59,7 @@ class SchedulerImportTestCase(TestCase):
                    dayOfWeek=days_of_week.MONDAY,
                    start_time=time(hour=10),
                    end_time=time(hour=12),
-                   classrooms=set((self.r1, ))),
+                   classrooms=[self.r1]),
             SZTerm(scheduler_id=4,
                    teacher=self.bolek,
                    course=self.c1,
@@ -68,7 +68,7 @@ class SchedulerImportTestCase(TestCase):
                    dayOfWeek=days_of_week.THURSDAY,
                    start_time=time(hour=10),
                    end_time=time(hour=12),
-                   classrooms=set((self.r1, ))),
+                   classrooms=[self.r1]),
         ]
 
         with self.subTest(msg="Fresh import"):
@@ -97,12 +97,14 @@ class SchedulerImportTestCase(TestCase):
                        dayOfWeek=days_of_week.THURSDAY,
                        start_time=time(hour=10),
                        end_time=time(hour=12),
-                       classrooms=set((self.r1, ))), )
+                       classrooms=[self.r1]))
             ims = Command()
             ims.semester = self.s1
             ims.update_terms(terms, False)
             # Nothing should change for the first course.
             self.assertEqual(self.c1.groups.count(), 3)
+            t = Term.objects.filter(group__course=self.c1, group__type=GroupType.EXERCISES).first()
+            self.assertCountEqual(t.classrooms.all(), [self.r1])
             # A new group should be created for the second course.
             self.assertEqual(self.c2.groups.count(), 1)
 
@@ -118,7 +120,7 @@ class SchedulerImportTestCase(TestCase):
                        dayOfWeek=days_of_week.THURSDAY,
                        start_time=time(hour=10),
                        end_time=time(hour=12),
-                       classrooms=set((self.r1, ))))
+                       classrooms=[self.r1]))
             ims = Command()
             ims.semester = self.s1
             ims.update_terms(terms, False)
