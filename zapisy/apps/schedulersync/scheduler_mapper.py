@@ -191,16 +191,16 @@ class SchedulerMapper:
         Args:
             Data from scheduler api, obtained by SchedulerData object.
         """
-        scheduler_data.teachers = self._map_teachers(scheduler_data.teachers)
-        scheduler_data.courses = self._map_courses(scheduler_data.courses)
-        scheduler_data.classrooms = self._map_classrooms(scheduler_data.classrooms)
+        teachers_map = self._map_teachers(scheduler_data.teachers)
+        courses_map = self._map_courses(scheduler_data.courses)
+        classrooms_map = self._map_classrooms(scheduler_data.classrooms)
         mapped_terms: List[SZTerm] = []
         for term in scheduler_data.terms:
-            course = scheduler_data.courses[term.course]
-            teacher = scheduler_data.teachers[term.teacher]
+            course = courses_map[term.course]
+            teacher = teachers_map[term.teacher]
             classrooms = [
-                scheduler_data.classrooms[number]
-                for number in term.classrooms if number in scheduler_data.classrooms
+                classrooms_map[number]
+                for number in term.classrooms if number in classrooms_map
             ]
             mapped_terms.append(SZTerm(term.scheduler_id, teacher, course, term.type, term.limit,
                                        term.dayOfWeek, term.start_time, term.end_time, classrooms))
