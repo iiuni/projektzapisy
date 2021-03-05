@@ -137,7 +137,7 @@ class Command(BaseCommand):
             diffs.extend(prop_updater(term, term_data, ['dayOfWeek', 'start_time', 'end_time']))
             diffs.extend(prop_updater(term.group, term_data, ['teacher']))
 
-            if set(term.classrooms.all()) != term_data.classrooms:
+            if set(term.classrooms.all()) != set(term_data.classrooms):
                 diffs.append(SlackUpdate('classrooms', term.classrooms.all(), term_data.classrooms))
                 term.classrooms.set(term_data.classrooms)
 
