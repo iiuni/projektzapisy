@@ -61,7 +61,6 @@ export default Vue.extend({
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
-            default="zaakceptowana"
             placeholder="Status pracy dyplomowej"
           />
         </div>
