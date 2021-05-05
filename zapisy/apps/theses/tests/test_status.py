@@ -3,7 +3,6 @@ from django.test import TestCase
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm
 from apps.theses.models import ThesesSystemSettings, Thesis, Vote
-from apps.theses.system_settings import change_status
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 
@@ -46,8 +45,8 @@ class ThesisStatusChangeTestCase(TestCase):
         vote_1 = Vote.objects.create(owner=EmployeeFactory(),
                                      vote=ThesisVote.ACCEPTED, thesis=thesis_vote_1)
 
-        change_status(thesis_vote_0, vote_0.vote)
-        change_status(thesis_vote_1, vote_1.vote)
+        vote_0.save()
+        vote_1.save()
 
         self.assertEqual(thesis_vote_0.status, ThesisStatus.ACCEPTED)
         self.assertEqual(thesis_vote_1.status, ThesisStatus.IN_PROGRESS)

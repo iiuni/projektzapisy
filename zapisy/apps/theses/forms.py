@@ -7,7 +7,6 @@ from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.models import (MAX_ASSIGNED_STUDENTS, MAX_ASSIGNED_STUDENTS_WITH_PERM, MAX_THESIS_TITLE_LEN, Remark,
                                 Thesis, Vote)
-from apps.theses.system_settings import change_status
 from apps.users.models import Employee, Student
 
 
@@ -283,14 +282,8 @@ class VoteForm(forms.ModelForm):
             instance.owner = self.user.employee
         if getattr(instance, 'thesis', None) is None:
             instance.thesis = self.thesis
-        thesis = instance.thesis
-
-        # check number of votes and change thesis status
-        change_status(thesis, instance.vote)
-
         if commit:
             instance.save()
-
         return instance
 
 
