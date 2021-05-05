@@ -11,7 +11,8 @@ from apps.users.models import Employee, Student
 
 MAX_THESIS_TITLE_LEN = 300
 MAX_REJECTION_REASON_LENGTH = 500
-MAX_ASSIGNED_STUDENTS = 2
+MAX_ASSIGNED_STUDENTS = 1
+MAX_ASSIGNED_STUDENTS_WITH_PERM = 3
 
 
 class ThesesSystemSettings(models.Model):
@@ -96,6 +97,9 @@ class Thesis(models.Model):
     class Meta:
         verbose_name = "praca dyplomowa"
         verbose_name_plural = "prace dyplomowe"
+        permissions = [
+            ("assign_multiple_students", "Can assign a thesis to more than one student")
+        ]
 
     def save(self, *args, **kwargs):
         """Overloaded save method.

@@ -5,7 +5,8 @@ from django.utils import timezone
 
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
-from apps.theses.models import MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
+from apps.theses.models import (MAX_ASSIGNED_STUDENTS, MAX_ASSIGNED_STUDENTS_WITH_PERM, MAX_THESIS_TITLE_LEN, Remark,
+                                Thesis, Vote)
 from apps.theses.system_settings import change_status
 from apps.users.models import Employee, Student
 
@@ -63,6 +64,9 @@ class ThesisFormBase(forms.ModelForm):
                 pk=user.employee.pk)
             self.fields['advisor'].initial = user.employee
             self.fields['advisor'].widget.attrs['readonly'] = True
+
+        self.can_assign_multiple_students = user.has_perm('theses.assign_multiple_students')
+
         self.fields['supporting_advisor'].queryset = Employee.objects.exclude(
             pk=user.employee.pk)
         self.helper = FormHelper()
@@ -70,9 +74,15 @@ class ThesisFormBase(forms.ModelForm):
 
     def clean_students(self):
         students = self.cleaned_data['students']
-        if len(students) > MAX_ASSIGNED_STUDENTS:
-            raise forms.ValidationError(
-                "Możesz przypisać maksymalnie " + str(MAX_ASSIGNED_STUDENTS) + " studentów")
+        if 'students' in self.changed_data:
+            if not self.can_assign_multiple_students and len(students) > MAX_ASSIGNED_STUDENTS:
+                raise forms.ValidationError(
+                    'Możesz przypisać tylko jednego studenta do pracy dyplomowej. '
+                    'Aby dodać więcej studentów zwróć się do administratora SZ.')
+            if len(students) > MAX_ASSIGNED_STUDENTS_WITH_PERM:
+                raise forms.ValidationError(
+                    f'Praca może być przypisana maksymalnie {MAX_ASSIGNED_STUDENTS_WITH_PERM} '
+                    'studentom.')
         return students
 
 
