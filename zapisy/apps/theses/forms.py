@@ -27,13 +27,6 @@ class VoteFormAdmin(forms.ModelForm):
         fields = '__all__'
 
 
-def display_max_students():
-    if MAX_ASSIGNED_STUDENTS == 1:
-        return 'jednego studenta'
-    else:
-        return f'{MAX_ASSIGNED_STUDENTS} studentów'
-
-
 class ThesisFormBase(forms.ModelForm):
     class Meta:
         model = Thesis
@@ -50,8 +43,9 @@ class ThesisFormBase(forms.ModelForm):
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         required=False,
-        label=(f"Przypisani studenci (aby przypisać więcej niż {display_max_students()} "
-               "zwróć się do zastępcy dyrektora ds. dydaktycznych)"),
+        label="Przypisani studenci",
+        help_text=(f"Limit przypisanych studentów: {MAX_ASSIGNED_STUDENTS}. "
+                   "Aby przypisać więcej studentów należy zwrócić się do zastępcy dyrektora ds. dydaktycznych."),
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
@@ -82,9 +76,7 @@ class ThesisFormBase(forms.ModelForm):
     def clean_students(self):
         students = self.cleaned_data['students']
         if 'students' in self.changed_data and len(students) > MAX_ASSIGNED_STUDENTS:
-            raise forms.ValidationError(
-                f'Możesz przypisać co najwyżej {display_max_students()} do pracy dyplomowej. '
-                'Aby dodać więcej studentów zwróć się do zastępcy dyrektora ds. dydaktycznych.')
+            raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
         return students
 
 
