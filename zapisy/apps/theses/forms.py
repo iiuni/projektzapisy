@@ -1,12 +1,11 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Column, Div, Layout, Row, Submit
+from crispy_forms.layout import Column, Layout, Row, Submit
 from django import forms
 from django.utils import timezone
 
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
-from apps.theses.models import (MAX_ASSIGNED_STUDENTS, MAX_ASSIGNED_STUDENTS_WITH_PERM, MAX_THESIS_TITLE_LEN, Remark,
-                                Thesis, Vote)
+from apps.theses.models import MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 
 
@@ -41,10 +40,11 @@ class ThesisFormBase(forms.ModelForm):
                                                 label="Promotor wspierający",
                                                 required=False)
     kind = forms.ChoiceField(choices=ThesisKind.choices, label="Typ")
-    students = forms.ModelMultipleChoiceField(queryset=Student.objects.all(),
-                                              required=False,
-                                              label="Przypisani studenci",
-                                              widget=forms.SelectMultiple(attrs={'size': '10'}))
+    students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.all(),
+        required=False,
+        label="Przypisani studenci (aby przypisać więcej niż jednego studenta zwróć się do aministratora SZ)",
+        widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do",
@@ -73,15 +73,10 @@ class ThesisFormBase(forms.ModelForm):
 
     def clean_students(self):
         students = self.cleaned_data['students']
-        if 'students' in self.changed_data:
-            if not self.can_assign_multiple_students and len(students) > MAX_ASSIGNED_STUDENTS:
-                raise forms.ValidationError(
-                    'Możesz przypisać tylko jednego studenta do pracy dyplomowej. '
-                    'Aby dodać więcej studentów zwróć się do administratora SZ.')
-            if len(students) > MAX_ASSIGNED_STUDENTS_WITH_PERM:
-                raise forms.ValidationError(
-                    f'Praca może być przypisana maksymalnie {MAX_ASSIGNED_STUDENTS_WITH_PERM} '
-                    'studentom.')
+        if 'students' in self.changed_data and len(students) > MAX_ASSIGNED_STUDENTS:
+            raise forms.ValidationError(
+                'Możesz przypisać co najwyżej jednego studenta do pracy dyplomowej. '
+                'Aby dodać więcej studentów zwróć się do administratora SZ.')
         return students
 
 
@@ -111,11 +106,7 @@ class ThesisForm(ThesisFormBase):
                 Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'),
             row_1,
-            Div('students',
-                HTML(('<small class="form-text text-muted ">Przytrzymaj '
-                      'wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby '
-                      'zaznaczyć więcej niż jeden wybór.</small>')),
-                css_class='mb-3'),
+            'students',
             'description',
         )
 
@@ -162,11 +153,7 @@ class EditThesisForm(ThesisFormBase):
                 Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'),
             special_row,
-            Div('students',
-                HTML(('<small class="form-text text-muted ">Przytrzymaj '
-                      'wciśnięty klawisz „Ctrl” lub „Command” na Macu, aby '
-                      'zaznaczyć więcej niż jeden wybór.</small>')),
-                css_class='mb-3'),
+            'students',
             'description',
         )
         if self.instance.is_returned and self.instance.is_mine(user):
