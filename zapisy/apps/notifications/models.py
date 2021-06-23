@@ -17,6 +17,8 @@ class NotificationPreferencesStudent(models.Model):
         "Zmiana prowadzącego grupy, do której czekasz w kolejce", default=True)
     news_has_been_added = models.BooleanField(
         "Nowa wiadomość w Aktualnościach", default=True)
+    terms_conflict = models.BooleanField(
+        "Nowa wiadomość, konflikt terminów w rezerwacji sal", default=True)
 
     @property
     def news_has_been_added_high_priority(self):

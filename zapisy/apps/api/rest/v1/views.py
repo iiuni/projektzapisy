@@ -9,7 +9,6 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Student
 from apps.effects.models import CompletedCourses
 
@@ -121,14 +120,6 @@ class DesiderataOtherViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = DesiderataOther.objects.all()
     serializer_class = serializers.DesiderataOtherSerializer
-    filterset_fields = '__all__'
-
-
-class SpecialReservationViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get']
-    permission_classes = (IsAdminUser,)
-    queryset = SpecialReservation.objects.all()
-    serializer_class = serializers.SpecialReservationSerializer
     filterset_fields = '__all__'
 
 

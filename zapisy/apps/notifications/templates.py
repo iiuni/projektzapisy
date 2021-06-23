@@ -11,6 +11,7 @@ class NotificationType(str, Enum):
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
     NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY = 'news_has_been_added_high_priority'
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
+    TERMS_CONFLICT = 'terms_conflict'
 
 
 mapping = {
@@ -36,4 +37,6 @@ mapping = {
     "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    NotificationType.TERMS_CONFLICT:
+    'Wydarzenie "{event_title}" rezerwacji sal pojawił się konfliktujący termin.',
 }

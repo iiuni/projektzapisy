@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 
 from .models import (Classroom, CourseInstance, Desiderata, DesiderataOther, Employee, Group, Model,
-                     Record, Semester, SingleVote, SpecialReservation, Student,
+                     Record, Semester, SingleVote, Student,
                      SystemState, Term, User, CompletedCourse)
 
 
@@ -182,20 +182,6 @@ class ZapisyApi:
     def desiderata_other(self, id: int) -> DesiderataOther:
         """Returns DesiderataOther object with a given id."""
         return self._get_single_record(DesiderataOther, id)
-
-    def special_reservations(
-        self, filters: Optional[dict] = None
-    ) -> Iterator[SpecialReservation]:
-        """Lists SpecialReservation objects.
-
-        SpecialReservation is a way to book a room for a semester. Filtering
-        by any field is possible by passing it in `filters` dict.
-        """
-        return self._get_deserialized_data(SpecialReservation, params=filters)
-
-    def special_reservation(self, id: int) -> SpecialReservation:
-        """Returns SpecialReservation object with a given id."""
-        return self._get_single_record(SpecialReservation, id)
 
     def single_votes(
         self, filters: Optional[dict] = None

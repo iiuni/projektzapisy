@@ -9,7 +9,8 @@ from django.http import Http404
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
-
+from apps.enrollment.courses.models.semester import Semester
+from apps.notifications.custom_signals import terms_conflict
 
 class Event(models.Model):
     TYPE_EXAM = '0'
@@ -17,6 +18,7 @@ class Event(models.Model):
     TYPE_GENERIC = '2'
     TYPE_CLASS = '3'
     TYPE_OTHER = '4'
+    TYPE_SPECIAL_RESERVATION = '5'
 
     STATUS_PENDING = '0'
     STATUS_ACCEPTED = '1'
@@ -30,6 +32,7 @@ class Event(models.Model):
              (TYPE_TEST, 'Kolokwium'),
              (TYPE_GENERIC, 'Wydarzenie'),
              (TYPE_CLASS, 'Zajęcia'),
+             (TYPE_SPECIAL_RESERVATION, 'Rezerwacja stała'),
              (TYPE_OTHER, 'Inne')]
 
     TYPES_FOR_STUDENT = [(TYPE_GENERIC, 'Wydarzenie')]
@@ -38,20 +41,16 @@ class Event(models.Model):
                          (TYPE_TEST, 'Kolokwium'),
                          (TYPE_GENERIC, 'Wydarzenie')]
 
-    title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
+    title = models.CharField(max_length=255, verbose_name='Tytuł', default='Tytuł')
     description = models.TextField(verbose_name='Opis', blank=True)
     type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
     visible = models.BooleanField(verbose_name='Wydarzenie jest publiczne', default=False)
     status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
     course = models.ForeignKey(CourseInstance, null=True, blank=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
-    reservation = models.ForeignKey(
-        'schedule.SpecialReservation',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
 
     interested = models.ManyToManyField(User, related_name='interested_events')
+    semester = models.ForeignKey(Semester, null=True, blank=True, default=None, verbose_name='semestr', on_delete=models.CASCADE)
 
     author = models.ForeignKey(User, verbose_name='Twórca', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -62,7 +61,7 @@ class Event(models.Model):
 
         if self.group:
             return reverse('group-view', args=[str(self.group_id)])
-        return reverse('events:show', args=[str(self.pk)])
+        return reverse('schedule:event', args=[str(self.pk)])
 
     class Meta:
         app_label = 'schedule'
@@ -73,11 +72,32 @@ class Event(models.Model):
             ("manage_events", "Może zarządzać wydarzeniami"),
         )
 
+    def _authorize_user_can_create_update_event(self):
+        """ Check if author is authorized to set given Event properties """
+        if self.author.has_perm('schedule.manage_events'):
+            return
+        if self.author.student:
+            if not any(self.type == t for t, _ in Event.TYPES_FOR_STUDENT):
+                raise ValidationError('Nie masz uprawnień aby dodawać wydarzenia tego typu', code='permission')
+            if self.status != Event.STATUS_PENDING:
+                raise ValidationError('Nie masz uprawnień aby dodawać zaakceptowane wydarzenia 1', code='permission')
+        # Employee can create accepted exam and test events
+        if self.author.employee:
+            if not any(self.type == t for t, _ in Event.TYPES_FOR_TEACHER):
+                raise ValidationError('Nie masz uprawnień aby dodawać wydarzenia tego typu', code='permission')
+            if self.type == Event.TYPE_GENERIC and self.status != Event.STATUS_PENDING:
+                raise ValidationError('Nie masz uprawnień aby dodawać zaakceptowane wydarzenia 2', code='permission')
+
     def clean(self, *args, **kwargs):
         """Overload clean method.
 
-        If author is employee and try reserve room for exam - accept it
-        If author has perms to manage events - accept it
+        If this is a new event set proper status and visible field. If author is employee and try reserve room for
+        exam - accept it.
+        If this is an existing event, check if author has permission to set given properties. Specially Event.type and
+        Event.status
+
+        Raises:
+            ValidationError: If author is not authorized to set given Event properties.
         """
         # if this is a new item
         if not self.pk:
@@ -103,7 +123,7 @@ class Event(models.Model):
                 if self.status != Event.STATUS_PENDING:
                     raise ValidationError(
                         message={
-                            'status': ['Nie masz uprawnień aby dodawać zaakceptowane wydarzenia']},
+                            'status': ['Nie masz uprawnień aby dodawać zaakceptowane wydarzenia 3']},
                         code='permission')
 
         else:
@@ -117,6 +137,7 @@ class Event(models.Model):
                     from .term import Term
                     for term in Term.objects.filter(event=self):
                         term.clean()
+            self._authorize_user_can_create_update_event()
 
         super(Event, self).clean()
 
@@ -128,25 +149,26 @@ class Event(models.Model):
             term.delete()
         self.delete()
 
-    def get_conflicted(self) -> List['Event']:
-        """Returns all conflicting events."""
+    def get_conflicted(self) -> List['Term']:
+        """Returns all conflicting terms."""
         terms = self.term_set.all()
         event_conflicts = set()
         for term in terms:
             term_conflicts = term.get_conflicted()
             for conflict in term_conflicts:
-                event_conflicts.add(conflict.event)
+                event_conflicts.add(conflict)
         return list(event_conflicts)
 
-    def _user_can_see_or_404(self, user):
-        """Private method. Return True if user can see event, otherwise False.
+    def can_user_see(self, user):
+        """Return True if user can see event, otherwise False.
 
         @param user: auth.User
         @return: Boolean
         """
         if not self.author == user and not user.has_perm('schedule.manage_events'):
             if(not self.visible or
-               self.type not in [self.TYPE_EXAM, self.TYPE_TEST, self.TYPE_GENERIC] or
+               self.type not in [self.TYPE_EXAM, self.TYPE_TEST, self.TYPE_GENERIC,
+                                 self.TYPE_CLASS, self.TYPE_SPECIAL_RESERVATION] or
                self.status != self.STATUS_ACCEPTED):
                 return False
 
@@ -166,7 +188,7 @@ class Event(models.Model):
         except ObjectDoesNotExist:
             raise Http404
 
-        if event._user_can_see_or_404(user):
+        if event.can_user_see(user):
             return event
         else:
             raise Http404

@@ -26,7 +26,6 @@ class AdminTestCase(TestCase):
         "/fereol_admin/news/news/",
         "/fereol_admin/poll/schema/",
         "/fereol_admin/preferences/preference/",
-        "/fereol_admin/schedule/specialreservation/",
         "/fereol_admin/schedule/term/",
         "/fereol_admin/sites/site/",
         "/fereol_admin/users/employee/",

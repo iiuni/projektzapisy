@@ -142,17 +142,6 @@ class DesiderataOther(Model):
     def __init__(self, id, comment, employee, semester):
         pass
 
-
-class SpecialReservation(Model):
-    redirect_key = "special-reservation"
-    is_paginated = False
-
-    @auto_assign
-    def __init__(self, id, title, DayOfWeek, start_time,
-                 end_time, semester, classroom):
-        pass
-
-
 class SystemState(Model):
     redirect_key = "systemstate"
     is_paginated = False

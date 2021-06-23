@@ -7,12 +7,13 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from apps.enrollment.courses.models.group import Group
+from apps.schedule.models.event import Event
 from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated)
+                                               thesis_voting_activated, terms_conflict)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -175,3 +176,19 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
                      NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))
+
+
+@receiver(terms_conflict, sender=Event)
+def notify_that_terms_conflict_appear(sender: Record, **kwargs) -> None:
+    event = kwargs['instance']
+    target = reverse(course_view, args=[event.course.slug]) #?
+
+    notify_user(
+        kwargs['user'],
+        Notification(
+            get_id(), get_time(), NotificationType.TERMS_CONFLICT, {
+                'course_name': event.course.name,
+                'teacher': event.get_teacher_full_name(),
+                'type': event.get_type_display(),
+                'reason': kwargs['reason']
+            }, target))

@@ -8,152 +8,16 @@ from django.test import TestCase
 from django.utils.crypto import get_random_string
 
 import apps.enrollment.courses.tests.factories as enrollment_factories
-from apps.common import days_of_week
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.tests.objectmothers import ClassroomObjectMother, SemesterObjectMother
 from apps.enrollment.records.models import Record, RecordStatus
-from apps.schedule import feeds
 from apps.schedule.models.event import Event
-from apps.schedule.models.message import EventMessage, EventModerationMessage
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.models.term import Term as EventTerm
 from apps.users.models import Employee
 from apps.users.tests.factories import EmployeeFactory, StudentFactory, UserFactory
 
 from . import factories
-
-
-class SpecialReservationTestCase(TestCase):
-    def setUp(self):
-        semester = SemesterObjectMother.summer_semester_2015_16()
-        semester.save()
-
-        semester_2 = SemesterObjectMother.winter_semester_2015_16()
-        semester_2.save()
-
-        room110 = ClassroomObjectMother.room110()
-        room110.save()
-
-        reservation_author = factories.UserFactory()
-        reservation_author.save()
-
-        reservation = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room110,
-                                         dayOfWeek=days_of_week.WEDNESDAY,
-                                         start_time=time(15),
-                                         end_time=time(16))
-        reservation.full_clean()
-        reservation.save(author_id=reservation_author.pk)
-
-        reservation_2 = SpecialReservation(semester=semester,
-                                           title='ąęłżóćśśń',
-                                           classroom=room110,
-                                           dayOfWeek=days_of_week.THURSDAY,
-                                           start_time=time(15),
-                                           end_time=time(16))
-        reservation_2.full_clean()
-        reservation_2.save(author_id=reservation_author.pk)
-
-        reservation_3 = SpecialReservation(semester=semester_2,
-                                           title='Reserve whole monday',
-                                           classroom=room110,
-                                           dayOfWeek=days_of_week.MONDAY,
-                                           start_time=time(8),
-                                           end_time=time(21))
-        reservation_3.full_clean()
-        reservation_3.save(author_id=reservation_author.pk)
-
-        reservation_4 = SpecialReservation(semester=semester,
-                                           title='Reserve just after reservation 2',
-                                           classroom=room110,
-                                           dayOfWeek=days_of_week.THURSDAY,
-                                           start_time=time(16),
-                                           end_time=time(18))
-        reservation_4.full_clean()
-        reservation_4.save(author_id=reservation_author.pk)
-
-    def test_special_reservation_unicode_method(self):
-        reservations = SpecialReservation.objects.all()
-        for reservation in reservations:
-            str(reservation)
-
-    def test_try_clean_on_non_overlapping_reservation(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        room = Classroom.get_by_number('110')
-        reservation = SpecialReservation(
-            semester=semester,
-            title='non-overlapping reservation',
-            classroom=room,
-            dayOfWeek=days_of_week.THURSDAY,
-            start_time=time(14),
-            end_time=time(15)
-        )
-        reservation.full_clean()
-
-    def test_created_reservation_is_present(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        reservations = SpecialReservation.get_reservations_for_semester(semester)
-        self.assertTrue(reservations)
-
-    def test_no_reservations_on_not_reserved_day(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        reservations = SpecialReservation.get_reservations_for_semester(semester, day=days_of_week.FRIDAY)
-        self.assertFalse(reservations)
-
-    def test_number_of_reservations(self):
-        semester = Semester.get_semester(date(2016, 5, 12))
-        reservations = SpecialReservation.get_reservations_for_semester(semester)
-        self.assertEqual(len(reservations), 3)
-
-
-class MessageTestCase(TestCase):
-    # there are two classes of name EventModerationMessage but it works
-    def test_simpliest_message_autotimenow(self):
-        event = factories.EventFactory()
-        message = get_random_string(length=32)
-        emm = EventModerationMessage(
-            author=factories.UserFactory(),
-            event=event,
-            message=message
-        )
-        emm.save()
-        emm2 = EventModerationMessage(
-            author=factories.UserFactory(),
-            event=event,
-            message=message
-        )
-        emm2.save()
-        # event message should not be counted
-        em = EventMessage(
-            author=factories.UserFactory(),
-            event=event,
-            message=message
-        )
-        em.save()
-
-        messages = EventModerationMessage.get_event_messages(event)
-        # the results should be 2 because em is not event moderation message
-        self.assertEqual(len(messages), 2)
-
-    def test_simpliest_eventmessage_autotimenow(self):  # this classes are the same almost
-        event = factories.EventFactory()
-        message = get_random_string(length=32)
-        em = EventMessage(
-            author=factories.UserFactory(),
-            event=event,
-            message=message
-        )
-        em.save()
-        em2 = EventMessage(
-            author=factories.UserFactory(),
-            event=event,
-            message=message
-        )
-        em2.save()
-        messages = EventMessage.get_event_messages(event)
-        self.assertEqual(len(messages), 2)
 
 
 class TermTestCase(TestCase):
@@ -179,121 +43,6 @@ class TermTestCase(TestCase):
             day=term2.get_day()
         )
         self.assertRaises(ValidationError, term3.full_clean)
-
-    def test_different_semester_reservation(self):
-        semester = \
-            enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
-        semester.save()
-        semester.full_clean()
-        other_semester = \
-            enrollment_factories.SemesterFactory(type=Semester.TYPE_SUMMER)
-        other_semester.save()
-        other_semester.full_clean()
-
-        room25 = enrollment_factories.ClassroomFactory()
-        room25.save()
-        room25.full_clean()
-
-        reservation_author = factories.UserFactory()
-        reservation_author.save()
-
-        reservation = SpecialReservation(semester=semester,
-                                         title="A reservation",
-                                         classroom=room25,
-                                         dayOfWeek=days_of_week.MONDAY,
-                                         start_time=time(8),
-                                         end_time=time(16))
-        reservation.full_clean()
-        reservation.save(author_id=reservation_author.pk)
-        reservation2 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.TUESDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation2.full_clean()
-        reservation2.save(author_id=reservation_author.pk)
-        reservation3 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.WEDNESDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation3.full_clean()
-        reservation3.save(author_id=reservation_author.pk)
-        reservation4 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.THURSDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation4.full_clean()
-        reservation4.save(author_id=reservation_author.pk)
-        reservation5 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.FRIDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation5.full_clean()
-        reservation5.save(author_id=reservation_author.pk)
-        reservation6 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.SATURDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation6.full_clean()
-        reservation6.save(author_id=reservation_author.pk)
-        reservation7 = SpecialReservation(semester=semester,
-                                          title="A reservation",
-                                          classroom=room25,
-                                          dayOfWeek=days_of_week.SUNDAY,
-                                          start_time=time(8),
-                                          end_time=time(16))
-        reservation7.full_clean()
-        reservation7.save(author_id=reservation_author.pk)
-
-        # It would fail, was this term in the same semester as the reservations.
-        term = factories.TermFactory(room=room25,
-                                     day=other_semester.lectures_beginning,
-                                     start=time(9), end=time(17))
-        term.full_clean()
-        term.save()
-        self.assertEqual(other_semester.semester_beginning, term.day)
-        self.assertEqual(reservation.classroom, term.room)
-
-
-class FeedsTestCase(TestCase):
-    def test_item_title(self):
-        event = factories.EventFactory()
-        event2 = factories.EventFactory()
-        latest = feeds.Latest()
-        item_title = [
-            feeds.Latest.item_title(
-                latest, event), feeds.Latest.item_title(
-                latest, event2)]
-        item_author = [
-            feeds.Latest.item_author_name(
-                latest, event), feeds.Latest.item_author_name(
-                latest, event)]
-        item_pub = [
-            feeds.Latest.item_pubdate(
-                latest, event), feeds.Latest.item_pubdate(
-                latest, event)]
-        item_desc = [
-            feeds.Latest.item_description(
-                latest, event), feeds.Latest.item_description(
-                latest, event)]
-        item_auth_mail = [
-            feeds.Latest.item_author_email(
-                latest, event), feeds.Latest.item_author_email(
-                latest, event)]
-        self.assertEqual(len(item_title), 2)
-        self.assertEqual(len(item_author), 2)
-        self.assertEqual(len(item_pub), 2)
-        self.assertEqual(len(item_desc), 2)
-        self.assertEqual(len(item_auth_mail), 2)
 
 
 class EventTestCase(TestCase):
@@ -341,7 +90,7 @@ class EventTestCase(TestCase):
 
     def test_get_absolute_url__no_group(self):
         event = Event.objects.all()[0]
-        self.assertEqual(event.get_absolute_url(), '/events/%d/' % event.pk)
+        self.assertEqual(event.get_absolute_url(), '/classrooms/events/%d/' % event.pk)
 
     def test_get_absolute_url__group(self):
         event = factories.EventCourseFactory.create()
@@ -354,7 +103,7 @@ class EventTestCase(TestCase):
             event=event,
             day=date(2016, 5, 20),
             start=time(15),
-            end=time(17),
+            end=time(16),
             room=room110
         )
         self.assertRaises(ValidationError, term.full_clean)
@@ -413,11 +162,11 @@ class EventTestCase(TestCase):
     def test_normal_user_cant_see_invisible_event(self):
         user = UserFactory()
         event = factories.EventInvisibleFactory.build()
-        self.assertFalse(event._user_can_see_or_404(user))
+        self.assertFalse(event.can_user_see(user))
 
     def test_author_can_see_own_invisible_event(self):
         event = factories.EventInvisibleFactory.build()
-        self.assertTrue(event._user_can_see_or_404(event.author))
+        self.assertTrue(event.can_user_see(event.author))
 
     def test_user_with_manage_perm_can_see_invisible_event(self):
         user = UserFactory()
@@ -425,31 +174,31 @@ class EventTestCase(TestCase):
         permission = Permission.objects.get(codename='manage_events')
         user.user_permissions.add(permission)
         event = factories.EventFactory(visible=False)
-        self.assertTrue(event._user_can_see_or_404(user))
+        self.assertTrue(event.get_event_or_404(0,user))
 
     def test_student_cant_see_pending_event(self):
         user = UserFactory()
         user.full_clean()
         event = factories.PendingEventFactory.build()
-        self.assertFalse(event._user_can_see_or_404(user))
+        self.assertFalse(event.can_user_see(user))
 
     def test_user_cant_see_rejected_event(self):
         user = UserFactory()
         user.full_clean()
         event = factories.RejectedEventFactory.build()
-        self.assertFalse(event._user_can_see_or_404(user))
+        self.assertFalse(event.can_user_see(user))
 
     def test_user_cant_see_type_class_event(self):
         user = UserFactory()
         user.full_clean()
         event = factories.EventFactory.build(type=Event.TYPE_CLASS)
-        self.assertFalse(event._user_can_see_or_404(user))
+        self.assertFalse(event.can_user_see(user))
 
     def test_user_cant_see_type_other_event(self):
         user = UserFactory()
         user.full_clean()
         event = factories.EventFactory.build(type=Event.TYPE_OTHER)
-        self.assertFalse(event._user_can_see_or_404(user))
+        self.assertFalse(event.can_user_see(user))
 
     def test_get_event_or_404_raises_error404_if_event_doesnt_exist(self):
         user = UserFactory.build()
@@ -604,37 +353,3 @@ class EventsOnChangedDayTestCase(TestCase):
         )
         reservation.full_clean()
         reservation.save(author_id=self.reservation_author.pk)
-
-    def test_add_event_on_changed_day(self):
-        classroom = Classroom.get_by_number('25')
-        reservation = SpecialReservation.objects.in_classroom(classroom)[0]
-
-        self.assertRaises(
-            ValidationError,
-            factories.TermThisYearFactory(
-                day=self.thursday,
-                start=reservation.start_time,
-                end=reservation.end_time,
-                room=classroom
-            ).full_clean
-        )
-
-    def test_check_theres_no_original_reservation_on_changed_day(self):
-        classroom = Classroom.get_by_number('25')
-        reservation = SpecialReservation.objects.in_classroom(classroom)[0]
-
-        reserv_thursday = factories.SpecialReservationFactory.build(
-            semester=reservation.semester,
-            classroom=classroom,
-            start_time=time(16, 15),
-            end_time=time(18),
-            dayOfWeek=days_of_week.THURSDAY
-        )
-        reserv_thursday.full_clean()
-        reserv_thursday.save(author_id=self.reservation_author.pk)
-
-        ev = EventTerm.get_terms_for_dates(
-            [self.thursday], classroom, start_time=reserv_thursday.start_time,
-            end_time=reserv_thursday.end_time
-        )
-        self.assertFalse(ev)

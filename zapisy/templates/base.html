@@ -54,8 +54,8 @@
                     <li {% block offer_active %}{% endblock %} class="nav-item">
                         <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
                     </li>
-                    <li {% block events_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                    <li {% block schedule_active %}{% endblock %} class="nav-item">
+                        <a href="{% url 'schedule:calendar' %}" class="nav-link">Sale</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li {% block theses_active %}{% endblock %} class="nav-item">

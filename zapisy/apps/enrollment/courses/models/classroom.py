@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 from django_extensions.db.fields import AutoSlugField
 
 
@@ -37,12 +36,6 @@ class Classroom(models.Model):
         verbose_name_plural = 'sale'
         app_label = 'courses'
         ordering = ['floor', 'number']
-
-    def get_absolute_url(self):
-        try:
-            return reverse('events:classroom', args=[self.slug])
-        except BaseException:
-            return reverse('events:classrooms')
 
     def __str__(self):
         return str(self.number) + ' (' + str(self.capacity) + ')'

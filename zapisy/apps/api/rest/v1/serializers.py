@@ -10,7 +10,6 @@ from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import Record
 from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Program, Student
 
 
@@ -124,13 +123,6 @@ class DesiderataOtherSerializer(serializers.ModelSerializer):
     class Meta:
         model = DesiderataOther
         fields = '__all__'
-
-
-class SpecialReservationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SpecialReservation
-        fields = '__all__'
-
 
 class SingleVoteSerializer(serializers.ModelSerializer):
     """Serializes single student vote.

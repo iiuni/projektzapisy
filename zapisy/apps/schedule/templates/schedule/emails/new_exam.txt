@@ -1,3 +1,0 @@
-W systemie zostały zarezerwowane sale dla przedmiotu {{ event.course }}.
-
-Link: https://zapisy.ii.uni.wroc.pl{% url 'events:session' %}

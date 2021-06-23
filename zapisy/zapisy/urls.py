@@ -20,7 +20,7 @@ urlpatterns = [
     path('statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     path('theses/', include(('apps.theses.urls', 'theses'), namespace='theses')),
     path('users/', include('apps.users.urls')),
-    path('', include(('apps.schedule.urls', 'events'), namespace='events')),
+    path('classrooms/', include(('apps.schedule.urls', 'schedule'), namespace='schedule')),
 
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('fereol_admin/', admin.site.urls),

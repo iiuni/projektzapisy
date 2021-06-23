@@ -4,10 +4,8 @@ from datetime import date, time
 import factory
 from factory.django import DjangoModelFactory
 
-from apps.common import days_of_week
 from apps.enrollment.courses.tests.factories import ClassroomFactory, GroupFactory
 from apps.schedule.models.event import Event
-from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.models.term import Term
 from apps.users.tests.factories import UserFactory
 
@@ -25,10 +23,7 @@ class EventFactory(DjangoModelFactory):
     class Meta:
         model = Event
 
-    type = factory.Iterator([
-        Event.TYPE_GENERIC, Event.TYPE_CLASS, Event.TYPE_TEST, Event.TYPE_EXAM, Event.TYPE_CLASS,
-        Event.TYPE_OTHER
-    ])
+    type = Event.TYPE_EXAM
     visible = True
     status = Event.STATUS_ACCEPTED
     author = factory.SubFactory(UserFactory)
@@ -85,14 +80,3 @@ class TermFixedDayFactory(TermThisYearFactory):
     day = date(2016, 5, 20)
     start = time(15)
     end = time(16)
-
-
-class SpecialReservationFactory(DjangoModelFactory):
-    class Meta:
-        model = SpecialReservation
-
-    title = factory.Sequence(lambda n: 'Special reservation %d' % n)
-    classroom = factory.SubFactory(ClassroomFactory)
-    dayOfWeek = days_of_week.FRIDAY
-    start_time = time(10, 15)
-    end_time = time(12)

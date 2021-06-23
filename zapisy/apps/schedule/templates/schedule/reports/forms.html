@@ -2,6 +2,11 @@
 {% load render_bundle from webpack_loader %}
 
 {% block all-content %}
+<h2>{% block calendartitle %} Raporty {% endblock %}</h2>
+
+    <div class="alert alert-info fade show" role="alert">
+        Wybierz salę, dla której chcesz pobrać wykaz zajęć.
+    </div>
 
 <ul class="nav nav-pills nav-fill mb-3" role="tablist">
     {% if form_table %}
