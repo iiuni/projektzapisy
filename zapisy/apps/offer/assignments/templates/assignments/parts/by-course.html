@@ -9,10 +9,14 @@
                     <th scope="row">{{ group_type }}</th>
                     <td>{{ group_summary.hours|floatformat }} h/semestr </td>
                     <td>
-                        {% for teacher in group_summary.teachers %}
+                        {% for teacher, count in group_summary.teachers.items %}
                             <span class="teacher">
-                                <a href="#teacher-{{ teacher.username }}">{{ teacher.name }}</a></span>{% if not forloop.last %},
-                                {% endif %}
+                                <a href="#teacher-{{ teacher.username }}">
+                                {{ teacher.name }}
+                                {% if count > 1 %} ({{count}}) {% endif %}
+                                </a>
+                            </span>
+                            {% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </td>
                 </tr>

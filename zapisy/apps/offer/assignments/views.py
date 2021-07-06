@@ -12,6 +12,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
+from django.template.defaultfilters import floatformat
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -65,20 +66,37 @@ def plan_view(request):
         assignments_course_info: AssignmentsCourseInfo = courses[semester][name]
         if group_type not in assignments_course_info:
             assignments_course_info[group_type] = CourseGroupTypeSummary(
-                hours=assignment.hours_semester, teachers=set())
+                hours=assignment.hours_semester, teachers=dict())
         if assignment.teacher_username not in teachers:
             messages.warning(
                 request, f"Użytkownik <strong>{assignment.teacher_username}</strong> "
                 "nie występuje w arkuszu <em>Pracownicy</em>. Przydział został pominięty.")
             continue
         teacher = teachers[assignment.teacher_username]
-        assignments_course_info[group_type].teachers.add(
-            TeacherInfo(username=assignment.teacher_username,
-                        name=f"{teacher.first_name} {teacher.last_name}"))
+        teacher_info = TeacherInfo(username=assignment.teacher_username,
+                                   name=f"{teacher.first_name} {teacher.last_name}")
+        # We do not use a defaultdict since it conflicts with django templates
+        count = assignments_course_info[group_type].teachers.get(teacher_info, 0)
+        assignments_course_info[group_type].teachers[teacher_info] = count + 1
+        hours_to_pensum = assignment.equivalent * assignment.hours_semester / assignment.multiple_teachers
+        stats[semester][group_type] += hours_to_pensum
+        hours_global[semester] += hours_to_pensum
+        # Here we prepare a display string for the hours that count towards pensum
+        non_standard = False
+        hours_to_pensum_display = ""
+        if assignment.equivalent != 1:
+            non_standard = True
+            hours_to_pensum_display += f"{floatformat(assignment.equivalent)}⋅"
+        hours_to_pensum_display += f"{floatformat(assignment.hours_semester)}"
+        if assignment.multiple_teachers > 1:
+            non_standard = True
+            hours_to_pensum_display += f"÷{floatformat(assignment.multiple_teachers)}"
+        if non_standard:
+            hours_to_pensum_display += f" = {floatformat(hours_to_pensum)}"
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
-        getattr(teacher, key).append(assignment)
-        stats[semester][group_type] += assignment.hours_semester / assignment.multiple_teachers
-        hours_global[semester] += assignment.hours_semester / assignment.multiple_teachers
+        getattr(teacher, key).append({'name': assignment.name,
+                                      'group_type': assignment.group_type,
+                                      'hours_to_pensum_display': hours_to_pensum_display})
 
     context = {
         'year': year,

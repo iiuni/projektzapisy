@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict, NamedTuple, Optional, Set, Tuple
+from typing import List, Dict, NamedTuple, Optional, Tuple
 
 from django.db.models import Count, F, Q, Sum, Window
 from django.db.models.functions import FirstValue
@@ -43,8 +43,8 @@ class EmployeeData(NamedTuple):
     balance: float
     hours_winter: float
     hours_summer: float
-    courses_winter: List[SingleAssignmentData]
-    courses_summer: List[SingleAssignmentData]
+    courses_winter: List[dict]
+    courses_summer: List[dict]
 
 
 # Indexed by employee's code.
@@ -58,7 +58,7 @@ class TeacherInfo(NamedTuple):
 
 class CourseGroupTypeSummary(NamedTuple):
     hours: float
-    teachers: Set[TeacherInfo]
+    teachers: Dict[TeacherInfo, int]
 
 
 # Indexed by group type.

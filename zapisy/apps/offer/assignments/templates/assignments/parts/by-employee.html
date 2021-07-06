@@ -14,8 +14,7 @@
                 <tr>
                     <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
                     <td>{{ sa.group_type }}</td>
-                    <td>({{sa.hours_semester|floatformat}}{% if sa.multiple_teachers > 1 %}÷{{ sa.multiple_teachers }}{% endif %}
-                         h/semestr)</td>
+                    <td style="text-align:right">{{ sa.hours_to_pensum_display }} h/semestr</td>
                 </tr>
             {% endfor %}
             <tr class="table-sm">
@@ -25,8 +24,7 @@
                 <tr>
                     <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
                     <td>{{ sa.group_type }}</td>
-                    <td>({{sa.hours_semester|floatformat}}{% if sa.multiple_teachers > 1 %}÷{{ sa.multiple_teachers }}{% endif %}
-                        h/semestr)</td>
+                    <td style="text-align:right">{{ sa.hours_to_pensum_display }} h/semestr</td>
                 </tr>
             {% endfor %}
         {% endif %}
