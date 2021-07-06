@@ -3,6 +3,7 @@ from typing import List, Dict, NamedTuple, Optional, Tuple
 
 from django.db.models import Count, F, Q, Sum, Window
 from django.db.models.functions import FirstValue
+from django.template.defaultfilters import floatformat
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_information import Language
@@ -33,6 +34,38 @@ class SingleAssignmentData(NamedTuple):
     multiple_teachers_id: str
 
 
+class ProcessedAssignment:
+    course_name: str
+    group_type: str
+    hours_multiplier: float
+    hours_semester: float
+    hours_divisor: int
+    hours_to_pensum: float
+
+    def __init__(self, sa: SingleAssignmentData):
+        self.course_name = sa.name
+        self.group_type = sa.group_type
+        self.hours_multiplier = sa.equivalent
+        self.hours_semester = sa.hours_semester
+        self.hours_divisor = sa.multiple_teachers
+        self.hours_to_pensum = self.hours_multiplier * self.hours_semester / self.hours_divisor
+
+    def hours_to_pensum_display(self) -> str:
+        """Displays hours to pensum as a formula and its result."""
+        has_pensum_modifiers = False
+        hours_to_pensum_display = ""
+        if self.hours_multiplier != 1:
+            has_pensum_modifiers = True
+            hours_to_pensum_display += f"{floatformat(self.hours_multiplier)}⋅"
+        hours_to_pensum_display += f"{floatformat(self.hours_semester)}"
+        if self.hours_divisor > 1:
+            has_pensum_modifiers = True
+            hours_to_pensum_display += f"÷{floatformat(self.hours_divisor)}"
+        if has_pensum_modifiers:
+            hours_to_pensum_display += f" = {floatformat(self.hours_to_pensum)}"
+        return hours_to_pensum_display
+
+
 class EmployeeData(NamedTuple):
     # 'pracownik' for full employee, 'doktorant' for PhD student, 'inny' for others.
     status: str
@@ -43,8 +76,8 @@ class EmployeeData(NamedTuple):
     balance: float
     hours_winter: float
     hours_summer: float
-    courses_winter: List[dict]
-    courses_summer: List[dict]
+    courses_winter: List[ProcessedAssignment]
+    courses_summer: List[ProcessedAssignment]
 
 
 # Indexed by employee's code.

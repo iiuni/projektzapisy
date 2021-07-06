@@ -12,7 +12,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
-from django.template.defaultfilters import floatformat
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -26,8 +25,7 @@ from .sheets import (create_sheets_service, read_assignments_sheet,
                      update_employees_sheet, update_assignments_sheet,
                      update_voting_results_sheet)
 from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary,
-                    EmployeeData, TeacherInfo, get_last_years, get_votes,
-                    suggest_teachers)
+                    EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
@@ -66,7 +64,7 @@ def plan_view(request):
         assignments_course_info: AssignmentsCourseInfo = courses[semester][name]
         if group_type not in assignments_course_info:
             assignments_course_info[group_type] = CourseGroupTypeSummary(
-                hours=assignment.hours_semester, teachers=dict())
+                hours=assignment.hours_semester, teachers={})
         if assignment.teacher_username not in teachers:
             messages.warning(
                 request, f"Użytkownik <strong>{assignment.teacher_username}</strong> "
@@ -75,28 +73,15 @@ def plan_view(request):
         teacher = teachers[assignment.teacher_username]
         teacher_info = TeacherInfo(username=assignment.teacher_username,
                                    name=f"{teacher.first_name} {teacher.last_name}")
-        # We do not use a defaultdict since it conflicts with django templates
+        # We do not use a defaultdict or Counter because they conflict with django templates,
+        # see https://docs.djangoproject.com/en/3.2/ref/templates/language/#template-variables
         count = assignments_course_info[group_type].teachers.get(teacher_info, 0)
         assignments_course_info[group_type].teachers[teacher_info] = count + 1
-        hours_to_pensum = assignment.equivalent * assignment.hours_semester / assignment.multiple_teachers
-        stats[semester][group_type] += hours_to_pensum
-        hours_global[semester] += hours_to_pensum
-        # Here we prepare a display string for the hours that count towards pensum
-        non_standard = False
-        hours_to_pensum_display = ""
-        if assignment.equivalent != 1:
-            non_standard = True
-            hours_to_pensum_display += f"{floatformat(assignment.equivalent)}⋅"
-        hours_to_pensum_display += f"{floatformat(assignment.hours_semester)}"
-        if assignment.multiple_teachers > 1:
-            non_standard = True
-            hours_to_pensum_display += f"÷{floatformat(assignment.multiple_teachers)}"
-        if non_standard:
-            hours_to_pensum_display += f" = {floatformat(hours_to_pensum)}"
+        processed_assignment = ProcessedAssignment(assignment)
+        stats[semester][group_type] += processed_assignment.hours_to_pensum
+        hours_global[semester] += processed_assignment.hours_to_pensum
         key = 'courses_winter' if assignment.semester == 'z' else 'courses_summer'
-        getattr(teacher, key).append({'name': assignment.name,
-                                      'group_type': assignment.group_type,
-                                      'hours_to_pensum_display': hours_to_pensum_display})
+        getattr(teacher, key).append(processed_assignment)
 
     context = {
         'year': year,
