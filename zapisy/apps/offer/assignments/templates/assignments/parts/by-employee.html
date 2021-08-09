@@ -12,7 +12,7 @@
             </tr>
             {% for sa in teacher.courses_winter %}
                 <tr>
-                    <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
+                    <td><a href="#course-{{ sa.course_name|slugify }}">{{ sa.course_name }}</a></td>
                     <td>{{ sa.group_type }}</td>
                     <td style="text-align:right">{{ sa.hours_to_pensum_display }} h/semestr</td>
                 </tr>
@@ -22,7 +22,7 @@
             </tr>
             {% for sa in teacher.courses_summer %}
                 <tr>
-                    <td><a href="#course-{{ sa.name|slugify }}">{{ sa.name }}</a></td>
+                    <td><a href="#course-{{ sa.course_name|slugify }}">{{ sa.course_name }}</a></td>
                     <td>{{ sa.group_type }}</td>
                     <td style="text-align:right">{{ sa.hours_to_pensum_display }} h/semestr</td>
                 </tr>
