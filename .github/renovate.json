@@ -1,0 +1,46 @@
+{
+  "extends": ["config:base"],
+  "automergeType": "pr",
+  "dependencyDashboard": true,
+  "prCreation": "not-pending",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 50,
+  "stabilityDays": 7,
+  "labels": ["dependencies"],
+  "pip_requirements": {
+    "fileMatch": ["^zapisy/requirements\\.([\\w]*)\\.txt$"]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "addLabels": ["security"]
+  },
+  "packageRules": [
+    {
+      "description": "Require dashboard approval for major updates",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Automerge patches",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge some minor updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "excludePackagePatterns": ["^Django$"],
+      "matchCurrentVersion": "!/^0\\./",
+      "automerge": true
+    },
+    {
+      "description": "Label JS deps",
+      "matchLanguages": ["js"],
+      "addLabels": ["javascript"]
+    },
+    {
+      "description": "Label Python deps",
+      "matchLanguages": ["python"],
+      "addLabels": ["python"]
+    }
+  ]
+}
