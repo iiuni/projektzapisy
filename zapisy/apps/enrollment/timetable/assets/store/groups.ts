@@ -179,9 +179,9 @@ const actions = {
       return;
     }
     const groupsToUpdate = keys(state.store);
-    const updateURL: string = (document.getElementById(
-      "prototype-update-url"
-    ) as HTMLInputElement).value;
+    const updateURL: string = (
+      document.getElementById("prototype-update-url") as HTMLInputElement
+    ).value;
     axios
       .post(updateURL, groupsToUpdate)
       .then((response) => {
