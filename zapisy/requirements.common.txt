@@ -32,7 +32,7 @@ pyyaml==5.4.1
 bokeh==2.3.3
 
 gspread==3.7.0
-typing-extensions==3.10.0.0
+typing-extensions==3.10.0.2
 oauth2client==4.1.3
 # We use html2text for one-off migration from HTML to markdown.
 html2text
