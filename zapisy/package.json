@@ -26,7 +26,7 @@
     "jquery": "3.6.0",
     "js-cookie": "2.2.1",
     "js-sha256": "0.9.0",
-    "katex": "0.13.13",
+    "katex": "0.13.18",
     "lodash-es": "4.17.21",
     "markdown-it": "11.0.1",
     "popper.js": "1.16.1",

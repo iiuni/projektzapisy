@@ -5057,7 +5057,7 @@ fsevents@~2.1.2:
     jquery: 3.6.0
     js-cookie: 2.2.1
     js-sha256: 0.9.0
-    katex: 0.13.13
+    katex: 0.13.18
     lodash-es: 4.17.21
     markdown-it: 11.0.1
     mini-css-extract-plugin: 0.12.0
@@ -5618,14 +5618,14 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"katex@npm:0.13.13":
-  version: 0.13.13
-  resolution: "katex@npm:0.13.13"
+"katex@npm:0.13.18":
+  version: 0.13.18
+  resolution: "katex@npm:0.13.18"
   dependencies:
     commander: ^6.0.0
   bin:
     katex: cli.js
-  checksum: 7897707e1e902810d44bac85b9c4256cf308199b2ba344c01fdd8e0adeca8f7f703cfc1973ab3897a82c85b9352fa891fc05ebbf054922c99cc63acd101a0171
+  checksum: a750c8c106487ff5fca4e18e22ac97b4fbf48c33a15c010293e392795b642c731c476cae98bfc92bfad4d4bcb052b00a3abc05a09d3e14d642e84d69428a588f
   languageName: node
   linkType: hard
 
