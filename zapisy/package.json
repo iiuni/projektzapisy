@@ -11,7 +11,7 @@
     "pnp": true
   },
   "dependencies": {
-    "@bokeh/bokehjs": "2.3.3",
+    "@bokeh/bokehjs": "2.4.0",
     "@fullcalendar/bootstrap": "5.9.0",
     "@fullcalendar/core": "5.9.0",
     "@fullcalendar/daygrid": "5.9.0",
