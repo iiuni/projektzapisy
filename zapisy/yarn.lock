@@ -2467,20 +2467,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:9.8.6":
-  version: 9.8.6
-  resolution: "autoprefixer@npm:9.8.6"
+"autoprefixer@npm:9.8.7":
+  version: 9.8.7
+  resolution: "autoprefixer@npm:9.8.7"
   dependencies:
     browserslist: ^4.12.0
     caniuse-lite: ^1.0.30001109
-    colorette: ^1.2.1
+    nanocolors: ^0.2.8
     normalize-range: ^0.1.2
     num2fraction: ^1.2.2
     postcss: ^7.0.32
     postcss-value-parser: ^4.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: b406d8047a97fcc39c9c6d208fd6f1974e5957800461d9a79457a3ecaca2c0ea090bd06f30c8653f48f751c31115c63a80502ff8c9a6bb7b8a5a5063021827d4
+  checksum: c781b5d4359742cf3c3dfd003360f26380ef56054e783ce4396e1fcd813aa6033499b13152931ccc90c29720c9211e2c266a2c72d6aac5179cdf49c618a7bbbb
   languageName: node
   linkType: hard
 
@@ -3235,13 +3235,6 @@ __metadata:
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
   checksum: 3e1c9a4dee12eada307436f61614dd11fe300469db2b83f80c8b7a7cd8a1015f0f18dd13403f018927b249003777ff60baba4a03c65f12e6bddc0dfd9642021f
-  languageName: node
-  linkType: hard
-
-"colorette@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "colorette@npm:1.2.1"
-  checksum: 1cc21ad4b84777a424794f78b6bb6a44b614ae17dcea91762199339f8047598e6d981249eeef7ea588c99eaf062be8fcdcd4866c112998922ed854db6dde96f9
   languageName: node
   linkType: hard
 
@@ -5057,7 +5050,7 @@ fsevents@~2.1.2:
     "@types/lodash": 4.14.173
     "@types/markdown-it": 10.0.3
     ContentTools: 1.6.13
-    autoprefixer: 9.8.6
+    autoprefixer: 9.8.7
     axios: 0.21.4
     babel-loader: 8.2.2
     big-integer: 1.6.49
@@ -6235,7 +6228,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"nanocolors@npm:^0.2.2":
+"nanocolors@npm:^0.2.2, nanocolors@npm:^0.2.8":
   version: 0.2.12
   resolution: "nanocolors@npm:0.2.12"
   checksum: 6f66a8cccb3bf419aacc9ec416dc948d4cea10681f6cf19ecfebdf707b593ea53f6dd6d675128c41e0a4164e734e54497beb20ddd00dacd859c4b5cad2a8c60f
