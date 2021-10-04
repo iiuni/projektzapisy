@@ -1819,10 +1819,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:4.14.173":
-  version: 4.14.173
-  resolution: "@types/lodash@npm:4.14.173"
-  checksum: 098ac766eb74f95d359a8e1745c173e9cd3c2a7ab7b230f6ec9f1fa78cf977b41692db6f2e5b423e0e5482d93e0407a3b8690b7fe7d41ea8e46685bbb1866809
+"@types/lodash@npm:4.14.175":
+  version: 4.14.175
+  resolution: "@types/lodash@npm:4.14.175"
+  checksum: d56c57f3784ff73d84ba5d2bb1dba8f6f88f97fb36113010c4a69fd7b823e4fe855b2fbabe8d020bc723e83dc84dc1fc3fc900a6e341fd12a8aaf75f1fddeb70
   languageName: node
   linkType: hard
 
@@ -5047,7 +5047,7 @@ fsevents@~2.1.2:
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.7
     "@types/katex": 0.11.1
-    "@types/lodash": 4.14.173
+    "@types/lodash": 4.14.175
     "@types/markdown-it": 10.0.3
     ContentTools: 1.6.13
     autoprefixer: 9.8.7
