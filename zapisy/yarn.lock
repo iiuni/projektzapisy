@@ -2467,20 +2467,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:9.8.7":
-  version: 9.8.7
-  resolution: "autoprefixer@npm:9.8.7"
+"autoprefixer@npm:9.8.8":
+  version: 9.8.8
+  resolution: "autoprefixer@npm:9.8.8"
   dependencies:
     browserslist: ^4.12.0
     caniuse-lite: ^1.0.30001109
-    nanocolors: ^0.2.8
     normalize-range: ^0.1.2
     num2fraction: ^1.2.2
+    picocolors: ^0.2.1
     postcss: ^7.0.32
     postcss-value-parser: ^4.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: c781b5d4359742cf3c3dfd003360f26380ef56054e783ce4396e1fcd813aa6033499b13152931ccc90c29720c9211e2c266a2c72d6aac5179cdf49c618a7bbbb
+  checksum: b1142d2f96adbbf9857b23cd14a8d5a004d9cf91d9bb3d38483fc3e1043d09ffa155d49871f2ca83480e0581a06f87a7e670e9feb57aa2c0cc959a0be6d2b70e
   languageName: node
   linkType: hard
 
@@ -5050,7 +5050,7 @@ fsevents@~2.1.2:
     "@types/lodash": 4.14.175
     "@types/markdown-it": 10.0.3
     ContentTools: 1.6.13
-    autoprefixer: 9.8.7
+    autoprefixer: 9.8.8
     axios: 0.21.4
     babel-loader: 8.2.2
     big-integer: 1.6.49
@@ -6228,7 +6228,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"nanocolors@npm:^0.2.2, nanocolors@npm:^0.2.8":
+"nanocolors@npm:^0.2.2":
   version: 0.2.12
   resolution: "nanocolors@npm:0.2.12"
   checksum: 6f66a8cccb3bf419aacc9ec416dc948d4cea10681f6cf19ecfebdf707b593ea53f6dd6d675128c41e0a4164e734e54497beb20ddd00dacd859c4b5cad2a8c60f
@@ -6798,6 +6798,13 @@ fsevents@~2.1.2:
   version: 2.1.0
   resolution: "performance-now@npm:2.1.0"
   checksum: bb4ebed0b03d6c3ad3ae4eddd1182c895d385cff9096af441c19c130aaae3ea70229438ebc3297dfc52c86022f6becf177a810050823d01bf5280779cd2de624
+  languageName: node
+  linkType: hard
+
+"picocolors@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "picocolors@npm:0.2.1"
+  checksum: 84da675558ed004c61a7fa7b0bcce6338c8e3ef1eadb43b5263059d1d745f4567464aa6aa603c506a82942a5a7dfda5bb023605a5f4c9888d7adc154845d579e
   languageName: node
   linkType: hard
 
