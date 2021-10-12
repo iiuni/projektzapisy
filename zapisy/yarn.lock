@@ -5072,7 +5072,7 @@ fsevents@~2.1.2:
     mini-css-extract-plugin: 0.12.0
     pnp-webpack-plugin: 1.7.0
     popper.js: 1.16.1
-    postcss: 7.0.38
+    postcss: 7.0.39
     postcss-loader: 4.3.0
     prettier: 2.4.1
     sass: 1.26.10
@@ -6228,13 +6228,6 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"nanocolors@npm:^0.2.2":
-  version: 0.2.12
-  resolution: "nanocolors@npm:0.2.12"
-  checksum: 6f66a8cccb3bf419aacc9ec416dc948d4cea10681f6cf19ecfebdf707b593ea53f6dd6d675128c41e0a4164e734e54497beb20ddd00dacd859c4b5cad2a8c60f
-  languageName: node
-  linkType: hard
-
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -6970,13 +6963,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"postcss@npm:7.0.38":
-  version: 7.0.38
-  resolution: "postcss@npm:7.0.38"
+"postcss@npm:7.0.39":
+  version: 7.0.39
+  resolution: "postcss@npm:7.0.39"
   dependencies:
-    nanocolors: ^0.2.2
+    picocolors: ^0.2.1
     source-map: ^0.6.1
-  checksum: e1de3516f9c13d350b8dfca9e13ac5c5cb56794fe6db9b8d81b981bee3bde1b8bf5a301da682c898e234eaa6ef1cfac5384d8879f7f3e5a929ac2d75102e09f3
+  checksum: 789ae741963f3cf57dff481ef6d0c8d458b8f423bc47ba15bd967f741b8074cf1f34aece48256b6fd914fd313080e9434497cd358519bd67da45da1395ef0899
   languageName: node
   linkType: hard
 
