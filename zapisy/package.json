@@ -35,8 +35,8 @@
     "vuex": "3.6.2"
   },
   "devDependencies": {
-    "@babel/core": "7.15.5",
-    "@babel/preset-env": "7.15.6",
+    "@babel/core": "7.15.8",
+    "@babel/preset-env": "7.15.8",
     "@fortawesome/fontawesome-free": "5.15.4",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
