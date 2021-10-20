@@ -2669,10 +2669,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:1.6.49":
-  version: 1.6.49
-  resolution: "big-integer@npm:1.6.49"
-  checksum: 44f944a37a9bfd7ce604831b01280f26e81ee44f675dfcef4e88413c56bd1be9e4f98c55392a37b363ef5d7ea12de53b1d47a03a2555f9aa26cc779d4caaca82
+"big-integer@npm:1.6.50":
+  version: 1.6.50
+  resolution: "big-integer@npm:1.6.50"
+  checksum: 7daae722e9898d5f581adb40caf898c046b30b97913a17252815f8d70547073c23b1deaa8666515d33f35c4616cfa1d5d06c5836f6ca588201097be8f7799f10
   languageName: node
   linkType: hard
 
@@ -5134,7 +5134,7 @@ fsevents@~2.1.2:
     autoprefixer: 9.8.8
     axios: 0.21.4
     babel-loader: 8.2.2
-    big-integer: 1.6.49
+    big-integer: 1.6.50
     bootstrap: 4.6.0
     bootstrap-sortable: "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
