@@ -32,7 +32,9 @@ class Term(models.Model):
         blank=True)
 
     usos_id = models.PositiveIntegerField(
-        null=True, blank=True, unique=True, verbose_name='Kod terminu w systemie USOS')
+        null=True, blank=True, unique=True, verbose_name='Kod DZ_TERMINY_GRUP w systemie USOS')
+    usos_term_id = models.PositiveIntegerField(
+        null=True, blank=True, unique=False, verbose_name='Kod DZ_TERMINY w systemie USOS')
 
     class Meta:
         # TO DO /pkacprzak/ add advanced constraint - example: start_time <
