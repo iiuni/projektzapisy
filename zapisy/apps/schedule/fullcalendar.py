@@ -174,7 +174,7 @@ class FullCalendarView(BaseListView):
         if not self.queryset:
             self.queryset = super(FullCalendarView, self).get_queryset()
 
-        return self.queryset.filter(Q(day__gte=start), Q(day__lt=end)).select_related('event')
+        return self.queryset.filter(Q(day__gte=start), Q(day__lte=end)).select_related('event')
 
     def render_to_response(self, context):
         return self.get_json_response(self.convert_to_json(context['object_list']))
