@@ -1699,13 +1699,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/vue-fontawesome@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@fortawesome/vue-fontawesome@npm:2.0.2"
+"@fortawesome/vue-fontawesome@npm:2.0.6":
+  version: 2.0.6
+  resolution: "@fortawesome/vue-fontawesome@npm:2.0.6"
   peerDependencies:
-    "@fortawesome/fontawesome-svg-core": ">= 1.2.0 < 1.3"
+    "@fortawesome/fontawesome-svg-core": ~1 || >=1.3.0-beta1
     vue: ~2
-  checksum: 87cad52e5316bca00183f24533703048ab34ff3b2642ab9a8f1053462fb60c22799dab22484c401f7ac1c61bd3fe1838a4240f5a85d7ce9c4eb6f03bc8841b26
+  checksum: 8a01f71d9e28b665203fd59e3c0f570a2eb997d9f6a4ce4bc5a95da85cec20424ed0868f3a1f303de495b559ea2c08001300fce1186f51de20e6486bc0bc5d4c
   languageName: node
   linkType: hard
 
@@ -5118,7 +5118,7 @@ fsevents@~2.1.2:
     "@fortawesome/free-brands-svg-icons": 5.15.4
     "@fortawesome/free-regular-svg-icons": 5.15.4
     "@fortawesome/free-solid-svg-icons": 5.15.4
-    "@fortawesome/vue-fontawesome": 2.0.2
+    "@fortawesome/vue-fontawesome": 2.0.6
     "@fullcalendar/bootstrap": 5.10.0
     "@fullcalendar/core": 5.10.0
     "@fullcalendar/daygrid": 5.10.0
