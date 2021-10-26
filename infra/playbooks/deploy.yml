@@ -43,6 +43,15 @@
         path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
         mode: '0774'
 
+    - name: Upgrade pip
+      become: yes
+      become_user: "{{ deploy_user }}"
+      pip:
+        name: pip
+        state: latest
+        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
+        virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+
     - name: Set up virtualenv and get requirements
       become: yes
       become_user: "{{ deploy_user }}"

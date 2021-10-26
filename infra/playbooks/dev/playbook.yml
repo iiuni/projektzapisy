@@ -41,6 +41,15 @@
         insertafter: EOF
         create: yes
 
+    - name: Upgrade pip
+      vars:
+        ansible_python_interpreter: "{{ PYTHON }}"
+      pip:
+        name: pip
+        state: latest
+        virtualenv: ~/env3
+        virtualenv_command: "{{ PYTHON }} -m venv"
+
     - name: Set up virtualenv and get requirements
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
