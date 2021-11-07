@@ -36,12 +36,12 @@ export default Vue.extend({
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
     const isChosenKey = ([key, _]: [number, string]) =>
-      searchParams.get(this.filterKey) == key.toString();
+      searchParams.get(this.property) == key.toString();
 
-    if (searchParams.has(this.filterKey) && this.options.some(isChosenKey)) {
+    if (searchParams.has(this.property) && this.options.some(isChosenKey)) {
       // Set selection from URL only if respective key is in search params
       // and its value is a valid option.
-      this.$data.selected = searchParams.get(this.filterKey);
+      this.$data.selected = searchParams.get(this.property);
     }
   },
   methods: {
@@ -51,9 +51,9 @@ export default Vue.extend({
     selected: function (newSelected: string | undefined) {
       const url = new URL(window.location.href);
       if (isUndefined(newSelected)) {
-        url.searchParams.delete(this.filterKey);
+        url.searchParams.delete(this.property);
       } else {
-        url.searchParams.set(this.filterKey, newSelected.toString());
+        url.searchParams.set(this.property, newSelected.toString());
       }
       window.history.replaceState(null, "", url.toString());
 
