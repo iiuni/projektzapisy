@@ -35,7 +35,8 @@ export default Vue.extend({
   },
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
-    const isChosenKey = ([key, _]) => searchParams.get(this.filterKey) == key;
+    const isChosenKey = ([key, _]: [number, string]) =>
+      searchParams.get(this.filterKey) == key.toString();
 
     if (searchParams.has(this.filterKey) && this.options.some(isChosenKey)) {
       // Set selection from URL only if respective key is in search params
@@ -54,7 +55,7 @@ export default Vue.extend({
       } else {
         url.searchParams.set(this.filterKey, newSelected.toString());
       }
-      window.history.replaceState(null, null, url);
+      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,
