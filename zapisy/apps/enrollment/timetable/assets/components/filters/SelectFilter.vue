@@ -35,7 +35,11 @@ export default Vue.extend({
   },
   created: function() {
     const searchParams = new URL(window.location.href).searchParams;
-    if(searchParams.has(this.filterKey)) {
+    const isChosenKey = ([key, _]) => searchParams.get(this.filterKey) == key;
+
+    if(searchParams.has(this.filterKey) && this.options.some(isChosenKey)) {
+      // Set selection from URL only if respective key is in search params
+      // and its value is a valid option.
       this.$data.selected = searchParams.get(this.filterKey);
     }
   },
