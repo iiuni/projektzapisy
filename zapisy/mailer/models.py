@@ -69,7 +69,7 @@ class Message(models.Model):
     priority = models.CharField(
         max_length=1,
         choices=PRIORITIES,
-        default='2',
+        default='3',
         verbose_name='priorytet')
     # @@@ campaign?
     # @@@ content_type?
