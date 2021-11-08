@@ -13,6 +13,7 @@ from apps.notifications.templates import NotificationType
 
 EMAIL_SUBJECT_TEMPLATE = getattr(settings, "EMAIL_SUBJECT_TEMPLATE", "[ZAPISY] %s")
 
+
 @job('dispatch-notifications')
 def dispatch_notifications_task(user):
     """Dispatch all pending notifications for the given user by email.
