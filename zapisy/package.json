@@ -18,7 +18,7 @@
     "@fullcalendar/timegrid": "5.10.1",
     "ContentTools": "1.6.13",
     "axios": "0.21.4",
-    "big-integer": "1.6.50",
+    "big-integer": "1.6.51",
     "bootstrap": "4.6.1",
     "bootstrap-sortable": "git://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
     "checkboxes.js": "1.2.2",
