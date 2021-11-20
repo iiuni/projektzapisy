@@ -32,11 +32,27 @@ export default Vue.extend({
       pattern: "",
     };
   },
+  created: function () {
+    const searchParams = new URL(window.location.href).searchParams;
+
+    if (searchParams.has(this.property)) {
+      // Set `pattern` from URL only if respective key is in search params.
+      this.$data.pattern = searchParams.get(this.property);
+    }
+  },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
   },
   watch: {
     pattern: function (newPattern: string, _) {
+      const url = new URL(window.location.href);
+      if (newPattern.length == 0) {
+        url.searchParams.delete(this.property);
+      } else {
+        url.searchParams.set(this.property, newPattern);
+      }
+      window.history.replaceState(null, "", url.toString());
+
       this.registerFilter({
         k: this.filterKey,
         f: new TextFilter(newPattern, this.property),
