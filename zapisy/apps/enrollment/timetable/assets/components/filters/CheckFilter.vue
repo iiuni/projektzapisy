@@ -40,11 +40,6 @@ export default Vue.extend({
       if (searchParams.get(this.property) === "true") {
         // and it's value is `true`.
         this.$data.on = true;
-      } else {
-        // otherwise prune value from search params.
-        const url = new URL(window.location.href);
-        url.searchParams.delete(this.property);
-        window.history.replaceState(null, "", url.toString());
       }
     }
   },
