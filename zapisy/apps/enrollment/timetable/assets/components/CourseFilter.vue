@@ -7,6 +7,7 @@ import LabelsFilter from "./filters/LabelsFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON } from "./../models";
+import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
@@ -52,6 +53,9 @@ export default Vue.extend({
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
       this.collapsed = false;
     }
+  },
+  methods: {
+    ...mapMutations("filters", ["clearFilters"]),
   },
 });
 </script>
@@ -104,6 +108,14 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
       </div>
     </div>

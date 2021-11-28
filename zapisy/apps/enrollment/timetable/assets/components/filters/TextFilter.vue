@@ -39,6 +39,14 @@ export default Vue.extend({
       // Set `pattern` from URL only if respective key is in search params.
       this.$data.pattern = searchParams.get(this.property);
     }
+
+    this.$store.subscribe((mutation, _) => {
+      switch (mutation.type) {
+        case "filters/clearFilters":
+          this.$data.pattern = "";
+          break;
+      }
+    });
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),

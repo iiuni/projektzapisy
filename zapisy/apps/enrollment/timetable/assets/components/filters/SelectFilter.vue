@@ -43,6 +43,14 @@ export default Vue.extend({
       // and its value is a valid option.
       this.$data.selected = searchParams.get(this.property);
     }
+
+    this.$store.subscribe((mutation, _) => {
+      switch (mutation.type) {
+        case "filters/clearFilters":
+          this.$data.selected = undefined;
+          break;
+      }
+    });
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),

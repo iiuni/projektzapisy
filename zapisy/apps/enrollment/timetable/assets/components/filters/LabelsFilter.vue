@@ -34,7 +34,10 @@ export default Vue.extend({
   },
   computed: {
     allLabelKeys: function () {
-      return keys(this.allLabels);
+      // As shown by `selected` type, we expect the `allLabels` to have keys
+      // of type `number`. However, none(?) key-obtaining methods have signature
+      // that would thread this information. Thus, we annotate this here.
+      return keys(this.allLabels) as unknown as number[];
     },
   },
   data: () => {
@@ -70,7 +73,7 @@ export default Vue.extend({
   // When the component is created we set all the labels as unselected
   // and then set those specified in the query string as selected.
   created: function () {
-    this.selected = fromPairs(keys(this.allLabels).map((k) => [k, false]));
+    this.selected = fromPairs(this.allLabelKeys.map((k) => [k, false]));
 
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
@@ -87,6 +90,16 @@ export default Vue.extend({
         f: new IntersectionFilter(selectedIds, this.property),
       });
     }
+
+    this.$store.subscribe((mutation, _) => {
+      switch (mutation.type) {
+        case "filters/clearFilters":
+          this.allLabelKeys
+            .filter((key) => this.selected[key])
+            .forEach(this.toggle);
+          break;
+      }
+    });
   },
 });
 </script>
