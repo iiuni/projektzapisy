@@ -7,6 +7,7 @@ import LabelsFilter from "@/enrollment/timetable/assets/components/filters/Label
 import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
@@ -66,6 +67,9 @@ export default Vue.extend({
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
       this.collapsed = false;
     }
+  },
+  methods: {
+    ...mapMutations("filters", ["clearFilters"]),
   },
 });
 </script>
@@ -130,6 +134,14 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
       </div>
     </div>
