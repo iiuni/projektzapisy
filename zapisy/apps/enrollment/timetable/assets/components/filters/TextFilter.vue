@@ -36,14 +36,14 @@ export default Vue.extend({
     const searchParams = new URL(window.location.href).searchParams;
 
     if (searchParams.has(this.property)) {
-      // Set `pattern` from URL only if respective key is in search params.
-      this.$data.pattern = searchParams.get(this.property);
+      // TypeScript doesn't infer that property is present, manual cast required.
+      this.pattern = searchParams.get(this.property) as string;
     }
 
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/clearFilters":
-          this.$data.pattern = "";
+          this.pattern = "";
           break;
       }
     });

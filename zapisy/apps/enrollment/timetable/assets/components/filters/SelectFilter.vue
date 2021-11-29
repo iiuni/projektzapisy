@@ -30,7 +30,7 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      selected: undefined,
+      selected: undefined as string | undefined,
     };
   },
   created: function () {
@@ -39,15 +39,14 @@ export default Vue.extend({
       searchParams.get(this.property) == key.toString();
 
     if (searchParams.has(this.property) && this.options.some(isChosenKey)) {
-      // Set selection from URL only if respective key is in search params
-      // and its value is a valid option.
-      this.$data.selected = searchParams.get(this.property);
+      // TypeScript doesn't infer that property is present, manual cast required.
+      this.selected = searchParams.get(this.property) as string;
     }
 
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/clearFilters":
-          this.$data.selected = undefined;
+          this.selected = undefined;
           break;
       }
     });
