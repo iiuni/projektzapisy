@@ -29,7 +29,7 @@ postmarkup==1.2.2
 # PyYAML is used for fixtures.
 pyyaml==5.4.1
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==2.4.1
+bokeh==2.4.2
 
 gspread==3.7.0
 typing-extensions==3.10.0.2
