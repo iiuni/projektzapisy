@@ -36,9 +36,7 @@ export default Vue.extend({
     const searchParams = new URL(window.location.href).searchParams;
 
     if (searchParams.has(this.property)) {
-      // Set `on` from URL only if respective key is in search params...
       if (searchParams.get(this.property) === "true") {
-        // and it's value is `true`.
         this.on = true;
       }
     }
