@@ -1513,9 +1513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bokeh/bokehjs@npm:2.4.1":
-  version: 2.4.1
-  resolution: "@bokeh/bokehjs@npm:2.4.1"
+"@bokeh/bokehjs@npm:2.4.2":
+  version: 2.4.2
+  resolution: "@bokeh/bokehjs@npm:2.4.2"
   dependencies:
     "@bokeh/numbro": ^1.6.2
     "@bokeh/slickgrid": ~2.4.2702
@@ -1537,7 +1537,7 @@ __metadata:
     timezone: ^1.0.23
     tslib: ^2.3.1
     underscore.template: ^0.1.7
-  checksum: 7a181d4821dab10541a887c19f38ea499ca65a4c980cce4b5534f3539eadc34b6de97f1706071c66e84a6f0b3c0760ce08215bf6ac8c0ab9e92a98ef000f088b
+  checksum: 0adfaf2380df9b9aa600d51aea872bee7d0f8d4c6f13ccfc03f4ed054cf188b7bc15db8314ee5cc2520856d4febb5ecc100a4ea9cd9713f048049f6c27647a0f
   languageName: node
   linkType: hard
 
@@ -5013,7 +5013,7 @@ fsevents@~2.1.2:
   dependencies:
     "@babel/core": 7.16.0
     "@babel/preset-env": 7.16.4
-    "@bokeh/bokehjs": 2.4.1
+    "@bokeh/bokehjs": 2.4.2
     "@fortawesome/fontawesome-free": 5.15.4
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-brands-svg-icons": 5.15.4
