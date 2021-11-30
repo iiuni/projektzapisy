@@ -1738,12 +1738,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:3.5.8":
-  version: 3.5.8
-  resolution: "@types/jquery@npm:3.5.8"
+"@types/jquery@npm:3.5.9":
+  version: 3.5.9
+  resolution: "@types/jquery@npm:3.5.9"
   dependencies:
     "@types/sizzle": "*"
-  checksum: 70c3db411e7fb72d987af97dbe489234595b12c7e902c247081eaaa18b470d88a0571da672c56f8ca74f9b90493f862a1701c63bde62a9968f0974c20f943fef
+  checksum: bebd9c25c3b24241c6827b27b4e2154bac37c9f3291c0bd98032310477d3a355c8490a5216e32b34423ae6cadcc90b919b01733b1039008844baa6cd841e84e6
   languageName: node
   linkType: hard
 
@@ -5025,7 +5025,7 @@ fsevents@~2.1.2:
     "@fullcalendar/daygrid": 5.10.1
     "@fullcalendar/timegrid": 5.10.1
     "@types/bootstrap": 4.6.1
-    "@types/jquery": 3.5.8
+    "@types/jquery": 3.5.9
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.7
     "@types/katex": 0.11.1
