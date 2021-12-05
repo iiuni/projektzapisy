@@ -1,6 +1,4 @@
-import functools
 import json
-from typing import Dict
 
 from apps.users.models import Student
 from apps.enrollment.courses.models.effects import Effects
