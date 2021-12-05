@@ -1,0 +1,122 @@
+{
+    "4": {
+        "2019": {
+            "ects": {
+                "description": "Wymagane punkty ECTS",
+                "limit": {
+                    "type": {
+                        "42": 6,
+                        "17": 12
+                    }
+                },
+                "sum": 180
+            },
+            "compulsory": {
+                "description": "Przedmioty O1, O2, I, K",
+                "filter": {
+                    "type": ["5", "6", "7", "8", "9", "36", "37"]
+                },
+                "sum": 140
+            },
+            "informatic": {
+                "description": "Przedmioty informatyczne",
+                "filter": {
+                    "type": ["5", "6", "7"]
+                },
+                "sum": 54
+            },
+            "teamwork": {
+                "description": "Praca zespołowa",
+                "filter": {
+                    "tag": ["9"]
+                }
+            },
+            "themed_subjects": {
+                "description": "Przedmioty tematyczne",
+                "filter": {
+                    "effect": ["2", "3", "4", "5", "6", "7", "10"]
+                },
+                "and": true,
+                "sum": 28
+            },
+            "professional_practice": {
+                "description": "Praktyka zawodowa",
+                "filter": {
+                    "subject": ["331", "332", "333", "334"]
+                }
+            },
+            "humanistic": {
+                "description": "Przedmioty humanistyczno-społeczne",
+                "filter": {
+                    "type": ["42"]
+                }
+            },
+            "owi": {
+                "description": "Ochrona własności intelektualnej",
+                "filter": {
+                    "subject": ["2326"]
+                }
+            },
+            "numerical_analysis": {
+                "description": "Analiza numeryczna",
+                "filter": {
+                    "subject": ["46", "47"]
+                }
+            },
+            "discrete_mathematics": {
+                "description": "Matematyka dyskretna",
+                "filter": {
+                    "subject": ["265", "266"]
+                }
+            },
+            "aisd": {
+                "description": "Algorytmy i struktury danych",
+                "filter": {
+                    "subject": ["26", "28"]
+                }
+            }
+        }
+    },
+    "1": {
+        "2019": {
+            "ects": {
+                "description": "Wymagane punkty ECTS",
+                "filterNot": { 
+                    "type": ["36", "5", "17"] 
+                },
+                "sum": 100
+            },
+            "compulsory": {
+                "description": "Przedmioty obowiazkowe",
+                "filter": { 
+                    "subject": ["136", "719"] 
+                },
+                "and": true
+            },
+            "masters-courses": {
+                "description": "Przedmioty I2, O2, O3",
+                "filter": { 
+                    "type": ["6", "9", "10"] 
+                },
+                "sum": 54
+            },
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                },
+                "sum": 9
+            },
+            "specialization": {
+                "description": "Tagi dziedzinowe",
+                "filter": {
+                    "type": ["6", "14"],
+                    "tag": ["4", "6", "7", "1", "5"]
+                },
+                "groupBy": "tag",
+                "aggregate": "sum",
+                "sum": 15
+            }
+        }
+    }
+}
