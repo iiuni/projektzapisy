@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Moje studia</li>
+{% endblock %}
+
+{% block main-subtitle %}Moje studia{% endblock %}
+
+{% block all-content %}
+    
+    <div class="mb-5">
+        <h2>Moje efekty kształcenia</h2>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
+            <tr>
+                <th>login</th>
+                <td>{{ request.user.username }}</td>
+            </tr>
+        </table>
+    </div>
+    <select class="custom-select" v-model="selected">
+       <option value="inżynierskie">
+        inżynierskie
+       </option>
+       <option value="licencjackie">
+        licencjackie
+        </option>
+     </select>
+     
+    {% if user.student %}
+    <div class="mb-5">
+        <h2>Wymagania</h2>
+        <table class="table table-condensed">
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
+            <tr>
+                <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
+                <td>{{ user.student.ects }}</td> 
+            </tr>
+            {% if effects %}
+                {% include "effects.html" with effects=effects only %}
+            {% endif %}
+        </table>
+    </div>
+    {% endif %}
+
+    
+{% endblock %}

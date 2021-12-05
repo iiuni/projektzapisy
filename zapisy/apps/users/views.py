@@ -213,6 +213,68 @@ def my_profile(request):
 
 
 @login_required
+def my_studies(request):
+    """User my-studies page.
+
+    The profile page displays user settings (e-mail address, notifications). If
+    he is a student, his opening times will be displayed. If the user is an
+    employee, the page allows him to modify his public information (office,
+    consultations).
+    """
+    semester = Semester.get_upcoming_semester()
+
+    data = {
+        'semester': semester,
+    }
+
+    if request.user.employee:
+        data.update({
+            'consultations': request.user.employee.consultations,
+            'room': request.user.employee.room,
+            'homepage': request.user.employee.homepage,
+            'title': request.user.employee.title,
+        })
+
+    if semester and request.user.student:
+        student: Student = request.user.student
+        done_effects = CompletedCourses.get_completed_effects(student)
+        data.update({
+            'effects': done_effects,
+        })
+        groups_opening_times = GroupOpeningTimes.objects.filter(
+            student_id=student.pk, group__course__semester_id=semester.pk).select_related(
+            'group', 'group__course', 'group__teacher',
+            'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
+        groups_times = []
+        got: GroupOpeningTimes
+        for got in groups_opening_times:
+            group: Group = got.group
+            group.opening_time = got.time
+            groups_times.append(group)
+        t0_time_obj = T0Times.objects.filter(student_id=student.pk, semester_id=semester.pk)
+        try:
+            t0_time = t0_time_obj.get().time
+        except T0Times.DoesNotExist:
+            t0_time = None
+        grade_info = StudentGraded.objects.filter(
+            student=student).select_related('semester').order_by('-semester__records_opening')
+        semesters_participated_in_grade = [x.semester for x in grade_info]
+        current_semester_ects = Record.student_points_in_semester(student, semester)
+        data.update({
+            't0_time': t0_time,
+            'groups_times': groups_times,
+            'semesters_participated_in_grade': semesters_participated_in_grade,
+            'current_semester_ects': current_semester_ects,
+        })
+
+    notifications_form = create_form(request)
+    data.update({
+        'form': notifications_form,
+    })
+
+    return render(request, 'users/my_studies.html', data)
+
+@login_required
 @require_POST
 def personal_data_consent(request):
     if request.POST:

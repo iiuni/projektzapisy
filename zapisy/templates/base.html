@@ -78,6 +78,9 @@
                         <li class="nav-item">
                             <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{% url 'my-studies' %}" class="nav-link">Moje studia</a>
+                        </li>
                         {% if user.is_staff %}
                             <li class="nav-item">
                                 <a href="/fereol_admin/" class="nav-link">Admin</a>
