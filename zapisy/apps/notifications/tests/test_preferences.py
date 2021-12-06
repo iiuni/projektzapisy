@@ -42,6 +42,18 @@ class PreferencesTestCase(test.TestCase):
                             body="Bardzo ciekawa wiadomość",
                             author=self.t1.user)
         self.assertCountEqual(self.inspect_outbox(mail.outbox),
+                              [])
+
+    def test_normal_prio_news(self):
+        """Tests that users' preferences are adhered to when a news is added.
+
+        But only active users and only for regular news.
+        """
+        News.objects.create(title="Tytuł zwykłego newsa",
+                            body="Bardzo ciekawa wiadomość",
+                            author=self.t1.user,
+                            priority=PriorityChoices.NORMAL)
+        self.assertCountEqual(self.inspect_outbox(mail.outbox),
                               [self.s1.user.email, self.t1.user.email])
 
     def test_urgent_news(self):
