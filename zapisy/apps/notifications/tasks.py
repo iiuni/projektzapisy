@@ -49,7 +49,7 @@ def dispatch_notifications_task(user):
             'greeting': f'Dzień dobry, {user.first_name}',
         }
 
-        subject = render_title(pn.description_id, pn.description_args)
+        subject = EMAIL_SUBJECT_TEMPLATE % render_title(pn.description_id, pn.description_args)
 
         message_contents = render_to_string('notifications/email_base.html', ctx)
 
