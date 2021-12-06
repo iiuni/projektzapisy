@@ -30,7 +30,7 @@ class News(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     priority = models.PositiveSmallIntegerField("priorytet",
                                                 choices=PriorityChoices.choices,
-                                                default=PriorityChoices.NORMAL,
+                                                default=PriorityChoices.LOW,
                                                 help_text=("""
             <dl>
             <dt>Ukryte</dt>

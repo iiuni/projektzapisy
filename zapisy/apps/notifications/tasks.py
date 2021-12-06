@@ -9,9 +9,10 @@ from django_rq import job
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
+from apps.notifications.utils import render_title
 from apps.notifications.templates import NotificationType
 
-EMAIL_SUBJECT_TEMPLATE = getattr(settings, "EMAIL_SUBJECT_TEMPLATE", "[ZAPISY] %s")
+EMAIL_SUBJECT_TEMPLATE = "[ZAPISY] %s"
 
 
 @job('dispatch-notifications')
@@ -48,11 +49,7 @@ def dispatch_notifications_task(user):
             'greeting': f'Dzień dobry, {user.first_name}',
         }
 
-        if pn.description_id == NotificationType.NEWS_HAS_BEEN_ADDED \
-                or pn.description_id == NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
-            subject = EMAIL_SUBJECT_TEMPLATE % pn.description_args['title']
-        else:
-            subject = 'Wiadomość od Systemu Zapisów IIUwr'
+        subject = render_title(pn.description_id, pn.description_args)
 
         message_contents = render_to_string('notifications/email_base.html', ctx)
 
