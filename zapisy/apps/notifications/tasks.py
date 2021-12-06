@@ -10,7 +10,6 @@ from apps.notifications.models import NotificationPreferencesStudent, Notificati
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
 from apps.notifications.utils import render_title
-from apps.notifications.templates import NotificationType
 
 EMAIL_SUBJECT_TEMPLATE = "[ZAPISY] %s"
 
