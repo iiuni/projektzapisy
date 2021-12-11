@@ -33,11 +33,8 @@ export default Vue.extend({
     onClass: String,
   },
   computed: {
-    allLabelKeys: function () {
-      // As shown by `selected` type, we expect the `allLabels` to have keys
-      // of type `number`. However, none(?) key-obtaining methods have signature
-      // that would thread this information. Thus, we annotate this here.
-      return keys(this.allLabels) as unknown as number[];
+    allLabelIds: function () {
+      return keys(this.allLabels).map((id) => parseInt(id, 10));
     },
   },
   data: () => {
@@ -47,14 +44,12 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
-    toggle(key: number) {
-      this.selected[key] = !this.selected[key];
-
-      const selectedIds: number[] = keys(this.selected)
-        .map(Number)
-        .filter((k: number) => {
-          return this.selected[k];
-        });
+    toggle(id: number) {
+      this.selected[id] = !this.selected[id];
+      this._afterSelectionChanged();
+    },
+    _afterSelectionChanged() {
+      const selectedIds = this.allLabelIds.filter((id) => this.selected[id]);
 
       const url = new URL(window.location.href);
       if (selectedIds.length > 0) {
@@ -73,7 +68,7 @@ export default Vue.extend({
   // When the component is created we set all the labels as unselected
   // and then set those specified in the query string as selected.
   created: function () {
-    this.selected = fromPairs(this.allLabelKeys.map((k) => [k, false]));
+    this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
 
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
@@ -94,9 +89,10 @@ export default Vue.extend({
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/clearFilters":
-          this.allLabelKeys
-            .filter((key) => this.selected[key])
-            .forEach(this.toggle);
+          this.allLabelIds.forEach((id) => {
+            this.selected[id] = false;
+          });
+          this._afterSelectionChanged();
           break;
       }
     });
@@ -109,7 +105,7 @@ export default Vue.extend({
     <h4>{{ title }}</h4>
     <a
       href="#"
-      v-for="l in allLabelKeys"
+      v-for="l in allLabelIds"
       class="badge"
       v-bind:class="[selected[l] ? onClass : 'badge-secondary']"
       @click.prevent="toggle(l)"
