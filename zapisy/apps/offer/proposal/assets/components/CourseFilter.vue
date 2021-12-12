@@ -51,19 +51,15 @@ export default Vue.extend({
       ["IN_VOTE", "poddany pod głosowanie"],
       ["WITHDRAWN", "wycofany z oferty"],
     ];
+  },
+  mounted: function () {
+    // Extract filterable properties names from the template.
+    const filterableProperties = Object.values(this.$refs)
+      .filter((ref: any) => ref.filterKey)
+      .map((filter: any) => filter.property);
 
-    const filterableProperties = [
-      "name",
-      "tags",
-      "courseType",
-      "effects",
-      "owner",
-      "recommendedForFirstYear",
-      "semester",
-      "status",
-    ];
-    const searchParams = new URL(window.location.href).searchParams;
     // Expand the filters if there are any initially specified in the search params.
+    const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
       this.collapsed = false;
     }
@@ -83,6 +79,7 @@ export default Vue.extend({
             filterKey="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
+            ref="name-filter"
           />
           <hr />
           <LabelsFilter
@@ -91,6 +88,7 @@ export default Vue.extend({
             property="tags"
             :allLabels="allTags"
             onClass="badge-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
@@ -99,6 +97,7 @@ export default Vue.extend({
             property="courseType"
             :options="allTypes"
             placeholder="Rodzaj przedmiotu"
+            ref="type-filter"
           />
           <hr />
           <LabelsFilter
@@ -107,6 +106,7 @@ export default Vue.extend({
             property="effects"
             :allLabels="allEffects"
             onClass="badge-info"
+            ref="effects-filter"
           />
         </div>
         <div class="col-md">
@@ -115,24 +115,28 @@ export default Vue.extend({
             property="owner"
             :options="allOwners"
             placeholder="Opiekun przedmiotu"
+            ref="owner-filter"
           />
           <SelectFilter
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
             placeholder="Semestr"
+            ref="semester-filter"
           />
           <SelectFilter
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
             placeholder="Status propozycji"
+            ref="status-filter"
           />
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
           />
           <hr />
           <button
