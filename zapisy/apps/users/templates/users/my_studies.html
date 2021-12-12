@@ -22,14 +22,12 @@
             </tr>
         </table>
     </div>
-    <select class="custom-select" v-model="selected">
-       <option value="inżynierskie">
-        inżynierskie
-       </option>
-       <option value="licencjackie">
-        licencjackie
-        </option>
-     </select>
+    <select style="margin-bottom:20px; width: 35%; min-width: 210px;" id="program" class="custom-select" v-model="selected" onchange="location = `?program=${this.value}`">
+        <option value="program">-- wybierz tryb studiów --</option>
+        <option value="inz">inżynierskie</option>
+        <option value="lic">licencjackie</option>
+    </select>
+       
      
     {% if user.student %}
     <div class="mb-5">
