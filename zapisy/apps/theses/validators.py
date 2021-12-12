@@ -35,3 +35,10 @@ def validate_master_rejecter(value: Optional[int]):
             # This is unexpected - users generally shouldn't be able to do that,
             # short of manually crafting malicious requests
             raise ValidationError("Podano niepoprawnego pracownika")
+
+
+def validate_max_number_of_students(value: Optional[int]):
+    if value is not None and not 1 <= value <= 3:
+        raise ValidationError(
+            "Maksymalna liczba studentów musi być z przedziału [1, 3]"
+        )
