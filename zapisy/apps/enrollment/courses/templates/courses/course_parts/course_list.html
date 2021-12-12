@@ -1,0 +1,91 @@
+{% extends "courses/base.html" %}
+
+{% block main-subtitle %}
+	{{ course }}
+{% endblock %}
+
+{% block enrollment_menu_courses %} class="active"{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'main-page' %}">Strona główna</a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <a href="{% url 'course-list' %}">Zapisy</a>
+    </li>
+
+    <li class="breadcrumb-item">
+	    <a href="{% url 'course-list' %}">Przedmioty</a>
+    </li>
+
+    <li class="breadcrumb-item">
+	    <a href="{% url 'course-page' course.slug %}">
+            {{course.name}}
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        lista
+    </li>
+{% endblock %}
+
+
+
+{% block content %}
+    <header class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1>{{ course }}</h1>
+        </div>
+    </header>
+
+
+    <hr>
+
+    <div class="table-responsive-sm">
+        <h3>Lista osób zapisanych na przedmiot:</h3>
+        <p>
+            Liczba zapisanych osób: {{students_in_course|length}}
+        </p>
+
+        {% if students_in_course %}
+            {% include "courses/students_list.html" with students=students_in_course %}
+            
+            {% if request.user.is_staff or request.user.employee %}
+            <div class="d-print-none">
+                <h5>Wyślij wiadomość do grupy</h5>
+                <ul>
+                    <li><a href="mailto:{{ mailto_group }}">udostępniając adresy mailowe studentów</a></li>
+                    <li><a href="mailto:{{ mailto_group_bcc }}">ukrywając adresy mailowe studentów</a></li>
+                </ul>
+                
+                <h5>Ściągnij listę studentów z grupy jako:</h5>
+                <ul>
+                    <li><a href="{% url 'course-csv' course.slug %}">csv</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="table-responsive-sm d-print-none">
+        {%if students_in_queue %}
+            <h3>Lista osób oczekujących na zapis:</h3>
+            <p>Liczba osób oczekujących na zapis: {{students_in_queue|length}}</p>
+
+            {% include "courses/students_list.html" with students=students_in_queue %}
+            
+            {% if request.user.is_staff or request.user.employee %}
+                <h5>Wyślij wiadomość do kolejki</h5>
+                <ul>
+                    <li><a href="mailto:{{ mailto_queue }}">udostępniając adresy mailowe studentów</a></li>
+                    <li><a href="mailto:{{ mailto_queue_bcc }}">ukrywając adresy mailowe studentów</a></li>
+                </ul>
+
+                <h5>Ściągnij listę studentów z kolejki jako:</h5>
+                <ul>
+                    <li><a href="{% url 'course-queue-csv' course.slug %}">csv</a></li>
+                </ul>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
