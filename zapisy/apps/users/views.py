@@ -236,9 +236,9 @@ def my_studies(request):
 
     program = request.GET.get('program', 4)
 
-    data.update({'program_test': program})
+    year = int(request.GET.get('year', request.user.date_joined.year))
 
-    reqs = requirements(program=program)
+    reqs = requirements(program=program, starting_year=year)
     res = list()
 
     for _, value in reqs.items():

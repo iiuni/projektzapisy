@@ -15,7 +15,12 @@ def load_studies_requirements(program, starting_year=2019):
     program_requirements = data[str(program)]
 
     years = program_requirements.keys()
-    year = max([x for x in years if int(x) <= starting_year])
+    years_lower = [x for x in years if int(x) <= starting_year]
+
+    if years_lower:
+        year = max(years_lower)
+    else:
+        year = max(years)
 
     return program_requirements[year]
 

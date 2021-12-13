@@ -32,16 +32,15 @@
                 <th>Aktualny semestr</th>
                 <td>{{ semester }}</td>
             </tr>
-            {% if effects %}
-                {% include "effects.html" with effects=effects only %}
-            {% endif %}
         </table>
     </div>
     <select style="margin-bottom:20px; width: 35%; min-width: 210px;" id="program" class="custom-select" v-model="selected" onchange="location = `?program=${this.value}`">
         <option value="program">-- wybierz tryb studiów --</option>
-        <option value="4">licencjackie</option>
-        <option value="12">inżynierskie</option>
-        <option value="1">magisterskie</option>
+        <option value="4">Informatyka, dzienne I stopnia</option>
+        <option value="12">Informatyka, dzienne I stopnia inżynierskie</option>
+        <option value="14">ISIM, dzienne I stopnia</option>
+        <option value="1">Informatyka, dzienne II stopnia</option>
+        <option value="18">Data Science, dzienne II stopnia</option>
     </select>
      
     <div class="mb-5">
@@ -54,6 +53,25 @@
             {% for req in requirements %}
             <tr>
                 <th>{{ req.description }}</th>
+                {% if req.filter.tag %}
+                    <td>
+                        {% for tag in req.filter.tag %}
+                            <p>
+                                <span class="badge badge-success mr-2">{{ tag }}</span>
+                            </p>
+                        {% endfor %}
+                    </td>
+                {% elif req.filter.effect %}
+                    <td>
+                        {% for effect in req.filter.effect %}
+                        <p>
+                            <span class="badge badge-info mr-2">{{ effect }}</span>
+                        </p>
+                        {% endfor %}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
                 {% if req.sum %}
                     <td>{{ req.sum }}</td>
                 {% else %}
@@ -61,9 +79,6 @@
                 {% endif %}
             </tr>
             {% endfor %}
-            {% if effects %}
-                {% include "effects.html" with effects=effects only %}
-            {% endif %}
         </table>
     </div>
 
