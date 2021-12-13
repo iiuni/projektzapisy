@@ -123,7 +123,6 @@ def course_list_view(request, slug):
     except CourseInstance.DoesNotExist:
         return None, None
 
-
     def get_group_data(group_id):
         group: Group
         try:
@@ -154,29 +153,25 @@ def course_list_view(request, slug):
             .order_by('created')
         )
 
-
         def collect_students(records) -> List[Student]:
             return [record.student for record in records]
-
 
         students_in_group = collect_students(records_in_group)
         students_in_queue = collect_students(records_in_queue)
 
         data = {
-            f'students_in_group': students_in_group,
-            f'students_in_queue': students_in_queue,
-            f'group': group,
-            f'can_user_see_all_students_here': can_user_view_students_list_for_group(
+            'students_in_group': students_in_group,
+            'students_in_queue': students_in_queue,
+            'group': group,
+            'can_user_see_all_students_here': can_user_view_students_list_for_group(
                 request.user, group
             ),
         }
 
         return data
 
-
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
-
 
     groups_ids = [group.id for group in course.groups.all()]
     groups_data = [get_group_data(id) for id in groups_ids]
@@ -189,8 +184,12 @@ def course_list_view(request, slug):
     for group_data in groups_data:
         students_in_course.update(group_data['students_in_group'])
     for group_data in groups_data:
-        students_in_queue.update([student for student in group_data['students_in_queue'] if student not in students_in_course])
-        
+        students_in_queue.update([
+            student
+            for student in group_data["students_in_queue"]
+            if student not in students_in_course
+        ])
+
     data = {
             'students_in_course': sort_student_by_name(students_in_course),
             'students_in_queue': sort_student_by_name(students_in_queue),
@@ -295,9 +294,9 @@ def recorded_students_csv(
 
     writer = csv.writer(response)
     for matricula, student in students.items():
-            writer.writerow([
-                    student["first_name"], student["last_name"], matricula, student["email"]
-                ])
+        writer.writerow([
+                student["first_name"], student["last_name"], matricula, student["email"]
+            ])
     return response
 
 
@@ -364,4 +363,9 @@ def course_queue_csv(request, course_slug):
         )
         students_enrolled.update([record.student.matricula for record in records_in_group])
 
-    return recorded_students_csv(group_ids, RecordStatus.QUEUED, course_short_name, exclude_matriculas=students_enrolled)
+    return recorded_students_csv(
+        group_ids,
+        RecordStatus.QUEUED,
+        course_short_name,
+        exclude_matriculas=students_enrolled
+    )
