@@ -140,14 +140,16 @@ class EditThesisForm(ThesisFormBase):
         if user.is_staff:
             special_row = Row(
                 Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-4'),
+                Column('reserved_until', css_class='form-group col-md-2'),
+                Column('max_number_of_students', css_class='form-group col-md-2'),
                 Column('status', css_class='form-group col-md-6'),
                 css_class='form-row'
             )
         else:
             self.fields['status'].required = False
             special_row = Row(
-                Column('kind', css_class='form-group col-md-6'),
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='form-row'
             )
