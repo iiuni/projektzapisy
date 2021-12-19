@@ -34,13 +34,24 @@
             </tr>
         </table>
     </div>
-    <select style="margin-bottom:20px; width: 35%; min-width: 210px;" id="program" class="custom-select" v-model="selected" onchange="location = `?program=${this.value}`">
-        <option value="program">-- wybierz tryb studiów --</option>
-        <option value="4">Informatyka, dzienne I stopnia</option>
-        <option value="12">Informatyka, dzienne I stopnia inżynierskie</option>
-        <option value="14">ISIM, dzienne I stopnia</option>
-        <option value="1">Informatyka, dzienne II stopnia</option>
-        <option value="18">Data Science, dzienne II stopnia</option>
+    {% for program in picker_data%}
+        {{picker_data}}
+        {{program}}
+
+        {% for year in program %}
+            {{year}}
+        {% endfor %}
+    {% endfor %}
+    <select style="margin-bottom:20px; width: 35%; min-width: 210px;" id="program" class="custom-select" v-model="selected" onchange="location = `?program=${JSON.parse(this.value).program}&year=${JSON.parse(this.value).year}`">
+       
+            {% for program in picker_data%}
+                {% for year in picker_data.program %}
+                    <option value='{"program": {{program}}, "year":{{year}}}'
+                    {% if request.GET.year == year and request.GET.program == program %}selected="selected"{% endif %}>
+                    {{picker_names.program}}
+                </option>
+               {% endfor %}
+          {% endfor %}
     </select>
      
     <div class="mb-5">

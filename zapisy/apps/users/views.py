@@ -243,8 +243,13 @@ def my_studies(request):
 
     for _, value in reqs.items():
         res.append(value)
-
+    hardcode_names = {"1":"licencjackie", "2": "inżynierskie"}
+    hardcode_example = { "1": ["2019", "2015"], "2": ["2019", "2013"]}
     data.update({'requirements': res})
+    data.update({'picker_data': hardcode_example})
+    data.update({'picker_names': hardcode_names})
+
+
 
     return render(request, 'users/my_studies.html', data)
 
