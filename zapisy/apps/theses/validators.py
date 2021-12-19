@@ -3,7 +3,7 @@ from typing import Optional
 
 from django.core.exceptions import ValidationError
 
-from apps.users.models import Employee
+from apps.users.models import Employee, MAX_MAX_ASSIGNED_STUDENTS
 
 from .users import get_num_board_members, is_theses_board_member
 
@@ -38,7 +38,7 @@ def validate_master_rejecter(value: Optional[int]):
 
 
 def validate_max_number_of_students(value: Optional[int]):
-    if value is not None and not 1 <= value <= 3:
+    if value is not None and not 1 <= value <= MAX_MAX_ASSIGNED_STUDENTS:
         raise ValidationError(
             "Maksymalna liczba studentów musi być z przedziału [1, 3]"
         )
