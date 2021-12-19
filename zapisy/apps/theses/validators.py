@@ -40,5 +40,5 @@ def validate_master_rejecter(value: Optional[int]):
 def validate_max_number_of_students(value: Optional[int]):
     if value is not None and not 1 <= value <= MAX_MAX_ASSIGNED_STUDENTS:
         raise ValidationError(
-            "Maksymalna liczba studentów musi być z przedziału [1, 3]"
+            f'Maksymalna liczba studentów musi być z przedziału [1, {MAX_MAX_ASSIGNED_STUDENTS}]'
         )
