@@ -14,13 +14,6 @@
                 },
                 "sum": 100
             },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
-            },
             "masters-courses": {
                 "description": "Przedmioty I2, O2, O3",
                 "filter": { 
@@ -58,6 +51,18 @@
                 "groupBy": "tag",
                 "aggregate": "sum",
                 "sum": 15
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         },
         "2015": {
@@ -74,13 +79,6 @@
                 },
                 "sum": 100
             },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
-            },
             "masters-courses": {
                 "description": "Przedmioty I2, O2, O3",
                 "filter": { 
@@ -118,6 +116,18 @@
                 "groupBy": "tag",
                 "aggregate": "sum",
                 "sum": 15
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         },
         "2018": {
@@ -132,13 +142,6 @@
                     }
                 },
                 "sum": 100
-            },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
             },
             "masters-courses": {
                 "description": "Przedmioty I2, O2, O3",
@@ -166,7 +169,7 @@
                 "filter": { 
                     "type": ["14"] 
                 },
-                "sum": 6
+                "sum": 9
             },
             "specialization": {
                 "description": "Tagi dziedzinowe",
@@ -184,6 +187,18 @@
                     "type": ["42"]
                 },
                 "sum": 5
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         },
         "2019": {
@@ -198,13 +213,6 @@
                     }
                 },
                 "sum": 100
-            },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
             },
             "i2": {
                 "description": "Przedmioty I2",
@@ -237,12 +245,31 @@
                 "aggregate": "sum",
                 "sum": 15
             },
+            "marked": {
+                "description": "Przedmioty SY,PD,NG",
+                "filter": { 
+                    "tag": ["1", "5", "7"] 
+                },
+                "sum": 12
+            },
             "humanistic": {
                 "description": "Przedmioty humanistyczno-społeczne",
                 "filter": {
                     "type": ["42"]
                 },
                 "sum": 5
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         }
     },
@@ -321,12 +348,76 @@
                 },
                 "sum": 70
             },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
+            "masters-courses": {
+                "description": "Przedmioty I2, O2, O3",
                 "filter": { 
-                    "subject": ["136", "719"] 
+                    "type": ["6", "9", "10", "38", "39"] 
                 },
-                "and": true
+                "sum": 51
+            },
+            "i2t": {
+                "description": "Przedmioty typu I2.T",
+                "filter": { 
+                    "type": ["38"] 
+                },
+                "sum": 12
+            },
+            "i2z": {
+                "description": "Przedmioty typu I2.Z",
+                "filter": { 
+                    "type": ["39"] 
+                },
+                "sum": 12
+            },
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                },
+                "sum": 9
+            },
+            "specialization": {
+                "description": "Tagi dziedzinowe",
+                "filter": {
+                    "type": ["6", "14"],
+                    "tag": ["4", "6", "7", "1", "5"]
+                },
+                "groupBy": "tag",
+                "aggregate": "sum",
+                "sum": 15
+            },
+            "humanistic": {
+                "description": "Przedmioty humanistyczno-społeczne",
+                "filter": {
+                    "type": ["42"]
+                },
+                "sum": 5
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
+            }
+        },
+        "2018": {
+            "ects": {
+                "description": "Wymagane punkty ECTS",
+                "filterNot": { 
+                    "type": ["36", "5", "17"] 
+                },
+                "limit": {
+                    "type": {
+                        "42": 6
+                    }
+                },
+                "sum": 70
             },
             "masters-courses": {
                 "description": "Przedmioty I2, O2, O3",
@@ -365,65 +456,6 @@
                 "groupBy": "tag",
                 "aggregate": "sum",
                 "sum": 15
-            }
-        },
-        "2018": {
-            "ects": {
-                "description": "Wymagane punkty ECTS",
-                "filterNot": { 
-                    "type": ["36", "5", "17"] 
-                },
-                "limit": {
-                    "type": {
-                        "42": 6
-                    }
-                },
-                "sum": 70
-            },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
-            },
-            "masters-courses": {
-                "description": "Przedmioty I2, O2, O3",
-                "filter": { 
-                    "type": ["6", "9", "10", "38", "39"] 
-                },
-                "sum": 51
-            },
-            "i2t": {
-                "description": "Przedmioty typu I2.T",
-                "filter": { 
-                    "type": ["38"] 
-                },
-                "sum": 12
-            },
-            "i2z": {
-                "description": "Przedmioty typu I2.Z",
-                "filter": { 
-                    "type": ["39"] 
-                },
-                "sum": 12
-            },
-            "seminar": {
-                "description": "Seminaria",
-                "filter": { 
-                    "type": ["14"] 
-                },
-                "sum": 6
-            },
-            "specialization": {
-                "description": "Tagi dziedzinowe",
-                "filter": {
-                    "type": ["6", "14"],
-                    "tag": ["4", "6", "7", "1", "5"]
-                },
-                "groupBy": "tag",
-                "aggregate": "sum",
-                "sum": 15
             },
             "humanistic": {
                 "description": "Przedmioty humanistyczno-społeczne",
@@ -431,6 +463,18 @@
                     "type": ["42"]
                 },
                 "sum": 5
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         },
         "2019": {
@@ -445,13 +489,6 @@
                     }
                 },
                 "sum": 70
-            },
-            "compulsory": {
-                "description": "Przedmioty obowiazkowe",
-                "filter": { 
-                    "subject": ["136", "719"] 
-                },
-                "and": true
             },
             "i2": {
                 "description": "Przedmioty I2",
@@ -490,6 +527,25 @@
                     "type": ["42"]
                 },
                 "sum": 5
+            },
+            "marked": {
+                "description": "Przedmioty SY,PD,NG",
+                "filter": { 
+                    "tag": ["1", "5", "7"] 
+                },
+                "sum": 12
+            },
+            "jfizo": {
+                "description": "Języki formalne i złożoność obliczeniowa",
+                "filter": { 
+                    "subject": ["136"] 
+                }
+            },
+            "jp": {
+                "description": "Języki programowania",
+                "filter": { 
+                    "subject": ["719"] 
+                }
             }
         }
     },
@@ -537,13 +593,47 @@
                     "type": ["13"]
                 }
             },
-            "themed_subjects": {
-                "description": "Przedmioty tematyczne",
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
+            "themed_subject_po": {
+                "description": "",
                 "filter": {
-                    "effect": ["2", "3", "4", "5", "6", "7", "10"]
-                },
-                "and": true,
-                "sum": 28
+                    "effect": ["2"]
+                }
+            },
+            "themed_subject_ask": {
+                "description": "",
+                "filter": {
+                    "effect": ["3"]
+                }
+            },
+            "themed_subject_rpis": {
+                "description": "",
+                "filter": {
+                    "effect": ["4"]
+                }
+            },
+            "themed_subject_so": {
+                "description": "",
+                "filter": {
+                    "effect": ["5"]
+                }
+            },
+            "themed_subject_sk": {
+                "description": "",
+                "filter": {
+                    "effect": ["6"]
+                }
+            },
+            "themed_subject_bd": {
+                "description": "",
+                "filter": {
+                    "effect": ["7"]
+                }
             },
             "internships": {
                 "description": "Praktyka zawodowa",
@@ -561,7 +651,8 @@
                 "description": "Przedmioty nieinformatyczne",
                 "filter": {
                     "type": ["15"]
-                }
+                },
+                "sum": 4
             },
             "logic": {
                 "description": "Logika",
@@ -650,13 +741,47 @@
                     "type": ["13"]
                 }
             },
-            "themed_subjects": {
-                "description": "Przedmioty tematyczne",
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
+            "themed_subject_po": {
+                "description": "",
                 "filter": {
-                    "effect": ["2", "3", "4", "5", "6", "7", "10"]
-                },
-                "and": true,
-                "sum": 28
+                    "effect": ["2"]
+                }
+            },
+            "themed_subject_ask": {
+                "description": "",
+                "filter": {
+                    "effect": ["3"]
+                }
+            },
+            "themed_subject_rpis": {
+                "description": "",
+                "filter": {
+                    "effect": ["4"]
+                }
+            },
+            "themed_subject_so": {
+                "description": "",
+                "filter": {
+                    "effect": ["5"]
+                }
+            },
+            "themed_subject_sk": {
+                "description": "",
+                "filter": {
+                    "effect": ["6"]
+                }
+            },
+            "themed_subject_bd": {
+                "description": "",
+                "filter": {
+                    "effect": ["7"]
+                }
             },
             "internships": {
                 "description": "Praktyka zawodowa",
@@ -770,6 +895,12 @@
                     "type": ["13"]
                 }
             },
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
             "themed_subjects": {
                 "description": "Przedmioty tematyczne",
                 "filter": {
@@ -795,7 +926,8 @@
                 "description": "Przedmioty humanistyczno-społeczne",
                 "filter": {
                     "type": ["42"]
-                }
+                },
+                "sum": 5
             },
             "owi": {
                 "description": "Ochrona własności intelektualnej",
@@ -879,13 +1011,47 @@
                     "type": ["13"]
                 }
             },
-            "themed_subjects": {
-                "description": "Przedmioty tematyczne",
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
+            "themed_subject_po": {
+                "description": "",
                 "filter": {
-                    "effect": ["2", "3", "4", "5", "6", "7", "10"]
-                },
-                "and": true,
-                "sum": 28
+                    "effect": ["2"]
+                }
+            },
+            "themed_subject_ask": {
+                "description": "",
+                "filter": {
+                    "effect": ["3"]
+                }
+            },
+            "themed_subject_rpis": {
+                "description": "",
+                "filter": {
+                    "effect": ["4"]
+                }
+            },
+            "themed_subject_so": {
+                "description": "",
+                "filter": {
+                    "effect": ["5"]
+                }
+            },
+            "themed_subject_sk": {
+                "description": "",
+                "filter": {
+                    "effect": ["6"]
+                }
+            },
+            "themed_subject_bd": {
+                "description": "",
+                "filter": {
+                    "effect": ["7"]
+                }
             },
             "internships": {
                 "description": "Praktyka zawodowa",
@@ -974,13 +1140,47 @@
                     "type": ["13"]
                 }
             },
-            "themed_subjects": {
-                "description": "Przedmioty tematyczne",
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
+            "themed_subject_po": {
+                "description": "",
                 "filter": {
-                    "effect": ["2", "3", "4", "5", "6", "7", "10"]
-                },
-                "and": true,
-                "sum": 28
+                    "effect": ["2"]
+                }
+            },
+            "themed_subject_ask": {
+                "description": "",
+                "filter": {
+                    "effect": ["3"]
+                }
+            },
+            "themed_subject_rpis": {
+                "description": "",
+                "filter": {
+                    "effect": ["4"]
+                }
+            },
+            "themed_subject_so": {
+                "description": "",
+                "filter": {
+                    "effect": ["5"]
+                }
+            },
+            "themed_subject_sk": {
+                "description": "",
+                "filter": {
+                    "effect": ["6"]
+                }
+            },
+            "themed_subject_bd": {
+                "description": "",
+                "filter": {
+                    "effect": ["7"]
+                }
             },
             "internships": {
                 "description": "Praktyka zawodowa",
@@ -1075,6 +1275,12 @@
                     "type": ["13"]
                 }
             },
+            "seminar": {
+                "description": "Seminaria",
+                "filter": { 
+                    "type": ["14"] 
+                }
+            },
             "themed_subjects": {
                 "description": "Przedmioty tematyczne",
                 "filter": {
@@ -1094,7 +1300,7 @@
                 "filter": {
                     "type": ["42"]
                 },
-                "sum": 4
+                "sum": 5
             },
             "owi": {
                 "description": "Ochrona własności intelektualnej",
