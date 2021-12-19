@@ -4,13 +4,32 @@ from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.course_type import Type
 from apps.offer.proposal.models import Proposal
+from apps.users.models import Program
 
 mapper = {'effect': Effects, 'tag': Tag, 'type': Type, 'subject': Proposal}
 
-
-def load_studies_requirements(program, starting_year=2019):
+def load_requirements_file():
     with open('wymagania.json') as json_file:
         data = json.load(json_file)
+    return data
+
+def load_list_of_programs_and_years():
+    data = load_requirements_file()
+
+    res = dict()
+
+    for program_id in data.keys():
+        program = Program.objects.get(pk=program_id)
+        
+        res[program] = dict()
+        res[program]['years'] = list(data[program_id].keys())
+        res[program]['id'] = program_id
+
+    return res
+
+
+def load_studies_requirements(program, starting_year=2019):
+    data = load_requirements_file()
 
     program_requirements = data[str(program)]
 
@@ -24,6 +43,20 @@ def load_studies_requirements(program, starting_year=2019):
 
     return program_requirements[year]
 
+def proper_year_for_program(program, year):
+    data = load_requirements_file()
+
+    program_requirements = data[str(program)]
+
+    years = program_requirements.keys()
+    years_lower = [x for x in years if int(x) <= year]
+
+    if years_lower:
+        year = max(years_lower)
+    else:
+        year = max(years)
+
+    return year
 
 def requirements(program, starting_year=2019):
     reqs = load_studies_requirements(program, starting_year)

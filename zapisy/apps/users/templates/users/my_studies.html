@@ -34,24 +34,15 @@
             </tr>
         </table>
     </div>
-    {% for program in picker_data%}
-        {{picker_data}}
-        {{program}}
-
-        {% for year in program %}
-            {{year}}
-        {% endfor %}
-    {% endfor %}
     <select style="margin-bottom:20px; width: 35%; min-width: 210px;" id="program" class="custom-select" v-model="selected" onchange="location = `?program=${JSON.parse(this.value).program}&year=${JSON.parse(this.value).year}`">
-       
-            {% for program in picker_data%}
-                {% for year in picker_data.program %}
-                    <option value='{"program": {{program}}, "year":{{year}}}'
-                    {% if request.GET.year == year and request.GET.program == program %}selected="selected"{% endif %}>
-                    {{picker_names.program}}
+        {% for program, value in picker_data.items %}
+            {% for year in value.years %}
+                <option value='{"program": {{value.id}}, "year":{{year}}}'
+                    {% if not request.GET.year and not request.GET.program and program == request.user.student.program and year == proper_year or request.GET.year == year and request.GET.program == value.id %}selected="selected"{% endif %}>
+                    {{ program }} {{ year }}
                 </option>
-               {% endfor %}
-          {% endfor %}
+            {% endfor %}
+        {% endfor %}
     </select>
      
     <div class="mb-5">

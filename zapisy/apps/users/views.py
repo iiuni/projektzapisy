@@ -10,14 +10,14 @@ from django.views.decorators.http import require_POST
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.effects.models import CompletedCourses
-from apps.effects.utils import requirements
+from apps.effects.utils import load_list_of_programs_and_years, proper_year_for_program, requirements
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
 from .forms import EmailChangeForm, EmployeeDataForm
-from .models import Employee, PersonalDataConsent, Student
+from .models import Employee, PersonalDataConsent, Program, Student
 
 logger = logging.getLogger()
 
@@ -234,7 +234,9 @@ def my_studies(request):
             'effects': done_effects,
         })
 
-    program = request.GET.get('program', 4)
+    student_program = Program.objects.filter(name=request.user.student.program).all()[0].id
+
+    program = request.GET.get('program', student_program)
 
     year = int(request.GET.get('year', request.user.date_joined.year))
 
@@ -243,13 +245,15 @@ def my_studies(request):
 
     for _, value in reqs.items():
         res.append(value)
-    hardcode_names = {"1":"licencjackie", "2": "inżynierskie"}
-    hardcode_example = { "1": ["2019", "2015"], "2": ["2019", "2013"]}
     data.update({'requirements': res})
-    data.update({'picker_data': hardcode_example})
-    data.update({'picker_names': hardcode_names})
 
 
+    list_of_programs = load_list_of_programs_and_years()
+    
+    data.update({'picker_data': list_of_programs})
+
+    proper_year = proper_year_for_program(program, year)
+    data.update({'proper_year': str(proper_year)})
 
     return render(request, 'users/my_studies.html', data)
 
