@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.effects.models import CompletedCourses
-from apps.effects.utils import load_list_of_programs_and_years, proper_year_for_program, requirements
+from apps.effects.utils import get_all_points, get_points_sum, load_list_of_programs_and_years, proper_year_for_program, requirements
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
@@ -241,10 +241,22 @@ def my_studies(request):
     year = int(request.GET.get('year', request.user.date_joined.year))
 
     reqs = requirements(program=program, starting_year=year)
+    # points = dict()
+    for key, value in reqs.items():
+        if key == 'ects':
+            value['user_points'] = get_all_points(request.user.student.id)
+        if 'filter' in value.keys():
+            if 'sum' in value.keys():
+                value['user_points'] = get_points_sum(request.user.student.id, value['filter'])
+
     res = list()
 
-    for _, value in reqs.items():
+    for key, value in reqs.items():
+        # if 'filter' in value.keys():
+        #     if 'sum' in value['filter'].keys():
+        #         value['user_points'] = points[key]
         res.append(value)
+
     data.update({'requirements': res})
 
 

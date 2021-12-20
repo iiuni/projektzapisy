@@ -1,10 +1,11 @@
 import json
+from apps.effects.models import CompletedCourses
 
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.course_type import Type
 from apps.offer.proposal.models import Proposal
-from apps.users.models import Program
+from apps.users.models import Program, Student
 
 mapper = {'effect': Effects, 'tag': Tag, 'type': Type, 'subject': Proposal}
 
@@ -111,3 +112,43 @@ def requirements(program, starting_year=2019):
                         res[key]['filterNot'][table].append(name)
 
     return res
+
+def get_all_points(student_id):
+    student = Student.objects.get(pk=student_id)
+    completed_courses = (
+            CompletedCourses.objects.filter(student=student, program=student.program)
+        )
+    
+    sum = 0
+
+    for record in completed_courses:
+        course = record.course
+        sum += course.points
+
+    return sum
+
+def get_points_sum(student_id, filter):
+    student = Student.objects.get(pk=student_id)
+    completed_courses = (
+            CompletedCourses.objects.filter(student=student, program=student.program)
+        )
+    
+    sum = 0
+
+    for record in completed_courses:
+        course = record.course
+        for table, objects in filter.items():
+            if table == 'subject':
+                if course.offer in objects:
+                    sum += course.points
+            if table == 'type':
+                if course.course_type in objects:
+                    sum += course.points
+            if table == 'effect':
+                if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
+                    sum += course.points
+            if table == 'tag':
+                if not set([tag for tag in course.tags.all()]).isdisjoint(set(objects)):
+                    sum += course.points
+
+    return sum
