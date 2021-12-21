@@ -1,6 +1,9 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.enrollment.courses.models import Semester
@@ -11,11 +14,19 @@ from apps.users.decorators import student_required
 
 from .forms import prepare_vote_formset
 
+from django.urls import reverse
+
+def testapi(request):
+   # do something
+   #return render(request, 'vote/form.html', {'message': "AD"})
+   return JsonResponse({"message":"VALUE_OF_MESSAGE"},status=201)
 
 @student_required
 def vote(request):
     """Renders voting form to the student and handles voting POST requests."""
     system_state = SystemState.get_current_state()
+
+    testapi(request)
 
     if not system_state:
         messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
@@ -40,7 +51,30 @@ def vote(request):
         template_name = 'vote/form.html'
     elif system_state.correction_active_semester():
         template_name = 'vote/form_correction.html'
-    return render(request, template_name, {'formset': formset})
+    #return render(request, template_name, {'formset': formset})
+
+    proposal = None
+    filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
+    qs = Proposal.objects.filter(status__in=filter_statuses).order_by('name')
+    proposal_list = []
+    for p in qs.prefetch_related('effects', 'tags'):
+        proposal_dict = p.__json__()
+        proposal_dict.update({
+            'status': ProposalStatus(p.status)._name_,
+            'semester': p.semester,
+            'url': reverse('offer-page', args=(p.slug,)),
+        })
+        proposal_list.append(proposal_dict)
+    filter_data = Proposal.prepare_filter_data(qs)
+
+    return render(request, template_name, {
+        'formset': formset,
+        "proposal": proposal,
+        "filters_json": json.dumps(filter_data),
+
+        "proposals": json.dumps(proposal_list),
+    })
+
 
 
 @login_required
