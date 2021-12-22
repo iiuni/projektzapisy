@@ -11,7 +11,7 @@ rq==1.10.1
 django-rq==2.5.1
 django-test-without-migrations==0.6
 django-webpack-loader==0.7.0
-djangorestframework==3.12.4
+djangorestframework==3.13.1
 django-pagedown==2.2.1
 
 ipdb==0.13.9
