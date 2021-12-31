@@ -44,7 +44,7 @@
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/vue-fontawesome": "2.0.6",
     "@types/bootstrap": "4.6.1",
-    "@types/jquery": "3.5.10",
+    "@types/jquery": "3.5.11",
     "@types/js-cookie": "2.2.7",
     "@types/js-yaml": "3.12.7",
     "@types/katex": "0.11.1",
