@@ -5,11 +5,14 @@
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
-    {% if user.is_staff or course.owner == request.user.employee %}
-        {% if course.semester.is_current_semester %}
-            <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'course-student-list' course.slug %}">Lista</a>
+        {% if user.is_staff or course.owner == request.user.employee %}
+            {% if course.semester.is_current_semester %}
+                <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+            {% endif %}
         {% endif %}
-    {% endif %}
+    </div>
 </div>
 
 <table class="table table-bordered table-md-responsive" id="table-info">

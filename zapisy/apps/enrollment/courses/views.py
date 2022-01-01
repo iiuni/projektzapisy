@@ -111,11 +111,11 @@ def course_view(request, slug):
 
 
 @login_required
-def course_list_view(request, slug):
+def course_list_view(request, course_slug: str, class_type: int = None):
     course: CourseInstance
     try:
         course = (
-            CourseInstance.objects.filter(slug=slug)
+            CourseInstance.objects.filter(slug=course_slug)
             .select_related('semester', 'course_type')
             .prefetch_related('tags', 'effects')
             .get()
@@ -173,7 +173,11 @@ def course_list_view(request, slug):
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
 
-    groups_ids = [group.id for group in course.groups.all()]
+    groups_ids = [
+        group.id
+        for group in course.groups.all()
+        if class_type is None or group.type == class_type
+    ]
     groups_data = [get_group_data(id) for id in groups_ids]
     can_user_see_all_students_here = all(
                 [group['can_user_see_all_students_here'] for group in groups_data]
@@ -199,6 +203,7 @@ def course_list_view(request, slug):
             'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
             'mailto_group_bcc': mailto(request.user, students_in_course, bcc=True),
             'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
+            'class_type': class_type,
     }
     return render(request, 'courses/course_parts/course_list.html', data)
 
