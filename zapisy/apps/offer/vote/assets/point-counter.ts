@@ -49,66 +49,84 @@ function highlightVotedRow(select: HTMLSelectElement) {
     tableRow.classList.remove("table-success");
     tableRow.classList.remove("table-primary");
   }
-
 }
 
 function setUpFilters() {
-    Vue.use(Vuex);
+  Vue.use(Vuex);
 
-    const store = new Vuex.Store({
-      modules: {
-        filters,
-      },
-    });
+  const store = new Vuex.Store({
+    modules: {
+      filters,
+    },
+  });
 
-    compF = new Vue({
-        el: "#course-filter",
-        render: (h) => h(FilterComponent), store
-    });
+  compF = new Vue({
+    el: "#course-filter",
+    render: (h) => h(FilterComponent),
+    store,
+  });
 }
 
-
 function filteredCourses(courses) {
-    let name = compF.$children[0].$children[0].$data.pattern;
-    let tags = compF.$children[0].$children[1].$data.selected;
-    let type = compF.$children[0].$children[2].$data.selected;
-    let effects = compF.$children[0].$children[3].$data.selected;
-    let owner = compF.$children[0].$children[4].$data.selected;
-    let semester = compF.$children[0].$children[5].$data.selected;
-    let status = "IN_VOTE"
-    let fresh = compF.$children[0].$children[6].$data.on;
+  let name = compF.$children[0].$children[0].$data.pattern;
+  let tags = compF.$children[0].$children[1].$data.selected;
+  let type = compF.$children[0].$children[2].$data.selected;
+  let effects = compF.$children[0].$children[3].$data.selected;
+  let owner = compF.$children[0].$children[4].$data.selected;
+  let semester = compF.$children[0].$children[5].$data.selected;
+  let status = "IN_VOTE";
+  let fresh = compF.$children[0].$children[6].$data.on;
 
-    let match = (val, filter) =>  { return filter == null || val == filter };
+  let match = (val, filter) => {
+    return filter == null || val == filter;
+  };
 
-    let filtered = courses.filter(x => match(x["semester"], semester) && match(x["status"], status)
-                                && match(x["owner"], owner) && match(x["courseType"], type))
-    if (fresh) {
-        filtered = filtered.filter(x => match(x["recommendedForFirstYear"], fresh));
-    }
-    let selectedTags = Object.keys(tags)
-        .filter(function(k){return tags[k]})
-        .map(Number);
+  let filtered = courses.filter(
+    (x) =>
+      match(x["semester"], semester) &&
+      match(x["status"], status) &&
+      match(x["owner"], owner) &&
+      match(x["courseType"], type)
+  );
+  if (fresh) {
+    filtered = filtered.filter((x) =>
+      match(x["recommendedForFirstYear"], fresh)
+    );
+  }
+  let selectedTags = Object.keys(tags)
+    .filter(function (k) {
+      return tags[k];
+    })
+    .map(Number);
 
-    let selectedEffects = Object.keys(effects)
-        .filter(function(k){return effects[k]})
-        .map(Number);
+  let selectedEffects = Object.keys(effects)
+    .filter(function (k) {
+      return effects[k];
+    })
+    .map(Number);
 
-    if (selectedTags.length > 0) {
-        filtered = filtered.filter(x => x["tags"].some(r => selectedTags.includes(r)));
-    }
-    if (selectedEffects.length > 0) {
-        filtered = filtered.filter(x => x["effects"].some(r => selectedEffects.includes(r)));
-    }
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter((x) =>
+      x["tags"].some((r) => selectedTags.includes(r))
+    );
+  }
+  if (selectedEffects.length > 0) {
+    filtered = filtered.filter((x) =>
+      x["effects"].some((r) => selectedEffects.includes(r))
+    );
+  }
 
-    if (name) {
-        filtered = filtered.filter(x => x["name"].toLowerCase().includes(name.toLowerCase()));
-    }
+  if (name) {
+    filtered = filtered.filter((x) =>
+      x["name"].toLowerCase().includes(name.toLowerCase())
+    );
+  }
 
-    if (filtered.length == 0) {
-        return [{ id: -1 }];
-    }
+  if (filtered.length == 0) {
+    return [{ id: -1 }];
+  }
 
-    return filtered;
+  return filtered;
 }
 
 function setUpCounter() {
@@ -142,39 +160,39 @@ function setUpCounter() {
 }
 
 function applyFilters() {
-    const rows = document.querySelectorAll("tr");
-    const filtered = filteredCourses(coursesData);
+  const rows = document.querySelectorAll("tr");
+  const filtered = filteredCourses(coursesData);
 
-    for (const row of rows) {
-      let hideRow = true;
-      for (const course of filtered) {
-        if (row!.classList.contains("subject-id-" + course["id"])) {
-          hideRow = false;
-          break;
-        }
-      }
-      if (hideRow) {
-        row!.classList.add("hidden");
-        row.setAttribute("style", "display: none;");
-      }
-      else {
-        row!.classList.remove("hidden");
-        row.setAttribute("style", "");
+  for (const row of rows) {
+    let hideRow = true;
+    for (const course of filtered) {
+      if (row!.classList.contains("subject-id-" + course["id"])) {
+        hideRow = false;
+        break;
       }
     }
+    if (hideRow) {
+      row!.classList.add("hidden");
+      row.setAttribute("style", "display: none;");
+    } else {
+      row!.classList.remove("hidden");
+      row.setAttribute("style", "");
+    }
+  }
 }
 
 function FormatCoursesData(coursesData) {
-    var sliced = coursesData.slice(1, -1);
-    sliced = sliced.replaceAll("}", "}}");
-    var coursesDataArray = sliced.split("}, ", 999999);
-    coursesDataArray[coursesDataArray.length-1] = coursesDataArray[coursesDataArray.length-1].slice(0, -1);
-    for(let n = 0; n < coursesDataArray.length; n++){
-        coursesDataArray[n] = JSON.parse(coursesDataArray[n])
-    }
-    return coursesDataArray;
+  var sliced = coursesData.slice(1, -1);
+  sliced = sliced.replaceAll("}", "}}");
+  var coursesDataArray = sliced.split("}, ", 999999);
+  coursesDataArray[coursesDataArray.length - 1] = coursesDataArray[
+    coursesDataArray.length - 1
+  ].slice(0, -1);
+  for (let n = 0; n < coursesDataArray.length; n++) {
+    coursesDataArray[n] = JSON.parse(coursesDataArray[n]);
+  }
+  return coursesDataArray;
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
   // We set-up the counter component in the beginning.
@@ -192,19 +210,17 @@ document.addEventListener("DOMContentLoaded", function () {
     highlightVotedRow(input as HTMLSelectElement);
   }
 
-
   for (const textInput of textInputs) {
     if (textInput!.classList.contains("form-control")) {
-        (textInput as HTMLElement).addEventListener("input", applyFilters);
-    }
-    else if (textInput!.classList.contains("custom-control-input")) {
-        (textInput as HTMLElement).addEventListener("change", applyFilters);
+      (textInput as HTMLElement).addEventListener("input", applyFilters);
+    } else if (textInput!.classList.contains("custom-control-input")) {
+      (textInput as HTMLElement).addEventListener("change", applyFilters);
     }
   }
 
   for (const badgeInput of badgeInputs) {
     if (badgeInput!.classList.contains("badge")) {
-        (badgeInput as HTMLElement).addEventListener("click", applyFilters);
+      (badgeInput as HTMLElement).addEventListener("click", applyFilters);
     }
   }
 
@@ -213,20 +229,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   for (const input of inputs) {
     if (input!.classList.contains("custom-select")) {
-        (input as HTMLElement).addEventListener("change", applyFilters);
-    }
-    else {
-        (input as HTMLElement).addEventListener("input", function (_) {
-          const row = this.closest("tr");
+      (input as HTMLElement).addEventListener("change", applyFilters);
+    } else {
+      (input as HTMLElement).addEventListener("input", function (_) {
+        const row = this.closest("tr");
 
-          if (row!.classList.contains("limit")) {
-            // Update the map.
-            setValueMapFromInput(comp!.inputs, this as HTMLInputElement);
-          }
+        if (row!.classList.contains("limit")) {
+          // Update the map.
+          setValueMapFromInput(comp!.inputs, this as HTMLInputElement);
+        }
 
-          // If the value is different than minimum, add a highlight.
-          highlightVotedRow(this as HTMLSelectElement);
-        });
+        // If the value is different than minimum, add a highlight.
+        highlightVotedRow(this as HTMLSelectElement);
+      });
     }
   }
 });
