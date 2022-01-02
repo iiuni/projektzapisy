@@ -161,5 +161,3 @@ export default Vue.extend({
   height: 28px;
 }
 </style>
-
-
