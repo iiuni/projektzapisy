@@ -68,14 +68,14 @@ function setUpFilters() {
 
 
 function filteredCourses(courses: Array<object>) {
-    let name = filterComponent.$children[0].$children[0].$data.pattern;
-    let tags = filterComponent.$children[0].$children[1].$data.selected;
-    let type = filterComponent.$children[0].$children[2].$data.selected;
-    let effects = filterComponent.$children[0].$children[3].$data.selected;
-    let owner = filterComponent.$children[0].$children[4].$data.selected;
-    let semester = filterComponent.$children[0].$children[5].$data.selected;
+    let name = filterComponent!.$children[0].$children[0].$data.pattern;
+    let tags = filterComponent!.$children[0].$children[1].$data.selected;
+    let type = filterComponent!.$children[0].$children[2].$data.selected;
+    let effects = filterComponent!.$children[0].$children[3].$data.selected;
+    let owner = filterComponent!.$children[0].$children[4].$data.selected;
+    let semester = filterComponent!.$children[0].$children[5].$data.selected;
     let status = "IN_VOTE"
-    let fresh = filterComponent.$children[0].$children[6].$data.on;
+    let fresh = filterComponent!.$children[0].$children[6].$data.on;
 
     let match = (val:string, filter:string) =>  { return filter == null || val == filter };
 
