@@ -5,17 +5,16 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import CounterComponent from "./components/CounterComponent.vue";
-//import FilterComponent from "@/offer/proposal/assets/components/CourseFilter.vue";
 import FilterComponent from "./components/CourseFilter.vue";
 
 import filters from "@/enrollment/timetable/assets/store/filters";
 
 // comp will hold a Vue component.
-let comp: CounterComponent | null = null;
-let compF: FilterComponent | null = null;
+let counterComponent: CounterComponent | null = null;
+let filterComponent: typeof FilterComponent | null = null;
 
-var coursesData = null;
-//let coursesDataArray = null;
+var coursesDataStr:string = null;
+var coursesDataArray:Array<object> = null;
 
 // Given a name-value map and an input DOM element updates the value
 // corresponding to the input.
@@ -49,84 +48,66 @@ function highlightVotedRow(select: HTMLSelectElement) {
     tableRow.classList.remove("table-success");
     tableRow.classList.remove("table-primary");
   }
+
 }
 
 function setUpFilters() {
-  Vue.use(Vuex);
+    Vue.use(Vuex);
 
-  const store = new Vuex.Store({
-    modules: {
-      filters,
-    },
-  });
+    const store = new Vuex.Store({
+      modules: {
+        filters,
+      },
+    });
 
-  compF = new Vue({
-    el: "#course-filter",
-    render: (h) => h(FilterComponent),
-    store,
-  });
+    filterComponent = new Vue({
+        el: "#course-filter",
+        render: (h) => h(FilterComponent), store
+    });
 }
 
-function filteredCourses(courses) {
-  let name = compF.$children[0].$children[0].$data.pattern;
-  let tags = compF.$children[0].$children[1].$data.selected;
-  let type = compF.$children[0].$children[2].$data.selected;
-  let effects = compF.$children[0].$children[3].$data.selected;
-  let owner = compF.$children[0].$children[4].$data.selected;
-  let semester = compF.$children[0].$children[5].$data.selected;
-  let status = "IN_VOTE";
-  let fresh = compF.$children[0].$children[6].$data.on;
 
-  let match = (val, filter) => {
-    return filter == null || val == filter;
-  };
+function filteredCourses(courses: Array<object>) {
+    let name = filterComponent.$children[0].$children[0].$data.pattern;
+    let tags = filterComponent.$children[0].$children[1].$data.selected;
+    let type = filterComponent.$children[0].$children[2].$data.selected;
+    let effects = filterComponent.$children[0].$children[3].$data.selected;
+    let owner = filterComponent.$children[0].$children[4].$data.selected;
+    let semester = filterComponent.$children[0].$children[5].$data.selected;
+    let status = "IN_VOTE"
+    let fresh = filterComponent.$children[0].$children[6].$data.on;
 
-  let filtered = courses.filter(
-    (x) =>
-      match(x["semester"], semester) &&
-      match(x["status"], status) &&
-      match(x["owner"], owner) &&
-      match(x["courseType"], type)
-  );
-  if (fresh) {
-    filtered = filtered.filter((x) =>
-      match(x["recommendedForFirstYear"], fresh)
-    );
-  }
-  let selectedTags = Object.keys(tags)
-    .filter(function (k) {
-      return tags[k];
-    })
-    .map(Number);
+    let match = (val:string, filter:string) =>  { return filter == null || val == filter };
 
-  let selectedEffects = Object.keys(effects)
-    .filter(function (k) {
-      return effects[k];
-    })
-    .map(Number);
+    let filtered = courses.filter( (x:object) => match(x["semester"], semester) && match(x["status"], status)
+                                && match(x["owner"], owner) && match(x["courseType"], type))
+    if (fresh) {
+        filtered = filtered.filter((x:object) => match(x["recommendedForFirstYear"], fresh));
+    }
+    let selectedTags = Object.keys(tags)
+        .filter(function(k){return tags[k]})
+        .map(Number);
 
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((x) =>
-      x["tags"].some((r) => selectedTags.includes(r))
-    );
-  }
-  if (selectedEffects.length > 0) {
-    filtered = filtered.filter((x) =>
-      x["effects"].some((r) => selectedEffects.includes(r))
-    );
-  }
+    let selectedEffects = Object.keys(effects)
+        .filter(function(k){return effects[k]})
+        .map(Number);
 
-  if (name) {
-    filtered = filtered.filter((x) =>
-      x["name"].toLowerCase().includes(name.toLowerCase())
-    );
-  }
+    if (selectedTags.length > 0) {
+        filtered = filtered.filter((x:object) => x["tags"].some((r:number) => selectedTags.includes(r)));
+    }
+    if (selectedEffects.length > 0) {
+        filtered = filtered.filter((x:object) => x["effects"].some((r:number) => selectedEffects.includes(r)));
+    }
 
-  if (filtered.length == 0) {
-    return [{ id: -1 }];
-  }
+    if (name) {
+        filtered = filtered.filter((x:object) => x["name"].toLowerCase().includes(name.toLowerCase()));
+    }
 
-  return filtered;
+    if (filtered.length == 0) {
+        return [{ id: -1 }];
+    }
+
+    return filtered;
 }
 
 function setUpCounter() {
@@ -142,7 +123,7 @@ function setUpCounter() {
     setValueMapFromInput(inputsMap, input as HTMLInputElement);
   }
 
-  comp = new Vue({
+  counterComponent = new Vue({
     el: "#point-counter",
     data: {
       inputs: inputsMap,
@@ -160,46 +141,46 @@ function setUpCounter() {
 }
 
 function applyFilters() {
-  const rows = document.querySelectorAll("tr");
-  const filtered = filteredCourses(coursesData);
+    const rows = document.querySelectorAll("tr");
+    const filtered = filteredCourses(coursesDataArray);
 
-  for (const row of rows) {
-    let hideRow = true;
-    for (const course of filtered) {
-      if (row!.classList.contains("subject-id-" + course["id"])) {
-        hideRow = false;
-        break;
+    for (const row of rows) {
+      let hideRow = true;
+      for (const course of filtered) {
+        if (row!.classList.contains("subject-id-" + course["id"])) {
+          hideRow = false;
+          break;
+        }
+      }
+      if (hideRow) {
+        row!.classList.add("hidden");
+        row.setAttribute("style", "display: none;");
+      }
+      else {
+        row!.classList.remove("hidden");
+        row.setAttribute("style", "");
       }
     }
-    if (hideRow) {
-      row!.classList.add("hidden");
-      row.setAttribute("style", "display: none;");
-    } else {
-      row!.classList.remove("hidden");
-      row.setAttribute("style", "");
-    }
-  }
 }
 
-function FormatCoursesData(coursesData) {
-  var sliced = coursesData.slice(1, -1);
-  sliced = sliced.replaceAll("}", "}}");
-  var coursesDataArray = sliced.split("}, ", 999999);
-  coursesDataArray[coursesDataArray.length - 1] = coursesDataArray[
-    coursesDataArray.length - 1
-  ].slice(0, -1);
-  for (let n = 0; n < coursesDataArray.length; n++) {
-    coursesDataArray[n] = JSON.parse(coursesDataArray[n]);
-  }
-  return coursesDataArray;
+function FormatCoursesData(coursesDataStr) {
+    var sliced = coursesDataStr.slice(1, -1);
+    sliced = sliced.replaceAll("}", "}}");
+    var coursesDataArray = sliced.split("}, ", 999999);
+    coursesDataArray[coursesDataArray.length-1] = coursesDataArray[coursesDataArray.length-1].slice(0, -1);
+    for(let n = 0; n < coursesDataArray.length; n++){
+        coursesDataArray[n] = JSON.parse(coursesDataArray[n])
+    }
+    return coursesDataArray;
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
   // We set-up the counter component in the beginning.
   setUpCounter();
   setUpFilters();
-  coursesData = document.getElementById("courses-data").innerHTML;
-  coursesData = FormatCoursesData(coursesData);
+  coursesDataStr = document.getElementById("courses-data").innerHTML;
+  coursesDataArray = FormatCoursesData(coursesDataStr);
 
   const inputs = document.querySelectorAll("select");
   const badgeInputs = document.querySelectorAll("a");
@@ -210,17 +191,19 @@ document.addEventListener("DOMContentLoaded", function () {
     highlightVotedRow(input as HTMLSelectElement);
   }
 
+
   for (const textInput of textInputs) {
     if (textInput!.classList.contains("form-control")) {
-      (textInput as HTMLElement).addEventListener("input", applyFilters);
-    } else if (textInput!.classList.contains("custom-control-input")) {
-      (textInput as HTMLElement).addEventListener("change", applyFilters);
+        (textInput as HTMLElement).addEventListener("input", applyFilters);
+    }
+    else if (textInput!.classList.contains("custom-control-input")) {
+        (textInput as HTMLElement).addEventListener("change", applyFilters);
     }
   }
 
   for (const badgeInput of badgeInputs) {
     if (badgeInput!.classList.contains("badge")) {
-      (badgeInput as HTMLElement).addEventListener("click", applyFilters);
+        (badgeInput as HTMLElement).addEventListener("click", applyFilters);
     }
   }
 
@@ -229,19 +212,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   for (const input of inputs) {
     if (input!.classList.contains("custom-select")) {
-      (input as HTMLElement).addEventListener("change", applyFilters);
-    } else {
-      (input as HTMLElement).addEventListener("input", function (_) {
-        const row = this.closest("tr");
+        (input as HTMLElement).addEventListener("change", applyFilters);
+    }
+    else {
+        (input as HTMLElement).addEventListener("input", function (_) {
+          const row = this.closest("tr");
 
-        if (row!.classList.contains("limit")) {
-          // Update the map.
-          setValueMapFromInput(comp!.inputs, this as HTMLInputElement);
-        }
+          if (row!.classList.contains("limit")) {
+            // Update the map.
+            setValueMapFromInput(counterComponent!.inputs, this as HTMLInputElement);
+          }
 
-        // If the value is different than minimum, add a highlight.
-        highlightVotedRow(this as HTMLSelectElement);
-      });
+          // If the value is different than minimum, add a highlight.
+          highlightVotedRow(this as HTMLSelectElement);
+        });
     }
   }
 });
