@@ -79,28 +79,29 @@ function filteredCourses(courses: Array<object>) {
 
     let match = (val:string, filter:string) =>  { return filter == null || val == filter };
 
-    let filtered = courses.filter( (x:object) => match(x["semester"], semester) && match(x["status"], status)
+    
+    let filtered : {[index:string]:any} = courses.filter( (x: {[index:string]:any}) => match(x["semester"], semester) && match(x["status"], status)
                                 && match(x["owner"], owner) && match(x["courseType"], type))
     if (fresh) {
-        filtered = filtered.filter((x:object) => match(x["recommendedForFirstYear"], fresh));
+        filtered = filtered.filter((x: {[index:string]:any}) => match(x["recommendedForFirstYear"], fresh));
     }
-    let selectedTags = Object.keys(tags)
+    let selectedTags:number[] = Object.keys(tags)
         .filter(function(k){return tags[k]})
         .map(Number);
 
-    let selectedEffects = Object.keys(effects)
+    let selectedEffects:number[] = Object.keys(effects)
         .filter(function(k){return effects[k]})
         .map(Number);
 
     if (selectedTags.length > 0) {
-        filtered = filtered.filter((x:object) => x["tags"].some((r:number) => selectedTags.includes(r)));
+        filtered = filtered.filter((x: {[index:string]:any}) => x["tags"].some((r:number) => selectedTags.includes(r)));
     }
     if (selectedEffects.length > 0) {
-        filtered = filtered.filter((x:object) => x["effects"].some((r:number) => selectedEffects.includes(r)));
+        filtered = filtered.filter((x: {[index:string]:any}) => x["effects"].some((r:number) => selectedEffects.includes(r)));
     }
 
     if (name) {
-        filtered = filtered.filter((x:object) => x["name"].toLowerCase().includes(name.toLowerCase()));
+        filtered = filtered.filter((x: {[index:string]:any}) => x["name"].toLowerCase().includes(name.toLowerCase()));
     }
 
     if (filtered.length == 0) {
@@ -146,8 +147,9 @@ function applyFilters() {
 
     for (const row of rows) {
       let hideRow = true;
-      for (const course of filtered) {
-        if (row!.classList.contains("subject-id-" + course["id"])) {
+      //for (const course  of filtered) {
+      for (const courseIdx  in filtered) {
+        if (row!.classList.contains("subject-id-" + filtered[courseIdx]["id"])) {
           hideRow = false;
           break;
         }
@@ -163,13 +165,15 @@ function applyFilters() {
     }
 }
 
-function FormatCoursesData(coursesDataStr) {
+function FormatCoursesData(coursesDataStr:string) {
     var sliced = coursesDataStr.slice(1, -1);
-    sliced = sliced.replaceAll("}", "}}");
-    var coursesDataArray = sliced.split("}, ", 999999);
-    coursesDataArray[coursesDataArray.length-1] = coursesDataArray[coursesDataArray.length-1].slice(0, -1);
+    //sliced = sliced.replaceAll("}", "}}");
+    sliced = sliced.replace(/\}/g, "}}");
+    let coursesData:string[] = sliced.split("}, ", 999999);
+    coursesData[coursesData.length-1] = coursesData[coursesData.length-1].slice(0, -1);
+    let coursesDataArray:Array<object> = [];
     for(let n = 0; n < coursesDataArray.length; n++){
-        coursesDataArray[n] = JSON.parse(coursesDataArray[n])
+        coursesDataArray[n] = JSON.parse(coursesData[n])
     }
     return coursesDataArray;
 }
@@ -179,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // We set-up the counter component in the beginning.
   setUpCounter();
   setUpFilters();
-  coursesDataStr = document.getElementById("courses-data").innerHTML;
+  coursesDataStr = document.getElementById("courses-data")!.innerHTML;
   coursesDataArray = FormatCoursesData(coursesDataStr);
 
   const inputs = document.querySelectorAll("select");
