@@ -13,8 +13,8 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 let counterComponent: CounterComponent | null = null;
 let filterComponent: typeof FilterComponent | null = null;
 
-var coursesDataStr:string = null;
-var coursesDataArray:Array<object> = null;
+var coursesDataStr:string;
+var coursesDataArray:Array<object>;
 
 // Given a name-value map and an input DOM element updates the value
 // corresponding to the input.
