@@ -11,7 +11,7 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 
 // comp will hold a Vue component.
 let counterComponent: CounterComponent | null = null;
-let filterComponent: typeof FilterComponent | null = null;
+let filterComponent: FilterComponent | null = null;
 
 var coursesDataStr:string;
 var coursesDataArray:Array<object>;
@@ -69,21 +69,18 @@ function setUpFilters() {
 
 function filteredCourses(courses: Array<object>) {
     console.log(filterComponent.$refs);
-    return courses;
 
-    /*let name = filterComponent!.$children[0].$children[0].$data.pattern;
-    let tags = filterComponent!.$children[0].$children[1].$data.selected;
-    let type = filterComponent!.$children[0].$children[2].$data.selected;
-    let effects = filterComponent!.$children[0].$children[3].$data.selected;
-    let owner = filterComponent!.$children[0].$children[4].$data.selected;
-    let semester = filterComponent!.$children[0].$children[5].$data.selected;
+    let name = filterComponent!.$refs["name-filter"].$data.pattern;
+    let tags = filterComponent!.$refs["tags-filter"].$data.selected;
+    let type = filterComponent!.$refs["type-filter"].$data.selected;
+    let effects = filterComponent!.$refs["effects-filter"].$data.selected;
+    let owner = filterComponent!.$refs["owner-filter"].$data.selected;
+    let semester = filterComponent!.$refs["semester-filter"].$data.selected;
     let status = "IN_VOTE"
-    let fresh = filterComponent!.$children[0].$children[6].$data.on;
-
+    let fresh = filterComponent!.$refs["freshmen-filter"].$data.on;
 
     let match = (val:string, filter:string) =>  { return filter == null || val == filter };
 
-    
     let filtered : {[index:string]:any} = courses.filter( (x: {[index:string]:any}) => match(x["semester"], semester) && match(x["status"], status)
                                 && match(x["owner"], owner) && match(x["courseType"], type))
     if (fresh) {
@@ -113,7 +110,6 @@ function filteredCourses(courses: Array<object>) {
     }
 
     return filtered;
-    */
 }
 
 function setUpCounter() {
@@ -152,9 +148,9 @@ function applyFilters() {
 
     for (const row of rows) {
       let hideRow = true;
-      //for (const course  of filtered) {
-      for (const courseIdx  in filtered) {
-        if (row!.classList.contains("subject-id-" + filtered[courseIdx]["id"])) {
+      for (const course  of filtered) {
+      //for (const courseIdx  in filtered) {
+        if (row!.classList.contains("subject-id-" + course["id"])) {
           hideRow = false;
           break;
         }
@@ -177,7 +173,7 @@ function FormatCoursesData(coursesDataStr:string) {
     let coursesData:string[] = sliced.split("}, ", 999999);
     coursesData[coursesData.length-1] = coursesData[coursesData.length-1].slice(0, -1);
     let coursesDataArray:Array<object> = [];
-    for(let n = 0; n < coursesDataArray.length; n++){
+    for(let n = 0; n < coursesData.length; n++){
         coursesDataArray[n] = JSON.parse(coursesData[n])
     }
     return coursesDataArray;
@@ -190,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
   setUpFilters();
   coursesDataStr = document.getElementById("courses-data")!.innerHTML;
   coursesDataArray = FormatCoursesData(coursesDataStr);
+  console.log(coursesDataArray);
 
   const inputs = document.querySelectorAll("select");
   const badgeInputs = document.querySelectorAll("a");
