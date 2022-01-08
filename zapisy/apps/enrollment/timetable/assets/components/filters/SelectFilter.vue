@@ -31,7 +31,11 @@ export default Vue.extend({
   data: () => {
     return {
       selected: undefined,
+      instance: undefined,
     };
+  },
+  created: function () {
+    this.$root.$refs[this.filterKey] = this;
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
