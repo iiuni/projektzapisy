@@ -31,7 +31,6 @@ export default Vue.extend({
   data: () => {
     return {
       selected: undefined,
-      instance: undefined,
     };
   },
   created: function () {
