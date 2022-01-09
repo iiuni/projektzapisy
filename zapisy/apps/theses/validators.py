@@ -3,7 +3,8 @@ from typing import Optional
 
 from django.core.exceptions import ValidationError
 
-from apps.users.models import Employee, MAX_MAX_ASSIGNED_STUDENTS
+from apps.users.models import Employee
+from .models import MAX_MAX_ASSIGNED_STUDENTS
 
 from .users import get_num_board_members, is_theses_board_member
 

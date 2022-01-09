@@ -3,6 +3,14 @@
 import apps.theses.validators
 from django.db import migrations, models
 
+def set_my_defaults(apps, schema_editor):
+    theses = apps.get_model('theses', 'thesis')
+    for thesis in theses.objects.all().iterator():
+        thesis.max_number_of_students = thesis.students.count() if thesis.students.count() > 0 else 1
+        thesis.save()
+
+# def reverse_func(apps, schema_editor):
+#     pass  # code for reverting migration, if any
 
 class Migration(migrations.Migration):
 
@@ -15,5 +23,11 @@ class Migration(migrations.Migration):
             model_name='thesis',
             name='max_number_of_students',
             field=models.SmallIntegerField(blank=True, default=None, null=True, validators=[apps.theses.validators.validate_max_number_of_students]),
+        ),
+        migrations.RunPython(set_my_defaults, migrations.RunPython.noop),
+        migrations.AlterField(
+            model_name='thesis',
+            name='max_number_of_students',
+            field=models.SmallIntegerField(default=1, validators=[apps.theses.validators.validate_max_number_of_students]),
         ),
     ]
