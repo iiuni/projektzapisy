@@ -59,7 +59,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                      vote=ThesisVote.ACCEPTED, thesis=thesis_vote_1)
         vote_7 = Vote.objects.create(owner=EmployeeFactory(),
                                      vote=ThesisVote.ACCEPTED, thesis=thesis_vote_1)
-                                     
+
         vote_0.save()
         vote_1.save()
         vote_2.save()
@@ -105,12 +105,12 @@ class ThesisStatusChangeTestCase(TestCase):
                          ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_2.status,
                          ThesisStatus.ACCEPTED.value)
-    
+
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
-                       'advisor': self.thesis_owner, 'kind': 0,
-                       'students': [StudentFactory(), StudentFactory(), StudentFactory()],
-                       'max_number_of_students': 2}
+                      'advisor': self.thesis_owner, 'kind': 0,
+                      'students': [StudentFactory(), StudentFactory(), StudentFactory()],
+                      'max_number_of_students': 2}
 
         thesis_form = ThesisForm(user=self.thesis_owner.user, data=form_data)
 
@@ -118,13 +118,12 @@ class ThesisStatusChangeTestCase(TestCase):
 
     def test_max_number_of_students_valid(self):
         form_data = {'title': 'Praca dyplomowa',
-                       'advisor': self.thesis_owner, 'kind': 0,
-                       'students': [StudentFactory(), StudentFactory()],
-                       'max_number_of_students': 2}
+                      'advisor': self.thesis_owner, 'kind': 0,
+                      'students': [StudentFactory(), StudentFactory()],
+                      'max_number_of_students': 2}
 
         thesis_form = ThesisForm(user=self.thesis_owner.user, data=form_data)
 
         thesis_form.save(commit=True)
 
         self.assertTrue(thesis_form.is_valid())
-

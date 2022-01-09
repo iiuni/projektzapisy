@@ -9,6 +9,7 @@ from .users import get_num_board_members, is_theses_board_member
 
 MAX_MAX_ASSIGNED_STUDENTS = 3
 
+
 def validate_num_required_votes(value: int):
     """Validates the number of required votes.
 
