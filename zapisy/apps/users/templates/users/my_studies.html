@@ -55,29 +55,64 @@
             {% for req in requirements %}
             <tr>
                 <th>{{ req.description }}</th>
-                {% if req.filter.tag %}
-                    <td>
-                        {% for tag in req.filter.tag %}
-                            <p>
-                                <span class="badge badge-success mr-2">{{ tag }}</span>
-                            </p>
-                        {% endfor %}
-                    </td>
-                {% elif req.filter.effect %}
-                    <td>
-                        {% for effect in req.filter.effect %}
-                        <p>
-                            <span class="badge badge-info mr-2">{{ effect }}</span>
-                        </p>
-                        {% endfor %}
-                    </td>
-                {% else %}
-                    <td></td>
-                {% endif %}
                 {% if req.sum %}
+                    {% if req.filter.tag %}
+                        <td>
+                            {% for tag in req.filter.tag %}
+                                <p>
+                                    <span class="badge badge-success mr-2">{{ tag }}</span>                                  
+                                </p>
+                            {% endfor %}
+                        </td>
+                    {% elif req.filter.effect %}
+                        <td>
+                            {% for effect in req.filter.effect %}
+                                <p>
+                                    <span class="badge badge-info mr-2">{{ effect }}</span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
                     <td>{{ req.user_points }} / {{ req.sum }}</td>
                 {% else %}
-                    <td>Zaliczenie</td>
+                    {% if req.filter.tag %}
+                        <td>
+                            {% for tag in req.filter.tag %}
+                                <p>
+                                    {% if req.passed %}
+                                        <span class="badge badge-success mr-2">{{ tag }}</span>
+                                    {% else %}
+                                        <span class="badge badge-danger mr-2">{{ tag }}</span>
+                                    {% endif %}
+                                </p>
+                            {% endfor %}
+                        </td>
+                    {% elif req.filter.effect %}
+                        <td>
+                            {% for effect in req.filter.effect %}
+                                <p>
+                                    {% if req.passed %}
+                                        <span class="badge badge-info mr-2">{{ effect }}</span>
+                                    {% else %}
+                                        <span class="badge badge-danger mr-2">{{ effect }}</span>
+                                    {% endif %}
+                                </p>
+                            {% endfor %}
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>
+                        {% if not req.filter.effect and not req.filter.tag %}
+                            {% if req.passed %}
+                                <i class="fas fa-check check green"></i>
+                            {% else %}
+                                <i class="fas fa-times check red"></i>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                 {% endif %}
             </tr>
             {% endfor %}

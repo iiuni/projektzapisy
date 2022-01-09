@@ -33,5 +33,11 @@ library.add(faBan);
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
 library.add(faPencilAlt);
 
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+library.add(faCheck);
+
+import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
+library.add(faTimes);
+
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();

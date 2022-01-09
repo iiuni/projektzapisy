@@ -152,3 +152,36 @@ def get_points_sum(student_id, filter):
                     sum += course.points
 
     return sum
+
+def is_passed(student_id, filter):
+    student = Student.objects.get(pk=student_id)
+    completed_courses = (
+            CompletedCourses.objects.filter(student=student, program=student.program)
+        )
+
+    passed = False
+
+    for record in completed_courses:
+        course = record.course
+        for table, objects in filter.items():
+            if table == 'subject':
+                if course.offer in objects:
+                    passed = True 
+                    break
+            if table == 'type':
+                if course.course_type in objects:
+                    passed = True
+                    break
+            if table == 'effect':
+                if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
+                    passed = True
+                    break
+            if table == 'tag':
+                if not set([tag for tag in course.tags.all()]).isdisjoint(set(objects)):
+                    passed = True
+                    break
+        if passed:
+            break
+
+    return passed
+    
