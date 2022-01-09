@@ -108,9 +108,9 @@ class ThesisStatusChangeTestCase(TestCase):
 
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
-                      'advisor': self.thesis_owner, 'kind': 0,
-                      'students': [StudentFactory(), StudentFactory(), StudentFactory()],
-                      'max_number_of_students': 2}
+                     'advisor': self.thesis_owner, 'kind': 0,
+                     'students': [StudentFactory(), StudentFactory(), StudentFactory()],
+                     'max_number_of_students': 2}
 
         thesis_form = ThesisForm(user=self.thesis_owner.user, data=form_data)
 
@@ -118,9 +118,9 @@ class ThesisStatusChangeTestCase(TestCase):
 
     def test_max_number_of_students_valid(self):
         form_data = {'title': 'Praca dyplomowa',
-                      'advisor': self.thesis_owner, 'kind': 0,
-                      'students': [StudentFactory(), StudentFactory()],
-                      'max_number_of_students': 2}
+                     'advisor': self.thesis_owner, 'kind': 0,
+                     'students': [StudentFactory(), StudentFactory()],
+                     'max_number_of_students': 2}
 
         thesis_form = ThesisForm(user=self.thesis_owner.user, data=form_data)
 
