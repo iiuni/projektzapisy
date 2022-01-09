@@ -59,8 +59,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                      vote=ThesisVote.ACCEPTED, thesis=thesis_vote_1)
         vote_7 = Vote.objects.create(owner=EmployeeFactory(),
                                      vote=ThesisVote.ACCEPTED, thesis=thesis_vote_1)
-
-
+                                     
         vote_0.save()
         vote_1.save()
         vote_2.save()

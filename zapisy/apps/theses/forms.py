@@ -45,7 +45,8 @@ class ThesisFormBase(forms.ModelForm):
         required=False,
         label="Przypisani studenci",
         # help_text=(f"Limit przypisanych studentów: {MAX_ASSIGNED_STUDENTS}. "
-        #            "Aby przypisać więcej studentów należy zwrócić się do zastępcy dyrektora ds. dydaktycznych."),
+        #     "Aby przypisać więcej studentów należy zwrócić się do zastępcy"
+        #     " dyrektora ds. dydaktycznych."),
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
