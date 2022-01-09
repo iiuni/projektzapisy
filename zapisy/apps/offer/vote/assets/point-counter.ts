@@ -4,6 +4,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
+declare module "*.vue" {
+   import Vue from "vue";
+   export default Vue;
+}
+
 import CounterComponent from "./components/CounterComponent.vue";
 import FilterComponent from "./components/CourseFilter.vue";
 
@@ -68,9 +73,10 @@ function setUpFilters() {
 
 
 function filteredCourses(courses: Array<object>) {
-    console.log(filterComponent.$refs);
+    //console.log(filterComponent.$refs);
 
-    let name = filterComponent!.$refs["name-filter"].$data.pattern;
+    let name = filterComponent!['$refs']["name-filter"]['$data']['pattern'];
+    //let name = filterComponent!.$refs["name-filter"].$data.pattern;
     let tags = filterComponent!.$refs["tags-filter"].$data.selected;
     let type = filterComponent!.$refs["type-filter"].$data.selected;
     let effects = filterComponent!.$refs["effects-filter"].$data.selected;
@@ -186,7 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
   setUpFilters();
   coursesDataStr = document.getElementById("courses-data")!.innerHTML;
   coursesDataArray = FormatCoursesData(coursesDataStr);
-  console.log(coursesDataArray);
 
   const inputs = document.querySelectorAll("select");
   const badgeInputs = document.querySelectorAll("a");
