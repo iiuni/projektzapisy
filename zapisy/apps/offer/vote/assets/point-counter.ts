@@ -11,7 +11,7 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 
 // comp will hold a Vue component.
 let counterComponent: CounterComponent | null = null;
-let filterComponent: FilterComponent | null = null;
+let filterComponent: typeof FilterComponent | null = null;
 
 var coursesDataStr:string;
 var coursesDataArray:Array<object>;
