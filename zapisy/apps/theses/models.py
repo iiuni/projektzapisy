@@ -2,7 +2,6 @@ from datetime import date
 
 from django.db import models
 from django.db.models import Q
-MAX_MAX_ASSIGNED_STUDENTS = 3
 from apps.notifications.custom_signals import thesis_voting_activated
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.users import is_theses_board_member

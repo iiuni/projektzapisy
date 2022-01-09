@@ -4,10 +4,10 @@ from typing import Optional
 from django.core.exceptions import ValidationError
 
 from apps.users.models import Employee
-from .models import MAX_MAX_ASSIGNED_STUDENTS
 
 from .users import get_num_board_members, is_theses_board_member
 
+MAX_MAX_ASSIGNED_STUDENTS = 3
 
 def validate_num_required_votes(value: int):
     """Validates the number of required votes.
