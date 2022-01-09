@@ -16,7 +16,8 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 
 // comp will hold a Vue component.
 let counterComponent: CounterComponent | null = null;
-let filterComponent: typeof FilterComponent | null = null;
+let filterComponent: any | null = null;
+//let filterComponent: typeof FilterComponent | null = null;
 
 var coursesDataStr:string;
 var coursesDataArray:Array<object>;
@@ -75,8 +76,7 @@ function setUpFilters() {
 function filteredCourses(courses: Array<object>) {
     //console.log(filterComponent.$refs);
 
-    let name = filterComponent!['$refs']["name-filter"]['$data']['pattern'];
-    //let name = filterComponent!.$refs["name-filter"].$data.pattern;
+    let name = filterComponent!.$refs["name-filter"].$data.pattern;
     let tags = filterComponent!.$refs["tags-filter"].$data.selected;
     let type = filterComponent!.$refs["type-filter"].$data.selected;
     let effects = filterComponent!.$refs["effects-filter"].$data.selected;
