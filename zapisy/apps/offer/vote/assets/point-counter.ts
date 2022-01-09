@@ -4,11 +4,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-declare module "*.vue" {
-   import Vue from "vue";
-   export default Vue;
-}
-
 import CounterComponent from "./components/CounterComponent.vue";
 import FilterComponent from "./components/CourseFilter.vue";
 
@@ -154,6 +149,29 @@ function applyFilters() {
 
     for (const row of rows) {
       let hideRow = true;
+      for (const courseIdx  in filtered) {
+        if (row!.classList.contains("subject-id-" + filtered[courseIdx].id)) {
+          hideRow = false;
+          break;
+        }
+      }
+      if (hideRow) {
+        row!.classList.add("hidden");
+        row.setAttribute("style", "display: none;");
+      }
+      else {
+        row!.classList.remove("hidden");
+        row.setAttribute("style", "");
+      }
+    }
+}
+
+/*function applyFilters() {
+    const rows = document.querySelectorAll("tr");
+    const filtered = filteredCourses(coursesDataArray);
+
+    for (const row of rows) {
+      let hideRow = true;
       for (const course  of filtered) {
       //for (const courseIdx  in filtered) {
         if (row!.classList.contains("subject-id-" + course["id"])) {
@@ -170,7 +188,7 @@ function applyFilters() {
         row.setAttribute("style", "");
       }
     }
-}
+}*/
 
 function FormatCoursesData(coursesDataStr:string) {
     var sliced = coursesDataStr.slice(1, -1);
