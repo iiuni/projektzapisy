@@ -9,10 +9,12 @@ from apps.users.models import Program, Student
 
 mapper = {'effect': Effects, 'tag': Tag, 'type': Type, 'subject': Proposal}
 
+
 def load_requirements_file():
     with open('wymagania.json') as json_file:
         data = json.load(json_file)
     return data
+
 
 def load_list_of_programs_and_years():
     data = load_requirements_file()
@@ -21,7 +23,7 @@ def load_list_of_programs_and_years():
 
     for program_id in data.keys():
         program = Program.objects.get(pk=program_id)
-        
+
         res[program] = dict()
         res[program]['years'] = list(data[program_id].keys())
         res[program]['id'] = program_id
@@ -44,6 +46,7 @@ def load_studies_requirements(program, starting_year=2019):
 
     return program_requirements[year]
 
+
 def proper_year_for_program(program, year):
     data = load_requirements_file()
 
@@ -58,6 +61,7 @@ def proper_year_for_program(program, year):
         year = max(years)
 
     return year
+
 
 def requirements(program, starting_year=2019):
     reqs = load_studies_requirements(program, starting_year)
@@ -77,10 +81,7 @@ def requirements(program, starting_year=2019):
                     res[key]['limit'][table] = dict()
                     dao = mapper[table]
                     for id, ects in ids.items():
-                        try:
-                            name = dao.objects.get(pk=id)
-                        except:
-                            print(f"Table: {table}, id: {id}")
+                        name = dao.objects.get(pk=id)
                         res[key]['limit'][table][name] = ects
 
         if 'filter' in value.keys():
@@ -91,10 +92,7 @@ def requirements(program, starting_year=2019):
                     res[key]['filter'][table] = list()
                     dao = mapper[table]
                     for id in ids:
-                        try:
-                            name = dao.objects.get(pk=id)
-                        except:
-                            print(f"Table: {table}, dao: {dao}, id: {id}, key: {key}")
+                        name = dao.objects.get(pk=id)
                         res[key]['filter'][table].append(name)
 
         if 'filterNot' in value.keys():
@@ -105,20 +103,16 @@ def requirements(program, starting_year=2019):
                     res[key]['filterNot'][table] = list()
                     dao = mapper[table]
                     for id in ids:
-                        try:
-                            name = dao.objects.get(pk=id)
-                        except:
-                            print(f"Table: {table}, id: {id}")
+                        name = dao.objects.get(pk=id)
                         res[key]['filterNot'][table].append(name)
 
     return res
 
+
 def get_all_points(student_id):
     student = Student.objects.get(pk=student_id)
-    completed_courses = (
-            CompletedCourses.objects.filter(student=student, program=student.program)
-        )
-    
+    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
+
     sum = 0
 
     for record in completed_courses:
@@ -127,12 +121,11 @@ def get_all_points(student_id):
 
     return sum
 
+
 def get_points_sum(student_id, filter):
     student = Student.objects.get(pk=student_id)
-    completed_courses = (
-            CompletedCourses.objects.filter(student=student, program=student.program)
-        )
-    
+    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
+
     sum = 0
 
     for record in completed_courses:
@@ -153,11 +146,10 @@ def get_points_sum(student_id, filter):
 
     return sum
 
+
 def is_passed(student_id, filter):
     student = Student.objects.get(pk=student_id)
-    completed_courses = (
-            CompletedCourses.objects.filter(student=student, program=student.program)
-        )
+    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
 
     passed = False
 
@@ -166,7 +158,7 @@ def is_passed(student_id, filter):
         for table, objects in filter.items():
             if table == 'subject':
                 if course.offer in objects:
-                    passed = True 
+                    passed = True
                     break
             if table == 'type':
                 if course.course_type in objects:
@@ -184,4 +176,3 @@ def is_passed(student_id, filter):
             break
 
     return passed
-    

@@ -10,7 +10,9 @@ from django.views.decorators.http import require_POST
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.effects.models import CompletedCourses
-from apps.effects.utils import get_all_points, get_points_sum, is_passed, load_list_of_programs_and_years, proper_year_for_program, requirements
+from apps.effects.utils import (get_all_points, get_points_sum, is_passed,
+                                load_list_of_programs_and_years, proper_year_for_program,
+                                requirements)
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
@@ -261,9 +263,8 @@ def my_studies(request):
 
     data.update({'requirements': res})
 
-
     list_of_programs = load_list_of_programs_and_years()
-    
+
     data.update({'picker_data': list_of_programs})
 
     proper_year = proper_year_for_program(program, year)
