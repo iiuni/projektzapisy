@@ -3,16 +3,15 @@ import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
+from django.urls import reverse
 
 from apps.enrollment.courses.models import Semester
 from apps.enrollment.utils import mailto
 from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.decorators import student_required
-
-from django.urls import reverse
 
 from .forms import prepare_vote_formset
 
@@ -45,6 +44,7 @@ def vote(request):
         template_name = 'vote/form.html'
     elif system_state.correction_active_semester():
         template_name = 'vote/form_correction.html'
+    #return render(request, template_name, {'formset': formset})
 
     proposal = None
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
@@ -67,7 +67,6 @@ def vote(request):
 
         "proposals": json.dumps(proposal_list),
     })
-
 
 
 @login_required
