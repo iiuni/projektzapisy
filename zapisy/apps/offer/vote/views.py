@@ -12,21 +12,15 @@ from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.users.decorators import student_required
 
-from .forms import prepare_vote_formset
-
 from django.urls import reverse
 
-def testapi(request):
-   # do something
-   #return render(request, 'vote/form.html', {'message': "AD"})
-   return JsonResponse({"message":"VALUE_OF_MESSAGE"},status=201)
+from .forms import prepare_vote_formset
+
 
 @student_required
 def vote(request):
     """Renders voting form to the student and handles voting POST requests."""
     system_state = SystemState.get_current_state()
-
-    testapi(request)
 
     if not system_state:
         messages.warning(request, "Głosowanie nie jest w tym momencie aktywne.")
@@ -51,7 +45,6 @@ def vote(request):
         template_name = 'vote/form.html'
     elif system_state.correction_active_semester():
         template_name = 'vote/form_correction.html'
-    return render(request, template_name, {'formset': formset})
 
     proposal = None
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
