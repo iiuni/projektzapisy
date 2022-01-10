@@ -44,7 +44,6 @@ def vote(request):
         template_name = 'vote/form.html'
     elif system_state.correction_active_semester():
         template_name = 'vote/form_correction.html'
-    #return render(request, template_name, {'formset': formset})
 
     proposal = None
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
