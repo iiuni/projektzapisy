@@ -6,7 +6,8 @@ from django.db.models import Q
 from apps.notifications.custom_signals import thesis_voting_activated
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.users import is_theses_board_member
-from apps.theses.validators import validate_master_rejecter, validate_num_required_votes, validate_max_number_of_students
+from apps.theses.validators import validate_master_rejecter, validate_num_required_votes, \
+    validate_max_number_of_students
 from apps.users.models import Employee, Student
 
 MAX_THESIS_TITLE_LEN = 300
