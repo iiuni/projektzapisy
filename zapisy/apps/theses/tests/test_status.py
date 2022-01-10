@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, ThesisForm
-from apps.theses.models import Thesis, Vote
+from apps.theses.models import ThesesSystemSettings, Thesis, Vote
 from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 
@@ -38,6 +38,8 @@ class ThesisStatusChangeTestCase(TestCase):
                                             status=ThesisStatus.IN_PROGRESS,
                                             max_number_of_students=1)
         test_edit_2.students.add(StudentFactory())
+
+        ThesesSystemSettings.objects.create(num_required_votes=4)
 
     def test_vote(self):
         thesis_vote_0 = Thesis.objects.get(title="thesis_vote_0")
