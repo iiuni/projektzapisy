@@ -1,6 +1,6 @@
 import json
-from apps.effects.models import CompletedCourses
 
+from apps.effects.models import CompletedCourses
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.course_type import Type
