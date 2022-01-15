@@ -7,6 +7,7 @@ import LabelsFilter from "@/enrollment/timetable/assets/components/filters/Label
 import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
@@ -51,6 +52,21 @@ export default Vue.extend({
       ["WITHDRAWN", "wycofany z oferty"],
     ];
   },
+  mounted: function () {
+    // Extract filterable properties names from the template.
+    const filterableProperties = Object.values(this.$refs)
+      .filter((ref: any) => ref.filterKey)
+      .map((filter: any) => filter.property);
+
+    // Expand the filters if there are any initially specified in the search params.
+    const searchParams = new URL(window.location.href).searchParams;
+    if (filterableProperties.some((p: string) => searchParams.has(p))) {
+      this.collapsed = false;
+    }
+  },
+  methods: {
+    ...mapMutations("filters", ["clearFilters"]),
+  },
 });
 </script>
 
@@ -63,6 +79,7 @@ export default Vue.extend({
             filterKey="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
+            ref="name-filter"
           />
           <hr />
           <LabelsFilter
@@ -71,6 +88,7 @@ export default Vue.extend({
             property="tags"
             :allLabels="allTags"
             onClass="badge-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
@@ -79,6 +97,7 @@ export default Vue.extend({
             property="courseType"
             :options="allTypes"
             placeholder="Rodzaj przedmiotu"
+            ref="type-filter"
           />
           <hr />
           <LabelsFilter
@@ -87,6 +106,7 @@ export default Vue.extend({
             property="effects"
             :allLabels="allEffects"
             onClass="badge-info"
+            ref="effects-filter"
           />
         </div>
         <div class="col-md">
@@ -95,25 +115,37 @@ export default Vue.extend({
             property="owner"
             :options="allOwners"
             placeholder="Opiekun przedmiotu"
+            ref="owner-filter"
           />
           <SelectFilter
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
             placeholder="Semestr"
+            ref="semester-filter"
           />
           <SelectFilter
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
             placeholder="Status propozycji"
+            ref="status-filter"
           />
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
       </div>
     </div>

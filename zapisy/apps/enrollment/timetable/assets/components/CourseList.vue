@@ -38,11 +38,11 @@ export default class CourseList extends Vue {
     this.$store.dispatch("courses/updateSelection", value);
   }
 
-  // The list should be initialised to contain all the courses and then apply
-  // filters whenever they update.
+  // The list should be initialised to contain courses filtered with initial filters
+  // fetched from the query string and then apply filters whenever they update.
   visibleCourses: CourseInfo[] = [];
   mounted() {
-    this.visibleCourses = this.courses;
+    this.visibleCourses = this.courses.filter(this.tester);
 
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {

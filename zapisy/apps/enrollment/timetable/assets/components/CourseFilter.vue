@@ -7,6 +7,7 @@ import LabelsFilter from "./filters/LabelsFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON } from "./../models";
+import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
@@ -39,6 +40,21 @@ export default Vue.extend({
     });
     this.allTypes = toPairs(filtersData.allTypes);
   },
+  mounted: function () {
+    // Extract filterable properties names from the template.
+    const filterableProperties = Object.values(this.$refs)
+      .filter((ref: any) => ref.filterKey)
+      .map((filter: any) => filter.property);
+
+    // Expand the filters if there are any initially specified in the search params.
+    const searchParams = new URL(window.location.href).searchParams;
+    if (filterableProperties.some((p: string) => searchParams.has(p))) {
+      this.collapsed = false;
+    }
+  },
+  methods: {
+    ...mapMutations("filters", ["clearFilters"]),
+  },
 });
 </script>
 
@@ -51,6 +67,7 @@ export default Vue.extend({
             filterKey="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
+            ref="name-filter"
           />
           <hr />
           <LabelsFilter
@@ -59,6 +76,7 @@ export default Vue.extend({
             property="tags"
             :allLabels="allTags"
             onClass="badge-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
@@ -67,6 +85,7 @@ export default Vue.extend({
             property="courseType"
             :options="allTypes"
             placeholder="Rodzaj przedmiotu"
+            ref="type-filter"
           />
           <hr />
           <LabelsFilter
@@ -75,6 +94,7 @@ export default Vue.extend({
             property="effects"
             :allLabels="allEffects"
             onClass="badge-info"
+            ref="effects-filter"
           />
         </div>
         <div class="col-md">
@@ -83,13 +103,23 @@ export default Vue.extend({
             property="owner"
             :options="allOwners"
             placeholder="Opiekun przedmiotu"
+            ref="owner-filter"
           />
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
       </div>
     </div>

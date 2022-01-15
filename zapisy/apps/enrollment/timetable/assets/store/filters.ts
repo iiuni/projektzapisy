@@ -27,6 +27,11 @@ const mutations = {
   registerFilter(state: State, { k, f }: { k: string; f: Filter }) {
     state.filters[k] = f;
   },
+  // clearFilter can be used to notify filters to reset their state.
+  clearFilters(_: State) {
+    // Intentionally left empty. No state change is required to notify
+    // subscribers of 'filters/clearFilters' mutation.
+  },
 };
 
 const actions = {};

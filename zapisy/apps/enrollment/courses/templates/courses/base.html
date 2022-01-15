@@ -15,7 +15,7 @@
             
             <div class="dropdown-menu" aria-labelledby="semester-dropdown">
                 {% for semester in all_semesters %}
-                <a class="dropdown-item" href={% url 'courses-semester' semester.pk %}>{{ semester }}</a>
+                <a class="dropdown-item semester-link" href={% url 'courses-semester' semester.pk %}>{{ semester }}</a>
                 {% endfor %}
             </div>
         </div>

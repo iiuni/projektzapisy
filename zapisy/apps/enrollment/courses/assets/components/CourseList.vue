@@ -17,22 +17,43 @@ export default Vue.extend({
     }),
   },
   mounted() {
-    // When mounted, load the list of courses from embedded JSON.
+    // When mounted, load the list of courses from embedded JSON and apply initial filters
+    // fetched from the query string.
     const courseData = JSON.parse(
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData;
+    this.visibleCourses = courseData.filter(this.tester);
+
+    // Append the initial query string to links in the semester dropdown.
+    updateSemesterLinks();
 
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
+          // Update the query string of links in the semester dropdown
+          // to reflect the new state of filters.
+          updateSemesterLinks();
           break;
       }
     });
   },
 });
+
+// Replaces the query string of links in the semester dropdown with the current query string.
+function updateSemesterLinks() {
+  const queryString = window.location.search;
+  const semesterLinks = document.getElementsByClassName("semester-link");
+  for (let i = 0; i < semesterLinks.length; i++) {
+    const link: Element = semesterLinks[i];
+    const hrefValue = link.getAttribute("href");
+    if (hrefValue !== null) {
+      const semesterPath = hrefValue.split("?")[0];
+      link.setAttribute("href", semesterPath + queryString);
+    }
+  }
+}
 </script>
 
 <template>

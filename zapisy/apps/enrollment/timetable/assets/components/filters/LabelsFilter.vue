@@ -33,8 +33,8 @@ export default Vue.extend({
     onClass: String,
   },
   computed: {
-    allLabelKeys: function () {
-      return keys(this.allLabels);
+    allLabelIds: function () {
+      return keys(this.allLabels).map((id) => parseInt(id, 10));
     },
   },
   data: () => {
@@ -44,23 +44,58 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
-    toggle(key: number) {
-      this.selected[key] = !this.selected[key];
+    toggle(id: number) {
+      this.selected[id] = !this.selected[id];
+      this._afterSelectionChanged();
+    },
+    _afterSelectionChanged() {
+      const selectedIds = this.allLabelIds.filter((id) => this.selected[id]);
 
-      const selectedIds = keys(this.selected)
-        .map(Number)
-        .filter((k: number) => {
-          return this.selected[k];
-        });
+      const url = new URL(window.location.href);
+      if (selectedIds.length > 0) {
+        url.searchParams.set(this.property, selectedIds.join(","));
+      } else {
+        url.searchParams.delete(this.property);
+      }
+      window.history.replaceState(null, "", url.toString());
+
       this.registerFilter({
         k: this.filterKey,
         f: new IntersectionFilter(selectedIds, this.property),
       });
     },
   },
-  // When the component is mounted we set all the labels as selected.
-  mounted: function () {
-    this.selected = fromPairs(keys(this.allLabels).map((k) => [k, false]));
+  // When the component is created we set all the labels as unselected
+  // and then set those specified in the query string as selected.
+  created: function () {
+    this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
+
+    const searchParams = new URL(window.location.href).searchParams;
+    if (searchParams.has(this.property)) {
+      const selectedIds = searchParams
+        .get(this.property)!
+        .split(",")
+        .map((id) => parseInt(id, 10))
+        .filter((id) => !isNaN(id));
+
+      selectedIds.forEach((id) => (this.selected[id] = true));
+
+      this.registerFilter({
+        k: this.filterKey,
+        f: new IntersectionFilter(selectedIds, this.property),
+      });
+    }
+
+    this.$store.subscribe((mutation, _) => {
+      switch (mutation.type) {
+        case "filters/clearFilters":
+          this.allLabelIds.forEach((id) => {
+            this.selected[id] = false;
+          });
+          this._afterSelectionChanged();
+          break;
+      }
+    });
   },
 });
 </script>
@@ -70,7 +105,7 @@ export default Vue.extend({
     <h4>{{ title }}</h4>
     <a
       href="#"
-      v-for="l in allLabelKeys"
+      v-for="l in allLabelIds"
       class="badge"
       v-bind:class="[selected[l] ? onClass : 'badge-secondary']"
       @click.prevent="toggle(l)"

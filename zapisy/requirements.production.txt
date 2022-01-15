@@ -1,5 +1,5 @@
 -r requirements.common.txt
 
-psycopg2==2.9.2
+psycopg2==2.9.3
 slackclient==2.9.3
 dropbox==10.10.0

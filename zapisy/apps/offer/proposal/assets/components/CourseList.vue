@@ -21,12 +21,13 @@ export default Vue.extend({
     }),
   },
   mounted() {
-    // When mounted, load the list of courses from embedded JSON.
+    // When mounted, load the list of courses from embedded JSON and apply initial filters
+    // fetched from the query string.
     const courseData = JSON.parse(
       document.getElementById("courses-data")!.innerHTML
     ) as ProposalInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData;
+    this.visibleCourses = courseData.filter(this.tester);
 
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
