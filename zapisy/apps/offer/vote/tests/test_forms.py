@@ -142,7 +142,7 @@ class VoteFormsetTest(test.TestCase):
         # This number is a bit artificial — we just care that it is a constant.
         # I have inspected the queries and they look ok, so this is just
         # supposed to test that no one breaks performance in the future.
-        with self.assertNumQueries(11):
+        with self.assertNumQueries(18):
             response = c.get(reverse('vote'))
         self.assertContains(response, '<select', count=6)
 
@@ -151,7 +151,7 @@ class VoteFormsetTest(test.TestCase):
 
         # Number of queries should not change when we add one more proposal.
         ProposalFactory(status=ProposalStatus.IN_VOTE)
-        with self.assertNumQueries(11):
+        with self.assertNumQueries(18):
             response = c.get(reverse('vote'))
         self.assertContains(response, '<select', count=7)
 
