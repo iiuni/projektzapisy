@@ -27,8 +27,6 @@
 <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
 {% endblock %}
 
-
-
 <div id="course-filter"></div>
 
 {# This will be used by Vue component to display currently used points #}
@@ -43,10 +41,6 @@
     {% endif %}
 {% endblock %}
 
-
-<script lang="javascript">
-
-</script>
 
 <form method="POST">
     {% csrf_token %}
