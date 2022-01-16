@@ -112,7 +112,7 @@ def requirements(program, starting_year=2019):
 def get_all_points(student_id):
     student = Student.objects.get(pk=student_id)
     completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-    print(student)
+
     sum = 0
 
     for record in completed_courses:
@@ -125,11 +125,7 @@ def get_all_points(student_id):
 def get_points_sum(student_id, filter):
     student = Student.objects.get(pk=student_id)
     completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-    filter_not_programs = program_requirements = data[str(program)].ects.filterNot.type
-    limit_programs = data[str(program)].ects.limit.type
-    used_limits = {}
-    for key in limit_programs:
-        used_limits[key] = 0
+
     sum = 0
 
     for record in completed_courses:
@@ -139,10 +135,8 @@ def get_points_sum(student_id, filter):
                 if course.offer in objects:
                     sum += course.points
             if table == 'type':
-                if course.course_type in objects and course.course_type not in filter_not_programs:
-                    added_sum = min(limit_programs[course.course_type] - used_limits[course.course_type], course.points)
-                    used_limits[key] += added_sum
-                    sum += added_sum
+                if course.course_type in objects:
+                    sum += course.points
             if table == 'effect':
                 if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
                     sum += course.points
