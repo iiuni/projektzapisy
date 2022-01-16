@@ -1,10 +1,12 @@
 import json
+
 from apps.effects.models import CompletedCourses
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.course_type import Type
 from apps.offer.proposal.models import Proposal
 from apps.users.models import Program, Student
+
 mapper = {'effect': Effects, 'tag': Tag, 'type': Type, 'subject': Proposal}
 
 
@@ -47,6 +49,7 @@ def load_studies_requirements(program, starting_year=2019):
 
 def proper_year_for_program(program, year):
     data = load_requirements_file()
+
     program_requirements = data[str(program)]
 
     years = program_requirements.keys()
@@ -107,17 +110,23 @@ def requirements(program, starting_year=2019):
 
 
 def get_all_points(student_id):
-    data = load_requirements_file()
     student = Student.objects.get(pk=student_id)
     completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-    student_program = str(Program.objects.filter(name=student.program).all()[0].id)
-    year = proper_year_for_program(student_program, student.user.date_joined.year)
-    filter_not_programs = data[str(student_program)][year]['ects'].get('filterNot')
-    if filter_not_programs == None:
-        filter_not_programs = {}
+    print(student)
+    sum = 0
 
-    limit_programs = data[str(student_program)][year]['ects']['limit']
+    for record in completed_courses:
+        course = record.course
+        sum += course.points
 
+    return sum
+
+
+def get_points_sum(student_id, filter):
+    student = Student.objects.get(pk=student_id)
+    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
+    filter_not_programs = program_requirements = data[str(program)].ects.filterNot.type
+    limit_programs = data[str(program)].ects.limit.type
     used_limits = {}
     for key in limit_programs:
         used_limits[key] = 0
@@ -126,14 +135,13 @@ def get_all_points(student_id):
     for record in completed_courses:
         course = record.course
         for table, objects in filter.items():
-            a = pies.fifi
             if table == 'subject':
                 if course.offer in objects:
                     sum += course.points
             if table == 'type':
-                if course.course_type in objects and course.course_type not in filter_not_programs.get('type'):
+                if course.course_type in objects and course.course_type not in filter_not_programs:
                     added_sum = min(limit_programs[course.course_type] - used_limits[course.course_type], course.points)
-                    used_limits[course.course_type] += added_sum
+                    used_limits[key] += added_sum
                     sum += added_sum
             if table == 'effect':
                 if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
@@ -141,31 +149,6 @@ def get_all_points(student_id):
             if table == 'tag':
                 if not set([tag for tag in course.tags.all()]).isdisjoint(set(objects)):
                     sum += course.points
-
-    return sum
-
-
-def get_points_sum(student_id, filter):
-    student = Student.objects.get(pk=student_id)
-    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-    
-    sum = 0
-
-    for record in completed_courses:
-        course = record.course
-        for table, objects in filter.items():
-            if table == 'subject':
-                if course.offer in objects:
-                    sum += course.points
-            if table == 'type':
-                if course.course_type in objects:
-                    sum += course.points
-            if table == 'effect':
-                if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
-                    sum += course.points
-            if table == 'tag':
-                if not set([tag for tag in course.tags.all()]).isdisjoint(set(objects)):
-                    sum += course.points 
 
     return sum
 
