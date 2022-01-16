@@ -242,20 +242,23 @@ def my_studies(request):
 
     year = int(request.GET.get('year', request.user.date_joined.year))
 
+    completed_courses = (CompletedCourses.objects.filter(student=request.user.student,
+                                                         program=request.user.student.program))
+
     reqs = requirements(program=program, starting_year=year)
     # points = dict()
     for key, value in reqs.items():
         if key == 'ects':
             value['user_points'] = get_all_points(
-                request.user.student.id, value['filterNot'] if 'filterNot' in value else {},
-                value['limit'] if 'limit' in value else {})
+                value['filterNot'] if 'filterNot' in value else {},
+                value['limit'] if 'limit' in value else {}, completed_courses)
         if 'filter' in value.keys():
             if 'sum' in value.keys():
                 value['user_points'] = get_points_sum(
-                    request.user.student.id, value['filter'],
-                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {})
+                    value['filter'], reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
+                    completed_courses)
             else:
-                value['passed'] = is_passed(request.user.student.id, value['filter'])
+                value['passed'] = is_passed(value['filter'], completed_courses)
 
     res = list()
 

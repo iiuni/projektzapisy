@@ -1,11 +1,10 @@
 import json
 
-from apps.effects.models import CompletedCourses
 from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.course_type import Type
 from apps.offer.proposal.models import Proposal
-from apps.users.models import Program, Student
+from apps.users.models import Program
 
 mapper = {'effect': Effects, 'tag': Tag, 'type': Type, 'subject': Proposal}
 
@@ -109,10 +108,7 @@ def requirements(program, starting_year=2019):
     return res
 
 
-def get_all_points(student_id, filterNot, limit):
-    student = Student.objects.get(pk=student_id)
-    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-
+def get_all_points(filterNot, limit, completed_courses):
     sum = 0
 
     filtered_courses = completed_courses
@@ -148,10 +144,7 @@ def get_all_points(student_id, filterNot, limit):
     return sum
 
 
-def get_points_sum(student_id, filter, limit):
-    student = Student.objects.get(pk=student_id)
-    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-
+def get_points_sum(filter, limit, completed_courses):
     sum = 0
 
     if 'type' not in limit:
@@ -187,10 +180,7 @@ def get_points_sum(student_id, filter, limit):
     return sum
 
 
-def is_passed(student_id, filter):
-    student = Student.objects.get(pk=student_id)
-    completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
-
+def is_passed(filter, completed_courses):
     passed = False
 
     for record in completed_courses:
