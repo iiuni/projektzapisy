@@ -109,24 +109,58 @@ def requirements(program, starting_year=2019):
     return res
 
 
-def get_all_points(student_id):
+def get_all_points(student_id, filterNot, limit):
     student = Student.objects.get(pk=student_id)
     completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
 
     sum = 0
 
-    for record in completed_courses:
+    filtered_courses = completed_courses
+
+    for table, objects in filterNot.items():
+        if table == 'subject':
+            filtered_courses = [
+                record for record in filtered_courses if record.course.offer not in objects
+            ]
+        if table == 'type':
+            filtered_courses = [
+                record for record in filtered_courses if record.course.course_type not in objects
+            ]
+
+    if 'type' not in limit:
+        limit['type'] = {}
+
+    used_limits = {}
+
+    for type in limit['type']:
+        used_limits[type] = 0
+
+    for record in filtered_courses:
         course = record.course
-        sum += course.points
+        type = course.course_type
+        if type in limit['type']:
+            added_sum = min(limit['type'][type] - used_limits[type], course.points)
+            used_limits[type] += added_sum
+            sum += added_sum
+        else:
+            sum += course.points
 
     return sum
 
 
-def get_points_sum(student_id, filter):
+def get_points_sum(student_id, filter, limit):
     student = Student.objects.get(pk=student_id)
     completed_courses = (CompletedCourses.objects.filter(student=student, program=student.program))
 
     sum = 0
+
+    if 'type' not in limit:
+        limit['type'] = {}
+
+    used_limits = {}
+
+    for type in limit['type']:
+        used_limits[type] = 0
 
     for record in completed_courses:
         course = record.course
@@ -135,8 +169,14 @@ def get_points_sum(student_id, filter):
                 if course.offer in objects:
                     sum += course.points
             if table == 'type':
-                if course.course_type in objects:
-                    sum += course.points
+                type = course.course_type
+                if type in objects:
+                    if type in limit['type']:
+                        added_sum = min(limit['type'][type] - used_limits[type], course.points)
+                        used_limits[type] += added_sum
+                        sum += added_sum
+                    else:
+                        sum += course.points
             if table == 'effect':
                 if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
                     sum += course.points

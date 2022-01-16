@@ -246,10 +246,14 @@ def my_studies(request):
     # points = dict()
     for key, value in reqs.items():
         if key == 'ects':
-            value['user_points'] = get_all_points(request.user.student.id)
+            value['user_points'] = get_all_points(
+                request.user.student.id, value['filterNot'] if 'filterNot' in value else {},
+                value['limit'] if 'limit' in value else {})
         if 'filter' in value.keys():
             if 'sum' in value.keys():
-                value['user_points'] = get_points_sum(request.user.student.id, value['filter'])
+                value['user_points'] = get_points_sum(
+                    request.user.student.id, value['filter'],
+                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {})
             else:
                 value['passed'] = is_passed(request.user.student.id, value['filter'])
 
