@@ -45,9 +45,6 @@ class ThesisFormBase(forms.ModelForm):
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
-        # help_text=(f"Limit przypisanych studentów: {MAX_ASSIGNED_STUDENTS}. "
-        #     "Aby przypisać więcej studentów należy zwrócić się do zastępcy"
-        #     " dyrektora ds. dydaktycznych."),
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
@@ -79,6 +76,7 @@ class ThesisFormBase(forms.ModelForm):
         self.helper.form_method = 'POST'
 
     def clean(self):
+        super().clean()
         students = self.cleaned_data['students']
         max_number_of_students = int(self.cleaned_data['max_number_of_students'])
         if 'students' in self.changed_data and len(students) > max_number_of_students:
