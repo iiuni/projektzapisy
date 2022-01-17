@@ -113,7 +113,7 @@ def course_view(request, slug):
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
     """Is user authorized to see students' names in the given group?"""
     is_user_proper_employee = (user.employee and not is_external_contractor(user))
-    is_user_group_teacher = user == group.teacher.user
+    is_user_group_teacher = group.teacher is not None and user == group.teacher.user
     return is_user_proper_employee or is_user_group_teacher
 
 
