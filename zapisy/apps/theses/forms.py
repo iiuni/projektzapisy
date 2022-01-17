@@ -79,7 +79,8 @@ class ThesisFormBase(forms.ModelForm):
         super().clean()
         students = self.cleaned_data['students']
         max_number_of_students = int(self.cleaned_data['max_number_of_students'])
-        if 'students' in self.changed_data and len(students) > max_number_of_students:
+        if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
+                and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
 
 
