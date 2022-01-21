@@ -105,6 +105,12 @@ def requirements(program, starting_year=2019):
                         name = dao.objects.get(pk=id)
                         res[key]['filterNot'][table].append(name)
 
+        if 'groupBy' in value.keys():
+            res[key]['groupBy'] = value['groupBy']
+
+        if 'aggregate' in value.keys():
+            res[key]['aggregate'] = value['aggregate']
+
     return res
 
 
