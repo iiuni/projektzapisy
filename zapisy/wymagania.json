@@ -1486,12 +1486,6 @@
           "subject": ["2771"]
         }
       },
-      "algebra2": {
-        "description": "Algebra 2",
-        "filter": {
-          "subject": ["2771"]
-        }
-      },
       "mathematical_analysis": {
         "description": "Analiza matematyczna",
         "filter": {

@@ -246,7 +246,6 @@ def my_studies(request):
                                                          program=request.user.student.program))
 
     reqs = requirements(program=program, starting_year=year)
-    # points = dict()
     for key, value in reqs.items():
         if key == 'ects':
             value['user_points'] = get_all_points(
@@ -258,13 +257,23 @@ def my_studies(request):
                     if value['groupBy'] == "tag":
                         value['user_points'] = 0
                         for tag in value['filter']['tag']:
-                            value['user_points'] = max(value['user_points'], get_points_sum({'tag': [tag]}, reqs['ects']['limit'] if 'limit' in reqs['ects'] else {}, completed_courses))
+                            value['user_points'] = max(
+                                value['user_points'],
+                                get_points_sum(
+                                    {'tag': [tag]},
+                                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
+                                    completed_courses))
                     elif value['groupBy'] == "type":
                         value['user_points'] = 0
                         for type in value['filter']['type']:
-                            value['user_points'] = max(value['user_points'], get_points_sum({'type': [type]}, reqs['ects']['limit'] if 'limit' in reqs['ects'] else {}, completed_courses))
+                            value['user_points'] = max(
+                                value['user_points'],
+                                get_points_sum(
+                                    {'type': [type]},
+                                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
+                                    completed_courses))
                 else:
-                    value['user_points'] = null
+                    value['user_points'] = None
             elif 'sum' in value.keys():
                 value['user_points'] = get_points_sum(
                     value['filter'], reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
