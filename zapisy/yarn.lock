@@ -5133,7 +5133,7 @@ fsevents@~2.1.2:
     postcss-loader: 4.3.0
     prettier: 2.5.1
     sass: 1.26.10
-    sass-loader: 10.2.0
+    sass-loader: 10.2.1
     spicery: 1.1.0
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.3.0
@@ -7644,9 +7644,9 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"sass-loader@npm:10.2.0":
-  version: 10.2.0
-  resolution: "sass-loader@npm:10.2.0"
+"sass-loader@npm:10.2.1":
+  version: 10.2.1
+  resolution: "sass-loader@npm:10.2.1"
   dependencies:
     klona: ^2.0.4
     loader-utils: ^2.0.0
@@ -7665,7 +7665,7 @@ resolve@^1.14.2:
       optional: true
     sass:
       optional: true
-  checksum: 1c8914920749f2e2e404e4663c9cce6ef4d38dc7fb30117c722c25b76257ebee444c90d20e174adf621036e1afefaadc8f89b69fd912347f4618b7401afae53c
+  checksum: f94f03e23740467ba5c899e07bcfbbecb53809821e693df5c8be6352f0c0758a7cbe8c0d04e6606215bd1294b92c13724fd5e16eeec1028fc159309a6689bacb
   languageName: node
   linkType: hard
 
