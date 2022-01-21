@@ -799,7 +799,8 @@
         "description": "Przedmioty humanistyczno-społeczne",
         "filter": {
           "type": ["42"]
-        }
+        },
+        "sum" : 5
       },
       "logic": {
         "description": "Logika",

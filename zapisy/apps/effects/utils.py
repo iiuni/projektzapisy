@@ -152,7 +152,6 @@ def get_all_points(filterNot, limit, completed_courses):
 
 def get_points_sum(filter, limit, completed_courses):
     sum = 0
-
     if 'type' not in limit:
         limit['type'] = {}
 
@@ -167,7 +166,7 @@ def get_points_sum(filter, limit, completed_courses):
             if table == 'subject':
                 if course.offer in objects:
                     sum += course.points
-            if table == 'type':
+            elif table == 'type':
                 type = course.course_type
                 if type in objects:
                     if type in limit['type']:
@@ -176,10 +175,10 @@ def get_points_sum(filter, limit, completed_courses):
                         sum += added_sum
                     else:
                         sum += course.points
-            if table == 'effect':
+            elif table == 'effect':
                 if not set([effect for effect in course.effects.all()]).isdisjoint(set(objects)):
                     sum += course.points
-            if table == 'tag':
+            elif table == 'tag':
                 if not set([tag for tag in course.tags.all()]).isdisjoint(set(objects)):
                     sum += course.points
 

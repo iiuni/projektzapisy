@@ -253,7 +253,19 @@ def my_studies(request):
                 value['filterNot'] if 'filterNot' in value else {},
                 value['limit'] if 'limit' in value else {}, completed_courses)
         if 'filter' in value.keys():
-            if 'sum' in value.keys():
+            if {'groupBy', 'aggregate'} <= value.keys():
+                if value['aggregate'] == 'sum':
+                    if value['groupBy'] == "tag":
+                        value['user_points'] = 0
+                        for tag in value['filter']['tag']:
+                            value['user_points'] = max(value['user_points'], get_points_sum({'tag': [tag]}, reqs['ects']['limit'] if 'limit' in reqs['ects'] else {}, completed_courses))
+                    elif value['groupBy'] == "type":
+                        value['user_points'] = 0
+                        for type in value['filter']['type']:
+                            value['user_points'] = max(value['user_points'], get_points_sum({'type': [type]}, reqs['ects']['limit'] if 'limit' in reqs['ects'] else {}, completed_courses))
+                else:
+                    value['user_points'] = null
+            elif 'sum' in value.keys():
                 value['user_points'] = get_points_sum(
                     value['filter'], reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
                     completed_courses)
