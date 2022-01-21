@@ -800,7 +800,7 @@
         "filter": {
           "type": ["42"]
         },
-        "sum" : 5
+        "sum": 5
       },
       "logic": {
         "description": "Logika",
