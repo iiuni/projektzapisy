@@ -11,8 +11,8 @@ from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.effects.models import CompletedCourses
 from apps.effects.utils import (get_all_points, get_points_sum, is_passed,
-                                load_list_of_programs_and_years, proper_year_for_program,
-                                requirements)
+                                load_list_of_programs_and_years, load_requirements_file,
+                                programExist, proper_year_for_program, requirements)
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
@@ -236,16 +236,21 @@ def my_studies(request):
             'effects': done_effects,
         })
 
+    reqs_file = load_requirements_file()
+
     student_program = Program.objects.filter(name=request.user.student.program).all()[0].id
 
-    program = request.GET.get('program', student_program)
+    if programExist(reqs_file, student_program):
+        program = request.GET.get('program', student_program)
+    else:
+        program = request.GET.get('program', list(reqs_file.keys())[0])
 
     year = int(request.GET.get('year', request.user.date_joined.year))
 
     completed_courses = (CompletedCourses.objects.filter(student=request.user.student,
                                                          program=request.user.student.program))
 
-    reqs = requirements(program=program, starting_year=year)
+    reqs = requirements(reqs_file, program, year)
     for key, value in reqs.items():
         if key == 'ects':
             value['user_points'] = get_all_points(
@@ -284,18 +289,15 @@ def my_studies(request):
     res = list()
 
     for key, value in reqs.items():
-        # if 'filter' in value.keys():
-        #     if 'sum' in value['filter'].keys():
-        #         value['user_points'] = points[key]
         res.append(value)
 
     data.update({'requirements': res})
 
-    list_of_programs = load_list_of_programs_and_years()
+    list_of_programs = load_list_of_programs_and_years(reqs_file)
 
     data.update({'picker_data': list_of_programs})
 
-    proper_year = proper_year_for_program(program, year)
+    proper_year = proper_year_for_program(reqs_file, program, year)
     data.update({'proper_year': str(proper_year)})
 
     return render(request, 'users/my_studies.html', data)

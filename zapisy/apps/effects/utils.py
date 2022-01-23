@@ -15,9 +15,11 @@ def load_requirements_file():
     return data
 
 
-def load_list_of_programs_and_years():
-    data = load_requirements_file()
+def programExist(data, program):
+    return str(program) in data.keys()
 
+
+def load_list_of_programs_and_years(data):
     res = dict()
 
     for program_id in data.keys():
@@ -30,9 +32,7 @@ def load_list_of_programs_and_years():
     return res
 
 
-def load_studies_requirements(program, starting_year=2019):
-    data = load_requirements_file()
-
+def load_studies_requirements(data, program, starting_year=2019):
     program_requirements = data[str(program)]
 
     years = program_requirements.keys()
@@ -46,9 +46,7 @@ def load_studies_requirements(program, starting_year=2019):
     return program_requirements[year]
 
 
-def proper_year_for_program(program, year):
-    data = load_requirements_file()
-
+def proper_year_for_program(data, program, year):
     program_requirements = data[str(program)]
 
     years = program_requirements.keys()
@@ -62,8 +60,8 @@ def proper_year_for_program(program, year):
     return year
 
 
-def requirements(program, starting_year=2019):
-    reqs = load_studies_requirements(program, starting_year)
+def requirements(data, program, starting_year=2019):
+    reqs = load_studies_requirements(data, program, starting_year)
     res = dict()
 
     for key, value in reqs.items():
