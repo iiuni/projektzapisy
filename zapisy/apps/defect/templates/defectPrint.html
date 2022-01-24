@@ -55,7 +55,6 @@
             <th scope="col" class="text-center">Miejsce usterki</th>
             <th scope="col" class="text-center">Stan usterki</th>
             <th scope="col" class="text-center">Data zgłoszenia</th>
-            <th scope="col" class="text-center">Data modyfikacji</th>
         </tr>
         </thead>
             <tbody>
@@ -65,7 +64,9 @@
                     <td class="text-center">{{ defect.place }}</td>
                     <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
                     <td class="text-center">{{ defect.creation_date }}</td>
-                    <td class="text-center">{{ defect.last_modification }}</td>
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="4">{{ defect.description }}</td>
                 </tr>
             {% endfor %}
             </tbody>
