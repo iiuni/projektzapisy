@@ -218,10 +218,9 @@ def my_profile(request):
 def my_studies(request):
     """User my-studies page.
 
-    The profile page displays user settings (e-mail address, notifications). If
-    he is a student, his opening times will be displayed. If the user is an
-    employee, the page allows him to modify his public information (office,
-    consultations).
+    The studies page displays student's studies requirements and progress.
+    It has picker to choose studies program and starting year to look on other
+    requirements.
     """
     semester = Semester.get_upcoming_semester()
 
