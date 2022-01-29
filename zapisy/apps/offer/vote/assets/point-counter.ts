@@ -68,8 +68,6 @@ function setUpFilters() {
 }
 
 function filteredCourses(courses: Array<object>) {
-  //console.log(filterComponent.$refs);
-
   let name = filterComponent!.$refs["name-filter"].$data.pattern;
   let tags = filterComponent!.$refs["tags-filter"].$data.selected;
   let type = filterComponent!.$refs["type-filter"].$data.selected;
@@ -184,18 +182,7 @@ function applyFilters() {
 }
 
 function FormatCoursesData(coursesDataStr: string) {
-  var sliced = coursesDataStr.slice(1, -1);
-  //sliced = sliced.replaceAll("}", "}}");
-  sliced = sliced.replace(/\}/g, "}}");
-  let coursesData: string[] = sliced.split("}, ", 999999);
-  coursesData[coursesData.length - 1] = coursesData[
-    coursesData.length - 1
-  ].slice(0, -1);
-  let coursesDataArray: Array<object> = [];
-  for (let n = 0; n < coursesData.length; n++) {
-    coursesDataArray[n] = JSON.parse(coursesData[n]);
-  }
-  return coursesDataArray;
+  return JSON.parse(coursesDataStr);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -208,6 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const inputs = document.querySelectorAll("select");
   const badgeInputs = document.querySelectorAll("a");
   const textInputs = document.querySelectorAll("input");
+
+  applyFilters();
   // Highlight "voted for" proposals ones where the current value is not a
   // minimum option.
   for (const input of inputs) {
