@@ -35,6 +35,8 @@ export default Vue.extend({
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
 
+    this.$root.$refs[this.filterKey] = this;
+
     if (searchParams.has(this.property)) {
       if (searchParams.get(this.property) === "true") {
         this.on = true;
