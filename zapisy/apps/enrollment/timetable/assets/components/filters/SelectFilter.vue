@@ -60,4 +60,3 @@ export default Vue.extend({
     </select>
   </div>
 </template>
-
