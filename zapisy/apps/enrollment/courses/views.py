@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group, GuaranteedSpots
+from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
@@ -24,8 +24,8 @@ def prepare_courses_list_data(semester: Optional[Semester]):
     for course in qs.prefetch_related('effects', 'tags'):
         course_dict = course.__json__()
         course_dict.update({
-                'url': reverse('course-page', args=(course.slug,)),
-            })
+            'url': reverse('course-page', args=(course.slug,)),
+        })
         courses.append(course_dict)
     filters_dict = CourseInstance.prepare_filter_data(qs)
     all_semesters = Semester.objects.filter(visible=True)
@@ -110,6 +110,67 @@ def course_view(request, slug):
     return render(request, 'courses/courses.html', data)
 
 
+def get_group_data(group_ids: List[int], user: User, status: RecordStatus):
+    """Retrieves a group and relevant data for each group id of group_ids list.
+
+    If the group does not exist skip it. If no group exists return an empty dictionary.
+    """
+    data = {}
+    for group_id in group_ids:
+        group: Group
+        try:
+            group = (
+                Group.objects.select_related(
+                    'course', 'course__semester', 'teacher', 'teacher__user'
+                )
+                .prefetch_related('term', 'term__classrooms')
+                .get(id=group_id)
+            )
+        except Group.DoesNotExist:
+            continue
+
+        records = (
+            Record.objects.filter(group_id=group_id, status=status)
+            .select_related(
+                'student', 'student__user', 'student__program', 'student__consent'
+            )
+            .prefetch_related('student__user__groups')
+            .order_by('student__user__last_name', 'student__user__first_name')
+        )
+
+        data[group_id] = {
+            'students': [record.student for record in records],
+            'group': group,
+            'can_user_see_all_students_here': can_user_view_students_list_for_group(
+                user, group
+            ),
+        }
+
+    return data
+
+
+def get_students_from_data(groups_data_enrolled, groups_data_queued):
+    def sort_student_by_name(students: List[Student]) -> List[Student]:
+        return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
+
+    students_in_course = set()
+    students_in_queue = set()
+
+    for group_data in groups_data_enrolled.values():
+        students_in_course.update(group_data["students"])
+    for group_data in groups_data_queued.values():
+        students_in_queue.update([
+            student
+            for student in group_data["students"]
+            if student not in students_in_course
+        ])
+
+    students_in_course = sort_student_by_name(students_in_course)
+    students_in_queue = sort_student_by_name(students_in_queue)
+
+    return students_in_course, students_in_queue
+
+
 @login_required
 def course_list_view(request, course_slug: str, class_type: int = None):
     course: CourseInstance
@@ -123,80 +184,32 @@ def course_list_view(request, course_slug: str, class_type: int = None):
     except CourseInstance.DoesNotExist:
         return None, None
 
-    def get_group_data(group_id):
-        group: Group
-        try:
-            group = (
-                Group.objects.select_related(
-                    'course', 'course__semester', 'teacher', 'teacher__user'
-                )
-                .prefetch_related('term', 'term__classrooms')
-                .get(id=group_id)
-            )
-        except Group.DoesNotExist:
-            raise Http404
-
-        records_in_group = (
-            Record.objects.filter(group_id=group_id, status=RecordStatus.ENROLLED)
-            .select_related(
-                'student', 'student__user', 'student__program', 'student__consent'
-            )
-            .prefetch_related('student__user__groups')
-            .order_by('student__user__last_name', 'student__user__first_name')
-        )
-        records_in_queue = (
-            Record.objects.filter(group_id=group_id, status=RecordStatus.QUEUED)
-            .select_related(
-                'student', 'student__user', 'student__program', 'student__consent'
-            )
-            .prefetch_related('student__user__groups')
-            .order_by('created')
-        )
-
-        def collect_students(records) -> List[Student]:
-            return [record.student for record in records]
-
-        students_in_group = collect_students(records_in_group)
-        students_in_queue = collect_students(records_in_queue)
-
-        data = {
-            'students_in_group': students_in_group,
-            'students_in_queue': students_in_queue,
-            'group': group,
-            'can_user_see_all_students_here': can_user_view_students_list_for_group(
-                request.user, group
-            ),
-        }
-
-        return data
-
-    def sort_student_by_name(students: List[Student]) -> List[Student]:
-        return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
-
     groups_ids = [
         group.id
         for group in course.groups.all()
         if class_type is None or group.type == class_type
     ]
-    groups_data = [get_group_data(id) for id in groups_ids]
-    can_user_see_all_students_here = all(
-                [group['can_user_see_all_students_here'] for group in groups_data]
-            )
-    students_in_course = set()
-    students_in_queue = set()
+    groups_data_enrolled = get_group_data(groups_ids, request.user, status=RecordStatus.ENROLLED)
+    groups_data_queued = get_group_data(groups_ids, request.user, status=RecordStatus.QUEUED)
 
-    for group_data in groups_data:
-        students_in_course.update(group_data['students_in_group'])
-    for group_data in groups_data:
-        students_in_queue.update([
-            student
-            for student in group_data["students_in_queue"]
-            if student not in students_in_course
-        ])
+    students_in_course, students_in_queue = get_students_from_data(
+        groups_data_enrolled, groups_data_queued
+    )
+    can_user_see_all_students_here = any(
+        [
+            group["can_user_see_all_students_here"]
+            for group in groups_data_enrolled.values()
+        ]
+    ) or any(
+        [
+            group["can_user_see_all_students_here"]
+            for group in groups_data_queued.values()
+        ]
+    )
 
     data = {
-            'students_in_course': sort_student_by_name(students_in_course),
-            'students_in_queue': sort_student_by_name(students_in_queue),
+            'students_in_course': students_in_course,
+            'students_in_queue': students_in_queue,
             'course': course,
             'can_user_see_all_students_here': can_user_see_all_students_here,
             'mailto_group': mailto(request.user, students_in_course, bcc=False),
@@ -221,76 +234,43 @@ def group_view(request, group_id):
 
     Presents list of all students enrolled and enqueued to group.
     """
-    group: Group
-    try:
-        group = Group.objects.select_related(
-                'course', 'course__semester', 'teacher', 'teacher__user'
-            ).prefetch_related('term', 'term__classrooms').get(id=group_id)
-    except Group.DoesNotExist:
-        raise Http404
-
-    records_in_group = Record.objects.filter(
-        group_id=group_id, status=RecordStatus.ENROLLED).select_related(
-            'student', 'student__user', 'student__program',
-            'student__consent').prefetch_related('student__user__groups').order_by(
-                'student__user__last_name', 'student__user__first_name')
-
-    records_in_queue = Record.objects.filter(
-        group_id=group_id, status=RecordStatus.QUEUED).select_related(
-            'student', 'student__user', 'student__program',
-            'student__consent').prefetch_related('student__user__groups').order_by('created')
-
-    guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
-
-    def collect_students(records) -> List[Student]:
-        record: Record
-        student_list = []
-        for record in records:
-            record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
-                role.name for role in record.student.user.groups.all())
-            student_list.append(record.student)
-        return student_list
-
-    students_in_group = collect_students(records_in_group)
-    students_in_queue = collect_students(records_in_queue)
-
+    enrolled_data = get_group_data(group_id, request.user, status=RecordStatus.ENROLLED).get(group_id, {})
+    queued_data = get_group_data(group_id, request.user, status=RecordStatus.QUEUED).get(group_id, {})
+    students_in_group, students_in_queue = get_students_from_data(enrolled_data, queued_data)
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
-        'guaranteed_spots': guaranteed_spots_rules,
-        'group': group,
-        'can_user_see_all_students_here': can_user_view_students_list_for_group(
-            request.user, group),
+        'group': enrolled_data.get("group"),
+        'can_user_see_all_students_here': enrolled_data.get("can_user_see_all_students_here"),
         'mailto_group': mailto(request.user, students_in_group, bcc=False),
         'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
         'mailto_group_bcc': mailto(request.user, students_in_group, bcc=True),
         'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
     }
-    data.update(prepare_courses_list_data(group.course.semester))
+    data.update(prepare_courses_list_data(enrolled_data.get("group").course.semester))
     return render(request, 'courses/group.html', data)
 
 
 def recorded_students_csv(
     group_ids: List[int],
     status: RecordStatus,
+    user: User,
     course_name: Optional[str] = None,
-    exclude_matriculas: Optional[Iterable] = None
+    exclude_students: Optional[Iterable] = None
 ) -> HttpResponse:
     """Builds the HttpResponse with list of student enrolled/enqueued in a list of groups."""
-    exclude_matriculas = exclude_matriculas or ()
-    order = 'student__user__last_name' if status == RecordStatus.ENROLLED else 'created'
+    exclude_students = exclude_students or ()
     students = {}
-    for group_id in group_ids:
-        records_in_group = Record.objects.filter(
-            group_id=group_id, status=status
-            ).select_related('student', 'student__user').order_by(order)
-        for record in records_in_group:
-            if record.student.matricula not in exclude_matriculas:
-                students[record.student.matricula] = {
-                    "first_name": record.student.user.first_name,
-                    "last_name": record.student.user.last_name,
-                    "email": record.student.user.email,
+    group_data = get_group_data(group_ids, user, status)
+    for group in group_data.values():
+        for student in group.get("students", []):
+            if student not in exclude_students:
+                students[student.matricula] = {
+                    "first_name": student.user.first_name,
+                    "last_name": student.user.last_name,
+                    "email": student.user.email,
                 }
+    students = sorted(students.items(), key=lambda e: (e[1].get("last_name"), e[1].get("first_name")))
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="{}-{}-{}.csv"'.format(
@@ -298,7 +278,7 @@ def recorded_students_csv(
     )
 
     writer = csv.writer(response)
-    for matricula, student in students.items():
+    for matricula, student in students:
         writer.writerow([
                 student["first_name"], student["last_name"], matricula, student["email"]
             ])
@@ -310,7 +290,7 @@ def group_enrolled_csv(request, group_id):
     """Prints out the group members in csv format."""
     if not Group.objects.filter(id=group_id).exists():
         raise Http404
-    return recorded_students_csv([group_id], RecordStatus.ENROLLED)
+    return recorded_students_csv([group_id], RecordStatus.ENROLLED, request.user)
 
 
 @employee_required
@@ -318,7 +298,7 @@ def group_queue_csv(request, group_id):
     """Prints out the group queue in csv format."""
     if not Group.objects.filter(id=group_id).exists():
         raise Http404
-    return recorded_students_csv([group_id], RecordStatus.QUEUED)
+    return recorded_students_csv([group_id], RecordStatus.QUEUED, request.user)
 
 
 def get_all_group_ids_for_course_slug(slug):
@@ -345,32 +325,26 @@ def course_enrolled_csv(request, course_slug):
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
-    return recorded_students_csv(group_ids, RecordStatus.ENROLLED, course_short_name)
+    return recorded_students_csv(group_ids, RecordStatus.ENROLLED, request.user, course_short_name)
 
 
 @employee_required
 def course_queue_csv(request, course_slug):
     """Prints out the course queue in csv format."""
     course_short_name, group_ids = get_all_group_ids_for_course_slug(course_slug)
-
-    students_enrolled = set()
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
+    group_data = get_group_data(group_ids, request.user, status=RecordStatus.ENROLLED)
 
-        records_in_group = (
-            Record.objects.filter(group_id=group_id, status=RecordStatus.ENROLLED)
-            .select_related(
-                'student', 'student__user', 'student__program', 'student__consent'
-            )
-            .prefetch_related('student__user__groups')
-            .order_by('student__user__last_name', 'student__user__first_name')
-        )
-        students_enrolled.update([record.student.matricula for record in records_in_group])
+    students_enrolled = set()
+    for group in group_data.values():
+        students_enrolled.update(group.get("students", []))
 
     return recorded_students_csv(
         group_ids,
         RecordStatus.QUEUED,
+        request.user,
         course_short_name,
-        exclude_matriculas=students_enrolled
+        exclude_students=students_enrolled
     )
