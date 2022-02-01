@@ -15,7 +15,7 @@ def load_requirements_file():
     return data
 
 
-def programExist(data, program):
+def program_exists(data, program):
     return str(program) in data.keys()
 
 

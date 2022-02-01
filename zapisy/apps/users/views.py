@@ -12,7 +12,7 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.effects.utils import (get_all_points, get_points_sum, is_passed,
                                 load_list_of_programs_and_years, load_requirements_file,
-                                programExist, proper_year_for_program, requirements)
+                                program_exists, proper_year_for_program, requirements)
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
@@ -239,7 +239,7 @@ def my_studies(request):
 
     student_program = Program.objects.filter(name=request.user.student.program).all()[0].id
 
-    if programExist(reqs_file, student_program):
+    if program_exists(reqs_file, student_program):
         program = request.GET.get('program', student_program)
     else:
         program = request.GET.get('program', list(reqs_file.keys())[0])
