@@ -35,13 +35,7 @@ def load_list_of_programs_and_years(data):
 def load_studies_requirements(data, program, starting_year=2019):
     program_requirements = data[str(program)]
 
-    years = program_requirements.keys()
-    years_lower = [x for x in years if int(x) <= starting_year]
-
-    if years_lower:
-        year = max(years_lower)
-    else:
-        year = max(years)
+    year = proper_year_for_program(data, program, starting_year)
 
     return program_requirements[year]
 
