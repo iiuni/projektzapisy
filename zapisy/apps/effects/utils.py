@@ -22,12 +22,12 @@ def program_exists(data, program):
 def load_list_of_programs_and_years(data):
     res = dict()
 
-    for program_id in data.keys():
-        program = Program.objects.get(pk=program_id)
+    programs = Program.objects.filter(id__in=data.keys())
 
+    for program in programs:
         res[program] = dict()
-        res[program]['years'] = list(data[program_id].keys())
-        res[program]['id'] = program_id
+        res[program]['years'] = list(data[str(program.id)].keys())
+        res[program]['id'] = str(program.id)
 
     return res
 
