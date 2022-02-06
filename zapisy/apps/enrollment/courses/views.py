@@ -1,6 +1,6 @@
 import csv
 import json
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -9,12 +9,19 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.courses.models.group import Group
+from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
+
+
+class GroupData(TypedDict):
+    students: List[Student]
+    group: Group
+    guaranteed_spots_rules: set
+    can_user_see_all_students_here: bool
 
 
 def prepare_courses_list_data(semester: Optional[Semester]):
@@ -110,7 +117,7 @@ def course_view(request, slug):
     return render(request, 'courses/courses.html', data)
 
 
-def get_group_data(group_ids: List[int], user: User, status: RecordStatus):
+def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Dict[int, GroupData]:
     """Retrieves a group and relevant data for each group id of group_ids list.
 
     If the group does not exist skip it. If no group exists return an empty dictionary.
@@ -127,7 +134,7 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus):
                 .get(id=group_id)
             )
         except Group.DoesNotExist:
-            continue
+            raise Http404
 
         records = (
             Record.objects.filter(group_id=group_id, status=status)
@@ -138,9 +145,17 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus):
             .order_by('student__user__last_name', 'student__user__first_name')
         )
 
+        guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
+        students: List[Student] = []
+        for record in records:
+            record.student.guaranteed = set(rule.role.name for rule in guaranteed_spots_rules) & set(
+                role.name for role in record.student.user.groups.all())
+            students.append(record.student)
+
         data[group_id] = {
-            'students': [record.student for record in records],
+            'students': students,
             'group': group,
+            'guaranteed_spots_rules': guaranteed_spots_rules,
             'can_user_see_all_students_here': can_user_view_students_list_for_group(
                 user, group
             ),
@@ -149,7 +164,10 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus):
     return data
 
 
-def get_students_from_data(groups_data_enrolled, groups_data_queued):
+def get_students_from_data(
+    groups_data_enrolled: Dict[int, GroupData],
+    groups_data_queued: Dict[int, GroupData],
+):
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
 
@@ -234,20 +252,23 @@ def group_view(request, group_id):
 
     Presents list of all students enrolled and enqueued to group.
     """
-    enrolled_data = get_group_data(group_id, request.user, status=RecordStatus.ENROLLED).get(group_id, {})
-    queued_data = get_group_data(group_id, request.user, status=RecordStatus.QUEUED).get(group_id, {})
+    enrolled_data = get_group_data([group_id], request.user, status=RecordStatus.ENROLLED)
+    queued_data = get_group_data([group_id], request.user, status=RecordStatus.QUEUED)
     students_in_group, students_in_queue = get_students_from_data(enrolled_data, queued_data)
+    group: Group = enrolled_data[group_id].get("group")
+
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
-        'group': enrolled_data.get("group"),
-        'can_user_see_all_students_here': enrolled_data.get("can_user_see_all_students_here"),
+        'guaranteed_spots': enrolled_data.get('guaranteed_spots_rules'),
+        'group': group,
+        'can_user_see_all_students_here': enrolled_data[group_id].get("can_user_see_all_students_here"),
         'mailto_group': mailto(request.user, students_in_group, bcc=False),
         'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
         'mailto_group_bcc': mailto(request.user, students_in_group, bcc=True),
         'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
     }
-    data.update(prepare_courses_list_data(enrolled_data.get("group").course.semester))
+    data.update(prepare_courses_list_data(group.course.semester))
     return render(request, 'courses/group.html', data)
 
 
