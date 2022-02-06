@@ -259,14 +259,13 @@ def my_studies(request):
             if {'groupBy', 'aggregate'} <= value.keys():
                 if value['aggregate'] == 'sum':
                     if value['groupBy'] == "tag":
-                        value['user_points'] = 0
+                        value['user_points'] = []
                         for tag in value['filter']['tag']:
-                            value['user_points'] = max(
-                                value['user_points'],
-                                get_points_sum(
+                            value['user_points'].append(get_points_sum(
                                     {'tag': [tag]},
                                     reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
                                     completed_courses))
+                        value['zip'] = zip(value['filter']['tag'], value['user_points'])
                     elif value['groupBy'] == "type":
                         value['user_points'] = 0
                         for type in value['filter']['type']:

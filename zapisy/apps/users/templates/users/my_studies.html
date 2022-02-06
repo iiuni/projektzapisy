@@ -55,12 +55,35 @@
             {% for req in requirements %}
             <tr>
                 <th>{{ req.description }}</th>
-                {% if req.sum %}
+                {% if req.groupBy %}
+                    {% if req.aggreate == sum %}
+                        <td>
+                            {% for tag,points in req.zip %}
+                                {% if req.sum > points %}
+                                    <p>
+                                        <span class="badge badge-danger mr-2">{{ tag }}</span>
+                                     </p>
+                                {% else %}
+                                    <p>
+                                        <span class="badge badge-success mr-2">{{ tag }}</span>
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for points in req.user_points %}
+                                <p>
+                                    {{ points }} / {{ req.sum }}
+                                </p>
+                            {% endfor %}
+                        </td>
+                    {% endif %}
+                {% elif req.sum %}
                     {% if req.filter.tag %}
                         <td>
                             {% for tag in req.filter.tag %}
                                 <p>
-                                    <span class="badge badge-success mr-2">{{ tag }}</span>                                  
+                                    <span class="badge badge-success mr-2">{{ tag }}</span>
                                 </p>
                             {% endfor %}
                         </td>
