@@ -214,7 +214,14 @@ class PollResults(TemplateView):
         if semester_id is None:
             semester_id = Semester.get_current_semester().id
         current_semester = Semester.get_current_semester()
-        selected_semester = Semester.objects.filter(pk=semester_id).get()
+
+        try:
+            selected_semester = Semester.objects.filter(pk=semester_id).get()
+        except Semester.DoesNotExist:
+            messages.error(
+                request, "Wybrany semestr nie istnieje."
+            )
+            return redirect('grade-main')
 
         available_polls = Poll.get_all_polls_for_semester(
             user=request.user, semester=selected_semester
