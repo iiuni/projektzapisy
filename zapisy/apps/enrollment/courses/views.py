@@ -191,22 +191,7 @@ def get_students_from_data(
 
 @login_required
 def course_list_view(request, course_slug: str, class_type: int = None):
-    course: CourseInstance
-    try:
-        course = (
-            CourseInstance.objects.filter(slug=course_slug)
-            .select_related('semester', 'course_type')
-            .prefetch_related('tags', 'effects')
-            .get()
-        )
-    except CourseInstance.DoesNotExist:
-        return None, None
-
-    groups_ids = [
-        group.id
-        for group in course.groups.all()
-        if class_type is None or group.type == class_type
-    ]
+    course, _, groups_ids = get_all_group_ids_for_course_slug(course_slug, class_type=class_type)
     groups_data_enrolled = get_group_data(groups_ids, request.user, status=RecordStatus.ENROLLED)
     groups_data_queued = get_group_data(groups_ids, request.user, status=RecordStatus.QUEUED)
 
@@ -322,7 +307,7 @@ def group_queue_csv(request, group_id):
     return recorded_students_csv([group_id], RecordStatus.QUEUED, request.user)
 
 
-def get_all_group_ids_for_course_slug(slug):
+def get_all_group_ids_for_course_slug(slug, class_type: int = None):
     """Return a tuple course short_name and a list of groups ids."""
     course: CourseInstance
     try:
@@ -336,13 +321,13 @@ def get_all_group_ids_for_course_slug(slug):
         return None, None
 
     name = course.short_name if course.short_name else course.name
-    return (name, [group.id for group in course.groups.all()])
+    return (course, name, [group.id for group in course.groups.all() if class_type is None or group.type == class_type])
 
 
 @employee_required
 def course_enrolled_csv(request, course_slug):
     """Prints out the course members in csv format."""
-    course_short_name, group_ids = get_all_group_ids_for_course_slug(course_slug)
+    _, course_short_name, group_ids = get_all_group_ids_for_course_slug(course_slug)
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
@@ -352,7 +337,7 @@ def course_enrolled_csv(request, course_slug):
 @employee_required
 def course_queue_csv(request, course_slug):
     """Prints out the course queue in csv format."""
-    course_short_name, group_ids = get_all_group_ids_for_course_slug(course_slug)
+    _, course_short_name, group_ids = get_all_group_ids_for_course_slug(course_slug)
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
