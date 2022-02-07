@@ -1,4 +1,4 @@
-import { property } from "lodash";\
+import { property } from "lodash";
 import { DefectInfo } from "@/defect/assets/models";
 
 interface State {
