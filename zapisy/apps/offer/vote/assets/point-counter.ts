@@ -12,7 +12,6 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 // comp will hold a Vue component.
 let counterComponent: CounterComponent | null = null;
 let filterComponent: any | null = null;
-//let filterComponent: typeof FilterComponent | null = null;
 
 var coursesDataStr: string;
 var coursesDataArray: Array<object>;
@@ -161,6 +160,7 @@ function setUpCounter() {
 
 function applyFilters() {
   const rows = document.querySelectorAll("tr");
+  //const filtered = await filteredCourses(coursesDataArray);
   const filtered = filteredCourses(coursesDataArray);
 
   for (const row of rows) {
@@ -197,6 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const textInputs = document.querySelectorAll("input");
 
   applyFilters();
+
   // Highlight "voted for" proposals ones where the current value is not a
   // minimum option.
   for (const input of inputs) {
