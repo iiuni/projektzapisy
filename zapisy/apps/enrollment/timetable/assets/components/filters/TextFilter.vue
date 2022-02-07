@@ -33,9 +33,8 @@ export default Vue.extend({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
-
     this.$root.$refs[this.filterKey] = this;
+    const searchParams = new URL(window.location.href).searchParams;
 
     if (searchParams.has(this.property)) {
       // TypeScript doesn't infer that property is present, manual cast required.

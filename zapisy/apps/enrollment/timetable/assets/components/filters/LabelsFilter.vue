@@ -71,7 +71,6 @@ export default Vue.extend({
     this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
 
     this.$root.$refs[this.filterKey] = this;
-
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
       const selectedIds = searchParams
