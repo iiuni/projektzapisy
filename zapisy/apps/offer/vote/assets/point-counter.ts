@@ -67,65 +67,7 @@ function setUpFilters() {
 }
 
 function filteredCourses(courses: Array<object>) {
-  let name = filterComponent!.$refs["name-filter"].$data.pattern;
-  let tags = filterComponent!.$refs["tags-filter"].$data.selected;
-  let type = filterComponent!.$refs["type-filter"].$data.selected;
-  let effects = filterComponent!.$refs["effects-filter"].$data.selected;
-  let owner = filterComponent!.$refs["owner-filter"].$data.selected;
-  let semester = filterComponent!.$refs["semester-filter"].$data.selected;
-  let status = "IN_VOTE";
-  let fresh = filterComponent!.$refs["freshmen-filter"].$data.on;
-
-  let match = (val: string, filter: string) => {
-    return filter == null || val == filter;
-  };
-
-  let filtered: { [index: string]: any } = courses.filter(
-    (x: { [index: string]: any }) =>
-      match(x["semester"], semester) &&
-      match(x["status"], status) &&
-      match(x["owner"], owner) &&
-      match(x["courseType"], type)
-  );
-  if (fresh) {
-    filtered = filtered.filter((x: { [index: string]: any }) =>
-      match(x["recommendedForFirstYear"], fresh)
-    );
-  }
-  let selectedTags: number[] = Object.keys(tags)
-    .filter(function (k) {
-      return tags[k];
-    })
-    .map(Number);
-
-  let selectedEffects: number[] = Object.keys(effects)
-    .filter(function (k) {
-      return effects[k];
-    })
-    .map(Number);
-
-  if (selectedTags.length > 0) {
-    filtered = filtered.filter((x: { [index: string]: any }) =>
-      x["tags"].some((r: number) => selectedTags.includes(r))
-    );
-  }
-  if (selectedEffects.length > 0) {
-    filtered = filtered.filter((x: { [index: string]: any }) =>
-      x["effects"].some((r: number) => selectedEffects.includes(r))
-    );
-  }
-
-  if (name) {
-    filtered = filtered.filter((x: { [index: string]: any }) =>
-      x["name"].toLowerCase().includes(name.toLowerCase())
-    );
-  }
-
-  if (filtered.length == 0) {
-    return [{ id: -1 }];
-  }
-
-  return filtered;
+  return courses.filter(filterComponent!.$refs["tester"]);
 }
 
 function setUpCounter() {
@@ -160,7 +102,6 @@ function setUpCounter() {
 
 function applyFilters() {
   const rows = document.querySelectorAll("tr");
-  //const filtered = await filteredCourses(coursesDataArray);
   const filtered = filteredCourses(coursesDataArray);
 
   for (const row of rows) {
@@ -196,8 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const badgeInputs = document.querySelectorAll("a");
   const textInputs = document.querySelectorAll("input");
 
-  applyFilters();
-
   // Highlight "voted for" proposals ones where the current value is not a
   // minimum option.
   for (const input of inputs) {
@@ -223,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   for (const input of inputs) {
     if (input!.classList.contains("custom-select")) {
-      (input as HTMLElement).addEventListener("change", applyFilters);
+      (input as HTMLElement).addEventListener("mouseleave", applyFilters);
     } else {
       (input as HTMLElement).addEventListener("input", function (_) {
         const row = this.closest("tr");
@@ -242,3 +181,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
+document.addEventListener("scroll", applyFilters);
