@@ -58,6 +58,19 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
+  mounted() {
+    // Extract filterable properties names from the template.
+    const filterableProperties = Object.values(this.$refs)
+      .filter((ref: any) => ref.filterKey)
+      .map((filter: any) => filter.property);
+    // Expand the filters if there are any initially specified in the search params.
+    const searchParams = new URL(window.location.href).searchParams;
+    if (filterableProperties.some((p: string) => searchParams.has(p))) {
+      this.collapsed = false;
+    }
+
+    this.$root.$refs["tester"] = this.tester;
+  },
 });
 </script>
 
