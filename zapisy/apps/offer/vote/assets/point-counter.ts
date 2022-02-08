@@ -67,7 +67,10 @@ function setUpFilters() {
 }
 
 function filteredCourses(courses: Array<object>) {
-  return courses.filter(filterComponent!.$refs["tester"]);
+  let filtered: { [index: string]: any } = courses.filter(
+    filterComponent!.$refs["tester"]
+  );
+  return filtered;
 }
 
 function setUpCounter() {
@@ -107,7 +110,7 @@ function applyFilters() {
   for (const row of rows) {
     let hideRow = true;
     for (const courseIdx in filtered) {
-      if (row!.classList.contains("subject-id-" + filtered[courseIdx]["id"])) {
+      if (row!.classList.contains("subject-id-" + filtered[courseIdx].id)) {
         hideRow = false;
         break;
       }
