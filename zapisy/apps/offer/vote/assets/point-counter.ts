@@ -180,6 +180,5 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
+  document.addEventListener("scroll", applyFilters);
 });
-
-document.addEventListener("scroll", applyFilters);
