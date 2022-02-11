@@ -34,7 +34,6 @@ export default Vue.extend({
     };
   },
   created: function () {
-    this.$root.$refs[this.filterKey] = this;
     const searchParams = new URL(window.location.href).searchParams;
     const isChosenKey = ([key, _]: [number, string]) =>
       searchParams.get(this.property) == key.toString();

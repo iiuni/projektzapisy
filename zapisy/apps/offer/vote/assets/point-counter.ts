@@ -11,7 +11,6 @@ import filters from "@/enrollment/timetable/assets/store/filters";
 
 // comp will hold a Vue component.
 let counterComponent: CounterComponent | null = null;
-let filterComponent: any | null = null;
 
 var coursesDataStr: string;
 var coursesDataArray: Array<object>;
@@ -35,9 +34,6 @@ function setValueMapFromInput(
 // colour on the course).
 function highlightVotedRow(select: HTMLSelectElement) {
   let tableRow = select.closest("tr")!;
-  if (tableRow == null) {
-    return;
-  }
   if (select.value !== select.options[0].text) {
     tableRow.classList.remove("table-success");
     tableRow.classList.add("table-primary");
@@ -59,18 +55,11 @@ function setUpFilters() {
     },
   });
 
-  filterComponent = new Vue({
+  new Vue({
     el: "#course-filter",
-    render: (h) => h(FilterComponent),
+    render: (h) => h(FilterComponent, { props: { refreshFun: applyFilters } }),
     store,
   });
-}
-
-function filteredCourses(courses: Array<object>) {
-  let filtered: { [index: string]: any } = courses.filter(
-    filterComponent!.$refs["tester"]
-  );
-  return filtered;
 }
 
 function setUpCounter() {
@@ -103,9 +92,9 @@ function setUpCounter() {
   });
 }
 
-function applyFilters() {
+function applyFilters(tester: any) {
   const rows = document.querySelectorAll("tr");
-  const filtered = filteredCourses(coursesDataArray);
+  const filtered: any = coursesDataArray.filter(tester);
 
   for (const row of rows) {
     let hideRow = true;
@@ -136,9 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   coursesDataStr = document.getElementById("courses-data")!.innerHTML;
   coursesDataArray = FormatCoursesData(coursesDataStr);
 
-  const inputs = document.querySelectorAll("select");
-  const badgeInputs = document.querySelectorAll("a");
-  const textInputs = document.querySelectorAll("input");
+  const inputs = document.querySelectorAll(".select");
 
   // Highlight "voted for" proposals ones where the current value is not a
   // minimum option.
@@ -146,42 +133,23 @@ document.addEventListener("DOMContentLoaded", function () {
     highlightVotedRow(input as HTMLSelectElement);
   }
 
-  for (const textInput of textInputs) {
-    if (textInput!.classList.contains("form-control")) {
-      (textInput as HTMLElement).addEventListener("input", applyFilters);
-    } else if (textInput!.classList.contains("custom-control-input")) {
-      (textInput as HTMLElement).addEventListener("change", applyFilters);
-    }
-  }
-
-  for (const badgeInput of badgeInputs) {
-    if (badgeInput!.classList.contains("badge")) {
-      (badgeInput as HTMLElement).addEventListener("click", applyFilters);
-    }
-  }
-
   // Whenever one of the inputs is changed, we need to update the value stored
   // in the component.
 
   for (const input of inputs) {
-    if (input!.classList.contains("custom-select")) {
-      (input as HTMLElement).addEventListener("mouseleave", applyFilters);
-    } else {
-      (input as HTMLElement).addEventListener("input", function (_) {
-        const row = this.closest("tr");
+    (input as HTMLElement).addEventListener("input", function (_) {
+      const row = this.closest("tr");
 
-        if (row!.classList.contains("limit")) {
-          // Update the map.
-          setValueMapFromInput(
-            counterComponent!.inputs,
-            this as HTMLInputElement
-          );
-        }
+      if (row!.classList.contains("limit")) {
+        // Update the map.
+        setValueMapFromInput(
+          counterComponent!.inputs,
+          this as HTMLInputElement
+        );
+      }
 
-        // If the value is different than minimum, add a highlight.
-        highlightVotedRow(this as HTMLSelectElement);
-      });
-    }
+      // If the value is different than minimum, add a highlight.
+      highlightVotedRow(this as HTMLSelectElement);
+    });
   }
-  document.addEventListener("scroll", applyFilters);
 });

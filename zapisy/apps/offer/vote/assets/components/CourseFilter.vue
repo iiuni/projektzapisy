@@ -17,6 +17,7 @@ export default Vue.extend({
     SelectFilter,
     CheckFilter,
   },
+  props: { refreshFun: Function },
   data: function () {
     return {
       allEffects: {},
@@ -69,7 +70,13 @@ export default Vue.extend({
       this.collapsed = false;
     }
 
-    this.$root.$refs["tester"] = this.tester;
+    this.$store.subscribe((mutation, _) => {
+      switch (mutation.type) {
+        case "filters/registerFilter":
+          this.refreshFun(this.tester);
+          break;
+      }
+    });
   },
 });
 </script>
@@ -81,6 +88,7 @@ export default Vue.extend({
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
+            ref="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
           />
@@ -88,6 +96,7 @@ export default Vue.extend({
           <LabelsFilter
             title="Tagi"
             filterKey="tags-filter"
+            ref="tags-filter"
             property="tags"
             :allLabels="allTags"
             onClass="badge-success"
@@ -96,6 +105,7 @@ export default Vue.extend({
         <div class="col-md">
           <SelectFilter
             filterKey="type-filter"
+            ref="type-filter"
             property="courseType"
             :options="allTypes"
             placeholder="Rodzaj przedmiotu"
@@ -104,6 +114,7 @@ export default Vue.extend({
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
+            ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
             onClass="badge-info"
@@ -112,12 +123,14 @@ export default Vue.extend({
         <div class="col-md">
           <SelectFilter
             filterKey="owner-filter"
+            ref="owner-filter"
             property="owner"
             :options="allOwners"
             placeholder="Opiekun przedmiotu"
           />
           <SelectFilter
             filterKey="semester-filter"
+            ref="semester-filter"
             property="semester"
             :options="allSemesters"
             placeholder="Semestr"
@@ -125,6 +138,7 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
+            ref="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
           />
