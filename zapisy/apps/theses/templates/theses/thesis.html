@@ -82,6 +82,15 @@
             </td>
         </tr>
         <tr>
+          <th scope="row">Maksymalna liczba studentów</th>
+          <td>{% if thesis.max_number_of_students %}
+                  {{ thesis.max_number_of_students }}
+              {% else %}
+                  Brak
+              {% endif %}
+          </td>
+        </tr>
+        <tr>
             <th scope="row">Studenci</th>
             <td>
                 {% for student in students %}

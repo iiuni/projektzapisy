@@ -5,8 +5,9 @@ from django.utils import timezone
 
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
-from apps.theses.models import MAX_ASSIGNED_STUDENTS, MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
+from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
+from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
 
 
 class ThesisFormAdmin(forms.ModelForm):
@@ -44,8 +45,6 @@ class ThesisFormBase(forms.ModelForm):
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
-        help_text=(f"Limit przypisanych studentów: {MAX_ASSIGNED_STUDENTS}. "
-                   "Aby przypisać więcej studentów należy zwrócić się do zastępcy dyrektora ds. dydaktycznych."),
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
     reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
@@ -53,6 +52,9 @@ class ThesisFormBase(forms.ModelForm):
                                      required=False)
     description = forms.CharField(
         label="Opis", widget=common_widgets.MarkdownArea, required=False)
+    max_number_of_students = forms.ChoiceField(
+        label="Maks. liczba studentów", choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
+    )
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
@@ -73,11 +75,13 @@ class ThesisFormBase(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
 
-    def clean_students(self):
+    def clean(self):
+        super().clean()
         students = self.cleaned_data['students']
-        if 'students' in self.changed_data and len(students) > MAX_ASSIGNED_STUDENTS:
+        max_number_of_students = int(self.cleaned_data['max_number_of_students'])
+        if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
+                and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
-        return students
 
 
 class ThesisForm(ThesisFormBase):
@@ -88,14 +92,16 @@ class ThesisForm(ThesisFormBase):
             self.fields['status'].required = True
             row_1 = Row(
                 Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-4'),
+                Column('reserved_until', css_class='form-group col-md-2'),
+                Column('max_number_of_students', css_class='form-group col-md-2'),
                 Column('status', css_class='form-group col-md-6'),
                 css_class='form-row'
             )
         else:
             self.fields['status'].required = False
             row_1 = Row(
-                Column('kind', css_class='form-group col-md-6'),
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='form-row'
             )
@@ -135,14 +141,16 @@ class EditThesisForm(ThesisFormBase):
         if user.is_staff:
             special_row = Row(
                 Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-4'),
+                Column('reserved_until', css_class='form-group col-md-2'),
+                Column('max_number_of_students', css_class='form-group col-md-2'),
                 Column('status', css_class='form-group col-md-6'),
                 css_class='form-row'
             )
         else:
             self.fields['status'].required = False
             special_row = Row(
-                Column('kind', css_class='form-group col-md-6'),
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='form-row'
             )

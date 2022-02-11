@@ -1,7 +1,7 @@
 Django==3.1.14
 django-bootstrap-pagination==1.7.1
-django-cas-ng==4.2.1
-django-crispy-forms==1.13.0
+django-cas-ng==4.3.0
+django-crispy-forms==1.14.0
 django-environ==0.8.1
 django-extensions==2.2.9
 django-filter==2.4.0
@@ -15,8 +15,8 @@ djangorestframework==3.13.1
 django-pagedown==2.2.1
 
 ipdb==0.13.9
-prompt-toolkit==3.0.24
-ipython==7.31.0
+prompt-toolkit==3.0.26
+ipython==7.31.1
 pycryptodome==3.12.0
 rollbar==0.16.2
 newrelic==5.24.0.153

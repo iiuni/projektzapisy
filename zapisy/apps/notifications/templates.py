@@ -37,3 +37,24 @@ mapping = {
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
 }
+
+mapping_title = {
+    NotificationType.NOT_PULLED_FROM_QUEUE:
+    'Proces wciągania Cię do grupy zakończył się niepowodzeniem',
+    NotificationType.PULLED_FROM_QUEUE:
+    'Nastąpiło pomyślne zapisanie Cię do grupy przedmiotu "{course_name}"',
+    NotificationType.ADDED_NEW_GROUP:
+    'W przedmiocie "{course_name}" została dodana grupa',
+    NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER:
+    'Przydzielono Cię do grupy przedmiotu "{course_name}"',
+    NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED:
+    'Nastąpiła zmiana prowadzacego w grupie przedmiotu "{course_name}"',
+    NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED:
+    'Nastąpiła zmiana prowadzacego w grupie przedmiotu "{course_name}"',
+    NotificationType.NEWS_HAS_BEEN_ADDED:
+    "{title}",
+    NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
+    "{title}",
+    NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
+    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+}

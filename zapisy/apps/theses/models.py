@@ -6,12 +6,12 @@ from django.db.models import Q
 from apps.notifications.custom_signals import thesis_voting_activated
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.users import is_theses_board_member
-from apps.theses.validators import validate_master_rejecter, validate_num_required_votes
+from apps.theses.validators import validate_master_rejecter, validate_num_required_votes, \
+    validate_max_number_of_students
 from apps.users.models import Employee, Student
 
 MAX_THESIS_TITLE_LEN = 300
 MAX_REJECTION_REASON_LENGTH = 500
-MAX_ASSIGNED_STUDENTS = 1
 
 
 class ThesesSystemSettings(models.Model):
@@ -92,6 +92,9 @@ class Thesis(models.Model):
     # A thesis is _modified_ when its status changes
     modified = models.DateTimeField(auto_now_add=True)
     objects = ThesesQuerySet.as_manager()
+    max_number_of_students = models.SmallIntegerField(
+        default=1,
+        validators=[validate_max_number_of_students])
 
     class Meta:
         verbose_name = "praca dyplomowa"

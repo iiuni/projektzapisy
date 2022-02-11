@@ -9,6 +9,9 @@ from django_rq import job
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
 from apps.notifications.utils import render_description
+from apps.notifications.utils import render_title
+
+EMAIL_SUBJECT_TEMPLATE = "[ZAPISY] %s"
 
 
 @job('dispatch-notifications')
@@ -45,9 +48,12 @@ def dispatch_notifications_task(user):
             'greeting': f'Dzień dobry, {user.first_name}',
         }
 
+        subject = EMAIL_SUBJECT_TEMPLATE % render_title(pn.description_id, pn.description_args)
+
         message_contents = render_to_string('notifications/email_base.html', ctx)
+
         messages.append((
-            'Wiadomość od Systemu Zapisów IIUWr',
+            subject,
             strip_tags(message_contents),
             settings.MASS_MAIL_FROM,
             [user.email],

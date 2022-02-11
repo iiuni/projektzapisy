@@ -121,6 +121,8 @@ def view_thesis(request, id):
 
     remarks_exist = not thesis.has_been_accepted or remarks
 
+    max_number_of_students = thesis.max_number_of_students
+
     return render(
         request, 'theses/thesis.html', {
             'thesis': thesis,
@@ -140,7 +142,8 @@ def view_thesis(request, id):
             'vote_form_rejected': vote_form_rejected,
             'vote_form_none': vote_form_none,
             'rejecter_accepted': rejecter_accepted,
-            'rejecter_rejected': rejecter_rejected
+            'rejecter_rejected': rejecter_rejected,
+            'max_number_of_students': max_number_of_students,
         })
 
 
