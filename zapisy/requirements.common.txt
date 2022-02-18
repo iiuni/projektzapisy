@@ -15,7 +15,7 @@ djangorestframework==3.13.1
 django-pagedown==2.2.1
 
 ipdb==0.13.9
-prompt-toolkit==3.0.26
+prompt-toolkit==3.0.28
 ipython==7.31.1
 pycryptodome==3.14.1
 rollbar==0.16.2
