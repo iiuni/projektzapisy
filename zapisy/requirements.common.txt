@@ -23,7 +23,7 @@ newrelic==5.24.0.153
 gunicorn==20.1.0
 python-dateutil==2.8.2
 python-memcached==1.59
-xhtml2pdf==0.2.5
+xhtml2pdf==0.2.6
 # BBCode -> HTML
 postmarkup==1.2.2
 # PyYAML is used for fixtures.
