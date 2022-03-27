@@ -1,5 +1,6 @@
 import os
 from typing import List, Optional, Set
+from itertools import groupby
 
 from django.conf import settings
 import environ
@@ -241,6 +242,54 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
                 f"Błąd czytania arkusza przydziałów (wiersz {i}): {str(e).capitalize()}.")
         assignments.append(sad)
     return assignments
+
+
+def proposal_to_subjects_sheets_format(groups: ProposalSummary):
+    """Function prepares data for Subjects spreadsheet.
+
+    Args:
+        groups: ProposalSummary sorted by attributes 'semester', 'name', 'group_type'
+    Returns:
+        List of lists, where each inner list represents a single row in spreadsheet.
+    """
+    data = [
+        [
+            'Proposal ID',
+            'Przedmiot',
+            'Rodzaj',
+            'Tagi',
+            'ECTS',
+            'Semestr',
+            'Planowana liczba grup',
+            'Uruchomiona liczba grup'
+        ]
+    ]
+
+    for i, group in enumerate(groupby(groups, lambda x: x.proposal_id), start=2):
+        proposal = next(group[1])
+        row = [
+            proposal.proposal_id,  # A. proposal_id
+            proposal.name,  # B. course name
+            '?',  # C. subject type
+            '?',  # D. tags
+            '?',  # E. ECTS
+            proposal.semester,  # F. semester
+            f'=COUNTIF(Przydziały!A2:A; A{i})',  # G. planned number of groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!K2:K; True)',  # H. number of active groups
+        ]
+        data.append(row)
+    return data
+
+
+def update_subjects_info(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
+    data = proposal_to_subjects_sheets_format(proposal)
+    worksheet: gspread.models.Worksheet = sheet.get_worksheet(2)
+    if worksheet is None:
+        worksheet = sheet.add_worksheet("Przedmioty", 2, 8)
+    worksheet.clear()
+    worksheet.update_title("Przedmioty")
+    worksheet.update('A:H', data, raw=False)
+    worksheet.freeze(rows=1)
 
 
 def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
