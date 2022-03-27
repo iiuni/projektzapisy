@@ -7,6 +7,8 @@ import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+from apps.enrollment.courses.models.course_information import CourseInformation
+
 from .utils import (
     EmployeeData,
     EmployeesSummary,
@@ -265,17 +267,22 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
         ]
     ]
 
-    for i, group in enumerate(groupby(groups, lambda x: x.proposal_id), start=2):
+    courses_names = [course[0] for course in groupby(groups, lambda x: x.name)]
+    courses_details = CourseInformation.objects.distinct('name').filter(name__in=courses_names).order_by('name')
+
+    for i, group in enumerate(groupby(groups, lambda x: x.proposal_id)):
         proposal = next(group[1])
+        details = courses_details[i]
+        assert(proposal.name == details.name)
         row = [
             proposal.proposal_id,  # A. proposal_id
             proposal.name,  # B. course name
-            '?',  # C. subject type
-            '?',  # D. tags
-            '?',  # E. ECTS
+            details.course_type.name,  # C. course type
+            ','.join(map(lambda x: x[0], details.tags.values_list('short_name'))),  # D. tags
+            details.points,  # E. ECTS
             proposal.semester,  # F. semester
-            f'=COUNTIF(Przydziały!A2:A; A{i})',  # G. planned number of groups
-            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!K2:K; True)',  # H. number of active groups
+            f'=COUNTIF(Przydziały!A2:A; A{i+2})',  # G. planned number of groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i+2}; Przydziały!K2:K; True)',  # H. number of active groups
         ]
         data.append(row)
     return data
