@@ -1,0 +1,17 @@
+{% extends "defectBase.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block all-content %}
+<div id="defect-root">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+            Edycja usterki
+        </h1>
+    </div>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        {% crispy form %}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "defectBase.html" %}
+
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block rendered_bundles %}
+    {% render_bundle "defect-style" %}
+{% endblock %}
+
+{% block js %}
+    {% render_bundle "defect-form" %}
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item">
+        <a href="{% url "main-page" %}">Strona główna</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url "defects:main" %}">Usterki</a>
+    </li>
+    {% if edit %}
+        <li class="breadcrumb-item">
+            <a href="{% url "defects:show_defect" defect_id %}">Usterka {{ defect_id }}</a>
+        </li>
+        <li class="breadcrumb-item active">
+            Edytuj
+        </li>
+    {% else %}
+        <li class="breadcrumb-item active">
+            Stwórz nową
+        </li>
+    {% endif %}
+
+{% endblock %}
+
+{% block all-content %}
+<div id="defect-root">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+            {% if edit %}
+                Edycja usterki
+            {% else %}
+                Dodawanie nowej usterki
+            {% endif %}
+        </h1>
+    </div>
+
+    <input id="extra-images-number" class="d-none" value="{{ extra_images_number }}">
+
+    <form action="" method="POST" class="post-form" enctype="multipart/form-data" id="main-form">
+        {% csrf_token %}
+        {% crispy form %}
+
+        <hr>
+
+        <div id="image-formset" class="mb-5">
+            <h4>Zdjęcia</h4>
+
+            {% if edit %}
+                <div class="container-fluid" style="margin: 10px">
+                    <div class="row">
+                        {% for image in images %}
+                            <div class="col-md-3 pop center-block">
+                                <button
+                                    class="btn btn-danger close delete-photo-button"
+                                    type="button"
+                                    id="delete-button-{{ image.0 }}"
+                                    style="background-color: red"
+                                >
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Delete</span>
+                                </button>
+                                <img class="img-thumbnail" src={{ image.1 }} >
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {{ formset.management_form }}
+            <div class="container-fluid" id="image-fields">
+                {% for image_form in formset %}
+                    <div class="row no-gutters">
+                        <div class="col">
+                            {% crispy image_form %}
+                        </div>
+                        <div class="col-auto">
+                            <button
+                                    class="btn btn-danger delete-field-button d-none"
+                                    type="button"
+                                    style="margin-top: 24px"
+                            >
+                                Usuń
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <button class="btn btn-primary" id="new-image-form">Dodaj kolejne zdjęcie</button>
+        </div>
+
+        <button type="submit" class="save btn btn-success mt-3" id="save-defect">Zapisz</button>
+    </form>
+
+    {% if edit %}
+        <div class="d-none">
+            {% for image in images %}
+            <form action="{% url 'defects:delete_image' image.0 %}" method="post" id="delete-form-{{ image.0 }}">
+                {% csrf_token %}
+                <input type="submit" value="Delete" />
+            </form>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

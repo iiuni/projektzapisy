@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'apps.grade.ticket_create',
     'apps.schedulersync',
     'apps.theses',
+    'apps.defect',
     'apps.effects',
     'django_extensions',
     'django_filters',
@@ -401,3 +402,10 @@ REST_FRAMEWORK = {
     # specifying `filterset_fields` in a view
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
+
+#
+# Google Drive Storage Settings
+#
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = "google_drive.json"
+GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = '/zapisy'  # OPTIONAL

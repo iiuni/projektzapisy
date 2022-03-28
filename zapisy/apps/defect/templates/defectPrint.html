@@ -1,0 +1,89 @@
+{# Base template for an entire System #}
+
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
+    <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+
+    <link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-109984921-1');
+    </script>
+
+    {% render_bundle "common-main" %}
+    {% block styles %}
+    {% endblock %}
+    {% block js %}{% endblock %}
+    {% block rss %}{% endblock %}
+    {% block head_extra %}{% endblock %}
+
+</head>
+
+{% load crispy_forms_tags %}
+
+{% block all-content %}
+    <form method="post" id="action-form">
+    {% csrf_token %}
+    <center>
+    <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+        
+        <h1 class="d-inline-block" style="text-align: center !important; width: 100%;">
+             Usterki 
+        </h1>
+    </div>
+    </center>
+    <table class="table table-striped sortable">
+        <thead>
+        <tr id="headers">
+            <th scope="col" class="az" data-defaultsign="nospan" data-defaultsort="asc">Nazwa Usterki</th>
+            <th scope="col" class="text-center">Miejsce usterki</th>
+            <th scope="col" class="text-center">Stan usterki</th>
+            <th scope="col" class="text-center">Data zgłoszenia</th>
+        </tr>
+        </thead>
+            <tbody>
+            {% for defect in defects %}
+                <tr id="{{ defect.id }}">
+                    <td> {{ defect.name }} </td>
+                    <td class="text-center">{{ defect.place }}</td>
+                    <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
+                    <td class="text-center">{{ defect.creation_date }}</td>
+                </tr>
+                {% if defect.description != "" %}
+                    <tr>
+                        <td class="text-center" colspan="4">{{ defect.description }}</td>
+                    </tr>
+                {% else %}
+                    <tr style="display:none;"></tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+    </table></form>
+
+    </div>
+
+{% endblock %}
+
+<script>
+    window.print()
+</script>
+
+<style>
+
+</style>

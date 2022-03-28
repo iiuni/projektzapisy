@@ -113,6 +113,16 @@ const AssetDefs = {
   "statistics-widget": [
     path.resolve("apps/statistics/assets/statistics-widget.js"),
   ],
+
+  // Defect App
+
+  "defect-form": [path.resolve("apps/defect/assets/defect_form.js")],
+  "defect-style": [path.resolve("apps/defect/assets/defect.css")],
+  "show-defect": [path.resolve("apps/defect/assets/show_defect.js")],
+  "defect-form": [path.resolve("apps/defect/assets/defect_form.js")],
+  "defect-style": [path.resolve("apps/defect/assets/defect.css")],
+  "show-defect": [path.resolve("apps/defect/assets/show_defect.js")],
+  "defect-widget": [path.resolve("apps/defect/assets/defects-widget.js")],
 };
 
 module.exports = AssetDefs;

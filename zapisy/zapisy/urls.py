@@ -20,6 +20,7 @@ urlpatterns = [
     path('statistics/', include(('apps.statistics.urls', 'statistics'), namespace='statistics')),
     path('theses/', include(('apps.theses.urls', 'theses'), namespace='theses')),
     path('users/', include('apps.users.urls')),
+    path('defect/', include(('apps.defect.urls', 'defects'), namespace='defects')),
     path('', include(('apps.schedule.urls', 'events'), namespace='events')),
 
     path('admin/doc/', include('django.contrib.admindocs.urls')),

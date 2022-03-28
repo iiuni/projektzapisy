@@ -12,7 +12,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated)
+                                               thesis_voting_activated, defect_modified)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -175,3 +175,22 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
                      NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))
+
+
+@receiver(defect_modified)
+def notify_that_defect_was_modified(sender, **kwargs) -> None:
+    defect = kwargs['instance']
+    target = reverse('defects:show_defect', args=[defect.id])
+
+    notify_user(
+        kwargs['user'],
+        Notification(
+            get_id(),
+            get_time(),
+            NotificationType.DEFECT_MODIFIED,
+            {
+                'defect_name': defect.name
+            },
+            target
+        )
+    )

@@ -10,6 +10,7 @@ jobs:
     env: 
       PYTHON_VERSION: 3.8
       NODE_VERSION: 12
+      GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS: ${{ secrets.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS }}
     services:
       postgres:
         image: postgres:12
@@ -74,4 +75,5 @@ jobs:
           mv env/.env_ci env/.env
           cd zapisy
           mkdir logs
+          echo $GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE_CONTENTS > "google_drive.json"
           python manage.py test --failfast --parallel --nomigrations

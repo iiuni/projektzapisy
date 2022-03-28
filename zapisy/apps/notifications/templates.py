@@ -11,6 +11,7 @@ class NotificationType(str, Enum):
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
     NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY = 'news_has_been_added_high_priority'
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
+    DEFECT_MODIFIED = 'defect_modified'
 
 
 mapping = {
@@ -36,6 +37,8 @@ mapping = {
     "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    NotificationType.DEFECT_MODIFIED:
+    'Zgłoszona przez Ciebie usterka o nazwie "{defect_name}" została zmodyfikowana.',
 }
 
 mapping_title = {
