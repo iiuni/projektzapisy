@@ -10,7 +10,7 @@ from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
-
+import datetime
 
 class ThesisFormAdmin(forms.ModelForm):
     class Meta:
@@ -49,7 +49,8 @@ class ThesisFormBase(forms.ModelForm):
         label="Przypisani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
-    reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
+    reserved_date = (datetime.date.today()+datetime.timedelta(days=730)).isoformat()
+    reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date', 'value': reserved_date}),
                                      label="Zarezerwowana do",
                                      required=False)
     description = forms.CharField(
