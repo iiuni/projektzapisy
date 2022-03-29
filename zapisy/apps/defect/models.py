@@ -28,6 +28,9 @@ class Defect(models.Model):
     state = models.PositiveSmallIntegerField("Stan", choices=StateChoices.choices, default=StateChoices.CREATED)
     information_from_repairer = models.TextField("Informacja od serwisanta", blank=True)
 
+    def __str__(self):
+        return self.name
+
     def get_url(self):
         return reverse('defects:show_defect', args=[str(self.id)])
 
@@ -44,3 +47,6 @@ class Image(models.Model):
 
 class DefectMaintainer(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.first_name + " " + self.user_id.last_name

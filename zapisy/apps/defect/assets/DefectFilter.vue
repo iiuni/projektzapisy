@@ -37,6 +37,11 @@ export default Vue.extend({
             :properties="['name']"
             placeholder="Nazwa usterki"
           />
+          <TextFilter
+            filter-key="reporter-filter"
+            :properties="['reporter']"
+            placeholder="Zgłaszający"
+          />
         </div>
         <div class="col">
           <TextFilter

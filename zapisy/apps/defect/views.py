@@ -71,6 +71,7 @@ def parse_names(request):
 def parse_defect(defect: Defect):
     return {"id": defect.id, "name": defect.name, "place": defect.place, "status_color": defect.get_status_color(),
             "state": defect.get_state_display(), "state_id": [defect.state],
+            "reporter": defect.reporter.first_name + " " + defect.reporter.last_name,
             "creation_date": defect.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
             "last_modification": defect.last_modification.strftime('%Y-%m-%d %H:%M:%S')}
 
@@ -213,7 +214,7 @@ def delete_image(request, image_id):
                 user=image.defect.reporter
             )
 
-        messages.success(request, "Pomyślnie usnięto zdjęcie")
+        messages.success(request, "Pomyślnie usunięto zdjęcie")
         return redirect('defects:edit_defect', defect_id=defect_id)
     raise Http404
 

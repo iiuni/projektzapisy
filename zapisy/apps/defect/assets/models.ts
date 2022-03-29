@@ -4,6 +4,7 @@ export interface DefectInfo {
   creation_date: Date;
   last_modification: Date;
   place: string;
+  reporter: string;
   state: PossibleStates;
   selected: boolean;
   state_id: 0 | 1 | 2 | 3;
