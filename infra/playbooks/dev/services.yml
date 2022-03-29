@@ -77,7 +77,3 @@
         enabled: yes
         state: started
       become: yes
-
-    - name: Run cron jobs
-      raw: /home/vagrant/env3/bin/python /vagrant/infra/cron_jobs/django_cleanup.py
-      become: yes
