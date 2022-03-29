@@ -36,6 +36,20 @@
         dest: /etc/systemd/system/
         force: yes
       become: yes
+      
+    - name: Deploy django_cleanup
+      copy:
+        src: django_cleanup.service
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
+    
+    - name: Deploy django_cleanup timer
+      copy:
+        src: django_cleanup.timer
+        dest: /etc/systemd/system/
+        force: yes
+      become: yes
 
     # Enable and run
     - name: Systemd daemon reload
@@ -74,6 +88,13 @@
     - name: Enable and run rqworker2 service
       service:
         name: rqworker2
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Enable timer for django_cleanup service
+      service:
+        name: django_cleanup.timer
         enabled: yes
         state: started
       become: yes

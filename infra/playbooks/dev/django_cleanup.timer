@@ -1,0 +1,9 @@
+[Unit]
+Description=Clear old django database sessions
+
+[Timer]
+OnCalendar=Fri *-*-* 23:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
