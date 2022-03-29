@@ -78,9 +78,9 @@
           data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
           <div class="d-flex w-100 justify-content-between">
             <span>{{ group_name }}</span>
-            {% with x=submissions_count|lookup:group_name %}
+            {% with x=submissions_count|lookup:group_name|replaceNone %}
             <span class="text-right text-nowrap">
-              {% if x %}{{ x }}{% else %}0{% endif %}
+              {{ x }}
             </span>
             {% endwith %}
           </div>

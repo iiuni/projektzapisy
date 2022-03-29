@@ -68,7 +68,7 @@
   <div class="col-lg-4 col-12">
     {% regroup polls by category as polls_by_category %}
     {% for category, submissions in polls_by_category %}
-      {% with category_submitted=stats.submitted_by_category|lookup:category category_total=submissions|length %}
+      {% with category_submitted=stats.submitted_by_category|lookup:category|replaceNone category_total=submissions|length %}
         <div
           class="card {% if category_submitted == category_total %}list-group-item-success{%else%}text-white bg-secondary{% endif %} mb-3">
           <div class="card-header">
