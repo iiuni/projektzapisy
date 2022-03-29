@@ -196,6 +196,11 @@ class EditThesisForm(ThesisFormBase):
                 instance.status = ThesisStatus.ACCEPTED.value
             else:
                 instance.status = status
+        
+        if "students" not in self.data:
+            instance.reserved_until = None
+        elif instance.reserved_until is None:
+            instance.reserved_until = datetime.date.today()+datetime.timedelta(days=730)
 
         if "students" not in self.data:
             instance.reserved_unti.titll = None
