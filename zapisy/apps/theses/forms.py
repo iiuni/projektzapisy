@@ -10,6 +10,7 @@ from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
 import datetime
 
+
 class ThesisFormAdmin(forms.ModelForm):
     class Meta:
         model = Thesis
