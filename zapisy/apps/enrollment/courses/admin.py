@@ -57,7 +57,7 @@ class SemesterAdmin(admin.ModelAdmin):
     def refresh_opening_times(self, request, queryset):
         """Computes Opening times for all students."""
         if queryset.count() != 1:
-            self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.ERROR)
+            self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.WARNING)
             return
         semester = queryset.get()
         T0Times.populate_t0(semester)
