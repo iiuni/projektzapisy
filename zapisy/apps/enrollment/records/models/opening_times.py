@@ -60,7 +60,7 @@ class T0Times(models.Model):
         """Computes T0's for all active students.
 
         The times are based on their ECTS points and their participation in
-        courses grading. The additional administrative bonus is also taken into
+        courses' grading. The additional administrative bonus is also taken into
         account.
 
         The function will throw a DatabaseError if something goes wrong.
@@ -83,7 +83,7 @@ class T0Times(models.Model):
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
-                # that over nighttime. 720 minutes is equal to12 hours. If
+                # that over nighttime. 720 minutes is equal to 12 hours. If
                 # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
                 # additional 12 hours from T0. This way T0's are separated by
                 # ECTS_BONUS minutes per point, but never fall in the nighttime.
@@ -100,6 +100,36 @@ class T0Times(models.Model):
                 # shifted from 00:00-12:00 to 22:00-10:00.
                 record.time -= timedelta(hours=2)
                 created.append(record)
+            cls.objects.bulk_create(created)
+
+    @classmethod
+    def populate_t0_selected(cls, semester: Semester, student : Student):
+        """Computes T0s for a student.
+
+        Look up the analogous populate_opening_times for a run-down.
+        """
+        with transaction.atomic():
+            cls.objects.filter(semester=semester, student=student).delete()
+
+            created: List[cls] = []
+            generated_tickets: Dict[int, int] = dict(
+                StudentGraded.objects.filter(semester_id__in=[
+                    semester.first_grade_semester_id, semester.second_grade_semester_id
+                ]).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
+                    "student_id", "num_tickets"))
+
+            record = cls(student=student, semester=semester)
+            record.time = semester.records_opening
+
+            record.time -= timedelta(
+                    minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
+            record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
+               
+            student_generated_tickets = generated_tickets.get(student.pk, 0)
+            record.time -= timedelta(days=1) * student_generated_tickets
+            record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
+            record.time -= timedelta(hours=2)
+            created.append(record)
             cls.objects.bulk_create(created)
 
 
@@ -240,6 +270,49 @@ class GroupOpeningTimes(models.Model):
                         )
                     )
                     opening_time_objects.append(bonus_obj)
+        cls.objects.bulk_create(opening_time_objects)
+
+    @classmethod
+    @transaction.atomic
+    def populate_opening_times_selected(cls, semester: Semester, student: Student):
+        """Computes opening times (bonuses) for a selected student.
+
+        Look up the analogous populate_opening_times for a run-down.
+        """
+        cls.objects.filter(group__course__semester_id=semester.id, student=student).delete()
+        t0times: Dict[int, datetime] = dict(
+            T0Times.objects.filter(semester_id=semester.id, student=student).values_list("student_id", "time")
+        )
+
+        opening_time_objects: List['GroupOpeningTimes'] = []
+        votes = SingleVote.objects.meaningful().in_semester(semester=semester)
+        groups = Group.objects.filter(course__semester=semester).select_related('course')
+
+        votes_by_proposal: Dict[int, List[SingleVote]] = defaultdict(list)
+        for vote in votes:
+            votes_by_proposal[vote.proposal_id].append(vote)
+
+        groups_by_proposal: Dict[int, List[Group]] = defaultdict(list)
+        for group in groups:
+            groups_by_proposal[group.course.offer_id].append(group)        
+
+        for proposal_id, groups in groups_by_proposal.items():
+            single_vote: SingleVote
+            for single_vote in votes_by_proposal[proposal_id]:
+                if single_vote.student_id==student.id:
+                   for group in groups:
+                        bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
+                        bonus_obj.time = max(
+                            filter(
+                                None,
+                                (
+                                    group.course.records_start,
+                                    t0times.get(single_vote.student_id, semester.records_opening) -
+                                    timedelta(days=single_vote.val),
+                                )
+                            )
+                        )
+                        opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)
 
     @classmethod
