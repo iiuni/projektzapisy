@@ -1,7 +1,10 @@
-from django.contrib import admin
+import datetime
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.records.models.opening_times import GroupOpeningTimes, T0Times
 
 from apps.users.models import Employee, Program, Student
 
@@ -36,6 +39,34 @@ class StudentAdmin(admin.ModelAdmin):
     def get_queryset(self, request) -> QuerySet:
         qs = super(StudentAdmin, self).get_queryset(request)
         return qs.select_related('program', 'user')
+
+    actions = ['refresh_opening_times']
+
+    def refresh_opening_times(self, request, queryset):
+        """Refreshes opening times for selected students."""
+        if queryset.count() < 1:
+            self.message_user(request, "Nie wybrano studentow", level=messages.WARNING)
+            return
+        """The opening times refreshing concerns the upcoming semester"""
+
+        semester = Semester.get_semester(Semester.get_current_semester().semester_ending + datetime.timedelta(days=1))
+
+        if semester is None:
+            self.message_user(request, "Aby uaktualnic czasy nalezy najpierw utworzyc przyszly semestr", level=messages.WARNING)
+            return
+        if semester.records_opening is None:
+            self.message_user(request, "Prosze uzupelnic szczegoly przyszlego semestru", level=messages.WARNING)
+            return
+	
+        student : Student
+        for student in queryset:
+            T0Times.populate_t0_selected(semester, student)
+            GroupOpeningTimes.populate_opening_times_selected(semester, student)
+        self.message_user(request,
+                            f"Obliczono czasy otwarcia zapisów.",
+                            level=messages.SUCCESS)
+
+    refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
 
 class EmployeeAdmin(admin.ModelAdmin):
