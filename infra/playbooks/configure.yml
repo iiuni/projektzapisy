@@ -240,6 +240,19 @@
         force: yes
       become: yes
 
+    - name: Deploy django_cleanup service
+      template:
+        src: templates/django_cleanup.service.j2
+        dest: /etc/systemd/system/django_cleanup.service
+      become: yes
+    
+    - name: Deploy django_cleanup timer
+      copy:
+        src: templates/django_cleanup.timer
+        dest: /etc/systemd/system/django_cleanup.timer
+        force: yes
+      become: yes
+
     - name: Deploy rqworker-default
       template:
         src: templates/rqworker-default.service.j2
