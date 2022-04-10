@@ -16,14 +16,6 @@ def lookup(dictionary, key):
         return dictionary[key]
     return None
 
-
-@register.filter(name="replaceNone")
-def replaceNone(value, replaceValue=0):
-    if value is not None:
-        return value
-    return replaceValue
-
-
 @register.filter(name="next")
 def next_iterator(iterator):
     return next(iterator)

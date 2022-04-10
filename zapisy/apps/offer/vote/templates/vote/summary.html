@@ -32,7 +32,7 @@
                 {% for proposal in proposals_in_semester %}
                 <tr>
                     <td><a href="{% url 'offer-page' slug=proposal.slug %}">{{ proposal.name }}</a></td>
-                    <td class="text-center">{{ proposal.total }}</td>
+                    <td class="text-center">{{ proposal.total|default_if_none:0 }}</td>
                     <td class="text-center">{{ proposal.count }}</td>
                     <td><a href="{% url 'proposal-vote-summary' slug=proposal.slug %}">lista</a></td>
                 </tr>

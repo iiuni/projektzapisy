@@ -34,7 +34,7 @@
                                 <span class="badge badge-danger" title="Oczekujących w kolejkach">
                                     {{ course_type|decode_class_type_plural }}
                                     <span class="badge badge-light">
-                                        {{ waiting_course|lookup:course_type|replaceNone }}
+                                        {{ waiting_course|lookup:course_type|default_if_none:0 }}
                                     </span>
                                 </span>
                             {% endfor %}
