@@ -16,6 +16,7 @@ def lookup(dictionary, key):
         return dictionary[key]
     return None
 
+
 @register.filter(name="next")
 def next_iterator(iterator):
     return next(iterator)
