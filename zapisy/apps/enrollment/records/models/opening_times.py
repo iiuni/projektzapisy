@@ -103,7 +103,7 @@ class T0Times(models.Model):
             cls.objects.bulk_create(created)
 
     @classmethod
-    def populate_t0_selected(cls, semester: Semester, student : Student):
+    def populate_t0_selected(cls, semester: Semester, student: Student):
         """Computes T0s for a student.
 
         Look up the analogous populate_opening_times for a run-down.
@@ -124,7 +124,7 @@ class T0Times(models.Model):
             record.time -= timedelta(
                     minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
             record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
-               
+
             student_generated_tickets = generated_tickets.get(student.pk, 0)
             record.time -= timedelta(days=1) * student_generated_tickets
             record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
@@ -294,13 +294,13 @@ class GroupOpeningTimes(models.Model):
 
         groups_by_proposal: Dict[int, List[Group]] = defaultdict(list)
         for group in groups:
-            groups_by_proposal[group.course.offer_id].append(group)        
+            groups_by_proposal[group.course.offer_id].append(group)
 
         for proposal_id, groups in groups_by_proposal.items():
             single_vote: SingleVote
             for single_vote in votes_by_proposal[proposal_id]:
-                if single_vote.student_id==student.id:
-                   for group in groups:
+                if single_vote.student_id == student.id:
+                    for group in groups:
                         bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
                         bonus_obj.time = max(
                             filter(
