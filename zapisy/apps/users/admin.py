@@ -52,10 +52,10 @@ class StudentAdmin(admin.ModelAdmin):
         """The opening times refreshing concerns the upcoming semester"""
 
         semester = Semester.get_semester(Semester.get_current_semester().semester_ending + datetime.timedelta(days=1))
-
+	
         if semester is None:
             self.message_user(request, "Aby uaktualnic czasy nalezy najpierw utworzyc przyszly semestr",
-			      level=messages.WARNING)
+            level=messages.WARNING)
             return
         if semester.records_opening is None:
             self.message_user(request, "Prosze uzupelnic szczegoly przyszlego semestru", level=messages.WARNING)
@@ -66,8 +66,8 @@ class StudentAdmin(admin.ModelAdmin):
             T0Times.populate_t0_selected(semester, student)
             GroupOpeningTimes.populate_opening_times_selected(semester, student)
         self.message_user(request,
-			  "Obliczono czasy otwarcia zapisów.",
-			  level=messages.SUCCESS)
+        "Obliczono czasy otwarcia zapisów.",
+        level=messages.SUCCESS)
 
     refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
