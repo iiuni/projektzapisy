@@ -54,8 +54,9 @@ class StudentAdmin(admin.ModelAdmin):
         semester = Semester.get_semester(Semester.get_current_semester().semester_ending + datetime.timedelta(days=1))
 	
         if semester is None:
-            self.message_user(request, "Aby uaktualnic czasy nalezy najpierw utworzyc przyszly semestr",
-            level=messages.WARNING)
+            self.message_user(
+		    	request, "Aby uaktualnic czasy nalezy najpierw utworzyc przyszly semestr",
+			level=messages.WARNING)
             return
         if semester.records_opening is None:
             self.message_user(request, "Prosze uzupelnic szczegoly przyszlego semestru", level=messages.WARNING)
@@ -65,9 +66,10 @@ class StudentAdmin(admin.ModelAdmin):
         for student in queryset:
             T0Times.populate_t0_selected(semester, student)
             GroupOpeningTimes.populate_opening_times_selected(semester, student)
-        self.message_user(request,
-        "Obliczono czasy otwarcia zapisów.",
-        level=messages.SUCCESS)
+        self.message_user(
+		request,
+        	"Obliczono czasy otwarcia zapisów.",
+        	level=messages.SUCCESS)
 
     refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
