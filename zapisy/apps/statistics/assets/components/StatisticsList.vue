@@ -14,7 +14,6 @@ import Component from "vue-class-component";
     }),
     ...mapGetters("sorting", {
       compare: "compare",
-      isEmpty: "isEmpty",
     }),
   },
 })
@@ -30,10 +29,8 @@ export default class StatisticsList extends Vue {
   created() {
     this.$store.dispatch("courses/initFromJSONTag");
   }
-
   mounted() {
     this.coursesList = this.courses;
-    this.coursesList.sort(this.compare);
 
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
@@ -64,51 +61,52 @@ export default class StatisticsList extends Vue {
         <th></th>
       </tr>
     </thead>
-    <tbody>
-      <template v-for="course in coursesList">
-        <tr>
-          <th colspan="2">
-            {{ course.course_name }}
-          </th>
-          <td colspan="6">
-            <span
-              v-for="waiting_course in course.waiting_students"
-              class="badge badge-danger"
-              title="Oczekujących niezapisanych"
-            >
-              {{ waiting_course.name }}
-              <span class="badge badge-light">
-                {{ waiting_course.number }}
-              </span>
+    <tbody
+      v-for="course in coursesList"
+      :key="course.alphabetical_sorting_index"
+    >
+      <tr>
+        <th colspan="2">
+          {{ course.course_name }}
+        </th>
+        <td colspan="6">
+          <span
+            v-for="waiting_course in course.waiting_students"
+            class="badge badge-danger"
+            title="Oczekujących niezapisanych"
+          >
+            {{ waiting_course.name }}
+            <span class="badge badge-light">
+              {{ waiting_course.number }}
             </span>
-          </td>
-        </tr>
-        <tr v-for="group in course.groups" :key="group.id">
-          <td>{{ group.teacher_name }}</td>
-          <td>{{ group.type_name }}</td>
-          <td>
-            {{ group.limit }}
-            <span
-              v-for="gs in group.guaranteed_spots"
-              :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'"
-            >
-              {{ gs.limit }}
-            </span>
-          </td>
-          <td>{{ group.enrolled }}</td>
-          <td>{{ group.queued }}</td>
-          <td>{{ group.pinned }}</td>
-          <td>
-            <a
-              class="badge badge-sm badge-primary"
-              :href="group.url"
-              target="_blank"
-            >
-              Admin <i class="fas fas-sm fa-external-link-alt"></i>
-            </a>
-          </td>
-        </tr>
-      </template>
+          </span>
+        </td>
+      </tr>
+      <tr v-for="group in course.groups" :key="group.id">
+        <td>{{ group.teacher_name }}</td>
+        <td>{{ group.type_name }}</td>
+        <td>
+          {{ group.limit }}
+          <span
+            v-for="gs in group.guaranteed_spots"
+            :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'"
+          >
+            {{ gs.limit }}
+          </span>
+        </td>
+        <td>{{ group.enrolled }}</td>
+        <td>{{ group.queued }}</td>
+        <td>{{ group.pinned }}</td>
+        <td>
+          <a
+            class="badge badge-sm badge-primary"
+            :href="group.url"
+            target="_blank"
+          >
+            Admin <i class="fas fas-sm fa-external-link-alt"></i>
+          </a>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>

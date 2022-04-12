@@ -1,4 +1,3 @@
-import { values, sortBy } from "lodash";
 import { ActionContext } from "vuex";
 
 export interface GroupInfo {
@@ -15,6 +14,7 @@ export interface GroupInfo {
 
 export interface CourseInfo {
   id: number;
+  alphabetical_sorting_index: number;
   course_name: string;
   groups: GroupInfo;
   waiting_students: [{ name: string; number: string }];
@@ -30,7 +30,7 @@ const state: State = {
 
 const getters = {
   courses(state: State): Array<CourseInfo> {
-    return sortBy(values(state.courses), "course_name");
+    return state.courses;
   },
 };
 

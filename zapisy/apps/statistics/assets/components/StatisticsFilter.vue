@@ -48,13 +48,13 @@ export default Vue.extend({
         });
       } else if (newSelected === "npr") {
         this.changeSorting({
-          k: "course_name",
-          f: true,
+          k: "alphabetical_sorting_index",
+          f: false,
         });
       } else if (newSelected === "npm") {
         this.changeSorting({
-          k: "course_name",
-          f: false,
+          k: "alphabetical_sorting_index",
+          f: true,
         });
       }
     },
