@@ -174,10 +174,14 @@ def my_prototype(request):
     filters_dict = CourseInstance.prepare_filter_data(
         CourseInstance.objects.filter(semester=semester))
     courses_json = list_courses_in_semester(semester)
+    points_for_courses = {r.group.course.id: r.group.course.points for r in records}
+    groups = [r.group for r in records]
     data = {
         'groups_json': group_dicts,
         'filters_json': filters_dict,
         'courses_json': courses_json,
+        'groups': groups,
+        'sum_points': sum(points_for_courses.values()),
     }
     return render(request, 'timetable/prototype.html', data)
 
