@@ -106,7 +106,8 @@ To restore the database, put the dump file into the `dump.7z` archive in _playbo
 ```
 ansible-playbook playbooks/restore_db.yml -i hosts/hostfile
 ```
-
+Database user is *fereol* as defined in `infra/playbooks/templates/env.js` however password for the database is encrypted. It will be randomly encrypted everytime we run `vagrant up`. We can retrievie the password simply by printing it in the code e.g. <br/>
+`print(env.str('DATABASE_PASSWORD'))` in `/zapisy/zapisy/settings.py`
 ## Other Notes
 
 ### Debugging
