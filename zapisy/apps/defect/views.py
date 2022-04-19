@@ -1,4 +1,4 @@
-from apps.notifications.custom_signals import defect_modified
+from ..notifications.custom_signals import defect_modified
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -44,10 +44,7 @@ def index(request):
                 messages.info(request, "Usunięto następujące usterki: " + query_set)
                 to_delete.delete()
 
-                for image_name in images_to_delete:
-                    image_path = '/zapisy/defect/' + image_name
-                    if gd_storage.exists(image_path):
-                        gd_storage.delete(image_path)
+                delete_images(images_to_delete)
             else:
                 messages.error(request,
                                "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
@@ -58,6 +55,13 @@ def index(request):
                                                "visibleDefects": [parse_defect(defect) for defect in
                                                                   Defect.objects.all().select_related("reporter")],
                                                'is_repairer': is_repairer_val})
+
+
+def delete_images(images_to_delete):
+    for image_name in images_to_delete:
+        image_path = '/zapisy/defect/' + image_name
+        if gd_storage.exists(image_path):
+            gd_storage.delete(image_path)
 
 
 def parse_names(request):
@@ -118,6 +122,26 @@ def edit_defect_helper(request, defect):
     context = {'form': form, 'formset': formset, "response": request.method, "edit": True, 'images': images,
                'extra_images_number': ExtraImagesNumber, 'defect_id': defect.id}
     return render(request, 'addDefect.html', context)
+
+
+@employee_required
+def delete_defect(request, defect_id):
+    try:
+        defect = Defect.objects.get(pk=defect_id)
+        if is_repairer(request.user.id):
+            images_to_delete = []
+            for image in defect.image_set.all():
+                images_to_delete.append(image.image.name)
+            delete_images(images_to_delete)
+            defect.delete()
+            messages.success(request, "Pomyślnie usunięto usterkę")
+            return redirect("defects:main")
+        else:
+            messages.error(request, "Brak odpowiednich uprawnień aby usunąć usterkę.")
+            return redirect('defects:show_defect', defect_id=defect.id)
+    except Defect.DoesNotExist:
+        messages.error(request, "Nie istnieje usterka o podanym id.")
+        return redirect('defects:main')
 
 
 @employee_required

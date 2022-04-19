@@ -16,11 +16,11 @@
 
 {% block bread %}
     <li class="breadcrumb-item">
-        <a href="{% url "main-page" %}">Strona główna</a>
+        <a href="{% url 'main-page' %}">Strona główna</a>
     </li>
 
     <li class="breadcrumb-item">
-        <a href="{% url "defects:main" %}">Usterki</a>
+        <a href="{% url 'defects:main' %}">Usterki</a>
     </li>
 
     <li class="breadcrumb-item active">
@@ -38,6 +38,12 @@
                 <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
                     Edytuj
                 </a>
+                {% if is_repairer %}
+                    <a
+                       class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
+                        Usuń
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -125,7 +131,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" a ria-labelledby="myModalLabel"
+         aria-hidden="true" >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body" style="padding: 0">
