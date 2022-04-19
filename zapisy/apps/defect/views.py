@@ -1,4 +1,3 @@
-from ..notifications.custom_signals import defect_modified
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -8,6 +7,8 @@ from gdstorage.storage import GoogleDriveStorage
 from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromRepairerForm
 from .models import Defect, StateChoices, DefectMaintainer
 from ..users.decorators import employee_required
+from ..notifications.custom_signals import defect_modified
+
 
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()

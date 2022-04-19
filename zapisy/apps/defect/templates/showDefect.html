@@ -85,9 +85,12 @@
         </tr>
         </tbody>
     </table>
-    <h2>Opis usterki</h2>
-    {{ defect.description }}
-
+    <div style="word-break: break-word">
+        {% if defect.description != "" %}
+            <h2>Opis usterki</h2>
+            {{ defect.description }}
+        {% endif %}
+    </div>
     <hr>
 
     <h3>Informacja od serwisanta</h3>
