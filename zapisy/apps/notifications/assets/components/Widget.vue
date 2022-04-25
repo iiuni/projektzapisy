@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
 import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 import Vue from "vue";
@@ -42,7 +42,7 @@ dayjs.locale("pl");
   },
   filters: {
     Moment: function (str: string) {
-      return dayjs.tz(str, 'Europe/Warsaw').fromNow();
+      return dayjs.tz(str, "Europe/Warsaw").fromNow();
     },
   },
 })
