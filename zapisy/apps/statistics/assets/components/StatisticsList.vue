@@ -49,7 +49,7 @@ export default class StatisticsList extends Vue {
 </script>
 
 <template>
-  <table class="table table-striped">
+  <table class="table table-striped" id="darker-first-row">
     <thead class="text-muted">
       <tr>
         <th scope="col">Prowadzący</th>

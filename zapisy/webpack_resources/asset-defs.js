@@ -111,6 +111,7 @@ const AssetDefs = {
 
   "statistics-widget": [
     path.resolve("apps/statistics/assets/statistics-widget.js"),
+    path.resolve("apps/statistics/assets/statistics_table.css"),
   ],
 };
 
