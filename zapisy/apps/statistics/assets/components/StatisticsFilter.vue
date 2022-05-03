@@ -38,12 +38,12 @@ export default Vue.extend({
     sort: function (newSelected: string) {
       if (newSelected === "nzsm") {
         this.changeSorting({
-          k: "number_of_waiting_students",
+          k: "max_of_waiting_students",
           f: false,
         });
       } else if (newSelected === "nzsr") {
         this.changeSorting({
-          k: "number_of_waiting_students",
+          k: "max_of_waiting_students",
           f: true,
         });
       } else if (newSelected === "npr") {
@@ -86,7 +86,7 @@ export default Vue.extend({
         <div class="col-lg-3">
           <CheckFilter
             filterKey="available-filter"
-            property="number_of_waiting_students"
+            property="max_of_waiting_students"
             label="Pokaż jedynie przedmioty, gdzie są niezapisani studenci"
           />
         </div>

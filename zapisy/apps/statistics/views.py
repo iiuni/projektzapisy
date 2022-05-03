@@ -1,4 +1,3 @@
-import functools
 from collections import defaultdict
 
 from django.contrib.auth.decorators import permission_required
@@ -81,7 +80,7 @@ def groups(request):
             'course_name': course_name,
             'groups': course_groups,
             'waiting_students': students,
-            'number_of_waiting_students': functools.reduce(lambda acc, s: acc + s['number'], students, 0)
+            'max_of_waiting_students': 0 if len(students) == 0 else max([s['number'] for s in students])
         })
 
     return render(request, 'statistics/groups_list.html', {
