@@ -26,10 +26,12 @@ export interface CourseInfo {
 interface State {
   courses: { [id: number]: CourseInfo };
   selection: number[];
+  sumPoints: number;
 }
 const state: State = {
   courses: {},
   selection: [],
+  sumPoints: parseInt(document.getElementById("enr-schedule-listByCourse").children[1].children[0].children[1].textContent!)
 };
 
 const getters = {
@@ -40,7 +42,6 @@ const getters = {
     return state.selection;
   },
 };
-
 const actions = {
   // updateSelection will fetch all the courses, for which we miss the
   // (groups) data, and then update the selection flags.
@@ -66,12 +67,13 @@ const actions = {
         axios.spread((...responses) => {
           responses.forEach((response, pos) => {
             const courseID = idsToFetch[pos];
-            const groupsJSON = response.data as GroupJSON[];
+            const groupsJSON = response.data['group_json'] as GroupJSON[];
             groupsJSON.forEach((groupJSON) => {
               commit("groups/updateGroup", { groupJSON }, { root: true });
             });
             const groupIDs = groupsJSON.map((g) => g.id);
             commit("setGroupIDs", { c: courseID, ids: groupIDs });
+            commit("setSumPoints", response.data['points']);
           });
         })
       )
@@ -106,6 +108,11 @@ const mutations = {
   },
   setSelection(state: State, ids: number[]) {
     state.selection = ids;
+  },
+  setSumPoints(state: State, points: number) {
+    state.sumPoints = parseInt(document.getElementById("enr-schedule-listByCourse").children[1].children[0].children[1].textContent!);
+    state.sumPoints += points;
+    console.log(state.sumPoints);
   },
 };
 

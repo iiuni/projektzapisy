@@ -245,7 +245,11 @@ def prototype_get_course(request, course_id):
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
     group_dicts = build_group_list(groups)
-    return JsonResponse(group_dicts, safe=False)
+    data = {
+        'group_json': group_dicts,
+        'points': course.points
+    }
+    return JsonResponse(data, safe=False)
 
 
 @student_required
