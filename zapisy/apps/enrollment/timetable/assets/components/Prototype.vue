@@ -20,7 +20,7 @@ import PrototypeSummary from "./PrototypeSummary.vue";
   components: {
     CourseList,
     PrototypeTimetable,
-    PrototypeSummary
+    PrototypeSummary,
   },
   computed: {
     ...mapGetters("courses", {
