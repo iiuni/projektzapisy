@@ -49,8 +49,7 @@ class ThesisFormBase(forms.ModelForm):
         label="Przypisani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
-    reserved_date = (datetime.date.today()+datetime.timedelta(days=730)).isoformat()
-    reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date', 'value': reserved_date}),
+    reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do",
                                      required=False)
     description = forms.CharField(
@@ -139,6 +138,10 @@ class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
+        self.title = self.instance.title
+        self.supporting_advisor = self.instance.supporting_advisor
+        self.kind = self.instance.kind
+
         self.status = self.instance.status
 
         if user.is_staff:
@@ -174,7 +177,9 @@ class EditThesisForm(ThesisFormBase):
             self.helper.add_input(
                 Submit('submit', 'Zapisz', css_class='btn-primary'))
 
+        
     def save(self, commit=True):
+        
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
@@ -191,10 +196,13 @@ class EditThesisForm(ThesisFormBase):
                 instance.status = status
 
         if "students" not in self.data:
-            instance.reserved_until = None
+            instance.reserved_unti.titll = None
         elif instance.reserved_until is None:
             instance.reserved_until = datetime.date.today()+datetime.timedelta(days=730)
 
+        if self.title != instance.title or self.supporting_advisor != self.instance.supporting_advisor or self.kind != instance.kind:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
+        
         if commit:
             instance.save()
             self.save_m2m()
