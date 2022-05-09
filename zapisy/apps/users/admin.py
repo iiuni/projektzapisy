@@ -67,7 +67,7 @@ class StudentAdmin(admin.ModelAdmin):
             GroupOpeningTimes.populate_opening_times_selected(semester, student)
         self.message_user(
                 request,
-                "Obliczono czasy otwarcia zapisów.",
+                "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
                 level=messages.SUCCESS)
 
     refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
