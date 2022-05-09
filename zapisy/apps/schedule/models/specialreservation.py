@@ -141,22 +141,28 @@ class SpecialReservation(models.Model):
         Checks for any conflicts between this SpecialReservation and other
         SpecialReservations, Terms of Events and Terms of Course Groups.
         """
-        if self.end_time <= self.start_time:
-            raise ValidationError(
-                message={'end_time': ['Koniec rezerwacji musi natępować po początku']},
-                code='invalid'
-            )
+        # supress errors due to invalid/missing fields
+        try:
+            if self.end_time <= self.start_time:
+                raise ValidationError(
+                    message={'end_time': ['Koniec rezerwacji musi natępować po początku']},
+                    code='invalid'
+                )
 
-        if not self.classroom.can_reserve:
-            raise ValidationError(
-                message={'classroom': ['Ta sala nie jest przeznaczona do rezerwacji']},
-                code='invalid'
-            )
+            if not self.classroom.can_reserve:
+                raise ValidationError(
+                    message={'classroom': ['Ta sala nie jest przeznaczona do rezerwacji']},
+                    code='invalid'
+                )
 
-        if not self.ignore_conflicts:
-            self.validate_against_all_terms()
+            if not self.ignore_conflicts:
+                self.validate_against_all_terms()
 
-        super(SpecialReservation, self).clean()
+            super(SpecialReservation, self).clean()
+        except ValidationError as e:
+            raise e
+        except Exception:
+            pass
 
     class Meta:
         app_label = 'schedule'
