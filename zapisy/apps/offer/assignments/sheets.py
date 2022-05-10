@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List, Optional, Set
 from itertools import groupby
 
@@ -254,6 +255,18 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
     Returns:
         List of lists, where each inner list represents a single row in spreadsheet.
     """
+    def get_basename(course_name):
+        return re.sub(r"(\(lato\)$|\(zima\)$)", "", course_name).strip()
+
+    courses_names = [group[0] for group in groupby(groups, lambda c: get_basename(c.name))]
+    courses_details = dict(
+        (course.name, course)
+        for course in CourseInformation.objects.distinct("name")
+        .filter(name__in=courses_names)
+        .prefetch_related("tags")
+    )
+    # TODO: filtrowac przedmioty lepiej niż z użyciem distinct("name").
+
     data = [
         [
             'Proposal ID',
@@ -267,13 +280,14 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
         ]
     ]
 
-    courses_names = [course[0] for course in groupby(groups, lambda x: x.name)]
-    courses_details = CourseInformation.objects.distinct('name').filter(name__in=courses_names).order_by('name')
-
-    for i, group in enumerate(groupby(groups, lambda x: x.proposal_id)):
-        proposal = next(group[1])
-        details = courses_details[i]
-        assert(proposal.name == details.name)
+    i = 2
+    for proposal_group in groupby(groups, lambda x: x.name):
+        proposal = next(proposal_group[1])
+        course_basename = get_basename(proposal.name)
+        if course_basename not in courses_details:
+            # TODO: dodać informację o niepowodzeniu gdy nie odnaleziono przedmiotu w bazie danych
+            continue
+        details = courses_details[course_basename]
         row = [
             proposal.proposal_id,  # A. proposal_id
             proposal.name,  # B. course name
@@ -281,10 +295,11 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
             ','.join(map(lambda x: x[0], details.tags.values_list('short_name'))),  # D. tags
             details.points,  # E. ECTS
             proposal.semester,  # F. semester
-            f'=COUNTIF(Przydziały!A2:A; A{i+2})',  # G. planned number of groups
-            f'=COUNTIFS(Przydziały!A2:A; A{i+2}; Przydziały!K2:K; True)',  # H. number of active groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned number of groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. number of active groups
         ]
         data.append(row)
+        i += 1
     return data
 
 
