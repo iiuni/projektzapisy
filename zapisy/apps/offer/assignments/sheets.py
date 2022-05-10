@@ -295,8 +295,8 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
             ','.join(map(lambda x: x[0], details.tags.values_list('short_name'))),  # D. tags
             details.points,  # E. ECTS
             proposal.semester,  # F. semester
-            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned number of groups
-            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. number of active groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. active groups
         ]
         data.append(row)
         i += 1
