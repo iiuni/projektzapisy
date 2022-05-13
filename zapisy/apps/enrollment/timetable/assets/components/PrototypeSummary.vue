@@ -55,14 +55,14 @@ export default class PrototypeSummary extends Vue {
     <table id="enr-schedule-listByCourseVUE" class="table table-striped">
       <thead>
         <tr>
-          <th scope="colVUE">Przedmiot</th>
-          <th class="ectsVUE" scope="colVUE">ECTS</th>
+          <th scope="col">Przedmiot</th>
+          <th class="ects" scope="col">ECTS</th>
         </tr>
       </thead>
       <tfoot>
         <tr>
           <td><strong>Suma punktów ECTS:</strong></td>
-          <td class="ectsVUE">{{ sumPoints }}</td>
+          <td class="ects">{{ sumPoints }}</td>
         </tr>
       </tfoot>
     </table>

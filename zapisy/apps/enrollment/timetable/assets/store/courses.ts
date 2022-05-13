@@ -31,10 +31,7 @@ interface State {
 const state: State = {
   courses: {},
   selection: [],
-  sumPoints: parseInt(
-    document.getElementById("enr-schedule-listByCourse")!.children[1]
-      .children[0].children[1].textContent!
-  ),
+  sumPoints: 0
 };
 
 const getters = {
@@ -113,10 +110,7 @@ const mutations = {
     state.selection = ids;
   },
   setSumPoints(state: State, points: number) {
-    state.sumPoints = parseInt(
-      document.getElementById("enr-schedule-listByCourse")!.children[1]
-        .children[0].children[1].textContent!
-    );
+    state.sumPoints = 0;
     state.sumPoints += points;
     console.log(state.sumPoints);
   },
