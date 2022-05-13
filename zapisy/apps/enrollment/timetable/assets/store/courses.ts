@@ -19,6 +19,7 @@ export interface CourseInfo {
   tags: Array<number>;
   owner: number;
   recommendedForFirstYear: boolean;
+  points: number;
 
   groups?: Array<number>;
 }
@@ -53,18 +54,24 @@ const actions = {
       (id) => state.courses[id].groups === undefined
     );
     if (idsToFetch.length === 0) {
+      // ids.forEach((c) => commit("setSumPoints", c));
       dispatch("commitSelection", ids);
     }
 
     // This puts a lock on all the courses that will be fetched. That way we
     // avoid fetching the same course in parallel when the student is
-    // clicking too fast.
-    idsToFetch.forEach((c) => commit("setGroupIDs", { c, ids: [] }));
+    // clicking too fast.  
+    idsToFetch.forEach((c) => {
+      commit("setGroupIDs", { c, ids: [] });
+      // commit("setSumPoints", c);
+    });
     const requests = idsToFetch.map((id) => axios.get(state.courses[id].url));
     axios
       .all(requests)
       .then(
         axios.spread((...responses) => {
+          // console.log(responses);
+          // console.log(ids);
           responses.forEach((response, pos) => {
             const courseID = idsToFetch[pos];
             const groupsJSON = response.data["group_json"] as GroupJSON[];
@@ -73,11 +80,15 @@ const actions = {
             });
             const groupIDs = groupsJSON.map((g) => g.id);
             commit("setGroupIDs", { c: courseID, ids: groupIDs });
-            commit("setSumPoints", response.data["points"]);
+            commit("setCoursePoints", { c: courseID, points: response.data["points"] });
           });
+          commit("clearSumPoints");
+          ids.forEach((c) => commit("setSumPoints", c));
         })
       )
-      .then(() => dispatch("commitSelection", ids))
+      .then(() => {
+        dispatch("commitSelection", ids);
+      })
       .catch();
   },
 
@@ -109,10 +120,18 @@ const mutations = {
   setSelection(state: State, ids: number[]) {
     state.selection = ids;
   },
-  setSumPoints(state: State, points: number) {
+  setCoursePoints(state: State, { c, points }: { c: number; points: number }) {
+    state.courses[c].points = points;
+  },
+  setSumPoints(state: State, ids: number) {
+    if (state.courses[ids] !== null) {
+      state.sumPoints += state.courses[ids].points;
+    } else {
+      state.sumPoints += 0;
+    }
+  },
+  clearSumPoints(state: State) {
     state.sumPoints = 0;
-    state.sumPoints += points;
-    console.log(state.sumPoints);
   },
 };
 
