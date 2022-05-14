@@ -141,6 +141,8 @@ def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
         data = worksheet.batch_get(['A3:A', 'I3:I'], major_dimension='COLUMNS')
     except KeyError:
         return set()
+    if len(data[0]) == 0 or len(data[1]):
+        return set()
     ids = data[0][0]
     rec = data[1][0]
     pick = set()
