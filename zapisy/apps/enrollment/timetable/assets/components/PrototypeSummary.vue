@@ -8,16 +8,15 @@ import Component from "vue-class-component";
 import state from "../store/courses";
 
 // export type CourseObject = { id: number; name: string; url: string };
-
 @Component({
   computed: {
     // ...mapGetters("courses", {
-    //   sumPointsState: "sumPoints",
+      //   sumPointsState: "sumPoints",
     // }),
     // ...mapGetters("filters", {
-    //   tester: "visible",
+      //   tester: "visible",
     // }),
-  },
+  },  
 })
 export default class PrototypeSummary extends Vue {
   // The computed property selectionState comes from store.
@@ -25,13 +24,20 @@ export default class PrototypeSummary extends Vue {
   //   // The same goes for courses and tester.
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
+  initialPoints!: number;
 
   get sumPoints(): number {
-    return state.state.sumPoints;
+    return this.initialPoints + state.state.sumPoints;
   }
-  //   set sumPoints(value: number) {
-  //     this.$store.dispatch("courses/setSumPoints");
-  //   }
+  // set sumPoints(newValue: number): {
+  //   state.state.sumPoints = newValue;
+  // }
+  created() {
+    const points = JSON.parse(
+      document.getElementById("initial-points")!.innerHTML
+    ) as number;
+    this.initialPoints = points;
+  }
 
   // The list should be initialised to contain courses filtered with initial filters
   // fetched from the query string and then apply filters whenever they update.

@@ -187,7 +187,7 @@ def my_prototype(request):
         'filters_json': filters_dict,
         'courses_json': courses_json,
         'groups': list(groups),
-        'sum_points': sum(points_for_courses.values()),
+        'initial_points': sum(points_for_courses.values()),
     }
     return render(request, 'timetable/prototype.html', data)
 

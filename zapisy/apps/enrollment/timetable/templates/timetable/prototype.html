@@ -30,6 +30,7 @@
     {{ groups_json|json_script:"timetable-data" }}
     {{ courses_json|json_script:"courses-list" }}
     {{ filters_json|json_script:"filters-data" }}
+    {{ initial_points|json_script:"initial-points" }}
     <input id="prototype-update-url" type="hidden" value="{% url 'prototype-update' %}">
 
     <div class="mt-3 border-top pt-3">
