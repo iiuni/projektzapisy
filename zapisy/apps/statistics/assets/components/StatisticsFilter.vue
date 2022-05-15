@@ -12,25 +12,18 @@ export default Vue.extend({
   },
   data: function () {
     return {
-      sortingModes: [] as [string, string][],
-      selected: undefined as string | undefined,
+      sortingModes: [
+        ["nzsr", "wg niezapisanych studentów, rosnąco"],
+        ["nzsm", "wg niezapisanych studentów, malejąco"],
+        ["npr", "wg nazwy przedmiotu, rosnąco"],
+        ["npm", "wg nazwy przedmiotu, malejąco"],
+      ],
+      selected: "npr",
     };
   },
-  created: function () {
-    this.sortingModes = [
-      ["nzsr", "wg niezapisanych studentów, rosnąco"],
-      ["nzsm", "wg niezapisanych studentów, malejąco"],
-      ["npr", "wg nazwy przedmiotu, rosnąco"],
-      ["npm", "wg nazwy przedmiotu, malejąco"],
-    ];
-  },
   watch: {
-    selected: function (newSelected: string | undefined) {
-      if (newSelected === undefined) {
-        this.sort("npr");
-      } else {
-        this.sort(newSelected.toString());
-      }
+    selected: function (newSelected: string) {
+      this.sort(newSelected.toString());
     },
   },
   methods: {

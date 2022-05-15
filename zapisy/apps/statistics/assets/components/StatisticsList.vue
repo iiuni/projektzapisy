@@ -49,7 +49,7 @@ export default class StatisticsList extends Vue {
 </script>
 
 <template>
-  <table class="table table-striped" id="darker-first-row">
+  <table class="table table-striped">
     <thead class="text-muted">
       <tr>
         <th scope="col">Prowadzący</th>
@@ -65,7 +65,7 @@ export default class StatisticsList extends Vue {
       v-for="course in coursesList"
       :key="course.alphabetical_sorting_index"
     >
-      <tr>
+      <tr class="table-active">
         <th colspan="2">
           {{ course.course_name }}
         </th>
