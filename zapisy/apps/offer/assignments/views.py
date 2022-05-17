@@ -48,7 +48,8 @@ def plan_view(request):
         messages.error(request, error)
         return render(request, 'assignments/view.html', {'year': year})
     except RefreshError as error:
-        messages.error(request, f"<p>Proszę sprawdzić konfigurację arkuszy Google.</p>{error}")
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       {error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
