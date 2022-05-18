@@ -1,7 +1,8 @@
 import logging
+from typing import List
+
 import redis
 import rollbar.contrib.django.middleware
-from typing import List
 
 TIMEOUT = 3600
 
@@ -26,6 +27,7 @@ class ReportLimiter:
 
     def list_ignored(self) -> List[str]:
         def cut_prefix(s: str) -> str: return s[len('404:'):]
+
         return list(map(cut_prefix, self.redis_client.keys('404:*')))
 
     def flush(self) -> None:
