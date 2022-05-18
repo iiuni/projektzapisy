@@ -71,16 +71,17 @@ def groups(request):
             })
             course_name = group.course.name
 
-        students = [{'name': decode_class_type_plural(class_type),
-                     'number': waiting_students[course_id][class_type]} for class_type in waiting_students[course_id]]
+        waiting_by_class_type = [{'name': decode_class_type_plural(class_type),
+                                  'number': waiting_students[course_id][class_type]}
+                                 for class_type in waiting_students[course_id]]
 
         courses_list.append({
             'id': course_id,
             'alphabetical_sorting_index': i,
             'course_name': course_name,
             'groups': course_groups,
-            'waiting_students': students,
-            'max_of_waiting_students': 0 if len(students) == 0 else max([s['number'] for s in students])
+            'waiting_students': waiting_by_class_type,
+            'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0)
         })
 
     return render(request, 'statistics/groups_list.html', {

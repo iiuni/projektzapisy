@@ -1,8 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
 
-import TextFilter from "./filters/TextFilter.vue";
-import CheckFilter from "./filters/CheckFilter.vue";
+import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue";
+import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
 import { mapMutations } from "vuex";
 
 export default Vue.extend({
@@ -69,7 +69,6 @@ export default Vue.extend({
         <div class="col-lg-3">
           <div class="input-group mb-2">
             <select class="custom-select" v-model="selected">
-              <option selected :value="undefined">-- Sortuj --</option>
               <option v-for="[k, o] of sortingModes" :value="k">
                 {{ o }}
               </option>

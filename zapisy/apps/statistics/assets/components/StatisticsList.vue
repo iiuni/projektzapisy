@@ -21,6 +21,7 @@ export default class StatisticsList extends Vue {
   // The list should be initialised to contain all the courses and then apply
   // filters and sorting whenever they update.
   coursesList: CourseInfo[] = [];
+  visibleCourses: boolean[] = [];
 
   courses!: CourseInfo[];
   tester!: (_: CourseInfo) => boolean;
@@ -30,17 +31,36 @@ export default class StatisticsList extends Vue {
     this.$store.dispatch("courses/initFromJSONTag");
   }
   mounted() {
-    this.coursesList = this.courses;
+    for (let i = 0; i < this.courses.length; i++) {
+      this.visibleCourses[i] = true;
+    }
+    this.courses.sort(this.compare);
 
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.coursesList = this.courses.filter(this.tester);
-          this.coursesList.sort(this.compare);
+          this.courses.sort(this.compare);
+          for (let i = 0; i < this.courses.length; i++) {
+            this.visibleCourses[i] = false;
+          }
+          for (let i = 0; i < this.coursesList.length; i++) {
+            this.visibleCourses[
+              this.coursesList[i].alphabetical_sorting_index
+            ] = true;
+          }
           break;
         case "sorting/changeSorting":
           this.coursesList = this.courses.filter(this.tester);
-          this.coursesList.sort(this.compare);
+          this.courses.sort(this.compare);
+          for (let i = 0; i < this.courses.length; i++) {
+            this.visibleCourses[i] = false;
+          }
+          for (let i = 0; i < this.coursesList.length; i++) {
+            this.visibleCourses[
+              this.coursesList[i].alphabetical_sorting_index
+            ] = true;
+          }
           break;
       }
     });
@@ -61,52 +81,56 @@ export default class StatisticsList extends Vue {
         <th></th>
       </tr>
     </thead>
-    <tbody
-      v-for="course in coursesList"
-      :key="course.alphabetical_sorting_index"
-    >
-      <tr class="table-active">
-        <th colspan="2">
-          {{ course.course_name }}
-        </th>
-        <td colspan="6">
-          <span
-            v-for="waiting_course in course.waiting_students"
-            class="badge badge-danger"
-            title="Oczekujących niezapisanych"
-          >
-            {{ waiting_course.name }}
-            <span class="badge badge-light">
-              {{ waiting_course.number }}
+    <tbody>
+      <template v-for="course in courses">
+        <tr v-show="visibleCourses[course.alphabetical_sorting_index]">
+          <th colspan="2">
+            {{ course.course_name }}
+          </th>
+          <td colspan="6">
+            <span
+              v-for="waiting_course in course.waiting_students"
+              class="badge badge-danger"
+              title="Oczekujących niezapisanych"
+              style="margin-right: 5px"
+            >
+              {{ waiting_course.name }}
+              <span class="badge badge-light">
+                {{ waiting_course.number }}
+              </span>
             </span>
-          </span>
-        </td>
-      </tr>
-      <tr v-for="group in course.groups" :key="group.id">
-        <td>{{ group.teacher_name }}</td>
-        <td>{{ group.type_name }}</td>
-        <td>
-          {{ group.limit }}
-          <span
-            v-for="gs in group.guaranteed_spots"
-            :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'"
-          >
-            {{ gs.limit }}
-          </span>
-        </td>
-        <td>{{ group.enrolled }}</td>
-        <td>{{ group.queued }}</td>
-        <td>{{ group.pinned }}</td>
-        <td>
-          <a
-            class="badge badge-sm badge-primary"
-            :href="group.url"
-            target="_blank"
-          >
-            Admin <i class="fas fas-sm fa-external-link-alt"></i>
-          </a>
-        </td>
-      </tr>
+          </td>
+        </tr>
+        <tr
+          v-for="group in course.groups"
+          :key="group.id"
+          v-show="visibleCourses[course.alphabetical_sorting_index]"
+        >
+          <td>{{ group.teacher_name }}</td>
+          <td>{{ group.type_name }}</td>
+          <td>
+            {{ group.limit }}
+            <span
+              v-for="gs in group.guaranteed_spots"
+              :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'"
+            >
+              {{ gs.limit }}
+            </span>
+          </td>
+          <td>{{ group.enrolled }}</td>
+          <td>{{ group.queued }}</td>
+          <td>{{ group.pinned }}</td>
+          <td>
+            <a
+              class="badge badge-sm badge-primary"
+              :href="group.url"
+              target="_blank"
+            >
+              Admin <i class="fas fas-sm fa-external-link-alt"></i>
+            </a>
+          </td>
+        </tr>
+      </template>
     </tbody>
   </table>
 </template>
