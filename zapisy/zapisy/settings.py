@@ -181,6 +181,7 @@ TEMPLATES = [
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
 MIDDLEWARE = [
+    'zapisy.middleware.report_limiter.ReportLimiter',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
@@ -190,7 +191,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404',
 ]
 
 ROOT_URLCONF = 'zapisy.urls'
