@@ -80,7 +80,6 @@ const actions = {
             });
             const groupIDs = groupsJSON.map((g) => g.id);
             commit("setGroupIDs", { c: courseID, ids: groupIDs });
-            commit("setCoursePoints", { c: courseID, points: response.data["points"] });
           });
           commit("clearSumPoints");
           ids.forEach((c) => commit("setSumPoints", c));
@@ -119,9 +118,6 @@ const mutations = {
   },
   setSelection(state: State, ids: number[]) {
     state.selection = ids;
-  },
-  setCoursePoints(state: State, { c, points }: { c: number; points: number }) {
-    state.courses[c].points = points;
   },
   setSumPoints(state: State, ids: number) {
     if (state.courses[ids] !== null) {
