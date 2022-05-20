@@ -28,9 +28,7 @@ class RollbarOnly404Limited:
         return response
 
     def list_ignored(self) -> List[str]:
-        def cut_prefix(s: str) -> str: return s[len(KEY_PREFIX):]
-
-        return list(map(cut_prefix, self.redis_client.keys(KEY_PATTERN)))
+        return [key[len(KEY_PREFIX):] for key in self.redis_client.keys(KEY_PATTERN)]
 
     def flush(self) -> None:
         for key in self.redis_client.scan_iter(KEY_PATTERN):
