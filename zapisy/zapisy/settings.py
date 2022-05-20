@@ -181,7 +181,7 @@ TEMPLATES = [
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
 MIDDLEWARE = [
-    'zapisy.middleware.report_limiter.ReportLimiter',
+    'zapisy.middleware.report_limiter.RollbarOnly404Limited',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',

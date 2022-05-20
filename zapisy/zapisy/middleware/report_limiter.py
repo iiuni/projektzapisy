@@ -9,7 +9,7 @@ KEY_PREFIX = '404:'
 KEY_PATTERN = KEY_PREFIX + '*'
 
 
-class ReportLimiter:
+class RollbarOnly404Limited:
     def __init__(self, get_response):
         self.get_response = get_response
         self.rollbar_404 = rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404()
