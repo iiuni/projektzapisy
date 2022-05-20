@@ -5,6 +5,8 @@ import redis
 import rollbar.contrib.django.middleware
 
 TIMEOUT = 3600
+KEY_PREFIX = '404:'
+KEY_PATTERN = KEY_PREFIX + '*'
 
 
 class ReportLimiter:
@@ -26,17 +28,17 @@ class ReportLimiter:
         return response
 
     def list_ignored(self) -> List[str]:
-        def cut_prefix(s: str) -> str: return s[len('404:'):]
+        def cut_prefix(s: str) -> str: return s[len(KEY_PREFIX):]
 
-        return list(map(cut_prefix, self.redis_client.keys('404:*')))
+        return list(map(cut_prefix, self.redis_client.keys(KEY_PATTERN)))
 
     def flush(self) -> None:
-        for key in self.redis_client.scan_iter("404:*"):
+        for key in self.redis_client.scan_iter(KEY_PATTERN):
             self.redis_client.delete(key)
 
     @staticmethod
     def ip_to_key(ip: str) -> str:
-        return "404:" + ip
+        return KEY_PREFIX + ip
 
     @staticmethod
     def request_to_ip(request) -> str:
