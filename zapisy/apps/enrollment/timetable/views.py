@@ -46,6 +46,7 @@ def build_group_list(groups: List[Group]):
                 'url': reverse('course-page', args=(group.course.slug, )),
                 'name': group.course.name,
                 'shortName': group.course.short_name,
+                'points': group.course.points,
             },
             'type': decode_class_type_singular(group.type),
             'url': reverse('group-view', args=(group.pk, )),

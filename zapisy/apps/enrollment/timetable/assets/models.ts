@@ -105,7 +105,8 @@ export class Course {
   constructor(
     public name: string,
     public shortName: string,
-    public url: string
+    public url: string,
+    public points: number
   ) {}
 }
 
