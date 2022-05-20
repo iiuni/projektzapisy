@@ -47,6 +47,7 @@ def build_group_list(groups: List[Group]):
                 'name': group.course.name,
                 'shortName': group.course.short_name,
                 'points': group.course.points,
+                'id': group.course.id,
             },
             'type': decode_class_type_singular(group.type),
             'url': reverse('group-view', args=(group.pk, )),
@@ -174,21 +175,12 @@ def my_prototype(request):
     group_dicts = build_group_list(all_groups)
     filters_dict = CourseInstance.prepare_filter_data(
         CourseInstance.objects.filter(semester=semester))
-    courses_json = list_courses_in_semester(semester)
-    groups = set()
-    points_for_courses = {r.group.course.id: r.group.course.points for r in records}
-    for pin in pinned:
-        points_for_courses[pin.course.id] = pin.course.points
-        groups.add(pin)
-    for r in records:
-        groups.add(r.group)
+    courses_json = list_courses_in_semester(semester)  
 
     data = {
         'groups_json': group_dicts,
         'filters_json': filters_dict,
         'courses_json': courses_json,
-        'groups': list(groups),
-        'initial_points': sum(points_for_courses.values()),
     }
     return render(request, 'timetable/prototype.html', data)
 

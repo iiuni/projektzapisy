@@ -19,7 +19,6 @@ export interface CourseInfo {
   tags: Array<number>;
   owner: number;
   recommendedForFirstYear: boolean;
-  points: number;
 
   groups?: Array<number>;
 }
@@ -27,12 +26,10 @@ export interface CourseInfo {
 interface State {
   courses: { [id: number]: CourseInfo };
   selection: number[];
-  sumPoints: number;
 }
 const state: State = {
   courses: {},
   selection: [],
-  sumPoints: 0
 };
 
 const getters = {
@@ -54,7 +51,6 @@ const actions = {
       (id) => state.courses[id].groups === undefined
     );
     if (idsToFetch.length === 0) {
-      // ids.forEach((c) => commit("setSumPoints", c));
       dispatch("commitSelection", ids);
     }
 
@@ -63,15 +59,12 @@ const actions = {
     // clicking too fast.  
     idsToFetch.forEach((c) => {
       commit("setGroupIDs", { c, ids: [] });
-      // commit("setSumPoints", c);
     });
     const requests = idsToFetch.map((id) => axios.get(state.courses[id].url));
     axios
       .all(requests)
       .then(
         axios.spread((...responses) => {
-          // console.log(responses);
-          // console.log(ids);
           responses.forEach((response, pos) => {
             const courseID = idsToFetch[pos];
             const groupsJSON = response.data["group_json"] as GroupJSON[];
@@ -81,8 +74,6 @@ const actions = {
             const groupIDs = groupsJSON.map((g) => g.id);
             commit("setGroupIDs", { c: courseID, ids: groupIDs });
           });
-          commit("clearSumPoints");
-          ids.forEach((c) => commit("setSumPoints", c));
         })
       )
       .then(() => {
@@ -118,17 +109,7 @@ const mutations = {
   },
   setSelection(state: State, ids: number[]) {
     state.selection = ids;
-  },
-  setSumPoints(state: State, ids: number) {
-    if (state.courses[ids] !== null) {
-      state.sumPoints += state.courses[ids].points;
-    } else {
-      state.sumPoints += 0;
-    }
-  },
-  clearSumPoints(state: State) {
-    state.sumPoints = 0;
-  },
+  },  
 };
 
 export default {

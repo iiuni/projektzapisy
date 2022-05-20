@@ -6,13 +6,14 @@ import { keys, values, isEmpty, xor, find, isNil } from "lodash";
 import Vue from "vue";
 import { ActionContext } from "vuex";
 
-import { Group, GroupJSON } from "../models";
+import { Course, Group, GroupJSON } from "../models";
 
 // Sets header for all POST requests to enable CSRF protection.
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
 type GroupById = { [id: number]: Group };
+type CourseById = { [id: number]: Course };
 
 // Coalesce is a useful function that returns first defined value in the
 // argument list, or undefined if there is none.
@@ -24,9 +25,13 @@ function coalesce(...args: Array<any | null | undefined>) {
 // those, that had been visible.
 interface State {
   store: GroupById;
+  sumPoints: number;
+  courses: CourseById;
 }
 const state: State = {
   store: {},
+  sumPoints: 0,
+  courses: {},
 };
 
 const getters = {
@@ -83,6 +88,11 @@ const mutations = {
   // data.
   updateGroup(state: State, { groupJSON }: { groupJSON: GroupJSON }) {
     let group = new Group(groupJSON);
+    let course = group.course;
+    if (state.courses[course.id] === undefined) {
+      state.courses[course.id] = course;
+      state.sumPoints += course.points;
+    }
     if (group.id in state.store) {
       const old = state.store[group.id];
       group.isSelected = old.isSelected;

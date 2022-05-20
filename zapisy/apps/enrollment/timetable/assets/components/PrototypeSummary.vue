@@ -5,7 +5,7 @@ import Component from "vue-class-component";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import state from "../store/courses";
+import state from "../store/groups";
 
 // export type CourseObject = { id: number; name: string; url: string };
 @Component({
@@ -24,20 +24,13 @@ export default class PrototypeSummary extends Vue {
   //   // The same goes for courses and tester.
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
-  initialPoints!: number;
 
   get sumPoints(): number {
-    return this.initialPoints + state.state.sumPoints;
+    return state.state.sumPoints;
   }
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
-  // }
-  created() {
-    const points = JSON.parse(
-      document.getElementById("initial-points")!.innerHTML
-    ) as number;
-    this.initialPoints = points;
-  }
+  // }  
 
   // The list should be initialised to contain courses filtered with initial filters
   // fetched from the query string and then apply filters whenever they update.
