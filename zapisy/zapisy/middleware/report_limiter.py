@@ -23,7 +23,7 @@ class RollbarOnly404Limited:
             return response
         ip = self.request_to_ip(request)
         if not self.check_and_add(ip):
-            self.logger.info(f'Added {ip} to ignored 404 list. Currently it contains {self.list_ignored()}')
+            self.logger.info(f'Added {ip} to the ignored 404 list. Currently it contains {self.list_ignored()}')
             return self.rollbar_404.process_response(request=request, response=response)
         return response
 
