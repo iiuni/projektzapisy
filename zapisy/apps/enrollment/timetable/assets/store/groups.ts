@@ -111,6 +111,14 @@ const mutations = {
     flipSelection.forEach((id) => {
       let group = state.store[id];
       // We will not show the group that is hidden.
+      let c = group.course.id;
+      if (group.isSelected && state.courses[c] !== undefined) {
+        state.sumPoints -= state.courses[c].points;
+        delete state.courses[c];
+      } else if (!group.isSelected && state.courses[c] === undefined){
+        state.courses[c] = group.course;
+        state.sumPoints += group.course.points;
+      }
       group.isSelected = !group.isSelected;
       Vue.set(state.store, id.toString(), group);
     });
