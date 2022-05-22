@@ -11,12 +11,12 @@ import state from "../store/groups";
 @Component({
   computed: {
     // ...mapGetters("courses", {
-      //   sumPointsState: "sumPoints",
+    //   sumPointsState: "sumPoints",
     // }),
     // ...mapGetters("filters", {
-      //   tester: "visible",
+    //   tester: "visible",
     // }),
-  },  
+  },
 })
 export default class PrototypeSummary extends Vue {
   // The computed property selectionState comes from store.
@@ -30,7 +30,7 @@ export default class PrototypeSummary extends Vue {
   }
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
-  // }  
+  // }
 
   // The list should be initialised to contain courses filtered with initial filters
   // fetched from the query string and then apply filters whenever they update.

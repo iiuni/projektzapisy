@@ -56,7 +56,7 @@ const actions = {
 
     // This puts a lock on all the courses that will be fetched. That way we
     // avoid fetching the same course in parallel when the student is
-    // clicking too fast.  
+    // clicking too fast.
     idsToFetch.forEach((c) => {
       commit("setGroupIDs", { c, ids: [] });
     });
@@ -109,7 +109,7 @@ const mutations = {
   },
   setSelection(state: State, ids: number[]) {
     state.selection = ids;
-  },  
+  },
 };
 
 export default {
