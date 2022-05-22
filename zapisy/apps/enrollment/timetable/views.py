@@ -175,7 +175,7 @@ def my_prototype(request):
     group_dicts = build_group_list(all_groups)
     filters_dict = CourseInstance.prepare_filter_data(
         CourseInstance.objects.filter(semester=semester))
-    courses_json = list_courses_in_semester(semester)  
+    courses_json = list_courses_in_semester(semester)
 
     data = {
         'groups_json': group_dicts,
