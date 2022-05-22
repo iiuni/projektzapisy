@@ -61,6 +61,25 @@ const mutations = {
   },
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    if (!group.isPinned) {
+      let counter = 0;
+      let c = group.course.id;
+      Object.entries(state.store).forEach((g) => {
+        if (
+          (g[1].isSelected ||
+            g[1].isPinned ||
+            g[1].isEnrolled ||
+            g[1].isEnqueued) &&
+          g[1].course.id == c
+        ) {
+          counter++;
+        }
+      });
+      if (counter == 1) {
+        state.sumPoints -= state.courses[c].points;
+        delete state.courses[c];
+      }
+    }
     group.isEnqueued = false;
     Vue.set(state.store, g.toString(), group);
   },
@@ -71,6 +90,23 @@ const mutations = {
   },
   unsetPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    let counter = 0;
+    let c = group.course.id;
+    Object.entries(state.store).forEach((g) => {
+      if (
+        (g[1].isSelected ||
+          g[1].isPinned ||
+          g[1].isEnrolled ||
+          g[1].isEnqueued) &&
+        g[1].course.id == c
+      ) {
+        counter++;
+      }
+    });
+    if (counter == 1) {
+      state.sumPoints -= state.courses[c].points;
+      delete state.courses[c];
+    }
     group.isPinned = false;
     Vue.set(state.store, g.toString(), group);
   },
@@ -111,16 +147,30 @@ const mutations = {
     flipSelection.forEach((id) => {
       let group = state.store[id];
       // We will not show the group that is hidden.
+      group.isSelected = !group.isSelected;
+      Vue.set(state.store, id.toString(), group);
       let c = group.course.id;
-      if (group.isSelected && state.courses[c] !== undefined) {
-        state.sumPoints -= state.courses[c].points;
-        delete state.courses[c];
-      } else if (!group.isSelected && state.courses[c] === undefined){
+      if (!group.isSelected && state.courses[c] !== undefined) {
+        let counter = 0;
+        Object.entries(state.store).forEach((g) => {
+          if (
+            (g[1].isSelected ||
+              g[1].isPinned ||
+              g[1].isEnrolled ||
+              g[1].isEnqueued) &&
+            g[1].course.id == c
+          ) {
+            counter++;
+          }
+        });
+        if (counter == 0) {
+          state.sumPoints -= state.courses[c].points;
+          delete state.courses[c];
+        }
+      } else if (group.isSelected && state.courses[c] === undefined) {
         state.courses[c] = group.course;
         state.sumPoints += group.course.points;
       }
-      group.isSelected = !group.isSelected;
-      Vue.set(state.store, id.toString(), group);
     });
   },
 };
