@@ -42,6 +42,28 @@ function setEdited(object) {
   $(object).closest(".term-form").find("input").prop("disabled", false);
   $(object).closest(".term-form").find(".form-place").addClass("bg-light");
 
+  var today = new Date();
+  if ($(object).closest(".term-form").find(".form-day").val() == "") {
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    var todayDate = yyyy + "-" + mm + "-" + dd;
+    $(object).closest(".term-form").find(".form-day").val(todayDate);
+  }
+  if ($(object).closest(".term-form").find(".form-start").val() == "") {
+    var hh = String(today.getHours());
+    var mm = String(today.getMinutes());
+    var time = hh + ":" + mm;
+    $(object).closest(".term-form").find(".form-start").val(time);
+  }
+  if ($(object).closest(".term-form").find(".form-end").val() == "") {
+    var endTime = new Date(today.getTime() + 5*60000);
+    var hh = String(endTime.getHours()).padStart(2, "0");
+    var mm = String(endTime.getMinutes()).padStart(2, "0");
+    var time = hh + ":" + mm;
+    $(object).closest(".term-form").find(".form-end").val(time);
+  }
+
   // Unmarks term as planned to be deleted.
   $(object)
     .closest(".term-form")
