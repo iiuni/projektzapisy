@@ -177,9 +177,8 @@ class EditThesisForm(ThesisFormBase):
             self.helper.add_input(
                 Submit('submit', 'Zapisz', css_class='btn-primary'))
 
-        
     def save(self, commit=True):
-        
+
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
@@ -207,7 +206,7 @@ class EditThesisForm(ThesisFormBase):
 
         if self.title != instance.title or self.supporting_advisor != self.instance.supporting_advisor or self.kind != instance.kind:
             instance.status = ThesisStatus.BEING_EVALUATED.value
-        
+
         if commit:
             instance.save()
             self.save_m2m()

@@ -102,7 +102,6 @@ const AssetDefs = {
 
   "theses-thesis-form-date": [
     path.resolve("apps/theses/assets/store/theses-date.js"),
-    path.resolve("apps/theses/assets/store/theses-date.css"),
   ],
 
   // User app
