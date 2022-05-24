@@ -51,6 +51,25 @@ const mutations = {
   },
   unsetEnrolled(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    if (!group.isPinned) {
+      let counter = 0;
+      let c = group.course.id;
+      Object.entries(state.store).forEach((g) => {
+        if (
+          (g[1].isSelected ||
+            g[1].isPinned ||
+            g[1].isEnrolled ||
+            g[1].isEnqueued) &&
+          g[1].course.id == c
+        ) {
+          counter++;
+        }
+      });
+      if (counter == 1) {
+        state.sumPoints -= state.courses[c].points;
+        delete state.courses[c];
+      }
+    }
     group.isEnrolled = false;
     Vue.set(state.store, g.toString(), group);
   },
