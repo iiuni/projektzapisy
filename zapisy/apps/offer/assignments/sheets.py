@@ -247,8 +247,8 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     return assignments
 
 
-def proposal_to_subjects_sheets_format(groups: ProposalSummary):
-    """Function prepares data for Subjects spreadsheet.
+def proposal_to_courses_sheets_format(groups: ProposalSummary):
+    """Function prepares data for Courses spreadsheet.
 
     Args:
         groups: ProposalSummary sorted by attributes 'semester', 'name', 'group_type'
@@ -303,8 +303,8 @@ def proposal_to_subjects_sheets_format(groups: ProposalSummary):
     return data
 
 
-def update_subjects_info(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
-    data = proposal_to_subjects_sheets_format(proposal)
+def update_courses_info(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
+    data = proposal_to_courses_sheets_format(proposal)
     worksheet: gspread.models.Worksheet = sheet.get_worksheet(2)
     if worksheet is None:
         worksheet = sheet.add_worksheet("Przedmioty", 2, 8)

@@ -23,7 +23,7 @@ from apps.users.models import Employee
 from .sheets import (create_sheets_service, read_assignments_sheet,
                      read_employees_sheet, read_opening_recommendations,
                      update_employees_sheet, update_assignments_sheet,
-                     update_subjects_info,
+                     update_courses_info,
                      update_voting_results_sheet)
 from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary,
                     EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
@@ -211,7 +211,7 @@ def create_assignments_sheet(request):
         )
     teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
-    update_subjects_info(sheet, suggested_groups)
+    update_courses_info(sheet, suggested_groups)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
 
