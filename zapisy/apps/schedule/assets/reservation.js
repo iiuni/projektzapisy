@@ -51,8 +51,8 @@ function setEdited(object) {
     $(object).closest(".term-form").find(".form-day").val(todayDate);
   }
   if ($(object).closest(".term-form").find(".form-start").val() == "") {
-    var hh = String(today.getHours());
-    var mm = String(today.getMinutes());
+    var hh = String(today.getHours()).padStart(2, "0");
+    var mm = String(today.getMinutes()).padStart(2, "0");
     var time = hh + ":" + mm;
     $(object).closest(".term-form").find(".form-start").val(time);
   }
