@@ -57,7 +57,11 @@ function setEdited(object) {
     $(object).closest(".term-form").find(".form-start").val(time);
   }
   if ($(object).closest(".term-form").find(".form-end").val() == "") {
+<<<<<<< HEAD
     var endTime = new Date(today.getTime() + 5 * 60000);
+=======
+    var endTime = new Date(today.getTime() + 5*60000);
+>>>>>>> default reservation values have been added
     var hh = String(endTime.getHours()).padStart(2, "0");
     var mm = String(endTime.getMinutes()).padStart(2, "0");
     var time = hh + ":" + mm;
