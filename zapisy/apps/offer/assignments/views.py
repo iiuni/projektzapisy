@@ -211,7 +211,6 @@ def create_assignments_sheet(request):
         )
     teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
-
     update_subjects_info(sheet, suggested_groups)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
