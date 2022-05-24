@@ -139,12 +139,10 @@ def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
     worksheet = sheet.sheet1
     try:
         data = worksheet.batch_get(['A3:A', 'I3:I'], major_dimension='COLUMNS')
-    except KeyError:
+        ids = data[0][0]
+        rec = data[1][0]
+    except (KeyError, IndexError):
         return set()
-    if len(data[0]) == 0 or len(data[1]):
-        return set()
-    ids = data[0][0]
-    rec = data[1][0]
     pick = set()
     for proposal_id, recommendation in zip(ids, rec):
         if recommendation == 'TRUE':
