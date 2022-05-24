@@ -31,7 +31,7 @@ function setFormDisplay() {
 // Disables edition of currently active terms.
 function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
-  $(".term-form").find("input").prop("disabled", true);
+  $(".term-form").find("input").prop("disabled", true );
   $(".term-form").find(".form-place").removeClass("bg-light");
 }
 
