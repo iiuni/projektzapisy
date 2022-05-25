@@ -18,10 +18,7 @@ import Component from "vue-class-component";
   },
 })
 export default class StatisticsList extends Vue {
-  // The list should be initialised to contain all the courses and then apply
-  // filters and sorting whenever they update.
   coursesList: CourseInfo[] = [];
-  visibleCourses: boolean[] = [];
 
   courses!: CourseInfo[];
   tester!: (_: CourseInfo) => boolean;
@@ -31,36 +28,16 @@ export default class StatisticsList extends Vue {
     this.$store.dispatch("courses/initFromJSONTag");
   }
   mounted() {
-    for (let i = 0; i < this.courses.length; i++) {
-      this.visibleCourses[i] = true;
-    }
-    this.courses.sort(this.compare);
+    this.coursesList = this.courses;
+    this.coursesList.sort(this.compare);
 
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.coursesList = this.courses.filter(this.tester);
-          this.courses.sort(this.compare);
-          for (let i = 0; i < this.courses.length; i++) {
-            this.visibleCourses[i] = false;
-          }
-          for (let i = 0; i < this.coursesList.length; i++) {
-            this.visibleCourses[
-              this.coursesList[i].alphabetical_sorting_index
-            ] = true;
-          }
+          this.coursesList.sort(this.compare);
           break;
         case "sorting/changeSorting":
-          this.coursesList = this.courses.filter(this.tester);
-          this.courses.sort(this.compare);
-          for (let i = 0; i < this.courses.length; i++) {
-            this.visibleCourses[i] = false;
-          }
-          for (let i = 0; i < this.coursesList.length; i++) {
-            this.visibleCourses[
-              this.coursesList[i].alphabetical_sorting_index
-            ] = true;
-          }
+          this.coursesList.sort(this.compare);
           break;
       }
     });
@@ -82,8 +59,8 @@ export default class StatisticsList extends Vue {
       </tr>
     </thead>
     <tbody>
-      <template v-for="course in courses">
-        <tr v-show="visibleCourses[course.alphabetical_sorting_index]">
+      <template v-for="course in coursesList">
+        <tr v-show="tester(course)">
           <th colspan="2">
             {{ course.course_name }}
           </th>
@@ -104,7 +81,7 @@ export default class StatisticsList extends Vue {
         <tr
           v-for="group in course.groups"
           :key="group.id"
-          v-show="visibleCourses[course.alphabetical_sorting_index]"
+          v-show="tester(course)"
         >
           <td>{{ group.teacher_name }}</td>
           <td>{{ group.type_name }}</td>

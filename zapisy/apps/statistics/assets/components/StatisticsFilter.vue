@@ -23,7 +23,7 @@ export default Vue.extend({
   },
   watch: {
     selected: function (newSelected: string) {
-      this.sort(newSelected.toString());
+      this.sort(newSelected);
     },
   },
   methods: {
@@ -41,13 +41,13 @@ export default Vue.extend({
         });
       } else if (newSelected === "npr") {
         this.changeSorting({
-          k: "alphabetical_sorting_index",
-          f: false,
+          k: "course_name",
+          f: true,
         });
       } else if (newSelected === "npm") {
         this.changeSorting({
-          k: "alphabetical_sorting_index",
-          f: true,
+          k: "course_name",
+          f: false,
         });
       }
     },

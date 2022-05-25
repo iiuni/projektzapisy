@@ -50,10 +50,9 @@ def groups(request):
     for group in groups:
         courses[group.course.id].append(group)
 
-    sorted_courses_ids = sorted(courses, key=lambda item: courses[item][0].course.name, reverse=True)
     courses_list = []
 
-    for i, course_id in enumerate(sorted_courses_ids):
+    for course_id in courses:
         course_groups = []
         course_name = ""
         for group in courses[course_id]:
@@ -77,7 +76,6 @@ def groups(request):
 
         courses_list.append({
             'id': course_id,
-            'alphabetical_sorting_index': i,
             'course_name': course_name,
             'groups': course_groups,
             'waiting_students': waiting_by_class_type,
