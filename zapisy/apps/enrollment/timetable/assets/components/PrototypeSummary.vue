@@ -6,6 +6,7 @@ import Component from "vue-class-component";
 
 // const current = getCurrentInstance();
 import state from "../store/groups";
+import { Course } from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
 @Component({
@@ -27,6 +28,9 @@ export default class PrototypeSummary extends Vue {
 
   get sumPoints(): number {
     return state.state.sumPoints;
+  }
+  get courses(): { [id: number]: Course } {
+    return state.state.courses;
   }
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
@@ -64,6 +68,42 @@ export default class PrototypeSummary extends Vue {
           <td class="ects">{{ sumPoints }}</td>
         </tr>
       </tfoot>
+      <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
+        <tr class="courseHeader">
+          <td class="name" scope="col">
+            <a href="{% url 'course-page' course.grouper.slug %}">
+              {{ item.name }}
+            </a>
+          </td>
+          <td rowspan="2" class="ects">
+            {{ item.points }}
+          </td>
+        </tr>
+        <!-- <tr class="courseDetails">
+                <td>
+                    <ul>
+                        {% for item in course.list %}
+                        {% with item as group %}
+                        <li>
+                            <span class="type">{{ group.get_type_display }}:</span>
+                            {% for term in group.term.all %}
+                            <span class="term">
+                                {{ term.get_dayOfWeek_display }}
+                                {{ term.start_time|time:'G:i' }}-{{ term.end_time|time:'G:i' }}
+                            </span>
+                            <span class="classroom">sala:
+                                  {% for classroom in term.classrooms.all %}
+                                    {{ classroom.number }}
+                                  {% endfor %}
+                            </span>
+                            {% endfor %}
+                        </li>
+                        {% endwith %}
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr> -->
+      </tbody>
     </table>
   </div>
 </template>
