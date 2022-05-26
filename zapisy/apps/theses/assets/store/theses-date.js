@@ -10,9 +10,11 @@ window.onload = function () {
 
       reservedUntil.value = reservedUntilDate;
       reservedUntil.disabled = false;
+      reservedUntil.required = true;
     } else {
       reservedUntil.value = "";
       reservedUntil.disabled = true;
+      reservedUntil.required = false;
     }
 
     reservedUntil.classList.add("border-danger");
