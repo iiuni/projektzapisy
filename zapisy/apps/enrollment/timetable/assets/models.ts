@@ -92,6 +92,9 @@ export class Term {
   get endTimeString(): string {
     return Term.printTime(this.endTime);
   }
+  get getClassrooms(): string {
+    return this.classrooms;
+  }
 }
 
 // Teacher is defined in apps/users/models.py as Employee, but we add the name
