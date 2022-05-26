@@ -1,5 +1,3 @@
-import datetime
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Column, Layout, Row, Submit
 from django import forms
@@ -194,11 +192,6 @@ class EditThesisForm(ThesisFormBase):
                 instance.status = ThesisStatus.ACCEPTED.value
             else:
                 instance.status = status
-
-        if "students" not in self.data:
-            instance.reserved_until = None
-        elif instance.reserved_until is None:
-            instance.reserved_until = datetime.date.today()+datetime.timedelta(days=730)
 
         if self.title != instance.title or self.supporting_advisor != self.instance.supporting_advisor or \
                 self.kind != instance.kind:
