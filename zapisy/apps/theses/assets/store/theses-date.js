@@ -32,9 +32,13 @@ window.onload = function () {
     studentsSelect.querySelectorAll("option:checked").length
   );
 
+  if(!Boolean(reservedUntil.value) && !reservedUntil.disabled) {
+    reservedUntil.disabled = true;
+  }
   if (Boolean(reservedUntil.value) != requiredDate) {
     changeOfDateField(requiredDate, reservedUntil);
   }
+
 
   studentsSelect.addEventListener("change", function handleChange(event) {
     if (
