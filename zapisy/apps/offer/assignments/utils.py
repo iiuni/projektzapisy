@@ -35,10 +35,7 @@ class SingleAssignmentData(NamedTuple):
 
 
 class SingleCourseData(NamedTuple):
-    """Represents a row in the Courses sheet
-    (except cells with number of groups which are calculated
-    based on Assignments sheet)
-    """
+    """Represents a row in the Courses sheet."""
     name: str
     proposal_id: int
     course_type: str
