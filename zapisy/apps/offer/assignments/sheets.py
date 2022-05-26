@@ -1,14 +1,10 @@
 import os
-import re
-from typing import List, Optional, Set
-from itertools import groupby
+from typing import List, Optional, Set, Iterator
 
 from django.conf import settings
 import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-
-from apps.enrollment.courses.models.course_information import CourseInformation
 
 from .utils import (
     EmployeeData,
@@ -16,6 +12,7 @@ from .utils import (
     ProposalSummary,
     ProposalVoteSummary,
     SingleAssignmentData,
+    SingleCourseData,
     SingleYearVoteSummary,
     VotingSummaryPerYear,
 )
@@ -208,7 +205,7 @@ def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: Propos
     worksheet.freeze(rows=1)
 
 
-def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
+def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleAssignmentData]:
     """Reads confirmed assignments from the spreadsheet.
 
     Raises:
@@ -220,11 +217,10 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     except gspread.WorksheetNotFound:
         return []
     data = worksheet.get_all_records()
-    assignments = []
     for i, row in enumerate(data, start=2):
         try:
             hours_w_overridden = row['Nadpisano h/tydzień'] == 'TRUE'
-            sad = SingleAssignmentData(
+            yield SingleAssignmentData(
                 proposal_id=int(row['Proposal ID']),
                 name=row['Przedmiot'],
                 group_type=row['Forma zajęć'].lower(),
@@ -243,68 +239,27 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
         except ValueError as e:
             raise ValueError(
                 f"Błąd czytania arkusza przydziałów (wiersz {i}): {str(e).capitalize()}.")
-        assignments.append(sad)
-    return assignments
 
 
-def proposal_to_courses_sheets_format(groups: ProposalSummary):
-    """Function prepares data for Courses spreadsheet.
+def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[SingleCourseData]):
+    data = [[
+        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi', 'ECTS', 'Semestr',
+        'Planowana liczba grup', 'Uruchomiona liczba grup'
+    ]]
 
-    Args:
-        groups: ProposalSummary sorted by attributes 'semester', 'name', 'group_type'
-    Returns:
-        List of lists, where each inner list represents a single row in spreadsheet.
-    """
-    def get_basename(course_name):
-        return re.sub(r"(\(lato\)$|\(zima\)$)", "", course_name).strip()
-
-    courses_names = [group[0] for group in groupby(groups, lambda c: get_basename(c.name))]
-    courses_details = dict(
-        (course.name, course)
-        for course in CourseInformation.objects.distinct("name")
-        .filter(name__in=courses_names)
-        .prefetch_related("tags")
-    )
-    # TODO: filtrowac przedmioty lepiej niż z użyciem distinct("name").
-
-    data = [
-        [
-            'Proposal ID',
-            'Przedmiot',
-            'Rodzaj',
-            'Tagi',
-            'ECTS',
-            'Semestr',
-            'Planowana liczba grup',
-            'Uruchomiona liczba grup'
-        ]
-    ]
-
-    i = 2
-    for proposal_group in groupby(groups, lambda x: x.name):
-        proposal = next(proposal_group[1])
-        course_basename = get_basename(proposal.name)
-        if course_basename not in courses_details:
-            # TODO: dodać informację o niepowodzeniu gdy nie odnaleziono przedmiotu w bazie danych
-            continue
-        details = courses_details[course_basename]
+    for i, group in enumerate(courses, start=2):
         row = [
-            proposal.proposal_id,  # A. proposal_id
-            proposal.name,  # B. course name
-            details.course_type.name,  # C. course type
-            ','.join(map(lambda x: x[0], details.tags.values_list('short_name'))),  # D. tags
-            details.points,  # E. ECTS
-            proposal.semester,  # F. semester
+            group.proposal_id,  # A. proposal_id
+            group.name,  # B. course name
+            group.course_type,  # C. course type
+            group.tags,  # D. tags
+            group.ects,  # E. ECTS
+            group.semester,  # F. semester
             f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned groups
             f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. active groups
         ]
         data.append(row)
-        i += 1
-    return data
 
-
-def update_courses_info(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
-    data = proposal_to_courses_sheets_format(proposal)
     worksheet: gspread.models.Worksheet = sheet.get_worksheet(2)
     if worksheet is None:
         worksheet = sheet.add_worksheet("Przedmioty", 2, 8)
@@ -312,6 +267,27 @@ def update_courses_info(sheet: gspread.models.Spreadsheet, proposal: ProposalSum
     worksheet.update_title("Przedmioty")
     worksheet.update('A:H', data, raw=False)
     worksheet.freeze(rows=1)
+
+
+def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCourseData]:
+    """Reads information about courses from the spreadsheet."""
+    try:
+        worksheet = sheet.worksheet("Przedmioty")
+    except gspread.WorksheetNotFound:
+        return []
+    for row in worksheet.get_all_records():
+        try:
+            if row['Proposal ID'] and row['Przedmiot'] and row["Rodzaj"] and row["ECTS"] and row["Semestr"]:
+                yield SingleCourseData(
+                    proposal_id=int(row['Proposal ID']),
+                    name=row['Przedmiot'],
+                    course_type=row["Rodzaj"],
+                    tags=row["Tagi"],
+                    ects=row["ECTS"],
+                    semester=row["Semestr"]
+                )
+        except Exception:
+            pass
 
 
 def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
