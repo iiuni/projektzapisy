@@ -215,7 +215,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[Single
     try:
         worksheet = sheet.worksheet("Przydziały")
     except gspread.WorksheetNotFound:
-        return []
+        return
     data = worksheet.get_all_records()
     for i, row in enumerate(data, start=2):
         try:
@@ -274,7 +274,7 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
     try:
         worksheet = sheet.worksheet("Przedmioty")
     except gspread.WorksheetNotFound:
-        return []
+        return
     for row in worksheet.get_all_records():
         try:
             if row['Proposal ID'] and row['Przedmiot'] and row['Rodzaj'] and row['ECTS'] and row['Semestr']:
