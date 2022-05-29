@@ -286,7 +286,7 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
                     ects=row['ECTS'],
                     semester=row['Semestr']
                 )
-        except Exception:
+        except (KeyError, ValueError):
             pass
 
 
