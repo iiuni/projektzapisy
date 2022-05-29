@@ -13,12 +13,12 @@ export default Vue.extend({
   data: function () {
     return {
       sortingModes: [
-        ["nzsr", "wg niezapisanych studentów, rosnąco"],
-        ["nzsm", "wg niezapisanych studentów, malejąco"],
-        ["npr", "wg nazwy przedmiotu, rosnąco"],
-        ["npm", "wg nazwy przedmiotu, malejąco"],
+        ["course_name_asc", "wg nazwy przedmiotu, rosnąco"],
+        ["course_name_desc", "wg nazwy przedmiotu, malejąco"],
+        ["waiting_students_asc", "wg liczby oczekujących, rosnąco"],
+        ["waiting_students_desc", "wg liczby oczekujących, malejąco"],
       ],
-      selected: "npr",
+      selected: "course_name_asc",
     };
   },
   watch: {
@@ -29,22 +29,22 @@ export default Vue.extend({
   methods: {
     ...mapMutations("sorting", ["changeSorting"]),
     sort: function (newSelected: string) {
-      if (newSelected === "nzsm") {
+      if (newSelected === "waiting_students_desc") {
         this.changeSorting({
           k: "max_of_waiting_students",
           f: false,
         });
-      } else if (newSelected === "nzsr") {
+      } else if (newSelected === "waiting_students_asc") {
         this.changeSorting({
           k: "max_of_waiting_students",
           f: true,
         });
-      } else if (newSelected === "npr") {
+      } else if (newSelected === "course_name_asc") {
         this.changeSorting({
           k: "course_name",
           f: true,
         });
-      } else if (newSelected === "npm") {
+      } else if (newSelected === "course_name_desc") {
         this.changeSorting({
           k: "course_name",
           f: false,
@@ -59,14 +59,14 @@ export default Vue.extend({
   <div class="card bg-light">
     <div class="card-body">
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-5">
           <TextFilter
             filterKey="title-filter"
             :properties="['course_name']"
             placeholder="Nazwa przedmiotu"
           />
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-4">
           <div class="input-group mb-2">
             <select class="custom-select" v-model="selected">
               <option v-for="[k, o] of sortingModes" :value="k">
@@ -79,7 +79,7 @@ export default Vue.extend({
           <CheckFilter
             filterKey="available-filter"
             property="max_of_waiting_students"
-            label="Pokaż jedynie przedmioty, gdzie są niezapisani studenci"
+            label="Pokaż jedynie przedmioty z oczekującymi studentami"
           />
         </div>
       </div>

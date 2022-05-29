@@ -53,10 +53,7 @@ def groups(request):
     courses_list = []
 
     for course_id in courses:
-        course_groups = []
-        course_name = ""
-        for group in courses[course_id]:
-            course_groups.append({
+        course_groups = [{
                 'id': group.id,
                 'teacher_name': group.teacher.get_full_name(),
                 'type_name': group.get_type_display(),
@@ -67,8 +64,7 @@ def groups(request):
                 'guaranteed_spots': [{'name': gs.role.name, 'limit': gs.limit}
                                      for gs in group.guaranteed_spots.all()],
                 'url': reverse('admin:courses_group_change', None, [str(group.id)])
-            })
-            course_name = group.course.name
+            } for group in courses[course_id]]
 
         waiting_by_class_type = [{'name': decode_class_type_plural(class_type),
                                   'number': waiting_students[course_id][class_type]}
@@ -76,7 +72,7 @@ def groups(request):
 
         courses_list.append({
             'id': course_id,
-            'course_name': course_name,
+            'course_name': courses[course_id][0].course.name,
             'groups': course_groups,
             'waiting_students': waiting_by_class_type,
             'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0)

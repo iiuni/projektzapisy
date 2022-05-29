@@ -87,12 +87,12 @@ export default class StatisticsList extends Vue {
           <td>{{ group.type_name }}</td>
           <td>
             {{ group.limit }}
-            <span
-              v-for="gs in group.guaranteed_spots"
-              :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'"
-            >
-              {{ gs.limit }}
-            </span>
+            <template v-for="gs in group.guaranteed_spots">
+              +
+              <span :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'">
+                {{ gs.limit }}
+              </span>
+            </template>
           </td>
           <td>{{ group.enrolled }}</td>
           <td>{{ group.queued }}</td>
