@@ -239,7 +239,7 @@ def create_assignments_sheet(request):
                 proposal_id=pid,
                 name=proposal.get_course_name(semester),
                 course_type=proposal.course_type.name,
-                tags=','.join(map(lambda x: x[0], proposal.tags.values_list('short_name'))),
+                tags=', '.join(map(lambda x: x[0], proposal.tags.values_list('short_name'))),
                 ects=proposal.points,
                 semester=semester
             )
