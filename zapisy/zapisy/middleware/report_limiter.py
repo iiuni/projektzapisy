@@ -18,7 +18,6 @@ class RollbarOnly404Limited:
 
     def __call__(self, request):
         response = self.get_response(request)
-
         if response.status_code != 404:
             return response
         ip = self.request_to_ip(request)
