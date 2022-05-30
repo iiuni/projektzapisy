@@ -10,7 +10,7 @@ KEY_PATTERN = KEY_PREFIX + '*'
 
 
 class RollbarOnly404Limited:
-    """ Ogranicza liczbę zgłoszeń 404 wysyłanych do Rollbara pochodzących od tych samych klientów.
+    """Ogranicza liczbę zgłoszeń 404 wysyłanych do Rollbara pochodzących od tych samych klientów.
 
     * Klienci są identyfikowani przy użyciu adresów IP, a dane o nich są przechowywane w Redisie
     (z założenia nietrwale).
