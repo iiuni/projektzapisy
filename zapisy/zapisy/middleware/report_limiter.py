@@ -10,18 +10,17 @@ KEY_PATTERN = KEY_PREFIX + '*'
 
 
 class RollbarOnly404Limited:
-    """
-    Ogranicza liczbę zgłoszeń 404 wysyłanych do Rollbara pochodzących od tych samych klientów.
+    """ Ogranicza liczbę zgłoszeń 404 wysyłanych do Rollbara pochodzących od tych samych klientów.
 
-    * Klienci są identyfikowani przy użyciu adresów IP, a dane o nich są przechowywane w Redisie (z założenia
-    nietrwale).
+    * Klienci są identyfikowani przy użyciu adresów IP, a dane o nich są przechowywane w Redisie
+    (z założenia nietrwale).
     * Zmienna TIMEOUT określa (w sekundach) jak często dany klient może spowodować wygenerowanie
-    zgłoszenia. Wysłanie kolejnych nieudanych zapytań w okresie ignorowania nie wydłuża czasu - liczy się moment
-    ostatniego zapytania z wysłanym zgłoszeniem.
-    * Ta klasa nie obsługuje w żaden sposób komunikacji z Rollbarem. Zgłoszenia są wysyłane za pośrednictwem
-    standardowego middleware'u od twórców projektu.
-    * Klient za każdym razem zobaczy stronę błędu i otrzyma kod 404, więc działanie tego modułu jest z jego punktu
-    widzenia przezroczyste.
+    zgłoszenia. Wysłanie kolejnych nieudanych zapytań w okresie ignorowania nie wydłuża czasu -
+    - liczy się moment ostatniego zapytania z wysłanym zgłoszeniem.
+    * Ta klasa nie obsługuje w żaden sposób komunikacji z Rollbarem. Zgłoszenia są wysyłane
+    za pośrednictwem standardowego middleware'u od twórców projektu.
+    * Klient za każdym razem zobaczy stronę błędu i otrzyma kod 404, więc działanie tego modułu
+    jest z jego punktu widzenia przezroczyste.
     """
     def __init__(self, get_response):
         self.get_response = get_response
