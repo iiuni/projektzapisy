@@ -209,7 +209,7 @@ class GroupOpeningTimes(models.Model):
 
         student_ids = queryset.values_list("id")
 
-        opening_time_objects: List[cls] = []
+        opening_time_objects: List['GroupOpeningTimes'] = []
         votes = SingleVote.objects.meaningful().in_semester(semester=semester)
         groups = Group.objects.filter(course__semester=semester).select_related('course')
 
