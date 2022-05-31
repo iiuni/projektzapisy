@@ -1,4 +1,5 @@
 import os
+from more_itertools import flatten
 from typing import List, Optional, Set, Iterator
 
 from django.conf import settings
@@ -61,7 +62,7 @@ def voting_legend_rows(years: List[str]) -> List[List[str]]:
 
     The length of a single row is 9+5*len(years).
     """
-    row1 = [""]*9 + sum(([y, "", "", "", ""] for y in years), [])
+    row1 = [""]*9 + list(flatten([y, "", "", "", ""] for y in years))
     row2 = [
         "Proposal ID",
         "Nazwa",
@@ -114,14 +115,14 @@ def voting_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) ->
     ]
     per_year = (voting_annual_part_of_row(
         pvs.voting.get(y, None)) for y in years)
-    return [beg + sum(per_year, [])]
+    return [beg + list(flatten(per_year))]
 
 
 def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> List[List[str]]:
     legend_rows = voting_legend_rows(years)
     proposal_rows = (voting_proposal_row(pvs, years, i)
                      for i, pvs in enumerate(votes.values(), start=3))
-    return legend_rows + sum(proposal_rows, [])
+    return legend_rows + list(flatten(proposal_rows))
 
 
 def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear,

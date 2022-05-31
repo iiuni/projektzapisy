@@ -2,6 +2,7 @@ import csv
 import os
 import re
 from collections import defaultdict
+from more_itertools import flatten
 from operator import attrgetter
 from typing import Dict
 
@@ -200,7 +201,7 @@ def create_assignments_sheet(request):
 
     # update Assignments sheet
     suggested_groups = suggest_teachers(new_picks, proposals)
-    all_groups = sum(current_assignments.values(), []) + suggested_groups
+    all_groups = list(flatten(current_assignments.values())) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
     update_assignments_sheet(sheet, suggested_groups)
 
