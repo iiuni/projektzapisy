@@ -50,25 +50,35 @@ function setEdited(object) {
   $(object).closest(".term-form").find(".form-place").addClass("bg-light");
 
   if ($(object).closest(".term-form").find(".form-day").val() == "") {
-    $(object).closest(".term-form").find(".form-day").val(dayjs().format('YYYY-MM-DD'));
+    $(object)
+      .closest(".term-form")
+      .find(".form-day")
+      .val(dayjs().format("YYYY-MM-DD"));
   }
   if ($(object).closest(".term-form").find(".form-start").val() == "") {
-    $(object).closest(".term-form").find(".form-start").val(dayjs().format('HH:mm'));
+    $(object)
+      .closest(".term-form")
+      .find(".form-start")
+      .val(dayjs().format("HH:mm"));
   }
   if ($(object).closest(".term-form").find(".form-end").val() == "") {
-<<<<<<< HEAD
-<<<<<<< HEAD
     var endTime = new Date(today.getTime() + 5 * 60000);
-=======
+
     var endTime = new Date(today.getTime() + 5*60000);
->>>>>>> default reservation values have been added
+    default reservation values have been added
     var hh = String(endTime.getHours()).padStart(2, "0");
     var mm = String(endTime.getMinutes()).padStart(2, "0");
     var time = hh + ":" + mm;
     $(object).closest(".term-form").find(".form-end").val(time);
-=======
     $(object).closest(".term-form").find(".form-end").val(dayjs().add(dayjs.duration({'minutes' : 5})).format('HH:mm'));
->>>>>>> calculating the date using the dayjs library
+    $(object)
+      .closest(".term-form")
+      .find(".form-end")
+      .val(
+        dayjs()
+          .add(dayjs.duration({ minutes: 5 }))
+          .format("HH:mm")
+      );
   }
 
   // Unmarks term as planned to be deleted.
