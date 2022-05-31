@@ -56,7 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, queryset = Student.get_active_students()):
+    def populate_t0(cls, semester: Semester, queryset=Student.get_active_students()):
         """Computes T0's for selected students, all active students if unspecified.
 
         The times are based on their ECTS points and their participation in
@@ -191,8 +191,9 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, queryset = Student.get_active_students()):
-        """Computes opening times (bonuses) for students from a selected group (all acive students if unspecified) that cast votes.
+    def populate_opening_times(cls, semester: Semester, queryset=Student.get_active_students()):
+        """Computes opening times (bonuses) for students from a selected group
+        (all acive students if unspecified) that cast votes.
 
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
@@ -234,9 +235,9 @@ class GroupOpeningTimes(models.Model):
                                     group.course.records_start,
                                     t0times.get(single_vote.student_id, semester.records_opening) -
                                     timedelta(days=single_vote.val),
+                                )
                             )
                         )
-                    )
                     opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)
 
