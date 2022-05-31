@@ -3,6 +3,13 @@
 // editing reservation terms.
 
 import "jquery";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(duration);
+
 const $ = jQuery;
 
 let formsetCounter = 0;
@@ -42,21 +49,14 @@ function setEdited(object) {
   $(object).closest(".term-form").find("input").prop("disabled", false);
   $(object).closest(".term-form").find(".form-place").addClass("bg-light");
 
-  var today = new Date();
   if ($(object).closest(".term-form").find(".form-day").val() == "") {
-    var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0");
-    var yyyy = today.getFullYear();
-    var todayDate = yyyy + "-" + mm + "-" + dd;
-    $(object).closest(".term-form").find(".form-day").val(todayDate);
+    $(object).closest(".term-form").find(".form-day").val(dayjs().format('YYYY-MM-DD'));
   }
   if ($(object).closest(".term-form").find(".form-start").val() == "") {
-    var hh = String(today.getHours()).padStart(2, "0");
-    var mm = String(today.getMinutes()).padStart(2, "0");
-    var time = hh + ":" + mm;
-    $(object).closest(".term-form").find(".form-start").val(time);
+    $(object).closest(".term-form").find(".form-start").val(dayjs().format('HH:mm'));
   }
   if ($(object).closest(".term-form").find(".form-end").val() == "") {
+<<<<<<< HEAD
 <<<<<<< HEAD
     var endTime = new Date(today.getTime() + 5 * 60000);
 =======
@@ -66,6 +66,9 @@ function setEdited(object) {
     var mm = String(endTime.getMinutes()).padStart(2, "0");
     var time = hh + ":" + mm;
     $(object).closest(".term-form").find(".form-end").val(time);
+=======
+    $(object).closest(".term-form").find(".form-end").val(dayjs().add(dayjs.duration({'minutes' : 5})).format('HH:mm'));
+>>>>>>> calculating the date using the dayjs library
   }
 
   // Unmarks term as planned to be deleted.
