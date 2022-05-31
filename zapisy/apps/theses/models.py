@@ -99,7 +99,7 @@ class Thesis(models.Model):
     class Meta:
         verbose_name = "praca dyplomowa"
         verbose_name_plural = "prace dyplomowe"
-        
+
         constraints = [
             models.CheckConstraint(
                 check=models.Q(students__isnull=False, reserved_until__isnull=False)
