@@ -192,8 +192,7 @@ class GroupOpeningTimes(models.Model):
     @classmethod
     @transaction.atomic
     def populate_opening_times(cls, semester: Semester, queryset=Student.get_active_students()):
-        """Computes opening times (bonuses) for students from a selected group
-        (all acive students if unspecified) that cast votes.
+        """Computes opening times for students from a selected group (or all acive students) that cast votes.
 
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
