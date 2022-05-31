@@ -2,9 +2,10 @@ import csv
 import os
 import re
 from collections import defaultdict
-from more_itertools import flatten
 from operator import attrgetter
 from typing import Dict
+
+from more_itertools import flatten
 
 import environ
 from django.conf import settings

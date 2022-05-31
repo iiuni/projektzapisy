@@ -1,6 +1,7 @@
 import os
-from more_itertools import flatten
 from typing import List, Optional, Set, Iterator
+
+from more_itertools import flatten
 
 from django.conf import settings
 import environ
