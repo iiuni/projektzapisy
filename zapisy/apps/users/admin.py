@@ -58,13 +58,11 @@ class StudentAdmin(admin.ModelAdmin):
                     level=messages.WARNING)
             return
         if semester.records_opening is None:
-            self.message_user(request, "Prosze uzupelnic szczegoly przyszlego semestru", level=messages.WARNING)
+            self.message_user(request, "Prosze uzupelnic czas otwarcia zapisow w przyszlym semestrze", level=messages.WARNING)
             return
 
-        student: Student
-        for student in queryset:
-            T0Times.populate_t0_selected(semester, student)
-            GroupOpeningTimes.populate_opening_times_selected(semester, student)
+        T0Times.populate_t0(semester, queryset)
+        GroupOpeningTimes.populate_opening_times(semester, queryset)
         self.message_user(
                 request,
                 "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
