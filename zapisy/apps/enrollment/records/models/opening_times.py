@@ -1,7 +1,7 @@
 """Module opening_times takes care of managing enrollment time constraints.
 
-Every student has his T0 - the time, when his enrollment starts. For some
-courses he has a time advantage coming from his votes. Additionally, some groups
+Every student has their T0 - the time, when their enrollment starts. For some
+courses they have a time advantage coming from their votes. Additionally, some groups
 will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
@@ -197,15 +197,16 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
+	t0times: Dict[int, datetime] = {}
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete all already existing records for this semester.
         for student in queryset:
-            cls.objects.filter(group__course__semester_id=semester.id, student=student).delete()
+            cls.objects.filter(group__course__semester_id=semester.id, student_id=student.id).delete()
             # We need T0 of each student.
-            t0times: Dict[int, datetime] = dict(
+             t0times.update(dict(
                 T0Times.objects.filter(semester_id=semester.id, student_id=student.id).values_list("student_id", "time")
-            )
+            ))
 
         student_ids = queryset.values_list("id")
 
