@@ -44,6 +44,15 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
         creds, SCOPES)
     gc = gspread.authorize(credentials)
     sh = gc.open_by_key(sheet_id)
+    update_locale_request = {
+        'updateSpreadsheetProperties': {
+            'properties': {
+                'locale': 'en_US'
+            },
+            'fields': 'locale'
+        }
+    }
+    sh.batch_update({'requests': [update_locale_request]})
     return sh
 
 
