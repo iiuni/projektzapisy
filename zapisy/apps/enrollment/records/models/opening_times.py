@@ -197,7 +197,7 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
-	t0times: Dict[int, datetime] = {}
+        t0times: Dict[int, datetime] = {}
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete all already existing records for this semester.
