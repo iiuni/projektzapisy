@@ -89,7 +89,7 @@ export default class StatisticsList extends Vue {
             {{ group.limit }}
             <template v-for="gs in group.guaranteed_spots">
               +
-              <span :title="'Miejsca gwarantowane dla grupy' + gs.name + '.'">
+              <span :title="'Miejsca gwarantowane dla grupy ' + gs.name + '.'">
                 {{ gs.limit }}
               </span>
             </template>

@@ -8,7 +8,7 @@ interface State {
 }
 const state: State = {
   property: "course_name",
-  order: false,
+  order: true,
 };
 
 const getters = {
