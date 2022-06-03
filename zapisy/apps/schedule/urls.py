@@ -4,7 +4,8 @@ from . import feeds, views
 
 urlpatterns = [
     path('classrooms/', views.classrooms, name='classrooms'),
-    re_path(r'^classrooms/get_terms/(?P<year>[0-9]{4})-(?P<month>[1-9]|0[1-9]|1[0-2])-(?P<day>[1-9]|0[1-9]|[12][0-9]|3[01])/$',
+    re_path(r'^classrooms/get_terms/(?P<year>[0-9]{4})-(?P<month>[1-9]|0[1-9]|1[0-2])-\
+            (?P<day>[1-9]|0[1-9]|[12][0-9]|3[01])/$',
             views.get_terms,
             name='get_terms'),
     path('classrooms/reservation/', views.new_reservation, name='reservation'),
