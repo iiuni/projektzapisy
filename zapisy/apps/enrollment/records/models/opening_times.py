@@ -67,7 +67,8 @@ class T0Times(models.Model):
         """
         with transaction.atomic():
             # First we delete all T0 records in current semester.
-            cls.objects.filter(semester=semester).delete()
+            for student in queryset:
+                cls.objects.filter(group__course__semester_id=semester.id, student_id=student.id).delete()
 
             created: List[cls] = []
             # For each student_id we want to know, how many times they have
@@ -200,7 +201,7 @@ class GroupOpeningTimes(models.Model):
         t0times: Dict[int, datetime] = {}
         # First make sure, that all SingleVotes have their course field
         # populated.
-        # First delete all already existing records for this semester.
+        # First delete already existing records for this semester and selected students.
         for student in queryset:
             cls.objects.filter(group__course__semester_id=semester.id, student_id=student.id).delete()
             # We need T0 of each student.
