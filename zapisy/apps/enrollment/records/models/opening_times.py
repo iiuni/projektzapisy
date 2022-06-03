@@ -204,7 +204,7 @@ class GroupOpeningTimes(models.Model):
         for student in queryset:
             cls.objects.filter(group__course__semester_id=semester.id, student_id=student.id).delete()
             # We need T0 of each student.
-             t0times.update(dict(
+            t0times.update(dict(
                 T0Times.objects.filter(semester_id=semester.id, student_id=student.id).values_list("student_id", "time")
             ))
 
