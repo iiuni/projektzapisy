@@ -91,7 +91,15 @@ export default class PrototypeSummary extends Vue {
         <tr class="courseDetails">
           <td>
             <ul v-for="(group, gid) in groups" :value="group" :key="gid">
-              <li>
+              <li
+                v-if="
+                  (group.isEnrolled ||
+                    group.isEnqueued ||
+                    group.isPinned ||
+                    group.isSelected) &&
+                  group.course.id == item.id
+                "
+              >
                 <span class="type">{{ group.type }}:</span>
                 <span class="term">
                   {{ GetNameDay(group.terms[0].weekday) }}
