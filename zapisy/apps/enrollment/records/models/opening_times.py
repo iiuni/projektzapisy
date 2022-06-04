@@ -67,8 +67,8 @@ class T0Times(models.Model):
         """
         with transaction.atomic():
             # First we delete all T0 records in current semester.
-            for student in queryset:
-                cls.objects.filter(student=student, semester=semester).delete()
+            # for student in queryset:
+                # cls.objects.filter(student=student, semester=semester).delete()
 
             created: List[cls] = []
             # For each student_id we want to know, how many times they have
