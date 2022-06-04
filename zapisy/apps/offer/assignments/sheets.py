@@ -288,15 +288,14 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
         return
     for row in worksheet.get_all_records():
         try:
-            if row['Proposal ID'] and row['Przedmiot'] and row['Rodzaj'] and row['ECTS'] and row['Semestr']:
-                yield SingleCourseData(
-                    proposal_id=int(row['Proposal ID']),
-                    name=row['Przedmiot'],
-                    course_type=row['Rodzaj'],
-                    tags=row['Tagi'],
-                    ects=row['ECTS'],
-                    semester=row['Semestr']
-                )
+            yield SingleCourseData(
+                proposal_id=int(row['Proposal ID']),
+                name=row['Przedmiot'],
+                course_type=row['Rodzaj'],
+                tags=row['Tagi'],
+                ects=row['ECTS'],
+                semester=row['Semestr']
+            )
         except (KeyError, ValueError):
             pass
 
