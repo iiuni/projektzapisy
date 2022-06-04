@@ -60,12 +60,13 @@ const mutations = {
             g[1].isPinned ||
             g[1].isEnrolled ||
             g[1].isEnqueued) &&
-          g[1].course.id == c
+          g[1].course.id == c &&
+          g[1].id != group.id
         ) {
           counter++;
         }
       });
-      if (counter == 1) {
+      if (counter == 0) {
         state.sumPoints -= state.courses[c].points;
         delete state.courses[c];
       }
@@ -89,12 +90,13 @@ const mutations = {
             g[1].isPinned ||
             g[1].isEnrolled ||
             g[1].isEnqueued) &&
-          g[1].course.id == c
+          g[1].course.id == c &&
+          g[1].id != group.id
         ) {
           counter++;
         }
       });
-      if (counter == 1) {
+      if (counter == 0) {
         state.sumPoints -= state.courses[c].points;
         delete state.courses[c];
       }
@@ -117,12 +119,13 @@ const mutations = {
           g[1].isPinned ||
           g[1].isEnrolled ||
           g[1].isEnqueued) &&
-        g[1].course.id == c
+        g[1].course.id == c &&
+        g[1].id != group.id
       ) {
         counter++;
       }
     });
-    if (counter == 1) {
+    if (counter == 0) {
       state.sumPoints -= state.courses[c].points;
       delete state.courses[c];
     }
