@@ -38,7 +38,7 @@ export default class PrototypeSummary extends Vue {
       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
     );
   }
-  private GetNameDay(day: DayOfWeek) {
+  public GetNameDay(day: DayOfWeek) {
     return nameDay(day);
   }
   // set sumPoints(newValue: number): {
