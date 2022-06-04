@@ -144,16 +144,17 @@ const mutations = {
   updateGroup(state: State, { groupJSON }: { groupJSON: GroupJSON }) {
     let group = new Group(groupJSON);
     let course = group.course;
-    if (state.courses[course.id] === undefined) {
-      state.courses[course.id] = course;
-      state.sumPoints += course.points;
-    }
     if (group.id in state.store) {
       const old = state.store[group.id];
       group.isSelected = old.isSelected;
       group.isEnrolled = coalesce(groupJSON.is_enrolled, old.isEnrolled);
       group.isEnqueued = coalesce(groupJSON.is_enqueued, old.isEnqueued);
       group.isPinned = coalesce(groupJSON.is_pinned, old.isPinned);
+    } else {
+      if (state.courses[course.id] === undefined) {
+        state.courses[course.id] = course;
+        state.sumPoints += course.points;
+      }
     }
     Vue.set(state.store, group.id.toString(), group);
   },

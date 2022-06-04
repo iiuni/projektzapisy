@@ -2,6 +2,7 @@
 import Vue from "vue";
 // import { mapGetters } from "vuex";
 import Component from "vue-class-component";
+import { values } from "lodash";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
@@ -33,7 +34,9 @@ export default class PrototypeSummary extends Vue {
     return state.state.courses;
   }
   get groups(): { [id: number]: Group } {
-    return state.state.store;
+    return values(state.state.store).filter(
+      (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+    );
   }
   private GetNameDay(day: DayOfWeek) {
     return nameDay(day);
@@ -88,7 +91,7 @@ export default class PrototypeSummary extends Vue {
         <tr class="courseDetails">
           <td>
             <ul v-for="(group, gid) in groups" :value="group" :key="gid">
-              <li v-if="group.course.id == item.id">
+              <li>
                 <span class="type">{{ group.type }}:</span>
                 <span class="term">
                   {{ GetNameDay(group.terms[0].weekday) }}
