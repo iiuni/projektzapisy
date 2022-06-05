@@ -236,7 +236,7 @@ class GroupOpeningTimes(models.Model):
                                 )
                             )
                         )
-                    opening_time_objects.append(bonus_obj)
+                        opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)
 
     @classmethod
