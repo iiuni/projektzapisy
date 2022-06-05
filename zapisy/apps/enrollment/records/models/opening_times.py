@@ -21,7 +21,7 @@ from apps.users.models import Student
 class T0Times(models.Model):
     """This model stores a T0 for a student.
 
-    T0 is a time when they can enroll into each groups (except of those that are
+    T0 is a time when they can enroll into any group (except of those that are
     still closed).
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -68,7 +68,7 @@ class T0Times(models.Model):
         with transaction.atomic():
             # First we delete all T0 records in current semester.
             # for student in queryset:
-                # cls.objects.filter(student=student, semester=semester).delete()
+            cls.objects.filter(student_in=queryset, semester=semester).delete()
 
             created: List[cls] = []
             # For each student_id we want to know, how many times they have
