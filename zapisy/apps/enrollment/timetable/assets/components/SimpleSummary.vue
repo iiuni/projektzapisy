@@ -8,13 +8,9 @@ import { values } from "lodash";
 // const current = getCurrentInstance();
 import state from "../store/groups";
 import { DayOfWeek, nameDay, Course, Group } from "../models";
-import SimpleSummary from "./SimpleSummary.vue"
 
 // export type CourseObject = { id: number; name: string; url: string };
 @Component({
-  components: {
-    SimpleSummary,
-  },
   computed: {
     // ...mapGetters("courses", {
     //   sumPointsState: "sumPoints",
@@ -24,7 +20,7 @@ import SimpleSummary from "./SimpleSummary.vue"
     // }),
   },
 })
-export default class PrototypeSummary extends Vue {
+export default class SimpleSummary extends Vue {
   // The computed property selectionState comes from store.
   //   selectionState!: number[];
   //   // The same goes for courses and tester.
@@ -68,6 +64,58 @@ export default class PrototypeSummary extends Vue {
 
 <template>
   <div class="table-responsiveVUE">
-    <SimpleSummary />
+    <table id="enr-schedule-listByCourseVUE" class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Przedmiot</th>
+          <th class="ects" scope="col">ECTS</th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <td><strong>Suma punktów ECTS:</strong></td>
+          <td class="ects">{{ sumPoints }}</td>
+        </tr>
+      </tfoot>
+      <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
+        <tr class="courseHeader">
+          <td class="name" scope="col">
+            <a href="{% url 'course-page' course.grouper.slug %}">
+              {{ item.name }}
+            </a>
+          </td>
+          <td rowspan="2" class="ects">
+            {{ item.points }}
+          </td>
+        </tr>
+        <tr class="courseDetails">
+          <td>
+            <ul v-for="(group, gid) in groups" :value="group" :key="gid">
+              <li
+                v-if="
+                  (group.isEnrolled ||
+                    group.isEnqueued ||
+                    group.isPinned ||
+                    group.isSelected) &&
+                  group.course.id == item.id
+                "
+              >
+                <span class="type">{{ group.type }}:</span>
+                <span class="term">
+                  {{ GetNameDay(group.terms[0].weekday) }}
+                  {{ group.terms[0].startTimeString }}-{{
+                    group.terms[0].endTimeString
+                  }}
+                </span>
+                <span class="classroom"
+                  >sala:
+                  {{ group.terms[0].getClassrooms }}
+                </span>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
