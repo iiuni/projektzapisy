@@ -288,6 +288,8 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
         return
     for row in worksheet.get_all_records():
         try:
+            # modify this part if you want to decide when individual rows
+            # should be restored from 'Courses' sheet
             if row['Proposal ID'] and row['Przedmiot'] and row['Rodzaj'] and row['ECTS'] and row['Semestr']:
                 yield SingleCourseData(
                     proposal_id=int(row['Proposal ID']),
