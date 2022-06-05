@@ -23,9 +23,10 @@ from apps.users.decorators import employee_required
 from apps.users.models import Employee
 
 from .sheets import (create_sheets_service, read_assignments_sheet,
-                     read_employees_sheet, read_opening_recommendations,
-                     update_employees_sheet, update_assignments_sheet,
-                     update_courses_sheet, update_voting_results_sheet)
+                     read_courses_sheet, read_employees_sheet,
+                     read_opening_recommendations, update_employees_sheet,
+                     update_assignments_sheet, update_courses_sheet,
+                     update_voting_results_sheet)
 from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary, SingleCourseData,
                     EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
 
@@ -165,10 +166,9 @@ def create_assignments_sheet(request):
         {error}""")
         return redirect(reverse('assignments-wizard'))
 
-    # uncomment if you want to restore old data from 'Courses' sheet
-    # current_courses = dict()
-    # for course in read_courses_sheet(sheet):
-    #     current_courses[(course.proposal_id, course.semester)] = course
+    current_courses = dict()
+    for course in read_courses_sheet(sheet):
+        current_courses[(course.proposal_id, course.semester)] = course
 
     # Read selections from the form.
     regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
@@ -184,19 +184,15 @@ def create_assignments_sheet(request):
     for pick in list(current_assignments.keys()):
         if pick not in picked_courses:
             del current_assignments[pick]
-    # uncomment if you want to restore old data from 'Courses' sheet
-    # for pick in list(current_courses.keys()):
-    #     if pick not in picked_courses:
-    #         del current_courses[pick]
+    for pick in list(current_courses.keys()):
+        if pick not in picked_courses:
+            del current_courses[pick]
 
     # Filter new picks, so they don't override existing data in the sheet.
     new_picks = [pick for pick in picked_courses if pick not in current_assignments]
+    missing_courses_picks = [pick for pick in picked_courses if pick not in current_courses]
 
-    # uncomment if you want to restore old data from 'Courses' sheet
-    # missing_courses_picks = [pick for pick in picked_courses if pick not in current_courses]
-    # proposal_ids = set(p for (p, _) in new_picks) | set(p for (p, _) in missing_courses_picks)
-
-    proposal_ids = set(p for (p, _) in picked_courses)
+    proposal_ids = set(p for (p, _) in new_picks) | set(p for (p, _) in missing_courses_picks)
     proposals = {
         p.id: p for p in Proposal.objects
         .filter(id__in=proposal_ids)
@@ -237,11 +233,8 @@ def create_assignments_sheet(request):
     update_employees_sheet(sheet, teachers)
 
     # update Courses sheet
-    # uncomment if you want to restore old data from 'Courses' sheet
-    # courses_data = list(current_courses.values())
-    # for pid, semester in missing_courses_picks:
-    courses_data = []
-    for pid, semester in picked_courses:
+    courses_data = list(current_courses.values())
+    for pid, semester in missing_courses_picks:
         proposal: Proposal = proposals[pid]
         courses_data.append(
             SingleCourseData(
