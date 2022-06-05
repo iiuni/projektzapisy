@@ -21,7 +21,7 @@ from apps.users.models import Student
 class T0Times(models.Model):
     """This model stores a T0 for a student.
 
-    T0 is a time when they can enroll into each groups (except of those that are
+    T0 is a time when they can enroll into any group (except of those that are
     still closed).
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -65,7 +65,7 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-       with transaction.atomic():
+        with transaction.atomic():
             # First we delete all T0 records in current semester.
             # for student in queryset:
             # cls.objects.filter(student__in=queryset, semester=semester).delete()
@@ -103,7 +103,6 @@ class T0Times(models.Model):
                 record.time -= timedelta(hours=2)
                 created.append(record)
             cls.objects.bulk_create(created)
-
 
 
 class GroupOpeningTimes(models.Model):
