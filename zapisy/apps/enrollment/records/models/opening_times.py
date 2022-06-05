@@ -56,23 +56,19 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, queryset=Student.get_active_students()):
-        """Computes T0's for selected students, all active students if unspecified.
-
+    def populate_t0(cls, semester: Semester):
+        """Computes T0's for all active students.
         The times are based on their ECTS points and their participation in
-        courses' grading. The additional administrative bonus is also taken into
+        courses grading. The additional administrative bonus is also taken into
         account.
-
         The function will throw a DatabaseError if something goes wrong.
         """
         with transaction.atomic():
             # First we delete all T0 records in current semester.
-            # for student in queryset:
-            # cls.objects.filter(student__in=queryset, semester=semester).delete()
             cls.objects.filter(semester=semester).delete()
 
             created: List[cls] = []
-            # For each student_id we want to know, how many times they have
+            # For each student_id we want to know, how many times he has
             # generated grading tickets in the last two semesters.
             generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
@@ -81,11 +77,11 @@ class T0Times(models.Model):
                     "student_id", "num_tickets"))
 
             student: Student
-            for student in queryset:
+            for student in Student.get_active_students():
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
-                # that over nighttime. 720 minutes is equal to 12 hours. If
+                # that over nighttime. 720 minutes is equal to12 hours. If
                 # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
                 # additional 12 hours from T0. This way T0's are separated by
                 # ECTS_BONUS minutes per point, but never fall in the nighttime.
