@@ -56,7 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, queryset=Student.get_active_students()):
+    def populate_t0(cls, semester: Semester, queryset=None):
         """Computes T0's for selected students, all active students if unspecified.
 
         The times are based on their ECTS points and their participation in
@@ -65,10 +65,15 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
+        if queryset is None:
+            students = Student.get_active_students()
+        else:
+            students = queryset
+
         with transaction.atomic():
             # First we delete all T0 records in current semester.
-            # for student in queryset:
-            cls.objects.filter(student__in=queryset, semester=semester).delete()
+            # for selected students:
+            cls.objects.filter(student__in=students, semester=semester).delete()
 
             created: List[cls] = []
             # For each student_id we want to know, how many times they have
@@ -76,11 +81,11 @@ class T0Times(models.Model):
             generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ], student__in=queryset).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
+                ], student__in=students).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
                     "student_id", "num_tickets"))
 
             student: Student
-            for student in Student.get_active_students():
+            for student in students:
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
@@ -193,25 +198,28 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, queryset=Student.get_active_students()):
+    def populate_opening_times(cls, semester: Semester, queryset=None):
         """Computes opening times for selected students (or all acive students) that cast votes.
 
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
+        if queryset is None:
+            students = Student.get_active_students()
+        else:
+            students = queryset
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete already existing records for this semester and selected students.
-        cls.objects.filter(student__in=queryset, group__course__semester_id=semester.id).delete()
+        cls.objects.filter(student__in=students, group__course__semester_id=semester.id).delete()
         # We need T0 of each student.
         t0times: Dict[int, datetime] = dict(
-                T0Times.objects.filter(semester_id=semester.id, student__in=queryset).values_list("student_id", "time")
+                T0Times.objects.filter(semester_id=semester.id, student__in=students).values_list("student_id", "time")
             )
 
-        student_ids = queryset.values_list("id")
 
         opening_time_objects: List[cls] = []
-        votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=queryset)
+        votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=students)
         groups = Group.objects.filter(course__semester=semester).select_related('course')
 
         votes_by_proposal: Dict[int, List[SingleVote]] = defaultdict(list)
