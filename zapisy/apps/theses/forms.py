@@ -8,7 +8,6 @@ from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
-from django.core.exceptions import ValidationError
 
 
 class ThesisFormAdmin(forms.ModelForm):
