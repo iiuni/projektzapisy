@@ -80,11 +80,11 @@ class T0Times(models.Model):
                     "student_id", "num_tickets"))
 
             student: Student
-            for student in queryset:
+            for student in Student.get_active_students():
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
-                # that over nighttime. 720 minutes is equal to 12 hours. If
+                # that over nighttime. 720 minutes is equal to12 hours. If
                 # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
                 # additional 12 hours from T0. This way T0's are separated by
                 # ECTS_BONUS minutes per point, but never fall in the nighttime.
