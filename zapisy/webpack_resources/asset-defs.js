@@ -100,10 +100,6 @@ const AssetDefs = {
 
   "theses-theses-widget": [path.resolve("apps/theses/assets/theses-widget.js")],
 
-  "theses-thesis-form-date": [
-    path.resolve("apps/theses/assets/store/theses-date.js"),
-  ],
-
   // User app
 
   "users-user-filter": [

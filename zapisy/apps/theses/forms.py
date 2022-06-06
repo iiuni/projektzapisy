@@ -8,6 +8,7 @@ from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
+from django.core.exceptions import ValidationError
 
 
 class ThesisFormAdmin(forms.ModelForm):
@@ -84,6 +85,10 @@ class ThesisFormBase(forms.ModelForm):
         if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
                 and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
+        if "students" in self.data and self.cleaned_data['reserved_until'] is None:
+            raise forms.ValidationError("Do pracy przypisano studenta. Uzupełnij datę rezerwacji")
+        if "students" not in self.data and self.cleaned_data['reserved_until'] is not None:
+            raise forms.ValidationError("Nie przypisano studentów. Usuń datę rezerwacji")
 
 
 class ThesisForm(ThesisFormBase):
@@ -125,8 +130,12 @@ class ThesisForm(ThesisFormBase):
         instance = super().save(commit=False)
         instance.added = timezone.now()
 
-        if not self.is_staff:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
+        instance.status = ThesisStatus.BEING_EVALUATED.value
+
+        raise ValidationError(
+            "Did not send for 'help' in the subject despite "
+            "CC'ing yourself."
+        )
 
         instance.save()
         self.save_m2m()
@@ -137,10 +146,6 @@ class ThesisForm(ThesisFormBase):
 class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
-
-        self.title = self.instance.title
-        self.supporting_advisor = self.instance.supporting_advisor
-        self.kind = self.instance.kind
 
         self.status = self.instance.status
 
@@ -178,7 +183,6 @@ class EditThesisForm(ThesisFormBase):
                 Submit('submit', 'Zapisz', css_class='btn-primary'))
 
     def save(self, commit=True):
-
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
