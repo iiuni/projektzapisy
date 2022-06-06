@@ -193,10 +193,6 @@ class EditThesisForm(ThesisFormBase):
             else:
                 instance.status = status
 
-        if self.title != instance.title or self.supporting_advisor != self.instance.supporting_advisor or \
-                self.kind != instance.kind:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
-
         if commit:
             instance.save()
             self.save_m2m()
