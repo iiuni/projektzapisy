@@ -76,7 +76,7 @@ class T0Times(models.Model):
             generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ], student_id__in=queryset).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
+                ], student__in=queryset).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
                     "student_id", "num_tickets"))
 
             student: Student
