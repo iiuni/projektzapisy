@@ -108,8 +108,6 @@ class T0Times(models.Model):
                 created.append(record)
             cls.objects.bulk_create(created)
 
-
-
 class GroupOpeningTimes(models.Model):
     """Stores student opening times for groups.
 
@@ -216,7 +214,6 @@ class GroupOpeningTimes(models.Model):
         t0times: Dict[int, datetime] = dict(
                 T0Times.objects.filter(semester_id=semester.id, student__in=students).values_list("student_id", "time")
             )
-
 
         opening_time_objects: List[cls] = []
         votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=students)
