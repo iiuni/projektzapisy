@@ -87,7 +87,7 @@ class ThesisFormBase(forms.ModelForm):
         if "students" in self.data and self.cleaned_data['reserved_until'] is None:
             raise forms.ValidationError("Do pracy przypisano studenta. Uzupełnij datę rezerwacji")
         if "students" not in self.data and self.cleaned_data['reserved_until'] is not None:
-            raise forms.ValidationError("Nie przypisano studentów. Usuń datę rezerwacji")
+            raise forms.ValidationError("Nie przypisano studentów do pracy. Usuń datę rezerwacji")
 
 
 class ThesisForm(ThesisFormBase):
