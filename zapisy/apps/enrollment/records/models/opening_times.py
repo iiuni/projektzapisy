@@ -21,7 +21,7 @@ from apps.users.models import Student
 class T0Times(models.Model):
     """This model stores a T0 for a student.
 
-    T0 is a time when they can enroll into any group (except of those that are
+    T0 is a time when they can enroll into each groups (except of those that are
     still closed).
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -56,32 +56,35 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester):
-        """Computes T0's for all active students.
+    def populate_t0(cls, semester: Semester, queryset=Student.get_active_students()):
+        """Computes T0's for selected students, all active students if unspecified.
+
         The times are based on their ECTS points and their participation in
-        courses grading. The additional administrative bonus is also taken into
+        courses' grading. The additional administrative bonus is also taken into
         account.
+
         The function will throw a DatabaseError if something goes wrong.
         """
         with transaction.atomic():
             # First we delete all T0 records in current semester.
-            cls.objects.filter(semester=semester).delete()
+            # for student in queryset:
+            cls.objects.filter(student__in=queryset, semester=semester).delete()
 
             created: List[cls] = []
-            # For each student_id we want to know, how many times he has
+            # For each student_id we want to know, how many times they have
             # generated grading tickets in the last two semesters.
             generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ]).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
+                ], student_id__in=queryset).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
                     "student_id", "num_tickets"))
 
             student: Student
-            for student in Student.get_active_students():
+            for student in queryset:
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
-                # that over nighttime. 720 minutes is equal to12 hours. If
+                # that over nighttime. 720 minutes is equal to 12 hours. If
                 # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
                 # additional 12 hours from T0. This way T0's are separated by
                 # ECTS_BONUS minutes per point, but never fall in the nighttime.
@@ -99,6 +102,7 @@ class T0Times(models.Model):
                 record.time -= timedelta(hours=2)
                 created.append(record)
             cls.objects.bulk_create(created)
+
 
 
 class GroupOpeningTimes(models.Model):
@@ -195,21 +199,19 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
-        t0times: Dict[int, datetime] = {}
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete already existing records for this semester and selected students.
-        for student in queryset:
-            cls.objects.filter(group__course__semester_id=semester.id, student_id=student.id).delete()
-            # We need T0 of each student.
-            t0times.update(dict(
-                T0Times.objects.filter(semester_id=semester.id, student_id=student.id).values_list("student_id", "time")
-            ))
+        cls.objects.filter(student__in=queryset, group__course__semester_id=semester.id).delete()
+        # We need T0 of each student.
+        t0times: Dict[int, datetime] = dict(
+                T0Times.objects.filter(semester_id=semester.id, student__in=queryset).values_list("student_id", "time")
+            )
 
         student_ids = queryset.values_list("id")
 
         opening_time_objects: List[cls] = []
-        votes = SingleVote.objects.meaningful().in_semester(semester=semester)
+        votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=queryset)
         groups = Group.objects.filter(course__semester=semester).select_related('course')
 
         votes_by_proposal: Dict[int, List[SingleVote]] = defaultdict(list)
@@ -223,20 +225,25 @@ class GroupOpeningTimes(models.Model):
         for proposal_id, groups in groups_by_proposal.items():
             single_vote: SingleVote
             for single_vote in votes_by_proposal[proposal_id]:
-                if single_vote.student_id in student_ids:
-                    for group in groups:
-                        bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
-                        bonus_obj.time = max(
-                            filter(
-                                None,
-                                (
-                                    group.course.records_start,
-                                    t0times.get(single_vote.student_id, semester.records_opening) -
-                                    timedelta(days=single_vote.val),
-                                )
+                # Every point gives a day worth of bonus.
+                for group in groups:
+                    bonus_obj = cls(student_id=single_vote.student_id, group_id=group.pk)
+                    bonus_obj.time = max(
+                        filter(
+                            None,
+                            (
+                                # The opening cannot be earlier than the group is opened
+                                # (if that is specified).
+                                group.course.records_start,
+                                # If the student does not have T0, we use
+                                # the general records opening time in the
+                                # semester.
+                                t0times.get(single_vote.student_id, semester.records_opening) -
+                                timedelta(days=single_vote.val),
                             )
                         )
-                        opening_time_objects.append(bonus_obj)
+                    )
+                    opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)
 
     @classmethod
