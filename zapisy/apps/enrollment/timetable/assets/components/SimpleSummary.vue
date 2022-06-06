@@ -6,10 +6,30 @@ import { values } from "lodash";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import state from "../store/groups";
+import { GroupById, CourseById } from "../store/groups";
 import { DayOfWeek, nameDay, Course, Group } from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
+const SimpleSummaryProps = Vue.extend({
+  props: {
+    summaryType: {
+      type: String,
+      default: "",
+    },
+    sumPoints: {
+        type: Number as () => Number,
+        default: 0,
+    },
+    groups: {
+        type: Array as () => Array<Group>,
+        default: {}
+    },
+    courses: {
+        type: Object as () => Object,
+        default: {},
+    },
+  },
+});
 @Component({
   computed: {
     // ...mapGetters("courses", {
@@ -20,27 +40,27 @@ import { DayOfWeek, nameDay, Course, Group } from "../models";
     // }),
   },
 })
-export default class SimpleSummary extends Vue {
+export default class SimpleSummary extends SimpleSummaryProps {
   // The computed property selectionState comes from store.
   //   selectionState!: number[];
   //   // The same goes for courses and tester.
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
 
-  get sumPoints(): number {
-    return state.state.sumPoints;
-  }
-  get courses(): { [id: number]: Course } {
-    return state.state.courses;
-  }
-  get groups(): { [id: number]: Group } {
-    return values(state.state.store).filter(
-      (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
-    );
-  }
-  public GetNameDay(day: DayOfWeek) {
-    return nameDay(day);
-  }
+//   get sumPoints(): number {
+//     return state.state.sumPoints;
+//   }
+//   get courses(): { [id: number]: Course } {
+//     return state.state.courses;
+//   }
+//   get groups(): { [id: number]: Group } {
+//     return values(state.state.store).filter(
+//       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+//     );
+//   }
+    public GetNameDay(day: DayOfWeek) {
+        return nameDay(day);
+    }
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
   // }
@@ -73,7 +93,7 @@ export default class SimpleSummary extends Vue {
       </thead>
       <tfoot>
         <tr>
-          <td><strong>Suma punktów ECTS:</strong></td>
+          <td><strong>Suma punktów ECTS za {{ summaryType }}:</strong></td>
           <td class="ects">{{ sumPoints }}</td>
         </tr>
       </tfoot>

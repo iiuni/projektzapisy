@@ -68,6 +68,6 @@ export default class PrototypeSummary extends Vue {
 
 <template>
   <div class="table-responsiveVUE">
-    <SimpleSummary />
+    <SimpleSummary summaryType="(P, Z, K, L)" :sumPoints="sumPoints" :groups="groups" :courses="courses"/>
   </div>
 </template>
