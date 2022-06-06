@@ -30,9 +30,41 @@
         </form>
         {% endif %}
     </div>
-    <form method="POST" class="post-form">
+    <form method="POST" class="post-form confirm-submit">
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
+    {% if not new_thesis %}
+    <script>
+        var title = document.getElementsByName('title')[0].value
+        var advisor = document.getElementsByName('advisor')[0].value
+        var supporting_advisor = document.getElementsByName('supporting_advisor')[0].value
+        var kind = document.getElementsByName('kind')[0].value
+        var max_number_of_students = document.getElementsByName('max_number_of_students')[0].value
+
+        $(document).on('submit', '.confirm-submit', function() {
+            if(document.getElementsByName('status')[0].querySelector('option:checked').value < 3) {
+                return;
+            }
+            var confirm_msg = 'Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n' +
+                    'Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?';
+            if(document.getElementsByName('title')[0].value != title) {
+                return confirm(`Zmieniono tytuł pracy.\n${confirm_msg}`);
+            }
+            if(document.getElementsByName('advisor')[0].value != advisor) {
+                return confirm(`Zmieniono promotora pracy.\n${confirm_msg}`);
+            }
+            if(document.getElementsByName('supporting_advisor')[0].value != supporting_advisor) {
+                return confirm(`Zmieniono promotora wspierającego.\n${confirm_msg}`);
+            }
+            if(document.getElementsByName('kind')[0].value != kind) {
+                return confirm(`Zmieniono typ pracy.\n${confirm_msg}`);
+            }
+            if(document.getElementsByName('max_number_of_students')[0].value != max_number_of_students) {
+                return confirm(`Zmieniono maks. liczba studentów.\n${confirm_msg}`);
+            }
+        })
+    </script>
+    {% endif %}
 </div>
 {% endblock %}

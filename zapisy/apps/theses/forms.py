@@ -142,6 +142,11 @@ class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
+        self.title = self.instance.title
+        self.advisor = self.instance.advisor
+        self.supporting_advisor = self.instance.supporting_advisor
+        self.kind = self.instance.kind
+        self.max_number_of_students = self.instance.max_number_of_students
         self.status = self.instance.status
 
         if user.is_staff:
@@ -180,6 +185,12 @@ class EditThesisForm(ThesisFormBase):
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
+
+        if self.title != instance.title or self.advisor != instance.advisor or \
+                self.supporting_advisor != instance.supporting_advisor or \
+                self.kind != self.instance.kind or \
+                self.max_number_of_students != self.instance.max_number_of_students:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
 
         if not self.is_staff:
             status = self.status
