@@ -23,6 +23,7 @@ newrelic==5.24.0.153
 gunicorn==20.1.0
 python-dateutil==2.8.2
 python-memcached==1.59
+more-itertools==8.13.0
 xhtml2pdf==0.2.7
 # BBCode -> HTML
 postmarkup==1.2.2
