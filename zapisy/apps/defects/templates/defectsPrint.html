@@ -67,7 +67,7 @@
                 </tr>
                 {% if defect.description != "" %}
                     <tr>
-                        <td class="text-center" colspan="4" style="word-break: break-all">{{ defect.description }}</td>
+                        <td class="text" colspan="4" style="word-break: break-all">{{ defect.description|linebreaksbr }}</td>
                     </tr>
                 {% else %}
                     <tr style="display:none;"></tr>

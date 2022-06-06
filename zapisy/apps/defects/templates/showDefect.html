@@ -88,7 +88,7 @@
     <div style="word-break: break-word">
         {% if defect.description != "" %}
             <h2>Opis usterki</h2>
-            {{ defect.description }}
+            {{ defect.description|linebreaksbr }}
         {% endif %}
     </div>
     <hr>
@@ -97,7 +97,7 @@
     <div id="info-div">
         <div id="info-text">
             {% if defect.information_from_defect_manager %}
-                {{ defect.information_from_defect_manager }}
+                <p>{{ defect.information_from_defect_manager|linebreaksbr }}</p>
             {% else %}
                 <p>Nie ma jeszcze żadnej informacji od serwisanta</p>
             {% endif %}
