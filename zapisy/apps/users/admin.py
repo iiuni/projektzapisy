@@ -49,7 +49,7 @@ class StudentAdmin(admin.ModelAdmin):
         if queryset.count() < 1:
             self.message_user(request, "Nie wybrano studentow", level=messages.WARNING)
             return
-        """The opening times refreshing concerns the upcoming semester"""
+        # The opening times refreshing concerns the upcoming semester
 
         semester = Semester.get_semester(Semester.get_current_semester().semester_ending + datetime.timedelta(days=1))
         if semester is None:
