@@ -108,7 +108,7 @@ class T0Times(models.Model):
                 created.append(record)
             cls.objects.bulk_create(created)
 
-            
+
 class GroupOpeningTimes(models.Model):
     """Stores student opening times for groups.
 
