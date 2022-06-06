@@ -129,12 +129,8 @@ class ThesisForm(ThesisFormBase):
         instance = super().save(commit=False)
         instance.added = timezone.now()
 
-        instance.status = ThesisStatus.BEING_EVALUATED.value
-
-        raise ValidationError(
-            "Did not send for 'help' in the subject despite "
-            "CC'ing yourself."
-        )
+        if not self.is_staff:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
 
         instance.save()
         self.save_m2m()
