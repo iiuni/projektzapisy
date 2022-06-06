@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { DefectInfo } from "@/defect/assets/models";
+import { DefectInfo } from "@/defects/assets/models";
 import SorterField from "@/theses/assets/components/sorters/SorterField.vue";
 import Component from "vue-class-component";
 
@@ -103,7 +103,7 @@ export default class DefectList extends Vue {
         :id="defect.id"
       >
         <td class="text-center align-middle">
-          <a class="btn-link" :href="'/defect/' + defect.id">{{
+          <a class="btn-link" :href="'/defects/' + defect.id">{{
             defect.name
           }}</a>
         </td>

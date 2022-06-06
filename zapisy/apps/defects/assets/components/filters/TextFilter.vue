@@ -3,7 +3,7 @@ import { property } from "lodash";
 import Vue from "vue";
 import { mapMutations } from "vuex";
 
-import { DefectInfo } from "@/defect/assets/models";
+import { DefectInfo } from "@/defects/assets/models";
 import { Filter } from "../../store/filters";
 
 class TextFilter implements Filter {

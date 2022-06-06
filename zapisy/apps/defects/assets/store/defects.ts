@@ -1,6 +1,6 @@
 import { values, sortBy } from "lodash";
 import { ActionContext } from "vuex";
-import { DefectInfo } from "@/defect/assets/models";
+import { DefectInfo } from "@/defects/assets/models";
 
 interface State {
   defects: DefectInfo[];

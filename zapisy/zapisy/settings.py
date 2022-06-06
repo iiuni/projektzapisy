@@ -233,7 +233,7 @@ INSTALLED_APPS = (
     'apps.grade.ticket_create',
     'apps.schedulersync',
     'apps.theses',
-    'apps.defect',
+    'apps.defects',
     'apps.effects',
     'django_extensions',
     'django_filters',

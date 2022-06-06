@@ -1,4 +1,4 @@
-{% extends "defectBase.html" %}
+{% extends "defectsBase.html" %}
 
 {% load crispy_forms_tags %}
 {% load render_bundle from webpack_loader %}
@@ -26,7 +26,7 @@
             <div>
             <a href="{% url 'defects:new' %}" class="btn btn-primary" role="button">Dodaj nową usterkę</a>
             <input type="submit" name="print" id="print-form-button" class="btn btn-primary" value="Drukuj">
-            {% if is_repairer %}
+            {% if is_defect_manager %}
             <input type="submit" name="delete" id="delete-form-button" class="btn btn-primary" value="Usuń">
             <input type="submit" name="done" id="done-form-button" class="btn btn-primary" value="Ustaw jako zrobione">
             {% endif %}

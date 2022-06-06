@@ -1,11 +1,11 @@
-{% extends "defectBase.html" %}
+{% extends "defectsBase.html" %}
 
 {% load render_bundle from webpack_loader %}
 {% load static %}
 {% load crispy_forms_tags %}
 
 {% block rendered_bundles %}
-    {% render_bundle "defect-style" %}
+    {% render_bundle "defects-style" %}
 {% endblock %}
 
 {% block js %}

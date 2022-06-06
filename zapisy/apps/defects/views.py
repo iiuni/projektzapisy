@@ -4,11 +4,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from gdstorage.storage import GoogleDriveStorage
 
-from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromRepairerForm
-from .models import Defect, StateChoices, DefectMaintainer
-from ..users.decorators import employee_required
+from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
+from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
-
+from ..users.decorators import employee_required
 
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()
@@ -16,7 +15,7 @@ gd_storage = GoogleDriveStorage()
 
 @employee_required
 def index(request):
-    is_repairer_val = is_repairer(request.user.id)
+    is_defect_manager_val = is_defect_manager(request.user.id)
     if request.method == "POST":
         query = request.POST
         if_empty, defects_list = parse_names(request)
@@ -27,13 +26,13 @@ def index(request):
                 return print_defects(request)
             return print_defects(request, defects_list)
         elif query.get('done') is not None:
-            if is_repairer_val:
+            if is_defect_manager_val:
                 Defect.objects.filter(pk__in=defects_list).update(state=StateChoices.DONE)
             else:
                 messages.error(request,
                                "Stan może zostać zmieniony tylko przez osoby do tego wyznaczone")
         elif query.get('delete') is not None:
-            if is_repairer_val:
+            if is_defect_manager_val:
                 to_delete = Defect.objects.filter(pk__in=defects_list)
 
                 images_to_delete = []
@@ -52,15 +51,15 @@ def index(request):
         else:
             messages.error(request, "Nie wprowadzono metody. Ten błąd nie powinien się zdarzyć. Proszę o kontakt z "
                                     "administratorem systemu zapisów.")
-    return render(request, "defectMain.html", {"defects": Defect.objects.all().select_related("reporter"),
-                                               "visibleDefects": [parse_defect(defect) for defect in
-                                                                  Defect.objects.all().select_related("reporter")],
-                                               'is_repairer': is_repairer_val})
+    return render(request, "defectsMain.html", {"defects": Defect.objects.all().select_related("reporter"),
+                                                "visibleDefects": [parse_defect(defect) for defect in
+                                                                   Defect.objects.all().select_related("reporter")],
+                                                'is_defect_manager': is_defect_manager_val})
 
 
 def delete_images(images_to_delete):
     for image_name in images_to_delete:
-        image_path = '/zapisy/defect/' + image_name
+        image_path = '/zapisy/defects/' + image_name
         if gd_storage.exists(image_path):
             gd_storage.delete(image_path)
 
@@ -91,10 +90,10 @@ def show_defect(request, defect_id):
         for image in images:
             image_urls.append(image.image.url[:-16])
 
-        info_form = InformationFromRepairerForm(instance=defect)
+        info_form = InformationFromDefectManagerForm(instance=defect)
 
         return render(request, 'showDefect.html', {'defect': defect, 'image_urls': image_urls, 'info_form': info_form,
-                                                   'is_repairer': is_repairer(request.user.id)})
+                                                   'is_defect_manager': is_defect_manager(request.user.id)})
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")
         return redirect('defects:main')
@@ -129,7 +128,7 @@ def edit_defect_helper(request, defect):
 def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        if is_repairer(request.user.id):
+        if is_defect_manager(request.user.id):
             images_to_delete = []
             for image in defect.image_set.all():
                 images_to_delete.append(image.image.name)
@@ -216,18 +215,18 @@ def add_defect_post_request(request):
 
 def print_defects(request, defects_list=None):
     if defects_list is None:
-        return render(request, 'defectPrint.html', {'defects': Defect.objects.all()})
+        return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:
         defects = dict([(defect.id, defect) for defect in Defect.objects.filter(pk__in=defects_list)])
         defects = list(filter(lambda x: x is not None, map(lambda defect: defects.get(defect, None), defects_list)))
-        return render(request, 'defectPrint.html', {'defects': defects})
+        return render(request, 'defectsPrint.html', {'defects': defects})
 
 
 def delete_image(request, image_id):
     if request.method == "POST":
         image = get_object_or_404(Image, id=image_id)
         defect_id = image.defect.id
-        image_path = '/zapisy/defect/' + image.image.name
+        image_path = '/zapisy/defects/' + image.image.name
 
         image.delete()
 
@@ -246,20 +245,20 @@ def delete_image(request, image_id):
     raise Http404
 
 
-def post_information_from_repairer(request, defect_id):
+def post_information_from_defect_manager(request, defect_id):
     if request.method == "POST":
-        if not is_repairer(request.user.id):
+        if not is_defect_manager(request.user.id):
             messages.error(request, "Informacja od serwisanta"
                                     " może zostać wypełniona tylko przez osoby do tego wyznaczone.")
             return redirect('defects:show_defect', defect_id=defect_id)
-        info_form = InformationFromRepairerForm(request.POST)
+        info_form = InformationFromDefectManagerForm(request.POST)
         if not info_form.is_valid():
             messages.error(request, info_form.errors)
             return redirect('defects:show_defect', defect_id=defect_id)
 
         info_form_data = info_form.cleaned_data
         defect = Defect.objects.filter(pk=defect_id)
-        defect.update(information_from_repairer=info_form_data['information_from_repairer'],
+        defect.update(information_from_defect_manager=info_form_data['information_from_defect_manager'],
                       state=info_form_data["state"])
 
         if request.user.id != defect.get().reporter.id:
@@ -274,5 +273,5 @@ def post_information_from_repairer(request, defect_id):
     raise Http404
 
 
-def is_repairer(user_id):
-    return DefectMaintainer.objects.filter(user_id=user_id).exists()
+def is_defect_manager(user_id):
+    return DefectManager.objects.filter(user_id=user_id).exists()

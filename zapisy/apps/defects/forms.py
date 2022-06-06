@@ -52,13 +52,13 @@ DefectImageFormSet = inlineformset_factory(Defect,
                                            can_delete=True)
 
 
-class InformationFromRepairerForm(forms.ModelForm):
+class InformationFromDefectManagerForm(forms.ModelForm):
     class Meta:
         model = Defect
-        fields = ['information_from_repairer', 'state']
+        fields = ['information_from_defect_manager', 'state']
 
     def __init__(self, *args, **kwargs):
-        super(InformationFromRepairerForm, self).__init__(*args, **kwargs)
-        self.fields['information_from_repairer'].label = ""
+        super(InformationFromDefectManagerForm, self).__init__(*args, **kwargs)
+        self.fields['information_from_defect_manager'].label = ""
         self.helper = FormHelper()
         self.helper.form_tag = False

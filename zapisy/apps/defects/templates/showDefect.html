@@ -1,11 +1,11 @@
-{% extends "defectBase.html" %}
+{% extends "defectsBase.html" %}
 
 {% load render_bundle from webpack_loader %}
 {% load static %}
 {% load crispy_forms_tags %}
 
 {% block rendered_bundles %}
-    {% render_bundle "defect-style" %}
+    {% render_bundle "defects-style" %}
 {% endblock %}
 
 {% block js %}
@@ -38,7 +38,7 @@
                 <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
                     Edytuj
                 </a>
-                {% if is_repairer %}
+                {% if is_defect_manager %}
                     <a
                        class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
                         Usuń
@@ -96,16 +96,16 @@
     <h3>Informacja od serwisanta</h3>
     <div id="info-div">
         <div id="info-text">
-            {% if defect.information_from_repairer %}
-                {{ defect.information_from_repairer }}
+            {% if defect.information_from_defect_manager %}
+                {{ defect.information_from_defect_manager }}
             {% else %}
                 <p>Nie ma jeszcze żadnej informacji od serwisanta</p>
             {% endif %}
         </div>
 
-        {% if is_repairer %}
+        {% if is_defect_manager %}
             <button class="btn btn-info" type="button" id="show-info-form-button">
-                {% if defect.information_from_repairer %}
+                {% if defect.information_from_defect_manager %}
                     Edytuj
                 {% else %}
                     Dodaj
