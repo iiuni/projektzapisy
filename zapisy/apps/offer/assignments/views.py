@@ -17,6 +17,8 @@ from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from google.auth.exceptions import RefreshError
+
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
@@ -47,6 +49,10 @@ def plan_view(request):
             filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return render(request, 'assignments/view.html', {'year': year})
+    except RefreshError as error:
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       {error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
