@@ -2,7 +2,8 @@
 {% load render_bundle from webpack_loader %}
 
 {% block main-subtitle %}
-    {% if employees_dict %} Lista pracowników {% elif students %} Lista studentów {% endif %}
+    {% if employee %} {{employee.get_full_name}} {% elif student %} {{student.get_full_name}} {% elif employees_dict %}
+    Lista pracowników {% elif students %} Lista studentów {% endif %}
 {% endblock %}
 
 {% block bread %}

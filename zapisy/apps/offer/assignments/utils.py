@@ -9,7 +9,7 @@ from apps.enrollment.courses.models import CourseInstance
 from apps.enrollment.courses.models.course_information import Language
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.records.models.records import Record, RecordStatus
-from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
+from apps.offer.proposal.models import Proposal, ProposalStatus
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.offer.vote.models.system_state import SystemState
 from apps.schedulersync.scheduler_data import GROUP_TYPES
@@ -32,6 +32,16 @@ class SingleAssignmentData(NamedTuple):
     # How many teachers assigned to the same group.
     multiple_teachers: int
     multiple_teachers_id: str
+
+
+class SingleCourseData(NamedTuple):
+    """Represents a row in the Courses sheet."""
+    name: str
+    proposal_id: int
+    course_type: str
+    tags: str
+    ects: str
+    semester: str
 
 
 class ProcessedAssignment:
@@ -127,7 +137,7 @@ VotingSummaryPerYear = Dict[str, ProposalVoteSummary]
 ProposalSummary = List[SingleAssignmentData]
 
 
-def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
+def suggest_teachers(picked: List[Tuple[int, str]], proposals: Dict[int, Proposal]) -> ProposalSummary:
     """Suggests teachers based on the past instances of the course.
 
     Data returned by this function will be presented in a spreadsheet, where it
@@ -137,9 +147,10 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
     the owner of the course.
 
     Args:
-        picked: Dictionary of proposals selected to be taught in the upcoming
-        year. The dictionary is keyed by Proposal ID and the value is 'z' or
-        'l'.
+        picked: List of proposals selected to be taught in the upcoming
+        year. Each element is a pair of Proposal ID and one letter encoding
+        semester: 'z' or 'l'
+        proposals: Dictionary of Proposals keyed by Proposal ID
     """
     groups: ProposalSummary = []
     REVERSE_GROUP_TYPES = {v: k for k, v in GROUP_TYPES.items()}
@@ -148,10 +159,6 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
         Language.ENGLISH: 1.5,
     }
     proposal_ids = set(p for (p, _s) in picked)
-    proposals = {
-        p.id: p for p in Proposal.objects.filter(
-            id__in=proposal_ids).select_related('owner', 'owner__user')
-    }
     # We use an SQL Window function to get the most recent instance of each
     # course.
     past_instances = CourseInstance.objects.filter(offer__in=proposal_ids).annotate(
@@ -177,11 +184,7 @@ def suggest_teachers(picked: List[Tuple[int, str]]) -> ProposalSummary:
             GroupType.SEMINAR: proposal.hours_seminar,
             GroupType.COMPENDIUM: proposal.hours_recap,
         })
-        if proposal.semester == SemesterChoices.UNASSIGNED:
-            apx = 'zima' if semester == 'z' else 'lato'
-            name = f"{proposal.name} ({apx})"
-        else:
-            name = proposal.name
+        name = proposal.get_course_name(semester)
         if pid in past_groups_by_proposal:
             groups.extend((SingleAssignmentData(
                 proposal_id=proposal.pk,
