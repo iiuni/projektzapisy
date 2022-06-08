@@ -7,6 +7,9 @@ from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
 from django.contrib.auth.models import User
 
+KEY_PREFIX = 'notifications:'
+KEY_PATTERN = KEY_PREFIX + '*'
+
 
 class NotificationsRepository(ABC):
 
@@ -138,10 +141,10 @@ class RedisNotificationsRepository(NotificationsRepository):
         return self.removed_count
 
     def _generate_unsent_key_for_user(self, user: User) -> str:
-        return f'notifications:unsent#{user.id}'
+        return f'{KEY_PREFIX}unsent#{user.id}'
 
     def _generate_sent_key_for_user(self, user: User) -> str:
-        return f'notifications:sent#{user.id}'
+        return f'{KEY_PREFIX}sent#{user.id}'
 
 
 def get_notifications_repository() -> NotificationsRepository:
