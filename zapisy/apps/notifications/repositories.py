@@ -7,6 +7,8 @@ from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
 from django.contrib.auth.models import User
 
+from zapisy.apps.common.redis import flush_with_prefix
+
 KEY_PREFIX = 'notifications:'
 KEY_PATTERN = KEY_PREFIX + '*'
 
@@ -98,7 +100,7 @@ class RedisNotificationsRepository(NotificationsRepository):
         self.redis_client.delete(self._generate_sent_key_for_user(user))
 
     def flush(self) -> None:
-        self.redis_client.flushdb()
+        flush_with_prefix(self.redis_client, KEY_PATTERN)
 
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         self.removed_count = 0
