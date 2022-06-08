@@ -31,8 +31,8 @@ export default class PrototypeSummary extends Vue {
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
 
-  get sumPoints(): number {
-    return state.state.sumPoints;
+  get totalPoints(): number {
+    return state.state.totalPoints;
   }
   get courses(): { [id: number]: Course } {
     return state.state.courses;
@@ -68,6 +68,6 @@ export default class PrototypeSummary extends Vue {
 
 <template>
   <div class="table-responsiveVUE">
-    <SimpleSummary summaryType="(P, Z, K, L)" :sumPoints="sumPoints" :groups="groups" :courses="courses"/>
+    <SimpleSummary summaryType="(P, Z, K, L)" :sumPoints="totalPoints" :groups="groups" :courses="courses"/>
   </div>
 </template>

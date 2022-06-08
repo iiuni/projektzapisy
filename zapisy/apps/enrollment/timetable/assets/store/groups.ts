@@ -21,16 +21,36 @@ function coalesce(...args: Array<any | null | undefined>) {
   return find(args, (o) => !isNil(o));
 }
 
+function updateSummaryState(state: State, group: Group) {
+  let counter = 0;
+  let c = group.course.id;
+  Object.entries(state.store).forEach((g) => {
+    if (
+      (g[1].isSelected ||
+        g[1].isPinned ||
+        g[1].isEnrolled ||
+        g[1].isEnqueued) &&
+      g[1].course.id == c &&
+      g[1].id != group.id
+    ) {
+      counter++;
+    }
+  });
+  if (counter == 0) {
+    state.totalPoints -= state.courses[c].points;
+    delete state.courses[c];
+  }
+}
 // Store holds the data for all groups that are currently visible, but also for
 // those, that had been visible.
 interface State {
   store: GroupById;
-  sumPoints: number;
+  totalPoints: number;
   courses: CourseById;
 }
 const state: State = {
   store: {},
-  sumPoints: 0,
+  totalPoints: 0,
   courses: {},
 };
 
@@ -52,24 +72,7 @@ const mutations = {
   unsetEnrolled(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     if (!group.isPinned) {
-      let counter = 0;
-      let c = group.course.id;
-      Object.entries(state.store).forEach((g) => {
-        if (
-          (g[1].isSelected ||
-            g[1].isPinned ||
-            g[1].isEnrolled ||
-            g[1].isEnqueued) &&
-          g[1].course.id == c &&
-          g[1].id != group.id
-        ) {
-          counter++;
-        }
-      });
-      if (counter == 0) {
-        state.sumPoints -= state.courses[c].points;
-        delete state.courses[c];
-      }
+      updateSummaryState(state, group);
     }
     group.isEnrolled = false;
     Vue.set(state.store, g.toString(), group);
@@ -82,24 +85,7 @@ const mutations = {
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     if (!group.isPinned) {
-      let counter = 0;
-      let c = group.course.id;
-      Object.entries(state.store).forEach((g) => {
-        if (
-          (g[1].isSelected ||
-            g[1].isPinned ||
-            g[1].isEnrolled ||
-            g[1].isEnqueued) &&
-          g[1].course.id == c &&
-          g[1].id != group.id
-        ) {
-          counter++;
-        }
-      });
-      if (counter == 0) {
-        state.sumPoints -= state.courses[c].points;
-        delete state.courses[c];
-      }
+      updateSummaryState(state, group);
     }
     group.isEnqueued = false;
     Vue.set(state.store, g.toString(), group);
@@ -111,24 +97,7 @@ const mutations = {
   },
   unsetPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
-    let counter = 0;
-    let c = group.course.id;
-    Object.entries(state.store).forEach((g) => {
-      if (
-        (g[1].isSelected ||
-          g[1].isPinned ||
-          g[1].isEnrolled ||
-          g[1].isEnqueued) &&
-        g[1].course.id == c &&
-        g[1].id != group.id
-      ) {
-        counter++;
-      }
-    });
-    if (counter == 0) {
-      state.sumPoints -= state.courses[c].points;
-      delete state.courses[c];
-    }
+    updateSummaryState(state, group);
     group.isPinned = false;
     Vue.set(state.store, g.toString(), group);
   },
@@ -156,7 +125,7 @@ const mutations = {
     } else {
       if (state.courses[course.id] === undefined) {
         state.courses[course.id] = course;
-        state.sumPoints += course.points;
+        state.totalPoints += course.points;
       }
     }
     Vue.set(state.store, group.id.toString(), group);
