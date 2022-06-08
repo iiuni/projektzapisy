@@ -7,7 +7,7 @@ from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
 from django.contrib.auth.models import User
 
-from zapisy.apps.common.redis import flush_with_prefix
+from apps.common.redis import flush_with_prefix
 
 KEY_PREFIX = 'notifications:'
 KEY_PATTERN = KEY_PREFIX + '*'

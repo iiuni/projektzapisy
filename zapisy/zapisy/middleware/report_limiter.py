@@ -4,7 +4,7 @@ from typing import List
 import redis
 import rollbar.contrib.django.middleware
 
-from zapisy.apps.common.redis import flush_with_prefix
+from apps.common.redis import flush_with_prefix
 
 TIMEOUT = 3600
 KEY_PREFIX = '404:'
