@@ -2984,13 +2984,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87":
-  version: 1.11.2
-  resolution: "bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#commit=ff650fd17cc2872f4031d355fa6382066d064e87"
-  checksum: 5d91772b8523bbb7493f1e3a43c752f34e9eb9a1138c3b75e69090c9ac2909fab93a0a07b58bbc72f5fd03e9b43411581e0bb45e8e25824e5007d96fbebdc33d
-  languageName: node
-  linkType: hard
-
 "bootstrap@npm:5.3.2":
   version: 5.3.2
   resolution: "bootstrap@npm:5.3.2"
@@ -5353,7 +5346,6 @@ fsevents@~2.1.2:
     big-integer: 1.6.51
     bootstrap: 5.3.2
     bootstrap-print-css: 1.0.1
-    bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
     cookieconsent: 3.1.1
@@ -5376,6 +5368,7 @@ fsevents@~2.1.2:
     sass: 1.26.10
     sass-loader: 10.4.1
     spicery: 1.1.0
+    tablesorter: ^2.31.3
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -8517,6 +8510,15 @@ resolve@^1.14.2:
   version: 1.2.0
   resolution: "symbol-observable@npm:1.2.0"
   checksum: 268834a1d4cba19d40f367e5c2755f612969c8418e43a3be17408e392802a667f8bb542893440d58a080a8ea8da05ea98e27e472b9f4ff6fbda78a21a1a41c53
+  languageName: node
+  linkType: hard
+
+"tablesorter@npm:^2.31.3":
+  version: 2.31.3
+  resolution: "tablesorter@npm:2.31.3"
+  dependencies:
+    jquery: ">=1.2.6"
+  checksum: 1c0304f2976973bb8f0edffb1c46e8118dcc4fae966f55c8d7b9407a32b30b92ac8e8a984d4ec6de8af1be05799adf1f904c0bb865acd861cdf575046ee3e0e6
   languageName: node
   linkType: hard
 

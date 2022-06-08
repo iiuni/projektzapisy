@@ -75,6 +75,7 @@ const AssetDefs = {
   ],
   "vote-bootstrap-table": [
     path.resolve("apps/offer/vote/assets/bootstrap-table.js"),
+    path.resolve("apps/offer/vote/assets/bootstrap-table.scss"),
   ],
 
   // Schedule app

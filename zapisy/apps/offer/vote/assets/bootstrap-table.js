@@ -1,2 +1,6 @@
-import "bootstrap-sortable";
-import "bootstrap-sortable/Contents/bootstrap-sortable.css";
+import * as $ from 'jquery'
+import 'tablesorter'
+
+$(function () {
+  $('.table').tablesorter();
+})
