@@ -1,6 +1,6 @@
-import * as $ from 'jquery'
-import 'tablesorter'
+import * as $ from "jquery";
+import "tablesorter";
 
 $(function () {
-  $('.table').tablesorter();
-})
+  $(".table").tablesorter();
+});
