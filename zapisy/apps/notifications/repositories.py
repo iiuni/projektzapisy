@@ -3,10 +3,9 @@ from datetime import datetime
 from typing import List
 
 import redis
-from django.contrib.auth.models import User
-
 from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
+from django.contrib.auth.models import User
 
 
 class NotificationsRepository(ABC):
