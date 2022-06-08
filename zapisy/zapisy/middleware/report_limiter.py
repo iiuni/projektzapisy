@@ -10,17 +10,16 @@ KEY_PATTERN = KEY_PREFIX + '*'
 
 
 class RollbarOnly404Limited:
-    """Ogranicza liczbę zgłoszeń 404 wysyłanych do Rollbara pochodzących od tych samych klientów.
+    """Throttles the number of the 404 reports sent to Rollbar originating from the same user.
 
-    * Klienci są identyfikowani przy użyciu adresów IP, a dane o nich są przechowywane w Redisie
-    (z założenia nietrwale).
-    * Zmienna TIMEOUT określa (w sekundach) jak często dany klient może spowodować wygenerowanie
-    zgłoszenia. Wysłanie kolejnych nieudanych zapytań w okresie ignorowania nie wydłuża czasu -
-    - liczy się moment ostatniego zapytania z wysłanym zgłoszeniem.
-    * Ta klasa nie obsługuje w żaden sposób komunikacji z Rollbarem. Zgłoszenia są wysyłane
-    za pośrednictwem standardowego middleware'u od twórców projektu.
-    * Klient za każdym razem zobaczy stronę błędu i otrzyma kod 404, więc działanie tego modułu
-    jest z jego punktu widzenia przezroczyste.
+    The clients are identified using their IP addresses and this data is temporarily stored
+    in Redis. The constant TIMEOUT contains the length of a timeframe (in seconds), during which
+    a client may cause a report to be sent. Sending more requests during this period does not
+    prolong it; only the time of the last request passed to Rollbar is used. This class does not
+    communicate with the Rollbar's servers. Any first request from a client in a timeframe will be
+    simply passed to the official middleware provided by the Rollbar project. In any case, the user
+    will see the error page and their client should receive 404 error code. Any action
+    performed by this middleware should not be deduced by a client.
     """
     def __init__(self, get_response):
         self.get_response = get_response
