@@ -56,8 +56,13 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, queryset=None):
-        """Computes T0's for selected students, all active students if unspecified.
+    def populate_t0(cls, semester: Semester, students_qs=None):
+        """Computes T0s for selected students.
+
+        The arguments are the semester of the T0s to be computed
+        and the optional queryset of students whose T0s are to be computed.
+        If the second argument is not passed, it will be executed for all
+        active student.
 
         The times are based on their ECTS points and their participation in
         courses' grading. The additional administrative bonus is also taken into
@@ -65,10 +70,10 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-        if queryset is None:
-            students = Student.get_active_students()
+        if students_qs.exists():
+            students = students_qs
         else:
-            students = queryset
+            students = Student.get_active_students()
 
         with transaction.atomic():
             # First we delete all T0 records in current semester.
@@ -107,6 +112,7 @@ class T0Times(models.Model):
                 record.time -= timedelta(hours=2)
                 created.append(record)
             cls.objects.bulk_create(created)
+
 
 
 class GroupOpeningTimes(models.Model):
@@ -197,16 +203,16 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, queryset=None):
+    def populate_opening_times(cls, semester: Semester, students_qs=None):
         """Computes opening times for selected students (or all acive students) that cast votes.
 
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
-        if queryset is None:
-            students = Student.get_active_students()
+        if students_qs.exists():
+            students = students_qs
         else:
-            students = queryset
+            students = Student.get_active_students()
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete already existing records for this semester and selected students.
@@ -215,6 +221,7 @@ class GroupOpeningTimes(models.Model):
         t0times: Dict[int, datetime] = dict(
                 T0Times.objects.filter(semester_id=semester.id, student__in=students).values_list("student_id", "time")
             )
+
 
         opening_time_objects: List[cls] = []
         votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=students)
@@ -289,3 +296,4 @@ class GroupOpeningTimes(models.Model):
                     ]))
             opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)
+
