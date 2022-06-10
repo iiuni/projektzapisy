@@ -21,7 +21,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                               status=ThesisStatus.BEING_EVALUATED,
                                               max_number_of_students=1)
         thesis_vote_1.students.add(StudentFactory())
-        thesis_vote_1.reservation_until = '2022-06-10'
+        thesis_vote_1.reserved_until = '2022-06-10'
 
         Thesis.objects.create(title="thesis_edit_0",
                               advisor=self.thesis_owner,
@@ -39,7 +39,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                             status=ThesisStatus.IN_PROGRESS,
                                             max_number_of_students=1)
         test_edit_2.students.add(StudentFactory())
-        test_edit_2.reservation_until = '2022-06-10'
+        test_edit_2.reserved_until = '2022-06-10'
 
         ThesesSystemSettings.objects.create(num_required_votes=4)
 
@@ -83,7 +83,7 @@ class ThesisStatusChangeTestCase(TestCase):
 
         form_data_0 = {'title': thesis_edit_0.title,
                        'advisor': thesis_edit_0.advisor_id, 'kind': 0,
-                       'reservation_until': '2022-06-10',
+                       'reserved_until': '2022-06-10',
                        'students': [StudentFactory()],
                        'max_number_of_students': 2}
         form_data_1 = {'title': thesis_edit_1.title,
@@ -114,7 +114,7 @@ class ThesisStatusChangeTestCase(TestCase):
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
-                     'reservation_until': '2022-06-10',
+                     'reserved_until': '2022-06-10',
                      'students': [StudentFactory(), StudentFactory(), StudentFactory()],
                      'max_number_of_students': 2}
 
@@ -125,7 +125,7 @@ class ThesisStatusChangeTestCase(TestCase):
     def test_max_number_of_students_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
-                     'reservation_until': '2022-06-10',
+                     'reserved_until': '2022-06-10',
                      'students': [StudentFactory(), StudentFactory()],
                      'max_number_of_students': 2}
 
@@ -143,7 +143,7 @@ class ThesisStatusChangeTestCase(TestCase):
 
         form_data_1 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
-                       'reservation_until': '2022-06-10',
+                       'reserved_until': '2022-06-10',
                        'max_number_of_students': 2}
 
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
@@ -159,7 +159,7 @@ class ThesisStatusChangeTestCase(TestCase):
 def test_reservation_date_valid(self):
     form_data_0 = {'title': 'Praca dyplomowa',
                    'advisor': self.thesis_owner, 'kind': 0,
-                   'reservation_until': '2022-06-10',
+                   'reserved_until': '2022-06-10',
                    'students': [StudentFactory(), StudentFactory()],
                    'max_number_of_students': 2}
 
