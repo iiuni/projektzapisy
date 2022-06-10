@@ -39,7 +39,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                             status=ThesisStatus.IN_PROGRESS,
                                             max_number_of_students=1)
         test_edit_2.students.add(StudentFactory())
-        test_edit_2.reservation_until='2022-06-10'
+        test_edit_2.reservation_until = '2022-06-10'
 
         ThesesSystemSettings.objects.create(num_required_votes=4)
 
