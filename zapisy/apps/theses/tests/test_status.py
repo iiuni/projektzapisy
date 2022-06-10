@@ -84,7 +84,7 @@ class ThesisStatusChangeTestCase(TestCase):
 
         form_data_0 = {'title': thesis_edit_0.title,
                        'advisor': thesis_edit_0.advisor_id, 'kind': 0,
-                       'reserved_until': ,
+                       'reserved_until':timezone.now(),
                        'students': [StudentFactory()],
                        'max_number_of_students': 2}
         form_data_1 = {'title': thesis_edit_1.title,
