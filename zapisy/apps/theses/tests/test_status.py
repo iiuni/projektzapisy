@@ -22,7 +22,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                               status=ThesisStatus.BEING_EVALUATED,
                                               max_number_of_students=1)
         thesis_vote_1.students.add(StudentFactory())
-        thesis_vote_1.reserved_until = '2024-06-10'
+        thesis_vote_1.reserved_until = timezone.now()
 
         Thesis.objects.create(title="thesis_edit_0",
                               advisor=self.thesis_owner,
@@ -40,7 +40,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                             status=ThesisStatus.IN_PROGRESS,
                                             max_number_of_students=1)
         test_edit_2.students.add(StudentFactory())
-        test_edit_2.reserved_until = '2024-06-10'
+        test_edit_2.reserved_until = timezone.now()
 
         ThesesSystemSettings.objects.create(num_required_votes=4)
 
@@ -78,15 +78,15 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_vote_1.status, ThesisStatus.IN_PROGRESS)
 
     def test_edit(self):
-        # thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
+        thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
         thesis_edit_1 = Thesis.objects.get(title="thesis_edit_1")
         thesis_edit_2 = Thesis.objects.get(title="thesis_edit_2")
 
-        # form_data_0 = {'title': thesis_edit_0.title,
-        #                'advisor': thesis_edit_0.advisor_id, 'kind': 0,
-        #                'reserved_until': timezone.now(),
-        #                'students': [StudentFactory()],
-        #                'max_number_of_students': 2}
+        form_data_0 = {'title': thesis_edit_0.title,
+                       'advisor': thesis_edit_0.advisor_id, 'kind': 0,
+                       'reserved_until': timezone.now(),
+                       'students': [StudentFactory()],
+                       'max_number_of_students': 2}
         form_data_1 = {'title': thesis_edit_1.title,
                        'advisor': thesis_edit_1.advisor_id, 'kind': 0,
                        'max_number_of_students': 2}
@@ -94,19 +94,19 @@ class ThesisStatusChangeTestCase(TestCase):
                        'advisor': thesis_edit_2.advisor_id, 'kind': 0,
                        'max_number_of_students': 2}
 
-        # form_0 = EditThesisForm(instance=thesis_edit_0,
-        #                         user=self.thesis_owner.user, data=form_data_0)
+        form_0 = EditThesisForm(instance=thesis_edit_0,
+                                user=self.thesis_owner.user, data=form_data_0)
         form_1 = EditThesisForm(instance=thesis_edit_1,
                                 user=self.thesis_owner.user, data=form_data_1)
         form_2 = EditThesisForm(instance=thesis_edit_2,
                                 user=self.thesis_owner.user, data=form_data_2)
 
-        # form_0.save(commit=True)
+        form_0.save(commit=True)
         form_1.save(commit=True)
         form_2.save(commit=True)
 
-        # self.assertEqual(thesis_edit_0.status,
-        #                  ThesisStatus.IN_PROGRESS.value)
+        self.assertEqual(thesis_edit_0.status,
+                         ThesisStatus.IN_PROGRESS.value)
         self.assertEqual(thesis_edit_1.status,
                          ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_2.status,
@@ -115,7 +115,7 @@ class ThesisStatusChangeTestCase(TestCase):
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
-                     'reserved_until': '2024-06-10',
+                     'reserved_until': timezone.now(),
                      'students': [StudentFactory(), StudentFactory(), StudentFactory()],
                      'max_number_of_students': 2}
 
@@ -144,7 +144,7 @@ class ThesisStatusChangeTestCase(TestCase):
 
         form_data_1 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
-                       'reserved_until': '2024-06-10',
+                       'reserved_until': timezone.now(),
                        'max_number_of_students': 2}
 
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
@@ -157,7 +157,7 @@ class ThesisStatusChangeTestCase(TestCase):
 def test_reservation_date_valid(self):
     form_data_0 = {'title': 'Praca dyplomowa',
                    'advisor': self.thesis_owner, 'kind': 0,
-                   'reserved_until': '2024-06-10',
+                   'reserved_until': timezone.now(),
                    'students': [StudentFactory(), StudentFactory()],
                    'max_number_of_students': 2}
 
