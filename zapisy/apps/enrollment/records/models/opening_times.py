@@ -70,7 +70,7 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-        if students_qs.exists():
+        if students_qs:
             students = students_qs
         else:
             students = Student.get_active_students()
@@ -209,7 +209,7 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
-        if students_qs.exists():
+        if students_qs:
             students = students_qs
         else:
             students = Student.get_active_students()
