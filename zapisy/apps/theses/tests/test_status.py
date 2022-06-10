@@ -91,8 +91,8 @@ class ThesisStatusChangeTestCase(TestCase):
                        'advisor': thesis_edit_2.advisor_id, 'kind': 0,
                        'max_number_of_students': 2}
 
-        form_data_0.students.add(StudentFactory())
-        form_data_0.reserved_until = '2022-06-10'
+        form_data_0['students'] = StudentFactory()
+        form_data_0['reserved_until'] = '2022-06-10'
 
         form_0 = EditThesisForm(instance=thesis_edit_0,
                                 user=self.thesis_owner.user, data=form_data_0)
