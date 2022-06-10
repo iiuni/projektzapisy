@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, ThesisForm
@@ -77,15 +78,15 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_vote_1.status, ThesisStatus.IN_PROGRESS)
 
     def test_edit(self):
-        # thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
+        thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
         thesis_edit_1 = Thesis.objects.get(title="thesis_edit_1")
         thesis_edit_2 = Thesis.objects.get(title="thesis_edit_2")
 
-        # form_data_0 = {'title': thesis_edit_0.title,
-        #                'advisor': thesis_edit_0.advisor_id, 'kind': 0,
-        #                'reserved_until': '2022-06-10',
-        #                'students': [StudentFactory()],
-        #                'max_number_of_students': 2}
+        form_data_0 = {'title': thesis_edit_0.title,
+                       'advisor': thesis_edit_0.advisor_id, 'kind': 0,
+                       'reserved_until': ,
+                       'students': [StudentFactory()],
+                       'max_number_of_students': 2}
         form_data_1 = {'title': thesis_edit_1.title,
                        'advisor': thesis_edit_1.advisor_id, 'kind': 0,
                        'max_number_of_students': 2}
@@ -125,7 +126,7 @@ class ThesisStatusChangeTestCase(TestCase):
     def test_max_number_of_students_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
-                     'reserved_until': '2022-06-10',
+                     'reserved_until': timezone.now(),
                      'students': [StudentFactory(), StudentFactory()],
                      'max_number_of_students': 2}
 
