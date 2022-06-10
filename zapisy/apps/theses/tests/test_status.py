@@ -78,7 +78,7 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_vote_1.status, ThesisStatus.IN_PROGRESS)
 
     def test_edit(self):
-        thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
+        # thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
         thesis_edit_1 = Thesis.objects.get(title="thesis_edit_1")
         thesis_edit_2 = Thesis.objects.get(title="thesis_edit_2")
 
