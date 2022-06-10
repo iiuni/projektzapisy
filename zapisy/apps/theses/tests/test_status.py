@@ -21,6 +21,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                               status=ThesisStatus.BEING_EVALUATED,
                                               max_number_of_students=1)
         thesis_vote_1.students.add(StudentFactory())
+        thesis_vote_1.reservation_until = '2022-06-10'
 
         Thesis.objects.create(title="thesis_edit_0",
                               advisor=self.thesis_owner,
