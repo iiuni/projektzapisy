@@ -83,8 +83,8 @@ class ThesisStatusChangeTestCase(TestCase):
 
         form_data_0 = {'title': thesis_edit_0.title,
                        'advisor': thesis_edit_0.advisor_id, 'kind': 0,
-                       'reserved_until': '2022-06-10',
-                       'students': [StudentFactory()],
+                    #    'reserved_until': '2022-06-10',
+                    #    'students': [StudentFactory()],
                        'max_number_of_students': 2}
         form_data_1 = {'title': thesis_edit_1.title,
                        'advisor': thesis_edit_1.advisor_id, 'kind': 0,
@@ -92,6 +92,9 @@ class ThesisStatusChangeTestCase(TestCase):
         form_data_2 = {'title': thesis_edit_2.title,
                        'advisor': thesis_edit_2.advisor_id, 'kind': 0,
                        'max_number_of_students': 2}
+
+        form_data_0.students.add(StudentFactory())
+        form_data_0.reserved_until = '2022-06-10'
 
         form_0 = EditThesisForm(instance=thesis_edit_0,
                                 user=self.thesis_owner.user, data=form_data_0)

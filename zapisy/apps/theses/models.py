@@ -104,7 +104,7 @@ class Thesis(models.Model):
             models.CheckConstraint(
                 check=models.Q(reserved_until__isnull=True)
                 or models.Q(reserved_until__isnull=False, students__usos_id__isnull=False),
-                name='reserved_untill_and_students'
+                name='reserved_until_and_students'
             )
         ]
 
