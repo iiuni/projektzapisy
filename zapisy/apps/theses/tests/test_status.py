@@ -35,6 +35,7 @@ class ThesisStatusChangeTestCase(TestCase):
         test_edit_2 = Thesis.objects.create(title="thesis_edit_2",
                                             advisor=self.thesis_owner,
                                             kind=0,
+                                            reservation_until='2022-06-10',
                                             status=ThesisStatus.IN_PROGRESS,
                                             max_number_of_students=1)
         test_edit_2.students.add(StudentFactory())
