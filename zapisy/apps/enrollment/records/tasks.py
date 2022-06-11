@@ -8,6 +8,7 @@ place he leaves vacant.
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from apps.users.models import Student
 from django_rq import job
 
 from apps.enrollment.courses.models import Group
@@ -69,7 +70,7 @@ def group_save_signal_receiver(sender, instance, created, raw, using, **kwargs):
                 group__course__semester=instance.course.semester).exists():
             # If not, we do nothing.
             return
-        GroupOpeningTimes.populate_single_group_opening_times(instance)
+        GroupOpeningTimes.populate_opening_times(instance.course.semester, Student.get_active_students(), instance)
         # Do not trigger pulling for new groups.
         return
     if not settings.RUN_ASYNC:
