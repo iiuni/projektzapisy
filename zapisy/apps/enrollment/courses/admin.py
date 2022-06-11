@@ -11,7 +11,6 @@ from apps.enrollment.courses.models.tag import Tag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 
-
 class GroupInline(admin.TabularInline):
     fields = ('id', 'teacher', 'get_terms_as_string', 'type', 'limit', 'extra', 'export_usos', 'usos_nr',)
     model = Group
@@ -57,7 +56,7 @@ class SemesterAdmin(admin.ModelAdmin):
     def refresh_opening_times(self, request, queryset):
         """Computes Opening times for all students."""
         if queryset.count() != 1:
-            self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.WARNING)
+            self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.ERROR)
             return
         semester = queryset.get()
         T0Times.populate_t0(semester)
