@@ -6,8 +6,7 @@ import { values } from "lodash";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import { GroupById, CourseById } from "../store/groups";
-import { DayOfWeek, nameDay, Course, Group } from "../models";
+import { DayOfWeek, nameDay, Group } from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
 const SimpleSummaryProps = Vue.extend({
