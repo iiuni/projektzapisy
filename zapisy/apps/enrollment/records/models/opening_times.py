@@ -56,7 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, students_qs: Iterable[Student]=None):
+    def populate_t0(cls, semester: Semester, students_qs: Iterable[Student] = None):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed
@@ -112,7 +112,6 @@ class T0Times(models.Model):
                 record.time -= timedelta(hours=2)
                 created.append(record)
             cls.objects.bulk_create(created)
-
 
 
 class GroupOpeningTimes(models.Model):
@@ -203,7 +202,7 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, students_qs: Iterable[Student]=None, group: Group=None):
+    def populate_opening_times(cls, semester: Semester, students_qs: Iterable[Student] = None, group: Group = None):
         """Computes opening times for selected students that cast votes.
 
         If no students are specified, the method will be executed for all active students.
