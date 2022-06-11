@@ -46,21 +46,13 @@ class StudentAdmin(admin.ModelAdmin):
 
     def refresh_opening_times(self, request, queryset):
         """Refreshes opening times for selected students."""
-        if queryset.count() < 1:
-            self.message_user(request, "Nie wybrano studentow", level=messages.WARNING)
-            return
         # The opening times refreshing concerns the upcoming semester
 
-        semester = Semester.get_semester(Semester.get_current_semester().semester_ending + datetime.timedelta(days=1))
+        semester = Semester.get_next_preopening()
         if semester is None:
             self.message_user(
-                    request, "Aby uaktualnic czasy nalezy najpierw utworzyc przyszly semestr",
-                    level=messages.WARNING)
-            return
-        if semester.records_opening is None:
-            self.message_user(
-                    request, "Prosze uzupelnic czas otwarcia zapisow w przyszlym semestrze",
-                    level=messages.WARNING)
+                    request, "Nie znaleziono semestru do obliczenia czasów",
+                    level=messages.ERROR)
             return
 
         T0Times.populate_t0(semester, queryset)
