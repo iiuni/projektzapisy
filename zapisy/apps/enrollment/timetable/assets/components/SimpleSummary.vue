@@ -2,7 +2,6 @@
 import Vue from "vue";
 // import { mapGetters } from "vuex";
 import Component from "vue-class-component";
-import { values } from "lodash";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
