@@ -249,7 +249,7 @@ class Semester(models.Model):
         Raises:
             MultipleObjectsReturned: Wrong semesters' dates
         """
-        return Semester.get_semester(datetime.today())  
+        return Semester.get_semester(datetime.today())
 
     def serialize_for_json(self):
         return {
