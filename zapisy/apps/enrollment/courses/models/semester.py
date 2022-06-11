@@ -249,13 +249,7 @@ class Semester(models.Model):
         Raises:
             MultipleObjectsReturned: Wrong semesters' dates
         """
-        return Semester.get_semester(datetime.today())
-
-    @staticmethod
-    def get_next_semester()-> Optional['Semester']:
-        """The function returns the semester beginning the day after the end of the current semester
-        """
-        
+        return Semester.get_semester(datetime.today())  
 
     def serialize_for_json(self):
         return {
