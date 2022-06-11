@@ -17,16 +17,16 @@ const SimpleSummaryProps = Vue.extend({
       default: "",
     },
     sumPoints: {
-        type: Number as () => Number,
-        default: 0,
+      type: Number as () => Number,
+      default: 0,
     },
     groups: {
-        type: Array as () => Array<Group>,
-        default: {}
+      type: Array as () => Array<Group>,
+      default: {},
     },
     courses: {
-        type: Object as () => Object,
-        default: {},
+      type: Object as () => Object,
+      default: {},
     },
   },
 });
@@ -47,20 +47,20 @@ export default class SimpleSummary extends SimpleSummaryProps {
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
 
-//   get sumPoints(): number {
-//     return state.state.sumPoints;
-//   }
-//   get courses(): { [id: number]: Course } {
-//     return state.state.courses;
-//   }
-//   get groups(): { [id: number]: Group } {
-//     return values(state.state.store).filter(
-//       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
-//     );
-//   }
-    public GetNameDay(day: DayOfWeek) {
-        return nameDay(day);
-    }
+  //   get sumPoints(): number {
+  //     return state.state.sumPoints;
+  //   }
+  //   get courses(): { [id: number]: Course } {
+  //     return state.state.courses;
+  //   }
+  //   get groups(): { [id: number]: Group } {
+  //     return values(state.state.store).filter(
+  //       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+  //     );
+  //   }
+  public GetNameDay(day: DayOfWeek) {
+    return nameDay(day);
+  }
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
   // }
@@ -93,7 +93,9 @@ export default class SimpleSummary extends SimpleSummaryProps {
       </thead>
       <tfoot>
         <tr>
-          <td><strong>Suma punktów ECTS za {{ summaryType }}:</strong></td>
+          <td>
+            <strong>Suma punktów ECTS za {{ summaryType }}:</strong>
+          </td>
           <td class="ects">{{ sumPoints }}</td>
         </tr>
       </tfoot>

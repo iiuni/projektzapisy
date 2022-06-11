@@ -20,25 +20,65 @@ type CourseById = { [id: number]: Course };
 function coalesce(...args: Array<any | null | undefined>) {
   return find(args, (o) => !isNil(o));
 }
+let conditionGenerator = {
+  all: (g: GroupById, group: Group, c: number) =>
+    (g[1].isSelected || g[1].isPinned || g[1].isEnrolled || g[1].isEnqueued) &&
+    g[1].course.id === c &&
+    g[1].id !== group.id,
+  enrolled: (g: GroupById, group: Group, c: number) =>
+    g[1].isEnrolled && g[1].course.id === c && g[1].id !== group.id,
+  equeued: (g: GroupById, group: Group, c: number) =>
+    g[1].isEnqueued && g[1].course.id === c && g[1].id !== group.id,
+  pinned: (g: GroupById, group: Group, c: number) =>
+    g[1].isPinned && g[1].course.id === c && g[1].id !== group.id,
+};
 
-function updateSummaryState(state: State, group: Group) {
+function updateState(
+  points: number,
+  courses: CourseById,
+  group: Group,
+  threshold: number,
+  condition: Function
+) {
   let counter = 0;
   let c = group.course.id;
   Object.entries(state.store).forEach((g) => {
-    if (
-      (g[1].isSelected ||
-        g[1].isPinned ||
-        g[1].isEnrolled ||
-        g[1].isEnqueued) &&
-      g[1].course.id == c &&
-      g[1].id != group.id
-    ) {
+    if (condition(g, group, c)) {
       counter++;
     }
   });
-  if (counter == 0) {
-    state.totalPoints -= state.courses[c].points;
-    delete state.courses[c];
+  if (counter == threshold && courses[c] !== undefined) {
+    points -= courses[c].points;
+    delete courses[c];
+  }
+  return { points: points, courses: courses };
+}
+
+function initializeGroupInSummary(state: State, course: Course, group: Group) {
+  if (state.totalCourses[course.id] === undefined) {
+    state.totalCourses[course.id] = course;
+    state.totalPoints += course.points;
+  }
+  if (group.isEnrolled && state.enrolledCourses[course.id] === undefined) {
+    state.enrolledPoints += group.course.points;
+    state.enrolledCourses[course.id] = group.course;
+  }
+  if (
+    group.isEnqueued &&
+    state.enrolledCourses[course.id] === undefined &&
+    state.queuedCourses[course.id] === undefined
+  ) {
+    state.queuedPoints += group.course.points;
+    state.queuedCourses[course.id] = group.course;
+  }
+  if (
+    group.isPinned &&
+    state.enrolledCourses[course.id] === undefined &&
+    state.queuedCourses[course.id] === undefined &&
+    state.pinnedCourses[course.id] === undefined
+  ) {
+    state.pinnedPoints += group.course.points;
+    state.pinnedCourses[course.id] = group.course;
   }
 }
 // Store holds the data for all groups that are currently visible, but also for
@@ -46,12 +86,24 @@ function updateSummaryState(state: State, group: Group) {
 interface State {
   store: GroupById;
   totalPoints: number;
-  courses: CourseById;
+  queuedPoints: number;
+  enrolledPoints: number;
+  pinnedPoints: number;
+  enrolledCourses: CourseById;
+  queuedCourses: CourseById;
+  pinnedCourses: CourseById;
+  totalCourses: CourseById;
 }
 const state: State = {
   store: {},
   totalPoints: 0,
-  courses: {},
+  queuedPoints: 0,
+  enrolledPoints: 0,
+  pinnedPoints: 0,
+  enrolledCourses: {},
+  queuedCourses: {},
+  pinnedCourses: {},
+  totalCourses: {},
 };
 
 const getters = {
@@ -66,39 +118,108 @@ const getters = {
 const mutations = {
   setEnrolled(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    let course = group.course;
     group.isEnrolled = true;
+    initializeGroupInSummary(state, course, group);
+    if (state.pinnedCourses[course.id] !== undefined) {
+      state.pinnedPoints -= state.pinnedCourses[course.id].points;
+      delete state.pinnedCourses[course.id];
+    }
     Vue.set(state.store, g.toString(), group);
   },
   unsetEnrolled(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
-    if (!group.isPinned) {
-      updateSummaryState(state, group);
-    }
     group.isEnrolled = false;
     Vue.set(state.store, g.toString(), group);
+    let updatedState = updateState(
+      state.enrolledPoints,
+      state.enrolledCourses,
+      group,
+      0,
+      conditionGenerator.enrolled
+    );
+    state.enrolledCourses = updatedState.courses;
+    state.enrolledPoints = updatedState.points;
+    if (!group.isPinned) {
+      updatedState = updateState(
+        state.totalPoints,
+        state.totalCourses,
+        group,
+        0,
+        conditionGenerator.all
+      );
+      state.totalCourses = updatedState.courses;
+      state.totalPoints = updatedState.points;
+    } else {
+      initializeGroupInSummary(state, group.course, group);
+    }
   },
   setEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     group.isEnqueued = true;
+    let course = group.course;
+    initializeGroupInSummary(state, course, group);
+    if (state.pinnedCourses[course.id] !== undefined) {
+      state.pinnedPoints -= state.pinnedCourses[course.id].points;
+      delete state.pinnedCourses[course.id];
+    }
     Vue.set(state.store, g.toString(), group);
   },
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
-    if (!group.isPinned) {
-      updateSummaryState(state, group);
-    }
     group.isEnqueued = false;
+    let updatedState = updateState(
+      state.queuedPoints,
+      state.queuedCourses,
+      group,
+      0,
+      conditionGenerator.enrolled
+    );
+    state.queuedCourses = updatedState.courses;
+    state.queuedPoints = updatedState.points;
+    if (!group.isPinned) {
+      let updatedState = updateState(
+        state.totalPoints,
+        state.totalCourses,
+        group,
+        0,
+        conditionGenerator.all
+      );
+      state.totalCourses = updatedState.courses;
+      state.totalPoints = updatedState.points;
+    } else {
+      initializeGroupInSummary(state, group.course, group);
+    }
     Vue.set(state.store, g.toString(), group);
   },
   setPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     group.isPinned = true;
+    let course = group.course;
+    initializeGroupInSummary(state, course, group);
     Vue.set(state.store, g.toString(), group);
   },
   unsetPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
-    updateSummaryState(state, group);
     group.isPinned = false;
+    let updatedState = updateState(
+      state.totalPoints,
+      state.totalCourses,
+      group,
+      0,
+      conditionGenerator.all
+    );
+    state.totalCourses = updatedState.courses;
+    state.totalPoints = updatedState.points;
+    updatedState = updateState(
+      state.pinnedPoints,
+      state.pinnedCourses,
+      group,
+      0,
+      conditionGenerator.pinned
+    );
+    state.pinnedCourses = updatedState.courses;
+    state.pinnedPoints = updatedState.points;
     Vue.set(state.store, g.toString(), group);
   },
   setSelected(state: State, { g }: { g: number }) {
@@ -123,10 +244,7 @@ const mutations = {
       group.isEnqueued = coalesce(groupJSON.is_enqueued, old.isEnqueued);
       group.isPinned = coalesce(groupJSON.is_pinned, old.isPinned);
     } else {
-      if (state.courses[course.id] === undefined) {
-        state.courses[course.id] = course;
-        state.totalPoints += course.points;
-      }
+      initializeGroupInSummary(state, course, group);
     }
     Vue.set(state.store, group.id.toString(), group);
   },
@@ -141,27 +259,23 @@ const mutations = {
       // We will not show the group that is hidden.
       group.isSelected = !group.isSelected;
       Vue.set(state.store, id.toString(), group);
-      let c = group.course.id;
-      if (!group.isSelected && state.courses[c] !== undefined) {
-        let counter = 0;
-        Object.entries(state.store).forEach((g) => {
-          if (
-            (g[1].isSelected ||
-              g[1].isPinned ||
-              g[1].isEnrolled ||
-              g[1].isEnqueued) &&
-            g[1].course.id == c
-          ) {
-            counter++;
-          }
-        });
-        if (counter == 0) {
-          state.sumPoints -= state.courses[c].points;
-          delete state.courses[c];
-        }
-      } else if (group.isSelected && state.courses[c] === undefined) {
-        state.courses[c] = group.course;
-        state.sumPoints += group.course.points;
+      let course = group.course;
+      if (!group.isSelected && state.totalCourses[course.id] !== undefined) {
+        let updatedState = updateState(
+          state.totalPoints,
+          state.totalCourses,
+          group,
+          0,
+          conditionGenerator.all
+        );
+        state.totalCourses = updatedState.courses;
+        state.totalPoints = updatedState.points;
+      } else if (
+        group.isSelected &&
+        state.totalCourses[course.id] === undefined
+      ) {
+        state.totalCourses[course.id] = group.course;
+        state.totalPoints += group.course.points;
       }
     });
   },

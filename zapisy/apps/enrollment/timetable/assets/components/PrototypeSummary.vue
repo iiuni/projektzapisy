@@ -8,7 +8,7 @@ import { values } from "lodash";
 // const current = getCurrentInstance();
 import state from "../store/groups";
 import { DayOfWeek, nameDay, Course, Group } from "../models";
-import SimpleSummary from "./SimpleSummary.vue"
+import SimpleSummary from "./SimpleSummary.vue";
 
 // export type CourseObject = { id: number; name: string; url: string };
 @Component({
@@ -34,8 +34,26 @@ export default class PrototypeSummary extends Vue {
   get totalPoints(): number {
     return state.state.totalPoints;
   }
-  get courses(): { [id: number]: Course } {
-    return state.state.courses;
+  get totalCourses(): { [id: number]: Course } {
+    return state.state.totalCourses;
+  }
+  get enrolledPoints(): number {
+    return state.state.enrolledPoints;
+  }
+  get enrolledCourses(): { [id: number]: Course } {
+    return state.state.enrolledCourses;
+  }
+  get queuedPoints(): number {
+    return state.state.queuedPoints;
+  }
+  get queuedCourses(): { [id: number]: Course } {
+    return state.state.queuedCourses;
+  }
+  get pinnedPoints(): number {
+    return state.state.pinnedPoints;
+  }
+  get pinnedCourses(): { [id: number]: Course } {
+    return state.state.pinnedCourses;
   }
   get groups(): { [id: number]: Group } {
     return values(state.state.store).filter(
@@ -68,6 +86,29 @@ export default class PrototypeSummary extends Vue {
 
 <template>
   <div class="table-responsiveVUE">
-    <SimpleSummary summaryType="(P, Z, K, L)" :sumPoints="totalPoints" :groups="groups" :courses="courses"/>
+    <SimpleSummary
+      summaryType="(P, Z, K, L)"
+      :sumPoints="totalPoints"
+      :groups="groups"
+      :courses="totalCourses"
+    />
+    <SimpleSummary
+      summaryType="(Z)"
+      :sumPoints="enrolledPoints"
+      :groups="groups"
+      :courses="enrolledCourses"
+    />
+    <SimpleSummary
+      summaryType="(K)"
+      :sumPoints="queuedPoints"
+      :groups="groups"
+      :courses="queuedCourses"
+    />
+    <SimpleSummary
+      summaryType="(P)"
+      :sumPoints="pinnedPoints"
+      :groups="groups"
+      :courses="pinnedCourses"
+    />
   </div>
 </template>
