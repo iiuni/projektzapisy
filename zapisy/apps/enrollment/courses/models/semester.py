@@ -227,6 +227,22 @@ class Semester(models.Model):
             return Semester.get_current_semester()
 
     @staticmethod
+    def get_next_preopening() -> Optional['Semester']:
+        """Returns either upcomming or current semester or None.
+
+        Next preopening is the earliest semester with enrollment
+        still not open to all of the students.
+
+        Raises:
+            MultipleObjectsReturned: Wrong semesters' dates
+        """
+        try:
+            return Semester.objects.filter(
+                visible=True, records_opening__gte=datetime.now()).earliest('records_opening')
+        except Semester.DoesNotExist:
+            return None
+
+    @staticmethod
     def get_current_semester() -> Optional['Semester']:
         """If exists, it returns current semester, otherwise return None.
 
@@ -234,6 +250,12 @@ class Semester(models.Model):
             MultipleObjectsReturned: Wrong semesters' dates
         """
         return Semester.get_semester(datetime.today())
+
+    @staticmethod
+    def get_next_semester()-> Optional['Semester']:
+        """The function returns the semester beginning the day after the end of the current semester
+        """
+        
 
     def serialize_for_json(self):
         return {
