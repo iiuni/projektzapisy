@@ -90,24 +90,18 @@ export default class PrototypeSummary extends Vue {
 
 <template>
   <div class="table-responsiveVUE">
-    <ul>
-      <li class="summary">
-        <input v-model="summary1" type="checkbox" value="" id="summary1" />
-        <label for="summary1"> (P, Z, K, L) </label><br />
-      </li>
-      <li class="summary">
-        <input v-model="summary2" type="checkbox" value="" id="summary2" />
-        <label for="summary2"> (Z) </label><br />
-      </li>
-      <li class="summary">
-        <input v-model="summary3" type="checkbox" value="" id="summary3" />
-        <label for="summary3"> (K) </label><br />
-      </li>
-      <li class="summary">
-        <input v-model="summary4" type="checkbox" value="" id="summary4" />
-        <label for="summary4"> (P) </label><br />
-      </li>
-    </ul>
+    <button type="button" class="summary" @click="summary1 = !summary1">
+      (P, Z, K, L)
+    </button>
+    <button type="button" class="summary" @click="summary2 = !summary2">
+      (Z)
+    </button>
+    <button type="button" class="summary" @click="summary3 = !summary3">
+      (K)
+    </button>
+    <button type="button" class="summary" @click="summary4 = !summary4">
+      (P)
+    </button>
     <SimpleSummary
       v-if="summary1"
       summaryType="(P, Z, K, L)"
