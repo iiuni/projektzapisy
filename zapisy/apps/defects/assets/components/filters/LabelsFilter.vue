@@ -72,6 +72,7 @@ export default Vue.extend({
       href="#"
       v-for="l in allLabelKeys"
       class="badge"
+      style="margin: 1px"
       v-bind:class="[selected[l] ? onClass : 'badge-secondary']"
       @click.prevent="toggle(l)"
     >
