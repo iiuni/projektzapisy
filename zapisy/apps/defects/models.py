@@ -6,9 +6,8 @@ from gdstorage.storage import GoogleDriveStorage
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()
 
-DEFECT_MAX_NAME_SIZE = 255
-DEFECT_MAX_PLACE_SIZE = 255
-DEFECT_MAX_INFORMATION_FROM_DEFECT_MANAGER_SIZE = 255
+DEFECT_MAX_NAME_SIZE = 35
+DEFECT_MAX_PLACE_SIZE = 35
 
 
 class StateChoices(models.IntegerChoices):
