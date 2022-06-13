@@ -20,7 +20,7 @@ def index(request):
         query = request.POST
         if_empty, defects_list = parse_names(request)
         if (query.get('print') is None and not (if_empty is False)) or len(defects_list) == 0:
-            messages.error(request, "Brak elementów do wyświetlenia.")
+            messages.error(request, "Akcja wymaga zaznaczenia elementów")
         elif query.get('print') is not None:
             if defects_list is None or len(defects_list) == 0:
                 return print_defects(request)
