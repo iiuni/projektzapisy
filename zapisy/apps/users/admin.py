@@ -46,10 +46,16 @@ class StudentAdmin(admin.ModelAdmin):
         """Refreshes opening times for selected students."""
         # The opening times refreshing concerns the upcoming semester
 
-        semester = Semester.get_next_preopening()
+        semester = Semester.get_upcoming_semester()
         if semester is None:
             self.message_user(
-                    request, "Nie znaleziono semestru do obliczenia czasów",
+                    request, "Nie znaleziono semestru do obliczenia czasów.",
+                    level=messages.ERROR)
+            return
+
+        if semester.records_opening is None:
+            self.message_user(
+                    request, "Proszę uzupelnić szczegóły odpowiedniego semestru.",
                     level=messages.ERROR)
             return
 
