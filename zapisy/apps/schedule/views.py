@@ -321,7 +321,10 @@ class ClassroomTermsAjaxView(FullCalendarView):
 
     def get_queryset(self):
         queryset = super(ClassroomTermsAjaxView, self).get_queryset()
-        return queryset.filter(room__slug=self.kwargs['slug'])
+        queryset = queryset.filter(room__slug=self.kwargs['slug'])\
+            .order_by('event__title', 'start', 'end', 'day')\
+            .distinct('event__title', 'start', 'end', 'day')
+        return queryset
 
 
 class EventsTermsAjaxView(FullCalendarView):
