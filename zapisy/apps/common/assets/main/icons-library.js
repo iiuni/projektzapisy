@@ -33,5 +33,20 @@ library.add(faBan);
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
 library.add(faPencilAlt);
 
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+library.add(faCheck);
+
+import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
+library.add(faTimes);
+
+import { faSort } from "@fortawesome/free-solid-svg-icons/faSort";
+library.add(faSort);
+
+import { faSortUp } from "@fortawesome/free-solid-svg-icons/faSortUp";
+library.add(faSortUp);
+
+import { faSortDown } from "@fortawesome/free-solid-svg-icons/faSortDown";
+library.add(faSortDown);
+
 // This allows us to include an icon with <i class="fa fa-[ICON-NAME]"></i>.
 dom.watch();
