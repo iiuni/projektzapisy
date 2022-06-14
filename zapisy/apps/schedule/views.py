@@ -330,7 +330,9 @@ class EventsTermsAjaxView(FullCalendarView):
 
     def get_queryset(self):
         queryset = super(EventsTermsAjaxView, self).get_queryset()
-        queryset = queryset.filter(event__type='2', event__visible=True)
+        queryset = queryset.filter(event__type='2', event__visible=True)\
+            .order_by('event__title', 'start', 'end', 'day')\
+            .distinct('event__title', 'start', 'end', 'day')
         return queryset
 
 
