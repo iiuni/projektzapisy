@@ -210,12 +210,15 @@ class Semester(models.Model):
             raise
 
     @staticmethod
-    def get_upcoming_semester() -> Optional['Semester']:
+    def get_upcoming_semester(precise : bool = False) -> Optional['Semester']:
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
-        been scheduled. It may be useful when students want to plan their
-        timetables.
+        been scheduled but has not closed. It may be useful when students
+        want to plan their timetables.
+        If no semester has scheduled and non-closed enrolment, in the case of
+        the optional argument being not passed or being false, the current semester
+        will be returned, if the argument is true, None will be returned.
 
         Raises:
             MultipleObjectsReturned: Wrong semesters' dates
@@ -224,23 +227,9 @@ class Semester(models.Model):
             return Semester.objects.filter(
                 visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
         except Semester.DoesNotExist:
+            if precise:
+                return None
             return Semester.get_current_semester()
-
-    @staticmethod
-    def get_next_preopening() -> Optional['Semester']:
-        """Returns either upcomming or current semester or None.
-
-        Next preopening is the earliest semester with enrollment
-        still not open to all of the students.
-
-        Raises:
-            MultipleObjectsReturned: Wrong semesters' dates
-        """
-        try:
-            return Semester.objects.filter(
-                visible=True, records_opening__gte=datetime.now()).earliest('records_opening')
-        except Semester.DoesNotExist:
-            return None
 
     @staticmethod
     def get_current_semester() -> Optional['Semester']:
