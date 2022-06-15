@@ -105,13 +105,16 @@ export class Teacher {
 
 // Course is defined in apps/enrollment/courses/models/course.py.
 export class Course {
+  public summaryPoints: number;
   constructor(
     public id: number,
     public name: string,
     public shortName: string,
     public url: string,
     public points: number
-  ) {}
+  ) {
+    this.summaryPoints = 0;
+  }
 }
 
 export interface GuaranteedSpot {

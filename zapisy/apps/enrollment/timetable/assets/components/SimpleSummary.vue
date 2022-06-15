@@ -5,7 +5,7 @@ import Component from "vue-class-component";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import { DayOfWeek, nameDay, Group } from "../models";
+import { DayOfWeek, nameDay, Group, Course} from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
 const SimpleSummaryProps = Vue.extend({
@@ -26,6 +26,10 @@ const SimpleSummaryProps = Vue.extend({
       type: Object as () => Object,
       default: {},
     },
+    groupsCondition: {
+     type : Function,
+     deafult: (group: Group, course: Course) => Boolean
+    }
   },
 });
 @Component({
@@ -113,11 +117,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
             <ul v-for="(group, gid) in groups" :value="group" :key="gid">
               <li
                 v-if="
-                  (group.isEnrolled ||
-                    group.isEnqueued ||
-                    group.isPinned ||
-                    group.isSelected) &&
-                  group.course.id == item.id
+                  groupsCondition(group, item)
                 "
               >
                 <span class="type">{{ group.type }}:</span>

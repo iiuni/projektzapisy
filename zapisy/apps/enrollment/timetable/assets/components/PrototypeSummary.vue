@@ -35,11 +35,18 @@ export default class PrototypeSummary extends Vue {
   public summary3: Boolean = false;
   public summary4: Boolean = false;
 
-  get totalPoints(): number {
-    return state.state.totalPoints;
+  public selectedGroups: Function = (group: Group, course: Course) =>
+  (!group.isEnrolled &&
+    !group.isEnqueued &&
+    !group.isPinned &&
+    group.isSelected) &&
+    group.course.id == course.id;
+
+  get selectedPoints(): number {
+    return state.state.selectedPoints;
   }
-  get totalCourses(): { [id: number]: Course } {
-    return state.state.totalCourses;
+  get selectedCourses(): { [id: number]: Course } {
+    return state.state.selectedCourses;
   }
   get enrolledPoints(): number {
     return state.state.enrolledPoints;
@@ -91,7 +98,7 @@ export default class PrototypeSummary extends Vue {
 <template>
   <div class="table-responsiveVUE">
     <button type="button" class="summary" @click="summary1 = !summary1">
-      (P, Z, K, L)
+      (L)
     </button>
     <button type="button" class="summary" @click="summary2 = !summary2">
       (Z)
@@ -104,12 +111,13 @@ export default class PrototypeSummary extends Vue {
     </button>
     <SimpleSummary
       v-if="summary1"
-      summaryType="(P, Z, K, L)"
-      :sumPoints="totalPoints"
+      summaryType="(L)"
+      :sumPoints="selectedPoints"
       :groups="groups"
-      :courses="totalCourses"
+      :courses="selectedCourses"
+      :groupsCondition="selectedGroups"
     />
-    <SimpleSummary
+    <!-- <SimpleSummary
       v-if="summary2"
       summaryType="(Z)"
       :sumPoints="enrolledPoints"
@@ -129,7 +137,7 @@ export default class PrototypeSummary extends Vue {
       :sumPoints="pinnedPoints"
       :groups="groups"
       :courses="pinnedCourses"
-    />
+    /> -->
   </div>
 </template>
 
