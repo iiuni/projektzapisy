@@ -27,7 +27,7 @@ let conditionGenerator = {
     g[1].id !== group.id,
   enrolled: (g: GroupById, group: Group, c: number) =>
     g[1].isEnrolled && g[1].course.id === c && g[1].id !== group.id,
-  equeued: (g: GroupById, group: Group, c: number) =>
+  enqueued: (g: GroupById, group: Group, c: number) =>
     g[1].isEnqueued && g[1].course.id === c && g[1].id !== group.id,
   pinned: (g: GroupById, group: Group, c: number) =>
     g[1].isPinned && g[1].course.id === c && g[1].id !== group.id,
@@ -173,7 +173,7 @@ const mutations = {
       state.queuedCourses,
       group,
       0,
-      conditionGenerator.enrolled
+      conditionGenerator.enqueued
     );
     state.queuedCourses = updatedState.courses;
     state.queuedPoints = updatedState.points;
