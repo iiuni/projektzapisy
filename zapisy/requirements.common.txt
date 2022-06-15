@@ -18,7 +18,7 @@ ipdb==0.13.9
 prompt-toolkit==3.0.29
 ipython==7.34.0
 pycryptodome==3.14.1
-rollbar==0.16.2
+rollbar==0.16.3
 newrelic==5.24.0.153
 gunicorn==20.1.0
 python-dateutil==2.8.2
