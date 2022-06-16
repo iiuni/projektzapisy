@@ -46,13 +46,18 @@ function updateState(
     }
   });
   if (counter == threshold && courses[c] !== undefined) {
-    points -= courses[c].summaryPoints;
+    points -= courses[c].points;
     delete courses[c];
   }
   return { points: points, courses: courses };
 }
 
 function initializeGroupInSummary(state: State, course: Course, group: Group) {
+  if (group.isPinned && state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
+    group.course.summaryPoints = group.course.points
+    state.pinnedCourses[group.course.id] = group.course;
+    state.pinnedPoints += group.course.summaryPoints;
+  }
   if (group.isSelected && state.selectedCourses[course.id] === undefined && state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
     group.course.summaryPoints = group.course.points
     state.selectedCourses[group.course.id] = group.course;
@@ -111,6 +116,10 @@ const mutations = {
   unsetEnrolled(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     group.isEnrolled = false;
+    if (state.enrolledCourses[group.course.id] === undefined && state.pinnedCourses[group.course.id] !== undefined) {
+      state.pinnedCourses[group.course.id].summaryPoints = state.pinnedCourses[group.course.id].points;
+      state.pinnedPoints += state.pinnedCourses[group.course.id].summaryPoints;
+    }
     Vue.set(state.store, g.toString(), group);
   },
   setEnqueued(state: State, { g }: { g: number }) {
@@ -121,23 +130,40 @@ const mutations = {
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     group.isEnqueued = false;
+    if (state.queuedCourses[group.course.id] === undefined && state.pinnedCourses[group.course.id] !== undefined) {
+      state.pinnedCourses[group.course.id].summaryPoints = state.pinnedCourses[group.course.id].points;
+      state.pinnedPoints += state.pinnedCourses[group.course.id].summaryPoints;
+    }
     Vue.set(state.store, g.toString(), group);
   },
   setPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     let course: Course = group.course
     group.isPinned = true;
-    state.selectedPoints -= state.selectedCourses[course.id].summaryPoints;
-    state.selectedCourses[group.course.id].summaryPoints = 0;
+    initializeGroupInSummary(state, course, group);
     let updatedState = updateState(state.selectedPoints, state.selectedCourses, group, 0, conditionGenerator.selected);
     state.selectedCourses = updatedState.courses;
     state.selectedPoints = updatedState.points;
+    if (state.selectedCourses[course.id] !== undefined) {
+      state.selectedPoints -= state.selectedCourses[course.id].summaryPoints;  
+      state.selectedCourses[group.course.id].summaryPoints = 0;
+    }
     Vue.set(state.store, g.toString(), group);
   },
   unsetPinned(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
     group.isPinned = false;
-    initializeGroupInSummary(state, group.course, group);
+    let updatedState = updateState(state.pinnedPoints, state.pinnedCourses, group, 0, conditionGenerator.pinned);
+    state.pinnedCourses = updatedState.courses;
+    state.pinnedPoints = updatedState.points;
+    if (state.pinnedCourses[group.course.id] === undefined) {
+      if (state.selectedCourses[group.course.id] !== undefined) {
+        state.selectedCourses[group.course.id].summaryPoints = state.selectedCourses[group.course.id].points;
+        state.selectedPoints += state.selectedCourses[group.course.id].summaryPoints;
+      } else {
+        initializeGroupInSummary(state, group.course, group);
+      }
+    }
     Vue.set(state.store, g.toString(), group);
   },
   setSelected(state: State, { g }: { g: number }) {
@@ -160,6 +186,8 @@ const mutations = {
       group.isEnrolled = coalesce(groupJSON.is_enrolled, old.isEnrolled);
       group.isEnqueued = coalesce(groupJSON.is_enqueued, old.isEnqueued);
       group.isPinned = coalesce(groupJSON.is_pinned, old.isPinned);
+    } else {
+      initializeGroupInSummary(state, group.course, group);
     }
     Vue.set(state.store, group.id.toString(), group);
   },

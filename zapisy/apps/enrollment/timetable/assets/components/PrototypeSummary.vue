@@ -42,6 +42,12 @@ export default class PrototypeSummary extends Vue {
     group.isSelected) &&
     group.course.id == course.id;
 
+  public pinnedGroups: Function = (group: Group, course: Course) =>
+  (!group.isEnrolled &&
+    !group.isEnqueued &&
+    group.isPinned) &&
+    group.course.id == course.id;
+
   get selectedPoints(): number {
     return state.state.selectedPoints;
   }
@@ -130,14 +136,15 @@ export default class PrototypeSummary extends Vue {
       :sumPoints="queuedPoints"
       :groups="groups"
       :courses="queuedCourses"
-    />
+    /> -->
     <SimpleSummary
       v-if="summary4"
       summaryType="(P)"
       :sumPoints="pinnedPoints"
       :groups="groups"
       :courses="pinnedCourses"
-    /> -->
+      :groupsCondition="pinnedGroups"
+    />
   </div>
 </template>
 
