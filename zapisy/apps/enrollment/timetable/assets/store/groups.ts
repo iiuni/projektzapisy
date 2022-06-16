@@ -22,7 +22,7 @@ function coalesce(...args: Array<any | null | undefined>) {
 }
 let conditionGenerator = {
   selected: (g: GroupById, group: Group, c: number) =>
-    g[1].isSelected && !g[1].isEnrolled && !g[1].isEnqueued && g[1].isPinned && g[1].course.id === c && g[1].id !== group.id,
+    g[1].isSelected && !g[1].isEnrolled && !g[1].isEnqueued && !g[1].isPinned && g[1].course.id === c && g[1].id !== group.id,
   enrolled: (g: GroupById, group: Group, c: number) =>
     g[1].isEnrolled && g[1].course.id === c && g[1].id !== group.id,
   enqueued: (g: GroupById, group: Group, c: number) =>
@@ -127,7 +127,7 @@ const mutations = {
     let group: Group = state.store[g];
     let course: Course = group.course
     group.isPinned = true;
-    state.selectedPoints -= state.selectedCourses[course.id].points;
+    state.selectedPoints -= state.selectedCourses[course.id].summaryPoints;
     state.selectedCourses[group.course.id].summaryPoints = 0;
     let updatedState = updateState(state.selectedPoints, state.selectedCourses, group, 0, conditionGenerator.selected);
     state.selectedCourses = updatedState.courses;
