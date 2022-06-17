@@ -52,7 +52,12 @@ function updateState(
   return { points: points, courses: courses };
 }
 
-function initializeGroupInSummary(state: State, course: Course, group: Group) {
+function initializeGroupInSummary(state: State, course: Course, group: Group) {  
+  if (group.isEnqueued && state.queuedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined) {
+    group.course.summaryPoints = group.course.points
+    state.queuedCourses[group.course.id] = group.course;
+    state.queuedPoints += group.course.summaryPoints;
+  }
   if (group.isPinned && state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
     group.course.summaryPoints = group.course.points
     state.pinnedCourses[group.course.id] = group.course;
@@ -124,15 +129,44 @@ const mutations = {
   },
   setEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    let course: Course = group.course;
     group.isEnqueued = true;
+    initializeGroupInSummary(state, course, group);
+    let updatedState = updateState(state.selectedPoints, state.selectedCourses, group, 0, conditionGenerator.selected);
+    state.selectedCourses = updatedState.courses;
+    state.selectedPoints = updatedState.points;
+    if (state.selectedCourses[course.id] !== undefined) {
+      state.selectedPoints -= state.selectedCourses[course.id].summaryPoints;  
+      state.selectedCourses[group.course.id].summaryPoints = 0;
+    }
+    updatedState = updateState(state.pinnedPoints, state.pinnedCourses, group, 0, conditionGenerator.pinned);
+    state.pinnedCourses = updatedState.courses;
+    state.pinnedPoints = updatedState.points;
+    if (state.pinnedCourses[course.id] !== undefined) {
+      state.pinnedPoints -= state.pinnedCourses[course.id].summaryPoints;  
+      state.pinnedCourses[group.course.id].summaryPoints = 0;
+    }
     Vue.set(state.store, g.toString(), group);
   },
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
+    let course: Course = group.course;
     group.isEnqueued = false;
-    if (state.queuedCourses[group.course.id] === undefined && state.pinnedCourses[group.course.id] !== undefined) {
-      state.pinnedCourses[group.course.id].summaryPoints = state.pinnedCourses[group.course.id].points;
-      state.pinnedPoints += state.pinnedCourses[group.course.id].summaryPoints;
+    let updatedState = updateState(state.queuedPoints, state.queuedCourses, group, 0, conditionGenerator.enqueued);
+    state.queuedCourses = updatedState.courses;
+    state.queuedPoints = updatedState.points;
+    if (state.queuedCourses[group.course.id] === undefined) {
+      if (state.pinnedCourses[group.course.id] !== undefined) {
+        state.pinnedCourses[group.course.id].summaryPoints = state.pinnedCourses[group.course.id].points;
+        state.pinnedPoints += state.pinnedCourses[group.course.id].summaryPoints;
+      } else {
+        if (state.selectedCourses[group.course.id] !== undefined) {
+          state.selectedCourses[group.course.id].summaryPoints = state.selectedCourses[group.course.id].points;
+          state.selectedPoints += state.selectedCourses[group.course.id].summaryPoints;
+        } else {
+          initializeGroupInSummary(state, group.course, group);
+        }
+      }
     }
     Vue.set(state.store, g.toString(), group);
   },

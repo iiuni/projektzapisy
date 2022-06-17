@@ -48,6 +48,10 @@ export default class PrototypeSummary extends Vue {
     group.isPinned) &&
     group.course.id == course.id;
 
+  public enqueuedGroups: Function = (group: Group, course: Course) =>
+    group.isEnqueued &&
+    group.course.id == course.id;
+  
   get selectedPoints(): number {
     return state.state.selectedPoints;
   }
@@ -129,14 +133,16 @@ export default class PrototypeSummary extends Vue {
       :sumPoints="enrolledPoints"
       :groups="groups"
       :courses="enrolledCourses"
-    />
+      :groupsCondition="enrolledGroups"
+    />-->
     <SimpleSummary
       v-if="summary3"
       summaryType="(K)"
       :sumPoints="queuedPoints"
       :groups="groups"
       :courses="queuedCourses"
-    /> -->
+      :groupsCondition="enqueuedGroups"
+    />
     <SimpleSummary
       v-if="summary4"
       summaryType="(P)"
