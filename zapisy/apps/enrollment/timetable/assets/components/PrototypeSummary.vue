@@ -36,22 +36,24 @@ export default class PrototypeSummary extends Vue {
   public summary4: Boolean = false;
 
   public selectedGroups: Function = (group: Group, course: Course) =>
-  (!group.isEnrolled &&
+    !group.isEnrolled &&
     !group.isEnqueued &&
     !group.isPinned &&
-    group.isSelected) &&
+    group.isSelected &&
     group.course.id == course.id;
 
   public pinnedGroups: Function = (group: Group, course: Course) =>
-  (!group.isEnrolled &&
+    !group.isEnrolled &&
     !group.isEnqueued &&
-    group.isPinned) &&
+    group.isPinned &&
     group.course.id == course.id;
 
   public enqueuedGroups: Function = (group: Group, course: Course) =>
-    group.isEnqueued &&
-    group.course.id == course.id;
-  
+    group.isEnqueued && group.course.id == course.id;
+
+  public enrolledGroups: Function = (group: Group, course: Course) =>
+    group.isEnrolled && group.course.id == course.id;
+
   get selectedPoints(): number {
     return state.state.selectedPoints;
   }
@@ -119,38 +121,43 @@ export default class PrototypeSummary extends Vue {
     <button type="button" class="summary" @click="summary4 = !summary4">
       (P)
     </button>
-    <SimpleSummary
-      v-if="summary1"
-      summaryType="(L)"
-      :sumPoints="selectedPoints"
-      :groups="groups"
-      :courses="selectedCourses"
-      :groupsCondition="selectedGroups"
-    />
-    <!-- <SimpleSummary
-      v-if="summary2"
-      summaryType="(Z)"
-      :sumPoints="enrolledPoints"
-      :groups="groups"
-      :courses="enrolledCourses"
-      :groupsCondition="enrolledGroups"
-    />-->
-    <SimpleSummary
-      v-if="summary3"
-      summaryType="(K)"
-      :sumPoints="queuedPoints"
-      :groups="groups"
-      :courses="queuedCourses"
-      :groupsCondition="enqueuedGroups"
-    />
-    <SimpleSummary
-      v-if="summary4"
-      summaryType="(P)"
-      :sumPoints="pinnedPoints"
-      :groups="groups"
-      :courses="pinnedCourses"
-      :groupsCondition="pinnedGroups"
-    />
+    <div v-if="summary1">
+      <SimpleSummary
+        summaryType="(L)"
+        :sumPoints="selectedPoints"
+        :groups="groups"
+        :courses="selectedCourses"
+        :groupsCondition="selectedGroups"
+      />
+    </div>
+    <div v-if="summary2">
+      <SimpleSummary
+        summaryType="(Z)"
+        :sumPoints="enrolledPoints"
+        :groups="groups"
+        :courses="enrolledCourses"
+        :groupsCondition="enrolledGroups"
+      />
+    </div>
+    <div v-if="summary3">
+      <SimpleSummary
+        summaryType="(K)"
+        :sumPoints="queuedPoints"
+        :groups="groups"
+        :courses="queuedCourses"
+        :groupsCondition="enqueuedGroups"
+      />
+    </div>
+    <div v-if="summary4">
+      <SimpleSummary
+        v-if="summary4"
+        summaryType="(P)"
+        :sumPoints="pinnedPoints"
+        :groups="groups"
+        :courses="pinnedCourses"
+        :groupsCondition="pinnedGroups"
+      />
+    </div>
   </div>
 </template>
 
