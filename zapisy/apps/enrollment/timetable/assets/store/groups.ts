@@ -2,7 +2,7 @@
 // groups should be presented on the timetable. It will maintain a store of
 // groups data at hand and will download new data if necessary.
 import axios from "axios";
-import { keys, values, isEmpty, xor, find, isNil } from "lodash";
+import { cloneDeep, keys, values, isEmpty, xor, find, isNil } from "lodash";
 import Vue from "vue";
 import { ActionContext } from "vuex";
 
@@ -51,7 +51,7 @@ function updateState(
     }
   });
   if (counter == threshold && courses[c] !== undefined) {
-    points -= courses[c].points;
+    points -= courses[c].summaryPoints;
     delete courses[c];
   }
   return { points: points, courses: courses };
@@ -63,24 +63,45 @@ function initializeGroupInSummary(state: State, course: Course, group: Group) {
     state.enrolledCourses[group.course.id] = group.course;
     state.enrolledPoints += group.course.summaryPoints;
   }
-  if (group.isEnqueued && state.queuedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined) {
-    group.course.summaryPoints = group.course.points
-    state.queuedCourses[group.course.id] = group.course;
+  if (
+    group.isEnqueued &&
+    state.queuedCourses[course.id] === undefined
+  ) {    
+    if (state.enrolledCourses[course.id] === undefined) {
+      group.course.summaryPoints = group.course.points;
+    } else {
+      group.course.summaryPoints = 0;
+    }
+    state.queuedCourses[group.course.id] = cloneDeep(group.course);
     state.queuedPoints += group.course.summaryPoints;
   }
-  if (group.isPinned && state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
-    group.course.summaryPoints = group.course.points
-    state.pinnedCourses[group.course.id] = group.course;  
+  if (
+    group.isPinned && !group.isEnqueued && !group.isEnrolled &&
+    state.pinnedCourses[course.id] === undefined    
+  ) {
+    if (state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
+      group.course.summaryPoints = group.course.points;
+    }else {
+      group.course.summaryPoints = 0;
+    }
+    state.pinnedCourses[group.course.id] = cloneDeep(group.course);
     state.pinnedPoints += group.course.summaryPoints;
   }
-  if (group.isSelected && state.selectedCourses[course.id] === undefined && state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
-    group.course.summaryPoints = group.course.points
-    state.selectedCourses[group.course.id] = group.course;  
+  if (
+    group.isSelected && !group.isPinned && !group.isEnqueued && !group.isEnrolled &&
+    state.selectedCourses[course.id] === undefined
+  ) {
+    if (state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
+      group.course.summaryPoints = group.course.points;
+    } else {
+      group.course.summaryPoints = 0;
+    }
+    state.selectedCourses[group.course.id] = cloneDeep(group.course);
     state.selectedPoints += group.course.summaryPoints;
   }
 }
 
-function lookForPinnedGroups(course: Course)
+function lookForPinnedGroups(course: Course) 
 {
   Object.entries(state.store).forEach((g) => {
     if (g[1].course.id == course.id) {
@@ -179,6 +200,8 @@ const mutations = {
           }
         }
       }
+    } else {
+      initializeGroupInSummary(state, group.course, group);
     }
     Vue.set(state.store, g.toString(), group);
   },
@@ -244,6 +267,8 @@ const mutations = {
           initializeGroupInSummary(state, group.course, group);
         }
       }
+    } else {
+      initializeGroupInSummary(state, group.course, group);
     }
     Vue.set(state.store, g.toString(), group);
   },
@@ -288,6 +313,8 @@ const mutations = {
       } else {
         initializeGroupInSummary(state, group.course, group);
       }
+    } else {
+      initializeGroupInSummary(state, group.course, group);
     }
     Vue.set(state.store, g.toString(), group);
   },
