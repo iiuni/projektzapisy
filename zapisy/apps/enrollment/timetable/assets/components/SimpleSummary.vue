@@ -5,7 +5,7 @@ import Component from "vue-class-component";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import { DayOfWeek, nameDay, Group, Course} from "../models";
+import { DayOfWeek, nameDay, Group, Course } from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
 const SimpleSummaryProps = Vue.extend({
@@ -30,7 +30,7 @@ const SimpleSummaryProps = Vue.extend({
      type : Function,
      deafult: (group: Group, course: Course) => Boolean
     }
-  },
+  },  
 });
 @Component({
   computed: {
@@ -109,7 +109,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
             </a>
           </td>
           <td rowspan="2" class="ects">
-            {{ item.points }}
+            {{ item.summaryPoints }}
           </td>
         </tr>
         <tr class="courseDetails">
