@@ -248,7 +248,6 @@ const mutations = {
   },
   unsetEnqueued(state: State, { g }: { g: number }) {
     let group: Group = state.store[g];
-    let course: Course = group.course;
     group.isEnqueued = false;
     let updatedState = updateState(
       state.queuedPoints,
