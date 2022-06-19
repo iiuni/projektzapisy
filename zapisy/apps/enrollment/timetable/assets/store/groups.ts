@@ -63,10 +63,7 @@ function initializeGroupInSummary(state: State, course: Course, group: Group) {
     state.enrolledCourses[group.course.id] = group.course;
     state.enrolledPoints += group.course.summaryPoints;
   }
-  if (
-    group.isEnqueued &&
-    state.queuedCourses[course.id] === undefined
-  ) {    
+  if (group.isEnqueued && state.queuedCourses[course.id] === undefined) {
     if (state.enrolledCourses[course.id] === undefined) {
       group.course.summaryPoints = group.course.points;
     } else {
@@ -76,22 +73,34 @@ function initializeGroupInSummary(state: State, course: Course, group: Group) {
     state.queuedPoints += group.course.summaryPoints;
   }
   if (
-    group.isPinned && !group.isEnqueued && !group.isEnrolled &&
-    state.pinnedCourses[course.id] === undefined    
+    group.isPinned &&
+    !group.isEnqueued &&
+    !group.isEnrolled &&
+    state.pinnedCourses[course.id] === undefined
   ) {
-    if (state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
+    if (
+      state.enrolledCourses[course.id] === undefined &&
+      state.queuedCourses[course.id] === undefined
+    ) {
       group.course.summaryPoints = group.course.points;
-    }else {
+    } else {
       group.course.summaryPoints = 0;
     }
     state.pinnedCourses[group.course.id] = cloneDeep(group.course);
     state.pinnedPoints += group.course.summaryPoints;
   }
   if (
-    group.isSelected && !group.isPinned && !group.isEnqueued && !group.isEnrolled &&
+    group.isSelected &&
+    !group.isPinned &&
+    !group.isEnqueued &&
+    !group.isEnrolled &&
     state.selectedCourses[course.id] === undefined
   ) {
-    if (state.pinnedCourses[course.id] === undefined && state.enrolledCourses[course.id] === undefined && state.queuedCourses[course.id] === undefined) {
+    if (
+      state.pinnedCourses[course.id] === undefined &&
+      state.enrolledCourses[course.id] === undefined &&
+      state.queuedCourses[course.id] === undefined
+    ) {
       group.course.summaryPoints = group.course.points;
     } else {
       group.course.summaryPoints = 0;
@@ -101,8 +110,7 @@ function initializeGroupInSummary(state: State, course: Course, group: Group) {
   }
 }
 
-function lookForPinnedGroups(course: Course) 
-{
+function lookForPinnedGroups(course: Course) {
   Object.entries(state.store).forEach((g) => {
     if (g[1].course.id == course.id) {
       initializeGroupInSummary(state, course, g[1]);
@@ -261,14 +269,14 @@ const mutations = {
         }
         state.pinnedPoints +=
           state.pinnedCourses[group.course.id].summaryPoints;
-      } else {        
+      } else {
         if (state.selectedCourses[group.course.id] !== undefined) {
           if (state.enrolledCourses[group.course.id] === undefined) {
             state.selectedCourses[group.course.id].summaryPoints =
               state.selectedCourses[group.course.id].points;
           } else {
             state.selectedCourses[group.course.id].summaryPoints = 0;
-          }          
+          }
           state.selectedPoints +=
             state.selectedCourses[group.course.id].summaryPoints;
         } else {
@@ -314,12 +322,15 @@ const mutations = {
     state.pinnedPoints = updatedState.points;
     if (state.pinnedCourses[group.course.id] === undefined) {
       if (state.selectedCourses[group.course.id] !== undefined) {
-        if (state.enrolledCourses[group.course.id] === undefined && state.queuedCourses[group.course.id] === undefined) {
+        if (
+          state.enrolledCourses[group.course.id] === undefined &&
+          state.queuedCourses[group.course.id] === undefined
+        ) {
           state.selectedCourses[group.course.id].summaryPoints =
             state.selectedCourses[group.course.id].points;
         } else {
-          state.selectedCourses[group.course.id].summaryPoints = 0;            
-        }        
+          state.selectedCourses[group.course.id].summaryPoints = 0;
+        }
         state.selectedPoints +=
           state.selectedCourses[group.course.id].summaryPoints;
       } else {

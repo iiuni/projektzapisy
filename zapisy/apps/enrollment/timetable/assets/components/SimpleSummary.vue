@@ -27,10 +27,10 @@ const SimpleSummaryProps = Vue.extend({
       default: {},
     },
     groupsCondition: {
-     type : Function,
-     deafult: (group: Group, course: Course) => Boolean
-    }
-  },  
+      type: Function,
+      deafult: (group: Group, course: Course) => Boolean,
+    },
+  },
 });
 @Component({
   computed: {
@@ -115,11 +115,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
         <tr class="courseDetails">
           <td>
             <ul v-for="(group, gid) in groups" :value="group" :key="gid">
-              <li
-                v-if="
-                  groupsCondition(group, item)
-                "
-              >
+              <li v-if="groupsCondition(group, item)">
                 <span class="type">{{ group.type }}:</span>
                 <span class="term">
                   {{ GetNameDay(group.terms[0].weekday) }}
