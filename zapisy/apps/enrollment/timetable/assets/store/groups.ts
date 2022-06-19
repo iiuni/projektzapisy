@@ -110,13 +110,6 @@ function initializeGroupInSummary(state: State, course: Course, group: Group) {
   }
 }
 
-function lookForPinnedGroups(course: Course) {
-  Object.entries(state.store).forEach((g) => {
-    if (g[1].course.id == course.id) {
-      initializeGroupInSummary(state, course, g[1]);
-    }
-  });
-}
 // Store holds the data for all groups that are currently visible, but also for
 // those, that had been visible.
 interface State {
