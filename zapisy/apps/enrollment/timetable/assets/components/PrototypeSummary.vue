@@ -128,6 +128,7 @@ export default class PrototypeSummary extends Vue {
         :groups="groups"
         :courses="selectedCourses"
         :groupsCondition="selectedGroups"
+        :key="JSON.stringify(selectedCourses)"
       />
     </div>
     <div v-if="summary2">
@@ -137,6 +138,7 @@ export default class PrototypeSummary extends Vue {
         :groups="groups"
         :courses="enrolledCourses"
         :groupsCondition="enrolledGroups"
+        :key="JSON.stringify(enrolledCourses)"
       />
     </div>
     <div v-if="summary3">
@@ -146,6 +148,7 @@ export default class PrototypeSummary extends Vue {
         :groups="groups"
         :courses="queuedCourses"
         :groupsCondition="enqueuedGroups"
+        :key="JSON.stringify(queuedCourses)"
       />
     </div>
     <div v-if="summary4">
@@ -156,6 +159,7 @@ export default class PrototypeSummary extends Vue {
         :groups="groups"
         :courses="pinnedCourses"
         :groupsCondition="pinnedGroups"
+        :key="JSON.stringify(pinnedCourses)"
       />
     </div>
   </div>
