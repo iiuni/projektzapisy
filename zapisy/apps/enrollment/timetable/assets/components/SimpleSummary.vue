@@ -5,7 +5,7 @@ import Component from "vue-class-component";
 // import { getCurrentInstance } from "vue";
 
 // const current = getCurrentInstance();
-import { DayOfWeek, nameDay, Group, Course } from "../models";
+import { DayOfWeek, nameDay, Group } from "../models";
 
 // export type CourseObject = { id: number; name: string; url: string };
 const SimpleSummaryProps = Vue.extend({
