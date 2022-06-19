@@ -253,14 +253,22 @@ const mutations = {
     state.queuedPoints = updatedState.points;
     if (state.queuedCourses[group.course.id] === undefined) {
       if (state.pinnedCourses[group.course.id] !== undefined) {
-        state.pinnedCourses[group.course.id].summaryPoints =
-          state.pinnedCourses[group.course.id].points;
+        if (state.enrolledCourses[group.course.id] === undefined) {
+          state.pinnedCourses[group.course.id].summaryPoints =
+            state.pinnedCourses[group.course.id].points;
+        } else {
+          state.pinnedCourses[group.course.id].summaryPoints = 0;
+        }
         state.pinnedPoints +=
           state.pinnedCourses[group.course.id].summaryPoints;
       } else {        
         if (state.selectedCourses[group.course.id] !== undefined) {
-          state.selectedCourses[group.course.id].summaryPoints =
-            state.selectedCourses[group.course.id].points;
+          if (state.enrolledCourses[group.course.id] === undefined) {
+            state.selectedCourses[group.course.id].summaryPoints =
+              state.selectedCourses[group.course.id].points;
+          } else {
+            state.selectedCourses[group.course.id].summaryPoints = 0;
+          }          
           state.selectedPoints +=
             state.selectedCourses[group.course.id].summaryPoints;
         } else {
@@ -306,8 +314,12 @@ const mutations = {
     state.pinnedPoints = updatedState.points;
     if (state.pinnedCourses[group.course.id] === undefined) {
       if (state.selectedCourses[group.course.id] !== undefined) {
-        state.selectedCourses[group.course.id].summaryPoints =
-          state.selectedCourses[group.course.id].points;
+        if (state.enrolledCourses[group.course.id] === undefined && state.queuedCourses[group.course.id] === undefined) {
+          state.selectedCourses[group.course.id].summaryPoints =
+            state.selectedCourses[group.course.id].points;
+        } else {
+          state.selectedCourses[group.course.id].summaryPoints = 0;            
+        }        
         state.selectedPoints +=
           state.selectedCourses[group.course.id].summaryPoints;
       } else {
