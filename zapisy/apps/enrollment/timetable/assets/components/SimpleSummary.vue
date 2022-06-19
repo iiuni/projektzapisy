@@ -28,7 +28,6 @@ const SimpleSummaryProps = Vue.extend({
     },
     groupsCondition: {
       type: Function,
-      deafult: (group: Group, course: Course) => Boolean,
     },
   },
 });
