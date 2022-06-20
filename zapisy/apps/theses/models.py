@@ -102,8 +102,8 @@ class Thesis(models.Model):
 
         constraints = [
             models.CheckConstraint(
-                check=models.Q(reserved_until__isnull=True, students__user=None)
-                or models.Q(reserved_until__isnull=False, students__user=None),
+                check=(models.Q(reserved_until__isnull=True) and models.Q(students=None))
+                or (models.Q(reserved_until__isnull=False) and not(models.Q(students=None))),
                 name='reserved_until_and_students'
             )
         ]
