@@ -100,13 +100,6 @@ class Thesis(models.Model):
         verbose_name = "praca dyplomowa"
         verbose_name_plural = "prace dyplomowe"
 
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(students=None),
-                name='reserved_until_and_students'
-            )
-        ]
-
     def save(self, *args, **kwargs):
         """Overloaded save method.
 
