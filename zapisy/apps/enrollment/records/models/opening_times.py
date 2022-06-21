@@ -7,7 +7,7 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List
+from typing import Dict, List
 
 from django.conf import settings
 from django.db import models, transaction
@@ -56,7 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
+    def populate_t0(cls, semester: Semester, students=None):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed
@@ -200,7 +200,7 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, students_qs: Iterable[Student] = None, groups=None):
+    def populate_opening_times(cls, semester: Semester, students=None, groups=None):
         """Computes opening times for selected students that cast votes.
 
         If no students are specified, the method will be executed for all active students.
@@ -208,9 +208,7 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment. The function will
         throw a DatabaseError if operation is unsuccessful.
         """
-        if students_qs:
-            students = students_qs
-        else:
+        if not students:
             students = Student.get_active_students()
         # First make sure, that all SingleVotes have their course field
         # populated.
