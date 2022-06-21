@@ -158,11 +158,10 @@ class SpecialReservation(models.Model):
             if not self.ignore_conflicts:
                 self.validate_against_all_terms()
 
-            super(SpecialReservation, self).clean()
-        except ValidationError as e:
-            raise e
-        except Exception:
+        except TypeError:
             pass
+
+        super(SpecialReservation, self).clean()
 
     class Meta:
         app_label = 'schedule'
