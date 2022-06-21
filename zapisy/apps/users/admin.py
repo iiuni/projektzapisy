@@ -44,8 +44,6 @@ class StudentAdmin(admin.ModelAdmin):
 
     def refresh_opening_times(self, request, queryset):
         """Refreshes opening times for selected students."""
-        # The opening times refreshing concerns the upcoming semester
-
         semester = Semester.get_upcoming_semester()
         if semester is None:
             self.message_user(
