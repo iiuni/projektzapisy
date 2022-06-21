@@ -1,6 +1,8 @@
+from datetime import date
+
+
 from django.test import TestCase
 from django.utils import timezone
-from datetime import date
 from freezegun import freeze_time
 
 from apps.theses.enums import ThesisStatus, ThesisVote
