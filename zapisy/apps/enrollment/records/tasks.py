@@ -14,7 +14,6 @@ from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.models.records import Record
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import Student
 
 
 @job
