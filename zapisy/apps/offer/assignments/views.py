@@ -5,6 +5,8 @@ from collections import defaultdict
 from operator import attrgetter
 from typing import Dict
 
+from more_itertools import flatten
+
 import environ
 from django.conf import settings
 from django.contrib import messages
@@ -15,16 +17,19 @@ from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from google.auth.exceptions import RefreshError
+
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 from apps.users.models import Employee
 
 from .sheets import (create_sheets_service, read_assignments_sheet,
-                     read_employees_sheet, read_opening_recommendations,
-                     update_employees_sheet, update_assignments_sheet,
+                     read_courses_sheet, read_employees_sheet,
+                     read_opening_recommendations, update_employees_sheet,
+                     update_assignments_sheet, update_courses_sheet,
                      update_voting_results_sheet)
-from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary,
+from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary, SingleCourseData,
                     EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
 
 env = environ.Env()
@@ -44,6 +49,10 @@ def plan_view(request):
             filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return render(request, 'assignments/view.html', {'year': year})
+    except RefreshError as error:
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       {error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -105,7 +114,7 @@ def assignments_wizard(request):
     """
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
-        assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+        assignments = list(read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
         assignments = []
@@ -146,7 +155,6 @@ def create_assignments_sheet(request):
     Makes sure that modifications made to the assignments sheet so far are not
     overridden.
     """
-    regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
 
     # Read the current contents of the sheet.
@@ -164,7 +172,12 @@ def create_assignments_sheet(request):
         {error}""")
         return redirect(reverse('assignments-wizard'))
 
+    current_courses = dict()
+    for course in read_courses_sheet(sheet):
+        current_courses[(course.proposal_id, course.semester)] = course
+
     # Read selections from the form.
+    regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     picked_courses = set()
     for course in request.POST:
         # Filter out fields other than courses.
@@ -177,15 +190,29 @@ def create_assignments_sheet(request):
     for pick in list(current_assignments.keys()):
         if pick not in picked_courses:
             del current_assignments[pick]
+    for pick in list(current_courses.keys()):
+        if pick not in picked_courses:
+            del current_courses[pick]
 
     # Filter new picks, so they don't override existing data in the sheet.
     new_picks = [pick for pick in picked_courses if pick not in current_assignments]
+    missing_courses_picks = [pick for pick in picked_courses if pick not in current_courses]
 
-    suggested_groups = suggest_teachers(new_picks)
-    all_groups = sum(current_assignments.values(), []) + suggested_groups
+    proposal_ids = set(p for (p, _) in new_picks) | set(p for (p, _) in missing_courses_picks)
+    proposals = {
+        p.id: p for p in Proposal.objects
+        .filter(id__in=proposal_ids)
+        .select_related('owner', 'owner__user', 'course_type')
+        .prefetch_related('tags')
+    }
+
+    # update Assignments sheet
+    suggested_groups = suggest_teachers(new_picks, proposals)
+    all_groups = list(flatten(current_assignments.values())) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
     update_assignments_sheet(sheet, suggested_groups)
 
+    # update Employees sheet
     new_usernames = set(
         g.teacher_username for g in suggested_groups if g.teacher_username not in teachers)
     is_external_contractor = models.Count(
@@ -210,6 +237,23 @@ def create_assignments_sheet(request):
         )
     teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
     update_employees_sheet(sheet, teachers)
+
+    # update Courses sheet
+    courses_data = list(current_courses.values())
+    for pid, semester in missing_courses_picks:
+        proposal: Proposal = proposals[pid]
+        courses_data.append(
+            SingleCourseData(
+                proposal_id=pid,
+                name=proposal.get_course_name(semester),
+                course_type=proposal.course_type.name,
+                tags=', '.join(map(lambda x: x[0], proposal.tags.values_list('short_name'))),
+                ects=proposal.points,
+                semester=semester
+            )
+        )
+    courses_data.sort(key=attrgetter('semester', 'name'))
+    update_courses_sheet(sheet, courses_data)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
 
@@ -247,7 +291,7 @@ def generate_scheduler_file(request, semester, fmt):
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
         teachers = read_employees_sheet(assignments_spreadsheet)
-        assignments = read_assignments_sheet(assignments_spreadsheet)
+        assignments = list(read_assignments_sheet(assignments_spreadsheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
         return redirect('assignments-wizard')

@@ -106,6 +106,12 @@ const AssetDefs = {
     path.resolve("apps/users/assets/user-filter-list-index.js"),
   ],
   "users-consent-dialog": [path.resolve("apps/users/assets/consent-dialog.ts")],
+
+  // Statistics app
+
+  "statistics-widget": [
+    path.resolve("apps/statistics/assets/statistics-widget.js"),
+  ],
 };
 
 module.exports = AssetDefs;

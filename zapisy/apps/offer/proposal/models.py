@@ -37,6 +37,13 @@ class Proposal(CourseInformation):
         verbose_name = "propozycja przedmiotu"
         verbose_name_plural = "propozycje przedmiotu"
 
+    def get_course_name(self, semester):
+        if self.semester == SemesterChoices.UNASSIGNED:
+            apx = 'zima' if semester == 'z' else 'lato'
+            return f"{self.name} ({apx})"
+        else:
+            return self.name
+
     def __copy__(self):
         """Clones a proposal.
 
