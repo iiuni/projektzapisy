@@ -202,7 +202,7 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, students_qs: Iterable[Student] = None, group: Group = None):
+    def populate_opening_times(cls, semester: Semester, students_qs: Iterable[Student] = None, groups=None):
         """Computes opening times for selected students that cast votes.
 
         If no students are specified, the method will be executed for all active students.
@@ -218,8 +218,7 @@ class GroupOpeningTimes(models.Model):
         # populated.
         # First delete already existing records for this semester and selected students.
         if group:
-            cls.objects.filter(group=group).delete()
-            groups = group
+            cls.objects.filter(group_in=groups).delete()
         else:
             cls.objects.filter(student__in=students, group__course__semester_id=semester.id).delete()
             groups = Group.objects.filter(course__semester=semester).select_related('course')
