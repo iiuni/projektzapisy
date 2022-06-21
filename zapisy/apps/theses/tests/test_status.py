@@ -27,6 +27,7 @@ class ThesisStatusChangeTestCase(TestCase):
                                               max_number_of_students=1)
         thesis_vote_1.students.add(StudentFactory())
         thesis_vote_1.reserved_until = timezone.now()
+        print('TestPrint:',thesis_vote_1.reserved_until)
 
         Thesis.objects.create(title="thesis_edit_0",
                               advisor=self.thesis_owner,
