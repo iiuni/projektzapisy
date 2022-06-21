@@ -5,16 +5,16 @@ threads. A typical example is, when a student decides to leave a group, we
 should not make him wait for another student being pulled from the queue to take
 place he leaves vacant.
 """
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django_rq import job
+
 from apps.users.models import Student
 from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.models.records import Record
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django_rq import job
 
 
 @job
