@@ -27,7 +27,6 @@ class ThesisStatusChangeTestCase(TestCase):
                                               max_number_of_students=1)
         thesis_vote_1.students.add(StudentFactory())
         thesis_vote_1.reserved_until = timezone.now()
-        print('TestPrint:', thesis_vote_1.reserved_until)
 
         Thesis.objects.create(title="thesis_edit_0",
                               advisor=self.thesis_owner,
@@ -162,7 +161,7 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertRaises(ValueError, thesis_form_0.save, commit=True)
         self.assertRaises(ValueError, thesis_form_1.save, commit=True)
 
-    @freeze_time(date(2022, 6, 7))
+    # @freeze_time(date(2022, 6, 7))
     def test_reservation_date_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
@@ -173,6 +172,9 @@ class ThesisStatusChangeTestCase(TestCase):
         form_data_1 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'max_number_of_students': 2}
+
+        print('TestPrint:', timezone.now())
+
 
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
         thesis_form_1 = ThesisForm(user=self.thesis_owner.user, data=form_data_1)
