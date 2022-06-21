@@ -175,7 +175,6 @@ class ThesisStatusChangeTestCase(TestCase):
 
         print('TestPrint:', timezone.now())
 
-
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
         thesis_form_1 = ThesisForm(user=self.thesis_owner.user, data=form_data_1)
 
