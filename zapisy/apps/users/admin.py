@@ -5,7 +5,6 @@ from django.db.models import QuerySet
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes, T0Times
-
 from apps.users.models import Employee, Program, Student
 
 
