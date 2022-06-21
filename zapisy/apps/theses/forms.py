@@ -84,9 +84,9 @@ class ThesisFormBase(forms.ModelForm):
         if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
                 and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
-        if "students" in self.data and self.cleaned_data['reserved_until'] is None:
+        if 'students' in self.data and self.cleaned_data['reserved_until'] is None:
             raise forms.ValidationError("Do pracy przypisano studenta. Uzupełnij datę rezerwacji")
-        if "students" not in self.data and self.cleaned_data['reserved_until'] is not None:
+        if 'students' not in self.data and self.cleaned_data['reserved_until'] is not None:
             raise forms.ValidationError("Nie przypisano studentów do pracy. Usuń datę rezerwacji")
 
 
