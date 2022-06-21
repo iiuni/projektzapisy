@@ -56,7 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
-    def populate_t0(cls, semester: Semester, students_qs: Iterable[Student] = None):
+    def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed
@@ -70,9 +70,7 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-        if students_qs:
-            students = students_qs
-        else:
+        if not students:
             students = Student.get_active_students()
 
         with transaction.atomic():
