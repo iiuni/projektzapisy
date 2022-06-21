@@ -116,7 +116,7 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_edit_2.status,
                          ThesisStatus.ACCEPTED.value)
 
-    @freeze_time(date(2022, 6, 21)) 
+    @freeze_time(date(2022, 6, 21))
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
@@ -142,7 +142,7 @@ class ThesisStatusChangeTestCase(TestCase):
 
         self.assertTrue(thesis_form.is_valid())
 
-    @freeze_time(date(2022, 6, 21)) 
+    @freeze_time(date(2022, 6, 21))
     def test_reservation_date_not_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
@@ -163,14 +163,14 @@ class ThesisStatusChangeTestCase(TestCase):
     @freeze_time(date(2022, 6, 21))
     def test_reservation_date_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
-                    'advisor': self.thesis_owner, 'kind': 0,
-                    'reserved_until': timezone.now(),
-                    'students': [StudentFactory(), StudentFactory()],
-                    'max_number_of_students': 2}
+                       'advisor': self.thesis_owner, 'kind': 0,
+                       'reserved_until': timezone.now(),
+                       'students': [StudentFactory(), StudentFactory()],
+                       'max_number_of_students': 2}
 
         form_data_1 = {'title': 'Praca dyplomowa',
-                    'advisor': self.thesis_owner, 'kind': 0,
-                    'max_number_of_students': 2}
+                       'advisor': self.thesis_owner, 'kind': 0,
+                       'max_number_of_students': 2}
 
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
         thesis_form_1 = ThesisForm(user=self.thesis_owner.user, data=form_data_1)
