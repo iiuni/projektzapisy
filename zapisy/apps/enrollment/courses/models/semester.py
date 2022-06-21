@@ -210,7 +210,7 @@ class Semester(models.Model):
             raise
 
     @staticmethod
-    def get_upcoming_semester(precise: bool = False) -> Optional['Semester']:
+    def get_upcoming_semester(strict: bool = False) -> Optional['Semester']:
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
@@ -227,7 +227,7 @@ class Semester(models.Model):
             return Semester.objects.filter(
                 visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
         except Semester.DoesNotExist:
-            if precise:
+            if strict:
                 return None
             return Semester.get_current_semester()
 
