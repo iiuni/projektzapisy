@@ -70,7 +70,7 @@ def group_save_signal_receiver(sender, instance, created, raw, using, **kwargs):
                 group__course__semester=instance.course.semester).exists():
             # If not, we do nothing.
             return
-        GroupOpeningTimes.populate_opening_times(instance.course.semester, Student.get_active_students(), instance)
+        GroupOpeningTimes.populate_opening_times(instance.course.semester, group=instance)
         # Do not trigger pulling for new groups.
         return
     if not settings.RUN_ASYNC:
