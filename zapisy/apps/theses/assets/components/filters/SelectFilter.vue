@@ -16,8 +16,7 @@ class ExactFilter implements Filter {
       return true;
     }
     let propGetter = property(this.propertyName) as (c: Object) => number;
-    let propValue = propGetter(c);
-    return propValue == this.option;
+    return propGetter(c) == this.option;
   }
 }
 

@@ -13,26 +13,22 @@ export default Vue.extend({
   },
   data: function () {
     return {
-      allKinds: [] as [string, string][],
-      allStatuses: [] as [string, string][],
+      allKinds: [
+        ["mgr", "Magisterska"],
+        ["inż", "Inżynierska"],
+        ["lic", "Licencjacka"],
+        ["isim", "ISIM"],
+        ["lic+inż", "Licencjat+inżynierska"],
+        ["lic+inż+isim", "Licencjat+inżynierska+ISIM"],
+      ],
+      allStatuses: [
+        ["weryfikowana przez komisję", "Weryfikowana przez komisję"],
+        ["zwrócona do poprawek", "Zwrócona do poprawek"],
+        ["zaakceptowana", "Zaakceptowana"],
+        ["w realizacji", "W realizacji"],
+        ["obroniona", "Obroniona"],
+      ],
     };
-  },
-  created: function () {
-    this.allKinds = [
-      ["mgr", "Magisterska"],
-      ["inż", "Inżynierska"],
-      ["lic", "Licencjacka"],
-      ["isim", "ISIM"],
-      ["lic+inż", "Licencjat+inżynierska"],
-      ["lic+inż+isim", "Licencjat+inżynierska+ISIM"],
-    ];
-    this.allStatuses = [
-      ["weryfikowana przez komisję", "Weryfikowana przez komisję"],
-      ["zwrócona do poprawek", "Zwrócona do poprawek"],
-      ["zaakceptowana", "Zaakceptowana"],
-      ["w realizacji", "W realizacji"],
-      ["obroniona", "Obroniona"],
-    ];
   },
 });
 </script>

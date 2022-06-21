@@ -13,8 +13,7 @@ class BooleanFilter implements Filter {
       return true;
     }
     let propGetter = property(this.propertyName) as (c: Object) => boolean;
-    let propValue = propGetter(c);
-    return propValue;
+    return propGetter(c);
   }
 }
 
