@@ -214,7 +214,7 @@ class Semester(models.Model):
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
-        been scheduled but has not closed. It may be useful when students
+        been scheduled but has not ended. It may be useful when students
         want to plan their timetables.
         If no semester has scheduled and non-closed enrolment, in the case of
         the optional argument being not passed or being false, the current semester
