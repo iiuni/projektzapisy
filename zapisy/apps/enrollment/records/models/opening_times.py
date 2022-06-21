@@ -217,7 +217,7 @@ class GroupOpeningTimes(models.Model):
         # First make sure, that all SingleVotes have their course field
         # populated.
         # First delete already existing records for this semester and selected students.
-        if group:
+        if groups:
             cls.objects.filter(group_in=groups).delete()
         else:
             cls.objects.filter(student__in=students, group__course__semester_id=semester.id).delete()
