@@ -62,7 +62,7 @@ class T0Times(models.Model):
         The arguments are the semester of the T0s to be computed
         and the optional queryset of students whose T0s are to be computed.
         If the second argument is not passed, it will be executed for all
-        active student.
+        active students.
 
         The times are based on each student's ECTS points and their participation in
         courses' grading. The additional administrative bonus is also taken into
