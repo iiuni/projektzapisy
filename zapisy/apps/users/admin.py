@@ -57,7 +57,7 @@ class StudentAdmin(admin.ModelAdmin):
             return
 
         T0Times.populate_t0(semester, queryset)
-        GroupOpeningTimes.populate_opening_times(semester, queryset)
+        GroupOpeningTimes.populate_opening_times(semester, students=queryset)
         self.message_user(
                 request,
                 "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
