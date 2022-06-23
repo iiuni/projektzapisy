@@ -200,7 +200,7 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, students=None, groups=None):
+    def populate_opening_times(cls, semester: Semester, *, students=None, groups=None):
         """Computes opening times for selected students that cast votes.
 
         If no students are specified, the method will be executed for all active students.
