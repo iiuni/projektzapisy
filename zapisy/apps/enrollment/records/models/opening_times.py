@@ -203,10 +203,17 @@ class GroupOpeningTimes(models.Model):
     def populate_opening_times(cls, semester: Semester, *, students=None, groups=None):
         """Computes opening times for selected students that cast votes.
 
-        If no students are specified, the method will be executed for all active students.
-        group is passed when the times for only one group are to be computed, otherwise all groups.
-        Voting for a course results in a quicker enrollment. The function will
-        throw a DatabaseError if operation is unsuccessful.
+        Voting for a course results in a quicker enrollment.
+        
+        Args:
+            semester: A semester for which we calculate opening times.
+            students: Students for whom we calculate opening times.
+               If None, calculation will be carried out for all active students.
+            groups: Groups for which we calculate opening times.
+               If None, calculation will be carried out for all groups.
+               
+        Raises:
+            DatabaseError: Operation is unsuccessful.
         """
         if not students:
             students = Student.get_active_students()
