@@ -210,7 +210,7 @@ class GroupOpeningTimes(models.Model):
             students: Students for whom we calculate opening times.
                If None, calculation will be carried out for all active students.
             groups: Groups for which we calculate opening times.
-               If None, calculation will be carried out for all groups.
+               If None, calculation will be carried out for all groups in the specified semester.
 
         Raises:
             DatabaseError: Operation is unsuccessful.
