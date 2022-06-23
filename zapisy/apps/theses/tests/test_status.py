@@ -1,8 +1,5 @@
-from datetime import date
-
 from django.test import TestCase
 from django.utils import timezone
-from freezegun import freeze_time
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, ThesisForm
@@ -11,7 +8,6 @@ from apps.users.tests.factories import EmployeeFactory, StudentFactory
 
 
 class ThesisStatusChangeTestCase(TestCase):
-    @freeze_time(date(2022, 6, 7))
     def setUp(self):
         self.thesis_owner = EmployeeFactory()
 
@@ -81,7 +77,6 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_vote_0.status, ThesisStatus.ACCEPTED)
         self.assertEqual(thesis_vote_1.status, ThesisStatus.IN_PROGRESS)
 
-    @freeze_time(date(2022, 6, 7))
     def test_edit(self):
         thesis_edit_0 = Thesis.objects.get(title="thesis_edit_0")
         thesis_edit_1 = Thesis.objects.get(title="thesis_edit_1")
@@ -117,7 +112,6 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertEqual(thesis_edit_2.status,
                          ThesisStatus.ACCEPTED.value)
 
-    @freeze_time(date(2022, 6, 7))
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
@@ -129,7 +123,6 @@ class ThesisStatusChangeTestCase(TestCase):
 
         self.assertRaises(ValueError, thesis_form.save, commit=True)
 
-    @freeze_time(date(2022, 6, 7))
     def test_max_number_of_students_valid(self):
         form_data = {'title': 'Praca dyplomowa',
                      'advisor': self.thesis_owner, 'kind': 0,
@@ -143,7 +136,6 @@ class ThesisStatusChangeTestCase(TestCase):
 
         self.assertTrue(thesis_form.is_valid())
 
-    @freeze_time(date(2022, 6, 7))
     def test_reservation_date_not_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
@@ -161,7 +153,6 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertRaises(ValueError, thesis_form_0.save, commit=True)
         self.assertRaises(ValueError, thesis_form_1.save, commit=True)
 
-    # @freeze_time(date(2022, 6, 7))
     def test_reservation_date_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
@@ -172,8 +163,6 @@ class ThesisStatusChangeTestCase(TestCase):
         form_data_1 = {'title': 'Praca dyplomowa',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'max_number_of_students': 2}
-
-        print('TestPrint:', timezone.now())
 
         thesis_form_0 = ThesisForm(user=self.thesis_owner.user, data=form_data_0)
         thesis_form_1 = ThesisForm(user=self.thesis_owner.user, data=form_data_1)
