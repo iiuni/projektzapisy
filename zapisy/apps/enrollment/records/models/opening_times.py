@@ -204,14 +204,14 @@ class GroupOpeningTimes(models.Model):
         """Computes opening times for selected students that cast votes.
 
         Voting for a course results in a quicker enrollment.
-        
+
         Args:
             semester: A semester for which we calculate opening times.
             students: Students for whom we calculate opening times.
                If None, calculation will be carried out for all active students.
             groups: Groups for which we calculate opening times.
                If None, calculation will be carried out for all groups.
-               
+
         Raises:
             DatabaseError: Operation is unsuccessful.
         """
