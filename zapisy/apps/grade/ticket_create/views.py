@@ -56,7 +56,8 @@ def tickets_generate(request):
     if not is_grade_active:
         messages.error(
             request,
-            "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów"
+            "Ocena zajęć jest w tej chwili zamknięta; nie można pobrać biletów",
+            extra_tags='danger'
         )
         return redirect('grade-main')
     polls = get_grouped_polls(request.user.student)
