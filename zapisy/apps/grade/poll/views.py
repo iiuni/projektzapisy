@@ -47,11 +47,15 @@ class TicketsEntry(TemplateView):
                 correct_polls, failed_polls = RSAKeys.parse_raw_tickets(tickets)
             except json.JSONDecodeError:
                 messages.error(
-                    request, "Wprowadzone klucze nie są w poprawnym formacie."
+                    request, "Wprowadzone klucze nie są w poprawnym formacie.",
+                    extra_tags='danger'
                 )
                 return redirect('grade-poll-tickets-enter')
             except ValueError as e:
-                messages.error(request, f"Niepoprawne klucze: {e}")
+                messages.error(
+                  request, f"Niepoprawne klucze: {e}",
+                  extra_tags='danger'
+                )
                 return redirect('grade-poll-tickets-enter')
 
             entries = []
@@ -64,7 +68,8 @@ class TicketsEntry(TemplateView):
                 messages.error(
                     request,
                     "Poniższe ankiety nie mogły zostać załadowane:<br>" +
-                    "<br>".join(failed_polls)
+                    "<br>".join(failed_polls),
+                    extra_tags='danger'
                 )
 
             if entries:
@@ -219,7 +224,8 @@ class PollResults(TemplateView):
             selected_semester = Semester.objects.filter(pk=semester_id).get()
         except Semester.DoesNotExist:
             messages.error(
-                request, "Wybrany semestr nie istnieje."
+                request, "Wybrany semestr nie istnieje.",
+                extra_tags='danger'
             )
             return redirect('grade-main')
 
@@ -234,7 +240,8 @@ class PollResults(TemplateView):
                 # User does not have permission to view details about
                 # the selected poll
                 messages.error(
-                    request, "Nie masz uprawnień do wyświetlenia tej ankiety."
+                    request, "Nie masz uprawnień do wyświetlenia tej ankiety.",
+                    extra_tags='danger'
                 )
                 return redirect('grade-poll-results', semester_id=semester_id)
         else:
@@ -263,7 +270,10 @@ class PollResults(TemplateView):
                 },
             )
 
-        messages.error(request, "Nie masz uprawnień do wyświetlania wyników oceny.")
+        messages.error(
+          request, "Nie masz uprawnień do wyświetlania wyników oceny.",
+          extra_tags='danger'
+        )
         return redirect('grade-main')
 
 
