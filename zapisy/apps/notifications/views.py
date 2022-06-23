@@ -42,7 +42,10 @@ def preferences_save(request):
         post.save()
         messages.success(request, 'Zmieniono ustawienia powiadomień')
     else:
-        messages.error(request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie")
+        messages.error(
+            request, "Wystąpił błąd, zmiany nie zostały zapisane. Proszę wypełnić formularz ponownie",
+            extra_tags='danger'
+        )
     return redirect('my-profile')
 
 
