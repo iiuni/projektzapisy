@@ -47,8 +47,8 @@ class ThesisFormBase(forms.ModelForm):
         label="Przypisani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
-    reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów,\
-                                     uzupełnij również datę rezerwacji.",
+    reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
+                                     "uzupełnij również datę rezerwacji.",
                                      widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do",
                                      required=False)
