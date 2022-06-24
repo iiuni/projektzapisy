@@ -153,7 +153,6 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertRaises(ValueError, thesis_form_0.save, commit=True)
         self.assertRaises(ValueError, thesis_form_1.save, commit=True)
 
-
     def test_reservation_date_valid(self):
         form_data_0 = {'title': 'Praca dyplomowa',
                     'advisor': self.thesis_owner, 'kind': 0,
