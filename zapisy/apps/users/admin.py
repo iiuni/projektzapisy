@@ -49,7 +49,6 @@ class StudentAdmin(admin.ModelAdmin):
                     request, "Nie znaleziono semestru do obliczenia czasów.",
                     level=messages.ERROR)
             return
-
         if semester.records_opening is None:
             self.message_user(
                     request, "Proszę uzupelnić szczegóły odpowiedniego semestru.",
