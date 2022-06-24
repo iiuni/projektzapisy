@@ -137,12 +137,12 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertTrue(thesis_form.is_valid())
 
     def test_reservation_date_not_valid(self):
-        form_data_0 = {'title': 'Praca dyplomowa',
+        form_data_0 = {'title': 'Praca dyplomowa 0',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'students': [StudentFactory(), StudentFactory()],
                        'max_number_of_students': 2}
 
-        form_data_1 = {'title': 'Praca dyplomowa',
+        form_data_1 = {'title': 'Praca dyplomowa 1',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'reserved_until': timezone.now(),
                        'max_number_of_students': 2}
