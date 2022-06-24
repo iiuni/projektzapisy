@@ -154,13 +154,13 @@ class ThesisStatusChangeTestCase(TestCase):
         self.assertRaises(ValueError, thesis_form_1.save, commit=True)
 
     def test_reservation_date_valid(self):
-        form_data_0 = {'title': 'Praca dyplomowa',
+        form_data_0 = {'title': 'Praca dyplomowa 0',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'reserved_until': timezone.now(),
                        'students': [StudentFactory(), StudentFactory()],
                        'max_number_of_students': 2}
 
-        form_data_1 = {'title': 'Praca dyplomowa',
+        form_data_1 = {'title': 'Praca dyplomowa 1',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'max_number_of_students': 2}
 
@@ -171,4 +171,4 @@ class ThesisStatusChangeTestCase(TestCase):
         thesis_form_1.save(commit=True)
 
         self.assertTrue(thesis_form_0.is_valid())
-        # self.assertTrue(thesis_form_1.is_valid())
+        self.assertTrue(thesis_form_1.is_valid())
