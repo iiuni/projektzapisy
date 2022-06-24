@@ -172,3 +172,4 @@ class ThesisStatusChangeTestCase(TestCase):
 
         self.assertTrue(thesis_form_0.is_valid())
         self.assertTrue(thesis_form_1.is_valid())
+        
