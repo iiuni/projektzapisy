@@ -8,9 +8,12 @@ from datetime import timedelta
 from django.test import TestCase
 
 from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.courses.models.group import GroupType
+from apps.enrollment.courses.tests.factories import CourseInstanceFactory, GroupFactory
 from apps.enrollment.records.models import GroupOpeningTimes, T0Times
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.users.models import Student
+from apps.users.tests.factories import StudentFactory
 
 
 class OpeningTimesTest(TestCase):
@@ -30,7 +33,7 @@ class OpeningTimesTest(TestCase):
         GroupOpeningTimes.populate_opening_times(cls.semester)
 
     def test_populated_times(self):
-        """Tests, that GroupOpeningTimes are correctly based on T0 and votes."""
+        """Tests that GroupOpeningTimes are correctly based on T0 and votes."""
         bolek_knitting_opening = GroupOpeningTimes.objects.get(
             student=self.bolek, group=self.knitting_lecture_group).time
         lolek_knitting_opening = GroupOpeningTimes.objects.get(
@@ -38,7 +41,7 @@ class OpeningTimesTest(TestCase):
         assert bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=1)
 
     def test_group_openings(self):
-        """Tests, that the functions correctly assert the group opened or closed.
+        """Tests that the functions correctly assert the group opened or closed.
 
         We look at Bolek's T0 and his votes. He only gets as many bonus days, as
         he did provide votes for the course.
@@ -57,7 +60,7 @@ class OpeningTimesTest(TestCase):
                                                         bolek_knitting_group_opening))
 
     def test_records_end(self):
-        """Tests, that student will not be able to enroll after records are closed."""
+        """Tests that student will not be able to enroll after records are closed."""
         self.assertTrue(
             GroupOpeningTimes.is_group_open_for_student(self.bolek, self.knitting_lecture_group,
                                                         self.semester.records_closing))
@@ -121,3 +124,28 @@ class OpeningTimesTest(TestCase):
                 self.bolek, [self.washing_up_seminar_group],
                 self.washing_up_seminar_group.course.records_start +
                 timedelta(seconds=1))[self.washing_up_seminar_group.id])
+
+    @classmethod
+    def setUpAddData(cls):
+        """Sets up data for narrow_recalcs"""
+
+        cls.zuza = StudentFactory(user__username='zuza', ects=252)
+        encepence = CourseInstanceFactory()
+        T0Times.populate_t0(cls.semester, students=cls.zuza)
+
+        cls.exercise = GroupFactory(course=encepence, type=GroupType.EXERCISES, limit=1, extra="ćw1")
+        cls.vote = SingleVote()
+        cls.vote.VALUE_CHOICES = '3'
+        cls.vote.student = cls.zuza
+        cls.vote.proposal = encepence
+        cls.vote.state = cls.semester.year
+        GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
+
+    def narrow_recalcs(self):
+        """Sets up data calculating opening times for specific students or groups"""
+
+        self.assertTrue(
+            GroupOpeningTimes.objects.get(student=self.zuza, group_id=self.exercise.pk).time
+            >
+            GroupOpeningTimes.objects.get(student=self.bolek, group_id=self.exercise.pk).time
+        )       
