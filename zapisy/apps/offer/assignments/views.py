@@ -43,7 +43,10 @@ def plan_view(request):
         assignments_from_sheet = list(
             filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
     except (KeyError, ValueError) as error:
-        messages.error(request, error)
+        messages.error(
+          request, error,
+          extra_tags='danger'
+        )
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -107,7 +110,10 @@ def assignments_wizard(request):
     try:
         assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
     except (KeyError, ValueError) as error:
-        messages.error(request, error)
+        messages.error(
+          request, error,
+          extra_tags='danger'
+        )
         assignments = []
 
     courses = []
@@ -161,7 +167,9 @@ def create_assignments_sheet(request):
         Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
         została wygenerowana w obawie przed nadpisaniem istniejących
         przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
-        {error}""")
+        {error}""",
+            extra_tags='danger'
+        )
         return redirect(reverse('assignments-wizard'))
 
     # Read selections from the form.
@@ -239,17 +247,26 @@ def generate_scheduler_file(request, semester, fmt):
         File in the desired format in a response.
     """
     if semester not in ['z', 'l']:
-        messages.error(f"Niepoprawny semestr: '{ semester }'")
+        messages.error(
+          f"Niepoprawny semestr: '{ semester }'",
+          extra_tags='danger'
+        )
         redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
-        messages.error(f"Niepoprawny format: '{ fmt }'")
+        messages.error(
+          f"Niepoprawny format: '{ fmt }'",
+          extra_tags='danger'
+        )
     current_year = SystemState.get_current_state().year
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
         teachers = read_employees_sheet(assignments_spreadsheet)
         assignments = read_assignments_sheet(assignments_spreadsheet)
     except (KeyError, ValueError) as error:
-        messages.error(request, error)
+        messages.error(
+          request, error,
+          extra_tags='danger'
+        )
         return redirect('assignments-wizard')
 
     content_teachers = [{
