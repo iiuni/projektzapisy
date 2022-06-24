@@ -35,7 +35,10 @@ def vote(request):
             formset.save()
             messages.success(request, "Zapisano głos.")
         else:
-            messages.error(request, "\n".join(formset.non_form_errors()))
+            messages.error(
+                request, "\n".join(formset.non_form_errors()),
+                extra_tags='danger'
+            )
 
     else:
         formset = prepare_vote_formset(system_state, request.user.student)
