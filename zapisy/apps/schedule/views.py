@@ -175,7 +175,10 @@ def decision(request, event_id):
 
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
-            messages.error(request, "Status wydarzenia nie został zmieniony")
+            messages.error(
+              request, "Status wydarzenia nie został zmieniony",
+              extra_tags='danger'
+            )
         else:
             event_obj = form.save()
             msg = EventModerationMessage()
@@ -189,7 +192,10 @@ def decision(request, event_id):
                 for conflict in conflicts:
                     messages.warning(request, "Powstał konflikt: " + conflict.title)
     else:
-        messages.error(request, form.non_field_errors())
+        messages.error(
+          request, form.non_field_errors(),
+          extra_tags='danger'
+        )
 
     return redirect(reverse('events:show', args=[str(event.id)]))
 
