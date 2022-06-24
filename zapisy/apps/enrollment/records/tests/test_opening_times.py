@@ -127,8 +127,7 @@ class OpeningTimesTest(TestCase):
 
     @classmethod
     def setUpAddData(cls):
-        """Sets up data for narrow_recalcs"""
-
+        """Sets up data for narrow_recalcs."""
         cls.zuza = StudentFactory(user__username='zuza', ects=252)
         encepence = CourseInstanceFactory()
         T0Times.populate_t0(cls.semester, students=cls.zuza)
@@ -142,10 +141,9 @@ class OpeningTimesTest(TestCase):
         GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
 
     def narrow_recalcs(self):
-        """Sets up data calculating opening times for specific students or groups"""
-
+        """Tests that opening times are correct for narrowed-down groups."""
         self.assertTrue(
             GroupOpeningTimes.objects.get(student=self.zuza, group_id=self.exercise.pk).time
             >
             GroupOpeningTimes.objects.get(student=self.bolek, group_id=self.exercise.pk).time
-        )       
+        )
