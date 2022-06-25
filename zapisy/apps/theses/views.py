@@ -195,10 +195,15 @@ def edit_thesis(request, id):
     else:
         form = EditThesisForm(request.user, instance=thesis)
 
+    confirm_changes = not request.user.is_staff \
+        and thesis.status != ThesisStatus.RETURNED_FOR_CORRECTIONS.value \
+        and thesis.status != ThesisStatus.BEING_EVALUATED.value
+
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
         'title': thesis.title,
-        'id': id
+        'id': id,
+        'accepted': confirm_changes
     })
 
 

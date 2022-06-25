@@ -186,16 +186,15 @@ class EditThesisForm(ThesisFormBase):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
-        if self.title != instance.title or self.advisor != instance.advisor or \
-                self.supporting_advisor != instance.supporting_advisor or \
-                self.kind != self.instance.kind or \
-                self.max_number_of_students != self.instance.max_number_of_students:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
-
         if not self.is_staff:
             status = self.status
 
-            if status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
+            if self.title != instance.title or self.advisor != instance.advisor or \
+                    self.supporting_advisor != instance.supporting_advisor or \
+                    self.kind != self.instance.kind or \
+                    self.max_number_of_students != self.instance.max_number_of_students:
+                instance.status = ThesisStatus.BEING_EVALUATED.value
+            elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
                 instance.status = ThesisStatus.BEING_EVALUATED.value
             elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
                 instance.status = ThesisStatus.IN_PROGRESS.value

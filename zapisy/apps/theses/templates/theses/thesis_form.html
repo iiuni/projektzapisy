@@ -34,7 +34,7 @@
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
-    {% if not new_thesis %}
+    {% if accepted %}
     <script>
         var title = document.getElementsByName('title')[0].value
         var advisor = document.getElementsByName('advisor')[0].value
@@ -43,9 +43,6 @@
         var max_number_of_students = document.getElementsByName('max_number_of_students')[0].value
 
         $(document).on('submit', '.confirm-submit', function() {
-            if(document.getElementsByName('status')[0].querySelector('option:checked').value < 3) {
-                return;
-            }
             var confirm_msg = 'Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n' +
                     'Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?';
             if(document.getElementsByName('title')[0].value != title) {
