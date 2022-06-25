@@ -144,7 +144,7 @@ class ThesisStatusChangeTestCase(TestCase):
                        'students': [StudentFactory(), StudentFactory()],
                        'max_number_of_students': 2}
 
-        form_data_1 = {'title': 'Praca dyplomowa'_1,
+        form_data_1 = {'title': 'Praca dyplomowa_1',
                        'advisor': self.thesis_owner, 'kind': 0,
                        'reserved_until': timezone.now(),
                        'max_number_of_students': 2}
