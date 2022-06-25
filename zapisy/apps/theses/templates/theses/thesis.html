@@ -65,29 +65,20 @@
         </tr>
         <tr>
             <th scope="row">Promotor</th>
-            <td>{% if thesis.advisor %}
-                    {{ thesis.advisor }}
-                {% else %}
-                    Brak
-                {% endif %}
+            <td>
+                {{ thesis.advisor|default_if_none:"Brak" }}
             </td>
         </tr>
         <tr>
             <th scope="row">Promotor wspierający</th>
-            <td>{% if thesis.supporting_advisor %}
-                    {{ thesis.supporting_advisor }}
-                {% else %}
-                    Brak
-                {% endif %}
+            <td>
+                {{ thesis.supporting_advisor|default_if_none:"Brak" }}
             </td>
         </tr>
         <tr>
           <th scope="row">Maksymalna liczba studentów</th>
-          <td>{% if thesis.max_number_of_students %}
-                  {{ thesis.max_number_of_students }}
-              {% else %}
-                  Brak
-              {% endif %}
+          <td>
+                {{ thesis.max_number_of_students|default_if_none:"Brak" }}
           </td>
         </tr>
         <tr>
@@ -102,11 +93,8 @@
         </tr>
         <tr>
             <th scope="row">Zarezerwowana do</th>
-            <td>{% if thesis.reserved_until %}
-                    {{ thesis.reserved_until }}
-                {% else %}
-                    Brak daty rezerwacji
-                {% endif %}
+            <td>
+                {{ thesis.reserved_until|default_if_none:"Brak daty rezerwacji" }}
             </td>
         </tr>
         <tr>

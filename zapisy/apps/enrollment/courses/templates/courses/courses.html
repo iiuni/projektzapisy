@@ -1,11 +1,7 @@
 {% extends "courses/base.html" %}
 
 {% block main-subtitle %}
-    {% if course %}
-        {{ course }}
-    {% else %}
-        Przedmioty
-    {% endif %}
+    {{ course|default_if_none:"Przedmioty" }}
 {% endblock %}
 
 {% block bread %}
