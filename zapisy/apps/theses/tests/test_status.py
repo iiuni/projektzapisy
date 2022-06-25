@@ -108,11 +108,11 @@ class ThesisStatusChangeTestCase(TestCase):
         form_2.save(commit=True)
 
         self.assertEqual(thesis_edit_0.status,
-                         ThesisStatus.IN_PROGRESS.value)
+                         ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_1.status,
                          ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_2.status,
-                         ThesisStatus.ACCEPTED.value)
+                         ThesisStatus.BEING_EVALUATED.value)
 
     def test_max_number_of_students_not_valid(self):
         form_data = {'title': 'Praca dyplomowa',
