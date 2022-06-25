@@ -106,7 +106,7 @@ class ThesisStatusChangeTestCase(TestCase):
         form_2.save(commit=True)
 
         self.assertEqual(thesis_edit_0.status,
-                         ThesisStatus.IN_PROGRESS.value)
+                         ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_1.status,
                          ThesisStatus.BEING_EVALUATED.value)
         self.assertEqual(thesis_edit_2.status,
