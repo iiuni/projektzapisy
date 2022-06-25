@@ -34,7 +34,7 @@
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
-    {% if accepted %}
+    {% if confirm_changes %}
     <script>
         var title = document.getElementsByName('title')[0].value
         var advisor = document.getElementsByName('advisor')[0].value
