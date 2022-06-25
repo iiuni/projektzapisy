@@ -18,7 +18,7 @@
         <h2>{{ proposal.name }}</h2>
         <p class = "text-muted">
             Na ten przedmiot zagłosowało osób: <strong>{{ votes|length }}</strong>
-            oddając punktów: <strong>{{ total }}</strong>.
+            oddając punktów: <strong>{{ total|default_if_none:0 }}</strong>.
         </p>
         {% if votes %}
             <table class="table table-hover">
