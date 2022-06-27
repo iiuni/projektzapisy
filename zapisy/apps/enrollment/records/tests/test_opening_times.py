@@ -28,7 +28,6 @@ class OpeningTimesTest(TestCase):
         cls.washing_up_seminar_group = Group.objects.get(pk=22)
 
         GroupOpeningTimes.populate_opening_times(cls.semester)
- 
 
     def test_populated_times(self):
         """Tests that GroupOpeningTimes are correctly based on T0 and votes."""
