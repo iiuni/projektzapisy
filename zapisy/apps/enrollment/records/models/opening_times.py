@@ -222,7 +222,7 @@ class GroupOpeningTimes(models.Model):
         # populated.
         # First delete already existing records for this semester and selected students.
         if groups:
-            cls.objects.filter(group_in=groups).delete()
+            cls.objects.filter(group__in=groups).delete()
         else:
             cls.objects.filter(student__in=students, group__course__semester_id=semester.id).delete()
             groups = Group.objects.filter(course__semester=semester).select_related('course')
