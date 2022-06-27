@@ -200,7 +200,8 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_opening_times(cls, semester: Semester, *, students: Iterable[Student] = None, groups: Iterable[Group] = None):
+    def populate_opening_times(cls, semester: Semester, *,
+                               students: Iterable[Student] = None, groups: Iterable[Group] = None):
         """Computes opening times for selected students that cast votes.
 
         Voting for a course results in a quicker enrollment.
