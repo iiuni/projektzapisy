@@ -11,10 +11,10 @@ from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.courses.models.group import GroupType
 from apps.enrollment.courses.tests.factories import CourseInstanceFactory, GroupFactory
 from apps.enrollment.records.models import GroupOpeningTimes, T0Times
+from apps.offer.proposal.tests.factories import ProposalFactory
 from apps.offer.vote.models.single_vote import SingleVote
 from apps.users.models import Student
-from apps.users.tests.factories import ProposalFactory, StudentFactory
-
+from apps.users.tests.factories import StudentFactory
 
 class OpeningTimesTest(TestCase):
     """To understand the test scenario see the fixture."""
