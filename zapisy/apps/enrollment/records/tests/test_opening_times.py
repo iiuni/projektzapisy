@@ -33,16 +33,16 @@ class OpeningTimesTest(TestCase):
         GroupOpeningTimes.populate_opening_times(cls.semester)
         
         # Set up data for test_narrow_recalcs
-        cls.zuza = StudentFactory(user__username='zuza', ects=252)
-        encepence = CourseInstanceFactory()
-        T0Times.populate_t0(cls.semester, students=[cls.zuza])
+#         cls.zuza = StudentFactory(user__username='zuza', ects=252)
+#         encepence = CourseInstanceFactory()
+#         T0Times.populate_t0(cls.semester, students=[cls.zuza])
 
-        cls.exercise = GroupFactory(course=encepence, type=GroupType.EXERCISES, limit=1, extra="ćw1")
-        cls.vote = SingleVote()
-        cls.vote.VALUE_CHOICES = '3'
-        cls.vote.student = cls.zuza
-        cls.vote.proposal = ProposalFactory(name="encepence")
-        GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
+#         cls.exercise = GroupFactory(course=encepence, type=GroupType.EXERCISES, limit=1, extra="ćw1")
+#         cls.vote = SingleVote()
+#         cls.vote.VALUE_CHOICES = '3'
+#         cls.vote.student = cls.zuza
+#         cls.vote.proposal = ProposalFactory(name="encepence")
+#         GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
 
     def test_populated_times(self):
         """Tests that GroupOpeningTimes are correctly based on T0 and votes."""
@@ -137,10 +137,10 @@ class OpeningTimesTest(TestCase):
                 self.washing_up_seminar_group.course.records_start +
                 timedelta(seconds=1))[self.washing_up_seminar_group.id])
 
-    def test_narrow_recalcs(self):
-        """Tests that opening times are correct for narrowed-down groups."""
-        self.assertTrue(
-            GroupOpeningTimes.objects.get(student=self.zuza, group_id=self.exercise.pk).time
-            >
-            GroupOpeningTimes.objects.get(student=self.bolek, group_id=self.exercise.pk).time
-        )
+#     def test_narrow_recalcs(self):
+#         """Tests that opening times are correct for narrowed-down groups."""
+#         self.assertTrue(
+#             GroupOpeningTimes.objects.get(student=self.zuza, group_id=self.exercise.pk).time
+#             >
+#             GroupOpeningTimes.objects.get(student=self.bolek, group_id=self.exercise.pk).time
+#         )
