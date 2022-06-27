@@ -35,7 +35,7 @@ class OpeningTimesTest(TestCase):
         # Set up data for test_narrow_recalcs
         cls.zuza = StudentFactory(user__username='zuza', ects=252)
         encepence = CourseInstanceFactory()
-        T0Times.populate_t0(cls.semester, students=cls.zuza)
+        T0Times.populate_t0(cls.semester, students=[cls.zuza])
 
         cls.exercise = GroupFactory(course=encepence, type=GroupType.EXERCISES, limit=1, extra="ćw1")
         cls.vote = SingleVote()
