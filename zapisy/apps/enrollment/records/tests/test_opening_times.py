@@ -41,7 +41,7 @@ class OpeningTimesTest(TestCase):
         cls.vote = SingleVote()
         cls.vote.VALUE_CHOICES = '3'
         cls.vote.student = cls.zuza
-        cls.vote.proposal = cls.exercise.course.offer_id).correction
+        cls.vote.proposal = cls.exercise.course.offer_id.correction
         cls.vote.state = cls.semester.year
         GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
 
