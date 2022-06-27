@@ -36,7 +36,7 @@ class OpeningTimesTest(TestCase):
         
         #Populate opening times for knitting lecture, but only for Bolek and Lolek now.
         GroupOpeningTimes.populate_opening_times(
-          cls.semester, students=[self.bolek, self.lolek],
+          cls.semester, students=[cls.bolek, cls.lolek],
           groups=[cls.knitting_lecture_group]
         )
  
