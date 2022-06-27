@@ -26,8 +26,7 @@ class OpeningTimesTest(TestCase):
         #Populate opening times for knitting lecture.
         GroupOpeningTimes.populate_opening_times(cls.semester, groups=[cls.knitting_lecture_group])
         
-        tola_knitting_opening = GroupOpeningTimes.objects.get(
-            student=cls.tola, group=cls.knitting_lecture_group).time
+        tola_knitting_opening = T0Times.objects.get(student=cls.tola).time
         lolek_knitting_opening = GroupOpeningTimes.objects.get(
             student=cls.lolek, group=cls.knitting_lecture_group).time
         cls.diff = lolek_knitting_opening - tola_knitting_opening
