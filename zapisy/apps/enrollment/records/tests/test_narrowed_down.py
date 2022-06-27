@@ -24,7 +24,7 @@ class OpeningTimesTest(TestCase):
         cls.knitting_lecture_group = Group.objects.get(pk=11)
         
         #Populate opening times for knitting lecture.
-        GroupOpeningTimes.populate_opening_times(cls.semester, groups=[self.knitting_lecture_group])
+        GroupOpeningTimes.populate_opening_times(cls.semester, groups=[cls.knitting_lecture_group])
         
         tola_knitting_opening = GroupOpeningTimes.objects.get(
             student=cls.tola, group=cls.knitting_lecture_group).time
@@ -38,7 +38,7 @@ class OpeningTimesTest(TestCase):
         #Populate opening times for knitting lecture, but only for Bolek and Lolek now.
         GroupOpeningTimes.populate_opening_times(
           cls.semester, students=[self.bolek, self.lolek],
-          groups=[self.knitting_lecture_group]
+          groups=[cls.knitting_lecture_group]
         )
  
 
