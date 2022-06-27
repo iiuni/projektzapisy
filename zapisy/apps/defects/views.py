@@ -30,7 +30,7 @@ def index(request):
                 Defect.objects.filter(pk__in=defects_list).update(state=StateChoices.DONE)
             else:
                 messages.error(request,
-                               "Stan może zostać zmieniony tylko przez osoby do tego wyznaczone")
+                               "Stan może zostać zmieniony tylko przez osoby do tego wyznaczone.")
         elif query.get('delete') is not None:
             if is_defect_manager_val:
                 to_delete = Defect.objects.filter(pk__in=defects_list)
@@ -39,7 +39,7 @@ def index(request):
                 for defect in to_delete:
                     for image in defect.image_set.all():
                         images_to_delete.append(image.image.name)
-
+                messages.info(request, images_to_delete)
                 query_set = ", ".join(map(lambda x: x['name'], list(to_delete.values())))
                 messages.info(request, "Usunięto następujące usterki: " + query_set)
                 to_delete.delete()
@@ -112,13 +112,13 @@ def edit_defect(request, defect_id):
 def edit_defect_helper(request, defect):
     if request.method == 'POST':
         return edit_defect_post_request(request, defect_id=defect.id)
-    else:
-        form = DefectForm(instance=defect)
-        formset = DefectImageFormSet()
-        images = []
 
-        for image in Image.objects.filter(defect=defect):
-            images.append((image.id, image.image.url[:-16]))
+    form = DefectForm(instance=defect)
+    formset = DefectImageFormSet()
+    images = []
+
+    for image in Image.objects.filter(defect=defect):
+        images.append((image.id, image.image.url[:-16]))
     context = {'form': form, 'formset': formset, "response": request.method, "edit": True, 'images': images,
                'extra_images_number': ExtraImagesNumber, 'defect_id': defect.id}
     return render(request, 'addDefect.html', context)
@@ -166,6 +166,7 @@ def return_error_and_reload(request, form, edit, errors):
 
 def edit_defect_post_request(request, defect_id):
     form = DefectForm(request.POST, request.FILES)
+
     if not form.is_valid():
         return return_error_and_reload(request, form, True, str(form.errors))
 
@@ -179,6 +180,9 @@ def edit_defect_post_request(request, defect_id):
     defect.update(name=form_data['name'], last_modification=now(),
                   description=form_data['description'], place=form_data['place'])
     formset.save()
+    selected_images = request.POST.getlist('files-to-delete[]')
+    for image in selected_images:
+        do_delete_image(request, image)
 
     if request.user.id != defect.get().reporter.id:
         defect_modified.send_robust(
@@ -224,25 +228,29 @@ def print_defects(request, defects_list=None):
 
 def delete_image(request, image_id):
     if request.method == "POST":
-        image = get_object_or_404(Image, id=image_id)
-        defect_id = image.defect.id
-        image_path = '/zapisy/defects/' + image.image.name
-
-        image.delete()
-
-        if gd_storage.exists(image_path):
-            gd_storage.delete(image_path)
-
-        if request.user.id != image.defect.reporter.id:
-            defect_modified.send_robust(
-                sender=Defect,
-                instance=image.defect,
-                user=image.defect.reporter
-            )
-
+        defect_id = do_delete_image(image_id)
         messages.success(request, "Pomyślnie usunięto zdjęcie")
         return redirect('defects:edit_defect', defect_id=defect_id)
     raise Http404
+
+
+def do_delete_image(request, image_id):
+    image = get_object_or_404(Image, id=image_id)
+    defect_id = image.defect.id
+    image_path = '/zapisy/defects/' + image.image.name
+
+    image.delete()
+
+    if gd_storage.exists(image_path):
+        gd_storage.delete(image_path)
+
+    if request.user.id != image.defect.reporter.id:
+        defect_modified.send_robust(
+            sender=Defect,
+            instance=image.defect,
+            user=image.defect.reporter
+        )
+    return defect_id
 
 
 def post_information_from_defect_manager(request, defect_id):

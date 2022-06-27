@@ -38,9 +38,9 @@ function saveEvent(event) {
 }
 
 function deleteImage(event) {
-  event.preventDefault();
+  event.preventDefault()
   const image_id = $(this).attr("id").slice(14);
-  $("#delete-form-" + image_id).trigger("submit");
+  $("#image-div-" + image_id).toggleClass("deleted");
 }
 
 function deleteImageField(event) {
