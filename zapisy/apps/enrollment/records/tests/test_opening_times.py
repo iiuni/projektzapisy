@@ -42,7 +42,6 @@ class OpeningTimesTest(TestCase):
         cls.vote.VALUE_CHOICES = '3'
         cls.vote.student = cls.zuza
         cls.vote.proposal = ProposalFactory(name="encepence")
-        cls.vote.state = cls.semester.year
         GroupOpeningTimes.populate_opening_times(cls.semester, groups=cls.exercise)
 
     def test_populated_times(self):
