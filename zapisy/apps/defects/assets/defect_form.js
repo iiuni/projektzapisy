@@ -38,7 +38,7 @@ function saveEvent(event) {
 }
 
 function deleteImage(event) {
-  event.preventDefault()
+  event.preventDefault();
   const image_id = $(this).attr("id").slice(14);
   $("#image-div-" + image_id).toggleClass("deleted");
 }
