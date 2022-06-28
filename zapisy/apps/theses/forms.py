@@ -1,3 +1,5 @@
+from copy import copy
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Column, Layout, Row, Submit
 from django import forms
@@ -142,11 +144,7 @@ class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
-        self.title = self.instance.title
-        self.advisor = self.instance.advisor
-        self.supporting_advisor = self.instance.supporting_advisor
-        self.kind = self.instance.kind
-        self.max_number_of_students = self.instance.max_number_of_students
+        self.origin_instance = copy(self.instance)
         self.status = self.instance.status
 
         if user.is_staff:
@@ -188,11 +186,14 @@ class EditThesisForm(ThesisFormBase):
 
         if not self.is_staff:
             status = self.status
+            origin_instance = self.origin_instance
 
-            if self.title != instance.title or self.advisor != instance.advisor or \
-                    self.supporting_advisor != instance.supporting_advisor or \
-                    self.kind != self.instance.kind or \
-                    self.max_number_of_students != self.instance.max_number_of_students:
+            if origin_instance.title != instance.title or \
+                    origin_instance.advisor != instance.advisor or \
+                    origin_instance.supporting_advisor != instance.supporting_advisor or \
+                    origin_instance.kind != self.instance.kind or \
+                    origin_instance.max_number_of_students != self.instance.max_number_of_students or \
+                    origin_instance.description != self.instance.description:
                 instance.status = ThesisStatus.BEING_EVALUATED.value
             elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
                 instance.status = ThesisStatus.BEING_EVALUATED.value
