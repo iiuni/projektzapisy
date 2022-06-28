@@ -62,15 +62,11 @@ class ThesisFormBase(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
-        self.is_staff = False
-        if user.is_staff:
-            self.is_staff = True
-            self.fields['advisor'].queryset = Employee.objects.all()
-        else:
-            self.fields['advisor'].queryset = Employee.objects.filter(
-                pk=user.employee.pk)
-            self.fields['advisor'].initial = user.employee
-            self.fields['advisor'].widget.attrs['readonly'] = True
+
+        self.fields['advisor'].queryset = Employee.objects.filter(
+            pk=user.employee.pk)
+        self.fields['advisor'].initial = user.employee
+        self.fields['advisor'].widget.attrs['readonly'] = True
 
         self.can_assign_multiple_students = user.has_perm('theses.assign_multiple_students')
 
@@ -96,23 +92,13 @@ class ThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(ThesisForm, self).__init__(user, *args, **kwargs)
 
-        if user.is_staff:
-            self.fields['status'].required = True
-            row_1 = Row(
-                Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-2'),
-                Column('max_number_of_students', css_class='form-group col-md-2'),
-                Column('status', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-        else:
-            self.fields['status'].required = False
-            row_1 = Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
+        self.fields['status'].required = False
+        row_1 = Row(
+            Column('kind', css_class='form-group col-md-3'),
+            Column('max_number_of_students', css_class='form-group col-md-3'),
+            Column('reserved_until', css_class='form-group col-md-6'),
+            css_class='form-row'
+        )
 
         self.helper.layout = Layout(
             'title',
@@ -130,9 +116,7 @@ class ThesisForm(ThesisFormBase):
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.added = timezone.now()
-
-        if not self.is_staff:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
+        instance.status = ThesisStatus.BEING_EVALUATED.value
 
         instance.save()
         self.save_m2m()
@@ -147,22 +131,13 @@ class EditThesisForm(ThesisFormBase):
         self.origin_instance = copy(self.instance)
         self.status = self.instance.status
 
-        if user.is_staff:
-            special_row = Row(
-                Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-2'),
-                Column('max_number_of_students', css_class='form-group col-md-2'),
-                Column('status', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-        else:
-            self.fields['status'].required = False
-            special_row = Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
+        self.fields['status'].required = False
+        special_row = Row(
+            Column('kind', css_class='form-group col-md-3'),
+            Column('max_number_of_students', css_class='form-group col-md-3'),
+            Column('reserved_until', css_class='form-group col-md-6'),
+            css_class='form-row'
+        )
 
         self.helper.layout = Layout(
             'title',
@@ -184,25 +159,24 @@ class EditThesisForm(ThesisFormBase):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
-        if not self.is_staff:
-            status = self.status
-            origin_instance = self.origin_instance
+        status = self.status
+        origin_instance = self.origin_instance
 
-            if origin_instance.title != instance.title or \
-                    origin_instance.advisor != instance.advisor or \
-                    origin_instance.supporting_advisor != instance.supporting_advisor or \
-                    origin_instance.kind != self.instance.kind or \
-                    origin_instance.max_number_of_students != self.instance.max_number_of_students or \
-                    origin_instance.description != self.instance.description:
-                instance.status = ThesisStatus.BEING_EVALUATED.value
-            elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
-                instance.status = ThesisStatus.BEING_EVALUATED.value
-            elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
-                instance.status = ThesisStatus.IN_PROGRESS.value
-            elif status == ThesisStatus.IN_PROGRESS.value and "students" not in self.data:
-                instance.status = ThesisStatus.ACCEPTED.value
-            else:
-                instance.status = status
+        if origin_instance.title != instance.title or \
+                origin_instance.advisor != instance.advisor or \
+                origin_instance.supporting_advisor != instance.supporting_advisor or \
+                origin_instance.kind != self.instance.kind or \
+                origin_instance.max_number_of_students != self.instance.max_number_of_students or \
+                origin_instance.description != self.instance.description:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
+        elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
+        elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
+            instance.status = ThesisStatus.IN_PROGRESS.value
+        elif status == ThesisStatus.IN_PROGRESS.value and "students" not in self.data:
+            instance.status = ThesisStatus.ACCEPTED.value
+        else:
+            instance.status = status
 
         if commit:
             instance.save()
