@@ -3,9 +3,8 @@ import Vue from "vue";
 // import { mapGetters } from "vuex";
 import Component from "vue-class-component";
 // import { getCurrentInstance } from "vue";
-
 // const current = getCurrentInstance();
-import { DayOfWeek, nameDay, Group } from "../models";
+import { DayOfWeek, nameDay, Group } from "../models";  
 
 // export type CourseObject = { id: number; name: string; url: string };
 const SimpleSummaryProps = Vue.extend({
@@ -13,31 +12,31 @@ const SimpleSummaryProps = Vue.extend({
     summaryType: {
       type: String,
       default: "",
-    },
-    sumPoints: {
-      type: Number as () => Number,
-      default: 0,
-    },
+    },    
     groups: {
       type: Array as () => Array<Group>,
       default: {},
-    },
-    courses: {
-      type: Object as () => Object,
-      default: {},
-    },
+    },    
     groupsCondition: {
       type: Function,
     },
+    courses: {
+      type: Object,
+      default: {}
+    },
+    points: {
+      type: Number,
+      default: 0,
+    }
   },
 });
 @Component({
   computed: {
     // ...mapGetters("courses", {
-    //   sumPointsState: "sumPoints",
+      //   sumPointsState: "sumPoints",
     // }),
     // ...mapGetters("filters", {
-    //   tester: "visible",
+      //   tester: "visible",
     // }),
   },
 })
@@ -47,34 +46,33 @@ export default class SimpleSummary extends SimpleSummaryProps {
   //   // The same goes for courses and tester.
   //   courses!: CourseInfo[];
   //   tester!: (_: CourseInfo) => boolean;
-
   //   get sumPoints(): number {
-  //     return state.state.sumPoints;
+    //     return state.state.sumPoints;
   //   }
   //   get courses(): { [id: number]: Course } {
-  //     return state.state.courses;
+    //     return state.state.courses;
   //   }
   //   get groups(): { [id: number]: Group } {
   //     return values(state.state.store).filter(
-  //       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+    //       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
   //     );
   //   }
   public GetNameDay(day: DayOfWeek) {
     return nameDay(day);
   }
   // set sumPoints(newValue: number): {
-  //   state.state.sumPoints = newValue;
+    //   state.state.sumPoints = newValue;
   // }
 
   // The list should be initialised to contain courses filtered with initial filters
   // fetched from the query string and then apply filters whenever they update.
   //   visibleCourses: CourseInfo[] = [];
   //   methods: {
-  // this.visibleCourses = this.courses.filter(this.tester);
+    // this.visibleCourses = this.courses.filter(this.tester);
 
   // this.$store.subscribe((mutation, state) => {
-  //   switch (mutation.type) {
-  //     case "filters/registerFilter":
+    //   switch (mutation.type) {
+      //     case "filters/registerFilter":
   //       this.visibleCourses = this.courses.filter(this.tester);
   //       break;
   //   }
@@ -97,7 +95,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
           <td>
             <strong>Suma punktów ECTS za {{ summaryType }}:</strong>
           </td>
-          <td class="ects">{{ sumPoints }}</td>
+          <td class="ects">{{ points }}</td>
         </tr>
       </tfoot>
       <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
