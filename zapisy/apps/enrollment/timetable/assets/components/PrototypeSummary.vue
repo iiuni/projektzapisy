@@ -7,7 +7,7 @@ import { values } from "lodash";
 
 // const current = getCurrentInstance();
 import state from "../store/groups";
-import { DayOfWeek, nameDay, Course, Group } from "../models";
+import { Course, Group } from "../models";
 import SimpleSummary from "./SimpleSummary.vue";
 
 // export type CourseObject = { id: number; name: string; url: string };
@@ -54,38 +54,11 @@ export default class PrototypeSummary extends Vue {
   public enrolledGroups: Function = (group: Group, course: Course) =>
     group.isEnrolled && group.course.id == course.id;
 
-  get selectedPoints(): number {
-    return state.state.selectedPoints;
-  }
-  get selectedCourses(): { [id: number]: Course } {
-    return state.state.selectedCourses;
-  }
-  get enrolledPoints(): number {
-    return state.state.enrolledPoints;
-  }
-  get enrolledCourses(): { [id: number]: Course } {
-    return state.state.enrolledCourses;
-  }
-  get queuedPoints(): number {
-    return state.state.queuedPoints;
-  }
-  get queuedCourses(): { [id: number]: Course } {
-    return state.state.queuedCourses;
-  }
-  get pinnedPoints(): number {
-    return state.state.pinnedPoints;
-  }
-  get pinnedCourses(): { [id: number]: Course } {
-    return state.state.pinnedCourses;
-  }
   get groups(): { [id: number]: Group } {
     return values(state.state.store).filter(
       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
     );
-  }
-  public GetNameDay(day: DayOfWeek) {
-    return nameDay(day);
-  }
+  }  
   // set sumPoints(newValue: number): {
   //   state.state.sumPoints = newValue;
   // }
@@ -124,42 +97,30 @@ export default class PrototypeSummary extends Vue {
     <div v-if="summary1">
       <SimpleSummary
         summaryType="(L)"
-        :sumPoints="selectedPoints"
         :groups="groups"
-        :courses="selectedCourses"
         :groupsCondition="selectedGroups"
-        :key="JSON.stringify(selectedCourses)"
       />
     </div>
     <div v-if="summary2">
       <SimpleSummary
         summaryType="(Z)"
-        :sumPoints="enrolledPoints"
         :groups="groups"
-        :courses="enrolledCourses"
         :groupsCondition="enrolledGroups"
-        :key="JSON.stringify(enrolledCourses)"
       />
     </div>
     <div v-if="summary3">
       <SimpleSummary
         summaryType="(K)"
-        :sumPoints="queuedPoints"
         :groups="groups"
-        :courses="queuedCourses"
         :groupsCondition="enqueuedGroups"
-        :key="JSON.stringify(queuedCourses)"
       />
     </div>
     <div v-if="summary4">
       <SimpleSummary
         v-if="summary4"
         summaryType="(P)"
-        :sumPoints="pinnedPoints"
         :groups="groups"
-        :courses="pinnedCourses"
         :groupsCondition="pinnedGroups"
-        :key="JSON.stringify(pinnedCourses)"
       />
     </div>
   </div>
