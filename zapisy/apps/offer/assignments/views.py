@@ -42,8 +42,8 @@ CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
-    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
+        assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
         teachers = read_employees_sheet(assignments_spreadsheet)
         assignments_from_sheet = list(
             filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))

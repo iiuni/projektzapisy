@@ -58,6 +58,13 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     return sh
 
 
+def find_or_insert_worksheet(sheet: gspread.models.Spreadsheet, name):
+    try:
+        return sheet.worksheet(name)
+    except gspread.WorksheetNotFound:
+        return sheet.add_worksheet(name, 1, 1)
+
+
 def voting_legend_rows(years: List[str]) -> List[List[str]]:
     """Creates two top rows with a legend.
 
@@ -208,9 +215,12 @@ def proposal_to_sheets_format(groups: ProposalSummary):
 
 def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
-    worksheet = sheet.get_worksheet(0)
+    try:
+        worksheet = sheet.worksheet("Przydziały")
+    except gspread.WorksheetNotFound:
+        worksheet = sheet.get_worksheet(0)
+        worksheet.update_title("Przydziały")
     worksheet.clear()
-    worksheet.update_title("Przydziały")
     worksheet.update('A:N', data, raw=False)
     worksheet.format('M:N', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)
@@ -271,9 +281,7 @@ def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[Single
         ]
         data.append(row)
 
-    worksheet: gspread.models.Worksheet = sheet.get_worksheet(2)
-    if worksheet is None:
-        worksheet = sheet.add_worksheet("Przedmioty", 2, 8)
+    worksheet = find_or_insert_worksheet(sheet, "Przedmioty")
     worksheet.clear()
     worksheet.update_title("Przedmioty")
     worksheet.update('A:H', data, raw=False)
@@ -309,7 +317,7 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
         'Godziny razem', 'Bilans'
     ]]
 
-    for i, t in enumerate(teachers):
+    for i, t in enumerate(teachers, start=2):
         data.append([
             t.username,
             t.first_name,
@@ -317,17 +325,15 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
             t.status,
             str(t.pensum),
             # Formulas computing winter and summer hours.
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i}; Przydziały!$K:$K;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i}; Przydziały!$K:$K;True)',
             # Total hours.
-            f'=$F{i+2}+$G{i+2}',
+            f'=$F{i}+$G{i}',
             # Balance.
-            f'=$H{i+2}-$E{i+2}',
+            f'=$H{i}-$E{i}',
         ])
 
-    worksheet: gspread.models.Worksheet = sheet.get_worksheet(1)
-    if worksheet is None:
-        worksheet = sheet.add_worksheet("Arkusz1", 2, 10)
+    worksheet = find_or_insert_worksheet(sheet, "Pracownicy")
     worksheet.clear()
     worksheet.update_title("Pracownicy")
     worksheet.update('A:I', data, raw=False)
