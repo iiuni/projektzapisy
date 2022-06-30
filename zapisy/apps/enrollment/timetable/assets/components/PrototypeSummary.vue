@@ -38,8 +38,8 @@ export default class PrototypeSummary extends Vue {
     let groups: { [id: number]: Group } = values(state.state.store).filter(
       (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
     );
-    let enrolledCourses = {};
-    let enrolledPoints = 0;
+    let enrolledCourses: { [id: number]: Course } = {};
+    let enrolledPoints: number = 0;
     Object.entries(groups).forEach((g) => {
       if (g[1].isEnrolled && enrolledCourses[g[1].course.id] === undefined) {
         enrolledCourses[g[1].course.id] = cloneDeep(g[1].course);
@@ -48,8 +48,8 @@ export default class PrototypeSummary extends Vue {
         enrolledPoints += enrolledCourses[g[1].course.id].summaryPoints;
       }
     });
-    let enqueuedCourses = {};
-    let enqueuedPoints = 0;
+    let enqueuedCourses: { [id: number]: Course } = {};
+    let enqueuedPoints: number = 0;
     Object.entries(groups).forEach((g) => {
       if (g[1].isEnqueued && enqueuedCourses[g[1].course.id] === undefined) {
         enqueuedCourses[g[1].course.id] = cloneDeep(g[1].course);
@@ -62,8 +62,8 @@ export default class PrototypeSummary extends Vue {
         enrolledPoints += enqueuedCourses[g[1].course.id].summaryPoints;
       }
     });
-    let pinnedCourses = {};
-    let pinnedPoints = 0;
+    let pinnedCourses: { [id: number]: Course } = {};
+    let pinnedPoints: number = 0;
     Object.entries(groups).forEach((g) => {
       if (
         g[1].isPinned &&
@@ -84,8 +84,8 @@ export default class PrototypeSummary extends Vue {
         pinnedPoints += pinnedCourses[g[1].course.id].summaryPoints;
       }
     });
-    let selectedCourses = {};
-    let selectedPoints = 0;
+    let selectedCourses: { [id: number]: Course } = {};
+    let selectedPoints: number = 0;
     Object.entries(groups).forEach((g) => {
       if (
         g[1].isSelected &&
