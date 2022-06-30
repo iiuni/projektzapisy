@@ -181,6 +181,31 @@ class PollResults(TemplateView):
                 ] += poll.number_of_submissions
 
         return number_of_submissions_for_category
+      
+      @staticmethod
+    def __get_unread(polls, user):
+        un_read = defaultdict(True.__bool__)
+        un_read_sing = defaultdict(True.__bool__)
+
+        last_views: Dict[Poll, datetime.datetime] = dict(
+                Viewed.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
+            )
+
+        last_modifieds = Submission.objects.filter(poll__in=polls)
+        for poll in polls:
+            if poll:
+                if poll.id in last_views:
+                    try:
+                        last_modified = last_modifieds.filter(poll=poll).latest('modified')
+                        un_read_sing[poll] = last_views[poll.id] > last_modified.modified
+                        un_read[poll.category] = un_read_sing[poll] and un_read[poll.category]
+                    except Submission.DoesNotExist:
+                        pass
+                else:
+                    un_read_sing[poll] = False
+                    un_read[poll.category]=False
+
+        return [un_read,un_read_sing]
 
     @staticmethod
     def __get_processed_results(submissions):
@@ -258,6 +283,9 @@ class PollResults(TemplateView):
                     'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
+                    ),
+                    'read': self.__get_unread(
+                        available_polls, request.user.employee
                     ),
                     'iterator': itertools.count(),
                 },
