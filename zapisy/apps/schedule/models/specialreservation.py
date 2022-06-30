@@ -9,6 +9,8 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 class SpecialReservationQuerySet(models.query.QuerySet):
     def on_day_of_week(self, day_of_week):
@@ -158,7 +160,7 @@ class SpecialReservation(models.Model):
             if not self.ignore_conflicts:
                 self.validate_against_all_terms()
 
-        except TypeError:
+        except (TypeError, ObjectDoesNotExist, ValueError):
             pass
 
         super(SpecialReservation, self).clean()

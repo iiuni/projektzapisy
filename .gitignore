@@ -1,5 +1,4 @@
 venv/
-.venv/
 infra/hosts/*.conf
 infra/playbooks/*.env
 infra/playbooks/*.7z
@@ -30,7 +29,6 @@ zapisy/static/
 compiled_assets/
 zapisy/webpack_resources/webpack-stats.json
 *.gz
-*.7z
 *.sql
 *.sqlite3
 socket
