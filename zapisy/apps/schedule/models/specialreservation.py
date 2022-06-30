@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import ValidationError
 from django.db import models
 
@@ -8,8 +9,6 @@ from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
-
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class SpecialReservationQuerySet(models.query.QuerySet):
