@@ -182,7 +182,7 @@ class PollResults(TemplateView):
 
         return number_of_submissions_for_category
       
-      @staticmethod
+    @staticmethod
     def __get_unread(polls, user):
         un_read = defaultdict(True.__bool__)
         un_read_sing = defaultdict(True.__bool__)
