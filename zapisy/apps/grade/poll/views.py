@@ -1,8 +1,9 @@
+import datetime
 import itertools
 import json
 from collections import defaultdict
 from operator import attrgetter
-from typing import List
+from typing import Dict, List
 
 from django.contrib import messages
 from django.shortcuts import redirect, render, reverse
@@ -10,7 +11,7 @@ from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
-from apps.grade.poll.models import Poll, Submission
+from apps.grade.poll.models import Poll, Submission, Viewed
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
@@ -181,7 +182,7 @@ class PollResults(TemplateView):
                 ] += poll.number_of_submissions
 
         return number_of_submissions_for_category
-      
+
     @staticmethod
     def __get_unread(polls, user):
         un_read = defaultdict(True.__bool__)
@@ -203,9 +204,9 @@ class PollResults(TemplateView):
                         pass
                 else:
                     un_read_sing[poll] = False
-                    un_read[poll.category]=False
+                    un_read[poll.category] = False
 
-        return [un_read,un_read_sing]
+        return [un_read, un_read_sing]
 
     @staticmethod
     def __get_processed_results(submissions):
