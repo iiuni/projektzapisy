@@ -396,6 +396,7 @@ class Submission(models.Model):
 
         return submission
 
+
 class Viewed(models.Model):
     """Represents the last time employee viewed poll."""
     user = models.ForeignKey(Employee, on_delete=models.CASCADE)
