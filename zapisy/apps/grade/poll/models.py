@@ -8,7 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import Student
+from apps.users.models import Employee, Student
 
 
 class PollType(models.IntegerChoices):
@@ -395,3 +395,9 @@ class Submission(models.Model):
             submission.save()
 
         return submission
+
+class Viewed(models.Model):
+    """Represents the last time employee viewed poll."""
+    user = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    time = models.DateTimeField()
