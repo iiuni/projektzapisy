@@ -2,7 +2,7 @@
 // groups should be presented on the timetable. It will maintain a store of
 // groups data at hand and will download new data if necessary.
 import axios from "axios";
-import { cloneDeep, keys, values, isEmpty, xor, find, isNil } from "lodash";
+import { keys, values, isEmpty, xor, find, isNil } from "lodash";
 import Vue from "vue";
 import { ActionContext } from "vuex";
 
