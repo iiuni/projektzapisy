@@ -76,9 +76,13 @@
       <div class="card">
         <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
           data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
-          <div class="d-flex w-100 justify-content-between">
+          {% with x=submissions_count|lookup:group_name %}
+          {% if read.0|lookup:group_name or x == 0 %}
+            <div class="d-flex w-100 justify-content-between">
+          {% else %}
+          <div class="d-flex w-100 justify-content-between" style="color:red">
+            {% endif %}
             <span>{{ group_name }}</span>
-            {% with x=submissions_count|lookup:group_name %}
             <span class="text-right text-nowrap">
               {% if x %}{{ x }}{% else %}0{% endif %}
             </span>
@@ -100,7 +104,11 @@
           {% else %}
           <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
             class="list-group-item list-group-item-action">
+            {% if read.1|lookup:entry or entry.number_of_submissions == 0 %}
             <div class="d-flex w-100 justify-content-between">
+          {% else %}
+          <div class="d-flex w-100 justify-content-between" style="color:red">
+            {% endif %}
               <span>{{ entry.subcategory }}</span>
               <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
