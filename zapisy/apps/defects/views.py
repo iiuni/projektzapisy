@@ -120,7 +120,7 @@ def edit_defect_helper(request, defect):
     for image in Image.objects.filter(defect=defect):
         images.append((image.id, image.image.url[:-16]))
     context = {'form': form, 'formset': formset, "response": request.method, "edit": True, 'images': images,
-               'extra_images_number': ExtraImagesNumber, 'defect_id': defect.id}
+               'extra_images_number': ExtraImagesNumber, 'defect': defect}
     return render(request, 'addDefect.html', context)
 
 

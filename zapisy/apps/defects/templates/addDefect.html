@@ -21,7 +21,7 @@
     </li>
     {% if edit %}
         <li class="breadcrumb-item">
-            <a href="{% url "defects:show_defect" defect_id %}">Usterka {{ defect_id }}</a>
+            <a href="{% url "defects:show_defect" defect.id %}">{{ defect.name }}</a>
         </li>
         <li class="breadcrumb-item active">
             Edytuj
