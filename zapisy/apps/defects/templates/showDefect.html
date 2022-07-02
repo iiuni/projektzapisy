@@ -34,7 +34,7 @@
                 <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
                     Edytuj
                 </a>
-                {% if is_defect_manager %}
+                {% if can_delete %}
                     <a
                        class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
                         Usuń

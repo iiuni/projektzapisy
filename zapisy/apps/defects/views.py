@@ -91,9 +91,11 @@ def show_defect(request, defect_id):
             image_urls.append(image.image.url[:-16])
 
         info_form = InformationFromDefectManagerForm(instance=defect)
+        is_manager = is_defect_manager(request.user.id)
 
         return render(request, 'showDefect.html', {'defect': defect, 'image_urls': image_urls, 'info_form': info_form,
-                                                   'is_defect_manager': is_defect_manager(request.user.id)})
+                                                   'is_defect_manager': is_manager,
+                                                   "can_delete": can_delete_defect(request, defect, is_manager)})
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")
         return redirect('defects:main')
@@ -128,7 +130,7 @@ def edit_defect_helper(request, defect):
 def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        if is_defect_manager(request.user.id):
+        if can_delete_defect(request.user.id, defect):
             images_to_delete = []
             for image in defect.image_set.all():
                 images_to_delete.append(image.image.name)
@@ -142,6 +144,12 @@ def delete_defect(request, defect_id):
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")
         return redirect('defects:main')
+
+
+def can_delete_defect(request, defect, is_defect_manager_val=None):
+    if is_defect_manager_val is None:
+        is_defect_manager_val = is_defect_manager(request.user.id)
+    return is_defect_manager_val or (defect.state == StateChoices.CREATED and defect.reporter == request.user)
 
 
 @employee_required
