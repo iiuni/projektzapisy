@@ -57,7 +57,8 @@ export default class PrototypeSummary extends Vue {
           enqueuedCourses[g[1].course.id].summaryPoints =
             enqueuedCourses[g[1].course.id].points;
         } else {
-          enqueuedCourses[g[1].course.id].summaryPoints = 0;
+          enqueuedCourses[g[1].course.id].summaryPoints = -1;
+          enrolledPoints += 1;
         }
         enrolledPoints += enqueuedCourses[g[1].course.id].summaryPoints;
       }
@@ -79,7 +80,8 @@ export default class PrototypeSummary extends Vue {
           pinnedCourses[g[1].course.id].summaryPoints =
             pinnedCourses[g[1].course.id].points;
         } else {
-          pinnedCourses[g[1].course.id].summaryPoints = 0;
+          pinnedCourses[g[1].course.id].summaryPoints = -1;
+          pinnedPoints += 1;
         }
         pinnedPoints += pinnedCourses[g[1].course.id].summaryPoints;
       }
@@ -103,7 +105,8 @@ export default class PrototypeSummary extends Vue {
           selectedCourses[g[1].course.id].summaryPoints =
             selectedCourses[g[1].course.id].points;
         } else {
-          selectedCourses[g[1].course.id].summaryPoints = 0;
+          selectedCourses[g[1].course.id].summaryPoints = -1;
+          selectedPoints += 1;
         }
         selectedPoints += selectedCourses[g[1].course.id].summaryPoints;
       }

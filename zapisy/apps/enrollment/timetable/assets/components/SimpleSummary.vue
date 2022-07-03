@@ -51,9 +51,15 @@ export default class SimpleSummary extends SimpleSummaryProps {
             {{ item.name }}
           </a>
         </td>
-        <td rowspan="2" class="ects" align="right">
+        <td
+          v-if="item.summaryPoints !== -1"
+          rowspan="2"
+          class="ects"
+          align="right"
+        >
           {{ item.summaryPoints }}
         </td>
+        <td v-else rowspan="2" class="ects" align="right">-</td>
       </tr>
       <tr class="courseDetails">
         <td class="courseDetails">
