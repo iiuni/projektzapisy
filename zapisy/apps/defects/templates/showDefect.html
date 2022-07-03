@@ -5,140 +5,141 @@
 {% load crispy_forms_tags %}
 
 {% block js %}
-    {% render_bundle "show-defect" %}
+{% render_bundle "show-defect" %}
 {% endblock %}
 
 {% block main-subtitle %}System raportowania usterek{% endblock %}
 
 {% block bread %}
-    <li class="breadcrumb-item">
-        <a href="{% url 'main-page' %}">Strona główna</a>
-    </li>
+<li class="breadcrumb-item">
+    <a href="{% url 'main-page' %}">Strona główna</a>
+</li>
 
-    <li class="breadcrumb-item">
-        <a href="{% url 'defects:main' %}">Usterki</a>
-    </li>
+<li class="breadcrumb-item">
+    <a href="{% url 'defects:main' %}">Usterki</a>
+</li>
 
-    <li class="breadcrumb-item active">
-        {{ defect.name }}
-    </li>
+<li class="breadcrumb-item active">
+    {{ defect.name }}
+</li>
 {% endblock %}
 
 {% block all-content %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="d-inline-block">
-            {{ defect.name }}
-        </h1>
-        <div class="ml-2 d-flex align-items-center justify-content-end flex-wrap">
-            <div class="d-inline-block mb-3 ml-1">
-                <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
-                    Edytuj
-                </a>
-                {% if can_delete %}
-                    <a
-                       class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
-                        Usuń
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <table class="table table-bordered table-md-responsive d-print-none" id="table-info">
-        <colgroup>
-            <col class="table-info-type"></col>
-        </colgroup>
-        <tbody>
-        <tr>
-            <th scope="row" style="width: 50%">Miejsce</th>
-            <td>
-                {{ defect.place }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">Zgłoszone przez</th>
-            <td>{% if defect.reporter %}
-                {% with defect.reporter.first_name|add:' '|add:defect.reporter.last_name as name %}
-                    {{ name }}
-                {% endwith %}
-            {% else %}
-                Brak
-            {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">Stan</th>
-            <td>
-                {{ defect.get_state_display }}
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">Data dodania</th>
-            <td>{{ defect.creation_date }}</td>
-        </tr>
-        <tr>
-            <th scope="row">Data modyfikacji</th>
-            <td>{{ defect.last_modification }}</td>
-        </tr>
-        </tbody>
-    </table>
-    <div style="word-break: break-word">
-        {% if defect.description != "" %}
-            <h2>Opis usterki</h2>
-            {{ defect.description|linebreaksbr }}
-        {% endif %}
-    </div>
-    <hr>
-
-    <h3>Informacja od serwisanta</h3>
-    <div id="info-div">
-        <div id="info-text">
-            {% if defect.information_from_defect_manager %}
-                <p>{{ defect.information_from_defect_manager|linebreaksbr }}</p>
-            {% else %}
-                <p>Nie ma jeszcze żadnej informacji od serwisanta</p>
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="d-inline-block">
+        {{ defect.name }}
+    </h1>
+    <div class="ml-2 d-flex align-items-center justify-content-end flex-wrap">
+        <div class="d-inline-block mb-3 ml-1">
+            <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
+                Edytuj
+            </a>
+            {% if can_delete %}
+            <a
+                    class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
+                Usuń
+            </a>
             {% endif %}
         </div>
-
-        {% if is_defect_manager %}
-            <button class="btn btn-info" type="button" id="show-info-form-button">
-                {% if defect.information_from_defect_manager %}
-                    Edytuj
-                {% else %}
-                    Dodaj
-                {% endif %}
-            </button>
-        {% endif %}
     </div>
+</div>
+<table class="table table-bordered table-md-responsive d-print-none" id="table-info">
+    <colgroup>
+        <col class="table-info-type"></col>
+    </colgroup>
+    <tbody>
+    <tr>
+        <th scope="row" style="width: 50%">Miejsce</th>
+        <td>
+            {{ defect.place }}
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">Zgłoszone przez</th>
+        <td>{% if defect.reporter %}
+            {% with defect.reporter.first_name|add:' '|add:defect.reporter.last_name as name %}
+            {{ name }}
+            {% endwith %}
+            {% else %}
+            Brak
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">Stan</th>
+        <td>
+            {{ defect.get_state_display }}
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">Data dodania</th>
+        <td>{{ defect.creation_date }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Data modyfikacji</th>
+        <td>{{ defect.last_modification }}</td>
+    </tr>
+    </tbody>
+</table>
+<div style="word-break: break-word">
+    {% if defect.description != "" %}
+    <h2>Opis usterki</h2>
+    {{ defect.description|linebreaksbr }}
+    {% endif %}
+</div>
+<hr>
 
-    <div id="info-form-div" class="d-none">
+<h3>Informacja od serwisanta</h3>
+<div id="info-div">
+
+
+    {% if is_defect_manager %}
+    <div id="info-form-div">
         <form action="{% url 'defects:repair_info' defect.id %}" method="post" id="info-form">
             {% csrf_token %}
             {% crispy info_form %}
-            <button class="btn btn-success" type="submit">Zapisz</button>
+            <button class="btn btn-success" type="submit">
+                {% if defect.information_from_defect_manager %}
+                Edytuj
+                {% else %}
+                Dodaj
+                {% endif %}
+            </button>
         </form>
     </div>
-
-    <hr>
-
-    <div class="container-fluid">
-        <div class="row">
-            {% for image_url in image_urls %}
-                <div class="col-md-3 pop center-block">
-                    <img class="img-thumbnail center-block" src={{ image_url }} >
-                </div>
-            {% endfor %}
-        </div>
+    {% else %}
+    <div id="info-text">
+        {% if defect.information_from_defect_manager %}
+        <p>{{ defect.information_from_defect_manager|linebreaksbr }}</p>
+        {% else %}
+        <p>Nie ma jeszcze żadnej informacji od serwisanta</p>
+        {% endif %}
     </div>
+    {% endif %}
+</div>
 
-    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" a ria-labelledby="myModalLabel"
-         aria-hidden="true" >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body" style="padding: 0">
-                    <img src="" class="imagepreview img-responsive" style="width: 100%;" >
-                </div>
+
+<hr>
+
+<div class="container-fluid">
+    <div class="row">
+        {% for image_url in image_urls %}
+        <div class="col-md-3 pop center-block">
+            <img class="img-thumbnail center-block" src={{ image_url }}>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" a ria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0">
+                <img src="" class="imagepreview img-responsive" style="width: 100%;">
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
