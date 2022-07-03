@@ -24,7 +24,8 @@ class ImageAdmin(admin.ModelAdmin):
 
     def defect_field(self, obj):
         return mark_safe('<a href="{}">{}</a>'.format(
-            reverse('admin:%s_%s_change' % (obj.defect._meta.app_label, obj.defect._meta.model_name), args=[obj.defect.id]),
+            reverse('admin:%s_%s_change' % (obj.defect._meta.app_label, obj.defect._meta.model_name),
+                    args=[obj.defect.id]),
             obj.defect.name
         ))
     defect_field.short_description = "Defect"

@@ -53,18 +53,23 @@ export default class DefectList extends Vue {
   // @ts-ignore
   select(event) {
     // @ts-ignore
-    !event.currentTarget.classList.toggle("selected")
-    if(document.getElementsByClassName("selected").length > 0){
-      document.getElementById("print-form-button").value = "Drukuj zaznaczone"
-      let delete_button = document.getElementById("delete-form-button")
-      if(delete_button)
-        document.getElementById("delete-form-button").disabled=false
-    }
-    else {
-      document.getElementById("print-form-button").value = "Drukuj wszystkie"
-      let delete_button = document.getElementById("delete-form-button")
-      if(delete_button)
-        document.getElementById("delete-form-button").disabled=true
+    !event.currentTarget.classList.toggle("selected");
+    if (document.getElementsByClassName("selected").length > 0) {
+      // @ts-ignore
+      document.getElementById("print-form-button").value = "Drukuj zaznaczone";
+      // @ts-ignore
+      let delete_button = document.getElementById("delete-form-button");
+      if (delete_button)
+        // @ts-ignore
+        document.getElementById("delete-form-button").disabled = false;
+    } else {
+      // @ts-ignore
+      document.getElementById("print-form-button").value = "Drukuj wszystkie";
+      // @ts-ignore
+      let delete_button = document.getElementById("delete-form-button");
+      if (delete_button)
+        // @ts-ignore
+        document.getElementById("delete-form-button").disabled = true;
     }
   }
 }

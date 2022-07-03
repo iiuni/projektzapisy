@@ -51,7 +51,8 @@
     <table class="table table-striped sortable">
         <thead>
         <tr id="headers">
-            <th scope="col" class="az" data-defaultsign="nospan" data-defaultsort="asc">Nazwa</th>
+            <th scope="col" class="az" data-defaultsign="nospan">Nazwa</th>
+            <th scope="col" class="text-center">Zgłosił</th>
             <th scope="col" class="text-center">Miejsce</th>
             <th scope="col" class="text-center">Stan</th>
             <th scope="col" class="text-center">Data</th>
@@ -61,6 +62,7 @@
             {% for defect in defects %}
                 <tr id="{{ defect.id }}">
                     <td> {{ defect.name }} </td>
+                    <td> {{ defect.reporter.first_name }} {{ defect.reporter.last_name}} </td>
                     <td class="text-center">{{ defect.place }}</td>
                     <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
                     <td class="text-center">{{ defect.creation_date }}</td>
