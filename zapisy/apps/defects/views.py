@@ -130,7 +130,7 @@ def edit_defect_helper(request, defect):
 def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        if can_delete_defect(request.user.id, defect):
+        if can_delete_defect(request, defect):
             images_to_delete = []
             for image in defect.image_set.all():
                 images_to_delete.append(image.image.name)
@@ -139,7 +139,7 @@ def delete_defect(request, defect_id):
             messages.success(request, "Pomyślnie usunięto usterkę")
             return redirect("defects:main")
         else:
-            messages.error(request, "Brak odpowiednich uprawnień aby usunąć usterkę.")
+            messages.error(request, "Swoją usterkę można usunąć tylko w stanie: Zgłoszone.")
             return redirect('defects:show_defect', defect_id=defect.id)
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")

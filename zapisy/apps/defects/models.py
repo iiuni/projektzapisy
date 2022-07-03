@@ -12,8 +12,8 @@ DEFECT_MAX_PLACE_SIZE = 35
 
 class StateChoices(models.IntegerChoices):
     CREATED = 0, "Zgłoszone"
-    IN_PROGRESS = 1, "W realizacji"
-    WAITING = 2, "W oczekiwaniu na realizację"
+    WAITING = 1, "W oczekiwaniu na realizację"
+    IN_PROGRESS = 2, "W realizacji"
     DONE = 3, "Zakończone"
 
 
