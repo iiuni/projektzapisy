@@ -25,11 +25,10 @@
             </h1>
             <div>
             <a href="{% url 'defects:new' %}" class="btn btn-primary" role="button">Dodaj nową usterkę</a>
-            <input type="submit" name="print" id="print-form-button" class="btn btn-primary" value="Drukuj">
+            <input type="submit" name="print" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
             {% if is_defect_manager %}
-            <input type="submit" name="delete" id="delete-form-button" class="btn btn-primary" value="Usuń">
-            <input type="submit" name="done" id="done-form-button" class="btn btn-primary" value="Ustaw jako zrobione">
-            {% endif %}
+            <input type="submit" name="delete" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
+        {% endif %}
             <input type="hidden" name="defects_ids" id="defects_ids" value="">
             <input type="hidden" name="if_form_empty" id="if_form_empty" value="0">
             </div>
