@@ -87,13 +87,16 @@ export default class DefectList extends Vue {
     <thead id="table-header">
       <tr class="text-center" id="headers">
         <th>
-          <SorterField property="name" label="Nazwa Usterki" />
+          <SorterField property="name" label="Nazwa" />
         </th>
         <th>
-          <SorterField property="place" label="Miejsce usterki" />
+          <SorterField property="place" label="Miejsce" />
         </th>
         <th>
-          <SorterField property="state" label="Stan Usterki" />
+          <SorterField property="reporter" label="Zgłosił" />
+        </th>
+        <th>
+          <SorterField property="state" label="Stan" />
         </th>
         <th>
           <SorterField property="creation_date" label="Data zgłoszenia" />
@@ -117,6 +120,9 @@ export default class DefectList extends Vue {
         </td>
         <td class="text-center align-middle">
           {{ defect.place }}
+        </td>
+        <td class="text-center align-middle">
+          {{ defect.reporter }}
         </td>
         <td class="text-center align-middle" :style="defect.status_color">
           {{ defect.state }}
