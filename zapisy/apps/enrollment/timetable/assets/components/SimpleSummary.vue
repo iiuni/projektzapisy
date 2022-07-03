@@ -31,12 +31,15 @@ export default class SimpleSummary extends SimpleSummaryProps {
   public GetNameDay(day: DayOfWeek) {
     return nameDay(day);
   }
+  public objectLength(o: Object) {
+    return Object.keys(o).length;
+  }
 }
 </script>
 
 <template>
   <div>
-    <tbody>
+    <tbody v-if="objectLength(courses) > 0">
       <tr>
         <td>
           <strong>Suma punktów ECTS za {{ summaryType }}:</strong>

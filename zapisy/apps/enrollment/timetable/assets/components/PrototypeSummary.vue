@@ -14,6 +14,7 @@ import SimpleSummary from "./SimpleSummary.vue";
 })
 export default class PrototypeSummary extends Vue {
   public points: number = 0;
+  public howManyPointsCategories: number = 0;
 
   public selectedGroups: Function = (group: Group, course: Course) =>
     !group.isEnrolled &&
@@ -113,6 +114,11 @@ export default class PrototypeSummary extends Vue {
     });
     this.points =
       selectedPoints + pinnedPoints + enqueuedPoints + enrolledPoints;
+    this.howManyPointsCategories =
+      +(Object.keys(enrolledCourses).length > 0) +
+      +(Object.keys(enqueuedCourses).length > 0) +
+      +(Object.keys(pinnedCourses).length > 0) +
+      +(Object.keys(selectedCourses).length > 0);
     return {
       enrolledCourses: enrolledCourses,
       enqueuedCourses: enqueuedCourses,
@@ -190,7 +196,7 @@ export default class PrototypeSummary extends Vue {
         :courses="selectedSummary[0]"
         :points="selectedSummary[1]"
       />
-      <tfoot>
+      <tfoot v-if="howManyPointsCategories > 1">
         <tr>
           <td>
             <strong>Suma punktów ECTS łącznie:</strong>
