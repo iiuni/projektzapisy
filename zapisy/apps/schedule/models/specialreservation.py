@@ -159,7 +159,7 @@ class SpecialReservation(models.Model):
             if not self.ignore_conflicts:
                 self.validate_against_all_terms()
 
-        except (TypeError, ObjectDoesNotExist, ValueError):
+        except (TypeError, ObjectDoesNotExist):
             pass
 
         super(SpecialReservation, self).clean()
