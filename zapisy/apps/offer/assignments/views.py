@@ -283,10 +283,11 @@ def generate_scheduler_file(request, semester, fmt):
         File in the desired format in a response.
     """
     if semester not in ['z', 'l']:
-        messages.error(f"Niepoprawny semestr: '{ semester }'")
-        redirect('assignments-wizard')
+        messages.error(request, f"Niepoprawny semestr: '{ semester }'")
+        return redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
-        messages.error(f"Niepoprawny format: '{ fmt }'")
+        messages.error(request, f"Niepoprawny format: '{ fmt }'")
+        return redirect('assignments-wizard')
     current_year = SystemState.get_current_state().year
     assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
