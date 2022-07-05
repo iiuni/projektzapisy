@@ -171,9 +171,9 @@ class EditThesisForm(ThesisFormBase):
             instance.status = ThesisStatus.BEING_EVALUATED.value
         elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
             instance.status = ThesisStatus.BEING_EVALUATED.value
-        elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
+        elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
             instance.status = ThesisStatus.IN_PROGRESS.value
-        elif status == ThesisStatus.IN_PROGRESS.value and "students" not in self.data:
+        elif status == ThesisStatus.IN_PROGRESS.value and 'students' not in self.data:
             instance.status = ThesisStatus.ACCEPTED.value
         else:
             instance.status = status
