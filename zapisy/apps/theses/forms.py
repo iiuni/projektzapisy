@@ -169,8 +169,6 @@ class EditThesisForm(ThesisFormBase):
                 origin_instance.max_number_of_students != self.instance.max_number_of_students or \
                 origin_instance.description != self.instance.description:
             instance.status = ThesisStatus.BEING_EVALUATED.value
-        elif status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
         elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
             instance.status = ThesisStatus.IN_PROGRESS.value
         elif status == ThesisStatus.IN_PROGRESS.value and 'students' not in self.data:
