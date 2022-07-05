@@ -93,19 +93,17 @@ class ThesisForm(ThesisFormBase):
         super(ThesisForm, self).__init__(user, *args, **kwargs)
 
         self.fields['status'].required = False
-        row_1 = Row(
-            Column('kind', css_class='form-group col-md-3'),
-            Column('max_number_of_students', css_class='form-group col-md-3'),
-            Column('reserved_until', css_class='form-group col-md-6'),
-            css_class='form-row'
-        )
 
         self.helper.layout = Layout(
             'title',
             Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
                 Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'),
-            row_1,
+            Row(
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
+                Column('reserved_until', css_class='form-group col-md-6'),
+                css_class='form-row'),
             'students',
             'description',
         )
@@ -132,19 +130,17 @@ class EditThesisForm(ThesisFormBase):
         self.status = self.instance.status
 
         self.fields['status'].required = False
-        special_row = Row(
-            Column('kind', css_class='form-group col-md-3'),
-            Column('max_number_of_students', css_class='form-group col-md-3'),
-            Column('reserved_until', css_class='form-group col-md-6'),
-            css_class='form-row'
-        )
 
         self.helper.layout = Layout(
             'title',
             Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
                 Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'),
-            special_row,
+            Row(
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
+                Column('reserved_until', css_class='form-group col-md-6'),
+                css_class='form-row'),
             'students',
             'description',
         )
