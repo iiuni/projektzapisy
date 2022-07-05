@@ -196,8 +196,8 @@ def edit_thesis(request, id):
         form = EditThesisForm(request.user, instance=thesis)
 
     confirm_changes = \
-        (thesis.status in (ThesisStatus.RETURNED_FOR_CORRECTIONS.value,\
-                           ThesisStatus.BEING_EVALUATED.value))
+        thesis.status not in (ThesisStatus.RETURNED_FOR_CORRECTIONS.value,\
+                           ThesisStatus.BEING_EVALUATED.value)
 
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
