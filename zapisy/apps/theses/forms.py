@@ -38,7 +38,8 @@ class ThesisFormBase(forms.ModelForm):
     title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN)
     advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                      label="Promotor",
-                                     required=True)
+                                     required=True,
+                                     empty_label=None)
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                                 label="Promotor wspierający",
                                                 required=False)
@@ -66,7 +67,6 @@ class ThesisFormBase(forms.ModelForm):
         self.fields['advisor'].queryset = Employee.objects.filter(
             pk=user.employee.pk)
         self.fields['advisor'].initial = user.employee
-        self.fields['advisor'].widget.attrs['readonly'] = True
 
         self.can_assign_multiple_students = user.has_perm('theses.assign_multiple_students')
 
