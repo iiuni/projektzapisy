@@ -74,6 +74,19 @@ class ThesisFormBase(forms.ModelForm):
             pk=user.employee.pk)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
+        self.helper.layout = Layout(
+            'title',
+            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
+                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'),
+            Row(
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
+                Column('reserved_until', css_class='form-group col-md-6'),
+                css_class='form-row'),
+            'students',
+            'description',
+        )
 
     def clean(self):
         super().clean()
@@ -93,20 +106,6 @@ class ThesisForm(ThesisFormBase):
         super(ThesisForm, self).__init__(user, *args, **kwargs)
 
         self.fields['status'].required = False
-
-        self.helper.layout = Layout(
-            'title',
-            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'),
-            Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'),
-            'students',
-            'description',
-        )
 
         self.helper.add_input(
             Submit('submit', 'Zapisz', css_class='btn-primary'))
@@ -131,19 +130,6 @@ class EditThesisForm(ThesisFormBase):
 
         self.fields['status'].required = False
 
-        self.helper.layout = Layout(
-            'title',
-            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'),
-            Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'),
-            'students',
-            'description',
-        )
         if self.instance.is_returned and self.instance.is_mine(user):
             self.helper.add_input(
                 Submit('submit', 'Zapisz i prześlij do komisji', css_class='btn-primary'))
