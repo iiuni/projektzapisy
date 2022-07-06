@@ -43,7 +43,7 @@ class StudentAdmin(admin.ModelAdmin):
 
     def refresh_opening_times(self, request, queryset):
         """Refreshes opening times for selected students."""
-        semester = Semester.get_upcoming_semester(True)
+        semester = Semester.get_upcoming_semester(strict=True)
         if semester is None:
             self.message_user(
                     request, "Nie znaleziono semestru do obliczenia czasów.",
