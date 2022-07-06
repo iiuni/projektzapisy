@@ -239,7 +239,7 @@ def generate_scheduler_file(request, semester, fmt):
         File in the desired format in a response.
     """
     if semester not in ['z', 'l']:
-        messages.error(f"Niepoprawny semestr: '{ semester }')
+        messages.error(f"Niepoprawny semestr: '{ semester }'")
         redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
         messages.error(f"Niepoprawny format: '{ fmt }'")
