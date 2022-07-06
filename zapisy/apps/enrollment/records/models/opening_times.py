@@ -74,8 +74,7 @@ class T0Times(models.Model):
             students = Student.get_active_students()
 
         with transaction.atomic():
-            # First we delete all T0 records in current semester.
-            # for selected students:
+            # First we delete T0 records in the semester for the selected students
             cls.objects.filter(student__in=students, semester=semester).delete()
 
             created: List[cls] = []
@@ -222,7 +221,7 @@ class GroupOpeningTimes(models.Model):
         # populated.
         # First delete already existing records for this semester and selected students.
         if groups:
-            cls.objects.filter(group__in=groups).delete()
+            cls.objects.filter(student__in=students, group__in=groups).delete()
         else:
             cls.objects.filter(student__in=students, group__course__semester_id=semester.id).delete()
             groups = Group.objects.filter(course__semester=semester).select_related('course')
