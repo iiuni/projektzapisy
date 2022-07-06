@@ -105,6 +105,8 @@ class ThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(ThesisForm, self).__init__(user, *args, **kwargs)
 
+        self.fields['status'].required = False
+
         self.helper.add_input(
             Submit('submit', 'Zapisz', css_class='btn-primary'))
 
@@ -125,6 +127,8 @@ class EditThesisForm(ThesisFormBase):
 
         self.origin_instance = copy(self.instance)
         self.status = self.instance.status
+
+        self.fields['status'].required = False
 
         if self.instance.is_returned and self.instance.is_mine(user):
             self.helper.add_input(
