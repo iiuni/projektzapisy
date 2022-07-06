@@ -5475,6 +5475,7 @@ fsevents@~2.1.2:
     vue: 2.6.14
     vue-class-component: 7.2.6
     vue-loader: 15.9.8
+    vue-multiselect: 2.1.4
     vue-template-compiler: 2.6.14
     vue-timers: 2.0.4
     vuex: 3.6.2
@@ -9234,6 +9235,13 @@ typescript@4.0.2:
     vue-template-compiler:
       optional: true
   checksum: bbbf069081b867f8b3135e51444818bae8199239f7718ebf484a4e81ddbb17629673d5a2eabb2abf4b2b822dd0fa75b78b487ab1f085714e0728a4c475536a74
+  languageName: node
+  linkType: hard
+
+"vue-multiselect@npm:2.1.4":
+  version: 2.1.4
+  resolution: "vue-multiselect@npm:2.1.4"
+  checksum: a77de83a10aa2c5a03b62934f5be0939452600b44f080a9f2e2568627567ebf1920f9054317ea277d115ac34adeeb2c35e14e1cc1d675a41d5b6ee6220b961da
   languageName: node
   linkType: hard
 
