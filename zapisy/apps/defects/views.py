@@ -3,6 +3,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from gdstorage.storage import GoogleDriveStorage
+import os
 
 from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
@@ -10,7 +11,7 @@ from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
 
 # Define Google Drive Storage
-gd_storage = GoogleDriveStorage()
+gd_storage = GoogleDriveStorage() if os.path.exists("google_drive.json") else None
 
 
 @employee_required
@@ -130,7 +131,7 @@ def edit_defect_helper(request, defect):
 def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        if can_delete_defect(request, defect):
+        if can_delete_defect(request.user.id, defect):
             images_to_delete = []
             for image in defect.image_set.all():
                 images_to_delete.append(image.image.name)
@@ -139,7 +140,7 @@ def delete_defect(request, defect_id):
             messages.success(request, "Pomyślnie usunięto usterkę")
             return redirect("defects:main")
         else:
-            messages.error(request, "Swoją usterkę można usunąć tylko w stanie: Zgłoszone.")
+            messages.error(request, "Brak odpowiednich uprawnień aby usunąć usterkę.")
             return redirect('defects:show_defect', defect_id=defect.id)
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")

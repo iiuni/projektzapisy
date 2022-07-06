@@ -1,10 +1,9 @@
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from gdstorage.storage import GoogleDriveStorage
-
-# Define Google Drive Storage
-gd_storage = GoogleDriveStorage()
+from os.path import exists
 
 DEFECT_MAX_NAME_SIZE = 35
 DEFECT_MAX_PLACE_SIZE = 35
@@ -39,8 +38,12 @@ class Defect(models.Model):
         return f"color: {color}" if color else ''
 
 
+def select_storage():
+    return GoogleDriveStorage() if exists("google_drive.json") else FileSystemStorage(location="defect/")
+
+
 class Image(models.Model):
-    image = models.ImageField(upload_to='defect', storage=gd_storage)
+    image = models.ImageField(storage=select_storage, upload_to='defect')
     defect = models.ForeignKey(Defect, on_delete=models.CASCADE, null=False, blank=True)
 
 
