@@ -60,7 +60,7 @@ class T0Times(models.Model):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed
-        and the optional queryset of students whose T0s are to be computed.
+        and the optional collection of students whose T0s are to be computed.
         If the second argument is not passed, it will be executed for all
         active students.
 
