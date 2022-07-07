@@ -203,7 +203,8 @@ def edit_thesis(request, id):
         'thesis_form': form,
         'title': thesis.title,
         'id': id,
-        'confirm_changes': confirm_changes
+        'confirm_changes': confirm_changes,
+        'origin_instance': thesis
     })
 
 

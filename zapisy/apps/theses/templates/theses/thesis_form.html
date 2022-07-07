@@ -35,36 +35,37 @@
         {% crispy thesis_form %}
     </form>
     {% if confirm_changes %}
+    <script id="origin_instance" type="application/json">
+    {
+        "title": "{{origin_instance.title}}",
+        "supporting_advisor": "{{origin_instance.supporting_advisor}}",
+        "kind": "{{origin_instance.kind}}",
+        "max_number_of_students": "{{origin_instance.max_number_of_students}}",
+        "description": "problem z parsowaniem decription"
+    }
+    </script>
     <script>
         window.onload = function() {
-            var title = document.querySelector('[name="title"]').value
-            var advisor = document.querySelector('[name="advisor"]').value
-            var supporting_advisor = document.querySelector('[name="supporting_advisor"]').value
-            var kind = document.querySelector('[name="kind"]').value
-            var max_number_of_students = document.querySelector('[name="max_number_of_students"]').value
-            var description = document.querySelector('textarea[name="description"]').value
+            const origin_instance = JSON.parse(document.getElementById('origin_instance').textContent)
 
             $(document).on('submit', '.confirm-submit', function() {
                 var confirm_msg = 'Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n' +
                         'Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?';
-                if(document.querySelector('[name="title"]').value != title) {
+                if(document.querySelector('[name="title"]').value != origin_instance.title) {
                     return confirm(`Zmieniono tytuł pracy.\n${confirm_msg}`);
                 }
-                if(document.querySelector('[name="advisor"]').value != advisor) {
-                    return confirm(`Zmieniono promotora pracy.\n${confirm_msg}`);
-                }
-                if(document.querySelector('[name="supporting_advisor"]').value != supporting_advisor) {
+                if(document.querySelector('[name="supporting_advisor"]').value != origin_instance.supporting_advisor) {
                     return confirm(`Zmieniono promotora wspierającego.\n${confirm_msg}`);
                 }
-                if(document.querySelector('[name="kind"]').value != kind) {
+                if(document.querySelector('[name="kind"]').value != origin_instance.kind) {
                     return confirm(`Zmieniono typ pracy.\n${confirm_msg}`);
                 }
-                if(document.querySelector('[name="max_number_of_students"]').value != max_number_of_students) {
+                if(document.querySelector('[name="max_number_of_students"]').value != origin_instance.max_number_of_students) {
                     return confirm(`Zmieniono maks. liczba studentów.\n${confirm_msg}`);
                 }
-                if(document.querySelector('textarea[name="description"]').value != description) {
-                    return confirm(`Zmieniono opis pracy.\n${confirm_msg}`);
-                }
+                // if(document.querySelector('textarea[name="description"]').value != origin_instance.description) {
+                //     return confirm(`Zmieniono opis pracy.\n${confirm_msg}`);
+                // }
             })
         }
     </script>
