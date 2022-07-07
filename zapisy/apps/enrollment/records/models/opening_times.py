@@ -232,7 +232,8 @@ class GroupOpeningTimes(models.Model):
             )
 
         opening_time_objects: List[cls] = []
-        votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(student__in=students)
+        votes = SingleVote.objects.meaningful().in_semester(semester=semester).filter(
+            student__in=students, proposal__in=[g.course.offer for g in groups])
 
         votes_by_proposal: Dict[int, List[SingleVote]] = defaultdict(list)
         for vote in votes:
