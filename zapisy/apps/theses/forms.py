@@ -71,6 +71,9 @@ class ThesisFormBase(forms.ModelForm):
 
         self.fields['supporting_advisor'].queryset = Employee.objects.exclude(
             pk=user.employee.pk)
+
+        self.fields['status'].required = False
+
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.layout = Layout(
@@ -86,6 +89,8 @@ class ThesisFormBase(forms.ModelForm):
             'students',
             'description',
         )
+        self.helper.add_input(
+            Submit('submit', 'Zapisz', css_class='btn-primary'))
 
     def clean(self):
         super().clean()
@@ -104,11 +109,6 @@ class ThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(ThesisForm, self).__init__(user, *args, **kwargs)
 
-        self.fields['status'].required = False
-
-        self.helper.add_input(
-            Submit('submit', 'Zapisz', css_class='btn-primary'))
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.added = timezone.now()
@@ -125,15 +125,6 @@ class EditThesisForm(ThesisFormBase):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
         self.old_instance = copy(self.instance)
-
-        self.fields['status'].required = False
-
-        if self.instance.is_returned and self.instance.is_mine(user):
-            self.helper.add_input(
-                Submit('submit', 'Zapisz i prześlij do komisji', css_class='btn-primary'))
-        else:
-            self.helper.add_input(
-                Submit('submit', 'Zapisz', css_class='btn-primary'))
 
     def save(self, commit=True):
         instance = super().save(commit=False)
