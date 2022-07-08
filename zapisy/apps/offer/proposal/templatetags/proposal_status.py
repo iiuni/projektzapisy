@@ -17,3 +17,14 @@ def semester_display(semester: SemesterChoices) -> str:
     """Returns a display value of a SemesterChoices enum."""
     semester = SemesterChoices(semester)
     return semester.label
+
+
+@register.filter
+def semester_order(proposals):
+    """Arranges semesters in order in which they actually occur, so winter, summer and then unassigned"""
+    ordering = {
+        SemesterChoices.WINTER: 1,
+        SemesterChoices.SUMMER: 2,
+        SemesterChoices.UNASSIGNED: 3
+    }
+    return sorted(proposals, key=lambda p: ordering[p.semester])

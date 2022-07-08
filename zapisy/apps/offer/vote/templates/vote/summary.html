@@ -16,7 +16,7 @@
 
 {% block all-content %}
     <h1>Podsumowanie głosowania</h1>
-    {% regroup proposals|dictsort:"semester" by semester as proposals_per_semester %}
+    {% regroup proposals|semester_order by semester as proposals_per_semester %}
     {% for semester, proposals_in_semester in proposals_per_semester %}
         <h2>Semestr {{ semester|semester_display }}</h2>
         <table class="table table-striped">
