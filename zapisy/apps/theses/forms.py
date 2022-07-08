@@ -140,14 +140,14 @@ class EditThesisForm(ThesisFormBase):
         instance.modified = timezone.now()
 
         status = self.old_instance.status
-        origin_instance = self.origin_instance
+        old_instance = self.old_instance
 
-        if origin_instance.title != instance.title or \
-                origin_instance.advisor != instance.advisor or \
-                origin_instance.supporting_advisor != instance.supporting_advisor or \
-                origin_instance.kind != self.instance.kind or \
-                origin_instance.max_number_of_students != self.instance.max_number_of_students or \
-                origin_instance.description != self.instance.description:
+        if old_instance.title != instance.title or \
+                old_instance.advisor != instance.advisor or \
+                old_instance.supporting_advisor != instance.supporting_advisor or \
+                old_instance.kind != self.instance.kind or \
+                old_instance.max_number_of_students != self.instance.max_number_of_students or \
+                old_instance.description != self.instance.description:
             instance.status = ThesisStatus.BEING_EVALUATED.value
         elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
             instance.status = ThesisStatus.IN_PROGRESS.value
