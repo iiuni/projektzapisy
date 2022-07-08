@@ -41,7 +41,7 @@
         "supporting_advisor": "{{origin_instance.supporting_advisor}}",
         "kind": "{{origin_instance.kind}}",
         "max_number_of_students": "{{origin_instance.max_number_of_students}}",
-        "description": "problem z parsowaniem decription"
+        "description": "{{origin_instance.description}}"
     }
     </script>
     <script>
@@ -63,9 +63,9 @@
                 if(document.querySelector('[name="max_number_of_students"]').value != origin_instance.max_number_of_students) {
                     return confirm(`Zmieniono maks. liczba studentów.\n${confirm_msg}`);
                 }
-                // if(document.querySelector('textarea[name="description"]').value != origin_instance.description) {
-                //     return confirm(`Zmieniono opis pracy.\n${confirm_msg}`);
-                // }
+                if(document.querySelector('textarea[name="description"]').value != origin_instance.description) {
+                    return confirm(`Zmieniono opis pracy.\n${confirm_msg}`);
+                }
             })
         }
     </script>
