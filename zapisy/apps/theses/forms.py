@@ -124,8 +124,7 @@ class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
-        self.origin_instance = copy(self.instance)
-        self.status = self.instance.status
+        self.old_instance = copy(self.instance)
 
         self.fields['status'].required = False
 
@@ -140,7 +139,7 @@ class EditThesisForm(ThesisFormBase):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
-        status = self.status
+        status = self.old_instance.status
         origin_instance = self.origin_instance
 
         if origin_instance.title != instance.title or \
