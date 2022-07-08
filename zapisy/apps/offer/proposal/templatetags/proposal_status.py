@@ -21,7 +21,7 @@ def semester_display(semester: SemesterChoices) -> str:
 
 @register.filter
 def semester_order(proposals):
-    """Arranges semesters in order in which they actually occur, so winter, summer and then unassigned"""
+    """Arranges semesters in order in which they actually occur."""
     ordering = {
         SemesterChoices.WINTER: 1,
         SemesterChoices.SUMMER: 2,
