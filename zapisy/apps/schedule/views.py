@@ -266,7 +266,7 @@ def get_terms(request, year, month, day):
     try:
         date = datetime.date(int(year), int(month), int(day))
     except ValueError:
-        raise Http404
+        raise Http404("URL contains invalid date.")
 
     def make_dict(start_time, end_time):
         return {
