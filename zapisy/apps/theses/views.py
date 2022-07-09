@@ -204,7 +204,7 @@ def edit_thesis(request, id):
         'title': thesis.title,
         'id': id,
         'confirm_changes': confirm_changes,
-        'origin_instance': thesis
+        'old_instance': thesis
     })
 
 
