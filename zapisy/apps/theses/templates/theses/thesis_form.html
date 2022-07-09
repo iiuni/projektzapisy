@@ -35,14 +35,7 @@
         {% crispy thesis_form %}
     </form>
     {% if confirm_changes %}
-    <script id="old_instance" type="application/json">
-    {
-        "title": "{{old_instance.title}}",
-        "supporting_advisor": "{{old_instance.supporting_advisor}}",
-        "kind": "{{old_instance.kind}}",
-        "max_number_of_students": "{{old_instance.max_number_of_students}}",
-        "description": "{{old_instance.description}}"
-    }
+        {{ old_instance|json_script:"old_instance" }}
     </script>
     <script>
         window.onload = function() {
