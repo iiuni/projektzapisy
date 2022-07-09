@@ -106,9 +106,6 @@ class ThesisFormBase(forms.ModelForm):
 
 
 class ThesisForm(ThesisFormBase):
-    def __init__(self, user, *args, **kwargs):
-        super(ThesisForm, self).__init__(user, *args, **kwargs)
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.added = timezone.now()
