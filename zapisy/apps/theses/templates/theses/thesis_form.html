@@ -41,7 +41,7 @@
         "supporting_advisor": "{{old_instance.supporting_advisor}}",
         "kind": "{{old_instance.kind}}",
         "max_number_of_students": "{{old_instance.max_number_of_students}}",
-        "description": "{{old_instance.description}"
+        "description": "{{old_instance.description}}"
     }
     </script>
     <script>
@@ -54,9 +54,9 @@
                 if(document.querySelector('[name="title"]').value != old_instance.title) {
                     return confirm(`Zmieniono tytuł pracy.\n${confirm_msg}`);
                 }
-                if(document.querySelector('[name="supporting_advisor"]').value != old_instance.supporting_advisor) {
-                    return confirm(`Zmieniono promotora wspierającego.\n${confirm_msg}`);
-                }
+                // if(document.querySelector('[name="supporting_advisor"]').value != old_instance.supporting_advisor) {
+                //     return confirm(`Zmieniono promotora wspierającego.\n${confirm_msg}`);
+                // }
                 if(document.querySelector('[name="kind"]').value != old_instance.kind) {
                     return confirm(`Zmieniono typ pracy.\n${confirm_msg}`);
                 }

@@ -5,6 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.forms.models import model_to_dict
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
@@ -199,12 +200,14 @@ def edit_thesis(request, id):
         thesis.status not in (ThesisStatus.RETURNED_FOR_CORRECTIONS.value,
                               ThesisStatus.BEING_EVALUATED.value)
 
+    thesis_dict = model_to_dict(thesis, fields=['title', 'advisor', 'supporting_advisor', 'kind', 'max_number_of_students', 'description'])
+
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
         'title': thesis.title,
         'id': id,
         'confirm_changes': confirm_changes,
-        'old_instance': thesis
+        'old_instance': thesis_dict
     })
 
 
