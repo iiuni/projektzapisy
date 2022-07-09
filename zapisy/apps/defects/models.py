@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.contrib.auth.models import User
@@ -39,7 +40,10 @@ class Defect(models.Model):
 
 
 def select_storage():
-    return GoogleDriveStorage() if exists("google_drive.json") else FileSystemStorage(location="defect/")
+    if exists(settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE):
+        return GoogleDriveStorage()
+    else:
+        FileSystemStorage(location="defect/")
 
 
 class Image(models.Model):

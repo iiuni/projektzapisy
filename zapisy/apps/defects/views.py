@@ -1,17 +1,22 @@
+import logging
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from gdstorage.storage import GoogleDriveStorage
-import os
 
 from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
 
-# Define Google Drive Storage
-gd_storage = GoogleDriveStorage() if os.path.exists("google_drive.json") else None
+gd_storage = GoogleDriveStorage() if os.path.exists(settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE) else None
+if gd_storage is None:
+    logging.getLogger().error("File" + settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE +
+                              "was not found. Defect service will not work properly")
 
 
 @employee_required
@@ -60,7 +65,7 @@ def index(request):
 
 def delete_images(images_to_delete):
     for image_name in images_to_delete:
-        image_path = '/zapisy/defects/' + image_name
+        image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image_name
         if gd_storage.exists(image_path):
             gd_storage.delete(image_path)
 
@@ -246,7 +251,7 @@ def delete_image(request, image_id):
 def do_delete_image(request, image_id):
     image = get_object_or_404(Image, id=image_id)
     defect_id = image.defect.id
-    image_path = '/zapisy/defects/' + image.image.name
+    image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image.image.name
 
     image.delete()
 
