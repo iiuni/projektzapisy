@@ -200,8 +200,8 @@ def edit_thesis(request, id):
         thesis.status not in (ThesisStatus.RETURNED_FOR_CORRECTIONS.value,
                               ThesisStatus.BEING_EVALUATED.value)
 
-    thesis_dict = model_to_dict(thesis, fields=['title', 'advisor', 'supporting_advisor',
-                                                'kind', 'max_number_of_students', 'description'])
+    thesis_dict = model_to_dict(thesis, fields=['title', 'supporting_advisor', 'kind',
+                                                'max_number_of_students', 'description'])
 
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
