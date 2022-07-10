@@ -1,8 +1,9 @@
+import datetime
 from typing import Dict
 
 from django import forms
 
-from apps.grade.poll.models import Submission
+from apps.grade.poll.models import Submission, ViewedAnswer
 
 
 class TicketsEntryForm(forms.Form):
@@ -48,7 +49,9 @@ class SubmissionEntryForm(forms.ModelForm):
             for index, field in enumerate(self.jsonfields):
                 field_name = f"field_{index}"
                 updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
-
+                if updated_answers["schema"][index]["type"] == "textarea":
+                    if self.initial.get(field_name) != updated_answers["schema"][index]["answer"]:
+                        updated_answers["schema"][index]["modified"] = datetime.datetime.now().isoformat()
             self.instance.submitted = True
             self.instance.answers = updated_answers
 
