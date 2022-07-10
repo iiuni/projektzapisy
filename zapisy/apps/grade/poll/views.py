@@ -4,6 +4,7 @@ import json
 from collections import defaultdict
 from operator import attrgetter
 from typing import Dict, List
+
 import dateutil.parser
 
 from django.contrib import messages
@@ -17,6 +18,7 @@ from apps.grade.poll.models import Poll, Submission, Viewed, ViewedAnswer
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
+
 
 class TicketsEntry(TemplateView):
     template_name = 'poll/tickets_enter.html'
@@ -228,25 +230,23 @@ class PollResults(TemplateView):
                         if 'modified' in entry:
                             try:
                                 last = objs.filter(submission=submission, question=entry['question']).latest('time')
-                                viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) <  last.time                           
+                                viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) < last.time
                             except ViewedAnswer.DoesNotExist:
                                 viewed[entry['answer']] = False
                             if not beg:
                                 updates += ", "
-                            updates += str((user.id,submission.id,entry['question'],time.isoformat()))
+                            updates += str((user.id, submission.id, entry['question'], datetime.datetime.now().isoformat()))
                             beg = False
-                            if submission.id:
-                                to_update.append((submission.id, entry['question']))
                         else:
                             viewed[entry['answer']] = True
         if submissions:
             cursor = connection.cursor()
             cursor.execute(
-              "INSERT INTO poll_viewedanswer (user_id, submission_id, question, time) VALUES "+
+              "INSERT INTO poll_viewedanswer (user_id, submission_id, question, time) VALUES " +
               updates +
               " ON CONFLICT ON CONSTRAINT unique_uqs_combination DO UPDATE SET time = NOW();")
             cursor.close()
-        
+
         return viewed
 
     @staticmethod
@@ -306,9 +306,9 @@ class PollResults(TemplateView):
                 return redirect('grade-poll-results', semester_id=semester_id)
             else:
                 Viewed.objects.update_or_create(
-                        poll=current_poll,user=request.user.employee,
+                        poll=current_poll, user=request.user.employee,
                         defaults={'time': datetime.datetime.now()},
-                )                
+                )
         else:
             submissions = []
 
