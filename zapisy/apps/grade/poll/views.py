@@ -235,7 +235,8 @@ class PollResults(TemplateView):
                                 viewed[entry['answer']] = False
                             if not beg:
                                 updates += ", "
-                            updates += str((user.id, submission.id, entry['question'], datetime.datetime.now().isoformat()))
+                            updates += str((user.id, submission.id, entry['question'],
+                              datetime.datetime.now().isoformat()))
                             beg = False
                         else:
                             viewed[entry['answer']] = True
