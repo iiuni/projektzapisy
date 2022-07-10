@@ -67,9 +67,15 @@
                     <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
                     <td class="text-center">{{ defect.creation_date }}</td>
                 </tr>
-                {% if defect.description != "" %}
+                {% if defect.description != "" or defect.information_from_defect_manager != "" %}
                     <tr>
-                        <td class="text" colspan="4" style="word-break: break-all">{{ defect.description|linebreaksbr }}</td>
+                        <td class="text" colspan="5" style="word-break: break-all">
+                            {{ defect.description|linebreaksbr }}
+                            {% if defect.information_from_defect_manager != "" %}
+                                {% if defect.description != "" %}<br><br>{% endif %}
+                                Informacja o zmianach: {{ defect.information_from_defect_manager }}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% else %}
                     <tr style="display:none;"></tr>

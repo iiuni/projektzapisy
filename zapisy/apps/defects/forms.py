@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
 from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, Image, DefectManager
+from ..users.models import Student
 
 
 class DefectFormBase(forms.ModelForm):
@@ -79,4 +80,6 @@ class DefectManagerAdminForm(forms.ModelForm):
 
         self.fields['user_id'].label_from_instance = self.label_from_instance
 
-    user_id = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=True).all().order_by("first_name", "last_name"))
+    students = Student.objects.all().values_list("id")
+    user_id = forms.ModelChoiceField(
+        queryset=User.objects.exclude(pk__in=students).all().order_by("first_name", "last_name"))

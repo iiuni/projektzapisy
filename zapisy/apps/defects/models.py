@@ -1,10 +1,12 @@
+from os.path import exists
+
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+
 from gdstorage.storage import GoogleDriveStorage
-from os.path import exists
 
 DEFECT_MAX_NAME_SIZE = 35
 DEFECT_MAX_PLACE_SIZE = 35
