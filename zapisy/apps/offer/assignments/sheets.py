@@ -215,11 +215,7 @@ def proposal_to_sheets_format(groups: ProposalSummary):
 
 def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
-    try:
-        worksheet = sheet.worksheet("Przydziały")
-    except gspread.WorksheetNotFound:
-        worksheet = sheet.get_worksheet(0)
-        worksheet.update_title("Przydziały")
+    worksheet = find_or_insert_worksheet(sheet, "Przydziały")
     worksheet.clear()
     worksheet.update('A:N', data, raw=False)
     worksheet.format('M:N', {'textFormat': {'italic': True}})
@@ -283,7 +279,6 @@ def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[Single
 
     worksheet = find_or_insert_worksheet(sheet, "Przedmioty")
     worksheet.clear()
-    worksheet.update_title("Przedmioty")
     worksheet.update('A:H', data, raw=False)
     worksheet.freeze(rows=1)
 
@@ -335,7 +330,6 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
 
     worksheet = find_or_insert_worksheet(sheet, "Pracownicy")
     worksheet.clear()
-    worksheet.update_title("Pracownicy")
     worksheet.update('A:I', data, raw=False)
     worksheet.format('F:I', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)
