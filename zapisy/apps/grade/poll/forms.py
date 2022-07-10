@@ -3,7 +3,7 @@ from typing import Dict
 
 from django import forms
 
-from apps.grade.poll.models import Submission, ViewedAnswer
+from apps.grade.poll.models import Submission
 
 
 class TicketsEntryForm(forms.Form):
