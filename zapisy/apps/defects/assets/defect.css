@@ -51,8 +51,9 @@
 }
 
 .delete-label .checkmark:after {
-  content: "X";
-  color: darkred;
+  content: "×";
+  font-size: 40px;
+  color: #e01414;
   position: absolute;
   left: 50%;
   top: 50%;

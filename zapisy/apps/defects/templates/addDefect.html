@@ -66,6 +66,9 @@
 
             {% if edit %}
                 <div class="container-fluid" style="margin: 10px">
+                    {% if images %}
+                        Zaznaczone zdjęcia zostaną usunięte.
+                    {% endif %}
                     <div class="row">
                         {% for image in images %}
                             <div class="col-md-3 pop center-block defect-edit-image" >
