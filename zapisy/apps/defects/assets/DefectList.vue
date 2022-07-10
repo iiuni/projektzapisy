@@ -98,7 +98,7 @@ export default class DefectList extends Vue {
           <SorterField property="place" label="Miejsce" />
         </th>
         <th>
-          <SorterField property="reporter" label="Zgłosił" />
+          <SorterField property="reporter" label="Zgłoszona przez" />
         </th>
         <th>
           <SorterField property="state" label="Stan" />

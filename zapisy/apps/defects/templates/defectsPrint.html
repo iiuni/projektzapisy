@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
+    <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System raportowania usterek{% endblock %}</title>
     <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
 
     <link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
@@ -51,8 +51,8 @@
     <table class="table table-striped sortable">
         <thead>
         <tr id="headers">
-            <th scope="col" class="az" data-defaultsign="nospan">Nazwa</th>
-            <th scope="col" class="text-center">Zgłosił</th>
+            <th scope="col" class="text-center az" data-defaultsign="nospan">Nazwa</th>
+            <th scope="col" class="text-center">Zgłoszona przez</th>
             <th scope="col" class="text-center">Miejsce</th>
             <th scope="col" class="text-center">Stan</th>
             <th scope="col" class="text-center">Data</th>
@@ -61,8 +61,8 @@
             <tbody>
             {% for defect in defects %}
                 <tr id="{{ defect.id }}">
-                    <td> {{ defect.name }} </td>
-                    <td> {{ defect.reporter.first_name }} {{ defect.reporter.last_name}} </td>
+                    <td class="text-center"> {{ defect.name }} </td>
+                    <td class="text-center"> {{ defect.reporter.first_name }} {{ defect.reporter.last_name}} </td>
                     <td class="text-center">{{ defect.place }}</td>
                     <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
                     <td class="text-center">{{ defect.creation_date }}</td>

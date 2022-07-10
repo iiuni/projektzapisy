@@ -12,7 +12,7 @@ DEFECT_MAX_PLACE_SIZE = 35
 
 class StateChoices(models.IntegerChoices):
     CREATED = 0, "Zgłoszone"
-    WAITING = 1, "W oczekiwaniu na realizację"
+    WAITING = 1, "Oczekująca"
     IN_PROGRESS = 2, "W realizacji"
     DONE = 3, "Zakończone"
 
@@ -47,7 +47,7 @@ def select_storage():
 
 
 class Image(models.Model):
-    image = models.ImageField(storage=select_storage, upload_to='defect')
+    image = models.ImageField(storage=select_storage, upload_to='defects')
     defect = models.ForeignKey(Defect, on_delete=models.CASCADE, null=False, blank=True)
 
 

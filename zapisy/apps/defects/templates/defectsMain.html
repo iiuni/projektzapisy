@@ -23,8 +23,8 @@
             <h1 class="d-inline-block">
                 Usterki
             </h1>
-            <div>
-            <a href="{% url 'defects:new' %}" class="btn btn-primary" role="button">Dodaj nową usterkę</a>
+            <div> <!-- btn btn-primary !-->
+            <a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a>
             <input type="submit" name="print" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
             {% if is_defect_manager %}
             <input type="submit" name="delete" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">

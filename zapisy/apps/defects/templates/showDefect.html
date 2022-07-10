@@ -8,7 +8,7 @@
 {% render_bundle "show-defect" %}
 {% endblock %}
 
-{% block main-subtitle %}System raportowania usterek{% endblock %}
+{% block main-subtitle %}{{ defect.name }} - System raportowania usterek{% endblock %}
 
 {% block bread %}
 <li class="breadcrumb-item">
@@ -31,12 +31,12 @@
     </h1>
     <div class="ml-2 d-flex align-items-center justify-content-end flex-wrap">
         <div class="d-inline-block mb-3 ml-1">
-            <a class="btn btn-sm btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
+            <a class="btn btn-outline-info" href="{% url 'defects:edit_defect' defect.id %}">
                 Edytuj
             </a>
             {% if can_delete %}
             <a
-                    class="btn btn-sm btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
+                    class="btn btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
                 Usuń
             </a>
             {% endif %}
@@ -89,7 +89,7 @@
 </div>
 <hr>
 
-<h3>Informacja od serwisanta o zmianach</h3>
+<h3>Informacja o zmianach</h3>
 <div id="info-div">
 
 

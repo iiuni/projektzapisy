@@ -17,7 +17,7 @@ export default Vue.extend({
     return {
       allStates: {
         0: "Zgłoszone",
-        1: "W oczekiwaniu na realizację",
+        1: "Oczekująca",
         2: "W realizacji",
         3: "Zakończone",
       },

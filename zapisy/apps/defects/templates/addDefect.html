@@ -11,6 +11,13 @@
 {% block js %}
     {% render_bundle "defect-form" %}
 {% endblock %}
+{% block main-subtitle %}
+    {% if edit %}
+        Edycja {{ defect.name }} - System raportowania usterek
+    {% else %}
+        Dodawanie usterki - System raportowania usterek
+    {% endif %}
+{% endblock %}
 
 {% block bread %}
     <li class="breadcrumb-item">

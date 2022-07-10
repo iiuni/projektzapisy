@@ -270,7 +270,7 @@ def do_delete_image(request, image_id):
 def post_information_from_defect_manager(request, defect_id):
     if request.method == "POST":
         if not is_defect_manager(request.user.id):
-            messages.error(request, "Informacja od serwisanta"
+            messages.error(request, "Informacja o zmianach"
                                     " może zostać wypełniona tylko przez osoby do tego wyznaczone.")
             return redirect('defects:show_defect', defect_id=defect_id)
         info_form = InformationFromDefectManagerForm(request.POST)

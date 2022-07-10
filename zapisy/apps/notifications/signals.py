@@ -184,12 +184,14 @@ def notify_that_defect_was_modified(sender, **kwargs) -> None:
 
     notify_user(
         kwargs['user'],
-        Notification(
+    Notification(
             get_id(),
             get_time(),
             NotificationType.DEFECT_MODIFIED,
             {
-                'defect_name': defect.name
+                'defect_name': defect.name,
+                'reporter': ' '.join([defect.reporter.first_name, defect.reporter.last_name]),
+
             },
             target
         )

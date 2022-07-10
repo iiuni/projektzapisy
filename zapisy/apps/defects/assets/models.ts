@@ -13,7 +13,7 @@ export interface DefectInfo {
 
 export type PossibleStates =
   | "Zgłoszone"
-  | "W oczekiwaniu na realizację"
+  | "Oczekująca"
   | "W realizacji"
   | "Zakończone";
 
