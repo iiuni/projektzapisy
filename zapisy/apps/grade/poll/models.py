@@ -402,3 +402,17 @@ class Viewed(models.Model):
     user = models.ForeignKey(Employee, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     time = models.DateTimeField()
+
+class ViewedAnswer(models.Model):
+    """Represents the last time employee viewed open question answer."""
+    user = models.ForeignKey(EmployeeModel, on_delete=models.CASCADE)
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
+    question = models.CharField(max_length=130, default="")
+    time = models.DateTimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'submission', 'question'], name='unique_uqs_combination'
+            )
+        ]
