@@ -4,18 +4,19 @@ import json
 from collections import defaultdict
 from operator import attrgetter
 from typing import Dict, List
+import dateutil.parser
 
 from django.contrib import messages
+from django.db import connection
 from django.shortcuts import redirect, render, reverse
 from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
-from apps.grade.poll.models import Poll, Submission, Viewed
+from apps.grade.poll.models import Poll, Submission, Viewed, ViewedAnswer
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
-
 
 class TicketsEntry(TemplateView):
     template_name = 'poll/tickets_enter.html'
@@ -149,7 +150,7 @@ class SubmissionEntry(UpdateView):
         return self.active_submission
 
     def get_success_url(self):
-        """Manages how the user is redirected after submitting his answers.
+        """Manages how the user is redirected after submitting answers.
 
         By default, when the form is validated successfully, the user
         is redirected to the next unfinished submission in the list.
@@ -201,12 +202,52 @@ class PollResults(TemplateView):
                         un_read_sing[poll] = last_views[poll.id] > last_modified.modified
                         un_read[poll.category] = un_read_sing[poll] and un_read[poll.category]
                     except Submission.DoesNotExist:
-                        pass
+                        un_read_sing[poll] = True
+                        un_read[poll.category] = un_read[poll.category]
                 else:
-                    un_read_sing[poll] = False
-                    un_read[poll.category] = False
+                    val = True
+                    for sub in last_modifieds.filter(poll=poll):
+                        if sub.submitted:
+                            val = False
+                            break
+                    un_read_sing[poll] = val
+                    un_read[poll.category] = un_read_sing[poll] and un_read[poll.category]
 
         return [un_read, un_read_sing]
+
+    @staticmethod
+    def __get_unviewed(submissions, user):
+        objs = ViewedAnswer.objects.filter(submission__in=submissions, user=user)
+        viewed = dict()
+        updates = ""
+        beg = True
+        for submission in submissions:
+            if 'schema' in submission.answers:
+                for entry in submission.answers['schema']:
+                    if entry['type'] == 'textarea':
+                        if 'modified' in entry:
+                            try:
+                                last = objs.filter(submission=submission, question=entry['question']).latest('time')
+                                viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) <  last.time                           
+                            except ViewedAnswer.DoesNotExist:
+                                viewed[entry['answer']] = False
+                            if not beg:
+                                updates += ", "
+                            updates += str((user.id,submission.id,entry['question'],time.isoformat()))
+                            beg = False
+                            if submission.id:
+                                to_update.append((submission.id, entry['question']))
+                        else:
+                            viewed[entry['answer']] = True
+        if submissions:
+            cursor = connection.cursor()
+            cursor.execute(
+              "INSERT INTO poll_viewedanswer (user_id, submission_id, question, time) VALUES "+
+              updates +
+              " ON CONFLICT ON CONSTRAINT unique_uqs_combination DO UPDATE SET time = NOW();")
+            cursor.close()
+        
+        return viewed
 
     @staticmethod
     def __get_processed_results(submissions):
@@ -263,6 +304,11 @@ class PollResults(TemplateView):
                     request, "Nie masz uprawnień do wyświetlenia tej ankiety."
                 )
                 return redirect('grade-poll-results', semester_id=semester_id)
+            else:
+                Viewed.objects.update_or_create(
+                        poll=current_poll,user=request.user.employee,
+                        defaults={'time': datetime.datetime.now()},
+                )                
         else:
             submissions = []
 
@@ -284,6 +330,9 @@ class PollResults(TemplateView):
                     'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
+                    ),
+                    'viewed': self.__get_unviewed(
+                        submissions, request.user.employee
                     ),
                     'read': self.__get_unread(
                         available_polls, request.user.employee
