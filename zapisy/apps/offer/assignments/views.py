@@ -52,7 +52,7 @@ def plan_view(request):
         return render(request, 'assignments/view.html', {'year': year})
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       {error}""")
+                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -112,18 +112,29 @@ def assignments_wizard(request):
     The main logic of this function is devoted to suggesting which proposals
     should be picked.
     """
+    year = SystemState.get_current_state().year
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
         assignments = list(read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
         assignments = []
+    except RefreshError as error:
+        assignments = []
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
+        return render(request, 'assignments/view.html', {'year': year})
 
     courses = []
     if assignments:
         picks = set(a.proposal_id for a in assignments)
     else:
-        picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
+        try:
+            picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
+        except RefreshError as error:
+            messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                           Błąd arkusza: {VOTING_RESULTS_SPREADSHEET_ID}<br>{error}""")
+            return render(request, 'assignments/view.html', {'year': year})
 
     for proposal in proposals:
         checked = proposal.pk in picks
@@ -155,11 +166,9 @@ def create_assignments_sheet(request):
     Makes sure that modifications made to the assignments sheet so far are not
     overridden.
     """
-    sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-
-    # Read the current contents of the sheet.
-    current_assignments = defaultdict(list)
     try:
+        sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+        current_assignments = defaultdict(list)
         for assignment in read_assignments_sheet(sheet):
             current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
         teachers = read_employees_sheet(sheet)
@@ -170,6 +179,10 @@ def create_assignments_sheet(request):
         została wygenerowana w obawie przed nadpisaniem istniejących
         przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
         {error}""")
+        return redirect(reverse('assignments-wizard'))
+    except RefreshError as error:
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
         return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
@@ -262,7 +275,12 @@ def create_voting_sheet(request):
     """Prepares the voting sheet."""
     years = get_last_years(3)
     voting = get_votes(years)
-    sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+    try:
+        sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+    except RefreshError as error:
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       Błąd arkusza: {VOTING_RESULTS_SPREADSHEET_ID}<br>{error}""")
+        return redirect(reverse('assignments-wizard'))
     update_voting_results_sheet(sheet, voting, years)
     return redirect(reverse('assignments-wizard')+'#step-1')
 
@@ -289,12 +307,16 @@ def generate_scheduler_file(request, semester, fmt):
         messages.error(request, f"Niepoprawny format: '{ fmt }'")
         return redirect('assignments-wizard')
     current_year = SystemState.get_current_state().year
-    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
+        assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
         teachers = read_employees_sheet(assignments_spreadsheet)
         assignments = list(read_assignments_sheet(assignments_spreadsheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return redirect('assignments-wizard')
+    except RefreshError as error:
+        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
+                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
         return redirect('assignments-wizard')
 
     content_teachers = [{
