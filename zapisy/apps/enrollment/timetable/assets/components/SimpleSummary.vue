@@ -29,7 +29,7 @@ const SimpleSummaryProps = Vue.extend({
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
   public GetNameDay(day: DayOfWeek) {
-    return nameDay(day);
+    return nameDay(day).toLowerCase();
   }
   public objectLength(o: Object) {
     return Object.keys(o).length;
@@ -68,7 +68,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
         <td class="courseDetails">
           <ul v-for="(group, gid) in groups" :value="group" :key="gid">
             <li v-if="groupsCondition(group, item)">
-              <span class="type">{{ group.type }}:</span>
+              <span class="type">{{ group.type.toLowerCase() }}:</span>
               <span class="term">
                 {{ GetNameDay(group.terms[0].weekday) }}
                 {{ group.terms[0].startTimeString }}-{{
