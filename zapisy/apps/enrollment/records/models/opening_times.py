@@ -56,6 +56,7 @@ class T0Times(models.Model):
         return True
 
     @classmethod
+    @transaction.atomic
     def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
         """Computes T0s for selected students.
 
@@ -73,42 +74,41 @@ class T0Times(models.Model):
         if not students:
             students = Student.get_active_students()
 
-        with transaction.atomic():
-            # First we delete T0 records in the semester for the selected students
-            cls.objects.filter(student__in=students, semester=semester).delete()
+        # First we delete T0 records in the semester for the selected students
+        cls.objects.filter(student__in=students, semester=semester).delete()
 
-            created: List[cls] = []
-            # For each student_id we want to know, how many times they have
-            # generated grading tickets in the last two semesters.
-            generated_tickets: Dict[int, int] = dict(
+        created: List[cls] = []
+        # For each student_id we want to know, how many times they have
+        # generated grading tickets in the last two semesters.
+        generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
                 ], student__in=students).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
                     "student_id", "num_tickets"))
 
-            student: Student
-            for student in students:
-                record = cls(student=student, semester=semester)
-                record.time = semester.records_opening
-                # Every ECTS gives 5 minutes bonus, but with logic splitting
-                # that over nighttime. 720 minutes is equal to12 hours. If
-                # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
-                # additional 12 hours from T0. This way T0's are separated by
-                # ECTS_BONUS minutes per point, but never fall in the nighttime.
-                record.time -= timedelta(
-                    minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
-                record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
-                # Every participation in classes grading gives a day worth
-                # advantage.
-                student_generated_tickets = generated_tickets.get(student.pk, 0)
-                record.time -= timedelta(days=1) * student_generated_tickets
-                # We may add some bonus by hand.
-                record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
-                # Finally, everyone gets 2 hours. This way, nighttime pause is
-                # shifted from 00:00-12:00 to 22:00-10:00.
-                record.time -= timedelta(hours=2)
-                created.append(record)
-            cls.objects.bulk_create(created)
+        student: Student
+        for student in students:
+            record = cls(student=student, semester=semester)
+            record.time = semester.records_opening
+            # Every ECTS gives 5 minutes bonus, but with logic splitting
+            # that over nighttime. 720 minutes is equal to12 hours. If
+            # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
+            # additional 12 hours from T0. This way T0's are separated by
+            # ECTS_BONUS minutes per point, but never fall in the nighttime.
+            record.time -= timedelta(
+                minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
+            record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
+            # Every participation in classes grading gives a day worth
+            # advantage.
+            student_generated_tickets = generated_tickets.get(student.pk, 0)
+            record.time -= timedelta(days=1) * student_generated_tickets
+            # We may add some bonus by hand.
+            record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
+            # Finally, everyone gets 2 hours. This way, nighttime pause is
+            # shifted from 00:00-12:00 to 22:00-10:00.
+            record.time -= timedelta(hours=2)
+            created.append(record)
+        cls.objects.bulk_create(created)
 
 
 class GroupOpeningTimes(models.Model):
