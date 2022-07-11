@@ -132,6 +132,9 @@ class OpeningTimesTest(TestCase):
                 student=self.bolek,
                 group=self.knitting_lecture_group
         ).update(time=bolek_knitting_opening + timedelta(hours=1))
-        self.assertTrue(bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=2))
         GroupOpeningTimes.populate_opening_times(self.semester, students=[self.lolek])
-        self.assertTrue(bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=1))
+        bolek_knitting_opening2 = GroupOpeningTimes.objects.get(
+                student=self.bolek, group=self.knitting_lecture_group).time
+        lolek_knitting_opening2 = GroupOpeningTimes.objects.get(
+                student=self.lolek, group=self.knitting_lecture_group).time
+        assert bolek_knitting_opening2 - lolek_knitting_opening2 == timedelta(hours=2)
