@@ -120,7 +120,6 @@ def assignments_wizard(request):
         messages.error(request, error)
         assignments = []
     except RefreshError as error:
-        assignments = []
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
                        Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
         return render(request, 'assignments/view.html', {'year': year})
