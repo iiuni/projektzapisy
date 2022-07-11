@@ -50,7 +50,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
     <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
       <tr class="courseHeader">
         <td class="name" scope="col">
-          <a href="{% url 'course-page' course.grouper.slug %}">
+          <a :href="item.url">
             {{ item.name }}
           </a>
         </td>
