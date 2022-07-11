@@ -60,7 +60,7 @@
         <tr>
             <th scope="row">Status</th>
             <td>
-                {{ thesis.get_status_display }}
+                {{ thesis.get_status_display|default_if_none:"Brak" }}
             </td>
         </tr>
         <tr>

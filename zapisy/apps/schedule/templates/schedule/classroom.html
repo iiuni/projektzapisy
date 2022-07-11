@@ -24,7 +24,7 @@
             <tr>
                 <th class="text-light bg-info">Opis</th>
                 <td colspan="3">
-                    {{ room.description|default_if_none:"Brak" }}
+                    {{ room.description|default:"Brak" }}
                 </td>
             </tr>
         </tbody>
@@ -37,3 +37,4 @@
     </script>
     {% render_bundle 'schedule-fullcalendar' %}
 {% endblock %}
+                    <!-- {% if room.description %}{{ room.description }}{% else %}Brak{% endif %} -->
