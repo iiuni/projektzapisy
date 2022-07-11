@@ -41,10 +41,10 @@ export default class SimpleSummary extends SimpleSummaryProps {
   <div>
     <tbody v-if="objectLength(courses) > 0">
       <tr>
-        <td>
+        <td class="summaryHeader">
           <strong>Suma punktów ECTS za {{ summaryType }}:</strong>
         </td>
-        <td class="ects">{{ points }}</td>
+        <td class="summaryHeaderEcts">{{ points }}</td>
       </tr>
     </tbody>
     <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
@@ -100,5 +100,12 @@ tr.simpleSumamry {
 }
 td.ects {
   text-align: right;
+}
+td.summaryHeader {
+  background-color: white;
+}
+td.summaryHeaderEcts {
+  text-align: right;
+  background-color: white;
 }
 </style>
