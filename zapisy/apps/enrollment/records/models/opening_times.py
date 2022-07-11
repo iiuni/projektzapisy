@@ -83,8 +83,8 @@ class T0Times(models.Model):
         generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ], student__in=students).values("student_id").annotate(num_tickets=models.Count("id")).values_list(
-                    "student_id", "num_tickets"))
+                ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
+                    'student_id', 'num_tickets'))
 
         student: Student
         for student in students:
@@ -228,7 +228,7 @@ class GroupOpeningTimes(models.Model):
 
         # We need T0 of each student.
         t0times: Dict[int, datetime] = dict(
-                T0Times.objects.filter(semester_id=semester.id, student__in=students).values_list("student_id", "time")
+                T0Times.objects.filter(semester_id=semester.id, student__in=students).values_list('student_id', 'time')
             )
 
         opening_time_objects: List[cls] = []
