@@ -126,8 +126,6 @@ class OpeningTimesTest(TestCase):
         """This tests GroupOpeningTimes for special cases."""
         bolek_knitting_opening = GroupOpeningTimes.objects.get(
                 student=self.bolek, group=self.knitting_lecture_group).time
-        lolek_knitting_opening = GroupOpeningTimes.objects.get(
-                student=self.lolek, group=self.knitting_lecture_group).time
         GroupOpeningTimes.objects.filter(
                 student=self.bolek,
                 group=self.knitting_lecture_group
