@@ -42,7 +42,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
     <tbody v-if="objectLength(courses) > 0">
       <tr>
         <td class="summaryHeader">
-          <strong>Suma punktów ECTS za {{ summaryType }}:</strong>
+          <strong>{{ summaryType }}</strong>
         </td>
         <td class="summaryHeaderEcts">{{ points }}</td>
       </tr>

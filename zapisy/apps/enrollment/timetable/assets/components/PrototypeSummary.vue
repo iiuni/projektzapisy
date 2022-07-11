@@ -169,28 +169,28 @@ export default class PrototypeSummary extends Vue {
         </tr>
       </thead>
       <SimpleSummary
-        summaryType="(Z)"
+        summaryType="Grupy, w których jesteś"
         :groups="groups"
         :groupsCondition="enrolledGroups"
         :courses="enrolledSummary[0]"
         :points="enrolledSummary[1]"
       />
       <SimpleSummary
-        summaryType="(K)"
+        summaryType="Grupy, do których czekasz w kolejce"
         :groups="groups"
         :groupsCondition="enqueuedGroups"
         :courses="enqueuedSummary[0]"
         :points="enqueuedSummary[1]"
       />
       <SimpleSummary
-        summaryType="(P)"
+        summaryType="Grupy, które masz przypięte"
         :groups="groups"
         :groupsCondition="pinnedGroups"
         :courses="pinnedSummary[0]"
         :points="pinnedSummary[1]"
       />
       <SimpleSummary
-        summaryType="(L)"
+        summaryType="Grupy, które masz zaznaczone"
         :groups="groups"
         :groupsCondition="selectedGroups"
         :courses="selectedSummary[0]"
@@ -199,7 +199,7 @@ export default class PrototypeSummary extends Vue {
       <tfoot v-if="howManyPointsCategories > 1">
         <tr>
           <td>
-            <strong>Suma punktów ECTS łącznie:</strong>
+            <strong>Punktów ECTS łącznie:</strong>
           </td>
           <td class="ects">{{ points }}</td>
         </tr>
