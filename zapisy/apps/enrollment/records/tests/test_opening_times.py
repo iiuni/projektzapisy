@@ -122,15 +122,15 @@ class OpeningTimesTest(TestCase):
                 self.washing_up_seminar_group.course.records_start +
                 timedelta(seconds=1))[self.washing_up_seminar_group.id])
 
-        def test_narrowed_down(self):
-            """This tests GroupOpeningTimes for special cases."""
-            bolek_knitting_opening = GroupOpeningTimes.objects.get(
+    def test_narrowed_down(self):
+        """This tests GroupOpeningTimes for special cases."""
+        bolek_knitting_opening = GroupOpeningTimes.objects.get(
                 student=self.bolek, group=self.knitting_lecture_group).time
-            lolek_knitting_opening = GroupOpeningTimes.objects.get(
+        lolek_knitting_opening = GroupOpeningTimes.objects.get(
                 student=self.lolek, group=self.knitting_lecture_group).time
-            GroupOpeningTimes.objects.filter(
+        GroupOpeningTimes.objects.filter(
                 student=self.bolek,
                 group=self.knitting_lecture_group
-            ).update(time=bolek_knitting_opening + timedelta(hours=1))
-            GroupOpeningTimes.populate_opening_times(self.semester, students=[self.lolek])
-            assert bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=2)
+        ).update(time=bolek_knitting_opening + timedelta(hours=1))
+        GroupOpeningTimes.populate_opening_times(self.semester, students=[self.lolek])
+        assert bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=2)
