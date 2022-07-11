@@ -240,7 +240,7 @@ class PollResults(TemplateView):
                             beg = False
                         else:
                             viewed[entry['answer']] = True
-        if submissions:
+        if updates:
             cursor = connection.cursor()
             cursor.execute(
               "INSERT INTO poll_viewedanswer (user_id, submission_id, question, time) VALUES " +
