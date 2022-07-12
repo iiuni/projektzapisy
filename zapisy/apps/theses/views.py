@@ -202,6 +202,7 @@ def edit_thesis(request, id):
 
     thesis_dict = model_to_dict(thesis, fields=['title', 'supporting_advisor', 'kind',
                                                 'max_number_of_students', 'description'])
+    thesis_dict['description'] = str(thesis_dict['description']).replace('\r\n', '\n')
 
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
