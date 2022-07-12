@@ -28,7 +28,7 @@ window.onload = function () {
 
   document.querySelector(".confirm-submit").addEventListener(
     "submit",
-    function () {
+    function (evt) {
       let changedFields = [];
 
       for (const fieldName in importantFields) {
@@ -37,18 +37,18 @@ window.onload = function () {
         }
       }
 
+      changed_field_str = changedFields.join(', ');
       if (changedFields.length > 1) {
-        changed_field_list = "";
-        changedFields.forEach((fieldName) => {
-          changed_field_list += fieldName + ", ";
-        });
-        changed_field_list = changed_field_list.slice(0, -2);
-        return confirm(
-          `Zmieniono pola: ${changed_field_list}.\n${confirm_msg}`
+        return (
+          confirm(`Zmieniono pola: ${changed_field_str}.\n${confirm_msg}`) ||
+          evt.preventDefault()
         );
       }
       if (changedFields.length == 1) {
-        return confirm(`Zmieniono pole: ${changedFields[0]}.\n${confirm_msg}`);
+        return (
+          confirm(`Zmieniono pole: ${changed_field_str}.\n${confirm_msg}`) ||
+          evt.preventDefault()
+        );
       }
     },
     false
