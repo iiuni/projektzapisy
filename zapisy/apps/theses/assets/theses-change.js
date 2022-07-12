@@ -3,37 +3,52 @@ window.onload = function () {
     document.getElementById("old_instance").textContent
   );
 
+  const importantFields = {
+    title: document.querySelector('[name="title"]'),
+    supporting_advisor: document.querySelector('[name="supporting_advisor"]'),
+    kind: document.querySelector('[name="kind"]'),
+    max_number_of_students: document.querySelector(
+      '[name="max_number_of_students"]'
+    ),
+    supporting_advisor: document.querySelector('[name="supporting_advisor"]'),
+    description: document.querySelector('textarea[name="description"]'),
+  };
+
+  const fieldsNames = {
+    title: "Tytuł pracy",
+    supporting_advisor: "Promotor wspierający",
+    kind: "Typ",
+    max_number_of_students: "Maksymalna liczba studentów",
+    description: "Opis pracy dyplomowej",
+  };
+
+  const confirm_msg =
+    "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
+    "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
+
   document.querySelector(".confirm-submit").addEventListener(
     "submit",
     function () {
-      const confirm_msg =
-        "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
-        "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
-      if (
-        document.querySelector('[name="title"]').value != old_instance.title
-      ) {
-        return confirm(`Zmieniono tytuł pracy.\n${confirm_msg}`);
+      let changedFields = [];
+
+      for (const fieldName in importantFields) {
+        if (importantFields[fieldName].value != old_instance[fieldName]) {
+          changedFields.push(fieldsNames[fieldName]);
+        }
       }
-      if (
-        document.querySelector('[name="supporting_advisor"]').value !=
-        old_instance.supporting_advisor
-      ) {
-        return confirm(`Zmieniono promotora wspierającego.\n${confirm_msg}`);
+
+      if (changedFields.length > 1) {
+        changed_field_list = "";
+        changedFields.forEach((fieldName) => {
+          changed_field_list += fieldName + ", ";
+        });
+        changed_field_list = changed_field_list.slice(0, -2);
+        return confirm(
+          `Zmieniono pola: ${changed_field_list}.\n${confirm_msg}`
+        );
       }
-      if (document.querySelector('[name="kind"]').value != old_instance.kind) {
-        return confirm(`Zmieniono typ pracy.\n${confirm_msg}`);
-      }
-      if (
-        document.querySelector('[name="max_number_of_students"]').value !=
-        old_instance.max_number_of_students
-      ) {
-        return confirm(`Zmieniono maks. liczba studentów.\n${confirm_msg}`);
-      }
-      if (
-        document.querySelector('textarea[name="description"]').value !=
-        old_instance.description
-      ) {
-        return confirm(`Zmieniono opis pracy.\n${confirm_msg}`);
+      if (changedFields.length == 1) {
+        return confirm(`Zmieniono pole: ${changedFields[0]}.\n${confirm_msg}`);
       }
     },
     false
