@@ -104,7 +104,7 @@ const AssetDefs = {
   "theses-theses-change": [
     path.resolve("apps/theses/assets/theses-change.js"),
   ],
-  
+
   // User app
 
   "users-user-filter": [
