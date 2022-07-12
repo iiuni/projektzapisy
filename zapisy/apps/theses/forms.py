@@ -43,7 +43,7 @@ class ThesisFormBase(forms.ModelForm):
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                                 label="Promotor wspierający",
                                                 required=False)
-    kind = forms.ChoiceField(choices=ThesisKind.choices, label="Typ")
+    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int)
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         required=False,
@@ -56,8 +56,9 @@ class ThesisFormBase(forms.ModelForm):
                                      required=False)
     description = forms.CharField(
         label="Opis", widget=common_widgets.MarkdownArea, required=False)
-    max_number_of_students = forms.ChoiceField(
-        label="Maks. liczba studentów", choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
+    max_number_of_students = forms.TypedChoiceField(
+        label="Maks. liczba studentów", coerce=int,
+        choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
     )
 
     def __init__(self, user, *args, **kwargs):
@@ -130,12 +131,9 @@ class EditThesisForm(ThesisFormBase):
         status = self.old_instance.status
         old_instance = self.old_instance
 
-        if old_instance.title != instance.title or \
-                old_instance.advisor != instance.advisor or \
-                old_instance.supporting_advisor != instance.supporting_advisor or \
-                old_instance.kind != self.instance.kind or \
-                old_instance.max_number_of_students != self.instance.max_number_of_students or \
-                old_instance.description != self.instance.description:
+        if len(set(self.changed_data).intersection([
+                'title', 'supporting_advisor', 'kind',
+                'max_number_of_students', 'description'])) > 0:
             instance.status = ThesisStatus.BEING_EVALUATED.value
         elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
             instance.status = ThesisStatus.IN_PROGRESS.value
