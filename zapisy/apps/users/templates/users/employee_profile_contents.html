@@ -34,11 +34,7 @@
 			<tr>
 				<th>pokój</th>
 				<td>
-					{% if employee.room %}
-						{{employee.room}}
-					{% else %}
-						brak danych
-					{% endif %}
+						{{employee.room|default_if_none:"brak danych"}}
 				</td>
 			</tr>
 	</table>
