@@ -14,14 +14,6 @@ window.onload = function () {
     description: document.querySelector('textarea[name="description"]'),
   };
 
-  const fieldsNames = {
-    title: "Tytuł pracy",
-    supporting_advisor: "Promotor wspierający",
-    kind: "Typ",
-    max_number_of_students: "Maksymalna liczba studentów",
-    description: "Opis pracy dyplomowej",
-  };
-
   const confirm_msg =
     "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
     "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
@@ -33,7 +25,16 @@ window.onload = function () {
 
       for (const fieldName in importantFields) {
         if (importantFields[fieldName].value != old_instance[fieldName]) {
-          changedFields.push(fieldsNames[fieldName]);
+          let label;
+          if(importantFields[fieldName].labels.length > 0) {
+            label = importantFields[fieldName].labels[0].innerText;
+          } else {
+            label = document.querySelector('[for="id_description"]').innerText;
+          }
+          if(label[label.length-1] == '*') {
+            label = label.slice(0,-1);
+          }
+          changedFields.push(label);
         }
       }
 
