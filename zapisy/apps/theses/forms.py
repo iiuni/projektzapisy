@@ -129,7 +129,6 @@ class EditThesisForm(ThesisFormBase):
         instance.modified = timezone.now()
 
         status = self.old_instance.status
-        old_instance = self.old_instance
 
         if len(set(self.changed_data).intersection([
                 'title', 'supporting_advisor', 'kind',
