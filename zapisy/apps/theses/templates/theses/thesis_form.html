@@ -30,6 +30,13 @@
         </form>
         {% endif %}
     </div>
+    {% if not new_thesis %}
+        <div class="alert alert-warning">
+            Temat został już zaakceptowany przez komisję. Wprowadzenie zmian innych niż dotyczące
+            daty rezerwacji i przypisanych studentów spowoduje przesłanie go z powrotem do decyzji komisji.
+        </div>
+    {% endif %}
+
     <form method="POST" class="post-form confirm-submit">
         {% csrf_token %}
         {% crispy thesis_form %}
