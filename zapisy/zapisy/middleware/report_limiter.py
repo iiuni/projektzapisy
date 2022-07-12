@@ -4,7 +4,7 @@ from typing import List
 import redis
 import rollbar.contrib.django.middleware
 
-from apps.common.redis import flush_with_prefix
+from apps.common.redis import flush_by_pattern
 
 TIMEOUT = 3600
 KEY_PREFIX = '404:'
@@ -43,7 +43,7 @@ class RollbarOnly404Limited:
         return [key[len(KEY_PREFIX):] for key in self.redis_client.keys(KEY_PATTERN)]
 
     def flush(self) -> None:
-        flush_with_prefix(self.redis_client, KEY_PATTERN)
+        flush_by_pattern(self.redis_client, KEY_PATTERN)
 
     @staticmethod
     def ip_to_key(ip: str) -> str:

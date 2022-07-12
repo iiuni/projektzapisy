@@ -6,7 +6,7 @@ import redis
 
 from django.contrib.auth.models import User
 
-from apps.common.redis import flush_with_prefix
+from apps.common.redis import flush_by_pattern
 from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
 
@@ -101,7 +101,7 @@ class RedisNotificationsRepository(NotificationsRepository):
         self.redis_client.delete(self._generate_sent_key_for_user(user))
 
     def flush(self) -> None:
-        flush_with_prefix(self.redis_client, KEY_PATTERN)
+        flush_by_pattern(self.redis_client, KEY_PATTERN)
 
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         self.removed_count = 0
