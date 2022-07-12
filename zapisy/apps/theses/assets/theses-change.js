@@ -53,4 +53,15 @@ window.onload = function () {
     },
     false
   );
+  document.getElementById("resetbtn").addEventListener(
+    "click",
+    function () {
+      document.querySelector('[name="title"]').value = old_instance.title
+      document.querySelector('[name="supporting_advisor"]').value = old_instance.supporting_advisor
+      document.querySelector('[name="kind"]').value = old_instance.kind
+      document.querySelector('[name="max_number_of_students"]').value = old_instance.max_number_of_students
+      document.querySelector('textarea[name="description"]').value = old_instance.description
+    },
+    false
+  );
 };
