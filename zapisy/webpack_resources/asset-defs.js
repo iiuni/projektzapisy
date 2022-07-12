@@ -98,8 +98,12 @@ const AssetDefs = {
 
   // Theses app
 
-  "theses-theses-widget": [path.resolve("apps/theses/assets/theses-widget.js")],
-  "theses-theses-change": [path.resolve("apps/theses/assets/theses-change.js")],
+  "theses-theses-widget": [
+    path.resolve("apps/theses/assets/theses-widget.js")
+  ],
+  "theses-theses-change": [
+    path.resolve("apps/theses/assets/theses-change.js")
+  ],
   
   // User app
 
