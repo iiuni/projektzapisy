@@ -30,6 +30,18 @@
         </form>
         {% endif %}
     </div>
+    {% if not new_thesis %}
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="alert alert-warning">
+                Temat został już zaakceptowany przez komisję. Wprowadzenie zmian innych niż dotyczące
+                daty rezerwacji i przypisanych studentów spowoduje przesłanie go z powrotem do decyzji komisji.
+            </div>
+            <div class="text-right">
+                <input class="btn btn btn-primary edit-term-form ml-3" name="confirm" type="submit" value="Cofnij zmiany" onclick="reset_changes()"/>
+            </div>
+        </div>
+    {% endif %}
+
     <form method="POST" class="post-form confirm-submit">
         {% csrf_token %}
         {% crispy thesis_form %}
@@ -38,5 +50,17 @@
         {{ old_instance|json_script:"old_instance" }}
         {% render_bundle 'theses-theses-change' %} 
     {% endif %}
+    <script>
+        function reset_changes() {
+            const old_instance = JSON.parse(
+                document.getElementById("old_instance").textContent
+            );
+            document.querySelector('[name="title"]').value = old_instance.title
+            document.querySelector('[name="supporting_advisor"]').value = old_instance.supporting_advisor
+            document.querySelector('[name="kind"]').value = old_instance.kind
+            document.querySelector('[name="max_number_of_students"]').value = old_instance.max_number_of_students
+            document.querySelector('textarea[name="description"]').value = old_instance.description
+        }
+    </script>
 </div>
 {% endblock %}
