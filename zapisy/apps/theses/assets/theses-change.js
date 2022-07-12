@@ -57,7 +57,7 @@ window.onload = function () {
     "click",
     function () {
       for (const fieldName in importantFields) {
-        importantFields[fieldName].value = old_instance[fieldName]
+        importantFields[fieldName].value = old_instance[fieldName];
       }
     },
     false
