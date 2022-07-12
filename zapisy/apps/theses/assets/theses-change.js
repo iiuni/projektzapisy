@@ -4,7 +4,7 @@ window.onload = function () {
   );
 
   $(document).on("submit", ".confirm-submit", function () {
-    var confirm_msg =
+    const confirm_msg =
       "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
       "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
     if (document.querySelector('[name="title"]').value != old_instance.title) {
