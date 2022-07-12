@@ -39,9 +39,6 @@
     <script>
         window.onload = function() {
             const old_instance = JSON.parse(document.getElementById('old_instance').textContent)
-            if(old_instance.supporting_advisor == null) {
-                old_instance.supporting_advisor = ""
-            }
 
             $(document).on('submit', '.confirm-submit', function() {
                 var confirm_msg = 'Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n' +
