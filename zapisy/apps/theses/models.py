@@ -43,7 +43,7 @@ class ThesesSystemSettings(models.Model):
 
 class ThesesQuerySet(models.QuerySet):
     def visible(self, user):
-        if user.is_staff or is_theses_board_member(user):
+        if is_theses_board_member(user):
             return self
         return self.filter(
             (~Q(status=ThesisStatus.BEING_EVALUATED) & ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) |
