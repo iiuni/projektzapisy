@@ -123,7 +123,7 @@ class OpeningTimesTest(TestCase):
                 timedelta(seconds=1))[self.washing_up_seminar_group.id])
 
     def test_narrowed_down(self):
-        """This tests GroupOpeningTimes for special cases."""
+        """Tests GroupOpeningTimes generation with parameters."""
         bolek_knitting_opening = GroupOpeningTimes.objects.get(
                 student=self.bolek, group=self.knitting_lecture_group).time
         GroupOpeningTimes.objects.filter(
