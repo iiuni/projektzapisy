@@ -26,9 +26,9 @@ window.onload = function () {
     "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
     "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
 
-  document.querySelector(".confirm-submit").addEventListener(
-    "submit",
-    function (evt) {
+  document
+    .querySelector(".confirm-submit")
+    .addEventListener("submit", function (evt) {
       let changedFields = [];
 
       for (const fieldName in importantFields) {
@@ -37,7 +37,7 @@ window.onload = function () {
         }
       }
 
-      changed_field_str = changedFields.join(', ');
+      changed_field_str = changedFields.join(", ");
       if (changedFields.length > 1) {
         return (
           confirm(`Zmieniono pola: ${changed_field_str}.\n${confirm_msg}`) ||
@@ -49,6 +49,14 @@ window.onload = function () {
           confirm(`Zmieniono pole: ${changed_field_str}.\n${confirm_msg}`) ||
           evt.preventDefault()
         );
+      }
+    });
+
+  document.getElementById("resetbtn").addEventListener(
+    "click",
+    function () {
+      for (const fieldName in importantFields) {
+        importantFields[fieldName].value = old_instance[fieldName];
       }
     },
     false
