@@ -60,14 +60,14 @@ class T0Times(models.Model):
     def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
         """Computes T0s for selected students.
 
-        The arguments are the semester of the T0s to be computed
-        and the optional collection of students whose T0s are to be computed.
-        If the second argument is not passed, it will be executed for all
-        active students.
+        The arguments are the semester of the T0s to be computed and the
+        optional collection of students whose T0s are to be computed. If the
+        second argument is not passed, it will be executed for all active
+        students.
 
-        The times are based on each student's ECTS points and their participation in
-        courses' grading. The additional administrative bonus is also taken into
-        account.
+        The times are based on each student's ECTS points and their
+        participation in courses' grading. The additional administrative bonus
+        is also taken into account.
 
         The function will throw a DatabaseError if something goes wrong.
         """
@@ -206,11 +206,12 @@ class GroupOpeningTimes(models.Model):
         Voting for a course results in a quicker enrollment.
 
         Args:
-            semester: A semester for which we calculate opening times.
-            students: Students for whom we calculate opening times.
-               If None, calculation will be carried out for all active students.
-            groups: Groups for which we calculate opening times.
-               If None, calculation will be carried out for all groups in the specified semester.
+            semester: Semester for which we calculate opening times.
+            students: Students for whom we calculate opening times. If None,
+            calculation will be carried out for all active students.
+            groups: Groups for which we calculate opening times. If None,
+            calculation will be carried out for all groups in the specified
+            semester.
 
         Raises:
             DatabaseError: Operation is unsuccessful.
