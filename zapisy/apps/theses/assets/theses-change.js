@@ -26,9 +26,9 @@ window.onload = function () {
     "Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
     "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?";
 
-  document.querySelector(".confirm-submit").addEventListener(
-    "submit",
-    function () {
+  document
+    .querySelector(".confirm-submit")
+    .addEventListener("submit", function () {
       let changedFields = [];
 
       for (const fieldName in importantFields) {
@@ -50,10 +50,8 @@ window.onload = function () {
       if (changedFields.length == 1) {
         return confirm(`Zmieniono pole: ${changedFields[0]}.\n${confirm_msg}`);
       }
-    },
-    false
-  );
-  
+    });
+
   document.getElementById("resetbtn").addEventListener(
     "click",
     function () {
