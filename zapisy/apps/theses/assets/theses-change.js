@@ -53,6 +53,7 @@ window.onload = function () {
     },
     false
   );
+  
   document.getElementById("resetbtn").addEventListener(
     "click",
     function () {
