@@ -26,13 +26,13 @@ window.onload = function () {
       for (const fieldName in importantFields) {
         if (importantFields[fieldName].value != old_instance[fieldName]) {
           let label;
-          if(importantFields[fieldName].labels.length > 0) {
+          if (importantFields[fieldName].labels.length > 0) {
             label = importantFields[fieldName].labels[0].innerText;
           } else {
             label = document.querySelector('[for="id_description"]').innerText;
           }
-          if(label[label.length-1] == '*') {
-            label = label.slice(0,-1);
+          if (label[label.length - 1] == "*") {
+            label = label.slice(0, -1);
           }
           changedFields.push(label);
         }
