@@ -196,7 +196,7 @@ class PollResults(TemplateView):
 
         last_modifieds: Dict[Poll, datetime.datetime] = dict(
             Submission.objects.filter(poll__in=polls, submitted=True).order_by('poll',
-            'modified').distinct('poll').values_list("poll", "modified")
+                'modified').distinct('poll').values_list("poll", "modified")
         )
         for poll in polls:
             if poll.id in last_views:
@@ -205,7 +205,7 @@ class PollResults(TemplateView):
                 else:
                     is_read_poll[poll] = True
             else:
-                is_read_poll[poll] = not poll.id in last_modifieds
+                is_read_poll[poll] = poll.id not in last_modifieds
             is_read_category[poll.category] &= is_read_poll[poll]
 
         return [is_read_category, is_read_poll]
