@@ -194,26 +194,27 @@ class PollResults(TemplateView):
                 PollView.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
             )
 
-        last_modifieds = Submission.objects.filter(poll__in=polls)
+        last_modifieds: Dict[Poll, datetime.datetime] = dict(
+            Submission.objects.filter(poll__in=polls, submitted=True).order_by('poll',
+            'modified').distinct('poll').values_list("poll", "modified")
+        )
         for poll in polls:
             if poll.id in last_views:
-                try:
-                    last_modified = last_modifieds.filter(poll=poll).latest('modified')
-                    is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
-                except Submission.DoesNotExist:
+                if poll.id in last_modifieds:
+                    is_read_poll[poll] = (last_views[poll.id] > last_modifieds[poll.id])
+                else:
                     is_read_poll[poll] = True
             else:
-                val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
-                is_read_poll[poll] = val
+                is_read_poll[poll] = not poll.id in last_modifieds
             is_read_category[poll.category] &= is_read_poll[poll]
 
         return [is_read_category, is_read_poll]
 
     @staticmethod
-    def __are_viewed_answers(submissions, user):
+    def __are_viewed_answers(current_poll, submissions, user):
         if submissions:
             try:
-                last = PollView.objects.get(user=user, poll=submissions[0].poll)
+                last = PollView.objects.get(user=user, poll=current_poll)
             except PollView.DoesNotExist:
                 last = None
             viewed = dict()
@@ -228,7 +229,7 @@ class PollResults(TemplateView):
                                 else:
                                     viewed[entry['answer']] = False
                             else:
-                                viewed[entry['answer']] = True
+                                viewed[entry['answer']] = = submission.modified < last.time
             return viewed
 
     @staticmethod
@@ -257,7 +258,6 @@ class PollResults(TemplateView):
 
         :param semester_id: if given, fetches polls from requested semester.
         :param poll_id: if given, displays summary for a given poll.
-        :param submission_id: if given, displays detailed submission view.
         """
         is_grade_active = check_grade_status()
         if semester_id is None:
@@ -293,7 +293,7 @@ class PollResults(TemplateView):
 
         if request.user.is_superuser or request.user.employee:
             viewed = self.__are_viewed_answers(
-                        submissions, request.user.employee
+                        current_poll, submissions, request.user.employee
                     )
             if poll_id is not None:
                 PollView.objects.update_or_create(
