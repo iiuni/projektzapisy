@@ -21,15 +21,15 @@ window.onload = function () {
   document
     .querySelector(".confirm-submit")
     .addEventListener("submit", function (evt) {
-      let changedFields = Object.keys(importantFields).filter(function (
-        fieldName
-      ) {
-        return importantFields[fieldName].value != old_instance[fieldName];
-      }).map(function (fld) {
-        return document
-          .querySelector(`[for=id_${fld}]`)
-          .childNodes[0].nodeValue.trim();
-      });
+      let changedFields = Object.keys(importantFields)
+        .filter(function (fieldName) {
+          return importantFields[fieldName].value != old_instance[fieldName];
+        })
+        .map(function (fld) {
+          return document
+            .querySelector(`[for=id_${fld}]`)
+            .childNodes[0].nodeValue.trim();
+        });
 
       changed_field_str = changedFields.join(", ");
 
