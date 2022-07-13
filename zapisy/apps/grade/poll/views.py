@@ -187,68 +187,55 @@ class PollResults(TemplateView):
         return number_of_submissions_for_category
 
     @staticmethod
-    def __get_unread(polls, user):
-        un_read = defaultdict(True.__bool__)
-        un_read_sing = defaultdict(True.__bool__)
+    def __are_read(polls, user):
+        is_read_category = defaultdict(True.__bool__)
+        is_read_poll = dict()
 
         last_views: Dict[Poll, datetime.datetime] = dict(
-                Viewed.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
+                PollView.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
             )
 
         last_modifieds = Submission.objects.filter(poll__in=polls)
         for poll in polls:
-            if poll:
                 if poll.id in last_views:
                     try:
                         last_modified = last_modifieds.filter(poll=poll).latest('modified')
-                        un_read_sing[poll] = last_views[poll.id] > last_modified.modified
-                        un_read[poll.category] = un_read_sing[poll] and un_read[poll.category]
+                        is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
                     except Submission.DoesNotExist:
-                        un_read_sing[poll] = True
-                        un_read[poll.category] = un_read[poll.category]
+                        is_read_poll[poll] = True
                 else:
-                    val = True
-                    for sub in last_modifieds.filter(poll=poll):
-                        if sub.submitted:
-                            val = False
-                            break
-                    un_read_sing[poll] = val
-                    un_read[poll.category] = un_read_sing[poll] and un_read[poll.category]
+                    val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
+                    is_read_poll[poll] = val
 
-        return [un_read, un_read_sing]
+                is_read_category[poll.category] &= is_read_poll[poll]
+
+        return [is_read_category,is_read_poll]
 
     @staticmethod
-    def __get_unviewed(submissions, user):
-        objs = ViewedAnswer.objects.filter(submission__in=submissions, user=user)
-        viewed = dict()
-        updates = ""
-        beg = True
-        for submission in submissions:
-            if 'schema' in submission.answers:
-                for entry in submission.answers['schema']:
-                    if entry['type'] == 'textarea':
-                        if 'modified' in entry:
-                            try:
-                                last = objs.filter(submission=submission, question=entry['question']).latest('time')
-                                viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) < last.time
-                            except ViewedAnswer.DoesNotExist:
-                                viewed[entry['answer']] = False
-                            if not beg:
-                                updates += ", "
-                            updates += str((user.id, submission.id, entry['question'],
-                                            datetime.datetime.now().isoformat()))
-                            beg = False
-                        else:
-                            viewed[entry['answer']] = True
-        if updates:
-            cursor = connection.cursor()
-            cursor.execute(
-              "INSERT INTO poll_viewedanswer (user_id, submission_id, question, time) VALUES " +
-              updates +
-              " ON CONFLICT ON CONSTRAINT unique_uqs_combination DO UPDATE SET time = NOW();")
-            cursor.close()
-
-        return viewed
+    def __are_viewed_answers(submissions, user):
+        if submissions:
+            try:
+                last = PollView.objects.get(user=user, poll=submissions[0].poll)
+            except PollView.DoesNotExist:
+                last = None
+            viewed = dict()
+            time = datetime.datetime.now()
+            updates = []
+            to_update = []
+            updates3 = ""
+            beg = True
+            for submission in submissions:
+                if 'schema' in submission.answers:
+                    for entry in submission.answers['schema']:
+                        if entry['type'] == 'textarea':
+                            if 'modified' in entry:
+                                if last:
+                                    viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) <  last.time  
+                                else:
+                                    viewed[entry['answer']] = False                  
+                            else:
+                                viewed[entry['answer']] = True        
+            return viewed
 
     @staticmethod
     def __get_processed_results(submissions):
@@ -271,7 +258,7 @@ class PollResults(TemplateView):
 
         return poll_results
 
-    def get(self, request, semester_id=None, poll_id=None, submission_id=None):
+    def get(self, request, semester_id=None, poll_id=None):
         """The main logic of passing data to the template presenting the results of the poll.
 
         :param semester_id: if given, fetches polls from requested semester.
@@ -305,17 +292,23 @@ class PollResults(TemplateView):
                     request, "Nie masz uprawnień do wyświetlenia tej ankiety."
                 )
                 return redirect('grade-poll-results', semester_id=semester_id)
-            else:
-                Viewed.objects.update_or_create(
-                        poll=current_poll, user=request.user.employee,
-                        defaults={'time': datetime.datetime.now()},
-                )
         else:
             submissions = []
 
         semesters = Semester.objects.all()
 
         if request.user.is_superuser or request.user.employee:
+            viewed = self.__are_viewed_answers(
+                        submissions, request.user.employee
+                    )
+            if poll_id is not None:     
+                PollView.objects.update_or_create(
+                        poll=current_poll,user=request.user.employee,
+                        defaults={'time': datetime.datetime.now()},
+                )
+            reads = self.__are_read(
+                        available_polls, request.user.employee
+                    )
             return render(
                 request,
                 self.template_name,
@@ -332,12 +325,8 @@ class PollResults(TemplateView):
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
-                    'viewed': self.__get_unviewed(
-                        submissions, request.user.employee
-                    ),
-                    'read': self.__get_unread(
-                        available_polls, request.user.employee
-                    ),
+                    'viewed': viewed,
+                    'read': reads,
                     'iterator': itertools.count(),
                 },
             )
