@@ -21,23 +21,11 @@ window.onload = function () {
   document
     .querySelector(".confirm-submit")
     .addEventListener("submit", function (evt) {
-      let changedFields = [];
-
-      for (const fieldName in importantFields) {
-        if (importantFields[fieldName].value != old_instance[fieldName]) {
-          let label;
-          if (importantFields[fieldName].labels.length > 0) {
-            label = importantFields[fieldName].labels[0].innerText;
-          } else {
-            label = document.querySelector('[for="id_description"]').innerText;
-          }
-          if (label[label.length - 1] == "*") {
-            label = label.slice(0, -1);
-          }
-          changedFields.push(label);
-        }
-      }
-
+      let changedFields = Object.keys(importantFields).filter(function (
+        fieldName
+      ) {
+        return importantFields[fieldName].value != old_instance[fieldName];
+      });
       changed_field_str = changedFields.join(", ");
       if (changedFields.length > 1) {
         return (
