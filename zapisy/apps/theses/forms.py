@@ -122,13 +122,13 @@ class EditThesisForm(ThesisFormBase):
     def __init__(self, user, *args, **kwargs):
         super(EditThesisForm, self).__init__(user, *args, **kwargs)
 
-        self.old_instance = copy(self.instance)
+        self.status = self.instance.status
 
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
-        status = self.old_instance.status
+        status = self.status
 
         if len(set(self.changed_data).intersection([
                 'title', 'supporting_advisor', 'kind',
