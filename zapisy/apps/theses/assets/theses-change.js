@@ -30,9 +30,10 @@ window.onload = function () {
       changed_field_str = changedFields.join(", ");
 
       if (changedFields.length > 0) {
-        let pole = changedFields.length == 1 ? "pole" : "pola";
         let msg =
-          `Zmieniono ${pole}: ${changed_field_str}.\n` +
+          `Zmieniono ${
+            changedFields.length == 1 ? "pole" : "pola"
+          }: ${changed_field_str}.\n` +
           `Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji. ` +
           `Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?`;
 
