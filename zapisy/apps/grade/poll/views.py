@@ -218,7 +218,8 @@ class PollResults(TemplateView):
                 last = None
             viewed = dict()
             for submission in submissions:
-                if 'schema' in submission.answers:
+                if 'schema' not in submission.answers:
+                    continue
                     for entry in submission.answers['schema']:
                         if entry['type'] == 'textarea':
                             if 'modified' in entry:
