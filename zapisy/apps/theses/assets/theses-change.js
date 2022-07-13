@@ -25,9 +25,9 @@ window.onload = function () {
         .filter(function (fieldName) {
           return importantFields[fieldName].value != old_instance[fieldName];
         })
-        .map(function (fld) {
+        .map(function (fieldName) {
           return document
-            .querySelector(`[for=id_${fld}]`)
+            .querySelector(`[for=id_${fieldName}]`)
             .childNodes[0].nodeValue.trim();
         });
 
