@@ -399,7 +399,7 @@ class Submission(models.Model):
 
 class PollView(models.Model):
     """Represents the last time employee viewed poll."""
-    user = models.ForeignKey(EmployeeModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(Employee, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     time = models.DateTimeField()
 
