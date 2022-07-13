@@ -196,19 +196,18 @@ class PollResults(TemplateView):
 
         last_modifieds = Submission.objects.filter(poll__in=polls)
         for poll in polls:
-          if poll.id in last_views:
-            try:
-              last_modified = last_modifieds.filter(poll=poll).latest('modified')
-              is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
-            except Submission.DoesNotExist:
-              is_read_poll[poll] = True
-          else:
-            val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
-            is_read_poll[poll] = val
+            if poll.id in last_views:
+                try:
+                    last_modified = last_modifieds.filter(poll=poll).latest('modified')
+                    is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
+                except Submission.DoesNotExist:
+                    is_read_poll[poll] = True
+            else:
+                val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
+                is_read_poll[poll] = val
+            is_read_category[poll.category] &= is_read_poll[poll]
 
-          is_read_category[poll.category] &= is_read_poll[poll]
-
-        return [is_read_category,is_read_poll]
+        return [is_read_category, is_read_poll]
 
     @staticmethod
     def __are_viewed_answers(submissions, user):
@@ -297,7 +296,7 @@ class PollResults(TemplateView):
                     )
             if poll_id is not None:
                 PollView.objects.update_or_create(
-                        poll=current_poll,user=request.user.employee, 
+                        poll=current_poll, user=request.user.employee,
                         defaults={'time': datetime.datetime.now()},
                 )
             reads = self.__are_read(
