@@ -30,12 +30,11 @@ window.onload = function () {
       changed_field_str = changedFields.join(", ");
 
       if (changedFields.length > 0) {
-        let msg = `Zmieniono pola: ${changed_field_str}.\n
-        Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji.\n" +
-        "Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?`;
-        if (changedFields.length == 1) {
-          msg = msg.substring(0, 13) + "e" + msg.substring(13 + 1);
-        }
+        let pole = changedFields.length == 1 ? "pole" : "pola";
+        let msg =
+          `Zmieniono ${pole}: ${changed_field_str}.\n` +
+          `Zapisanie zmian spowoduje ponowne przesłanie pracy do komisji. ` +
+          `Czy na pewno chcesz zapisać zmiany w pracy dyplomowej?`;
 
         return confirm(msg) || evt.preventDefault();
       }
