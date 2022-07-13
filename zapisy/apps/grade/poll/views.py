@@ -8,7 +8,6 @@ from typing import Dict, List
 import dateutil.parser
 
 from django.contrib import messages
-from django.db import connection
 from django.shortcuts import redirect, render, reverse
 from django.views.generic import TemplateView, UpdateView, View
 
@@ -197,17 +196,17 @@ class PollResults(TemplateView):
 
         last_modifieds = Submission.objects.filter(poll__in=polls)
         for poll in polls:
-                if poll.id in last_views:
-                    try:
-                        last_modified = last_modifieds.filter(poll=poll).latest('modified')
-                        is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
-                    except Submission.DoesNotExist:
-                        is_read_poll[poll] = True
-                else:
-                    val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
-                    is_read_poll[poll] = val
+          if poll.id in last_views:
+            try:
+              last_modified = last_modifieds.filter(poll=poll).latest('modified')
+              is_read_poll[poll] = (last_views[poll.id] > last_modified.modified)
+            except Submission.DoesNotExist:
+              is_read_poll[poll] = True
+          else:
+            val = all([not sub.submitted for sub in last_modifieds.filter(poll=poll)])
+            is_read_poll[poll] = val
 
-                is_read_category[poll.category] &= is_read_poll[poll]
+          is_read_category[poll.category] &= is_read_poll[poll]
 
         return [is_read_category,is_read_poll]
 
@@ -219,22 +218,17 @@ class PollResults(TemplateView):
             except PollView.DoesNotExist:
                 last = None
             viewed = dict()
-            time = datetime.datetime.now()
-            updates = []
-            to_update = []
-            updates3 = ""
-            beg = True
             for submission in submissions:
                 if 'schema' in submission.answers:
                     for entry in submission.answers['schema']:
                         if entry['type'] == 'textarea':
                             if 'modified' in entry:
                                 if last:
-                                    viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) <  last.time  
+                                    viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) < last.time
                                 else:
-                                    viewed[entry['answer']] = False                  
+                                    viewed[entry['answer']] = False
                             else:
-                                viewed[entry['answer']] = True        
+                                viewed[entry['answer']] = True
             return viewed
 
     @staticmethod
@@ -301,9 +295,9 @@ class PollResults(TemplateView):
             viewed = self.__are_viewed_answers(
                         submissions, request.user.employee
                     )
-            if poll_id is not None:     
+            if poll_id is not None:
                 PollView.objects.update_or_create(
-                        poll=current_poll,user=request.user.employee,
+                        poll=current_poll,user=request.user.employee, 
                         defaults={'time': datetime.datetime.now()},
                 )
             reads = self.__are_read(
