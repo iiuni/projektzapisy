@@ -26,9 +26,11 @@ window.onload = function () {
       ) {
         return importantFields[fieldName].value != old_instance[fieldName];
       });
-      
+
       changedFields.map(function (fld) {
-        return document.querySelector(`[for=id_${fld}]`).childNodes[0].nodeValue.trim();
+        return document
+          .querySelector(`[for=id_${fld}]`)
+          .childNodes[0].nodeValue.trim();
       });
 
       changed_field_str = changedFields.join(", ");
