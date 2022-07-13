@@ -229,7 +229,7 @@ class PollResults(TemplateView):
                                 else:
                                     viewed[entry['answer']] = False
                             else:
-                                viewed[entry['answer']] = = submission.modified < last.time
+                                viewed[entry['answer']] = submission.modified < last.time
             return viewed
 
     @staticmethod
