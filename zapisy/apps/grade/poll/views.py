@@ -194,11 +194,10 @@ class PollResults(TemplateView):
                 PollView.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
             )
 
-        last_modifieds: Dict[Poll, datetime.datetime] = dict(
-            Submission.objects.filter(poll__in=polls,
-                submitted=True).order_by('poll',
-                    'modified').distinct('poll').values_list("poll", "modified")
-        )
+        last_modifieds: Dict[Poll, datetime.datetime] = dict(Submission.objects.filter(poll__in=polls,
+                                                                submitted=True).order_by('poll', 'modified'
+                                                                ).distinct('poll').values_list('poll', 'modified'
+                                                                ))
         for poll in polls:
             if poll.id in last_views:
                 if poll.id in last_modifieds:
