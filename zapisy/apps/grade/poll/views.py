@@ -199,13 +199,7 @@ class PollResults(TemplateView):
                                                                 ).distinct('poll').values_list('poll', 'modified'
                                                                 ))
         for poll in polls:
-            if poll.id in last_views:
-                if poll.id in last_modifieds:
-                    is_read_poll[poll] = (last_views[poll.id] > last_modifieds[poll.id])
-                else:
-                    is_read_poll[poll] = True
-            else:
-                is_read_poll[poll] = poll.id not in last_modifieds
+            is_read_poll[poll] = poll.id not in last_modifieds or (poll.id in last_views and last_views[poll.id] > last_modifieds[poll.id])
             is_read_category[poll.category] &= is_read_poll[poll]
 
         return [is_read_category, is_read_poll]
