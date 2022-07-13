@@ -14,7 +14,7 @@ from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
-from apps.grade.poll.models import Poll, Submission, Viewed, ViewedAnswer
+from apps.grade.poll.models import Poll, Submission, PollView
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
