@@ -34,17 +34,14 @@ window.onload = function () {
       });
 
       changed_field_str = changedFields.join(", ");
-      if (changedFields.length > 1) {
-        return (
-          confirm(`Zmieniono pola: ${changed_field_str}.\n${confirm_msg}`) ||
-          evt.preventDefault()
-        );
-      }
-      if (changedFields.length == 1) {
-        return (
-          confirm(`Zmieniono pole: ${changed_field_str}.\n${confirm_msg}`) ||
-          evt.preventDefault()
-        );
+
+      if (changedFields.length > 0) {
+        let msg = `Zmieniono pola: ${changed_field_str}.\n${confirm_msg}`;
+        if (changedFields.length == 1) {
+          msg = msg.substring(0, 13) + "e" + msg.substring(13 + 1);
+        }
+
+        return confirm(msg) || evt.preventDefault();
       }
     });
 
