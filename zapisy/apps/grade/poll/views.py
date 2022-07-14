@@ -231,13 +231,12 @@ class PollResults(TemplateView):
                     choices = entry['choices']
 
                 if entry['type'] == 'textarea':
-                    if 'modified' in entry:
-                        if last_time:
-                            viewed = dateutil.parser.isoparse(entry['modified']) < last_time
-                        else:
-                            viewed = False
+                    if not last_time:
+                        viewed = False
+                    elif 'modified' in entry:
+                        viewed = dateutil.parser.isoparse(entry['modified']) < last_time
                     else:
-                        viewed = last_time and submission.modified < last_time
+                        viewed = submission.modified < last_time
 
                 poll_results.add_entry(
                     question=entry['question'],
