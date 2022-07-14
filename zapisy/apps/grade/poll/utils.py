@@ -139,17 +139,20 @@ class PollSummarizedResultsEntry:
         """
         if not answer:
             return
-        if self.field_type == 'radio' and answer in self._choices:
-            choice_index = self._choices.index(answer)
-            self._choices_occurences[choice_index] += 1
+        if self.field_type == 'radio':
+            try:
+                choice_index = self._choices.index(a)
+                self._choices_occurences[choice_index] += 1
+            except ValueError:
+                return
         elif self.field_type == 'checkbox':
             # Multiple-choice question will have a list of selected answers.
             for a in answer:
                 try:
                     choice_index = self._choices.index(a)
+                    self._choices_occurences[choice_index] += 1
                 except ValueError:
                     continue
-                self._choices_occurences[choice_index] += 1
         else:
             self._answers.append(PollResultsAnswer(opinion=answer, viewed=viewed))
 
