@@ -105,10 +105,11 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, choices=None):
+    def __init__(self, question, field_type, choices=None, viewed=False):
         self.question = question
         self._answers = []
         self._choices = choices
+        self._viewed = viewed
         self._choices_occurences = [0] * len(choices) if choices else []
         self._components = None
         self.field_type = field_type
@@ -189,14 +190,15 @@ class PollSummarizedResults:
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
 
-    def add_entry(self, question, field_type, answer, choices=None):
+    def add_entry(self, question, field_type, answer, choices=None, viewed=False):
         if question in self._questions:
             index = self._questions.index(question)
             existing_entry = self._entries[index]
             existing_entry.add_answer(answer)
         else:
             new_entry = PollSummarizedResultsEntry(
-                question=question, field_type=field_type, choices=choices
+                question=question, field_type=field_type,
+                choices=choices, viewed=viewed
             )
             new_entry.add_answer(answer)
             self._entries.append(new_entry)
