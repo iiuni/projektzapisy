@@ -282,9 +282,9 @@ class PollResults(TemplateView):
                 messages.error(
                     request, "Nie masz uprawnień do wyświetlenia tej ankiety."
                 )
-                return redirect('grade-poll-results', semester_id=semester_id)     
+                return redirect('grade-poll-results', semester_id=semester_id)
             submissions = Submission.objects.filter(poll=poll_id,
-                                                    submitted=True).order_by('modified')         
+                                                    submitted=True).order_by('modified')
         else:
             submissions = []
 
@@ -294,9 +294,9 @@ class PollResults(TemplateView):
                     current_poll, request.user.employee, submissions
                 )
 
-        if poll_id is not None:     
+        if poll_id is not None:
             PollView.objects.update_or_create(
-                    poll=current_poll,user=request.user.employee,
+                    poll=current_poll, user=request.user.employee,
                     defaults={'time': datetime.datetime.now()},
             )
 
@@ -325,6 +325,7 @@ class PollResults(TemplateView):
                 'iterator': itertools.count(),
             },
         )
+
 
 class GradeDetails(TemplateView):
     """Displays details and rules about how the grade is set up."""
