@@ -36,17 +36,11 @@
         {% if entry.field_type == "radio" or entry.field_type == "checkbox" %}
           {{ entry.plot.1 | safe }}
           {{ entry.plot.0 | safe }}
-          {% else %}
-            {% for answer in entry.answers %}
-              {% if answer.opinion %}
-                {% if answer.opinion != "-" %}
-                  {% if answer.viewed %}
-                    <div class="{% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2">{{ answer.opinion }}</div>
-                  {%else%}
-                    <div class="border border-danger pb-2 pt-2 p-1">{{ answer.opinion }}</div>
-                  {% endif %}
-                {% endif %}
-              {% endif %}
+        {% else %}
+          {% for answer in entry.answers %}
+            {% if answer.opinion and answer.opinion != "-" %}
+              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2 p-1">{{ answer.opinion }}</div>
+            {% endif %}
           {% endfor %}
         {% endif %}
       </div>
@@ -80,7 +74,7 @@
       {% for group_name, entries in polls.items %}
       {% with index=iterator|next %}
       <div class="card">
-        <div class="card-header {% if read_cat|lookup:group_name %} {% else %} bg-danger text-white {% endif %}" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
+        <div class="card-header {% if not read_cat|lookup:group_name %} bg-danger text-white {% endif %}" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
           data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
             <div class="d-flex w-100 justify-content-between">
             <span>{{ group_name }}</span>
@@ -103,14 +97,10 @@
           </a>
           {% else %}
           <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
+            class="list-group-item {% if not read_poll|lookup:entry%} list-group-item-danger {% endif %} list-group-item-action">
+            <div class=" d-flex w-100 justify-content-between">
               <span> 
-                {% if read_poll|lookup:entry%}
-                  {{ entry.subcategory }}
-                {% else %}
-                  <strong> {{ entry.subcategory }}</strong>
-                {% endif %}
+                {{ entry.subcategory }}
               </span>
               <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
