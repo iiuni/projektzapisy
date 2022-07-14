@@ -213,12 +213,13 @@ class PollResults(TemplateView):
             display_answers_count=True, display_plots=True
         )
 
-        if submissions:
-            try:
-                last = PollView.objects.get(user=user, poll=current_poll)
-            except PollView.DoesNotExist:
-                last = None
-            viewed = dict()
+        if not submissions:
+            return poll_results
+
+        try:
+            last_time = PollView.objects.get(user=user, poll=current_poll).time
+        except PollView.DoesNotExist:
+            last_time = None
 
         for submission in submissions:
             if 'schema' not in submission.answers:
@@ -231,12 +232,12 @@ class PollResults(TemplateView):
 
                 if entry['type'] == 'textarea':
                     if 'modified' in entry:
-                        if last:
-                            viewed = dateutil.parser.isoparse(entry['modified']) < last.time
+                        if last_time:
+                            viewed = dateutil.parser.isoparse(entry['modified']) < last_time
                         else:
                             viewed = False
                     else:
-                        viewed = last and submission.modified < last.time
+                        viewed = last and submission.modified < last_time
 
                 poll_results.add_entry(
                     question=entry['question'],
