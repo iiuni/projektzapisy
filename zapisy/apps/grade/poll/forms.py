@@ -49,7 +49,7 @@ class SubmissionEntryForm(forms.ModelForm):
             for index, field in enumerate(self.jsonfields):
                 field_name = f"field_{index}"
                 updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
-                if updated_answers["schema"][index]["type"] == "textarea":
+                if updated_answers["schema"][index]["type"] not in ["radio", "checkbox"]:
                     if self.initial.get(field_name) != updated_answers["schema"][index]["answer"]:
                         updated_answers["schema"][index]["modified"] = datetime.datetime.now().isoformat()
             self.instance.submitted = True
