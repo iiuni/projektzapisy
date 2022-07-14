@@ -141,7 +141,7 @@ class PollSummarizedResultsEntry:
             return
         if self.field_type == 'radio':
             try:
-                choice_index = self._choices.index(a)
+                choice_index = self._choices.index(answer)
                 self._choices_occurences[choice_index] += 1
             except ValueError:
                 return
