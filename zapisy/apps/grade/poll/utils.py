@@ -98,6 +98,7 @@ def group(entries: List[Poll], sort=False) -> dict:
 
     return dict(output)
 
+
 class PollResultsAnswer:
     """A single answer."""
     def __init__(self, opinion, viewed=True):
