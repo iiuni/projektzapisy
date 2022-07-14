@@ -145,6 +145,7 @@ def view_thesis(request, id):
             'rejecter_accepted': rejecter_accepted,
             'rejecter_rejected': rejecter_rejected,
             'max_number_of_students': max_number_of_students,
+            'is_staff': request.user.is_staff
         })
 
 

@@ -34,15 +34,22 @@
                 </div>
             {% endif %}
             {% if can_edit_thesis %}
-                <div class="d-inline-block mb-3 ml-1">
-                    <a class="btn btn-sm btn-outline-info" href="{% url 'theses:edit_thesis' thesis.id %}">
-                        {% if save_and_verify %}
-                            Edytuj i prześlij do komisji
-                        {% else %}
-                            Edytuj
-                        {% endif %}
-                    </a>
-                </div>
+            <div class="d-inline-block mb-3 ml-1">
+                <a class="btn btn-sm btn-outline-info" href="{% url 'theses:edit_thesis' thesis.id %}">
+                    {% if save_and_verify %}
+                        Edytuj i prześlij do komisji
+                    {% else %}
+                        Edytuj
+                    {% endif %}
+                </a>
+            </div>
+            {% endif %}
+            {% if is_staff %}
+            <div class="d-inline-block mb-3 ml-1">
+                <a class="btn btn-sm badge-primary" href="{% url 'admin:theses_thesis_change' thesis.id %}">
+                    Admin
+                </a>
+            </div>
             {% endif %}
         </div>
     </div>
