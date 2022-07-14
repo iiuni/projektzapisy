@@ -194,12 +194,12 @@ class PollResults(TemplateView):
                 PollView.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
             )
 
-        last_modifieds = dict(Submission.objects.filter(poll__in=polls,
-                                                        submitted=True
-                                                        ).order_by('poll',
-                                                                    'modified').distinct('poll'
-                                                                                        ).values_list('poll',
-                                                                                                        'modified'))
+        last_modifieds = dict(
+            Submission.objects.filter(poll__in=polls, submitted=True)
+            .order_by("poll", "modified")
+            .distinct("poll")
+            .values_list("poll", "modified")
+        )
         for poll in polls:
             is_read_poll[poll] = (poll.id not in last_modifieds or
                                     (poll.id in last_views and last_views[poll.id] > last_modifieds[poll.id]))
