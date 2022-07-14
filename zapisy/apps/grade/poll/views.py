@@ -237,7 +237,7 @@ class PollResults(TemplateView):
                         else:
                             viewed = False
                     else:
-                        viewed = last and submission.modified < last_time
+                        viewed = last_time and submission.modified < last_time
 
                 poll_results.add_entry(
                     question=entry['question'],
