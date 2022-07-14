@@ -229,7 +229,7 @@ class PollResults(TemplateView):
                     choices = entry['choices']
                 else:
                     choices = None
-                
+
                 if entry['type'] in ["radio", "checkbox"]:
                     viewed = None
                 elif not last_time:
