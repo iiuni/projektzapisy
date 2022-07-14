@@ -28,11 +28,23 @@ const SimpleSummaryProps = Vue.extend({
 });
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
+  private opened: Array<number> = [];
   public GetNameDay(day: DayOfWeek) {
     return nameDay(day).toLowerCase();
   }
   public objectLength(o: Object) {
     return Object.keys(o).length;
+  }
+  public toggleView(cid: number) {
+    let index = this.opened.indexOf(cid);
+    if (index > -1) {
+      this.opened.splice(index, 1);
+    } else {
+      this.opened.push(cid);
+    }
+  }
+  public isViewOpened(cid: number) {
+    return this.opened.includes(cid);
   }
 }
 </script>
@@ -49,8 +61,8 @@ export default class SimpleSummary extends SimpleSummaryProps {
     </tbody>
     <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
       <tr class="courseHeader">
-        <td class="name" scope="col">
-          <a :href="item.url">
+        <td @click="toggleView(item.id)" class="name" scope="col">
+          <a @click="toggleView(item.id)" :href="item.url">
             {{ item.name }}
           </a>
         </td>
@@ -64,7 +76,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
         </td>
         <td v-else rowspan="2" class="ects" align="right">-</td>
       </tr>
-      <tr class="courseDetails">
+      <tr v-if="isViewOpened(item.id)" class="courseDetails">
         <td class="courseDetails">
           <ul v-for="(group, gid) in groups" :value="group" :key="gid">
             <li v-if="groupsCondition(group, item)">
