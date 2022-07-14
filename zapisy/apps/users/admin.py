@@ -1,8 +1,10 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
 
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.records.models.opening_times import GroupOpeningTimes, T0Times
 from apps.users.models import Employee, Program, Student
 
 
@@ -36,6 +38,31 @@ class StudentAdmin(admin.ModelAdmin):
     def get_queryset(self, request) -> QuerySet:
         qs = super(StudentAdmin, self).get_queryset(request)
         return qs.select_related('program', 'user')
+
+    actions = ['refresh_opening_times']
+
+    def refresh_opening_times(self, request, queryset):
+        """Refreshes opening times for selected students."""
+        semester = Semester.get_upcoming_semester(strict=True)
+        if semester is None:
+            self.message_user(
+                    request, "Nie znaleziono semestru do obliczenia czasów.",
+                    level=messages.ERROR)
+            return
+        if semester.records_opening is None:
+            self.message_user(
+                    request, "Proszę uzupelnić szczegóły odpowiedniego semestru.",
+                    level=messages.ERROR)
+            return
+
+        T0Times.populate_t0(semester, queryset)
+        GroupOpeningTimes.populate_opening_times(semester, students=queryset)
+        self.message_user(
+                request,
+                "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
+                level=messages.SUCCESS)
+
+    refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
 
 class EmployeeAdmin(admin.ModelAdmin):

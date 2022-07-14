@@ -210,12 +210,15 @@ class Semester(models.Model):
             raise
 
     @staticmethod
-    def get_upcoming_semester() -> Optional['Semester']:
+    def get_upcoming_semester(strict: bool = False) -> Optional['Semester']:
         """Returns either upcomming or current semester or None.
 
         Upcoming semester is the one, enrolment into which has already
-        been scheduled. It may be useful when students want to plan their
-        timetables.
+        been scheduled but has not ended. It may be useful when students
+        want to plan their timetables.
+        If there is no semester for which enrolment has been scheduled and has not
+        ended, the behaviour depends on the optional argument: if it is set to True,
+        None is returned; otherwise current_semester is returned.
 
         Raises:
             MultipleObjectsReturned: Wrong semesters' dates
@@ -224,6 +227,8 @@ class Semester(models.Model):
             return Semester.objects.filter(
                 visible=True, records_closing__gte=datetime.now()).earliest('records_closing')
         except Semester.DoesNotExist:
+            if strict:
+                return None
             return Semester.get_current_semester()
 
     @staticmethod
