@@ -3,23 +3,15 @@ window.onload = function () {
     document.getElementById("old_instance").textContent
   );
 
-  const importantFields = {
-    title: document.querySelector('[name="title"]'),
-    supporting_advisor: document.querySelector('[name="supporting_advisor"]'),
-    kind: document.querySelector('[name="kind"]'),
-    max_number_of_students: document.querySelector(
-      '[name="max_number_of_students"]'
-    ),
-    supporting_advisor: document.querySelector('[name="supporting_advisor"]'),
-    description: document.querySelector('textarea[name="description"]'),
-  };
-
   document
     .querySelector(".confirm-submit")
     .addEventListener("submit", function (evt) {
-      let changedFields = Object.keys(importantFields)
+      let changedFields = Object.keys(old_instance)
         .filter(function (fieldName) {
-          return importantFields[fieldName].value != old_instance[fieldName];
+          return (
+            document.querySelector(`.confirm-submit [name=${fieldName}]`)
+              .value != old_instance[fieldName]
+          );
         })
         .map(function (fieldName) {
           return document
@@ -44,8 +36,15 @@ window.onload = function () {
   document.getElementById("resetbtn").addEventListener(
     "click",
     function () {
-      for (const fieldName in importantFields) {
-        importantFields[fieldName].value = old_instance[fieldName];
+      const Fields = Object.keys(old_instance);
+      for (const fieldName in Fields) {
+        if (Fields[fieldName] == "description") {
+          document.querySelector(`textarea[name=${Fields[fieldName]}]`).value =
+            old_instance[Fields[fieldName]];
+        } else {
+          document.querySelector(`[name=${Fields[fieldName]}]`).value =
+            old_instance[Fields[fieldName]];
+        }
       }
     },
     false
