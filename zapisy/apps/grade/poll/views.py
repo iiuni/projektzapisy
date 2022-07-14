@@ -191,7 +191,7 @@ class PollResults(TemplateView):
         is_read_poll = dict()
 
         last_views: Dict[Poll, datetime.datetime] = dict(
-                PollView.objects.filter(user=user, poll__in=polls).values_list("poll", "time")
+                PollView.objects.filter(user=user, poll__in=polls).values_list('poll', 'time')
             )
 
         last_modifieds = dict(
