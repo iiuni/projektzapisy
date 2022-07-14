@@ -204,6 +204,7 @@ class PollResults(TemplateView):
             is_read_poll[poll] = poll.id not in last_modifieds or (
                 poll.id in last_views and last_views[poll.id] > last_modifieds[poll.id]
             )
+            is_read_category[poll.category] &= is_read_poll[poll]
         return [is_read_category, is_read_poll]
 
     @staticmethod
