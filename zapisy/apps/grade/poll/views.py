@@ -227,15 +227,17 @@ class PollResults(TemplateView):
             for entry in submission.answers['schema']:
                 if 'choices' in entry:
                     choices = entry['choices']
-                    viewed = None
                 else:
                     choices = None
-                    if not last_time:
-                        viewed = False
-                    elif 'modified' in entry:
-                        viewed = dateutil.parser.isoparse(entry['modified']) < last_time
-                    else:
-                        viewed = submission.modified < last_time
+                
+                if entry['type'] in ["radio", "checkbox"]:
+                    viewed = None
+                elif not last_time:
+                    viewed = False
+                elif 'modified' in entry:
+                    viewed = dateutil.parser.isoparse(entry['modified']) < last_time
+                else:
+                    viewed = submission.modified < last_time
 
                 poll_results.add_entry(
                     question=entry['question'],
