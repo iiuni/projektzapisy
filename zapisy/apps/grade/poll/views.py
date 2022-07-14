@@ -226,7 +226,7 @@ class PollResults(TemplateView):
                 continue
             for entry in submission.answers['schema']:
                 choices = None
-                viewed = False
+                viewed = None
                 if 'choices' in entry:
                     choices = entry['choices']
 
@@ -254,10 +254,14 @@ class PollResults(TemplateView):
         :param semester_id: if given, fetches polls from requested semester.
         :param poll_id: if given, displays summary for a given poll.
         """
+        if not request.user.is_superuser and not request.user.employee:
+            messages.error(request, "Nie masz uprawnień do wyświetlania wyników oceny.")
+            return redirect('grade-main')
+
         is_grade_active = check_grade_status()
-        if semester_id is None:
-            semester_id = Semester.get_current_semester().id
         current_semester = Semester.get_current_semester()
+        if semester_id is None:
+            semester_id = current_semester.id
 
         try:
             selected_semester = Semester.objects.filter(pk=semester_id).get()
@@ -272,57 +276,55 @@ class PollResults(TemplateView):
         )
         current_poll = Poll.objects.filter(id=poll_id).first()
         if poll_id is not None:
-            submissions = Submission.objects.filter(poll=poll_id,
-                                                    submitted=True).order_by('modified')
             if current_poll not in available_polls:
                 # User does not have permission to view details about
                 # the selected poll
                 messages.error(
                     request, "Nie masz uprawnień do wyświetlenia tej ankiety."
                 )
-                return redirect('grade-poll-results', semester_id=semester_id)
+                return redirect('grade-poll-results', semester_id=semester_id)     
+            submissions = Submission.objects.filter(poll=poll_id,
+                                                    submitted=True).order_by('modified')         
         else:
             submissions = []
 
         semesters = Semester.objects.all()
 
-        if request.user.is_superuser or request.user.employee:
-            results = self.__get_processed_results(
-                        current_poll, request.user.employee, submissions
-                    )
-            if poll_id is not None:
-                PollView.objects.update_or_create(
-                        poll=current_poll, user=request.user.employee,
-                        defaults={'time': datetime.datetime.now()},
+        results = self.__get_processed_results(
+                    current_poll, request.user.employee, submissions
                 )
-            reads = self.__are_read(
-                        available_polls, request.user.employee
-                    )
-            return render(
-                request,
-                self.template_name,
-                {
-                    'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
-                    'results': results,
-                    'results_iterator': itertools.count(),
-                    'semesters': semesters,
-                    'current_semester': current_semester,
-                    'current_poll_id': poll_id,
-                    'current_poll': current_poll,
-                    'selected_semester': selected_semester,
-                    'submissions_count': self.__get_counter_for_categories(
-                        available_polls
-                    ),
-                    'read_cat': reads[0],
-                    'read_poll': reads[1],
-                    'iterator': itertools.count(),
-                },
+
+        if poll_id is not None:     
+            PollView.objects.update_or_create(
+                    poll=current_poll,user=request.user.employee,
+                    defaults={'time': datetime.datetime.now()},
             )
 
-        messages.error(request, "Nie masz uprawnień do wyświetlania wyników oceny.")
-        return redirect('grade-main')
+        reads = self.__are_read(
+                available_polls, request.user.employee
+            )
 
+        return render(
+            request,
+            self.template_name,
+            {
+                'is_grade_active': is_grade_active,
+                'polls': group(entries=available_polls, sort=True),
+                'results': results,
+                'results_iterator': itertools.count(),
+                'semesters': semesters,
+                'current_semester': current_semester,
+                'current_poll_id': poll_id,
+                'current_poll': current_poll,
+                'selected_semester': selected_semester,
+                'submissions_count': self.__get_counter_for_categories(
+                    available_polls
+                ),
+                'read_cat': reads[0],
+                'read_poll': reads[1],
+                'iterator': itertools.count(),
+            },
+        )
 
 class GradeDetails(TemplateView):
     """Displays details and rules about how the grade is set up."""
