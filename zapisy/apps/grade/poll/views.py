@@ -300,7 +300,6 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
-
         reads = self.__are_read(
                 available_polls, request.user.employee
             )
