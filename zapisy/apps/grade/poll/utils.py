@@ -145,9 +145,10 @@ class PollSummarizedResultsEntry:
         elif self.field_type == 'checkbox':
             # Multiple-choice question will have a list of selected answers.
             for a in answer:
-                if a not in self._choices:
+                try:
+                    choice_index = self._choices.index(a)
+                except ValueError:
                     continue
-                choice_index = self._choices.index(a)
                 self._choices_occurences[choice_index] += 1
         else:
             self._answers.append(PollResultsAnswer(opinion=answer, viewed=viewed))
