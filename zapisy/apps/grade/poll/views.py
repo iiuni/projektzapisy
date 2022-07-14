@@ -262,7 +262,7 @@ class PollResults(TemplateView):
         if semester_id is None:
             semester_id = current_semester.id
             selected_semester = current_semester
-        else:    
+        else:
             try:
                 selected_semester = Semester.objects.get(pk=semester_id)
             except Semester.DoesNotExist:
@@ -288,7 +288,7 @@ class PollResults(TemplateView):
                     current_poll, request.user.employee, submissions
                 )
             PollView.objects.update_or_create(
-                poll=current_poll,user=request.user.employee,
+                poll=current_poll, user=request.user.employee,
                 defaults={'time': datetime.datetime.now()},
             )
         except Poll.DoesNotExist:
