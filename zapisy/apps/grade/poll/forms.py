@@ -36,7 +36,7 @@ class SubmissionEntryForm(forms.ModelForm):
                 field=field, active=self.is_grade_active
             )
 
-            self.fields[f"field_{index}"] = form_field
+            self.fields[f'field_{index}'] = form_field
 
     def save(self, commit=True):
         """Updates the submission.
@@ -47,11 +47,11 @@ class SubmissionEntryForm(forms.ModelForm):
         if self.is_grade_active:
             updated_answers = self.instance.answers
             for index, field in enumerate(self.jsonfields):
-                field_name = f"field_{index}"
-                updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
-                if updated_answers["schema"][index]["type"] not in ["radio", "checkbox"]:
-                    if self.initial.get(field_name) != updated_answers["schema"][index]["answer"]:
-                        updated_answers["schema"][index]["modified"] = datetime.datetime.now().isoformat()
+                field_name = f'field_{index}'
+                updated_answers['schema'][index]['answer'] = self.cleaned_data.get(field_name)
+                if updated_answers['schema'][index]['type'] not in ["radio", "checkbox"]:
+                    if self.initial.get(field_name) != updated_answers['schema'][index]['answer']:
+                        updated_answers['schema'][index]['modified'] = datetime.datetime.now().isoformat()
             self.instance.submitted = True
             self.instance.answers = updated_answers
 
@@ -68,33 +68,33 @@ class SubmissionEntryForm(forms.ModelForm):
         :param active: whether the field will be active or disabled.
         :returns: a Django Forms field.
         """
-        if field["type"] == "textarea":
+        if field['type'] == "textarea":
             form_field = forms.CharField(
-                widget=forms.Textarea, label=field["question"], required=False
+                widget=forms.Textarea, label=field['question'], required=False
             )
-        elif field["type"] == "radio" and "choices" in field:
-            attrs = {"disabled": "disabled"} if not active else {}
-            choices = tuple(zip(field["choices"], field["choices"]))
+        elif field['type'] == "radio" and 'choices' in field:
+            attrs = {'disabled': "disabled"} if not active else {}
+            choices = tuple(zip(field['choices'], field['choices']))
             form_field = forms.ChoiceField(
                 choices=choices,
-                label=field["question"],
+                label=field['question'],
                 widget=forms.RadioSelect(choices=choices, attrs=attrs),
                 required=False,
             )
-        elif field["type"] == "checkbox" and "choices" in field:
-            attrs = {"disabled": "disabled"} if not active else {}
-            choices = tuple(zip(field["choices"], field["choices"]))
+        elif field['type'] == "checkbox" and "choices" in field:
+            attrs = {'disabled': "disabled"} if not active else {}
+            choices = tuple(zip(field['choices'], field['choices']))
             form_field = forms.MultipleChoiceField(
                 choices=choices,
-                label=field["question"],
+                label=field['question'],
                 widget=forms.CheckboxSelectMultiple(choices=choices, attrs=attrs),
                 required=False,
             )
         else:
-            form_field = forms.CharField(label=field["question"], required=False)
+            form_field = forms.CharField(label=field['question'], required=False)
 
         if not active:
-            form_field.widget.attrs["readonly"] = True
+            form_field.widget.attrs['readonly'] = True
         return form_field
 
     class Meta:
