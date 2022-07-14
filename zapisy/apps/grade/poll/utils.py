@@ -101,7 +101,9 @@ def group(entries: List[Poll], sort=False) -> dict:
 
 class PollResultsAnswer:
     """A single answer."""
-    def __init__(self, opinion, viewed=True):
+    def __init__(self, opinion, viewed):
+        if viewed is None:
+            raise ValueError('PollResultsAnswer.viewed is boolean.')
         self.opinion = opinion
         self.viewed = viewed
 
@@ -112,7 +114,7 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, choices=None):
+    def __init__(self, question, field_type, choices):
         self.question = question
         self._answers = []
         self._choices = choices
@@ -203,7 +205,7 @@ class PollSummarizedResults:
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
 
-    def add_entry(self, question, field_type, answer, choices=None, viewed=True):
+    def add_entry(self, question, field_type, answer, choices, viewed):
         if question in self._questions:
             index = self._questions.index(question)
             existing_entry = self._entries[index]
