@@ -225,12 +225,11 @@ class PollResults(TemplateView):
             if 'schema' not in submission.answers:
                 continue
             for entry in submission.answers['schema']:
-                choices = None
-                viewed = None
                 if 'choices' in entry:
                     choices = entry['choices']
-
-                if entry['type'] not in ["radio", "checkbox"]:
+                    viewed = None
+                else:
+                    choices = None
                     if not last_time:
                         viewed = False
                     elif 'modified' in entry:
@@ -262,20 +261,20 @@ class PollResults(TemplateView):
         current_semester = Semester.get_current_semester()
         if semester_id is None:
             semester_id = current_semester.id
-
-        try:
-            selected_semester = Semester.objects.filter(pk=semester_id).get()
-        except Semester.DoesNotExist:
-            messages.error(
-                request, "Wybrany semestr nie istnieje."
-            )
-            return redirect('grade-main')
-
+            selected_semester = current_semester
+        else:    
+            try:
+                selected_semester = Semester.objects.get(pk=semester_id)
+            except Semester.DoesNotExist:
+                messages.error(
+                    request, "Wybrany semestr nie istnieje."
+                )
+                return redirect('grade-main')
         available_polls = Poll.get_all_polls_for_semester(
             user=request.user, semester=selected_semester
         )
-        current_poll = Poll.objects.filter(id=poll_id).first()
-        if poll_id is not None:
+        try:
+            current_poll = Poll.objects.get(id=poll_id)
             if current_poll not in available_polls:
                 # User does not have permission to view details about
                 # the selected poll
@@ -285,7 +284,16 @@ class PollResults(TemplateView):
                 return redirect('grade-poll-results', semester_id=semester_id)
             submissions = Submission.objects.filter(poll=poll_id,
                                                     submitted=True).order_by('modified')
-        else:
+            results = self.__get_processed_results(
+                    current_poll, request.user.employee, submissions
+                )
+            PollView.objects.update_or_create(
+                poll=current_poll,user=request.user.employee,
+                defaults={'time': datetime.datetime.now()},
+            )
+        except Poll.DoesNotExist:
+            results = []
+            current_poll = None
             submissions = []
 
         semesters = Semester.objects.all()
