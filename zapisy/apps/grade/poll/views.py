@@ -230,7 +230,7 @@ class PollResults(TemplateView):
                 if 'choices' in entry:
                     choices = entry['choices']
 
-                if entry['type'] == 'textarea':
+                if entry['type'] not in ["radio", "checkbox"]:
                     if not last_time:
                         viewed = False
                     elif 'modified' in entry:
