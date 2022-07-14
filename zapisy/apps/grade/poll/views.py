@@ -298,15 +298,6 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
-        results = self.__get_processed_results(
-                    current_poll, request.user.employee, submissions
-                )
-
-        if poll_id is not None:
-            PollView.objects.update_or_create(
-                    poll=current_poll, user=request.user.employee,
-                    defaults={'time': datetime.datetime.now()},
-            )
 
         reads = self.__are_read(
                 available_polls, request.user.employee
