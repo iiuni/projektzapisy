@@ -205,45 +205,43 @@ class PollResults(TemplateView):
         return [is_read_category, is_read_poll]
 
     @staticmethod
-    def __are_viewed_answers(current_poll, submissions, user):
+    def __get_processed_results(current_poll, user, submissions):
+        poll_results = PollSummarizedResults(
+            display_answers_count=True, display_plots=True
+        )
+
         if submissions:
             try:
                 last = PollView.objects.get(user=user, poll=current_poll)
             except PollView.DoesNotExist:
                 last = None
             viewed = dict()
-            for submission in submissions:
-                if 'schema' not in submission.answers:
-                    continue
-                    for entry in submission.answers['schema']:
-                        if entry['type'] == 'textarea':
-                            if 'modified' in entry:
-                                if last:
-                                    viewed[entry['answer']] = dateutil.parser.isoparse(entry['modified']) < last.time
-                                else:
-                                    viewed[entry['answer']] = False
-                            else:
-                                viewed[entry['answer']] = submission.modified < last.time
-            return viewed
-
-    @staticmethod
-    def __get_processed_results(submissions):
-        poll_results = PollSummarizedResults(
-            display_answers_count=True, display_plots=True
-        )
 
         for submission in submissions:
-            if 'schema' in submission.answers:
-                for entry in submission.answers['schema']:
-                    choices = None
-                    if 'choices' in entry:
-                        choices = entry['choices']
-                    poll_results.add_entry(
-                        question=entry['question'],
-                        field_type=entry['type'],
-                        answer=entry['answer'],
-                        choices=choices,
-                    )
+            if 'schema' not in submission.answers:
+                continue
+            for entry in submission.answers['schema']:
+                choices = None
+                viewed = False
+                if 'choices' in entry:
+                    choices = entry['choices']
+
+                if entry['type'] == 'textarea':
+                    if 'modified' in entry:
+                        if last:
+                            viewed = dateutil.parser.isoparse(entry['modified']) < last.time  
+                        else:
+                            viewed = False
+                    else:
+                        viewed = last and submission.modified < last.time
+
+                poll_results.add_entry(
+                    question=entry['question'],
+                    field_type=entry['type'],
+                    answer=entry['answer'],
+                    choices=choices,
+                    viewed=viewed
+                )
 
         return poll_results
 
@@ -286,8 +284,8 @@ class PollResults(TemplateView):
         semesters = Semester.objects.all()
 
         if request.user.is_superuser or request.user.employee:
-            viewed = self.__are_viewed_answers(
-                        current_poll, submissions, request.user.employee
+            results = self.__get_processed_results(
+                        current_poll, request.user.employee, submissions
                     )
             if poll_id is not None:
                 PollView.objects.update_or_create(
@@ -303,7 +301,7 @@ class PollResults(TemplateView):
                 {
                     'is_grade_active': is_grade_active,
                     'polls': group(entries=available_polls, sort=True),
-                    'results': self.__get_processed_results(submissions),
+                    'results': results,
                     'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
@@ -313,8 +311,8 @@ class PollResults(TemplateView):
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
-                    'viewed': viewed,
-                    'read': reads,
+                    'read_cat': reads[0],
+                    'read_poll': reads[1],
                     'iterator': itertools.count(),
                 },
             )
