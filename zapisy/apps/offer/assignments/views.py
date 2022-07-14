@@ -52,7 +52,7 @@ def plan_view(request):
         return render(request, 'assignments/view.html', {'year': year})
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
+                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -121,7 +121,7 @@ def assignments_wizard(request):
         assignments = []
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
+                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
         return render(request, 'assignments/view.html', {'year': year})
 
     courses = []
@@ -132,7 +132,7 @@ def assignments_wizard(request):
             picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
         except RefreshError as error:
             messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                           Błąd arkusza: {VOTING_RESULTS_SPREADSHEET_ID}<br>{error}""")
+                           Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}""")
             return render(request, 'assignments/view.html', {'year': year})
 
     for proposal in proposals:
@@ -181,7 +181,7 @@ def create_assignments_sheet(request):
         return redirect(reverse('assignments-wizard'))
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
+                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
         return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
@@ -278,7 +278,7 @@ def create_voting_sheet(request):
         sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Błąd arkusza: {VOTING_RESULTS_SPREADSHEET_ID}<br>{error}""")
+                       Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}""")
         return redirect(reverse('assignments-wizard'))
     update_voting_results_sheet(sheet, voting, years)
     return redirect(reverse('assignments-wizard')+'#step-1')
@@ -315,7 +315,7 @@ def generate_scheduler_file(request, semester, fmt):
         return redirect('assignments-wizard')
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Błąd arkusza: {CLASS_ASSIGNMENT_SPREADSHEET_ID}<br>{error}""")
+                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
         return redirect('assignments-wizard')
 
     content_teachers = [{
