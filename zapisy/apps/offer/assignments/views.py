@@ -292,8 +292,8 @@ def generate_scheduler_file(request, semester, fmt):
     assignments Google sheets.
 
     Args:
-        slug: represents semester, 'lato' for summer, 'zima' for winter.
-        format: format of requested file, either 'csv' or 'json'.
+        semester: represents semester, 'l' for summer, 'z' for winter.
+        fmt: format of requested file, either 'csv' or 'json'.
 
     Returns:
         File in the desired format in a response.
