@@ -39,7 +39,7 @@
         {% else %}
           {% for answer in entry.answers %}
             {% if answer.opinion and answer.opinion != "-" %}
-              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2 p-1">{{ answer.opinion }}</div>
+              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2">{{ answer.opinion }}</div>
             {% endif %}
           {% endfor %}
         {% endif %}
