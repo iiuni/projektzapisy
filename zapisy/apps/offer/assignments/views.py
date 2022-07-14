@@ -112,7 +112,6 @@ def assignments_wizard(request):
     The main logic of this function is devoted to suggesting which proposals
     should be picked.
     """
-    year = SystemState.get_current_state().year
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
         assignments = list(read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)))
@@ -122,7 +121,7 @@ def assignments_wizard(request):
     except RefreshError as error:
         messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
                        Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
-        return render(request, 'assignments/view.html', {'year': year})
+        assignments = []
 
     courses = []
     if assignments:
@@ -133,7 +132,7 @@ def assignments_wizard(request):
         except RefreshError as error:
             messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
                            Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}""")
-            return render(request, 'assignments/view.html', {'year': year})
+            picks = set()
 
     for proposal in proposals:
         checked = proposal.pk in picks
