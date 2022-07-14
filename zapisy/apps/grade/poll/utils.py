@@ -98,6 +98,12 @@ def group(entries: List[Poll], sort=False) -> dict:
 
     return dict(output)
 
+class PollResultsAnswer:
+    """A single answer."""
+    def __init__(self, opinion, viewed=True):
+        self.opinion = opinion
+        self.viewed = viewed
+
 
 class PollSummarizedResultsEntry:
     """A single entry in a summary view for a Poll.
@@ -105,11 +111,10 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, choices=None, viewed=False):
+    def __init__(self, question, field_type, choices=None):
         self.question = question
         self._answers = []
         self._choices = choices
-        self._viewed = viewed
         self._choices_occurences = [0] * len(choices) if choices else []
         self._components = None
         self.field_type = field_type
@@ -123,7 +128,7 @@ class PollSummarizedResultsEntry:
             return self._choices
         return []
 
-    def add_answer(self, answer):
+    def add_answer(self, answer, viewed):
         """Adds an answer to the container.
 
         If the field_type of the entry is set to `radio`, the answer will be
@@ -141,7 +146,7 @@ class PollSummarizedResultsEntry:
             for a in answer:
                 choice_index = self._choices.index(a)
                 self._choices_occurences[choice_index] += 1
-        self._answers.append(answer)
+        self._answers.append(PollResultsAnswer(opinion=answer, viewed=viewed))
 
     @property
     def answers(self):
@@ -190,17 +195,17 @@ class PollSummarizedResults:
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
 
-    def add_entry(self, question, field_type, answer, choices=None, viewed=False):
+    def add_entry(self, question, field_type, answer, choices=None, viewed=True):
         if question in self._questions:
             index = self._questions.index(question)
             existing_entry = self._entries[index]
-            existing_entry.add_answer(answer)
+            existing_entry.add_answer(answer, viewed)
         else:
             new_entry = PollSummarizedResultsEntry(
                 question=question, field_type=field_type,
-                choices=choices, viewed=viewed
+                choices=choices
             )
-            new_entry.add_answer(answer)
+            new_entry.add_answer(answer, viewed)
             self._entries.append(new_entry)
             self._questions.append(question)
 
