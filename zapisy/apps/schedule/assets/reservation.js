@@ -49,19 +49,19 @@ function setEditable(object) {
   $(object).closest(".term-form").find("input").prop("disabled", false);
   $(object).closest(".term-form").find(".form-place").addClass("bg-light");
 
-  if ($(object).closest(".term-form").find(".form-day").val() == "") {
+  if (
+    $(object).closest(".term-form").find(".form-day").val() == "" &&
+    $(object).closest(".term-form").find(".form-start").val() == "" &&
+    $(object).closest(".term-form").find(".form-end").val() == ""
+  ) {
     $(object)
       .closest(".term-form")
       .find(".form-day")
       .val(dayjs().format("YYYY-MM-DD"));
-  }
-  if ($(object).closest(".term-form").find(".form-start").val() == "") {
     $(object)
       .closest(".term-form")
       .find(".form-start")
       .val(dayjs().format("HH:mm"));
-  }
-  if ($(object).closest(".term-form").find(".form-end").val() == "") {
     $(object)
       .closest(".term-form")
       .find(".form-end")
