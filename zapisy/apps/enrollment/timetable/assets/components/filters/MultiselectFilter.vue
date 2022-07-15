@@ -36,9 +36,7 @@ export default Vue.extend({
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
-      const selectedIdsFromUrl = searchParams.get(this.property)!.split(",");
-      this.selected = [];
-      selectedIdsFromUrl.forEach((id) => (this.selected.push(id)));
+      this.selected = searchParams.get(this.property)!.split(",");
     }
 
     this.$store.subscribe((mutation, _) => {
