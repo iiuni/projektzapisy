@@ -100,8 +100,8 @@ def group(entries: List[Poll], sort=False) -> dict:
 
 
 class PollResultsAnswer:
-    """A single answer."""
-    def __init__(self, opinion, viewed):
+    """A single open question answer."""
+    def __init__(self, opinion: str, viewed: bool):
         if viewed is None:
             raise ValueError("PollResultsAnswer.viewed is boolean.")
         self.opinion = opinion
@@ -134,6 +134,8 @@ class PollSummarizedResultsEntry:
     def add_answer(self, answer, viewed):
         """Adds an answer to the container.
 
+        The argument viewed can be None or boolean, but its value is only
+        used in cases where it is the latter.
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
         If the field_tyoe of the entry is set to `checkbox`, each answer will be
