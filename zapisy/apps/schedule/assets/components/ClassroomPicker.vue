@@ -44,6 +44,7 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     // the click events on all of these buttons in the document.
     $(document).on("click", ".edit-term-form", f);
     $(document).on("click", "#new-term-form", f);
+    $(document).ready(f);
   }
 
   getUnoccupied() {
