@@ -6,7 +6,7 @@ import { mapMutations } from "vuex";
 import { Filter } from "../../store/filters";
 
 class ExactFilter implements Filter {
-  constructor(public public ids: number[], public propertyName: string) {}
+  constructor(public ids: number[], public propertyName: string) {}
 
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {
@@ -30,15 +30,13 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      selected: [undefined]
+      selected: [undefined],
     };
   },
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
-      this.selected = searchParams
-        .get(this.property)!
-        .split(",");
+      this.selected = searchParams.get(this.property)!.split(",");
     }
 
     this.$store.subscribe((mutation, _) => {
@@ -55,8 +53,12 @@ export default Vue.extend({
   watch: {
     selected: function () {
       const selectedIds = this.selected
-        .filter((el) => {return el != null})
-        .map((el) => {return Number(el)});
+        .filter((el) => {
+          return el != null;
+        })
+        .map((el) => {
+          return Number(el);
+        });
 
       const url = new URL(window.location.href);
       if (isEmpty(selectedIds)) {
