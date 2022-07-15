@@ -52,8 +52,8 @@ def plan_view(request):
         messages.error(request, error)
         return render(request, 'assignments/view.html', {'year': year})
     except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -120,8 +120,8 @@ def assignments_wizard(request):
         messages.error(request, error)
         assignments = []
     except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         assignments = []
 
     courses = []
@@ -131,8 +131,8 @@ def assignments_wizard(request):
         try:
             picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
         except (GoogleAuthError, GSpreadException) as error:
-            messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                           Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}""")
+            messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                           f"Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}"))
             picks = set()
 
     for proposal in proposals:
@@ -180,8 +180,8 @@ def create_assignments_sheet(request):
         {error}""")
         return redirect(reverse('assignments-wizard'))
     except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
@@ -277,8 +277,8 @@ def create_voting_sheet(request):
     try:
         sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
     except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}""")
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                       f"Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}"))
         return redirect(reverse('assignments-wizard'))
     update_voting_results_sheet(sheet, voting, years)
     return redirect(reverse('assignments-wizard')+'#step-1')
@@ -314,8 +314,8 @@ def generate_scheduler_file(request, semester, fmt):
         messages.error(request, error)
         return redirect('assignments-wizard')
     except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, f"""<h4>Błąd w konfiguracji arkuszy Google.</h4>
-                       Nie udało się otworzyć arkusza z przydziałami<br>{error}""")
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         return redirect('assignments-wizard')
 
     content_teachers = [{
