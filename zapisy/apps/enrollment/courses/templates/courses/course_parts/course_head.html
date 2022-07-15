@@ -1,16 +1,24 @@
 {% load filters %}
 
+<style>
+    .center-btn-vert {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center">
     <h1 class="d-inline-block">
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
-    <div {% if course.name|length < 30 %}class="btn-group"{% else %}class="btn-group-vertical"{% endif %} role="group" aria-label="Basic example">
-        <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'course-student-list' course.slug %}">Lista&nbsp;studentów</a>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
         {% if course.semester.is_current_semester %}
-            <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'offer-page' course.offer.slug %}">Zobacz&nbsp;w&nbsp;ofercie</a>
+            <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
             {% if user.is_staff or course.owner == request.user.employee %}
-                <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+                <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
             {% endif %}
         {% endif %}
     </div>
