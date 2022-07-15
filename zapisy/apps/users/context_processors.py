@@ -1,5 +1,6 @@
-from apps.users.models import is_employee, is_external_contractor, is_student
 from django.contrib.messages.api import get_messages
+
+from apps.users.models import is_employee, is_external_contractor, is_student
 
 
 def roles(request):
@@ -12,6 +13,6 @@ def roles(request):
 
 
 def messages(request):
-    """Remove duplicated messages"""
+    """Remove duplicated messages."""
     unique_messages = {(m.level, m.message): m for m in get_messages(request)}
     return {'messages': unique_messages.values()}
