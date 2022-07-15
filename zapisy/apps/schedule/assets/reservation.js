@@ -167,7 +167,7 @@ $(document).ready(() => {
   }
 
   setEditable(document.querySelector(".term-form"));
-  
+
   setFormDisplay();
   $(document).on("change", "#form-type", setFormDisplay);
 
