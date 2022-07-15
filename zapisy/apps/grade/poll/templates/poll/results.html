@@ -32,14 +32,14 @@
     {% for entry in results.entries %}
     <div class="card mb-3">
       <div class="card-body">
-        <h5 class="card-title p-1">{{ entry.question }}</h5>
+        <h5 class="card-title px-1">{{ entry.question }}</h5>
         {% if entry.field_type == "radio" or entry.field_type == "checkbox" %}
           {{ entry.plot.1 | safe }}
           {{ entry.plot.0 | safe }}
         {% else %}
           {% for answer in entry.answers %}
             {% if answer.opinion and answer.opinion != "-" %}
-              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2 p-1">{{ answer.opinion }}</div>
+              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2 px-1">{{ answer.opinion }}</div>
             {% endif %}
           {% endfor %}
         {% endif %}
