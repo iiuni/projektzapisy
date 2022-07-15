@@ -35,8 +35,8 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
-      return b;
+    this.allOwners = toPairs(filtersData.allOwners).sort(([k1, [a1, b1]], [k2, [a2, b2]]) => {
+      return b1.localeCompare(b2, 'pl');
     }).map(([k, [a, b]]) => {
       return [Number(k), `${a} ${b}`] as [number, string];
     });
