@@ -36,15 +36,9 @@ window.onload = function () {
   document.getElementById("resetbtn").addEventListener(
     "click",
     function () {
-      const Fields = Object.keys(old_instance);
-      for (const fieldName in Fields) {
-        if (Fields[fieldName] == "description") {
-          document.querySelector(`textarea[name=${Fields[fieldName]}]`).value =
-            old_instance[Fields[fieldName]];
-        } else {
-          document.querySelector(`[name=${Fields[fieldName]}]`).value =
-            old_instance[Fields[fieldName]];
-        }
+      for (const fieldName in old_instance) {
+        document.querySelector(`.confirm-submit [name=${fieldName}]`).value =
+          old_instance[fieldName];
       }
     },
     false
