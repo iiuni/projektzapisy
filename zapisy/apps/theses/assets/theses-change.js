@@ -13,7 +13,8 @@ window.onload = function () {
       let changedFields = Object.keys(old_instance)
         .filter(function (fieldName) {
           return (
-            document.querySelector(`[name=${fieldName}]`).value != old_instance[fieldName]
+            document.querySelector(`[name=${fieldName}]`).value !=
+            old_instance[fieldName]
           );
         })
         .map(function (fieldName) {
