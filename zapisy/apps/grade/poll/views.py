@@ -215,7 +215,6 @@ class PollResults(TemplateView):
 
         if not submissions:
             return poll_results
-
         try:
             last_time = PollView.objects.get(user=user, poll=current_poll).time
         except PollView.DoesNotExist:
