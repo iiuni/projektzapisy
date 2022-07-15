@@ -5,6 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.forms.models import model_to_dict
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
@@ -64,11 +65,11 @@ def view_thesis(request, id):
     board_member = is_theses_board_member(request.user)
 
     user_privileged_for_thesis = thesis.is_among_advisors(
-        request.user) or request.user.is_staff or board_member
+        request.user) or board_member
 
     if not thesis.has_been_accepted and not user_privileged_for_thesis:
         raise PermissionDenied
-    can_edit_thesis = (request.user.is_staff or thesis.is_mine(request.user))
+    can_edit_thesis = thesis.is_mine(request.user)
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
     can_vote = thesis.is_voting_active and board_member
     show_master_rejecter = is_master_rejecter(request.user) and (
@@ -144,6 +145,7 @@ def view_thesis(request, id):
             'rejecter_accepted': rejecter_accepted,
             'rejecter_rejected': rejecter_rejected,
             'max_number_of_students': max_number_of_students,
+            'is_staff': request.user.is_staff
         })
 
 
@@ -157,7 +159,7 @@ def gen_form(request, id, studentid):
         raise Http404("No Student matches the given query.")
 
     user_privileged_for_thesis = thesis.is_among_advisors(
-        request.user) or request.user.is_staff or is_theses_board_member(request.user)
+        request.user) or is_theses_board_member(request.user)
     user_allowed_to_generate = user_privileged_for_thesis or (
         thesis.has_been_accepted and thesis.is_student_assigned(request.user))
     if not user_allowed_to_generate:
@@ -183,7 +185,7 @@ def gen_form(request, id, studentid):
 def edit_thesis(request, id):
     """Show form for edit selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
-    if not request.user.is_staff and not thesis.is_mine(request.user):
+    if not thesis.is_mine(request.user):
         raise PermissionDenied
     if request.method == "POST":
         form = EditThesisForm(request.user, request.POST, instance=thesis)
@@ -195,10 +197,22 @@ def edit_thesis(request, id):
     else:
         form = EditThesisForm(request.user, instance=thesis)
 
+    confirm_changes = \
+        thesis.status not in (ThesisStatus.RETURNED_FOR_CORRECTIONS.value,
+                              ThesisStatus.BEING_EVALUATED.value)
+
+    thesis_dict = model_to_dict(thesis, fields=['title', 'supporting_advisor', 'kind',
+                                                'max_number_of_students', 'description'])
+    thesis_dict['description'] = str(thesis_dict['description']).replace('\r\n', '\n')
+    if thesis_dict['supporting_advisor'] is None:
+        thesis_dict['supporting_advisor'] = ""
+
     return render(request, 'theses/thesis_form.html', {
         'thesis_form': form,
         'title': thesis.title,
-        'id': id
+        'id': id,
+        'confirm_changes': confirm_changes,
+        'old_instance': thesis_dict
     })
 
 
@@ -273,7 +287,7 @@ def rejecter_decision(request, id):
 def delete_thesis(request, id):
     """Delete selected thesis."""
     thesis = get_object_or_404(Thesis, id=id)
-    if not request.user.is_staff and not thesis.is_mine(request.user):
+    if not thesis.is_mine(request.user):
         raise PermissionDenied
     thesis.delete()
     messages.success(request, 'Pomyślnie usunięto pracę dyplomową')

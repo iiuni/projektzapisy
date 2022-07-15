@@ -6,7 +6,12 @@ from apps.theses.models import Remark, ThesesSystemSettings, Thesis, Vote
 
 class ThesisAdmin(admin.ModelAdmin):
     autocomplete_fields = []
-    list_display = ('title', 'kind', 'status', 'added')
+    list_display = ('title', 'kind', 'advisor', 'status', 'added')
+    list_filter = ('kind', 'status', 'advisor')
+    search_fields = (
+        'advisor__user__first_name',
+        'advisor__user__last_name',
+        'title')
     form = ThesisFormAdmin
 
 

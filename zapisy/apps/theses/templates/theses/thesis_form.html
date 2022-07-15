@@ -30,9 +30,25 @@
         </form>
         {% endif %}
     </div>
-    <form method="POST" class="post-form">
+    {% if confirm_changes %}
+    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+        <div class="d-inline-block">
+            Temat został już zaakceptowany przez komisję. Wprowadzenie zmian innych niż dotyczące
+            daty rezerwacji i przypisanych studentów spowoduje przesłanie go z powrotem do decyzji komisji.
+        </div>
+        <button class="btn btn-primary float-righ edit-term-form ml-3" id="resetbtn" style="display: inline-block; white-space: normal; word-wrap: break-word;"> 
+            Cofnij zmiany wymagające zgody komisji 
+        </button>
+    </div>
+    {% endif %}
+
+    <form method="POST" id="confirm-submit" class="post-form">
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
+    {% if confirm_changes %}
+        {{ old_instance|json_script:"old_instance" }}
+        {% render_bundle 'theses-theses-change' %} 
+    {% endif %}
 </div>
 {% endblock %}
