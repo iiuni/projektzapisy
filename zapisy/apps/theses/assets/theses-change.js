@@ -1,12 +1,14 @@
 window.onload = function () {
-  // Object old_instance contains the accepted, but mutable parameters of the thesis:
-  // title, supporting_avisor, kind, max_number_of_students and description.
+  // Object old_instance contains the original values of mutable parameters of the thesis
+  // that are subject to approval by the committee:
+  // title, supporting_advisor, kind, max_number_of_students and description.
   const old_instance = JSON.parse(
     document.getElementById("old_instance").textContent
   );
 
-  // Changing any of the accepted parameters
-  // switches the thesis back to the BEING_EVALUATED state
+  // This function identifies which of the parameters subject to approval
+  // have been changed, and if any are found, the user is shown a
+  // confirmation dialog listing their human-readable names.
   document
     .getElementById("confirm-submit")
     .addEventListener("submit", function (evt) {
@@ -37,8 +39,8 @@ window.onload = function () {
       }
     });
 
-  // The reset button allows the user to reset changes
-  // made to accepted parameters.
+  // The reset button allows the user to undo the changes
+  // made to parameters subject to approval.
   document.getElementById("resetbtn").addEventListener(
     "click",
     function () {
