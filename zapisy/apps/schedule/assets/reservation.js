@@ -180,4 +180,6 @@ $(document).ready(() => {
   $(document).on("click", ".edit-term-form", editTermClick);
 
   $(document).on("click", "#save-event", saveEvent);
+
+  document.querySelector(".edit-term-form").click();
 });
