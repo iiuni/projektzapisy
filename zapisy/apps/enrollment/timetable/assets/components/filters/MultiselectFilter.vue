@@ -12,7 +12,7 @@ class ExactFilter implements Filter {
     if (isEmpty(this.ids)) {
       return true;
     }
-    let propGetter = property(this.propertyName) as (c: Object) => string;
+    let propGetter = property(this.propertyName) as (c: Object) => number;
     let propValue = propGetter(c);
     return this.ids.includes(propValue);
   }
@@ -30,7 +30,7 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      selected: [undefined],
+      selected: [undefined] as string | undefined[],
     };
   },
   created: function () {
@@ -42,7 +42,7 @@ export default Vue.extend({
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/clearFilters":
-          this.selected = [];
+          this.selected = [undefined];
           break;
       }
     });
