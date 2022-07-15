@@ -13,8 +13,8 @@ window.onload = function () {
       let changedFields = Object.keys(old_instance)
         .filter(function (fieldName) {
           return (
-            document.querySelector(`[name=${fieldName}]`).value !=
-            old_instance[fieldName]
+            document.querySelector(`#confirm-submit [name=${fieldName}]`)
+              .value != old_instance[fieldName]
           );
         })
         .map(function (fieldName) {
@@ -43,7 +43,7 @@ window.onload = function () {
     "click",
     function () {
       for (const fieldName in old_instance) {
-        document.querySelector(`[name=${fieldName}]`).value =
+        document.querySelector(`#confirm-submit [name=${fieldName}]`).value =
           old_instance[fieldName];
       }
     },
