@@ -103,7 +103,7 @@ class PollResultsAnswer:
     """A single open question answer."""
     def __init__(self, opinion: str, viewed: bool):
         if viewed is None:
-            raise ValueError("PollResultsAnswer.viewed is boolean.")
+            raise ValueError("Attempted to assign None to PollResultsAnswer.viewed, should be boolean.")
         self.opinion = opinion
         self.viewed = viewed
 
