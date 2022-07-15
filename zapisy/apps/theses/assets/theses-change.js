@@ -8,13 +8,12 @@ window.onload = function () {
   // Changing any of the accepted parameters
   // switches the thesis back to the BEING_EVALUATED state
   document
-    .querySelector(".confirm-submit")
+    .getElementById("confirm-submit")
     .addEventListener("submit", function (evt) {
       let changedFields = Object.keys(old_instance)
         .filter(function (fieldName) {
           return (
-            document.querySelector(`.confirm-submit [name=${fieldName}]`)
-              .value != old_instance[fieldName]
+            document.querySelector(`[name=${fieldName}]`).value != old_instance[fieldName]
           );
         })
         .map(function (fieldName) {
@@ -43,7 +42,7 @@ window.onload = function () {
     "click",
     function () {
       for (const fieldName in old_instance) {
-        document.querySelector(`.confirm-submit [name=${fieldName}]`).value =
+        document.querySelector(`[name=${fieldName}]`).value =
           old_instance[fieldName];
       }
     },
