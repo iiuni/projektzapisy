@@ -30,13 +30,15 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      selected: [undefined] as string | undefined[],
+      selected: [undefined] as (string | undefined)[],
     };
   },
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
-      this.selected = searchParams.get(this.property)!.split(",");
+      const selectedIdsFromUrl = searchParams.get(this.property)!.split(",");
+      this.selected = [];
+      selectedIdsFromUrl.forEach((id) => (this.selected.push(id)));
     }
 
     this.$store.subscribe((mutation, _) => {
