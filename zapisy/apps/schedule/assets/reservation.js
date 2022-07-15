@@ -38,7 +38,7 @@ function setFormDisplay() {
 // Disables edition of currently active terms.
 function setTermsToDefault() {
   $(".active-term").removeClass("active-term");
-  $(".term-form").find("input").prop("disabled", true );
+  $(".term-form").find("input").prop("disabled", true);
   $(".term-form").find(".form-place").removeClass("bg-light");
 }
 
@@ -62,15 +62,6 @@ function setEdited(object) {
       .val(dayjs().format("HH:mm"));
   }
   if ($(object).closest(".term-form").find(".form-end").val() == "") {
-    var endTime = new Date(today.getTime() + 5 * 60000);
-
-    var endTime = new Date(today.getTime() + 5*60000);
-    default reservation values have been added
-    var hh = String(endTime.getHours()).padStart(2, "0");
-    var mm = String(endTime.getMinutes()).padStart(2, "0");
-    var time = hh + ":" + mm;
-    $(object).closest(".term-form").find(".form-end").val(time);
-    $(object).closest(".term-form").find(".form-end").val(dayjs().add(dayjs.duration({'minutes' : 5})).format('HH:mm'));
     $(object)
       .closest(".term-form")
       .find(".form-end")
