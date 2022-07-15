@@ -5,6 +5,7 @@ import Vue from "vue";
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
+import MultiselectFilter from "./filters/MultiselectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON } from "./../models";
 import { mapMutations } from "vuex";
@@ -14,6 +15,7 @@ export default Vue.extend({
     TextFilter,
     LabelsFilter,
     SelectFilter,
+    MultiselectFilter,
     CheckFilter,
   },
   data: function () {
@@ -80,7 +82,7 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiselectFilter
             filterKey="type-filter"
             property="courseType"
             :options="allTypes"
@@ -98,7 +100,7 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiselectFilter
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
