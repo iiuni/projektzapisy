@@ -43,7 +43,7 @@ function setTermsToDefault() {
 }
 
 // Enables edition of given term.
-function setEdited(object) {
+function setEditable(object) {
   setTermsToDefault();
   $(object).closest(".term-form").addClass("active-term");
   $(object).closest(".term-form").find("input").prop("disabled", false);
@@ -123,12 +123,12 @@ function newTermClick(event) {
   // We find chosen element, display it and mark as active.
   const newTermForm = $(".term-form").eq(first);
   newTermForm.removeClass("d-none");
-  setEdited(newTermForm);
+  setEditable(newTermForm);
 }
 
 function editTermClick(event) {
   event.preventDefault();
-  setEdited(event.target);
+  setEditable(event.target);
 }
 
 // Handles setting outside location. The place field is
