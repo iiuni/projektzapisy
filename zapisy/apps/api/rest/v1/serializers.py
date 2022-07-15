@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models.base import ObjectDoesNotExist
 from rest_framework import serializers
 
 from apps.effects.models import CompletedCourses
@@ -82,7 +83,12 @@ class ProgramRelatedField(serializers.RelatedField):
         return value.name
 
     def to_internal_value(self, data):
-        return Program.objects.get(name=data)
+        try:
+            program = Program.objects.get(name=data)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("Program o podanej nazwie nie istnieje.")
+        else:
+            return program
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -223,7 +229,12 @@ class CourseRelatedField(serializers.RelatedField):
         return value.usos_kod
 
     def to_internal_value(self, data):
-        return CourseInstance.objects.get(usos_kod=data)
+        try:
+            course = CourseInstance.objects.get(usos_kod=data)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("Kurs o podanym usos_kod nie istnieje.")
+        else:
+            return course
 
 
 class StudentRelatedField(serializers.RelatedField):
@@ -234,7 +245,15 @@ class StudentRelatedField(serializers.RelatedField):
         return value.usos_id
 
     def to_internal_value(self, data):
-        return Student.objects.get(usos_id=data)
+        if not isinstance(data, int):
+            if not data.isdigit():
+                raise serializers.ValidationError("usos_id studenta musi być liczbą.")
+        try:
+            student = Student.objects.get(usos_id=data)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("Student o podanym usos_id nie istnieje.")
+        else:
+            return student
 
 
 class CompletedCoursesSerializer(serializers.ModelSerializer):
