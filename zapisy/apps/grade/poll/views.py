@@ -11,7 +11,7 @@ from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
-from apps.grade.poll.models import Poll, Submission, PollView
+from apps.grade.poll.models import Poll, PollView, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
@@ -186,9 +186,12 @@ class PollResults(TemplateView):
 
     @staticmethod
     def __modified_status(polls: Iterable[Poll], user: Employee) -> Tuple[Dict[str, bool], Dict[Poll, bool]]:
-        """For all polls and their categories, checks whether any submission within
-        has been modified since last view by the employee, and returns this data as
-        two dictionaries with boolean values."""
+        """Checks for unviewed modifications in the polls and their categories.
+        
+        For all specified polls and their categories, checks whether any
+        submission within them has been modified since last view by the
+        employee, and returns this data as two dictionaries with boolean values.
+        """
         is_read_category = defaultdict(True.__bool__)
         is_read_poll = dict()
 
