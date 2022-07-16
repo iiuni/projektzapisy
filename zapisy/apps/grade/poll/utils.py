@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import bokeh.embed
 import bokeh.models.sources
@@ -101,7 +101,7 @@ def group(entries: List[Poll], sort=False) -> dict:
 
 class PollResultsAnswer:
     """A single open question answer with view status."""
-    def __init__(self, opinion: str, viewed: bool):
+    def __init__(self, opinion: str, viewed: Optional[bool]):
         if viewed is None:
             raise ValueError("Attempted to assign None to PollResultsAnswer.viewed, should be boolean.")
         self.opinion = opinion
