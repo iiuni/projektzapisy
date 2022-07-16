@@ -245,13 +245,10 @@ class StudentRelatedField(serializers.RelatedField):
         return value.usos_id
 
     def to_internal_value(self, data):
-        if not isinstance(data, int):
-            if not data.isdigit():
-                raise serializers.ValidationError("usos_id studenta musi być liczbą.")
         try:
             student = Student.objects.get(usos_id=data)
-        except ObjectDoesNotExist:
-            raise serializers.ValidationError("Student o podanym usos_id nie istnieje.")
+        except (ValueError, ObjectDoesNotExist):
+            raise serializers.ValidationError("Błędny usos_id.")
         else:
             return student
 
