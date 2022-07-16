@@ -134,8 +134,9 @@ class PollSummarizedResultsEntry:
     def add_answer(self, answer, viewed):
         """Adds an answer to the container.
 
-        The argument viewed can be None or boolean, but its value is only
-        used in cases where it is the latter.
+        The value of `viewed` is only used for text answers and should be
+        boolean; `None` will cause an exception. For single or multiple
+        choice, the value does not matter and ideally should be `None`.
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
         If the field_type of the entry is set to `checkbox`, each answer will be
