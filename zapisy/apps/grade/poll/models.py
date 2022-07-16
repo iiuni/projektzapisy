@@ -401,11 +401,11 @@ class PollView(models.Model):
     """Represents the last time employee viewed poll."""
     user = models.ForeignKey(Employee, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    time = models.DateTimeField()
+    time = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'poll'], name='unique_us_combination'
+                fields=['user', 'poll'], name='unique_user_poll'
             )
         ]
