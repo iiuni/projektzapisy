@@ -3,9 +3,7 @@ import itertools
 import json
 from collections import defaultdict
 from operator import attrgetter
-from typing import Dict, List
-
-import dateutil.parser
+from typing import Dict, Iterable, List, Tuple
 
 from django.contrib import messages
 from django.shortcuts import redirect, render, reverse
@@ -17,6 +15,7 @@ from apps.grade.poll.models import Poll, Submission, PollView
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
+from apps.users.models import Employee
 
 
 class TicketsEntry(TemplateView):
@@ -186,7 +185,8 @@ class PollResults(TemplateView):
         return number_of_submissions_for_category
 
     @staticmethod
-    def __are_read(polls, user):
+    def __modified_status(polls: Iterable[Poll], user: Employee) -> Tuple[Dict[str, bool], Dict[Poll, bool]]:
+        """Checks if there is an unviewed modifications in submissions for the polls and their categories"""
         is_read_category = defaultdict(True.__bool__)
         is_read_poll = dict()
 
@@ -194,7 +194,7 @@ class PollResults(TemplateView):
                 PollView.objects.filter(user=user, poll__in=polls).values_list('poll', 'time')
             )
 
-        last_modifieds = dict(
+        last_modifieds: Dict[Poll, datetime.datetime] = dict(
             Submission.objects.filter(poll__in=polls, submitted=True)
             .order_by('poll', 'modified')
             .distinct('poll')
@@ -205,7 +205,7 @@ class PollResults(TemplateView):
                 poll.id in last_views and last_views[poll.id] > last_modifieds[poll.id]
             )
             is_read_category[poll.category] &= is_read_poll[poll]
-        return [is_read_category, is_read_poll]
+        return (is_read_category, is_read_poll)
 
     @staticmethod
     def __get_processed_results(current_poll, user, submissions):
@@ -234,7 +234,7 @@ class PollResults(TemplateView):
                 elif not last_time:
                     viewed = False
                 elif 'modified' in entry:
-                    viewed = dateutil.parser.isoparse(entry['modified']) < last_time
+                    viewed = datetime.datetime.fromisoformat(entry['modified']) < last_time
                 else:
                     viewed = submission.modified < last_time
 
@@ -299,7 +299,7 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
-        reads = self.__are_read(
+        read_cat, read_poll = self.__modified_status(
                 available_polls, request.user.employee
             )
 
@@ -319,8 +319,8 @@ class PollResults(TemplateView):
                 'submissions_count': self.__get_counter_for_categories(
                     available_polls
                 ),
-                'read_cat': reads[0],
-                'read_poll': reads[1],
+                'read_cat': read_cat,
+                'read_poll': read_poll,
                 'iterator': itertools.count(),
             },
         )
