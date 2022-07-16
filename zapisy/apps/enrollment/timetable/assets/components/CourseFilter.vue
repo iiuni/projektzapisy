@@ -125,13 +125,13 @@ export default Vue.extend({
         </div>
       </div>
       <div class="row justify-content-center">
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            @click="clearFilters()"
-          >
-            Wyczyść filtry
-          </button>
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          @click="clearFilters()"
+        >
+          Wyczyść filtry
+        </button>
       </div>
     </div>
     <div class="card-footer p-1 text-center">

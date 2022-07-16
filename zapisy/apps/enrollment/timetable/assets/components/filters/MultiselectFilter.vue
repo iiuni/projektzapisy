@@ -52,14 +52,13 @@ export default Vue.extend({
     ...mapMutations("filters", ["registerFilter"]),
     clearFilter() {
       this.selected = [];
-    }
+    },
   },
   watch: {
     selected: function () {
-      const selectedIds = this.selected
-          .map((el) => {
-            return Number(el);
-          });
+      const selectedIds = this.selected.map((el) => {
+        return Number(el);
+      });
 
       const url = new URL(window.location.href);
       if (isEmpty(selectedIds)) {
@@ -82,7 +81,13 @@ export default Vue.extend({
   <div class="mb-2">
     <h4>{{ title }}</h4>
     <select multiple class="custom-select" v-model="selected">
-      <option :value="undefined" @click.prevent="clearFilter()" class="font-italic text-secondary">{{ placeholder }}</option>
+      <option
+        :value="undefined"
+        @click.prevent="clearFilter()"
+        class="font-italic text-secondary"
+      >
+        {{ placeholder }}
+      </option>
       <option v-for="[k, o] of options" :value="k">
         {{ o }}
       </option>
