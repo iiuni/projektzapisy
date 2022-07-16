@@ -4,7 +4,6 @@ import Vue from "vue";
 
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
-import SelectFilter from "./filters/SelectFilter.vue";
 import MultiselectFilter from "./filters/MultiselectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON } from "./../models";
@@ -14,7 +13,6 @@ export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    SelectFilter,
     MultiselectFilter,
     CheckFilter,
   },
@@ -97,7 +95,7 @@ export default Vue.extend({
             property="courseType"
             :options="allTypes"
             title="Rodzaj przedmiotu"
-            placeholder="Wszystkie przedmioty"
+            placeholder="Wszystkie rodzaje"
             ref="type-filter"
           />
           <hr />
