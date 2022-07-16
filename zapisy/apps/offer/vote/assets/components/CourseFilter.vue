@@ -110,14 +110,6 @@ export default Vue.extend({
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
           />
-          <hr />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            @click="clearFilters()"
-          >
-            Wyczyść filtry
-          </button>
         </div>
         <div class="col-md">
           <MultiselectFilter
