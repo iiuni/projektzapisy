@@ -26,11 +26,12 @@ export default Vue.extend({
     // Every filter needs a unique identifier.
     filterKey: String,
     options: Array as () => [number, string][],
+    title: String,
     placeholder: String,
   },
   data: () => {
     return {
-      selected: [undefined] as (string | undefined)[],
+      selected: [] as (string | undefined)[],
     };
   },
   created: function () {
@@ -42,23 +43,23 @@ export default Vue.extend({
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/clearFilters":
-          this.selected = [undefined];
+          this.selected = [];
           break;
       }
     });
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
+    clearFilter() {
+      this.selected = [];
+    }
   },
   watch: {
     selected: function () {
       const selectedIds = this.selected
-        .filter((el) => {
-          return el != null;
-        })
-        .map((el) => {
-          return Number(el);
-        });
+          .map((el) => {
+            return Number(el);
+          });
 
       const url = new URL(window.location.href);
       if (isEmpty(selectedIds)) {
@@ -78,9 +79,10 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="input-group mb-2">
+  <div class="mb-2">
+    <h4>{{ title }}</h4>
     <select multiple class="custom-select" v-model="selected">
-      <option :value="undefined">-- {{ placeholder }} --</option>
+      <option :value="undefined" @click.prevent="clearFilter()" class="font-italic text-secondary">{{ placeholder }}</option>
       <option v-for="[k, o] of options" :value="k">
         {{ o }}
       </option>

@@ -66,7 +66,7 @@ export default Vue.extend({
   <div class="card bg-light">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
       <div class="row">
-        <div class="col-md">
+        <div class="col-md-5">
           <TextFilter
             filterKey="name-filter"
             property="name"
@@ -74,6 +74,36 @@ export default Vue.extend({
             ref="name-filter"
           />
           <hr />
+          <CheckFilter
+            filterKey="freshmen-filter"
+            property="recommendedForFirstYear"
+            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiselectFilter
+            filterKey="type-filter"
+            property="courseType"
+            :options="allTypes"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie przedmioty"
+            ref="type-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiselectFilter
+            filterKey="owner-filter"
+            property="owner"
+            :options="allOwners"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
+            ref="owner-filter"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
           <LabelsFilter
             title="Tagi"
             filterKey="tags-filter"
@@ -84,14 +114,6 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <MultiselectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
-            ref="type-filter"
-          />
-          <hr />
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
@@ -101,22 +123,8 @@ export default Vue.extend({
             ref="effects-filter"
           />
         </div>
-        <div class="col-md">
-          <MultiselectFilter
-            filterKey="owner-filter"
-            property="owner"
-            :options="allOwners"
-            placeholder="Opiekun przedmiotu"
-            ref="owner-filter"
-          />
-          <hr />
-          <CheckFilter
-            filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
-            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
-            ref="freshmen-filter"
-          />
-          <hr />
+      </div>
+      <div class="row justify-content-center">
           <button
             class="btn btn-outline-secondary"
             type="button"
@@ -124,7 +132,6 @@ export default Vue.extend({
           >
             Wyczyść filtry
           </button>
-        </div>
       </div>
     </div>
     <div class="card-footer p-1 text-center">
