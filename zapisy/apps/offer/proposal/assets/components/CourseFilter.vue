@@ -5,8 +5,12 @@ import Vue from "vue";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
+import MultiselectFilter from "@/enrollment/timetable/assets/components/filters/MultiselectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
-import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import {
+  FilterDataJSON,
+  MultiselectFilterData,
+} from "@/enrollment/timetable/assets/models";
 import { mapMutations } from "vuex";
 
 export default Vue.extend({
@@ -14,6 +18,7 @@ export default Vue.extend({
     TextFilter,
     LabelsFilter,
     SelectFilter,
+    MultiselectFilter,
     CheckFilter,
   },
   data: function () {
@@ -35,12 +40,16 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
-      return b;
-    }).map(([k, [a, b]]) => {
-      return [Number(k), `${a} ${b}`] as [number, string];
+    this.allOwners = toPairs(filtersData.allOwners)
+      .sort(([k1, [a1, b1]], [k2, [a2, b2]]) => {
+        return b1.localeCompare(b2, "pl");
+      })
+      .map(([k, [a, b]]) => {
+        return [Number(k), `${a} ${b}`];
+      });
+    this.allTypes = toPairs(filtersData.allTypes).map(([a, b]) => {
+      return [Number(a), b];
     });
-    this.allTypes = toPairs(filtersData.allTypes);
     this.allSemesters = [
       ["z", "zimowy"],
       ["l", "letni"],
@@ -81,54 +90,18 @@ export default Vue.extend({
             placeholder="Nazwa przedmiotu"
             ref="name-filter"
           />
-          <hr />
-          <LabelsFilter
-            title="Tagi"
-            filterKey="tags-filter"
-            property="tags"
-            :allLabels="allTags"
-            onClass="bg-success"
-            ref="tags-filter"
-          />
-        </div>
-        <div class="col-md">
-          <SelectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
-            ref="type-filter"
-          />
-          <hr />
-          <LabelsFilter
-            title="Efekty kształcenia"
-            filterKey="effects-filter"
-            property="effects"
-            :allLabels="allEffects"
-            onClass="bg-info"
-            ref="effects-filter"
-          />
-        </div>
-        <div class="col-md">
-          <SelectFilter
-            filterKey="owner-filter"
-            property="owner"
-            :options="allOwners"
-            placeholder="Opiekun przedmiotu"
-            ref="owner-filter"
-          />
-          <SelectFilter
+          <MultiselectFilter
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
-            placeholder="Semestr"
+            title="Semestr"
             ref="semester-filter"
           />
-          <SelectFilter
+          <MultiselectFilter
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
-            placeholder="Status propozycji"
+            title="Status propozycji"
             ref="status-filter"
           />
           <hr />
@@ -146,6 +119,44 @@ export default Vue.extend({
           >
             Wyczyść filtry
           </button>
+        </div>
+        <div class="col-md">
+          <MultiselectFilter
+            filterKey="type-filter"
+            property="courseType"
+            :options="allTypes"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie przedmioty"
+            ref="type-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Tagi"
+            filterKey="tags-filter"
+            property="tags"
+            :allLabels="allTags"
+            onClass="bg-success"
+            ref="tags-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiselectFilter
+            filterKey="owner-filter"
+            property="owner"
+            :options="allOwners"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
+            ref="owner-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Efekty kształcenia"
+            filterKey="effects-filter"
+            property="effects"
+            :allLabels="allEffects"
+            onClass="bg-info"
+            ref="effects-filter"
+          />
         </div>
       </div>
     </div>

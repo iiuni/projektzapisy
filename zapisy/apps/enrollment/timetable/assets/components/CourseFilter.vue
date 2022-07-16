@@ -40,9 +40,11 @@ export default Vue.extend({
         return b1.localeCompare(b2, "pl");
       })
       .map(([k, [a, b]]) => {
-        return [Number(k), `${a} ${b}`] as [number, string];
+        return [Number(k), `${a} ${b}`];
       });
-    this.allTypes = toPairs(filtersData.allTypes);
+    this.allTypes = toPairs(filtersData.allTypes).map(([a, b]) => {
+      return [Number(a), b];
+    });
   },
   mounted: function () {
     // Extract filterable properties names from the template.
@@ -66,7 +68,7 @@ export default Vue.extend({
   <div class="card bg-light">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md">
           <TextFilter
             filterKey="name-filter"
             property="name"
@@ -80,6 +82,14 @@ export default Vue.extend({
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
         <div class="col-md">
           <MultiselectFilter
@@ -89,6 +99,15 @@ export default Vue.extend({
             title="Rodzaj przedmiotu"
             placeholder="Wszystkie przedmioty"
             ref="type-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Tagi"
+            filterKey="tags-filter"
+            property="tags"
+            :allLabels="allTags"
+            onClass="badge-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
@@ -114,6 +133,7 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
+          <hr />
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
@@ -123,15 +143,6 @@ export default Vue.extend({
             ref="effects-filter"
           />
         </div>
-      </div>
-      <div class="row justify-content-center">
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          @click="clearFilters()"
-        >
-          Wyczyść filtry
-        </button>
       </div>
     </div>
     <div class="card-footer p-1 text-center">

@@ -6,13 +6,13 @@ import { mapMutations } from "vuex";
 import { Filter } from "../../store/filters";
 
 class ExactFilter implements Filter {
-  constructor(public ids: number[], public propertyName: string) {}
+  constructor(public ids: string[], public propertyName: string) {}
 
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {
       return true;
     }
-    let propGetter = property(this.propertyName) as (c: Object) => number;
+    let propGetter = property(this.propertyName) as (c: Object) => string;
     let propValue = propGetter(c);
     return this.ids.includes(propValue);
   }
@@ -25,7 +25,7 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    options: Array as () => [number, string][],
+    options: Array as () => [string, string][],
     title: String,
     placeholder: String,
   },
@@ -56,9 +56,7 @@ export default Vue.extend({
   },
   watch: {
     selected: function () {
-      const selectedIds = this.selected.map((el) => {
-        return Number(el);
-      });
+      const selectedIds = this.selected;
 
       const url = new URL(window.location.href);
       if (isEmpty(selectedIds)) {
@@ -82,6 +80,7 @@ export default Vue.extend({
     <h4>{{ title }}</h4>
     <select multiple class="custom-select" v-model="selected">
       <option
+        v-if="placeholder"
         :value="undefined"
         @click.prevent="clearFilter()"
         class="font-italic text-secondary"
