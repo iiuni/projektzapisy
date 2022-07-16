@@ -289,8 +289,7 @@ class PollResults(TemplateView):
                     current_poll, request.user.employee, submissions
                 )
             PollView.objects.update_or_create(
-                poll=current_poll, user=request.user.employee,
-                defaults={'time': datetime.datetime.now()},
+                poll=current_poll, user=request.user.employee
             )
         except Poll.DoesNotExist:
             results = []
