@@ -100,7 +100,7 @@ def group(entries: List[Poll], sort=False) -> dict:
 
 
 class PollResultsAnswer:
-    """A single open question answer."""
+    """A single open question answer with view status."""
     def __init__(self, opinion: str, viewed: bool):
         if viewed is None:
             raise ValueError("Attempted to assign None to PollResultsAnswer.viewed, should be boolean.")
