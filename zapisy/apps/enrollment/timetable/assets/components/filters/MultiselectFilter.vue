@@ -78,7 +78,12 @@ export default Vue.extend({
 <template>
   <div class="mb-2">
     <h4>{{ title }}</h4>
-    <select multiple class="custom-select" v-model="selected">
+    <select
+      multiple
+      v-model="selected"
+      :size="Math.min(options.length, 5)"
+      class="custom-select"
+    >
       <option
         v-if="placeholder"
         :value="undefined"
