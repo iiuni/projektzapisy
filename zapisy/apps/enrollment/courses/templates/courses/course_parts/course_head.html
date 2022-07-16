@@ -1,10 +1,14 @@
 {% load filters %}
 
 <style>
-    .center-btn-vert {
+    #main-content .btn-group a {
         display: flex;
         flex-direction: column;
         justify-content: center;
+    }
+    #hours span + span::before {
+        content: '+';
+        margin: 0 .5em;
     }
 </style>
 
@@ -14,11 +18,11 @@
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
+        <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
         {% if course.semester.is_current_semester %}
-            <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
+            <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
             {% if user.is_staff or course.owner == request.user.employee %}
-                <a class="btn btn-sm btn-outline-info center-btn-vert" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+                <a class="btn btn-sm btn-outline-info" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
             {% endif %}
         {% endif %}
     </div>
@@ -43,12 +47,6 @@
         <tr>
             <th scope="row">Liczba godzin</th>
             <td id="hours">
-                <style>
-                    #hours span + span::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
                 {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
                 {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
                 {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
