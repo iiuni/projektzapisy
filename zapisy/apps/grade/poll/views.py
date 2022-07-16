@@ -187,7 +187,7 @@ class PollResults(TemplateView):
     @staticmethod
     def __modified_status(polls: Iterable[Poll], user: Employee) -> Tuple[Dict[str, bool], Dict[Poll, bool]]:
         """Checks for unviewed modifications in the polls and their categories.
-        
+
         For all specified polls and their categories, checks whether any
         submission within them has been modified since last view by the
         employee, and returns this data as two dictionaries with boolean values.
