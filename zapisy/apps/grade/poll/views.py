@@ -186,7 +186,9 @@ class PollResults(TemplateView):
 
     @staticmethod
     def __modified_status(polls: Iterable[Poll], user: Employee) -> Tuple[Dict[str, bool], Dict[Poll, bool]]:
-        """Checks for unviewed modifications in submissions for the polls and their categories."""
+        """For all polls and their categories, checks whether any submission within
+        has been modified since last view by the employee, and returns this data as
+        two dictionaries with boolean values."""
         is_read_category = defaultdict(True.__bool__)
         is_read_poll = dict()
 
