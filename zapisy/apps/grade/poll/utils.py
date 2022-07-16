@@ -138,7 +138,7 @@ class PollSummarizedResultsEntry:
         used in cases where it is the latter.
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
-        If the field_tyoe of the entry is set to `checkbox`, each answer will be
+        If the field_type of the entry is set to `checkbox`, each answer will be
         counted separately.
         """
         if not answer:
