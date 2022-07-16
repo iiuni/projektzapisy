@@ -31,7 +31,7 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      selected: [] as (string | undefined)[],
+      selected: [] as string[],
     };
   },
   created: function () {

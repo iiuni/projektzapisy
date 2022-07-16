@@ -1,5 +1,5 @@
 <script lang="ts">
-import { cloneDeep, sortBy, toPairs } from "lodash";
+import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
