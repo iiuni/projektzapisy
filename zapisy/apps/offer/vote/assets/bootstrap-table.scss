@@ -2,8 +2,12 @@ table {
   table-layout: fixed;
 }
 
-table .proposal-text {
-  width: 60%;
+table .voters-text {
+  width: 20%;
+}
+
+table .points-text {
+  width: 16%;
 }
 
 .tablesorter .sorter-false {
