@@ -1,5 +1,14 @@
+table {
+  table-layout: fixed;
+}
+
+table .proposal-text {
+  width: 60%;
+}
+
 .tablesorter .sorter-false {
   cursor: default;
+  width: 5%;
 }
 
 th.tablesorter-header:not(.sorter-false):hover {
