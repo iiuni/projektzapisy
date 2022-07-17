@@ -242,7 +242,7 @@ class StudentRelatedField(serializers.RelatedField):
     def to_internal_value(self, data):
         try:
             return Student.objects.get(usos_id=data)
-        except (ValueError, Student.DoesNotExist):
+        except (ValueError, TypeError, Student.DoesNotExist):
             raise serializers.ValidationError("Błędny usos_id.")
 
 
