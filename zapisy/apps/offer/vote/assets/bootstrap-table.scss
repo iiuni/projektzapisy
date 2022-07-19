@@ -2,12 +2,8 @@ table {
   table-layout: fixed;
 }
 
-table .voters-text {
-  width: 20%;
-}
-
-table .points-text {
-  width: 16%;
+table th:not(:first-child) {
+  width: max-content;
 }
 
 .tablesorter .sorter-false {
