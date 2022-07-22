@@ -4,9 +4,13 @@ from typing import List, Optional, Set, Iterator
 from more_itertools import flatten
 
 from django.conf import settings
+from django.contrib import messages
 import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+
+from gspread.exceptions import GSpreadException
+from google.auth.exceptions import GoogleAuthError
 
 from .utils import (
     EmployeeData,
@@ -19,6 +23,11 @@ from .utils import (
     VotingSummaryPerYear,
 )
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
+VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
+CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
+
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
@@ -28,8 +37,6 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     Loads up data from environment, creates credentials and connects to
     appropriate spreadsheet.
     """
-    env = environ.Env()
-    environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
     creds = {
         "type": env('GDRIVE_SERVICE_TYPE'),
         "project_id": env('GDRIVE_PROJECT_ID'),
@@ -56,6 +63,24 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     }
     sh.batch_update({'requests': [update_locale_request]})
     return sh
+
+
+def assignments_sheet_or_none(request):
+    try:
+        return create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+    except (GoogleAuthError, GSpreadException) as error:
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami.<br>{error}"))
+        return None
+
+
+def voting_sheet_or_none(request):
+    try:
+        return create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+    except (GoogleAuthError, GSpreadException) as error:
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google</h4>"
+                       f"Nie udało się otworzyć arkusza z wynikami głosowania.<br>{error}"))
+        return None
 
 
 def find_or_insert_worksheet(sheet: gspread.models.Spreadsheet, name):

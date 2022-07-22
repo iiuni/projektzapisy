@@ -25,35 +25,28 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 from apps.users.models import Employee
 
-from .sheets import (create_sheets_service, read_assignments_sheet,
-                     read_courses_sheet, read_employees_sheet,
-                     read_opening_recommendations, update_employees_sheet,
-                     update_assignments_sheet, update_courses_sheet,
-                     update_voting_results_sheet)
+from .sheets import (read_assignments_sheet, read_courses_sheet,
+                     read_employees_sheet, read_opening_recommendations,
+                     update_employees_sheet, update_assignments_sheet,
+                     update_courses_sheet, update_voting_results_sheet,
+                     voting_sheet_or_none, assignments_sheet_or_none,
+                     VOTING_RESULTS_SPREADSHEET_ID, CLASS_ASSIGNMENT_SPREADSHEET_ID)
 from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary, SingleCourseData,
                     EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
-
-env = environ.Env()
-environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
-VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
-CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 
 
 @employee_required
 def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
+    assignments_sheet = assignments_sheet_or_none(request)
+    if assignments_sheet is None:
+        return render(request, 'assignments/view.html', {'year': year})
     try:
-        assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-        teachers = read_employees_sheet(assignments_spreadsheet)
-        assignments_from_sheet = list(
-            filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
+        teachers = read_employees_sheet(assignments_sheet)
+        assignments_from_sheet = list(filter(lambda a: a.confirmed, read_assignments_sheet(assignments_sheet)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
-        return render(request, 'assignments/view.html', {'year': year})
-    except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -114,26 +107,25 @@ def assignments_wizard(request):
     should be picked.
     """
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
-    try:
-        assignments = list(read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)))
-    except (KeyError, ValueError) as error:
-        messages.error(request, error)
+    assignments_sheet = assignments_sheet_or_none(request)
+    if assignments_sheet is None:
         assignments = []
-    except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
-        assignments = []
+    else:
+        try:
+            assignments = list(read_assignments_sheet(assignments_sheet))
+        except (KeyError, ValueError) as error:
+            messages.error(request, error)
+            assignments = []
 
     courses = []
     if assignments:
         picks = set(a.proposal_id for a in assignments)
     else:
-        try:
-            picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
-        except (GoogleAuthError, GSpreadException) as error:
-            messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                           f"Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}"))
+        voting_spreadsheet = voting_sheet_or_none(request)
+        if voting_spreadsheet is None:
             picks = set()
+        else:
+            picks = read_opening_recommendations(voting_spreadsheet)
 
     for proposal in proposals:
         checked = proposal.pk in picks
@@ -165,12 +157,14 @@ def create_assignments_sheet(request):
     Makes sure that modifications made to the assignments sheet so far are not
     overridden.
     """
+    assignments_sheet = assignments_sheet_or_none(request)
+    if assignments_sheet is None:
+        return redirect(reverse('assignments-wizard'))
     try:
-        sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
         current_assignments = defaultdict(list)
-        for assignment in read_assignments_sheet(sheet):
+        for assignment in read_assignments_sheet(assignments_sheet):
             current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
-        teachers = read_employees_sheet(sheet)
+        teachers = read_employees_sheet(assignments_sheet)
     except (KeyError, ValueError) as error:
         messages.error(
             request, f"""<p>
@@ -179,13 +173,9 @@ def create_assignments_sheet(request):
         przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
         {error}""")
         return redirect(reverse('assignments-wizard'))
-    except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
-        return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
-    for course in read_courses_sheet(sheet):
+    for course in read_courses_sheet(assignments_sheet):
         current_courses[(course.proposal_id, course.semester)] = course
 
     # Read selections from the form.
@@ -222,7 +212,7 @@ def create_assignments_sheet(request):
     suggested_groups = suggest_teachers(new_picks, proposals)
     all_groups = list(flatten(current_assignments.values())) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
-    update_assignments_sheet(sheet, suggested_groups)
+    update_assignments_sheet(assignments_sheet, suggested_groups)
 
     # update Employees sheet
     new_usernames = set(
@@ -248,7 +238,7 @@ def create_assignments_sheet(request):
             courses_summer=[],
         )
     teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
-    update_employees_sheet(sheet, teachers)
+    update_employees_sheet(assignments_sheet, teachers)
 
     # update Courses sheet
     courses_data = list(current_courses.values())
@@ -265,22 +255,19 @@ def create_assignments_sheet(request):
             )
         )
     courses_data.sort(key=attrgetter('semester', 'name'))
-    update_courses_sheet(sheet, courses_data)
+    update_courses_sheet(assignments_sheet, courses_data)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
 
 @staff_member_required
 def create_voting_sheet(request):
     """Prepares the voting sheet."""
+    voting_sheet = voting_sheet_or_none(request)
+    if voting_sheet is None:
+        return redirect(reverse('assignments-wizard'))
     years = get_last_years(3)
     voting = get_votes(years)
-    try:
-        sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
-    except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                       f"Nie udało się otworzyć arkusza z wynikami głosowania<br>{error}"))
-        return redirect(reverse('assignments-wizard'))
-    update_voting_results_sheet(sheet, voting, years)
+    update_voting_results_sheet(voting_sheet, voting, years)
     return redirect(reverse('assignments-wizard')+'#step-1')
 
 
@@ -305,17 +292,14 @@ def generate_scheduler_file(request, semester, fmt):
     if fmt not in ['csv', 'json']:
         messages.error(request, f"Niepoprawny format: '{ fmt }'")
         return redirect('assignments-wizard')
-    current_year = SystemState.get_current_state().year
+    assignments_sheet = assignments_sheet_or_none(request)
+    if assignments_sheet is None:
+        return redirect('assignments-wizard')
     try:
-        assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-        teachers = read_employees_sheet(assignments_spreadsheet)
-        assignments = list(read_assignments_sheet(assignments_spreadsheet))
+        teachers = read_employees_sheet(assignments_sheet)
+        assignments = list(read_assignments_sheet(assignments_sheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
-        return redirect('assignments-wizard')
-    except (GoogleAuthError, GSpreadException) as error:
-        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google.</h4>"
-                       f"Nie udało się otworzyć arkusza z przydziałami<br>{error}"))
         return redirect('assignments-wizard')
 
     content_teachers = [{
@@ -358,6 +342,7 @@ def generate_scheduler_file(request, semester, fmt):
         content_assignments.append(scheduler_assignment)
         index += 1
 
+    current_year = SystemState.get_current_state().year
     if fmt == 'json':
         response = JsonResponse(content_teachers + content_assignments, safe=False)
         response[
