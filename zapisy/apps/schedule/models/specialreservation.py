@@ -151,7 +151,7 @@ class SpecialReservation(models.Model):
 
         Checks for any conflicts between this SpecialReservation and other
         SpecialReservations, Terms of Events and Terms of Course Groups.
-        
+
         Django will run this even if validation of individual fields fails,
         so exceptions raised in such case are caught and suppressed.
         `DoesNotExist`s appear naturally in validate_against_all_terms, while
