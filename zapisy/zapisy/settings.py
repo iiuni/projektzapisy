@@ -168,7 +168,6 @@ TEMPLATES = [
             'debug': env.bool('TEMPLATE_DEBUG'),
             'context_processors': [
                 'django.contrib.messages.context_processors.messages',
-                'apps.users.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.request',
                 'django.template.context_processors.debug',
