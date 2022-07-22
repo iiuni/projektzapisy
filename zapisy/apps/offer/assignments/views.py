@@ -1,5 +1,4 @@
 import csv
-import os
 import re
 from collections import defaultdict
 from operator import attrgetter
@@ -7,8 +6,6 @@ from typing import Dict
 
 from more_itertools import flatten
 
-import environ
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
@@ -16,9 +13,6 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-
-from gspread.exceptions import GSpreadException
-from google.auth.exceptions import GoogleAuthError
 
 from apps.offer.proposal.models import Proposal, ProposalStatus, SemesterChoices
 from apps.offer.vote.models.system_state import SystemState
