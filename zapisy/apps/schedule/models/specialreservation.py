@@ -52,6 +52,7 @@ class SpecialReservationManager(models.Manager):
     def between_hours(self, start_time, end_time):
         return self.get_queryset().between_hours(start_time, end_time)
 
+
 def validate_reserveable_classroom(data):
     if not Classroom.objects.get(pk=data).can_reserve:
         raise ValidationError(
@@ -59,6 +60,7 @@ def validate_reserveable_classroom(data):
             code='non_reserveable_classroom',
             params={'value': data}
         )
+
 
 class SpecialReservation(models.Model):
 
