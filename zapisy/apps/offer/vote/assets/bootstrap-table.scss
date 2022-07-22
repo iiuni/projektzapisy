@@ -1,14 +1,14 @@
-table {
-  table-layout: fixed;
+td:first-child {
+  width: 100%;
 }
 
-table th:not(:first-child) {
+th:first-child .tablesorter-icon {
+  float: right;
+}
+
+th:not(:first-child) {
   width: max-content;
-}
-
-.tablesorter .sorter-false {
-  cursor: default;
-  width: 5%;
+  white-space: nowrap;
 }
 
 th.tablesorter-header:not(.sorter-false):hover {
@@ -17,5 +17,8 @@ th.tablesorter-header:not(.sorter-false):hover {
 
 .tablesorter-icon {
   margin: 3px;
-  float: right;
+}
+
+.tablesorter .sorter-false {
+  cursor: default;
 }
