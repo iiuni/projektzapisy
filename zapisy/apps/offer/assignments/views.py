@@ -111,7 +111,6 @@ def assignments_wizard(request):
             messages.error(request, error)
             assignments = []
 
-    courses = []
     if assignments:
         picks = set(a.proposal_id for a in assignments)
     else:
@@ -121,6 +120,7 @@ def assignments_wizard(request):
         else:
             picks = read_opening_recommendations(voting_spreadsheet)
 
+    courses = []
     for proposal in proposals:
         checked = proposal.pk in picks
         # First value is the name of course
@@ -162,10 +162,10 @@ def create_assignments_sheet(request):
     except (KeyError, ValueError) as error:
         messages.error(
             request, f"""<p>
-        Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
-        została wygenerowana w obawie przed nadpisaniem istniejących
-        przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
-        {error}""")
+            Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
+            została wygenerowana w obawie przed nadpisaniem istniejących
+            przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
+            {error}""")
         return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
