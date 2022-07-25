@@ -54,19 +54,23 @@ function setEditable(object) {
     $(object).closest(".term-form").find(".form-start").val() == "" &&
     $(object).closest(".term-form").find(".form-end").val() == ""
   ) {
-    const date = dayjs();
-    $(object)
-      .closest(".term-form")
-      .find(".form-day")
-      .val(date.format("YYYY-MM-DD"));
-    $(object)
-      .closest(".term-form")
-      .find(".form-start")
-      .val(date.format("HH:mm"));
-    $(object)
-      .closest(".term-form")
-      .find(".form-end")
-      .val(date.add(dayjs.duration({ minutes: 5 })).format("HH:mm"));
+    const timeStampFrom = dayjs();
+    const timeStampTo = timeStampFrom.add(dayjs.duration({ minutes: 5 }));
+
+    if (timeStampFrom.date() === timeStampTo.date()) {
+      $(object)
+        .closest(".term-form")
+        .find(".form-day")
+        .val(timeStampFrom.format("YYYY-MM-DD"));
+      $(object)
+        .closest(".term-form")
+        .find(".form-start")
+        .val(timeStampFrom.format("HH:mm"));
+      $(object)
+        .closest(".term-form")
+        .find(".form-end")
+        .val(timeStampTo.format("HH:mm"));
+    }
   }
 
   // Unmarks term as planned to be deleted.
