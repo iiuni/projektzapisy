@@ -2832,13 +2832,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:4.6.1":
-  version: 4.6.1
-  resolution: "bootstrap@npm:4.6.1"
+"bootstrap@npm:4.6.2":
+  version: 4.6.2
+  resolution: "bootstrap@npm:4.6.2"
   peerDependencies:
     jquery: 1.9.1 - 3
     popper.js: ^1.16.1
-  checksum: e08169f438a67af698053e3c58735526166a692c395ab33b24e3a689539135d1198ab72567f6cece90348e5e00acaf5181272b3dd47ce2b8bab8339968bbe2b0
+  checksum: 2f93c502edbdee6e962f18f3a4d6e1190849638d1a5d651f8035d4206d710c2eb4fb94e11b349a9f32f47c6934379fbc03d1758d04dac85cb546a9f553719ef0
   languageName: node
   linkType: hard
 
@@ -5176,7 +5176,7 @@ fsevents@~2.1.2:
     axios: 0.21.4
     babel-loader: 8.2.5
     big-integer: 1.6.51
-    bootstrap: 4.6.1
+    bootstrap: 4.6.2
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
