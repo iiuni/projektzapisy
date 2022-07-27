@@ -147,12 +147,14 @@ playbooks](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-e
 To test deployment locally (using a virtual machine) follow the instructions
 below.
 
-1. Install VirtualBox and Vagrant.
-2. Run `vagrant up` command in the _hosts_ directory.
-3. Run these commands in turn in the _infra_ directory:
-   ```
+1. Install VirtualBox, Vagrant, and Ansible.
+2. In `infra/hosts`, run `vagrant up`.
+3. In `infra`, run the following:
+   ```bash
    ansible-playbook playbooks/configure.yml -i hosts/example
    ansible-playbook playbooks/deploy.yml -i hosts/example
+   # for the following, first place the database dump file at `playbooks/dump.7z`
+   ansible-playbook playbooks/restore_db.yml -i hosts/example
    ```
 4. Check the [192.168.33.10](http://192.168.33.10/) address in your web
    browser.
