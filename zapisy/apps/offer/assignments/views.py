@@ -33,14 +33,15 @@ from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTy
 def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
-    assignments_sheet = assignments_sheet_or_none(request)
-    if assignments_sheet is None:
-        return render(request, 'assignments/view.html', {'year': year})
     try:
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
         teachers = read_employees_sheet(assignments_sheet)
         assignments_from_sheet = list(filter(lambda a: a.confirmed, read_assignments_sheet(assignments_sheet)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return render(request, 'assignments/view.html', {'year': year})
+    except AssertionError:
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -101,19 +102,17 @@ def assignments_wizard(request):
     should be picked.
     """
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
-    assignments_sheet = assignments_sheet_or_none(request)
-    if assignments_sheet is None:
-        assignments = []
-    else:
-        try:
+    try:
+        assignments_sheet = assignments_sheet_or_none(request)
+        if assignments_sheet is not None:
             assignments = list(read_assignments_sheet(assignments_sheet))
-        except (KeyError, ValueError) as error:
-            messages.error(request, error)
-            assignments = []
+    except (KeyError, ValueError) as error:
+        messages.error(request, error)
 
-    if assignments:
+    try:
         picks = set(a.proposal_id for a in assignments)
-    else:
+    except NameError:
+        # caused by undefined `assignments`
         voting_spreadsheet = voting_sheet_or_none(request)
         if voting_spreadsheet is None:
             picks = set()
@@ -151,10 +150,9 @@ def create_assignments_sheet(request):
     Makes sure that modifications made to the assignments sheet so far are not
     overridden.
     """
-    assignments_sheet = assignments_sheet_or_none(request)
-    if assignments_sheet is None:
-        return redirect(reverse('assignments-wizard'))
     try:
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
         current_assignments = defaultdict(list)
         for assignment in read_assignments_sheet(assignments_sheet):
             current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
@@ -166,6 +164,8 @@ def create_assignments_sheet(request):
             została wygenerowana w obawie przed nadpisaniem istniejących
             przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
             {error}""")
+        return redirect(reverse('assignments-wizard'))
+    except AssertionError:
         return redirect(reverse('assignments-wizard'))
 
     current_courses = dict()
@@ -286,14 +286,16 @@ def generate_scheduler_file(request, semester, fmt):
     if fmt not in ['csv', 'json']:
         messages.error(request, f"Niepoprawny format: '{ fmt }'")
         return redirect('assignments-wizard')
-    assignments_sheet = assignments_sheet_or_none(request)
-    if assignments_sheet is None:
-        return redirect('assignments-wizard')
+
     try:
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
         teachers = read_employees_sheet(assignments_sheet)
         assignments = list(read_assignments_sheet(assignments_sheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return redirect('assignments-wizard')
+    except AssertionError:
         return redirect('assignments-wizard')
 
     content_teachers = [{
