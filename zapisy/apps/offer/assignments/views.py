@@ -103,16 +103,16 @@ def assignments_wizard(request):
     """
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
+        assignments = []
         assignments_sheet = assignments_sheet_or_none(request)
         if assignments_sheet is not None:
             assignments = list(read_assignments_sheet(assignments_sheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
 
-    try:
+    if assignments != []:
         picks = set(a.proposal_id for a in assignments)
-    except NameError:
-        # caused by undefined `assignments`
+    else:
         voting_spreadsheet = voting_sheet_or_none(request)
         if voting_spreadsheet is None:
             picks = set()
