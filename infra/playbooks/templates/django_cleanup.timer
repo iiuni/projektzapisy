@@ -2,7 +2,7 @@
 Description=Clear old django database sessions
 
 [Timer]
-OnCalendar=FRI *-*-* 23:00:00
+OnCalendar=Wed *-*-* 05:00:00
 Persistent=true
 
 [Install]
