@@ -110,7 +110,7 @@ def assignments_wizard(request):
     except (KeyError, ValueError) as error:
         messages.error(request, error)
 
-    if assignments != []:
+    if assignments:
         picks = set(a.proposal_id for a in assignments)
     else:
         voting_spreadsheet = voting_sheet_or_none(request)
