@@ -140,7 +140,7 @@ class Semester(models.Model):
         else:
             date += timedelta(days=7 - date.weekday() + python_weekday)
 
-        assert(Term.get_day_of_week(date) == day_of_week)
+        assert Term.get_day_of_week(date) == day_of_week
 
         dates = []
         while date <= self.lectures_ending:

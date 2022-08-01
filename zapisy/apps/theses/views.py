@@ -167,7 +167,7 @@ def gen_form(request, id, studentid):
 
     students = []
     for student in thesis.students.all():
-        if(student.id != studentid):
+        if student.id != studentid:
             students.append(student)
 
     students_num = len(students) + 1
