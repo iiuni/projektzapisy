@@ -53,15 +53,6 @@ class SpecialReservationManager(models.Manager):
         return self.get_queryset().between_hours(start_time, end_time)
 
 
-def validate_reserveable_classroom(data):
-    if not Classroom.objects.get(pk=data).can_reserve:
-        raise ValidationError(
-            message='Ta sala nie jest przeznaczona do rezerwacji.',
-            code='non_reserveable_classroom',
-            params={'value': data}
-        )
-
-
 class SpecialReservation(models.Model):
 
     semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
@@ -69,7 +60,6 @@ class SpecialReservation(models.Model):
     classroom = models.ForeignKey(Classroom,
                                   verbose_name='sala',
                                   on_delete=models.CASCADE,
-                                  validators=[validate_reserveable_classroom],
                                   limit_choices_to={'can_reserve': True})
     dayOfWeek = models.CharField(max_length=1,
                                  choices=days_of_week.DAYS_OF_WEEK,
