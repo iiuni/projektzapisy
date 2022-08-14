@@ -45,7 +45,7 @@ def select_storage():
     if exists(settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE):
         return GoogleDriveStorage()
     else:
-        FileSystemStorage(location="defect/")
+        return FileSystemStorage(location="defect/")
 
 
 class Image(models.Model):

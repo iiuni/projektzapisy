@@ -77,6 +77,6 @@ class DefectManagerAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DefectManagerAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user_id'].queryset = User.objects.filter(
-            pk__in=[o.user_id for o in Employee.objects.all()]).all().order_by("first_name", "last_name")
+        self.fields['user_id'].queryset = \
+            User.objects.select_related('employee').filter(employee__isnull=False).order_by("first_name", "last_name")
         self.fields['user_id'].label_from_instance = self.label_from_instance

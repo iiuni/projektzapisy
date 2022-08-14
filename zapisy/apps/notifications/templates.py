@@ -38,7 +38,7 @@ mapping = {
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.DEFECT_MODIFIED:
-    '{reporter} zmodyfikował(a) dodaną przez Ciebie usterkę {defect_name}',
+    '{defect_manager} odpowiedział(a) na dodaną przez Ciebie usterkę {defect_name}',
 }
 
 mapping_title = {

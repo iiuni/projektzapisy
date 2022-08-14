@@ -202,7 +202,8 @@ def edit_defect_post_request(request, defect_id):
         defect_modified.send_robust(
             sender=Defect,
             instance=defect.get(),
-            user=defect.get().reporter
+            user=defect.get().reporter,
+            defect_manager=request.user
         )
 
     messages.success(request, "Edytowano usterkę")
@@ -262,7 +263,8 @@ def do_delete_image(request, image_id):
         defect_modified.send_robust(
             sender=Defect,
             instance=image.defect,
-            user=image.defect.reporter
+            user=image.defect.reporter,
+            defect_manager=request.user
         )
     return defect_id
 
@@ -287,7 +289,8 @@ def post_information_from_defect_manager(request, defect_id):
             defect_modified.send_robust(
                 sender=Defect,
                 instance=defect.get(),
-                user=defect.get().reporter
+                user=defect.get().reporter,
+                defect_manager=request.user
             )
 
         messages.success(request, "Pomyślnie zmieniono informację od serwisanta")

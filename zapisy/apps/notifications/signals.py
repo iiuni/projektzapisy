@@ -180,7 +180,9 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 @receiver(defect_modified)
 def notify_that_defect_was_modified(sender, **kwargs) -> None:
     defect = kwargs['instance']
+
     target = reverse('defects:show_defect', args=[defect.id])
+    defect_manager = kwargs['defect_manager']
 
     notify_user(
         kwargs['user'],
@@ -190,8 +192,7 @@ def notify_that_defect_was_modified(sender, **kwargs) -> None:
             NotificationType.DEFECT_MODIFIED,
             {
                 'defect_name': defect.name,
-                'reporter': ' '.join([defect.reporter.first_name, defect.reporter.last_name]),
-
+                'defect_manager': ' '.join([defect_manager.first_name, defect_manager.last_name])
             },
             target
         )
