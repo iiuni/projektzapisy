@@ -6,18 +6,13 @@ from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
-from gdstorage.storage import GoogleDriveStorage
-
+from . import models
 from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
 
-gd_storage = GoogleDriveStorage() if os.path.exists(settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE) else None
-if gd_storage is None:
-    logging.getLogger().error("File" + settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE +
-                              "was not found. Defect service will not work properly")
-
+storage = models.select_storage()
 
 @employee_required
 def index(request):
@@ -66,8 +61,8 @@ def index(request):
 def delete_images(images_to_delete):
     for image_name in images_to_delete:
         image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image_name
-        if gd_storage.exists(image_path):
-            gd_storage.delete(image_path)
+        if storage.exists(image_path):
+            storage.delete(image_path)
 
 
 def parse_names(request):
@@ -256,8 +251,8 @@ def do_delete_image(request, image_id):
 
     image.delete()
 
-    if gd_storage.exists(image_path):
-        gd_storage.delete(image_path)
+    if storage.exists(image_path):
+        storage.delete(image_path)
 
     if request.user.id != image.defect.reporter.id:
         defect_modified.send_robust(
