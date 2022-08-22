@@ -14,6 +14,7 @@ from ..users.decorators import employee_required
 
 storage = models.select_storage()
 
+
 @employee_required
 def index(request):
     is_defect_manager_val = is_defect_manager(request.user.id)
@@ -198,7 +199,7 @@ def edit_defect_post_request(request, defect_id):
             sender=Defect,
             instance=defect.get(),
             user=defect.get().reporter,
-            defect_manager=request.user
+            executor=request.user
         )
 
     messages.success(request, "Edytowano usterkę")
@@ -227,7 +228,8 @@ def add_defect_post_request(request):
     return redirect('defects:main')
 
 
-def print_defects(request, defects_list=None):
+@employee_required
+def print_defects(request):
     if defects_list is None:
         return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:
@@ -259,7 +261,7 @@ def do_delete_image(request, image_id):
             sender=Defect,
             instance=image.defect,
             user=image.defect.reporter,
-            defect_manager=request.user
+            executor=request.user
         )
     return defect_id
 
@@ -285,7 +287,7 @@ def post_information_from_defect_manager(request, defect_id):
                 sender=Defect,
                 instance=defect.get(),
                 user=defect.get().reporter,
-                defect_manager=request.user
+                executor=request.user
             )
 
         messages.success(request, "Pomyślnie zmieniono informację od serwisanta")

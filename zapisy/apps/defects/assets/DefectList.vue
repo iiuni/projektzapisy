@@ -140,7 +140,7 @@ export default class DefectList extends Vue {
         </td>
       </tr>
       <tr v-if="!visibleDefects.length" class="text-center">
-        <td colspan="5">
+        <td colspan="6">
           <em class="text-muted">Brak widocznych usterek.</em>
         </td>
       </tr>

@@ -22,7 +22,7 @@ class StateChoices(models.IntegerChoices):
 class Defect(models.Model):
     name = models.CharField(max_length=DEFECT_MAX_NAME_SIZE, verbose_name='Nazwa')
     creation_date = models.DateTimeField(auto_now_add=True)
-    last_modification = models.DateTimeField(auto_now_add=True)
+    last_modification = models.DateTimeField(auto_now=True)
     place = models.CharField(max_length=DEFECT_MAX_PLACE_SIZE, verbose_name="Miejsce")
     description = models.TextField("Opis usterki", blank=True)
     reporter = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -45,7 +45,7 @@ def select_storage():
     if exists(settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE):
         return GoogleDriveStorage()
     else:
-        logging.getLogger().error("File" + settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE +
+        logging.getLogger().error("File " + settings.GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE +
                                   " was not found. Defect service may not work properly")
         return FileSystemStorage(location="defect/")
 

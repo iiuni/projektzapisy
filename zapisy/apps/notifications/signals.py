@@ -182,7 +182,7 @@ def notify_that_defect_was_modified(sender, **kwargs) -> None:
     defect = kwargs['instance']
 
     target = reverse('defects:show_defect', args=[defect.id])
-    defect_manager = kwargs['defect_manager']
+    executor = kwargs['executor']
 
     notify_user(
         kwargs['user'],
@@ -192,7 +192,7 @@ def notify_that_defect_was_modified(sender, **kwargs) -> None:
             NotificationType.DEFECT_MODIFIED,
             {
                 'defect_name': defect.name,
-                'defect_manager': ' '.join([defect_manager.first_name, defect_manager.last_name])
+                'executor': ' '.join([executor.first_name, executor.last_name])
             },
             target
         )

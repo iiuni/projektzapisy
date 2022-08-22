@@ -66,22 +66,23 @@
             <h4>Zdjęcia</h4>
 
             {% if edit %}
-                <div class="container-fluid" style="margin: 10px">
-                    {% if images %}
-                        Zaznaczone zdjęcia zostaną usunięte.
-                    {% endif %}
-                    <div class="row">
-                        {% for image in images %}
-                            <div class="col-md-3 pop center-block defect-edit-image" >
-                                <label class="delete-label">
-                                    <input type="checkbox" name="files-to-delete[]" value="{{ image.0 }}">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <img class="img-thumbnail" src={{ image.1 }} >
-                            </div>
-                        {% endfor %}
+                {% if images %}
+                    <div class="container-fluid" style="margin: 10px">
+                        Aby usunąć wybrane zdjęcia zaznacz je za pomocą kwadratu w lewym górym rogu zdjęcia.
+                        <div class="row">
+                            {% for image in images %}
+                                <div class="col-md-3 center-block defect-edit-image" >
+                                    <label class="delete-label">
+                                        <input type="checkbox" name="files-to-delete[]" value="{{ image.0 }}">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <img class="img-thumbnail" src={{ image.1 }} >
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
+
             {% endif %}
 
             {{ formset.management_form }}
