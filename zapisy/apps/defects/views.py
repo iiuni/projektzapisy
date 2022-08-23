@@ -1,5 +1,4 @@
 import logging
-import os
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,13 +19,9 @@ def index(request):
     is_defect_manager_val = is_defect_manager(request.user.id)
     if request.method == "POST":
         query = request.POST
-        if_empty, defects_list = parse_names(request)
-        if (query.get('print') is None and not (if_empty is False)) or len(defects_list) == 0:
+        defects_list = parse_names_delete(request, "defects_ids")
+        if len(defects_list) == 0:
             messages.error(request, "Akcja wymaga zaznaczenia elementów")
-        elif query.get('print') is not None:
-            if defects_list is None or len(defects_list) == 0:
-                return print_defects(request)
-            return print_defects(request, defects_list)
         elif query.get('done') is not None:
             if is_defect_manager_val:
                 Defect.objects.filter(pk__in=defects_list).update(state=StateChoices.DONE)
@@ -66,12 +61,18 @@ def delete_images(images_to_delete):
             storage.delete(image_path)
 
 
-def parse_names(request):
+def parse_names_get(request, field):
     try:
-        return int(request.POST.get("if_form_empty")) != 0, \
-               list(map(int, request.POST.get("defects_ids").split(';')))
+        return list(map(int, request.GET.get(field).split(';')))
     except Exception:
-        return True, []
+        []
+
+
+def parse_names_post(request, field):
+    try:
+        return list(map(int, request.POST.get(field).split(';')))
+    except Exception:
+        []
 
 
 def parse_defect(defect: Defect):
@@ -230,7 +231,8 @@ def add_defect_post_request(request):
 
 @employee_required
 def print_defects(request):
-    if defects_list is None:
+    defects_list = parse_names_get(request, "defects_ids")
+    if defects_list is None or defects_list == []:
         return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:
         defects = dict([(defect.id, defect) for defect in Defect.objects.filter(pk__in=defects_list)])

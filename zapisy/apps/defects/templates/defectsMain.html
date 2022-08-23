@@ -5,7 +5,7 @@
 
 {% block bread %}
     <li class="breadcrumb-item">
-        <a href="{% url "main-page" %}">Strona główna</a>
+        <a href="{% url 'main-page' %}">Strona główna</a>
     </li>
 
     <li class="breadcrumb-item active">
@@ -17,23 +17,27 @@
 
     {{ visibleDefects|json_script:"defect-data" }}
 
-    <form method="post" id="action-form">
-        {% csrf_token %}
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="d-inline-block">
-                Usterki
-            </h1>
-            <div> <!-- btn btn-primary !-->
-            <a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a>
-            <input type="submit" name="print" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+            Usterki
+        </h1>
+        <div>
+            <div style="float: left; padding: 2px;"><a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a></div>
+            <div style="float: left; padding: 2px;"><form method="get" action="{% url 'defects:print' %}" id="action-form-print">
+                <input type="submit" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
+                <input type="hidden" name="defects_ids" id="defects_ids-print" value="">
+            </form></div>
             {% if is_defect_manager %}
-            <input type="submit" name="delete" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
-        {% endif %}
-            <input type="hidden" name="defects_ids" id="defects_ids" value="">
-            <input type="hidden" name="if_form_empty" id="if_form_empty" value="0">
-            </div>
+                <div style="float: left; padding: 2px;"><form method="post" class="action-form-delete">
+                    {% csrf_token %}
+                    <input type="submit" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
+                    <input type="hidden" name="defects_ids" id="defects_ids-delete" class="defect_ids" value="">
+                </form></div>
+            {% endif %}
         </div>
-    </form>
+    </div>
+
 
 
         <p class="row justify-content-center">
@@ -47,22 +51,15 @@
 
     <script>
          function prepareForm() {
-             let selected
-             if($('tr.selected').length == 0){
-                $("#if_form_empty").val("1")
-                 selected = $('tbody tr').map(function () {
+             let selected = $('tbody tr.selected').map(function () {
                      return this.id
-                 }).toArray()
-             }
-             else {
-                 selected = $('tbody tr.selected').map(function () {
-                     return this.id
-                 }).toArray()
-             }
-             $("#defects_ids").val(selected.join(';'))
+                 }).toArray().join(';')
+             $('#defects_ids-delete').val(selected)
+             $('#defects_ids-print').val(selected)
          }
 
-         $("#action-form").on("submit", prepareForm)
+         $(".action-form-delete").on("submit", prepareForm)
+         $(".action-form-print").on("submit", prepareForm)
     </script>
 {% endblock %}
 

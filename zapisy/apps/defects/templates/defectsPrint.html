@@ -70,9 +70,9 @@
                 {% if defect.description != "" or defect.information_from_defect_manager != "" %}
                     <tr>
                         <td class="text" colspan="5" style="word-break: break-all">
-                            <div>{{ defect.description }}</div>
+                            <div>{{ defect.description|linebreaksbr }}</div>
                             {% if defect.information_from_defect_manager != "" %}
-                                <div><b>Informacja o zmianach:</b> {{ defect.information_from_defect_manager }}</div>
+                                <div><b>Informacja o zmianach:</b> {{ defect.information_from_defect_manager|linebreaksbr }}</div>
                             {% endif %}
                         </td>
                     </tr>
@@ -82,8 +82,6 @@
             {% endfor %}
             </tbody>
     </table></form>
-
-    </div>
 
 {% endblock %}
 
