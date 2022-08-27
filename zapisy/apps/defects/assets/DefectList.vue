@@ -56,9 +56,11 @@ export default class DefectList extends Vue {
     let selected = Array.prototype.map.call(
         document.getElementsByClassName("selected"), function(x){return x.id}).join(',')
     // @ts-ignore
-    document.getElementById("defects_ids_delete").value = selected
-    // @ts-ignore
     document.getElementById("defects_ids_print").value = selected
+    // @ts-ignore
+    let delete_button = document.getElementById("defects_ids_delete")
+    // @ts-ignore
+    if (delete_button) delete_button.value = selected
   }
 
   // @ts-ignore
