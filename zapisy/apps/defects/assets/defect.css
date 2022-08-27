@@ -34,6 +34,7 @@
   height: 25px;
   width: 25px;
   background-color: #eee;
+  border: solid black 0.01em;
 }
 
 .delete-label:hover input ~ .checkmark {
