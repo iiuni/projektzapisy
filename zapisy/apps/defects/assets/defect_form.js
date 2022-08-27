@@ -52,7 +52,7 @@ function deleteImageField(event) {
 
 $(function () {
   // We get number of image forms received from server.
-  maxFormsetNumber = parseInt($('input[name="image_set-TOTAL_FORMS"]').val());
+  maxFormsetNumber = parseInt($('input[name="defectimage_set-TOTAL_FORMS"]').val());
 
   // We get number of extra image forms (empty ones) received from server
   extraImagesNumber = parseInt($("#extra-images-number").val());

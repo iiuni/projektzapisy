@@ -50,7 +50,7 @@ def select_storage():
         return FileSystemStorage(location="defect/")
 
 
-class Image(models.Model):
+class DefectImage(models.Model):
     image = models.ImageField(storage=select_storage, upload_to='defects')
     defect = models.ForeignKey(Defect, on_delete=models.CASCADE, null=False, blank=True)
 

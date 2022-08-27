@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 
 from . import models
-from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
+from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
@@ -76,7 +76,7 @@ def parse_defect(defect: Defect):
 def show_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        images = Image.objects.filter(defect=defect)
+        images = DefectImage.objects.filter(defect=defect)
         image_urls = []
 
         for image in images:
@@ -111,11 +111,11 @@ def edit_defect_helper(request, defect):
     formset = DefectImageFormSet()
     images = []
 
-    for image in Image.objects.filter(defect=defect):
+    for image in DefectImage.objects.filter(defect=defect):
         images.append((image.id, image.image.url[:-16]))
     context = {'form': form, 'formset': formset, "response": request.method, "edit": True, 'images': images,
                'extra_images_number': ExtraImagesNumber, 'defect': defect}
-    return render(request, 'addDefect.html', context)
+    return render(request, 'editDefect.html', context)
 
 
 @employee_required
@@ -153,7 +153,7 @@ def add_defect(request):
         form = DefectForm()
         formset = DefectImageFormSet()
     context = {'form': form, 'formset': formset, "response": request.method, 'extra_images_number': ExtraImagesNumber}
-    return render(request, 'addDefect.html', context)
+    return render(request, 'editDefect.html', context)
 
 
 def return_error_and_reload(request, form, edit, errors):
@@ -161,7 +161,7 @@ def return_error_and_reload(request, form, edit, errors):
     formset = DefectImageFormSet()
     context = {'form': form, 'formset': formset, "response": request.method,
                'extra_images_number': ExtraImagesNumber, "edit": edit}
-    return render(request, 'addDefect.html', context)
+    return render(request, 'editDefect.html', context)
 
 
 def edit_defect_post_request(request, defect_id):
@@ -238,7 +238,7 @@ def delete_image(request, image_id):
 
 
 def do_delete_image(request, image_id):
-    image = get_object_or_404(Image, id=image_id)
+    image = get_object_or_404(DefectImage, id=image_id)
     defect_id = image.defect.id
     image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image.image.name
 

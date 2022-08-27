@@ -4,8 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
-from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, Image, DefectManager
-from ..users.models import Employee
+from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, DefectImage, DefectManager
 
 
 class DefectFormBase(forms.ModelForm):
@@ -27,13 +26,13 @@ class DefectForm(DefectFormBase):
         super(DefectForm, self).__init__(*args, **kwargs)
 
 
-class ImageForm(forms.ModelForm):
+class DefectImageForm(forms.ModelForm):
     class Meta:
-        model = Image
+        model = DefectImage
         fields = ('image',)
 
     def __init__(self, *args, **kwargs):
-        super(ImageForm, self).__init__(*args, **kwargs)
+        super(DefectImageForm, self).__init__(*args, **kwargs)
         self.fields['image'].required = False
 
         self.helper = FormHelper()
@@ -48,8 +47,8 @@ class ImageForm(forms.ModelForm):
 
 ExtraImagesNumber = 10
 DefectImageFormSet = inlineformset_factory(Defect,
-                                           Image,
-                                           form=ImageForm,
+                                           DefectImage,
+                                           form=DefectImageForm,
                                            extra=ExtraImagesNumber,
                                            can_delete=True)
 

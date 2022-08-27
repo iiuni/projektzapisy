@@ -3,19 +3,19 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from .forms import DefectManagerAdminForm
-from .models import Defect, DefectManager, Image
+from .models import Defect, DefectManager, DefectImage
 
 
-class ImageInline(admin.TabularInline):
-    model = Image
+class DefectImageInline(admin.TabularInline):
+    model = DefectImage
 
 
 class DefectInline(admin.TabularInline):
     model = Defect
 
 
-@admin.register(Image)
-class ImageAdmin(admin.ModelAdmin):
+@admin.register(DefectImage)
+class DefectImageAdmin(admin.ModelAdmin):
     list_display = ("id", "image", "defect_field")
     # readonly_fields = ("defect_field",)
 
@@ -31,7 +31,7 @@ class ImageAdmin(admin.ModelAdmin):
 @admin.register(Defect)
 class DefectAdmin(admin.ModelAdmin):
     list_display = ("name", "reporter", "state", "place", "creation_date", "last_modification")
-    inlines = [ImageInline]
+    inlines = [DefectImageInline]
 
 
 @admin.register(DefectManager)
