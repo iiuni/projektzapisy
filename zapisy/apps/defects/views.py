@@ -17,41 +17,38 @@ storage = models.select_storage()
 @employee_required
 def index(request):
     is_defect_manager_val = is_defect_manager(request.user.id)
-    if request.method == "POST":
-        query = request.POST
-        defects_list = parse_names_delete(request, "defects_ids")
-        if len(defects_list) == 0:
-            messages.error(request, "Akcja wymaga zaznaczenia elementów")
-        elif query.get('done') is not None:
-            if is_defect_manager_val:
-                Defect.objects.filter(pk__in=defects_list).update(state=StateChoices.DONE)
-            else:
-                messages.error(request,
-                               "Stan może zostać zmieniony tylko przez osoby do tego wyznaczone.")
-        elif query.get('delete') is not None:
-            if is_defect_manager_val:
-                to_delete = Defect.objects.filter(pk__in=defects_list)
-
-                images_to_delete = []
-                for defect in to_delete:
-                    for image in defect.image_set.all():
-                        images_to_delete.append(image.image.name)
-                messages.info(request, images_to_delete)
-                query_set = ", ".join(map(lambda x: x['name'], list(to_delete.values())))
-                messages.info(request, "Usunięto następujące usterki: " + query_set)
-                to_delete.delete()
-
-                delete_images(images_to_delete)
-            else:
-                messages.error(request,
-                               "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
-        else:
-            messages.error(request, "Nie wprowadzono metody. Ten błąd nie powinien się zdarzyć. Proszę o kontakt z "
-                                    "administratorem systemu zapisów.")
     return render(request, "defectsMain.html", {"defects": Defect.objects.all().select_related("reporter"),
                                                 "visibleDefects": [parse_defect(defect) for defect in
                                                                    Defect.objects.all().select_related("reporter")],
                                                 'is_defect_manager': is_defect_manager_val})
+
+
+def delete_images_endpoint(request):
+    is_defect_manager_val = is_defect_manager(request.user.id)
+    if request.method == "POST":
+        defects_list = parse_names(request.POST, "defects_ids")
+        if len(defects_list) == 0:
+            messages.error(request, "Akcja wymaga zaznaczenia elementów")
+            return redirect('defects:main')
+
+        if not is_defect_manager_val:
+            messages.error(request,
+                           "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
+            return redirect('defects:main')
+
+        to_delete = Defect.objects.filter(pk__in=defects_list)
+        images_to_delete = []
+
+        for defect in to_delete:
+            for image in defect.image_set.all():
+                images_to_delete.append(image.image.name)
+
+        query_set = ", ".join(map(lambda x: x['name'], list(to_delete.values())))
+        messages.info(request, "Usunięto następujące usterki: " + query_set)
+
+        to_delete.delete()
+        delete_images(images_to_delete)
+        return redirect('defects:main')
 
 
 def delete_images(images_to_delete):
@@ -61,16 +58,9 @@ def delete_images(images_to_delete):
             storage.delete(image_path)
 
 
-def parse_names_get(request, field):
+def parse_names(form_fields, field):
     try:
-        return list(map(int, request.GET.get(field).split(',')))
-    except Exception:
-        []
-
-
-def parse_names_post(request, field):
-    try:
-        return list(map(int, request.POST.get(field).split(',')))
+        return list(map(int, form_fields.get(field).split(',')))
     except Exception:
         []
 
@@ -231,7 +221,7 @@ def add_defect_post_request(request):
 
 @employee_required
 def print_defects(request):
-    defects_list = parse_names_get(request, "defects_ids")
+    defects_list = parse_names(request.GET, "defects_ids")
     if defects_list is None or defects_list == []:
         return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:

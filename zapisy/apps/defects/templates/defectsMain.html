@@ -29,7 +29,7 @@
                 <input type="hidden" name="defects_ids" id="defects_ids_print" value="">
             </form></div>
             {% if is_defect_manager %}
-                <div style="float: left; padding: 2px;"><form method="post" class="action-form-delete">
+                <div style="float: left; padding: 2px;"><form method="post" action="{% url 'defects:delete' %}" class="action-form-delete">
                     {% csrf_token %}
                     <input type="submit" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
                     <input type="hidden" name="defects_ids" id="defects_ids_delete" class="defect_ids" value="">
