@@ -26,13 +26,13 @@
             <div style="float: left; padding: 2px;"><a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a></div>
             <div style="float: left; padding: 2px;"><form method="get" action="{% url 'defects:print' %}" id="action-form-print">
                 <input type="submit" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
-                <input type="hidden" name="defects_ids" id="defects_ids-print" value="">
+                <input type="hidden" name="defects_ids" id="defects_ids_print" value="">
             </form></div>
             {% if is_defect_manager %}
                 <div style="float: left; padding: 2px;"><form method="post" class="action-form-delete">
                     {% csrf_token %}
                     <input type="submit" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
-                    <input type="hidden" name="defects_ids" id="defects_ids-delete" class="defect_ids" value="">
+                    <input type="hidden" name="defects_ids" id="defects_ids_delete" class="defect_ids" value="">
                 </form></div>
             {% endif %}
         </div>
@@ -47,20 +47,6 @@
         <p class="row justify-content-center">
 
         <div id="defects-list"></div>
-
-
-    <script>
-         function prepareForm() {
-             let selected = $('tbody tr.selected').map(function () {
-                     return this.id
-                 }).toArray().join(';')
-             $('#defects_ids-delete').val(selected)
-             $('#defects_ids-print').val(selected)
-         }
-
-         $(".action-form-delete").on("submit", prepareForm)
-         $(".action-form-print").on("submit", prepareForm)
-    </script>
 {% endblock %}
 
 {% block rendered_bundles %}

@@ -42,12 +42,23 @@ export default class DefectList extends Vue {
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
+          this.set_forms_values()
         case "sorting/changeSorting":
           this.visibleDefects = this.defects.filter(this.tester);
           this.visibleDefects.sort(this.compare);
           break;
       }
     });
+  }
+
+  set_forms_values(){
+    // @ts-ignore
+    let selected = Array.prototype.map.call(
+        document.getElementsByClassName("selected"), function(x){return x.id}).join(',')
+    // @ts-ignore
+    document.getElementById("defects_ids_delete").value = selected
+    // @ts-ignore
+    document.getElementById("defects_ids_print").value = selected
   }
 
   // @ts-ignore
@@ -71,6 +82,7 @@ export default class DefectList extends Vue {
         // @ts-ignore
         document.getElementById("delete-form-button").disabled = true;
     }
+    this.set_forms_values()
   }
 }
 </script>

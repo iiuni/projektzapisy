@@ -63,14 +63,14 @@ def delete_images(images_to_delete):
 
 def parse_names_get(request, field):
     try:
-        return list(map(int, request.GET.get(field).split(';')))
+        return list(map(int, request.GET.get(field).split(',')))
     except Exception:
         []
 
 
 def parse_names_post(request, field):
     try:
-        return list(map(int, request.POST.get(field).split(';')))
+        return list(map(int, request.POST.get(field).split(',')))
     except Exception:
         []
 
