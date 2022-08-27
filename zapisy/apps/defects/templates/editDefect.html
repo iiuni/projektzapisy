@@ -59,7 +59,7 @@
     <form action="" method="POST" class="post-form" enctype="multipart/form-data" id="main-form">
         {% csrf_token %}
         {% crispy form %}
-
+        <input type="submit" hidden />
         <hr>
 
         <div id="image-formset" class="mb-5">
