@@ -1,10 +1,9 @@
-import logging
-
 from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
+
 from . import models
 from .forms import DefectForm, Image, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
