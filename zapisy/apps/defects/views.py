@@ -4,6 +4,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 
+import logging
+
 from . import models
 from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
@@ -212,7 +214,12 @@ def add_defect_post_request(request):
         return return_error_and_reload(request, form, False, str(formset.errors))
 
     defect.save()
-    formset.save()
+    try:
+        formset.save()
+    except Exception as exception:
+        messages.error(request, "Wystąpił problem podczas zapisu zdjęć. Niektóre z nich mogły zostać niedodane.")
+        logging.getLogger().error("Error during uploading files to GoogleDrive: {}".format(str(exception)))
+        return redirect('defects:edit_defect', defect_id=defect.id)
 
     messages.success(request, "Dodano pomyślnie usterkę")
     return redirect('defects:main')
