@@ -20,6 +20,8 @@ from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
 from apps.users.models import Employee, Student
 
+from apps.defects.models import Defect
+
 
 def get_id() -> str:
     return str(uuid.uuid1())
@@ -177,8 +179,8 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
         }, target))
 
 
-@receiver(defect_modified)
-def notify_that_defect_was_modified(sender, **kwargs) -> None:
+@receiver(defect_modified, sender=Defect)
+def notify_that_defect_was_modified(sender: Defect, **kwargs) -> None:
     defect = kwargs['instance']
 
     target = reverse('defects:show_defect', args=[defect.id])
