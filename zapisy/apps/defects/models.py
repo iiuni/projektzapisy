@@ -27,7 +27,7 @@ class Defect(models.Model):
     description = models.TextField("Opis usterki", blank=True)
     reporter = models.ForeignKey(User, on_delete=models.CASCADE)
     state = models.PositiveSmallIntegerField("Stan", choices=StateChoices.choices, default=StateChoices.CREATED)
-    information_from_defect_manager = models.TextField("Informacja od serwisanta", blank=True)
+    information_from_defect_manager = models.TextField("Informacja o zmianach", blank=True)
 
     def __str__(self):
         return self.name

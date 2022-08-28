@@ -288,7 +288,7 @@ def post_information_from_defect_manager(request, defect_id):
                 executor=request.user
             )
 
-        messages.success(request, "Pomyślnie zmieniono informację od serwisanta")
+        messages.success(request, "Pomyślnie zmodyfikowano informację o zmianach")
         return redirect('defects:show_defect', defect_id=defect_id)
     raise Http404
 
