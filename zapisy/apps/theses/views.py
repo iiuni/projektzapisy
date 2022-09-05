@@ -65,7 +65,7 @@ def view_thesis(request, id):
     board_member = is_theses_board_member(request.user)
 
     user_privileged_for_thesis = thesis.is_among_advisors(
-        request.user) or board_member
+        request.user) or request.user.is_staff or board_member
 
     if not thesis.has_been_accepted and not user_privileged_for_thesis:
         raise PermissionDenied
@@ -159,7 +159,7 @@ def gen_form(request, id, studentid):
         raise Http404("No Student matches the given query.")
 
     user_privileged_for_thesis = thesis.is_among_advisors(
-        request.user) or is_theses_board_member(request.user)
+        request.user) or request.user.is_staff or is_theses_board_member(request.user)
     user_allowed_to_generate = user_privileged_for_thesis or (
         thesis.has_been_accepted and thesis.is_student_assigned(request.user))
     if not user_allowed_to_generate:
