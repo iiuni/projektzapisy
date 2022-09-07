@@ -23,9 +23,11 @@
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
+        {% if user.is_authenticated %}
+            <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
         {% if course.semester.is_current_semester %}
-            <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
             {% if user.is_staff or course.owner == request.user.employee %}
                 <a class="btn btn-sm btn-outline-info" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
             {% endif %}

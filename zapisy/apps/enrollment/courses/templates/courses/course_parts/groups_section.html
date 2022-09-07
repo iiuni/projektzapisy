@@ -4,7 +4,9 @@
 <div class="table-responsive tutorial">
     <h3 class="d-inline-block">{{ class_type|decode_class_type_plural }}
     </h3>
-    <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
+    {% if user.is_authenticated %}
+        <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
+    {% endif %}
     {% if class_type in waiting_students %}
         <span class="badge bg-danger d-inline-block align-text-bottom ms-2">
             Niezapisanych&mdash;oczekujących
