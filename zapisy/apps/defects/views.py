@@ -24,7 +24,7 @@ def index(request):
                                                 'is_defect_manager': is_defect_manager_val})
 
 
-def delete_images_endpoint(request):
+def delete_defects_endpoint(request):
     is_defect_manager_val = is_defect_manager(request.user.id)
     if request.method == "POST":
         defects_list = parse_names(request.POST, "defects_ids")
@@ -49,7 +49,8 @@ def delete_images_endpoint(request):
 
         to_delete.delete()
         delete_images(images_to_delete)
-        return redirect('defects:main')
+    messages.error(request, "Nieprawidłowa metoda zapytania http.")
+    return redirect('defects:main')
 
 
 def delete_images(images_to_delete):
