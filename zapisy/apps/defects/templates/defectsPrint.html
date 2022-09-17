@@ -1,19 +1,27 @@
+{% extends "defectsBase.html" %}
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-<!DOCTYPE html>
-<html lang="pl">
+{% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>ListaUsterek{% now "Y-m-d:H:i" %}</title>
-    <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
+{% block bread %}
 
-    <link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
-    {% render_bundle "common-main" %}
-</head>
-<body>
+     <li class="breadcrumb-item">
+        <a href="{% url 'main-page' %}">Strona główna</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'defects:main' %}">Usterki</a>
+    </li>
+    <li class="breadcrumb-item active">
+        Drukuj
+    </li>
+{% endblock %}
+
+{% block title %} ListaUsterek{% now "Y-m-d:H:i" %} {% endblock %}
+
+{% block all-content %}
+
     <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
         <h1 class="d-inline-block" style="text-align: center !important; width: 100%;">
              Usterki
@@ -35,7 +43,7 @@
                     <td class="text-center"> {{ defect.name }} </td>
                     <td class="text-center"> {{ defect.reporter.first_name }} {{ defect.reporter.last_name}} </td>
                     <td class="text-center">{{ defect.place }}</td>
-                    <td class="text-center" style="{{ defect.get_status_color }}">{{ defect.get_state_display }}</td>
+                    <td class="text-center">{{ defect.get_state_display }}</td>
                     <td class="text-center">{{ defect.creation_date }}</td>
                 </tr>
                 {% if defect.description != "" or defect.information_from_defect_manager != "" %}
@@ -53,12 +61,8 @@
             {% endfor %}
             </tbody>
     </table>
-</body>
 
-<script>
-    window.print()
-</script>
-
-<style>
-
-</style>
+    <script>
+        window.print()
+    </script>
+{% endblock %}
