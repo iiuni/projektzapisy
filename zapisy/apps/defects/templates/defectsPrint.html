@@ -7,62 +7,61 @@
 
 {% block bread %}
 
-     <li class="breadcrumb-item">
-        <a href="{% url 'main-page' %}">Strona główna</a>
-    </li>
-    <li class="breadcrumb-item">
-        <a href="{% url 'defects:main' %}">Usterki</a>
-    </li>
-    <li class="breadcrumb-item active">
-        Drukuj
-    </li>
+<li class="breadcrumb-item">
+    <a href="{% url 'main-page' %}">Strona główna</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="{% url 'defects:main' %}">Usterki</a>
+</li>
+<li class="breadcrumb-item active">
+    Drukuj
+</li>
 {% endblock %}
 
 {% block title %} ListaUsterek{% now "Y-m-d:H:i" %} {% endblock %}
 
 {% block all-content %}
 
-    <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-        <h1 class="d-inline-block" style="text-align: center !important; width: 100%;">
-             Usterki
-        </h1>
-    </div>
-    <table class="table table-striped">
-        <thead>
-        <tr id="headers">
-            <th scope="col" class="text-center az" data-defaultsign="nospan">Nazwa</th>
-            <th scope="col" class="text-center">Zgłoszona przez</th>
-            <th scope="col" class="text-center">Miejsce</th>
-            <th scope="col" class="text-center">Stan</th>
-            <th scope="col" class="text-center">Data</th>
-        </tr>
-        </thead>
-            <tbody>
-            {% for defect in defects %}
-                <tr id="{{ defect.id }}">
-                    <td class="text-center"> {{ defect.name }} </td>
-                    <td class="text-center"> {{ defect.reporter.first_name }} {{ defect.reporter.last_name}} </td>
-                    <td class="text-center">{{ defect.place }}</td>
-                    <td class="text-center">{{ defect.get_state_display }}</td>
-                    <td class="text-center">{{ defect.creation_date }}</td>
-                </tr>
-                {% if defect.description != "" or defect.information_from_defect_manager != "" %}
-                    <tr>
-                        <td class="text" colspan="5" style="word-break: break-all">
-                            <div>{{ defect.description|linebreaksbr }}</div>
-                            {% if defect.information_from_defect_manager != "" %}
-                                <div><b>Informacja o zmianach:</b> {{ defect.information_from_defect_manager|linebreaksbr }}</div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr style="display:none;"></tr>
-                {% endif %}
-            {% endfor %}
-            </tbody>
-    </table>
+<div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+    <h1 class="d-inline-block" style="text-align: center !important; width: 100%;">
+        Usterki
+    </h1>
+</div>
+<table class="table table-striped">
+    <thead>
+    <tr id="headers">
+        <th scope="col" class="text-center az" data-defaultsign="nospan">Nazwa</th>
+        <th scope="col" class="text-center">Miejsce</th>
+        <th scope="col" class="text-center">Zgłoszona przez</th>
+        <th scope="col" class="text-center">Stan</th>
+        <th scope="col" class="text-center">Data</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for defect in defects %}
+    <tr id="{{ defect.id }}">
+        <td class="text-center"> {{ defect.name }}</td>
+        <td class="text-center">{{ defect.place }}</td>
+        <td class="text-center"> {{ defect.reporter.first_name }} {{ defect.reporter.last_name }}</td>
+        <td class="text-center">{{ defect.get_state_display }}</td>
+        <td class="text-center">{{ defect.creation_date }}</td>
+    </tr>
+    <tr>
+        <td class="text" colspan="5" style="word-break: break-all;
+            {% if defect.description == '' and defect.information_from_defect_manager == '' %} display:none; {% endif %}">
+            {% if defect.description != "" %}
+            <div>{{ defect.description|linebreaksbr }}</div>
+            {% endif %}
+            {% if defect.information_from_defect_manager != "" %}
+            <div><strong>Informacja o zmianach:</strong> {{ defect.information_from_defect_manager|linebreaksbr }}</div>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-    <script>
-        window.print()
-    </script>
+<script>
+    window.print()
+</script>
 {% endblock %}
