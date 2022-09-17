@@ -231,7 +231,7 @@ def print_defects(request):
     if defects_list is None or defects_list == []:
         return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:
-        defects = dict([(defect.id, defect) for defect in Defect.objects.filter(pk__in=defects_list)])
+        defects = { defect.id: defect for defect in Defect.objects.filter(pk__in=defects_list) }
         defects = list(filter(lambda x: x is not None, map(lambda defect: defects.get(defect, None), defects_list)))
         return render(request, 'defectsPrint.html', {'defects': defects})
 
