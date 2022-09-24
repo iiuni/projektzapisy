@@ -195,3 +195,10 @@
         enabled: yes
         state: started
       become: yes
+
+    - name: Enable timer for django_cleanup service
+      service:
+        name: django_cleanup.timer
+        enabled: yes
+        state: started
+      become: yes

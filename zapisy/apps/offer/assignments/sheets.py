@@ -1,10 +1,16 @@
 import os
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Iterator
+
+from more_itertools import flatten
 
 from django.conf import settings
+from django.contrib import messages
 import environ
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+
+from gspread.exceptions import GSpreadException
+from google.auth.exceptions import GoogleAuthError
 
 from .utils import (
     EmployeeData,
@@ -12,9 +18,15 @@ from .utils import (
     ProposalSummary,
     ProposalVoteSummary,
     SingleAssignmentData,
+    SingleCourseData,
     SingleYearVoteSummary,
     VotingSummaryPerYear,
 )
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
+VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
+CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -25,8 +37,6 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     Loads up data from environment, creates credentials and connects to
     appropriate spreadsheet.
     """
-    env = environ.Env()
-    environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
     creds = {
         "type": env('GDRIVE_SERVICE_TYPE'),
         "project_id": env('GDRIVE_PROJECT_ID'),
@@ -43,7 +53,41 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
         creds, SCOPES)
     gc = gspread.authorize(credentials)
     sh = gc.open_by_key(sheet_id)
+    update_locale_request = {
+        'updateSpreadsheetProperties': {
+            'properties': {
+                'locale': 'en_US'
+            },
+            'fields': 'locale'
+        }
+    }
+    sh.batch_update({'requests': [update_locale_request]})
     return sh
+
+
+def assignments_sheet_or_none(request):
+    try:
+        return create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+    except (GoogleAuthError, GSpreadException) as error:
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google</h4>"
+                       f"Nie udało się otworzyć arkusza z przydziałami.<br>{error}"))
+        return None
+
+
+def voting_sheet_or_none(request):
+    try:
+        return create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
+    except (GoogleAuthError, GSpreadException) as error:
+        messages.error(request, ("<h4>Błąd w konfiguracji arkuszy Google</h4>"
+                       f"Nie udało się otworzyć arkusza z wynikami głosowania.<br>{error}"))
+        return None
+
+
+def find_or_insert_worksheet(sheet: gspread.models.Spreadsheet, name):
+    try:
+        return sheet.worksheet(name)
+    except gspread.WorksheetNotFound:
+        return sheet.add_worksheet(name, 1, 1)
 
 
 def voting_legend_rows(years: List[str]) -> List[List[str]]:
@@ -51,7 +95,7 @@ def voting_legend_rows(years: List[str]) -> List[List[str]]:
 
     The length of a single row is 9+5*len(years).
     """
-    row1 = [""]*9 + sum(([y, "", "", "", ""] for y in years), [])
+    row1 = [""]*9 + list(flatten([y, "", "", "", ""] for y in years))
     row2 = [
         "Proposal ID",
         "Nazwa",
@@ -104,14 +148,14 @@ def voting_proposal_row(pvs: ProposalVoteSummary, years: List[str], row: int) ->
     ]
     per_year = (voting_annual_part_of_row(
         pvs.voting.get(y, None)) for y in years)
-    return [beg + sum(per_year, [])]
+    return [beg + list(flatten(per_year))]
 
 
 def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> List[List[str]]:
     legend_rows = voting_legend_rows(years)
     proposal_rows = (voting_proposal_row(pvs, years, i)
                      for i, pvs in enumerate(votes.values(), start=3))
-    return legend_rows + sum(proposal_rows, [])
+    return legend_rows + list(flatten(proposal_rows))
 
 
 def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear,
@@ -135,10 +179,10 @@ def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
     worksheet = sheet.sheet1
     try:
         data = worksheet.batch_get(['A3:A', 'I3:I'], major_dimension='COLUMNS')
-    except KeyError:
+        ids = data[0][0]
+        rec = data[1][0]
+    except (KeyError, IndexError):
         return set()
-    ids = data[0][0]
-    rec = data[1][0]
     pick = set()
     for proposal_id, recommendation in zip(ids, rec):
         if recommendation == 'TRUE':
@@ -196,15 +240,14 @@ def proposal_to_sheets_format(groups: ProposalSummary):
 
 def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
-    worksheet = sheet.get_worksheet(0)
+    worksheet = find_or_insert_worksheet(sheet, "Przydziały")
     worksheet.clear()
-    worksheet.update_title("Przydziały")
     worksheet.update('A:N', data, raw=False)
     worksheet.format('M:N', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)
 
 
-def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssignmentData]:
+def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleAssignmentData]:
     """Reads confirmed assignments from the spreadsheet.
 
     Raises:
@@ -214,13 +257,12 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
     try:
         worksheet = sheet.worksheet("Przydziały")
     except gspread.WorksheetNotFound:
-        return []
+        return
     data = worksheet.get_all_records()
-    assignments = []
     for i, row in enumerate(data, start=2):
         try:
             hours_w_overridden = row['Nadpisano h/tydzień'] == 'TRUE'
-            sad = SingleAssignmentData(
+            yield SingleAssignmentData(
                 proposal_id=int(row['Proposal ID']),
                 name=row['Przedmiot'],
                 group_type=row['Forma zajęć'].lower(),
@@ -239,8 +281,54 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> List[SingleAssi
         except ValueError as e:
             raise ValueError(
                 f"Błąd czytania arkusza przydziałów (wiersz {i}): {str(e).capitalize()}.")
-        assignments.append(sad)
-    return assignments
+
+
+def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[SingleCourseData]):
+    data = [[
+        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi', 'ECTS', 'Semestr',
+        'Planowana liczba grup', 'Uruchomiona liczba grup'
+    ]]
+
+    for i, group in enumerate(courses, start=2):
+        row = [
+            group.proposal_id,  # A. proposal_id
+            group.name,  # B. course name
+            group.course_type,  # C. course type
+            group.tags,  # D. tags
+            group.ects,  # E. ECTS
+            group.semester,  # F. semester
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. active groups
+        ]
+        data.append(row)
+
+    worksheet = find_or_insert_worksheet(sheet, "Przedmioty")
+    worksheet.clear()
+    worksheet.update('A:H', data, raw=False)
+    worksheet.freeze(rows=1)
+
+
+def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCourseData]:
+    """Reads information about courses from the spreadsheet."""
+    try:
+        worksheet = sheet.worksheet("Przedmioty")
+    except gspread.WorksheetNotFound:
+        return
+    for row in worksheet.get_all_records():
+        try:
+            # modify this part if you want to decide when individual rows
+            # should be restored from 'Courses' sheet
+            if row['Proposal ID'] and row['Przedmiot'] and row['Rodzaj'] and row['ECTS'] and row['Semestr']:
+                yield SingleCourseData(
+                    proposal_id=int(row['Proposal ID']),
+                    name=row['Przedmiot'],
+                    course_type=row['Rodzaj'],
+                    tags=row['Tagi'],
+                    ects=row['ECTS'],
+                    semester=row['Semestr']
+                )
+        except (KeyError, ValueError):
+            pass
 
 
 def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
@@ -249,7 +337,7 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
         'Godziny razem', 'Bilans'
     ]]
 
-    for i, t in enumerate(teachers):
+    for i, t in enumerate(teachers, start=2):
         data.append([
             t.username,
             t.first_name,
@@ -257,19 +345,16 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
             t.status,
             str(t.pensum),
             # Formulas computing winter and summer hours.
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
-            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i+2}; Przydziały!$K:$K;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "z"; Przydziały!$J:$J; $A{i}; Przydziały!$K:$K;True)',
+            f'=SUMIFS(Przydziały!$H:$H; Przydziały!$I:$I; "l"; Przydziały!$J:$J; $A{i}; Przydziały!$K:$K;True)',
             # Total hours.
-            f'=$F{i+2}+$G{i+2}',
+            f'=$F{i}+$G{i}',
             # Balance.
-            f'=$H{i+2}-$E{i+2}',
+            f'=$H{i}-$E{i}',
         ])
 
-    worksheet: gspread.models.Worksheet = sheet.get_worksheet(1)
-    if worksheet is None:
-        worksheet = sheet.add_worksheet("Arkusz1", 2, 10)
+    worksheet = find_or_insert_worksheet(sheet, "Pracownicy")
     worksheet.clear()
-    worksheet.update_title("Pracownicy")
     worksheet.update('A:I', data, raw=False)
     worksheet.format('F:I', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)

@@ -30,7 +30,7 @@ class OpeningTimesTest(TestCase):
         GroupOpeningTimes.populate_opening_times(cls.semester)
 
     def test_populated_times(self):
-        """Tests, that GroupOpeningTimes are correctly based on T0 and votes."""
+        """Tests that GroupOpeningTimes are correctly based on T0 and votes."""
         bolek_knitting_opening = GroupOpeningTimes.objects.get(
             student=self.bolek, group=self.knitting_lecture_group).time
         lolek_knitting_opening = GroupOpeningTimes.objects.get(
@@ -38,7 +38,7 @@ class OpeningTimesTest(TestCase):
         assert bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=1)
 
     def test_group_openings(self):
-        """Tests, that the functions correctly assert the group opened or closed.
+        """Tests that the functions correctly assert the group opened or closed.
 
         We look at Bolek's T0 and his votes. He only gets as many bonus days, as
         he did provide votes for the course.
@@ -57,7 +57,7 @@ class OpeningTimesTest(TestCase):
                                                         bolek_knitting_group_opening))
 
     def test_records_end(self):
-        """Tests, that student will not be able to enroll after records are closed."""
+        """Tests that student will not be able to enroll after records are closed."""
         self.assertTrue(
             GroupOpeningTimes.is_group_open_for_student(self.bolek, self.knitting_lecture_group,
                                                         self.semester.records_closing))
@@ -121,3 +121,18 @@ class OpeningTimesTest(TestCase):
                 self.bolek, [self.washing_up_seminar_group],
                 self.washing_up_seminar_group.course.records_start +
                 timedelta(seconds=1))[self.washing_up_seminar_group.id])
+
+    def test_narrowed_down(self):
+        """Tests GroupOpeningTimes generation with parameters."""
+        bolek_knitting_opening = GroupOpeningTimes.objects.get(
+                student=self.bolek, group=self.knitting_lecture_group).time
+        GroupOpeningTimes.objects.filter(
+                student=self.bolek,
+                group=self.knitting_lecture_group
+        ).update(time=bolek_knitting_opening + timedelta(hours=1))
+        GroupOpeningTimes.populate_opening_times(self.semester, students=[self.lolek])
+        bolek_knitting_opening2 = GroupOpeningTimes.objects.get(
+                student=self.bolek, group=self.knitting_lecture_group).time
+        lolek_knitting_opening2 = GroupOpeningTimes.objects.get(
+                student=self.lolek, group=self.knitting_lecture_group).time
+        assert bolek_knitting_opening2 - lolek_knitting_opening2 == timedelta(hours=2)

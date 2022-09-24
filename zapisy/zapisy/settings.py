@@ -333,7 +333,7 @@ ROLLBAR = {
 
 # Message classes set to be compatible with Bootstrap 4 alerts.
 MESSAGE_TAGS = {
-    messages.ERROR: 'danger',
+    messages.ERROR: 'danger error',
     messages.DEBUG: 'dark',
 }
 

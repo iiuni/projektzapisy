@@ -82,7 +82,10 @@ class ProgramRelatedField(serializers.RelatedField):
         return value.name
 
     def to_internal_value(self, data):
-        return Program.objects.get(name=data)
+        try:
+            return Program.objects.get(name=data)
+        except Program.DoesNotExist:
+            raise serializers.ValidationError("Program o podanej nazwie nie istnieje.")
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -223,7 +226,10 @@ class CourseRelatedField(serializers.RelatedField):
         return value.usos_kod
 
     def to_internal_value(self, data):
-        return CourseInstance.objects.get(usos_kod=data)
+        try:
+            return CourseInstance.objects.get(usos_kod=data)
+        except CourseInstance.DoesNotExist:
+            raise serializers.ValidationError("Kurs o podanym usos_kod nie istnieje.")
 
 
 class StudentRelatedField(serializers.RelatedField):
@@ -234,7 +240,10 @@ class StudentRelatedField(serializers.RelatedField):
         return value.usos_id
 
     def to_internal_value(self, data):
-        return Student.objects.get(usos_id=data)
+        try:
+            return Student.objects.get(usos_id=data)
+        except (ValueError, TypeError, Student.DoesNotExist):
+            raise serializers.ValidationError("Błędny usos_id.")
 
 
 class CompletedCoursesSerializer(serializers.ModelSerializer):

@@ -3,6 +3,13 @@
 // editing reservation terms.
 
 import "jquery";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(duration);
+
 const $ = jQuery;
 
 let formsetCounter = 0;
@@ -36,11 +43,35 @@ function setTermsToDefault() {
 }
 
 // Enables edition of given term.
-function setEdited(object) {
+function setEditable(object) {
   setTermsToDefault();
   $(object).closest(".term-form").addClass("active-term");
   $(object).closest(".term-form").find("input").prop("disabled", false);
   $(object).closest(".term-form").find(".form-place").addClass("bg-light");
+
+  if (
+    $(object).closest(".term-form").find(".form-day").val() == "" &&
+    $(object).closest(".term-form").find(".form-start").val() == "" &&
+    $(object).closest(".term-form").find(".form-end").val() == ""
+  ) {
+    const timeStampFrom = dayjs();
+    const timeStampTo = timeStampFrom.add(dayjs.duration({ minutes: 5 }));
+
+    if (timeStampFrom.date() === timeStampTo.date()) {
+      $(object)
+        .closest(".term-form")
+        .find(".form-day")
+        .val(timeStampFrom.format("YYYY-MM-DD"));
+      $(object)
+        .closest(".term-form")
+        .find(".form-start")
+        .val(timeStampFrom.format("HH:mm"));
+      $(object)
+        .closest(".term-form")
+        .find(".form-end")
+        .val(timeStampTo.format("HH:mm"));
+    }
+  }
 
   // Unmarks term as planned to be deleted.
   $(object)
@@ -93,12 +124,12 @@ function newTermClick(event) {
   // We find chosen element, display it and mark as active.
   const newTermForm = $(".term-form").eq(first);
   newTermForm.removeClass("d-none");
-  setEdited(newTermForm);
+  setEditable(newTermForm);
 }
 
 function editTermClick(event) {
   event.preventDefault();
-  setEdited(event.target);
+  setEditable(event.target);
 }
 
 // Handles setting outside location. The place field is

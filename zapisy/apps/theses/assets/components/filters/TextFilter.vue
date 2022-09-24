@@ -10,10 +10,7 @@ class TextFilter implements Filter {
   propGetters: ((c: ThesisInfo) => string)[];
 
   constructor(public pattern: string = "", public propertyNames: string[]) {
-    this.propGetters = [];
-    for (const propName of propertyNames) {
-      this.propGetters.push(property(propName));
-    }
+    this.propGetters = this.propertyNames.map((propName) => property(propName));
   }
 
   visible(c: ThesisInfo): boolean {

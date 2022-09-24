@@ -57,7 +57,10 @@ class SpecialReservation(models.Model):
 
     semester = models.ForeignKey(Semester, verbose_name='semestr', on_delete=models.CASCADE)
     title = models.CharField(verbose_name='nazwa', max_length=255)
-    classroom = models.ForeignKey(Classroom, verbose_name='sala', on_delete=models.CASCADE)
+    classroom = models.ForeignKey(Classroom,
+                                  verbose_name='sala',
+                                  on_delete=models.CASCADE,
+                                  limit_choices_to={'can_reserve': True})
     dayOfWeek = models.CharField(max_length=1,
                                  choices=days_of_week.DAYS_OF_WEEK,
                                  verbose_name='dzień tygodnia')
@@ -140,21 +143,25 @@ class SpecialReservation(models.Model):
 
         Checks for any conflicts between this SpecialReservation and other
         SpecialReservations, Terms of Events and Terms of Course Groups.
+
+        Django will run this even if validation of individual fields fails,
+        so exceptions raised in such case are caught and suppressed.
+        `DoesNotExist`s appear naturally in validate_against_all_terms, while
+        `TypeError` may arise at any date or time comparison when at least
+        one of its arguments is missing and thus `None`.
         """
-        if self.end_time <= self.start_time:
-            raise ValidationError(
-                message={'end_time': ['Koniec rezerwacji musi natępować po początku']},
-                code='invalid'
-            )
+        try:
+            if self.end_time <= self.start_time:
+                raise ValidationError(
+                    message={'end_time': ['Koniec rezerwacji musi następować po początku.']},
+                    code='invalid'
+                )
 
-        if not self.classroom.can_reserve:
-            raise ValidationError(
-                message={'classroom': ['Ta sala nie jest przeznaczona do rezerwacji']},
-                code='invalid'
-            )
+            if not self.ignore_conflicts:
+                self.validate_against_all_terms()
 
-        if not self.ignore_conflicts:
-            self.validate_against_all_terms()
+        except (TypeError, Semester.DoesNotExist, Classroom.DoesNotExist):
+            pass
 
         super(SpecialReservation, self).clean()
 

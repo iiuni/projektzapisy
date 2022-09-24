@@ -263,7 +263,10 @@ def change_interested(request, event_id):
 
 @login_required
 def get_terms(request, year, month, day):
-    date = datetime.date(int(year), int(month), int(day))
+    try:
+        date = datetime.date(int(year), int(month), int(day))
+    except ValueError:
+        raise Http404("URL contains invalid date.")
 
     def make_dict(start_time, end_time):
         return {

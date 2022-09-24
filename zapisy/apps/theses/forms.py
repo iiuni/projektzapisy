@@ -36,44 +36,60 @@ class ThesisFormBase(forms.ModelForm):
     title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN)
     advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                      label="Promotor",
-                                     required=True)
+                                     required=True,
+                                     empty_label=None)
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                                 label="Promotor wspierający",
                                                 required=False)
-    kind = forms.ChoiceField(choices=ThesisKind.choices, label="Typ")
+    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int)
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
-    status = forms.ChoiceField(choices=ThesisStatus.choices, label="Status")
-    reserved_until = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}),
+    reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
+                                     "uzupełnij również datę rezerwacji.",
+                                     widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do",
                                      required=False)
     description = forms.CharField(
         label="Opis", widget=common_widgets.MarkdownArea, required=False)
-    max_number_of_students = forms.ChoiceField(
-        label="Maks. liczba studentów", choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
+    max_number_of_students = forms.TypedChoiceField(
+        label="Maks. liczba studentów", coerce=int,
+        choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
     )
 
     def __init__(self, user, *args, **kwargs):
         super(ThesisFormBase, self).__init__(*args, **kwargs)
-        self.is_staff = False
-        if user.is_staff:
-            self.is_staff = True
-            self.fields['advisor'].queryset = Employee.objects.all()
-        else:
-            self.fields['advisor'].queryset = Employee.objects.filter(
-                pk=user.employee.pk)
-            self.fields['advisor'].initial = user.employee
-            self.fields['advisor'].widget.attrs['readonly'] = True
+
+        self.fields['advisor'].queryset = Employee.objects.filter(
+            pk=user.employee.pk)
+        self.fields['advisor'].initial = user.employee
 
         self.can_assign_multiple_students = user.has_perm('theses.assign_multiple_students')
 
         self.fields['supporting_advisor'].queryset = Employee.objects.exclude(
             pk=user.employee.pk)
+
+        self.fields['status'].required = False
+
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
+        self.helper.layout = Layout(
+            'title',
+            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
+                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'),
+            Row(
+                Column('kind', css_class='form-group col-md-3'),
+                Column('max_number_of_students', css_class='form-group col-md-3'),
+                Column('reserved_until', css_class='form-group col-md-6'),
+                css_class='form-row'),
+            'students',
+            'description',
+        )
+        self.helper.add_input(
+            Submit('submit', 'Zapisz', css_class='btn-primary'))
 
     def clean(self):
         super().clean()
@@ -82,49 +98,17 @@ class ThesisFormBase(forms.ModelForm):
         if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
                 and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
+        if 'students' in self.data and self.cleaned_data['reserved_until'] is None:
+            raise forms.ValidationError("Do pracy przypisano studenta. Uzupełnij datę rezerwacji")
+        if 'students' not in self.data and self.cleaned_data['reserved_until'] is not None:
+            raise forms.ValidationError("Nie przypisano studentów do pracy. Usuń datę rezerwacji")
 
 
 class ThesisForm(ThesisFormBase):
-    def __init__(self, user, *args, **kwargs):
-        super(ThesisForm, self).__init__(user, *args, **kwargs)
-
-        if user.is_staff:
-            self.fields['status'].required = True
-            row_1 = Row(
-                Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-2'),
-                Column('max_number_of_students', css_class='form-group col-md-2'),
-                Column('status', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-        else:
-            self.fields['status'].required = False
-            row_1 = Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-
-        self.helper.layout = Layout(
-            'title',
-            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'),
-            row_1,
-            'students',
-            'description',
-        )
-
-        self.helper.add_input(
-            Submit('submit', 'Zapisz', css_class='btn-primary'))
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.added = timezone.now()
-
-        if not self.is_staff:
-            instance.status = ThesisStatus.BEING_EVALUATED.value
+        instance.status = ThesisStatus.BEING_EVALUATED.value
 
         instance.save()
         self.save_m2m()
@@ -138,54 +122,22 @@ class EditThesisForm(ThesisFormBase):
 
         self.status = self.instance.status
 
-        if user.is_staff:
-            special_row = Row(
-                Column('kind', css_class='form-group col-md-2'),
-                Column('reserved_until', css_class='form-group col-md-2'),
-                Column('max_number_of_students', css_class='form-group col-md-2'),
-                Column('status', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-        else:
-            self.fields['status'].required = False
-            special_row = Row(
-                Column('kind', css_class='form-group col-md-3'),
-                Column('max_number_of_students', css_class='form-group col-md-3'),
-                Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'
-            )
-
-        self.helper.layout = Layout(
-            'title',
-            Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
-                Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'),
-            special_row,
-            'students',
-            'description',
-        )
-        if self.instance.is_returned and self.instance.is_mine(user):
-            self.helper.add_input(
-                Submit('submit', 'Zapisz i prześlij do komisji', css_class='btn-primary'))
-        else:
-            self.helper.add_input(
-                Submit('submit', 'Zapisz', css_class='btn-primary'))
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
 
-        if not self.is_staff:
-            status = self.status
+        status = self.status
 
-            if status == ThesisStatus.RETURNED_FOR_CORRECTIONS.value:
-                instance.status = ThesisStatus.BEING_EVALUATED.value
-            elif status == ThesisStatus.ACCEPTED.value and "students" in self.data:
-                instance.status = ThesisStatus.IN_PROGRESS.value
-            elif status == ThesisStatus.IN_PROGRESS.value and "students" not in self.data:
-                instance.status = ThesisStatus.ACCEPTED.value
-            else:
-                instance.status = status
+        if len(set(self.changed_data).intersection([
+                'title', 'supporting_advisor', 'kind',
+                'max_number_of_students', 'description'])) > 0:
+            instance.status = ThesisStatus.BEING_EVALUATED.value
+        elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
+            instance.status = ThesisStatus.IN_PROGRESS.value
+        elif status == ThesisStatus.IN_PROGRESS.value and 'students' not in self.data:
+            instance.status = ThesisStatus.ACCEPTED.value
+        else:
+            instance.status = status
 
         if commit:
             instance.save()

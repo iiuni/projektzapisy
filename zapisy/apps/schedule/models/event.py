@@ -145,7 +145,7 @@ class Event(models.Model):
         @return: Boolean
         """
         if not self.author == user and not user.has_perm('schedule.manage_events'):
-            if(not self.visible or
+            if (not self.visible or
                self.type not in [self.TYPE_EXAM, self.TYPE_TEST, self.TYPE_GENERIC] or
                self.status != self.STATUS_ACCEPTED):
                 return False
