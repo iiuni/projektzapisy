@@ -56,8 +56,10 @@ class RollbarOnly404Limited:
 
     def check_and_add(self, ip: str) -> bool:
         """This function checks whether a key was present and adds it for a set time if it was not.
+
         As the timeout may only be set for a key and not for a value in an array, we use
         the individual entries with empty values for each IP address. SET returns None, if the key
-        was not present. In such case, no value is set."""
+        was not present. In such case, no value is set.
+        """
         key = self.ip_to_key(ip)
         return self.redis_client.set(name=key, value="", ex=TIMEOUT, nx=True) is None
