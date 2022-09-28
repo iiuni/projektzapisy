@@ -37,7 +37,6 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
     Loads up data from environment, creates credentials and connects to
     appropriate spreadsheet.
     """
-
     creds = {
         "type": env('GDRIVE_SERVICE_TYPE'),
         "project_id": env('GDRIVE_PROJECT_ID'),
@@ -50,7 +49,6 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
         "auth_provider_x509_cert_url": env('GDRIVE_AUTH_PROVIDER'),
         "client_x509_cert_url": env('GDRIVE_CLIENT_CERT_URL')
     }
-
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(
         creds, SCOPES)
     gc = gspread.authorize(credentials)

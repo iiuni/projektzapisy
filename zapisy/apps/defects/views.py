@@ -11,7 +11,7 @@ from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumbe
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
-
+1
 storage = models.select_storage()
 
 
@@ -41,7 +41,7 @@ def delete_defects_endpoint(request):
         images_to_delete = []
 
         for defect in to_delete:
-            for image in defect.image_set.all():
+            for image in defect.defectimage_set.all():
                 images_to_delete.append(image.image.name)
 
         query_set = ", ".join(map(lambda x: x['name'], list(to_delete.values())))
@@ -49,7 +49,8 @@ def delete_defects_endpoint(request):
 
         to_delete.delete()
         delete_images(images_to_delete)
-    messages.error(request, "Nieprawidłowa metoda zapytania http.")
+    else:
+        messages.error(request, "Nieprawidłowa metoda zapytania http.")
     return redirect('defects:main')
 
 
@@ -125,9 +126,9 @@ def edit_defect_helper(request, defect):
 def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
-        if can_delete_defect(request.user.id, defect):
+        if can_delete_defect(request, defect):
             images_to_delete = []
-            for image in defect.image_set.all():
+            for image in defect.defectimage_set.all():
                 images_to_delete.append(image.image.name)
             delete_images(images_to_delete)
             defect.delete()
