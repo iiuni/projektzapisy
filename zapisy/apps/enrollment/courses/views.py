@@ -240,7 +240,9 @@ def group_view(request, group_id):
     """
     enrolled_data = get_group_data([group_id], request.user, status=RecordStatus.ENROLLED)
     queued_data = get_group_data([group_id], request.user, status=RecordStatus.QUEUED)
-    students_in_group, students_in_queue = get_students_from_data(enrolled_data, queued_data, preserve_queue_ordering=True)
+    students_in_group, students_in_queue = get_students_from_data(
+        enrolled_data, queued_data, preserve_queue_ordering=True
+    )
     group: Group = enrolled_data[group_id].get("group")
 
     data = {
