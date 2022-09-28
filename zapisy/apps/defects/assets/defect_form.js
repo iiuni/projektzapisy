@@ -46,14 +46,16 @@ function deleteImage(event) {
 function deleteImageField(event) {
   event.preventDefault();
   const buttonIndex = $(".delete-field-button").index(this);
-  const form = $(".image-form")
+  const form = $(".image-form");
   $(form).eq(buttonIndex).find(".custom-file-input").get(0).value = "";
   $(form).eq(buttonIndex).find(".custom-file-label").get(0).innerText = "";
 }
 
 $(function () {
   // We get number of image forms received from server.
-  maxFormsetNumber = parseInt($('input[name="defectimage_set-TOTAL_FORMS"]').val());
+  maxFormsetNumber = parseInt(
+    $('input[name="defectimage_set-TOTAL_FORMS"]').val()
+  );
 
   // We get number of extra image forms (empty ones) received from server
   extraImagesNumber = parseInt($("#extra-images-number").val());

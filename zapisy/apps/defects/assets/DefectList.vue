@@ -42,7 +42,7 @@ export default class DefectList extends Vue {
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.set_forms_values()
+          this.set_forms_values();
         case "sorting/changeSorting":
           this.visibleDefects = this.defects.filter(this.tester);
           this.visibleDefects.sort(this.compare);
@@ -51,16 +51,19 @@ export default class DefectList extends Vue {
     });
   }
 
-  set_forms_values(){
+  set_forms_values() {
     // @ts-ignore
-    let selected = Array.prototype.map.call(
-        document.getElementsByClassName("selected"), function(x){return x.id}).join(',')
+    let selected = Array.prototype.map
+      .call(document.getElementsByClassName("selected"), function (x) {
+        return x.id;
+      })
+      .join(",");
     // @ts-ignore
-    document.getElementById("defects_ids_print").value = selected
+    document.getElementById("defects_ids_print").value = selected;
     // @ts-ignore
-    let delete_button = document.getElementById("defects_ids_delete")
+    let delete_button = document.getElementById("defects_ids_delete");
     // @ts-ignore
-    if (delete_button) delete_button.value = selected
+    if (delete_button) delete_button.value = selected;
   }
 
   // @ts-ignore
@@ -84,7 +87,7 @@ export default class DefectList extends Vue {
         // @ts-ignore
         document.getElementById("delete-form-button").disabled = true;
     }
-    this.set_forms_values()
+    this.set_forms_values();
   }
 }
 </script>

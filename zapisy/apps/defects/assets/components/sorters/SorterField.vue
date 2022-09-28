@@ -40,7 +40,7 @@ export default Vue.extend({
       } else {
         this.changeSorting({
           k: this.property,
-          f: this.order === 0 ,
+          f: this.order === 0,
         });
         this.order += 1;
       }

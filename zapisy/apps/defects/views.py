@@ -1,10 +1,10 @@
+import logging
+
 from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
-
-import logging
 
 from . import models
 from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
@@ -232,8 +232,8 @@ def print_defects(request):
     if defects_list is None or defects_list == []:
         return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
     else:
-        defects = { defect.id: defect for defect in Defect.objects.filter(pk__in=defects_list) }
-        defects = [ defects[i] for i in defects_list if i in defects.keys() ]
+        defects = {defect.id: defect for defect in Defect.objects.filter(pk__in=defects_list)}
+        defects = [defects[i] for i in defects_list if i in defects.keys()]
         return render(request, 'defectsPrint.html', {'defects': defects})
 
 
