@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "zapisy-dev-sandbox",
+  "private_key_id": "7e245418e908f5b2e91689dbfe758f140caf76da",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDOIc4c+GfM5Bz1\nHoigRyaHlTrwQENAZ7YoI8j86Q1pNtlGGYp9rLpWSPtBUaWlOOgtiijwt516eINt\np+e8yuRPVGrHaITENt8yDMKNuBMElFoqTjewYlP8jJOh7ccltojvI+a+cDmQjVyL\nOHzJi7Wb83nTRC9re4fXNBj4kPzWMION33ykNeuSTt/W0FWx71e1gwbphwQdziml\n3UyspkVk7H33DfzBqS9iNkDufOeXcQmcFLAX5KF4hdbZ7/K0jhwchAShOIJ3fjvW\nRDYsWUDHN2WMuqIffA4YGHD/gntz0FlvajkR9qsjLVs+Ep8CoirYj4ILqHNCPD8v\nq2Flkd6VAgMBAAECggEABZ3BPzYt2h3yjL8FZ+DSrywU9nrdwRKUmqWWGSGsRcMQ\naqQjb7uBXupBfWYTacUNeq4pT3hFQEC8Zx+OoKO90oMTjLWvj4HBFUFEGncIowuO\nJOvd3Mer6xC547qs9P1XqSJZYsZIyF+mxQXeqD1F2EcYy3WLPezYPXgPctO8wGB2\nj7UF3oJKa0A8n0hKdRvKMxAnScfCVOD+NtIpBqnDGFv61pwCNxxVu2rTVzbB1QLW\nMnV2PBZtO5Iefev2+KYdAdyEjf0JMVAlSY4TE6MJGM4ikHjHzMCs74FWwRwEr11s\nbSWom5N8c3djV8Q7nRGq3/ViVio4W+nth8KOHgpLGQKBgQDo1IjR/gj9sySukcNp\nS3WmK8M6of9qcufkEaFGRLJZDGSJe8PS5MFsRawYLq7S3rSYk+aUSj6n8qbbSn0o\nz3o/JiIhrDyG+fRHbRMDY6/jM+T+M6pnHLzA0wd9uLoSPCZ3nXggZYaByipLv7UH\np2Q3KtMpFp4FJTXgupXwiQMHOQKBgQDipR8pacIw/OWG35a1DdAA2iyqsc9sERsC\nAzWkNrHztj9fNjvLpHOtNiyF4cjh4nUwLo30F+Z+8CIuzbuf/+K4vWkFXAMrwrzH\npWF2yCynDJLHkEr1E/R9fhZq28KT5YX/idmN1rFcD5guVOAIa7RXZ3ftuH7Ggvry\nzoNVysxWPQKBgGHUU7zwYbS/3gzfwFzw0PlGcBylzt1adKc25S3SVaHm/CNsdoaZ\nidBFoh7zFpAR9Y4arwrl+1e0NHn13YsVSodYLYU6iqAoTITqhs+oxlHQD0rkSJhU\n0davlPk1cjGRRpSB/OSX5CGK4aS8Y4NYyVoIy3r7PuBoly/bFn9gAn65AoGBAIBS\noUwfVxXJemNc4MVuJqD05mlW92vmW3ZOPubVGPg17beIy15HpD8j9x1ucwCB6Xv4\nP+M+TQD+ETySu3KhvMqAY5/nMtxqC9y15HMOb0m9srVPG0GbpMgQxbyG5Ko8QBwo\n/oZyUkUfhzhkUdwyrw71xE9SMGVQ76jeCDpg8kS5AoGBAI9o2lNjMqPF1hbfohqL\n3xMI7oB8lUK//6NSdJgJm924XUGnOx8l9WvFmTQFt48jvlglhi1QglzDkuXIYgRh\n2fq9XHfnxIPQmBTHlWFF4R411uZtl04650E8bPjdnFBMuBL2eVJyMJ+KCmtGMFVD\n+7O0muTSXE4k6I6EuLIBWtNy\n-----END PRIVATE KEY-----\n",
+  "client_email": "kredenszale@zapisy-dev-sandbox.iam.gserviceaccount.com",
+  "client_id": "108142044550842304771",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/kredenszale%40zapisy-dev-sandbox.iam.gserviceaccount.com"
+}
