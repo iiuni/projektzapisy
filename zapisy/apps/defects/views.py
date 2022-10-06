@@ -11,7 +11,7 @@ from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumbe
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
-1
+
 storage = models.select_storage()
 
 
