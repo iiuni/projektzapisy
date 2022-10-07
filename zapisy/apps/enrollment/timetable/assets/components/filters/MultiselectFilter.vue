@@ -18,12 +18,9 @@ class ExactFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a course.
 export default Vue.extend({
   props: {
-    // Property of a course on which we are filtering.
     property: String,
-    // Every filter needs a unique identifier.
     filterKey: String,
     options: Array as () => [string, string][],
     title: String,

@@ -9,6 +9,7 @@ import LabelsFilter from "@/enrollment/timetable/assets/components/filters/Label
 import MultiselectFilter from "@/enrollment/timetable/assets/components/filters/MultiselectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
@@ -63,11 +64,12 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  mounted() {
+  mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
+
     // Expand the filters if there are any initially specified in the search params.
     const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
@@ -81,6 +83,9 @@ export default Vue.extend({
           break;
       }
     });
+  },
+  methods: {
+    ...mapMutations("filters", ["clearFilters"]),
   },
 });
 </script>
@@ -110,6 +115,14 @@ export default Vue.extend({
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
           />
+          <hr />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            @click="clearFilters()"
+          >
+            Wyczyść filtry
+          </button>
         </div>
         <div class="col-md">
           <MultiselectFilter
