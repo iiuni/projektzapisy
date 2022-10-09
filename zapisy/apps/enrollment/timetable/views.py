@@ -240,7 +240,6 @@ def prototype_get_course(request, course_id):
     group_dicts = build_group_list(groups)
     data = {
         'group_json': group_dicts,
-        'points': course.points
     }
     return JsonResponse(data, safe=False)
 

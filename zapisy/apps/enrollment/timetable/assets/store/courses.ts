@@ -40,6 +40,7 @@ const getters = {
     return state.selection;
   },
 };
+
 const actions = {
   // updateSelection will fetch all the courses, for which we miss the
   // (groups) data, and then update the selection flags.
@@ -57,9 +58,7 @@ const actions = {
     // This puts a lock on all the courses that will be fetched. That way we
     // avoid fetching the same course in parallel when the student is
     // clicking too fast.
-    idsToFetch.forEach((c) => {
-      commit("setGroupIDs", { c, ids: [] });
-    });
+    idsToFetch.forEach((c) => commit("setGroupIDs", { c, ids: [] }));
     const requests = idsToFetch.map((id) => axios.get(state.courses[id].url));
     axios
       .all(requests)
@@ -76,9 +75,7 @@ const actions = {
           });
         })
       )
-      .then(() => {
-        dispatch("commitSelection", ids);
-      })
+      .then(() => dispatch("commitSelection", ids))
       .catch();
   },
 
