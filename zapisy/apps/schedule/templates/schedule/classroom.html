@@ -10,21 +10,21 @@
 
 {% block classroomview %}
     <table class="table border">
-    	<tbody>
+        <tbody>
             <tr>
-        		<th width="12%" class="text-light bg-info">Piętro</th>
-        		<td width="*">{{ room.get_floor_display }}</td>
-        		<th width="12%" class="text-light bg-info">Pojemność</th>
-        		<td width="20%">{{ room.capacity }}</td>
-    	    </tr>
-    	    <tr>
+                <th width="12%" class="text-light bg-info">Piętro</th>
+                <td width="*">{{ room.get_floor_display }}</td>
+                <th width="12%" class="text-light bg-info">Pojemność</th>
+                <td width="20%">{{ room.capacity }}</td>
+            </tr>
+            <tr>
                 <th class="text-light bg-info">Typ</th>
                 <td colspan="3">{{ room.get_type_display }}</td>
             </tr>
-    		<tr>
+            <tr>
                 <th class="text-light bg-info">Opis</th>
                 <td colspan="3">
-                    {% if room.description %}{{ room.description }}{% else %}Brak{% endif %}
+                    {{ room.description|default:"Brak" }}
                 </td>
             </tr>
         </tbody>

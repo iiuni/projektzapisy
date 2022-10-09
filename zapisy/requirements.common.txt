@@ -2,34 +2,35 @@ Django==3.1.14
 django-bootstrap-pagination==1.7.1
 django-cas-ng==4.3.0
 django-crispy-forms==1.14.0
-django-environ==0.8.1
+django-environ==0.9.0
 django-extensions==2.2.9
 django-filter==2.4.0
 django-mailer==1.2.6
 redis==3.5.3
-rq==1.10.1
+rq==1.11.1
 django-rq==2.5.1
 django-test-without-migrations==0.6
 django-webpack-loader==0.7.0
-djangorestframework==3.13.1
+djangorestframework==3.14.0
 django-pagedown==2.2.1
 
 ipdb==0.13.9
-prompt-toolkit==3.0.29
-ipython==7.32.0
-pycryptodome==3.14.1
-rollbar==0.16.2
+prompt-toolkit==3.0.31
+ipython==7.34.0
+pycryptodome==3.15.0
+rollbar==0.16.3
 newrelic==5.24.0.153
 gunicorn==20.1.0
 python-dateutil==2.8.2
 python-memcached==1.59
-xhtml2pdf==0.2.7
+more-itertools==8.14.0
+xhtml2pdf==0.2.8
 # BBCode -> HTML
 postmarkup==1.2.2
 # PyYAML is used for fixtures.
 pyyaml==5.4.1
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==2.4.2
+bokeh==2.4.3
 
 gspread==3.7.0
 typing-extensions==3.10.0.2

@@ -18,7 +18,6 @@ import Component from "vue-class-component";
     }),
     ...mapGetters("sorting", {
       compare: "compare",
-      isEmpty: "isEmpty",
     }),
   },
 })
@@ -36,7 +35,6 @@ export default class ThesesList extends Vue {
   }
 
   mounted() {
-    this.visibleTheses = this.theses;
     this.visibleTheses = this.theses.sort(this.compare);
 
     this.$store.subscribe((mutation, state) => {
@@ -88,25 +86,25 @@ export default class ThesesList extends Vue {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="t of visibleTheses" :key="t.id">
+      <tr v-for="thesis of visibleTheses" :key="thesis.id">
         <td class="align-middle">
-          <a class="btn-link" :href="t.url">{{ t.title }}</a>
-          <em v-if="t.status !== 'zaakceptowana'" class="text-muted"
-            >({{ t.status }})</em
+          <a class="btn-link" :href="thesis.url">{{ thesis.title }}</a>
+          <em v-if="thesis.status !== 'zaakceptowana'" class="text-muted"
+            >({{ thesis.status }})</em
           >
         </td>
         <td class="text-center align-middle">
-          {{ t.kind }}
+          {{ thesis.kind }}
         </td>
         <td class="align-middle">
-          {{ t.advisor }}
+          {{ thesis.advisor }}
         </td>
         <td
           class="align-middle"
-          :class="{ 'text-muted': t.is_available }"
-          :title="reservedUntilAltText(t)"
+          :class="{ 'text-muted': thesis.is_available }"
+          :title="reservedUntilAltText(thesis)"
         >
-          {{ t.students }}
+          {{ thesis.students }}
         </td>
       </tr>
       <tr v-if="!visibleTheses.length" class="text-center">

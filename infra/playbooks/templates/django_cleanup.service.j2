@@ -1,0 +1,9 @@
+[Unit]
+Description=Clear old django database sessions
+
+[Service]
+User={{ deploy_user }}
+Group={{ deploy_user }}
+WorkingDirectory=/home/{{ deploy_user }}/deploy/current/zapisy/
+ExecStart=/home/{{ deploy_user }}/deploy/current/venv/bin/python3 /home/{{ deploy_user }}/deploy/current/zapisy/manage.py clearsessions
+Type=oneshot

@@ -10,16 +10,13 @@ from django.views.decorators.http import require_POST
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 from apps.effects.models import CompletedCourses
-from apps.effects.utils import (get_all_points, get_points_sum, is_passed,
-                                load_list_of_programs_and_years, load_requirements_file,
-                                program_exists, proper_year_for_program, requirements)
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
 from .forms import EmailChangeForm, EmployeeDataForm
-from .models import Employee, PersonalDataConsent, Program, Student
+from .models import Employee, PersonalDataConsent, Student
 
 logger = logging.getLogger()
 
@@ -48,8 +45,7 @@ def students_view(request, user_id: int = None):
 
     if user_id is not None:
         try:
-            student: Student = Student.objects.select_related('user',
-                                                              'consent').get(user_id=user_id)
+            student: Student = Student.objects.select_related('user', 'consent').get(user_id=user_id)
         except Student.DoesNotExist:
             raise Http404
 
@@ -60,12 +56,11 @@ def students_view(request, user_id: int = None):
 
         semester = Semester.get_upcoming_semester()
 
-        records = Record.objects.filter(student=student,
-                                        group__course__semester=semester,
-                                        status=RecordStatus.ENROLLED).select_related(
-                                            'group__teacher', 'group__teacher__user',
-                                            'group__course').prefetch_related(
-                                                'group__term', 'group__term__classrooms')
+        records = Record.objects.filter(
+            student=student,
+            group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
+            'group__teacher', 'group__teacher__user', 'group__course').prefetch_related(
+            'group__term', 'group__term__classrooms')
         groups = [r.group for r in records]
 
         # Highlight groups shared with the viewer in green.
@@ -107,10 +102,9 @@ def employees_view(request, user_id: int = None):
             raise Http404
 
         semester = Semester.get_upcoming_semester()
-        groups = Group.objects.filter(course__semester_id=semester.pk,
-                                      teacher=employee).select_related(
-                                          'teacher', 'teacher__user', 'course').prefetch_related(
-                                              'term', 'term__classrooms')
+        groups = Group.objects.filter(
+            course__semester_id=semester.pk, teacher=employee).select_related(
+            'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
         groups = list(groups)
 
         # Highlight groups shared with the viewer in green.
@@ -180,10 +174,14 @@ def my_profile(request):
 
     if semester and request.user.student:
         student: Student = request.user.student
+        done_effects = CompletedCourses.get_completed_effects(student)
+        data.update({
+            'effects': done_effects,
+        })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
-                'group', 'group__course', 'group__teacher',
-                'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
+            'group', 'group__course', 'group__teacher',
+            'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
         groups_times = []
         got: GroupOpeningTimes
         for got in groups_opening_times:
@@ -212,93 +210,6 @@ def my_profile(request):
     })
 
     return render(request, 'users/my_profile.html', data)
-
-
-@login_required
-def my_studies(request):
-    """User my-studies page.
-
-    The studies page displays student's studies requirements and progress.
-    It has picker to choose studies program and starting year to look on other
-    requirements.
-    """
-    semester = Semester.get_upcoming_semester()
-
-    data = {
-        'semester': semester,
-    }
-
-    if semester and request.user.student:
-        student: Student = request.user.student
-        done_effects = CompletedCourses.get_completed_effects(student)
-        data.update({
-            'effects': done_effects,
-        })
-
-    reqs_file = load_requirements_file()
-
-    student_program = Program.objects.filter(name=request.user.student.program).all()[0].id
-
-    if program_exists(reqs_file, student_program):
-        program = request.GET.get('program', student_program)
-    else:
-        program = request.GET.get('program', list(reqs_file.keys())[0])
-
-    year = int(request.GET.get('year', request.user.date_joined.year))
-
-    completed_courses = (CompletedCourses.objects.filter(student=request.user.student,
-                                                         program=request.user.student.program))
-
-    reqs = requirements(reqs_file, program, year)
-    for key, value in reqs.items():
-        if key == 'ects':
-            value['user_points'] = get_all_points(
-                value['filterNot'] if 'filterNot' in value else {},
-                value['limit'] if 'limit' in value else {}, completed_courses)
-        if 'filter' in value.keys():
-            if {'groupBy', 'aggregate'} <= value.keys():
-                if value['aggregate'] == 'sum':
-                    if value['groupBy'] == "tag":
-                        value['user_points'] = []
-                        for tag in value['filter']['tag']:
-                            value['user_points'].append(get_points_sum(
-                                    {'tag': [tag]},
-                                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
-                                    completed_courses))
-                        value['zip'] = zip(value['filter']['tag'], value['user_points'])
-                    elif value['groupBy'] == "type":
-                        value['user_points'] = 0
-                        for type in value['filter']['type']:
-                            value['user_points'] = max(
-                                value['user_points'],
-                                get_points_sum(
-                                    {'type': [type]},
-                                    reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
-                                    completed_courses))
-                else:
-                    value['user_points'] = None
-            elif 'sum' in value.keys():
-                value['user_points'] = get_points_sum(
-                    value['filter'], reqs['ects']['limit'] if 'limit' in reqs['ects'] else {},
-                    completed_courses)
-            else:
-                value['passed'] = is_passed(value['filter'], completed_courses)
-
-    res = list()
-
-    for key, value in reqs.items():
-        res.append(value)
-
-    data.update({'requirements': res})
-
-    list_of_programs = load_list_of_programs_and_years(reqs_file)
-
-    data.update({'picker_data': list_of_programs})
-
-    proper_year = proper_year_for_program(reqs_file, program, year)
-    data.update({'proper_year': str(proper_year)})
-
-    return render(request, 'users/my_studies.html', data)
 
 
 @login_required

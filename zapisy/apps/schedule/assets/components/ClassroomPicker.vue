@@ -13,7 +13,7 @@ const ClassroomPickerDefinition = Vue.extend({
   },
   data: () => {
     return {
-      showOccupied: true,
+      showOccupied: false,
     };
   },
 });

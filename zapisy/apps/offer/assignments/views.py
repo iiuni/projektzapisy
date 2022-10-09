@@ -1,12 +1,11 @@
 import csv
-import os
 import re
 from collections import defaultdict
 from operator import attrgetter
 from typing import Dict
 
-import environ
-from django.conf import settings
+from more_itertools import flatten
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
@@ -20,30 +19,29 @@ from apps.offer.vote.models.system_state import SystemState
 from apps.users.decorators import employee_required
 from apps.users.models import Employee
 
-from .sheets import (create_sheets_service, read_assignments_sheet,
+from .sheets import (read_assignments_sheet, read_courses_sheet,
                      read_employees_sheet, read_opening_recommendations,
                      update_employees_sheet, update_assignments_sheet,
-                     update_voting_results_sheet)
-from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary,
+                     update_courses_sheet, update_voting_results_sheet,
+                     voting_sheet_or_none, assignments_sheet_or_none,
+                     VOTING_RESULTS_SPREADSHEET_ID, CLASS_ASSIGNMENT_SPREADSHEET_ID)
+from .utils import (AssignmentsCourseInfo, AssignmentsViewSummary, CourseGroupTypeSummary, SingleCourseData,
                     EmployeeData, ProcessedAssignment, TeacherInfo, get_last_years, get_votes, suggest_teachers)
-
-env = environ.Env()
-environ.Env.read_env(os.path.join(settings.BASE_DIR, os.pardir, 'env', '.env'))
-VOTING_RESULTS_SPREADSHEET_ID = env('VOTING_RESULTS_SPREADSHEET_ID')
-CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 
 
 @employee_required
 def plan_view(request):
     """Displays assignments and pensa based on data from spreadsheets."""
     year = SystemState.get_current_state().year
-    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
     try:
-        teachers = read_employees_sheet(assignments_spreadsheet)
-        assignments_from_sheet = list(
-            filter(lambda a: a.confirmed, read_assignments_sheet(assignments_spreadsheet)))
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
+        teachers = read_employees_sheet(assignments_sheet)
+        assignments_from_sheet = list(filter(lambda a: a.confirmed, read_assignments_sheet(assignments_sheet)))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return render(request, 'assignments/view.html', {'year': year})
+    except AssertionError:
         return render(request, 'assignments/view.html', {'year': year})
 
     courses: Dict[str, AssignmentsViewSummary] = {'z': {}, 'l': {}}
@@ -105,17 +103,23 @@ def assignments_wizard(request):
     """
     proposals = Proposal.objects.filter(status=ProposalStatus.IN_VOTE).order_by('name')
     try:
-        assignments = read_assignments_sheet(create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID))
+        assignments = []
+        assignments_sheet = assignments_sheet_or_none(request)
+        if assignments_sheet is not None:
+            assignments = list(read_assignments_sheet(assignments_sheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
-        assignments = []
 
-    courses = []
     if assignments:
         picks = set(a.proposal_id for a in assignments)
     else:
-        picks = read_opening_recommendations(create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID))
+        voting_spreadsheet = voting_sheet_or_none(request)
+        if voting_spreadsheet is None:
+            picks = set()
+        else:
+            picks = read_opening_recommendations(voting_spreadsheet)
 
+    courses = []
     for proposal in proposals:
         checked = proposal.pk in picks
         # First value is the name of course
@@ -146,25 +150,30 @@ def create_assignments_sheet(request):
     Makes sure that modifications made to the assignments sheet so far are not
     overridden.
     """
-    regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
-    sheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
-
-    # Read the current contents of the sheet.
-    current_assignments = defaultdict(list)
     try:
-        for assignment in read_assignments_sheet(sheet):
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
+        current_assignments = defaultdict(list)
+        for assignment in read_assignments_sheet(assignments_sheet):
             current_assignments[(assignment.proposal_id, assignment.semester)].append(assignment)
-        teachers = read_employees_sheet(sheet)
+        teachers = read_employees_sheet(assignments_sheet)
     except (KeyError, ValueError) as error:
         messages.error(
             request, f"""<p>
-        Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
-        została wygenerowana w obawie przed nadpisaniem istniejących
-        przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
-        {error}""")
+            Nie udało się sparsować aktualnego arkusza i jego nowa wersja nie
+            została wygenerowana w obawie przed nadpisaniem istniejących
+            przydziałów. Proszę poprawić dane w arkuszu lub go opróżnić.</p>
+            {error}""")
+        return redirect(reverse('assignments-wizard'))
+    except AssertionError:
         return redirect(reverse('assignments-wizard'))
 
+    current_courses = dict()
+    for course in read_courses_sheet(assignments_sheet):
+        current_courses[(course.proposal_id, course.semester)] = course
+
     # Read selections from the form.
+    regex = re.compile(r'asgn-(?P<proposal_id>\d+)-(?P<semester>[zl])')
     picked_courses = set()
     for course in request.POST:
         # Filter out fields other than courses.
@@ -177,15 +186,29 @@ def create_assignments_sheet(request):
     for pick in list(current_assignments.keys()):
         if pick not in picked_courses:
             del current_assignments[pick]
+    for pick in list(current_courses.keys()):
+        if pick not in picked_courses:
+            del current_courses[pick]
 
     # Filter new picks, so they don't override existing data in the sheet.
     new_picks = [pick for pick in picked_courses if pick not in current_assignments]
+    missing_courses_picks = [pick for pick in picked_courses if pick not in current_courses]
 
-    suggested_groups = suggest_teachers(new_picks)
-    all_groups = sum(current_assignments.values(), []) + suggested_groups
+    proposal_ids = set(p for (p, _) in new_picks) | set(p for (p, _) in missing_courses_picks)
+    proposals = {
+        p.id: p for p in Proposal.objects
+        .filter(id__in=proposal_ids)
+        .select_related('owner', 'owner__user', 'course_type')
+        .prefetch_related('tags')
+    }
+
+    # update Assignments sheet
+    suggested_groups = suggest_teachers(new_picks, proposals)
+    all_groups = list(flatten(current_assignments.values())) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
-    update_assignments_sheet(sheet, suggested_groups)
+    update_assignments_sheet(assignments_sheet, suggested_groups)
 
+    # update Employees sheet
     new_usernames = set(
         g.teacher_username for g in suggested_groups if g.teacher_username not in teachers)
     is_external_contractor = models.Count(
@@ -209,17 +232,36 @@ def create_assignments_sheet(request):
             courses_summer=[],
         )
     teachers = sorted(teachers.values(), key=attrgetter('status', 'last_name', 'first_name'))
-    update_employees_sheet(sheet, teachers)
+    update_employees_sheet(assignments_sheet, teachers)
+
+    # update Courses sheet
+    courses_data = list(current_courses.values())
+    for pid, semester in missing_courses_picks:
+        proposal: Proposal = proposals[pid]
+        courses_data.append(
+            SingleCourseData(
+                proposal_id=pid,
+                name=proposal.get_course_name(semester),
+                course_type=proposal.course_type.name,
+                tags=', '.join(map(lambda x: x[0], proposal.tags.values_list('short_name'))),
+                ects=proposal.points,
+                semester=semester
+            )
+        )
+    courses_data.sort(key=attrgetter('semester', 'name'))
+    update_courses_sheet(assignments_sheet, courses_data)
     return redirect(reverse('assignments-wizard')+'#step-3')
 
 
 @staff_member_required
 def create_voting_sheet(request):
     """Prepares the voting sheet."""
+    voting_sheet = voting_sheet_or_none(request)
+    if voting_sheet is None:
+        return redirect(reverse('assignments-wizard'))
     years = get_last_years(3)
     voting = get_votes(years)
-    sheet = create_sheets_service(VOTING_RESULTS_SPREADSHEET_ID)
-    update_voting_results_sheet(sheet, voting, years)
+    update_voting_results_sheet(voting_sheet, voting, years)
     return redirect(reverse('assignments-wizard')+'#step-1')
 
 
@@ -232,24 +274,28 @@ def generate_scheduler_file(request, semester, fmt):
     assignments Google sheets.
 
     Args:
-        slug: represents semester, 'lato' for summer, 'zima' for winter.
-        format: format of requested file, either 'csv' or 'json'.
+        semester: represents semester, 'l' for summer, 'z' for winter.
+        fmt: format of requested file, either 'csv' or 'json'.
 
     Returns:
         File in the desired format in a response.
     """
     if semester not in ['z', 'l']:
-        messages.error(f"Niepoprawny semestr: '{ semester }'")
-        redirect('assignments-wizard')
+        messages.error(request, f"Niepoprawny semestr: '{ semester }'")
+        return redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
-        messages.error(f"Niepoprawny format: '{ fmt }'")
-    current_year = SystemState.get_current_state().year
-    assignments_spreadsheet = create_sheets_service(CLASS_ASSIGNMENT_SPREADSHEET_ID)
+        messages.error(request, f"Niepoprawny format: '{ fmt }'")
+        return redirect('assignments-wizard')
+
     try:
-        teachers = read_employees_sheet(assignments_spreadsheet)
-        assignments = read_assignments_sheet(assignments_spreadsheet)
+        assignments_sheet = assignments_sheet_or_none(request)
+        assert assignments_sheet is not None
+        teachers = read_employees_sheet(assignments_sheet)
+        assignments = list(read_assignments_sheet(assignments_sheet))
     except (KeyError, ValueError) as error:
         messages.error(request, error)
+        return redirect('assignments-wizard')
+    except AssertionError:
         return redirect('assignments-wizard')
 
     content_teachers = [{
@@ -292,6 +338,7 @@ def generate_scheduler_file(request, semester, fmt):
         content_assignments.append(scheduler_assignment)
         index += 1
 
+    current_year = SystemState.get_current_state().year
     if fmt == 'json':
         response = JsonResponse(content_teachers + content_assignments, safe=False)
         response[

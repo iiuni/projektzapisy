@@ -32,7 +32,7 @@ class Term(models.Model):
     ignore_conflicts = models.BooleanField(default=False)
 
     def validate_against_event_terms(self):
-        assert(self.room is not None)
+        assert self.room is not None
         terms = Term.get_terms_for_dates(dates=[self.day],
                                          classroom=self.room,
                                          start_time=self.start,
@@ -48,7 +48,7 @@ class Term(models.Model):
                 code='overlap')
 
     def validate_against_course_terms(self):
-        assert(self.room is not None)
+        assert self.room is not None
         semester = Semester.get_semester(self.day)
         if not semester:
             return

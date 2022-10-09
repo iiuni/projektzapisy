@@ -87,7 +87,10 @@ class Term(models.Model):
 
     @staticmethod
     def get_python_day_of_week(day_of_week):
-        return [x[0] for x in days_of_week.DAYS_OF_WEEK].index(day_of_week)
+        try:
+            return [x[0] for x in days_of_week.DAYS_OF_WEEK].index(day_of_week)
+        except ValueError:
+            return None
 
     def numbers(self):
         if not self.id:
