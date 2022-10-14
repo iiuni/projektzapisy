@@ -222,12 +222,12 @@ export default class PrototypeSummary extends SimpleSummaryProps {
 </script>
 
 <template>
-  <div class="table-responsiveVUE">
-    <table id="enr-schedule-listByCourseVUE" class="table table-striped">
-      <thead>
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="thead-dark">
         <tr>
           <th scope="col">Przedmiot</th>
-          <th class="ects" scope="col">ECTS</th>
+          <th scope="col">ECTS</th>
         </tr>
       </thead>
       <SimpleSummary
@@ -246,23 +246,14 @@ export default class PrototypeSummary extends SimpleSummaryProps {
         summaryType="Grupy, które masz zaznaczone"
         :summaryData="selectedSummary"
       />
-      <tfoot v-if="countActiveCategories() > 1">
+      <tfoot class="table-dark" v-if="countActiveCategories() > 1">
         <tr>
           <td>
             <strong>Punktów ECTS łącznie:</strong>
           </td>
-          <td class="ects">{{ getTotalPointsFromAllCategories() }}</td>
+          <td>{{ getTotalPointsFromAllCategories() }}</td>
         </tr>
       </tfoot>
     </table>
   </div>
 </template>
-
-<style>
-thead {
-  width: 100%;
-}
-th.ects {
-  text-align: right;
-}
-</style>

@@ -35,7 +35,7 @@ const SimpleSummaryProps = Vue.extend({
 
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
-  private opened: Array<number> = [];
+  opened: Array<number> = [];
 
   public getNameDay(day: DayOfWeek) {
     return nameDay(day).toLowerCase();
@@ -69,68 +69,54 @@ export default class SimpleSummary extends SimpleSummaryProps {
 </script>
 
 <template>
-  <div>
-    <tbody v-if="summaryData.length > 0">
-      <tr>
-        <td class="summaryHeader">
-          <strong>{{ summaryType }}</strong>
-        </td>
-        <td class="summaryHeaderEcts">{{ getTotalPoints() }}</td>
-      </tr>
-    </tbody>
-    <tbody v-for="item in summaryData" :key="item.id">
-      <tr class="courseHeader">
-        <td @click="toggleView(item.id)" class="name" scope="col">
+  <tbody>
+    <tr class="table-default" v-if="summaryData.length > 0">
+      <td class="summaryHeader">
+        <strong>{{ summaryType }}</strong>
+      </td>
+      <td class="summaryHeaderEcts">{{ getTotalPoints() }}</td>
+    </tr>
+    <template v-for="item in summaryData">
+      <tr class="table-transparent" :key="item.id">
+        <td
+          @click="toggleView(item.id)"
+          class="table-transparent-data"
+          scope="col"
+        >
           <a @click="toggleView(item.id)" :href="item.url">
             {{ item.name }}
           </a>
         </td>
-        <td rowspan="2" class="ects" align="right">
+        <td class="table-transparent-data">
           {{ getPoints(item) }}
         </td>
       </tr>
-      <tr v-if="isViewOpened(item.id)" class="courseDetails">
-        <td class="courseDetails">
-          <ul v-for="group in item.groups" :key="group.id">
-            <li>
-              <span class="type">{{ group.type.toLowerCase() }}:</span>
-              <span class="term">
-                {{ getNameDay(group.terms[0].weekday) }}
-                {{ group.terms[0].startTimeString }}-{{
-                  group.terms[0].endTimeString
-                }}
-              </span>
-              <span class="classroom"
-                >sala:
-                {{ group.terms[0].getClassrooms }}
-              </span>
-            </li>
-          </ul>
-        </td>
+      <tr v-if="isViewOpened(item.id)" :key="item.name + item.id">
+        <ul v-for="group in item.groups" :key="group.id">
+          <li>
+            <span class="type">{{ group.type.toLowerCase() }}:</span>
+            <span class="term">
+              {{ getNameDay(group.terms[0].weekday) }}
+              {{ group.terms[0].startTimeString }}-{{
+                group.terms[0].endTimeString
+              }}
+            </span>
+            <span class="classroom"
+              >sala:
+              {{ group.terms[0].getClassrooms }}
+            </span>
+          </li>
+        </ul>
       </tr>
-    </tbody>
-  </div>
+    </template>
+  </tbody>
 </template>
 
 <style>
-tbody {
-  width: 114%;
-  display: table;
+.table-transparent {
+  background-color: rgba(0, 0, 0, 0.05);
 }
-td.courseDetails {
-  width: 90%;
-}
-tr.simpleSumamry {
-  width: 200%;
-}
-td.ects {
-  text-align: right;
-}
-td.summaryHeader {
-  background-color: white;
-}
-td.summaryHeaderEcts {
-  text-align: right;
-  background-color: white;
+.table-transparent-data {
+  border-bottom: 1px solid #dee2e6;
 }
 </style>
