@@ -111,8 +111,7 @@ export class Course {
     public shortName: string,
     public url: string,
     public points: number
-  ) {
-  }
+  ) {}
 }
 
 export interface GuaranteedSpot {
