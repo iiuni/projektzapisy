@@ -55,6 +55,6 @@ export default class Prototype extends Vue {
 <template>
   <div class="col">
     <PrototypeTimetable :groups="groupsGetter" />
-    <PrototypeSummary />
+    <PrototypeSummary :groups="groupsGetter" />
   </div>
 </template>

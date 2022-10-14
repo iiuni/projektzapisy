@@ -1,7 +1,22 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { DayOfWeek, nameDay, Group } from "../models";
+import { DayOfWeek, nameDay, Group, Course } from "../models";
+
+export class CourseWithGroups extends Course {
+  public groups: Group[];
+  public isOverlapping: Boolean;
+
+  constructor(
+    public course: Course,
+    public courseGroups: Group[],
+    public courseIsOverlapping: Boolean
+  ) {
+    super(course.id, course.name, course.shortName, course.url, course.points);
+    this.groups = courseGroups;
+    this.isOverlapping = courseIsOverlapping;
+  }
+}
 
 const SimpleSummaryProps = Vue.extend({
   props: {
@@ -9,32 +24,35 @@ const SimpleSummaryProps = Vue.extend({
       type: String,
       default: "",
     },
-    groups: {
-      type: Array as () => Array<Group>,
-      default: {},
-    },
-    groupsCondition: {
-      type: Function,
-    },
-    courses: {
-      type: Object,
-      default: {},
-    },
-    points: {
-      type: Number,
-      default: 0,
+    summaryData: {
+      type: Array as () => Array<CourseWithGroups>,
+      default() {
+        return [];
+      },
     },
   },
 });
+
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
   private opened: Array<number> = [];
-  public GetNameDay(day: DayOfWeek) {
+
+  public getNameDay(day: DayOfWeek) {
     return nameDay(day).toLowerCase();
   }
-  public objectLength(o: Object) {
-    return Object.keys(o).length;
+
+  public getPoints(data: CourseWithGroups) {
+    return data.isOverlapping ? "–" : data.points;
   }
+
+  public getTotalPoints(): Number {
+    let sum = 0;
+    this.summaryData.forEach((data) => {
+      sum += data.isOverlapping ? 0 : data.points;
+    });
+    return sum;
+  }
+
   public toggleView(cid: number) {
     let index = this.opened.indexOf(cid);
     if (index > -1) {
@@ -43,6 +61,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
       this.opened.push(cid);
     }
   }
+
   public isViewOpened(cid: number) {
     return this.opened.includes(cid);
   }
@@ -51,38 +70,32 @@ export default class SimpleSummary extends SimpleSummaryProps {
 
 <template>
   <div>
-    <tbody v-if="objectLength(courses) > 0">
+    <tbody v-if="summaryData.length > 0">
       <tr>
         <td class="summaryHeader">
           <strong>{{ summaryType }}</strong>
         </td>
-        <td class="summaryHeaderEcts">{{ points }}</td>
+        <td class="summaryHeaderEcts">{{ getTotalPoints() }}</td>
       </tr>
     </tbody>
-    <tbody v-for="(item, idx) in courses" :value="item" :key="idx">
+    <tbody v-for="item in summaryData" :key="item.id">
       <tr class="courseHeader">
         <td @click="toggleView(item.id)" class="name" scope="col">
           <a @click="toggleView(item.id)" :href="item.url">
             {{ item.name }}
           </a>
         </td>
-        <td
-          v-if="item.summaryPoints !== -1"
-          rowspan="2"
-          class="ects"
-          align="right"
-        >
-          {{ item.summaryPoints }}
+        <td rowspan="2" class="ects" align="right">
+          {{ getPoints(item) }}
         </td>
-        <td v-else rowspan="2" class="ects" align="right">-</td>
       </tr>
       <tr v-if="isViewOpened(item.id)" class="courseDetails">
         <td class="courseDetails">
-          <ul v-for="(group, gid) in groups" :value="group" :key="gid">
-            <li v-if="groupsCondition(group, item)">
+          <ul v-for="group in item.groups" :key="group.id">
+            <li>
               <span class="type">{{ group.type.toLowerCase() }}:</span>
               <span class="term">
-                {{ GetNameDay(group.terms[0].weekday) }}
+                {{ getNameDay(group.terms[0].weekday) }}
                 {{ group.terms[0].startTimeString }}-{{
                   group.terms[0].endTimeString
                 }}

@@ -1,160 +1,222 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { values, cloneDeep } from "lodash";
 
-import state from "../store/groups";
-import { Course, Group } from "../models";
+import { Group } from "../models";
 import SimpleSummary from "./SimpleSummary.vue";
+import { CourseWithGroups } from "./SimpleSummary.vue";
+
+const SimpleSummaryProps = Vue.extend({
+  props: {
+    groups: {
+      type: Array as () => Array<Group>,
+      default() {
+        return [];
+      },
+    },
+  },
+});
 
 @Component({
   components: {
     SimpleSummary,
   },
 })
-export default class PrototypeSummary extends Vue {
-  public points: number = 0;
-  public howManyPointsCategories: number = 0;
+export default class PrototypeSummary extends SimpleSummaryProps {
+  enrolledSummaryActive: Boolean = false;
+  enqueuedSummaryActive: Boolean = false;
+  pinnedSummaryActive: Boolean = false;
+  selectedSummaryActive: Boolean = false;
 
-  public selectedGroups: Function = (group: Group, course: Course) =>
-    !group.isEnrolled &&
-    !group.isEnqueued &&
-    !group.isPinned &&
-    group.isSelected &&
-    group.course.id == course.id;
-
-  public pinnedGroups: Function = (group: Group, course: Course) =>
-    !group.isEnrolled &&
-    !group.isEnqueued &&
-    group.isPinned &&
-    group.course.id == course.id;
-
-  public enqueuedGroups: Function = (group: Group, course: Course) =>
-    group.isEnqueued && group.course.id == course.id;
-
-  public enrolledGroups: Function = (group: Group, course: Course) =>
-    group.isEnrolled && group.course.id == course.id;
-
-  public initializeCourses() {
-    let groups: { [id: number]: Group } = values(state.state.store).filter(
-      (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+  get enrolledSummary(): CourseWithGroups[] {
+    let enrolledCourses = new Set(
+      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
     );
-    let enrolledCourses: { [id: number]: Course } = {};
-    let enrolledPoints: number = 0;
-    Object.entries(groups).forEach((g) => {
-      if (g[1].isEnrolled && enrolledCourses[g[1].course.id] === undefined) {
-        enrolledCourses[g[1].course.id] = cloneDeep(g[1].course);
-        enrolledCourses[g[1].course.id].summaryPoints =
-          enrolledCourses[g[1].course.id].points;
-        enrolledPoints += enrolledCourses[g[1].course.id].summaryPoints;
+
+    if (enrolledCourses.size == 0) {
+      this.enrolledSummaryActive = false;
+      return [];
+    }
+
+    let summaryData: Array<CourseWithGroups> = [];
+    for (let course of enrolledCourses) {
+      let groups = this.groups.filter(
+        (g) => g.isEnrolled && g.course.id == course
+      );
+
+      if (groups.length == 0) {
+        continue;
       }
-    });
-    let enqueuedCourses: { [id: number]: Course } = {};
-    let enqueuedPoints: number = 0;
-    Object.entries(groups).forEach((g) => {
-      if (g[1].isEnqueued && enqueuedCourses[g[1].course.id] === undefined) {
-        enqueuedCourses[g[1].course.id] = cloneDeep(g[1].course);
-        if (enrolledCourses[g[1].course.id] === undefined) {
-          enqueuedCourses[g[1].course.id].summaryPoints =
-            enqueuedCourses[g[1].course.id].points;
-        } else {
-          enqueuedCourses[g[1].course.id].summaryPoints = -1;
-          enrolledPoints += 1;
-        }
-        enrolledPoints += enqueuedCourses[g[1].course.id].summaryPoints;
-      }
-    });
-    let pinnedCourses: { [id: number]: Course } = {};
-    let pinnedPoints: number = 0;
-    Object.entries(groups).forEach((g) => {
-      if (
-        g[1].isPinned &&
-        !g[1].isEnrolled &&
-        !g[1].isEnqueued &&
-        pinnedCourses[g[1].course.id] === undefined
-      ) {
-        pinnedCourses[g[1].course.id] = cloneDeep(g[1].course);
-        if (
-          enrolledCourses[g[1].course.id] === undefined &&
-          enqueuedCourses[g[1].course.id] === undefined
-        ) {
-          pinnedCourses[g[1].course.id].summaryPoints =
-            pinnedCourses[g[1].course.id].points;
-        } else {
-          pinnedCourses[g[1].course.id].summaryPoints = -1;
-          pinnedPoints += 1;
-        }
-        pinnedPoints += pinnedCourses[g[1].course.id].summaryPoints;
-      }
-    });
-    let selectedCourses: { [id: number]: Course } = {};
-    let selectedPoints: number = 0;
-    Object.entries(groups).forEach((g) => {
-      if (
-        g[1].isSelected &&
-        !g[1].isPinned &&
-        !g[1].isEnrolled &&
-        !g[1].isEnqueued &&
-        selectedCourses[g[1].course.id] === undefined
-      ) {
-        selectedCourses[g[1].course.id] = cloneDeep(g[1].course);
-        if (
-          enrolledCourses[g[1].course.id] === undefined &&
-          enqueuedCourses[g[1].course.id] === undefined &&
-          pinnedCourses[g[1].course.id] === undefined
-        ) {
-          selectedCourses[g[1].course.id].summaryPoints =
-            selectedCourses[g[1].course.id].points;
-        } else {
-          selectedCourses[g[1].course.id].summaryPoints = -1;
-          selectedPoints += 1;
-        }
-        selectedPoints += selectedCourses[g[1].course.id].summaryPoints;
-      }
-    });
-    this.points =
-      selectedPoints + pinnedPoints + enqueuedPoints + enrolledPoints;
-    this.howManyPointsCategories =
-      +(Object.keys(enrolledCourses).length > 0) +
-      +(Object.keys(enqueuedCourses).length > 0) +
-      +(Object.keys(pinnedCourses).length > 0) +
-      +(Object.keys(selectedCourses).length > 0);
-    return {
-      enrolledCourses: enrolledCourses,
-      enqueuedCourses: enqueuedCourses,
-      pinnedCourses: pinnedCourses,
-      selectedCourses: selectedCourses,
-      enrolledPoints: enrolledPoints,
-      enqueuedPoints: enqueuedPoints,
-      pinnedPoints: pinnedPoints,
-      selectedPoints: selectedPoints,
-    };
+
+      this.enrolledSummaryActive = true;
+
+      summaryData.push(new CourseWithGroups(groups[0].course, groups, false));
+    }
+    return summaryData;
   }
 
-  get pinnedSummary(): [{ [id: number]: Course }, number] {
-    let courses = this.initializeCourses();
-    return [courses.pinnedCourses, courses.pinnedPoints];
-  }
-
-  get enrolledSummary(): [{ [id: number]: Course }, number] {
-    let courses = this.initializeCourses();
-    return [courses.enrolledCourses, courses.enrolledPoints];
-  }
-
-  get enqueuedSummary(): [{ [id: number]: Course }, number] {
-    let courses = this.initializeCourses();
-    return [courses.enqueuedCourses, courses.enqueuedPoints];
-  }
-
-  get selectedSummary(): [{ [id: number]: Course }, number] {
-    let courses = this.initializeCourses();
-    return [courses.selectedCourses, courses.selectedPoints];
-  }
-
-  get groups(): { [id: number]: Group } {
-    return values(state.state.store).filter(
-      (g) => g.isEnrolled || g.isEnqueued || g.isPinned || g.isSelected
+  get enqueuedSummary(): CourseWithGroups[] {
+    let enqueuedCourses = new Set(
+      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
     );
+    if (enqueuedCourses.size == 0) {
+      this.enqueuedSummaryActive = false;
+      return [];
+    }
+
+    let enrolledCourses = new Set(
+      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
+    );
+
+    let summaryData: Array<CourseWithGroups> = [];
+    for (let course of enqueuedCourses) {
+      let groups = this.groups.filter(
+        (g) => !g.isEnrolled && g.isEnqueued && g.course.id == course
+      );
+
+      if (groups.length == 0) {
+        continue;
+      }
+
+      let courseIsOverlapping = enrolledCourses.has(course);
+      this.enqueuedSummaryActive = true;
+
+      summaryData.push(
+        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
+      );
+    }
+    return summaryData;
+  }
+
+  get pinnedSummary(): CourseWithGroups[] {
+    let pinnedCourses = new Set(
+      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
+    );
+    if (pinnedCourses.size == 0) {
+      this.pinnedSummaryActive = false;
+      return [];
+    }
+
+    let enrolledCourses = new Set(
+      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
+    );
+    let enqueuedCourses = new Set(
+      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
+    );
+
+    let summaryData: Array<CourseWithGroups> = [];
+    for (let course of pinnedCourses) {
+      let groups = this.groups.filter(
+        (g) =>
+          !g.isEnrolled && !g.isEnqueued && g.isPinned && g.course.id == course
+      );
+
+      if (groups.length == 0) {
+        continue;
+      }
+
+      let courseIsOverlapping =
+        enrolledCourses.has(course) || enqueuedCourses.has(course);
+      this.pinnedSummaryActive = true;
+
+      summaryData.push(
+        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
+      );
+    }
+    return summaryData;
+  }
+
+  get selectedSummary(): CourseWithGroups[] {
+    let selectedCourses = new Set(
+      this.groups.filter((g) => g.isSelected).map((g) => g.course.id)
+    );
+    if (selectedCourses.size == 0) {
+      this.selectedSummaryActive = false;
+      return [];
+    }
+
+    let enrolledCourses = new Set(
+      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
+    );
+    let enqueuedCourses = new Set(
+      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
+    );
+    let pinnedCourses = new Set(
+      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
+    );
+
+    let summaryData: Array<CourseWithGroups> = [];
+    for (let course of selectedCourses) {
+      let groups = this.groups.filter(
+        (g) =>
+          !g.isEnrolled &&
+          !g.isEnqueued &&
+          !g.isPinned &&
+          g.isSelected &&
+          g.course.id == course
+      );
+
+      if (groups.length == 0) {
+        continue;
+      }
+
+      let courseIsOverlapping =
+        enrolledCourses.has(course) ||
+        enqueuedCourses.has(course) ||
+        pinnedCourses.has(course);
+      this.selectedSummaryActive = true;
+
+      summaryData.push(
+        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
+      );
+    }
+    return summaryData;
+  }
+
+  public countActiveCategories() {
+    return (
+      Number(this.enrolledSummaryActive) +
+      Number(this.enqueuedSummaryActive) +
+      Number(this.pinnedSummaryActive) +
+      Number(this.selectedSummaryActive)
+    );
+  }
+
+  public getTotalPointsFromAllCategories() {
+    let enrolledCourses = new Set(
+      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
+    );
+    let enqueuedCourses = new Set(
+      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
+    );
+    let pinnedCourses = new Set(
+      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
+    );
+    let selectedCourses = new Set(
+      this.groups.filter((g) => g.isSelected).map((g) => g.course.id)
+    );
+
+    let courses = this.union(enrolledCourses, enqueuedCourses);
+    courses = this.union(courses, pinnedCourses);
+    courses = this.union(courses, selectedCourses);
+
+    let sum = 0;
+    this.groups.forEach((g) => {
+      if (courses.has(g.course.id)) {
+        sum += g.course.points;
+        courses.delete(g.course.id);
+      }
+    });
+
+    return sum;
+  }
+
+  private union(setA: Set<Number>, setB: Set<Number>) {
+    const _union = new Set(setA);
+    for (const elem of setB) {
+      _union.add(elem);
+    }
+    return _union;
   }
 }
 </script>
@@ -170,38 +232,26 @@ export default class PrototypeSummary extends Vue {
       </thead>
       <SimpleSummary
         summaryType="Grupy, w których jesteś"
-        :groups="groups"
-        :groupsCondition="enrolledGroups"
-        :courses="enrolledSummary[0]"
-        :points="enrolledSummary[1]"
+        :summaryData="enrolledSummary"
       />
       <SimpleSummary
         summaryType="Grupy, do których czekasz w kolejce"
-        :groups="groups"
-        :groupsCondition="enqueuedGroups"
-        :courses="enqueuedSummary[0]"
-        :points="enqueuedSummary[1]"
+        :summaryData="enqueuedSummary"
       />
       <SimpleSummary
         summaryType="Grupy, które masz przypięte"
-        :groups="groups"
-        :groupsCondition="pinnedGroups"
-        :courses="pinnedSummary[0]"
-        :points="pinnedSummary[1]"
+        :summaryData="pinnedSummary"
       />
       <SimpleSummary
         summaryType="Grupy, które masz zaznaczone"
-        :groups="groups"
-        :groupsCondition="selectedGroups"
-        :courses="selectedSummary[0]"
-        :points="selectedSummary[1]"
+        :summaryData="selectedSummary"
       />
-      <tfoot v-if="howManyPointsCategories > 1">
+      <tfoot v-if="countActiveCategories() > 1">
         <tr>
           <td>
             <strong>Punktów ECTS łącznie:</strong>
           </td>
-          <td class="ects">{{ points }}</td>
+          <td class="ects">{{ getTotalPointsFromAllCategories() }}</td>
         </tr>
       </tfoot>
     </table>

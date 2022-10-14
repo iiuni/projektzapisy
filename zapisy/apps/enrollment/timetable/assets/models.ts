@@ -105,7 +105,6 @@ export class Teacher {
 
 // Course is defined in apps/enrollment/courses/models/course.py.
 export class Course {
-  public summaryPoints: number;
   constructor(
     public id: number,
     public name: string,
@@ -113,7 +112,6 @@ export class Course {
     public url: string,
     public points: number
   ) {
-    this.summaryPoints = 0;
   }
 }
 
