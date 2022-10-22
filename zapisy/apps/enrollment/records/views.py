@@ -29,11 +29,12 @@ def enqueue(request):
                 "asynchroniczny proces."
             )
         )
-        if not Record.can_enroll(student, group):
+        if not (reason := Record.can_enroll(student, group)):
             messages.warning(request,
                              ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
-                              "Jeśli nie  zmieni się to do czasu wciągania Twojego rekordu "
-                              "z  kolejki, zostanie on usunięty."))
+                              "Powód: " + reason.value + ". "
+                              "Jeśli nie zmieni się to do czasu wciągania Twojego rekordu "
+                              "z kolejki, zostanie on usunięty."))
     else:
         messages.warning(request, "Nie udało się dopisać do kolejki.")
     return redirect('course-page', slug=group.course.slug)
