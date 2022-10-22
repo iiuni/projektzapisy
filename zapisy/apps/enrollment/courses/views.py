@@ -112,6 +112,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     }
     return course, data
 
+
 @require_GET
 def course_view(request, slug):
     course, data = course_view_data(request, slug)
