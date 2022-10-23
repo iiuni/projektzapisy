@@ -35,7 +35,8 @@ const SimpleSummaryProps = Vue.extend({
 
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
-  opened: Array<number> = [];
+  openedCourses: Array<number> = [];
+  openedCategory: Boolean = false;
 
   public getNameDay(day: DayOfWeek) {
     return nameDay(day).toLowerCase();
@@ -53,17 +54,22 @@ export default class SimpleSummary extends SimpleSummaryProps {
     return sum;
   }
 
-  public toggleView(cid: number) {
-    let index = this.opened.indexOf(cid);
+  public toggleCourseView(cid: number) {
+    let index = this.openedCourses.indexOf(cid);
     if (index > -1) {
-      this.opened.splice(index, 1);
+      this.openedCourses.splice(index, 1);
     } else {
-      this.opened.push(cid);
+      this.openedCourses.push(cid);
     }
   }
 
-  public isViewOpened(cid: number) {
-    return this.opened.includes(cid);
+  public isCourseViewOpened(cid: number) {
+    return this.openedCourses.includes(cid);
+  }
+
+  public toggleCategoryView(): Boolean {
+    this.openedCategory = !this.openedCategory;
+    return this.openedCategory;
   }
 }
 </script>
@@ -71,42 +77,50 @@ export default class SimpleSummary extends SimpleSummaryProps {
 <template>
   <tbody>
     <tr class="table-default" v-if="summaryData.length > 0">
-      <td class="summaryHeader">
+      <td class="summaryHeader" @click="toggleCategoryView()">
         <strong>{{ summaryType }}</strong>
       </td>
-      <td class="summaryHeaderEcts">{{ getTotalPoints() }}</td>
+      <td class="summaryHeaderEcts">
+        <div class="table-second-column">
+          {{ getTotalPoints() }}
+        </div>
+      </td>
     </tr>
     <template v-for="item in summaryData">
-      <tr class="table-transparent" :key="item.id">
-        <td
-          @click="toggleView(item.id)"
-          class="table-transparent-data"
-          scope="col"
-        >
-          <a @click="toggleView(item.id)" :href="item.url">
+      <tr v-if="openedCategory" class="table-transparent" :key="item.id">
+        <td @click="toggleCourseView(item.id)" class="table-transparent-data">
+          <a @click="toggleCourseView(item.id)" :href="item.url">
             {{ item.name }}
           </a>
         </td>
         <td class="table-transparent-data">
-          {{ getPoints(item) }}
+          <div class="table-second-column">
+            {{ getPoints(item) }}
+          </div>
         </td>
       </tr>
-      <tr v-if="isViewOpened(item.id)" :key="item.name + item.id">
-        <ul v-for="group in item.groups" :key="group.id">
-          <li>
-            <span class="type">{{ group.type.toLowerCase() }}:</span>
-            <span class="term">
-              {{ getNameDay(group.terms[0].weekday) }}
-              {{ group.terms[0].startTimeString }}-{{
-                group.terms[0].endTimeString
-              }}
-            </span>
-            <span class="classroom"
-              >sala:
-              {{ group.terms[0].getClassrooms }}
-            </span>
-          </li>
-        </ul>
+      <tr
+        class=""
+        v-if="openedCategory && isCourseViewOpened(item.id)"
+        :key="item.name + item.id"
+      >
+        <td class="p-2">
+          <ul v-for="group in item.groups" :key="group.id">
+            <li>
+              <span class="type">{{ group.type.toLowerCase() }}:</span>
+              <span class="term">
+                {{ getNameDay(group.terms[0].weekday) }}
+                {{ group.terms[0].startTimeString }}-{{
+                  group.terms[0].endTimeString
+                }}
+              </span>
+              <span class="classroom"
+                >sala:
+                {{ group.terms[0].getClassrooms }}
+              </span>
+            </li>
+          </ul>
+        </td>
       </tr>
     </template>
   </tbody>
@@ -118,5 +132,9 @@ export default class SimpleSummary extends SimpleSummaryProps {
 }
 .table-transparent-data {
   border-bottom: 1px solid #dee2e6;
+}
+.table-second-column {
+  width: 30%;
+  text-align: right;
 }
 </style>

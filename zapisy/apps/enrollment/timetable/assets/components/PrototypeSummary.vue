@@ -224,10 +224,20 @@ export default class PrototypeSummary extends SimpleSummaryProps {
 <template>
   <div class="table-responsive">
     <table class="table">
-      <thead class="thead-dark">
+      <colgroup>
+        <col style="width: 80%" />
+        <col style="width: 20%" />
+      </colgroup>
+      <thead class="table-dark">
         <tr>
-          <th scope="col">Przedmiot</th>
-          <th scope="col">ECTS</th>
+          <td>
+            <strong>Przedmiot</strong>
+          </td>
+          <td>
+            <div class="table-second-column">
+              <strong>ECTS</strong>
+            </div>
+          </td>
         </tr>
       </thead>
       <SimpleSummary
@@ -246,14 +256,25 @@ export default class PrototypeSummary extends SimpleSummaryProps {
         summaryType="Grupy, które masz zaznaczone"
         :summaryData="selectedSummary"
       />
-      <tfoot class="table-dark" v-if="countActiveCategories() > 1">
+      <tfoot class="table-dark">
         <tr>
           <td>
             <strong>Punktów ECTS łącznie:</strong>
           </td>
-          <td>{{ getTotalPointsFromAllCategories() }}</td>
+          <td>
+            <div class="table-second-column">
+              {{ getTotalPointsFromAllCategories() }}
+            </div>
+          </td>
         </tr>
       </tfoot>
     </table>
   </div>
 </template>
+
+<style>
+.table-second-column {
+  width: 30%;
+  text-align: right;
+}
+</style>
