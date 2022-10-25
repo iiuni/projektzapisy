@@ -39,3 +39,5 @@ oauth2client==4.1.3
 html2text
 # We use google-cloud-storage to store images from defect
 django-googledrive-storage==1.6.0
+# ... but something broke for us in a dependency upgrade
+google-auth-oauthlib<0.6
