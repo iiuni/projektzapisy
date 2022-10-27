@@ -13,9 +13,9 @@
   "dependencies": {
     "@bokeh/bokehjs": "2.4.3",
     "@fullcalendar/bootstrap": "5.11.4",
-    "@fullcalendar/bootstrap5": "^6.1.4",
-    "@fullcalendar/core": "^6.1.4",
-    "@fullcalendar/daygrid": "^6.1.4",
+    "@fullcalendar/bootstrap5": "^5.11.4",
+    "@fullcalendar/core": "^5.11.4",
+    "@fullcalendar/daygrid": "^5.11.4",
     "@fullcalendar/timegrid": "5.11.4",
     "@popperjs/core": "^2.11.6",
     "ContentTools": "1.6.16",

@@ -25,8 +25,12 @@ footer {
   }
 }
 
-textarea {
-  margin-top: 0.5rem;
+
+.form-group {
+  margin-bottom: 1rem !important;
+}
+
+.form-group > label {
   margin-bottom: 0.5rem;
 }
 
