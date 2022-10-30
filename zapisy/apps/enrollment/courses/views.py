@@ -2,21 +2,17 @@ import csv
 import json
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views.decorators.http import require_GET
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
-from apps.notifications.repositories import get_notifications_repository
-from apps.notifications.utils import render_description
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
 
@@ -113,23 +109,11 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     return course, data
 
 
-@require_GET
 def course_view(request, slug):
     course, data = course_view_data(request, slug)
     if course is None:
         raise Http404
     data.update(prepare_courses_list_data(course.semester))
-
-    notification_id = request.GET.get("notification")
-    if notification_id and request.user:
-        notifications_repository = get_notifications_repository()
-        notification = notifications_repository.get_by_id(
-            request.user, notification_id)
-        if notification:
-            description = render_description(notification.description_id,
-                                             notification.description_args)
-            messages.warning(request, description)
-
     return render(request, 'courses/courses.html', data)
 
 

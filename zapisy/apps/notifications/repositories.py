@@ -12,10 +12,6 @@ from apps.notifications.serialization import JsonNotificationSerializer, Notific
 class NotificationsRepository(ABC):
 
     @abstractmethod
-    def get_by_id(self, user: User, id: str) -> Notification:
-        pass
-
-    @abstractmethod
     def get_count_for_user(self, user: User) -> int:
         pass
 
@@ -58,16 +54,6 @@ class RedisNotificationsRepository(NotificationsRepository):
         self.serializer = serializer
         self.redis_client = redis.Redis()
         self.removed_count = 0
-
-    def get_by_id(self, user: User, id: str) -> Notification:
-        serialized = self.redis_client.smembers(
-            self._generate_unsent_key_for_user(user))
-        serialized = serialized.union(
-            self.redis_client.smembers(self._generate_sent_key_for_user(user)))
-
-        for notification in map(self.serializer.deserialize, serialized):
-            if notification.id == id:
-                return notification
 
     def get_count_for_user(self, user: User) -> int:
         # SCARD returns 0 if one of them does not exist
