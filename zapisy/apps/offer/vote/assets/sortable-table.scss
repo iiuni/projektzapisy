@@ -1,0 +1,46 @@
+.table tbody.semester {
+  border: none;
+
+  th {
+    background-color: #ffffff;
+    border: none;
+    cursor: auto;
+    padding-top: 1.75rem;
+    padding-left: 0;
+
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
+.table tbody.headers {
+  border-top: none;
+
+  th {
+    background-color: #ffffff;
+  }
+
+  th:not(:last-child) {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.075);
+    }
+
+    .th-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      [data-fa-i2svg] {
+        color: #bfbfc1;
+        margin-left: 0.75rem;
+      }
+    }
+
+    &:first-child .th-content {
+      justify-content: flex-start;
+    }
+  }
+}

@@ -73,9 +73,9 @@ const AssetDefs = {
   "vote-point-counter": [
     path.resolve("apps/offer/vote/assets/point-counter.ts"),
   ],
-  "vote-bootstrap-table": [
-    path.resolve("apps/offer/vote/assets/bootstrap-table.js"),
-    path.resolve("apps/offer/vote/assets/bootstrap-table.scss"),
+  "vote-sortable-table": [
+    path.resolve("apps/offer/vote/assets/sortable-table.js"),
+    path.resolve("apps/offer/vote/assets/sortable-table.scss"),
   ],
 
   // Schedule app
