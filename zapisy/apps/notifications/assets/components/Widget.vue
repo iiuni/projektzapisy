@@ -126,9 +126,7 @@ export default class NotificationsComponent extends Vue {
               <small class="text-muted mx-2">{{
                 elem.issuedOn | Moment
               }}</small>
-              <button type="button" class="close" @click="deleteOne(elem.id)">
-                &times;
-              </button>
+              <button type="button" class="btn-close" @click="deleteOne(elem.id)"></button>
             </div>
             <a :href="elem.target" class="toast-link">
               <div class="toast-body text-body">{{ elem.description }}</div>

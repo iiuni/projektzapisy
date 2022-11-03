@@ -67,15 +67,15 @@ export default Vue.extend({
 // Refers to palette of Bootstrap 4.
 
 .in_vote a {
-  color: var(--green);
+  color: var(--bs-green);
 }
 
 .in_offer a {
-  color: var(--blue);
+  color: var(--bs-blue);
 }
 
 .withdrawn a {
-  color: var(--gray);
+  color: var(--bs-gray);
 }
 
 #proposal-legend {
