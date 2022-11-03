@@ -2,34 +2,14 @@
 import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 import Vue from "vue";
 import Component from "vue-class-component";
-
-class Notification {
-  constructor(
-    public id: string,
-    public description: string,
-    public issuedOn: string,
-    public target: string
-  ) {}
-}
-
-// Defines a parser that validates and parses Notifications from JSON.
-const notifications: ParseFn<Notification> = (x: any) =>
-  new Notification(
-    fromMap(x, "id", aString),
-    fromMap(x, "description", aString),
-    fromMap(x, "issued_on", aString),
-    fromMap(x, "target", aString)
-  );
-const notificationsArray = anArrayContaining(notifications);
+import { mapState } from "vuex";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -40,6 +20,11 @@ dayjs.locale("pl");
   components: {
     FontAwesomeIcon,
   },
+  computed: {
+    ...mapState('notifications', {
+      notifications: "notifications",
+    })
+  },
   filters: {
     Moment: function (str: string) {
       return dayjs.tz(str, "Europe/Warsaw").fromNow();
@@ -47,53 +32,25 @@ dayjs.locale("pl");
   },
 })
 export default class NotificationsComponent extends Vue {
-  n_list: Notification[] = [];
 
   get n_counter(): number {
-    return this.n_list.length;
+    return this.notifications.length;
   }
 
   farBell = farBell;
   fasBell = fasBell;
 
-  getNotifications() {
-    return axios
-      .get("/notifications/get")
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
+  deleteAll() {
+    this.$store.dispatch('notifications/deleteAll')
   }
 
-  deleteAll(): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete/all")
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
+  deleteOne(id: string) {
+    this.$store.dispatch('notifications/delete', id)
   }
 
-  deleteOne(i: number): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete", {
-        uuid: i,
-      })
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  async created() {
-    this.getNotifications();
-    setInterval(this.getNotifications, 30000);
+  created() {
+    this.$store.dispatch('notifications/get')
+    setInterval(() => this.$store.dispatch('notifications/get'), 30000);
   }
 }
 </script>
@@ -120,7 +77,7 @@ export default class NotificationsComponent extends Vue {
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <form class="p-1 place-for-notifications">
-          <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
+          <div v-for="elem in notifications" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
               <strong class="mr-auto"></strong>
               <small class="text-muted mx-2">{{
