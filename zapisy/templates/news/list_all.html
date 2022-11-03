@@ -23,9 +23,7 @@
         <form class="input-group">
             <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
                     value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
-            <div class="input-group-append">
-                <button class="btn btn-success" type="submit">Wyszukaj</button>
-            </div>
+            <button class="btn btn-success" type="submit">Wyszukaj</button>
         </form>
         {% if query %}
             <p class="mx-auto font-weight-bolder m-2">

@@ -27,6 +27,22 @@ footer {
 
 a {
   cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a.bg-secondary:hover {
+  color: #fff;
+  text-decoration: none !important;
+  background-color: #545b62 !important;
+}
+
+a.bg-secondary:focus {
+  outline: 0;
+  box-shadow: 0 0 0 .2rem rgba(108,117,125,.5);
 }
 
 @media print {

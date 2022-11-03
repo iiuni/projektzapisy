@@ -99,7 +99,7 @@ export default Vue.extend({
             ref="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
           />
         </div>
         <div class="col-md">
@@ -117,7 +117,7 @@ export default Vue.extend({
             ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
           />
         </div>
         <div class="col-md">

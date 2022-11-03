@@ -12,9 +12,7 @@
 {% block classroomview %}
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         Wybierz salę, by zobaczyć jakie odbywają się w niej zajęcia i wydarzenia.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endblock %}
 {% endblock %}
@@ -27,7 +25,7 @@
         <span class="text-capitalize navbar-brand" href="#">{{ floor.grouper }}</span>
         <nav class="nav nav-pills flex-column text-center">
             {% for r in floor.list %}
-                <a class=" nav-link ml-3 my-1 {% if r == room %}active{% else %}bg-light{% endif %}" href="{{ r.get_absolute_url }}" >{{ r.number }}</a>
+                <a class=" nav-link ms-3 my-1 {% if r == room %}active{% else %}bg-light{% endif %}" href="{{ r.get_absolute_url }}" >{{ r.number }}</a>
             {% endfor %}
         </nav>
     {% endfor %}

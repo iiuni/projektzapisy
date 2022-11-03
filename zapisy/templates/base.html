@@ -96,10 +96,10 @@
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown" id="login-dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bs-auto-close="outside" >
                                 <b>Zaloguj się</b><span class="caret"></span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right m-2">
+                            <div class="dropdown-menu dropdown-menu-end m-2">
                                 <div class="m-3">
                                     <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
                                         <img src="{% static 'common/images/logo-uwr.svg' %}"
@@ -213,7 +213,7 @@
     {% block rendered_bundles %}
     {% endblock %}
     <footer class="d-print-none">
-        <div class="container-fluid">
+        <div class="container-fluid bg-light">
             <div class="container">
                 <p>
                     &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>

@@ -87,7 +87,7 @@ export default Vue.extend({
             filterKey="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
             ref="tags-filter"
           />
         </div>
@@ -105,7 +105,7 @@ export default Vue.extend({
             filterKey="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
             ref="effects-filter"
           />
         </div>
