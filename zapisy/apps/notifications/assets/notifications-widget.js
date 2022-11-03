@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Widget from "./components/Widget.vue";
-import store from './store'
+import store from "./store";
 
 new Vue({
   el: "#notificationswidget",

@@ -21,9 +21,9 @@ dayjs.locale("pl");
     FontAwesomeIcon,
   },
   computed: {
-    ...mapState('notifications', {
+    ...mapState("notifications", {
       notifications: "notifications",
-    })
+    }),
   },
   filters: {
     Moment: function (str: string) {
@@ -32,7 +32,6 @@ dayjs.locale("pl");
   },
 })
 export default class NotificationsComponent extends Vue {
-
   get n_counter(): number {
     return this.notifications.length;
   }
@@ -41,16 +40,16 @@ export default class NotificationsComponent extends Vue {
   fasBell = fasBell;
 
   deleteAll() {
-    this.$store.dispatch('notifications/deleteAll')
+    this.$store.dispatch("notifications/deleteAll");
   }
 
   deleteOne(id: string) {
-    this.$store.dispatch('notifications/delete', id)
+    this.$store.dispatch("notifications/delete", id);
   }
 
   created() {
-    this.$store.dispatch('notifications/get')
-    setInterval(() => this.$store.dispatch('notifications/get'), 30000);
+    this.$store.dispatch("notifications/get");
+    setInterval(() => this.$store.dispatch("notifications/get"), 30000);
   }
 }
 </script>
@@ -77,7 +76,11 @@ export default class NotificationsComponent extends Vue {
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <form class="p-1 place-for-notifications">
-          <div v-for="elem in notifications" :key="elem.id" class="toast mb-1 show">
+          <div
+            v-for="elem in notifications"
+            :key="elem.id"
+            class="toast mb-1 show"
+          >
             <div class="toast-header">
               <strong class="mr-auto"></strong>
               <small class="text-muted mx-2">{{

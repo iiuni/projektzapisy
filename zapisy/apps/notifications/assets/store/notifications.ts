@@ -18,50 +18,50 @@ const notifications: ParseFn<Notification> = (x: any) =>
     fromMap(x, "description", aString),
     fromMap(x, "issued_on", aString),
     fromMap(x, "target", aString)
-  )
-const notificationsArray = anArrayContaining(notifications)
+  );
+const notificationsArray = anArrayContaining(notifications);
 
 interface State {
-  notifications: Array<Notification>
+  notifications: Array<Notification>;
 }
 
 const state: State = {
   notifications: [],
-}
+};
 
-const getters = {}
+const getters = {};
 
 const mutations = {
   setNotificationsList(state: State, notifications: Array<Notification>) {
-    state.notifications = notifications
-  }
-}
+    state.notifications = notifications;
+  },
+};
 
 const actions = {
   async get({ commit }: ActionContext<State, any>) {
-    let response = await axios.get("/notifications/get")
-    let notifications = parse(notificationsArray)(response.data)
-    commit('setNotificationsList', notifications)
+    let response = await axios.get("/notifications/get");
+    let notifications = parse(notificationsArray)(response.data);
+    commit("setNotificationsList", notifications);
   },
 
   async delete({ commit }: ActionContext<State, any>, id: string) {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
-    let response = await axios.post('/notifications/delete', {
-      uuid: id
-    })
-    let notifications = parse(notificationsArray)(response.data)
-    commit('setNotificationsList', notifications)
+    let response = await axios.post("/notifications/delete", {
+      uuid: id,
+    });
+    let notifications = parse(notificationsArray)(response.data);
+    commit("setNotificationsList", notifications);
   },
 
   async deleteAll({ commit }: ActionContext<State, any>) {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
-    let response = await axios.post("/notifications/delete/all")
-    let notifications = parse(notificationsArray)(response.data)
-    commit('setNotificationsList', notifications)
+    let response = await axios.post("/notifications/delete/all");
+    let notifications = parse(notificationsArray)(response.data);
+    commit("setNotificationsList", notifications);
   },
-}
+};
 
 export default {
   namespaced: true,
@@ -69,4 +69,4 @@ export default {
   getters,
   actions,
   mutations,
-}
+};
