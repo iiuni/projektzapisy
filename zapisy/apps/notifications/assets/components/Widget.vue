@@ -10,7 +10,7 @@ import "dayjs/locale/pl";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { mapState } from "vuex";
-import { Notification } from "../store/notifications"
+import { Notification } from "../store/notifications";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
