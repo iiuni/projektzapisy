@@ -2,34 +2,21 @@
 import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import "dayjs/locale/pl";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { mapState } from "vuex";
 import { Notification } from "../store/notifications";
-
-dayjs.extend(relativeTime);
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.locale("pl");
+import NotificationToast from "./NotificationToast.vue";
 
 @Component({
   components: {
     FontAwesomeIcon,
+    NotificationToast,
   },
   computed: {
     ...mapState("notifications", {
       notifications: "notifications",
     }),
-  },
-  filters: {
-    Moment: function (str: string) {
-      return dayjs.tz(str, "Europe/Warsaw").fromNow();
-    },
   },
 })
 export default class NotificationsComponent extends Vue {
@@ -44,10 +31,6 @@ export default class NotificationsComponent extends Vue {
 
   deleteAll() {
     this.$store.dispatch("notifications/deleteAll");
-  }
-
-  deleteOne(id: string) {
-    this.$store.dispatch("notifications/delete", id);
   }
 
   created() {
@@ -79,24 +62,11 @@ export default class NotificationsComponent extends Vue {
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <form class="p-1 place-for-notifications">
-          <div
-            v-for="elem in notifications"
-            :key="elem.id"
-            class="toast mb-1 show"
-          >
-            <div class="toast-header">
-              <strong class="mr-auto"></strong>
-              <small class="text-muted mx-2">{{
-                elem.issuedOn | Moment
-              }}</small>
-              <button type="button" class="close" @click="deleteOne(elem.id)">
-                &times;
-              </button>
-            </div>
-            <a :href="elem.target" class="toast-link">
-              <div class="toast-body text-body">{{ elem.description }}</div>
-            </a>
-          </div>
+          <NotificationToast
+            v-for="notification in notifications"
+            :key="notification.id"
+            :notification="notification"
+          />
         </form>
         <form>
           <div v-if="n_counter" class="pt-2 border-top text-center w-100">
@@ -125,17 +95,6 @@ export default class NotificationsComponent extends Vue {
 // Hide arrow, displayed by default for tag <a> in .dropdown-menu.
 .specialdropdown::after {
   content: none;
-}
-
-a.toast-link:hover {
-  text-decoration: none;
-  .toast-body {
-    background-color: var(--light);
-  }
-}
-
-.toast-body {
-  white-space: pre-wrap;
 }
 
 .place-for-notifications {
