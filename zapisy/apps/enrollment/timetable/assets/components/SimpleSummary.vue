@@ -42,8 +42,8 @@ export default class SimpleSummary extends SimpleSummaryProps {
     return nameDay(day).toLowerCase();
   }
 
-  public getPoints(data: CourseWithGroups) {
-    return data.isOverlapping ? "–" : data.points;
+  public getPrintablePoints(data: CourseWithGroups): String {
+    return data.isOverlapping ? "–" : String(data.points);
   }
 
   public getTotalPoints(): Number {
@@ -94,7 +94,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
         </td>
         <td class="table-transparent-data">
           <div class="table-second-column">
-            {{ getPoints(item) }}
+              {{ getPrintablePoints(item) }}
           </div>
         </td>
       </tr>
