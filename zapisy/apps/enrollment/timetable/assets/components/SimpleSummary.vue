@@ -89,8 +89,9 @@ export default class SimpleSummary extends SimpleSummaryProps {
         </div>
       </td>
     </tr>
+    <template v-if="openedCategory">
     <template v-for="item in summaryData">
-      <tr v-if="openedCategory" class="table-transparent" :key="item.id">
+        <tr class="table-transparent" :key="item.id">
         <td @click="toggleCourseView(item.id)" class="table-transparent-data">
           <a @click="toggleCourseView(item.id)" :href="item.url">
             {{ item.name }}
@@ -103,13 +104,12 @@ export default class SimpleSummary extends SimpleSummaryProps {
         </td>
       </tr>
       <tr
-        class=""
-        v-if="openedCategory && isCourseViewOpened(item.id)"
+          v-if="isCourseViewOpened(item.id)"
         :key="item.name + item.id"
       >
         <td class="p-2">
-          <ul v-for="group in item.groups" :key="group.id">
-            <li>
+            <ul>
+              <li v-for="group in item.groups" :key="group.id">
               <span class="type">{{ group.type.toLowerCase() }}:</span>
                 <span v-for="(term, idx) in group.terms" class="term" :key="idx">
                   {{ getNameDay(term.weekday) }}
@@ -124,6 +124,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
           </ul>
         </td>
       </tr>
+      </template>
     </template>
   </tbody>
 </template>
