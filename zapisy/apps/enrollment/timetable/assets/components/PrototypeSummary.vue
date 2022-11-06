@@ -3,8 +3,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 
 import { Group } from "../models";
-import SimpleSummary from "./SimpleSummary.vue";
-import { CourseWithGroups } from "./SimpleSummary.vue";
+import SingleSummary from "./SingleSummary.vue";
+import { CourseWithGroups } from "./SingleSummary.vue";
 
 const SimpleSummaryProps = Vue.extend({
   props: {
@@ -19,7 +19,7 @@ const SimpleSummaryProps = Vue.extend({
 
 @Component({
   components: {
-    SimpleSummary,
+    SingleSummary,
   },
 })
 export default class PrototypeSummary extends SimpleSummaryProps {
@@ -240,19 +240,19 @@ export default class PrototypeSummary extends SimpleSummaryProps {
           </td>
         </tr>
       </thead>
-      <SimpleSummary
+      <SingleSummary
         summaryType="Grupy, w których jesteś"
         :summaryData="enrolledSummary"
       />
-      <SimpleSummary
+      <SingleSummary
         summaryType="Grupy, do których czekasz w kolejce"
         :summaryData="enqueuedSummary"
       />
-      <SimpleSummary
+      <SingleSummary
         summaryType="Grupy, które masz przypięte"
         :summaryData="pinnedSummary"
       />
-      <SimpleSummary
+      <SingleSummary
         summaryType="Grupy, które masz zaznaczone"
         :summaryData="selectedSummary"
       />

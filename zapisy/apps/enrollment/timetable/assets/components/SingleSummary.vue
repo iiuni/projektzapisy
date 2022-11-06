@@ -18,7 +18,7 @@ export class CourseWithGroups extends Course {
   }
 }
 
-const SimpleSummaryProps = Vue.extend({
+const SingleSummaryProps = Vue.extend({
   props: {
     summaryType: {
       type: String,
@@ -34,7 +34,7 @@ const SimpleSummaryProps = Vue.extend({
 });
 
 @Component({})
-export default class SimpleSummary extends SimpleSummaryProps {
+export default class SingleSummary extends SingleSummaryProps {
   expandedCourses: { [cid: number]: boolean } = {};
   expandedCategory: Boolean = false;
 
