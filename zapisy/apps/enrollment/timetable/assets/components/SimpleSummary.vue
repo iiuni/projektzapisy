@@ -35,7 +35,7 @@ const SimpleSummaryProps = Vue.extend({
 
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
-  openedCourses: Array<number> = [];
+  expandedCourses: { [cid: number]: boolean } = {}
   openedCategory: Boolean = false;
 
   public getNameDay(day: DayOfWeek) {
@@ -55,16 +55,15 @@ export default class SimpleSummary extends SimpleSummaryProps {
   }
 
   public toggleCourseView(cid: number) {
-    let index = this.openedCourses.indexOf(cid);
-    if (index > -1) {
-      this.openedCourses.splice(index, 1);
+    if (this.expandedCourses[cid] === undefined) {
+      Vue.set(this.expandedCourses, cid, true);
     } else {
-      this.openedCourses.push(cid);
+      Vue.set(this.expandedCourses, cid, !this.expandedCourses[cid]);
     }
   }
 
-  public isCourseViewOpened(cid: number) {
-    return this.openedCourses.includes(cid);
+  public isCourseViewOpened(cid: number): boolean {    
+    return this.expandedCourses[cid] === undefined ? false : this.expandedCourses[cid];
   }
 
   public toggleCategoryView(): Boolean {
