@@ -35,7 +35,7 @@ const SimpleSummaryProps = Vue.extend({
 
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
-  expandedCourses: { [cid: number]: boolean } = {}
+  expandedCourses: { [cid: number]: boolean } = {};
   openedCategory: Boolean = false;
 
   public getNameDay(day: DayOfWeek) {
@@ -66,8 +66,10 @@ export default class SimpleSummary extends SimpleSummaryProps {
     }
   }
 
-  public isCourseViewOpened(cid: number): boolean {    
-    return this.expandedCourses[cid] === undefined ? false : this.expandedCourses[cid];
+  public isCourseViewOpened(cid: number): boolean {
+    return this.expandedCourses[cid] === undefined
+      ? false
+      : this.expandedCourses[cid];
   }
 
   public toggleCategoryView(): Boolean {
@@ -90,40 +92,39 @@ export default class SimpleSummary extends SimpleSummaryProps {
       </td>
     </tr>
     <template v-if="openedCategory">
-    <template v-for="item in summaryData">
+      <template v-for="item in summaryData">
         <tr class="table-transparent" :key="item.id">
-        <td @click="toggleCourseView(item.id)" class="table-transparent-data">
-          <a @click="toggleCourseView(item.id)" :href="item.url">
-            {{ item.name }}
-          </a>
-        </td>
-        <td class="table-transparent-data">
-          <div class="table-second-column">
+          <td @click="toggleCourseView(item.id)" class="table-transparent-data">
+            <a @click="toggleCourseView(item.id)" :href="item.url">
+              {{ item.name }}
+            </a>
+          </td>
+          <td class="table-transparent-data">
+            <div class="table-second-column">
               {{ getPrintablePoints(item) }}
-          </div>
-        </td>
-      </tr>
-      <tr
-          v-if="isCourseViewOpened(item.id)"
-        :key="item.name + item.id"
-      >
-        <td class="p-2">
+            </div>
+          </td>
+        </tr>
+        <tr v-if="isCourseViewOpened(item.id)" :key="item.name + item.id">
+          <td class="p-2">
             <ul>
               <li v-for="group in item.groups" :key="group.id">
-              <span class="type">{{ group.type.toLowerCase() }}:</span>
-                <span v-for="(term, idx) in group.terms" class="term" :key="idx">
+                <span class="type">{{ group.type.toLowerCase() }}:</span>
+                <span
+                  v-for="(term, idx) in group.terms"
+                  class="term"
+                  :key="idx"
+                >
                   {{ getNameDay(term.weekday) }}
-                  {{ term.startTimeString }}-{{
-                    term.endTimeString
-                }}
+                  {{ term.startTimeString }}-{{ term.endTimeString }}
                   sala:
                   {{ term.getClassrooms }}
-                  {{ getPrintableComma(idx, group.terms)}}
-              </span>
-            </li>
-          </ul>
-        </td>
-      </tr>
+                  {{ getPrintableComma(idx, group.terms) }}
+                </span>
+              </li>
+            </ul>
+          </td>
+        </tr>
       </template>
     </template>
   </tbody>
