@@ -66,7 +66,7 @@ const actions = {
         axios.spread((...responses) => {
           responses.forEach((response, pos) => {
             const courseID = idsToFetch[pos];
-            const groupsJSON = response.data["group_json"] as GroupJSON[];
+            const groupsJSON = response.data as GroupJSON[];
             groupsJSON.forEach((groupJSON) => {
               commit("groups/updateGroup", { groupJSON }, { root: true });
             });
