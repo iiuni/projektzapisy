@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { DayOfWeek, nameDay, Group, Course } from "../models";
+import { DayOfWeek, nameDay, Group, Course, Term } from "../models";
 
 export class CourseWithGroups extends Course {
   public groups: Group[];
@@ -44,6 +44,10 @@ export default class SimpleSummary extends SimpleSummaryProps {
 
   public getPrintablePoints(data: CourseWithGroups): String {
     return data.isOverlapping ? "–" : String(data.points);
+  }
+
+  public getPrintableComma(idx: number, terms: Array<Term>): String {
+    return terms.length == idx + 1 ? "" : "|";
   }
 
   public getTotalPoints(): Number {
@@ -107,15 +111,14 @@ export default class SimpleSummary extends SimpleSummaryProps {
           <ul v-for="group in item.groups" :key="group.id">
             <li>
               <span class="type">{{ group.type.toLowerCase() }}:</span>
-              <span class="term">
-                {{ getNameDay(group.terms[0].weekday) }}
-                {{ group.terms[0].startTimeString }}-{{
-                  group.terms[0].endTimeString
+                <span v-for="(term, idx) in group.terms" class="term" :key="idx">
+                  {{ getNameDay(term.weekday) }}
+                  {{ term.startTimeString }}-{{
+                    term.endTimeString
                 }}
-              </span>
-              <span class="classroom"
-                >sala:
-                {{ group.terms[0].getClassrooms }}
+                  sala:
+                  {{ term.getClassrooms }}
+                  {{ getPrintableComma(idx, group.terms)}}
               </span>
             </li>
           </ul>
