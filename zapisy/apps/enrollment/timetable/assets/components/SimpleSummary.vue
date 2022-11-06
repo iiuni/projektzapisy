@@ -5,16 +5,16 @@ import { DayOfWeek, nameDay, Group, Course, Term } from "../models";
 
 export class CourseWithGroups extends Course {
   public groups: Group[];
-  public isOverlapping: Boolean;
+  public isRepeated: Boolean;
 
   constructor(
     public course: Course,
     public courseGroups: Group[],
-    public courseIsOverlapping: Boolean
+    public courseIsRepeated: Boolean
   ) {
     super(course.id, course.name, course.shortName, course.url, course.points);
     this.groups = courseGroups;
-    this.isOverlapping = courseIsOverlapping;
+    this.isRepeated = courseIsRepeated;
   }
 }
 
@@ -36,14 +36,14 @@ const SimpleSummaryProps = Vue.extend({
 @Component({})
 export default class SimpleSummary extends SimpleSummaryProps {
   expandedCourses: { [cid: number]: boolean } = {};
-  openedCategory: Boolean = false;
+  expandedCategory: Boolean = false;
 
   public getNameDay(day: DayOfWeek) {
     return nameDay(day).toLowerCase();
   }
 
   public getPrintablePoints(data: CourseWithGroups): String {
-    return data.isOverlapping ? "–" : String(data.points);
+    return data.isRepeated ? "–" : String(data.points);
   }
 
   public getPrintableComma(idx: number, terms: Array<Term>): String {
@@ -53,7 +53,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
   public getTotalPoints(): Number {
     let sum = 0;
     this.summaryData.forEach((data) => {
-      sum += data.isOverlapping ? 0 : data.points;
+      sum += data.isRepeated ? 0 : data.points;
     });
     return sum;
   }
@@ -73,8 +73,8 @@ export default class SimpleSummary extends SimpleSummaryProps {
   }
 
   public toggleCategoryView(): Boolean {
-    this.openedCategory = !this.openedCategory;
-    return this.openedCategory;
+    this.expandedCategory = !this.expandedCategory;
+    return this.expandedCategory;
   }
 }
 </script>
@@ -91,7 +91,7 @@ export default class SimpleSummary extends SimpleSummaryProps {
         </div>
       </td>
     </tr>
-    <template v-if="openedCategory">
+    <template v-if="expandedCategory">
       <template v-for="item in summaryData">
         <tr class="table-transparent" :key="item.id">
           <td @click="toggleCourseView(item.id)" class="table-transparent-data">
