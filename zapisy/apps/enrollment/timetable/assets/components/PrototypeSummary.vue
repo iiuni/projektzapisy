@@ -28,11 +28,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
       this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
     );
 
-    if (enrolledCourses.size == 0) {
-      this.enrolledSummaryActive = false;
-      return [];
-    }
-
     let summaryData: Array<CourseWithGroups> = [];
     for (let course of enrolledCourses) {
       let groups = this.groups.filter(
@@ -43,8 +38,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
         continue;
       }
 
-      this.enrolledSummaryActive = true;
-
       summaryData.push(new CourseWithGroups(groups[0].course, groups, false));
     }
     return summaryData;
@@ -54,10 +47,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
     let enqueuedCourses = new Set(
       this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
     );
-    if (enqueuedCourses.size == 0) {
-      this.enqueuedSummaryActive = false;
-      return [];
-    }
 
     let enrolledCourses = new Set(
       this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
@@ -74,7 +63,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
       }
 
       let courseIsOverlapping = enrolledCourses.has(course);
-      this.enqueuedSummaryActive = true;
 
       summaryData.push(
         new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
@@ -87,10 +75,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
     let pinnedCourses = new Set(
       this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
     );
-    if (pinnedCourses.size == 0) {
-      this.pinnedSummaryActive = false;
-      return [];
-    }
 
     let enrolledCourses = new Set(
       this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
@@ -112,7 +96,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
 
       let courseIsOverlapping =
         enrolledCourses.has(course) || enqueuedCourses.has(course);
-      this.pinnedSummaryActive = true;
 
       summaryData.push(
         new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
@@ -125,10 +108,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
     let selectedCourses = new Set(
       this.groups.filter((g) => g.isSelected).map((g) => g.course.id)
     );
-    if (selectedCourses.size == 0) {
-      this.selectedSummaryActive = false;
-      return [];
-    }
 
     let enrolledCourses = new Set(
       this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
@@ -159,22 +138,12 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
         enrolledCourses.has(course) ||
         enqueuedCourses.has(course) ||
         pinnedCourses.has(course);
-      this.selectedSummaryActive = true;
 
       summaryData.push(
         new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
       );
     }
     return summaryData;
-  }
-
-  public countActiveCategories() {
-    return (
-      Number(this.enrolledSummaryActive) +
-      Number(this.enqueuedSummaryActive) +
-      Number(this.pinnedSummaryActive) +
-      Number(this.selectedSummaryActive)
-    );
   }
 
   public getTotalPointsFromAllCategories() {
