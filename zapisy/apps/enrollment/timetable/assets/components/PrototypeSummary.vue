@@ -6,7 +6,7 @@ import { Group } from "../models";
 import SingleSummary from "./SingleSummary.vue";
 import { CourseWithGroups } from "./SingleSummary.vue";
 
-const SimpleSummaryProps = Vue.extend({
+const PrototypeSummaryProps = Vue.extend({
   props: {
     groups: {
       type: Array as () => Array<Group>,
@@ -22,12 +22,7 @@ const SimpleSummaryProps = Vue.extend({
     SingleSummary,
   },
 })
-export default class PrototypeSummary extends SimpleSummaryProps {
-  enrolledSummaryActive: Boolean = false;
-  enqueuedSummaryActive: Boolean = false;
-  pinnedSummaryActive: Boolean = false;
-  selectedSummaryActive: Boolean = false;
-
+export default class PrototypeSummary extends PrototypeSummaryProps {
   get enrolledSummary(): CourseWithGroups[] {
     let enrolledCourses = new Set(
       this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
