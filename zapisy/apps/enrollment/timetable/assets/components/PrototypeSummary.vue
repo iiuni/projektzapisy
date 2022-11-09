@@ -23,14 +23,24 @@ const PrototypeSummaryProps = Vue.extend({
   },
 })
 export default class PrototypeSummary extends PrototypeSummaryProps {
-  public getSummaryData(groupTypeFilter: Function, groupSupremacyFilter: Function): CourseWithGroups[] {
-    let courses = new Set(this.groups.filter((g) => groupTypeFilter(g)).map((g) => g.course.id));
-    let supremeCourses = new Set(this.groups.filter((g) => groupSupremacyFilter(g)).map((g) => g.course.id));
+  public getSummaryData(
+    groupTypeFilter: Function,
+    groupSupremacyFilter: Function
+  ): CourseWithGroups[] {
+    let courses = new Set(
+      this.groups.filter((g) => groupTypeFilter(g)).map((g) => g.course.id)
+    );
+    let supremeCourses = new Set(
+      this.groups.filter((g) => groupSupremacyFilter(g)).map((g) => g.course.id)
+    );
 
     let summaryData: Array<CourseWithGroups> = [];
     for (let course of courses) {
-      let groups = this.groups.filter((g) => 
-        !groupSupremacyFilter(g)  && groupTypeFilter(g) && g.course.id == course
+      let groups = this.groups.filter(
+        (g) =>
+          !groupSupremacyFilter(g) &&
+          groupTypeFilter(g) &&
+          g.course.id == course
       );
 
       if (groups.length == 0) {
@@ -106,19 +116,39 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
       </thead>
       <SingleSummary
         summaryType="Grupy, w których jesteś"
-        :summaryData="getSummaryData((g) => g.isEnrolled, (g) => false)"
+        :summaryData="
+          getSummaryData(
+            (g) => g.isEnrolled,
+            (g) => false
+          )
+        "
       />
       <SingleSummary
         summaryType="Grupy, do których czekasz w kolejce"
-        :summaryData="getSummaryData((g) => g.isEnqueued, (g) => g.isEnrolled)"
+        :summaryData="
+          getSummaryData(
+            (g) => g.isEnqueued,
+            (g) => g.isEnrolled
+          )
+        "
       />
       <SingleSummary
         summaryType="Grupy, które masz przypięte"
-        :summaryData="getSummaryData((g) => g.isPinned, (g) => g.isEnrolled || g.isEnqueued)"
+        :summaryData="
+          getSummaryData(
+            (g) => g.isPinned,
+            (g) => g.isEnrolled || g.isEnqueued
+          )
+        "
       />
       <SingleSummary
         summaryType="Grupy, które masz zaznaczone"
-        :summaryData="getSummaryData((g) => g.isSelected, (g) => g.isEnrolled || g.isEnqueued || g.isPinned)"
+        :summaryData="
+          getSummaryData(
+            (g) => g.isSelected,
+            (g) => g.isEnrolled || g.isEnqueued || g.isPinned
+          )
+        "
       />
       <tfoot class="table-dark">
         <tr>
