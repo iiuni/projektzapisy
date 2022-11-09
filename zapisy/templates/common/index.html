@@ -20,7 +20,9 @@
     </div>
     {% endfor %}
     <div class="row justify-content-end px-3">
-        <a class="float-right btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
+        <div class="col p-0">
+            <a class="float-end btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
+        </div>
     </div>
     
     <div class="row mt-5 align-items-end">

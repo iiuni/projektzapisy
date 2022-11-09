@@ -100,13 +100,13 @@ export default class NotificationsComponent extends Vue {
 
 <template>
   <div>
-    <li id="notification-dropdown" class="nav-item dropdown">
+    <li id="notification-dropdown" class="nav-item dropdown btn-group text-center">
       <a
         class="nav-link dropdown-toggle specialdropdown ml-1"
         href="#"
         id="navbarDropdown"
         role="button"
-        data-toggle="dropdown"
+        data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
@@ -118,7 +118,7 @@ export default class NotificationsComponent extends Vue {
           <font-awesome-icon :icon="farBell" size="lg" />
         </div>
       </a>
-      <div class="dropdown-menu dropdown-menu-right">
+      <div class="dropdown-menu">
         <form class="p-1 place-for-notifications">
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
@@ -165,7 +165,7 @@ export default class NotificationsComponent extends Vue {
 a.toast-link:hover {
   text-decoration: none;
   .toast-body {
-    background-color: var(--light);
+    background-color: var(--bs-light);
   }
 }
 
@@ -179,7 +179,7 @@ a.toast-link:hover {
 }
 
 .counter-badge {
-  background-color: var(--pink);
+  background-color: var(--bs-pink);
   border-radius: 2px;
   color: white;
   font-weight: bold;
