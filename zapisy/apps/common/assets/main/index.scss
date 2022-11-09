@@ -17,12 +17,26 @@ footer {
   margin-top: auto;
   padding-top: 5rem;
   .container-fluid {
-    background-color: var(--light);
+    background-color: var(--bs-light);
     padding: 1rem 0;
     p {
       margin: 0.5rem 0;
     }
   }
+}
+
+.nav-link:hover {
+  text-decoration: none;
+}
+
+.btn-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.btn-link:hover, .btn-link:focus {
+  color: #0056b3;
+  text-decoration: underline;  
 }
 
 a {
@@ -34,10 +48,32 @@ a:hover {
   text-decoration: underline;
 }
 
-a.bg-secondary:hover {
+a.badge {
+  text-decoration: none;
+}
+
+a.badge:hover {
   color: #fff;
-  text-decoration: none !important;
+}
+
+a.bg-secondary:hover, a.bg-secondary:focus {
   background-color: #545b62 !important;
+}
+
+a.bg-info:hover, a.bg-info:focus {
+  background-color: #117a8b !important;
+}
+
+a.bg-success:hover, a.bg-success:focus {
+  background-color: #00401e !important;
+}
+
+a.bg-info:focus {
+  box-shadow: 0 0 0 .2rem rgba(23,162,184,.5);
+}
+
+a.bg-success:focus {
+  box-shadow: 0 0 0 .2rem rgba(0,115,54,.5);
 }
 
 a.bg-secondary:focus {
@@ -186,17 +222,17 @@ colgroup col.table-info-type {
 // Required field marker in forms.
 .asteriskField {
   padding-left: 0.25em;
-  color: var(--red);
+  color: var(--bs-red);
 }
 
 // News items on the main page and the news page.
 .od-news-item {
   margin: 2rem 0;
   padding: 4rem;
-  background: var(--light);
+  background: var(--bs-light);
 
   .od-news-date {
-    color: var(--dark);
+    color: var(--bs-dark);
     font-style: italic;
     display: block;
     @media (min-width: 992px) {

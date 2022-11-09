@@ -4,7 +4,7 @@
 <div class="table-responsive tutorial">
     <h3 class="d-inline-block">{{ class_type|decode_class_type_plural }}
     </h3>
-    <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
+    <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
     {% if class_type in waiting_students %}
         <span class="badge badge-danger d-inline-block align-text-bottom ml-2">
             Niezapisanych&mdash;oczekujących
@@ -12,7 +12,7 @@
         </span>
     {% endif %}
     <table class="table table-bordered text-center">
-        <thead class="thead-dark">
+        <thead class="table-dark">
             <tr>
                 <th>Prowadzący</th>
                 <th scope="col">Termin zajęć</th>

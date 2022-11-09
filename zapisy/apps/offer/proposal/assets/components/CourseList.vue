@@ -91,15 +91,15 @@ export default Vue.extend({
       margin-left: -17px;
     }
     &.in_vote:before {
-      color: var(--green);
+      color: var(--bs-green);
     }
 
     &.in_offer:before {
-      color: var(--blue);
+      color: var(--bs-blue);
     }
 
     &.withdrawn:before {
-      color: var(--gray);
+      color: var(--bs-gray);
     }
   }
 }
