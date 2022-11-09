@@ -23,124 +23,24 @@ const PrototypeSummaryProps = Vue.extend({
   },
 })
 export default class PrototypeSummary extends PrototypeSummaryProps {
-  get enrolledSummary(): CourseWithGroups[] {
-    let enrolledCourses = new Set(
-      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
-    );
+  public getSummaryData(groupTypeFilter: Function, groupSupremacyFilter: Function): CourseWithGroups[] {
+    let courses = new Set(this.groups.filter((g) => groupTypeFilter(g)).map((g) => g.course.id));
+    let supremeCourses = new Set(this.groups.filter((g) => groupSupremacyFilter(g)).map((g) => g.course.id));
 
     let summaryData: Array<CourseWithGroups> = [];
-    for (let course of enrolledCourses) {
-      let groups = this.groups.filter(
-        (g) => g.isEnrolled && g.course.id == course
+    for (let course of courses) {
+      let groups = this.groups.filter((g) => 
+        !groupSupremacyFilter(g)  && groupTypeFilter(g) && g.course.id == course
       );
 
       if (groups.length == 0) {
         continue;
       }
 
-      summaryData.push(new CourseWithGroups(groups[0].course, groups, false));
-    }
-    return summaryData;
-  }
-
-  get enqueuedSummary(): CourseWithGroups[] {
-    let enqueuedCourses = new Set(
-      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
-    );
-
-    let enrolledCourses = new Set(
-      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
-    );
-
-    let summaryData: Array<CourseWithGroups> = [];
-    for (let course of enqueuedCourses) {
-      let groups = this.groups.filter(
-        (g) => !g.isEnrolled && g.isEnqueued && g.course.id == course
-      );
-
-      if (groups.length == 0) {
-        continue;
-      }
-
-      let courseIsOverlapping = enrolledCourses.has(course);
+      let isCourseRepeating = supremeCourses.has(course);
 
       summaryData.push(
-        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
-      );
-    }
-    return summaryData;
-  }
-
-  get pinnedSummary(): CourseWithGroups[] {
-    let pinnedCourses = new Set(
-      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
-    );
-
-    let enrolledCourses = new Set(
-      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
-    );
-    let enqueuedCourses = new Set(
-      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
-    );
-
-    let summaryData: Array<CourseWithGroups> = [];
-    for (let course of pinnedCourses) {
-      let groups = this.groups.filter(
-        (g) =>
-          !g.isEnrolled && !g.isEnqueued && g.isPinned && g.course.id == course
-      );
-
-      if (groups.length == 0) {
-        continue;
-      }
-
-      let courseIsOverlapping =
-        enrolledCourses.has(course) || enqueuedCourses.has(course);
-
-      summaryData.push(
-        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
-      );
-    }
-    return summaryData;
-  }
-
-  get selectedSummary(): CourseWithGroups[] {
-    let selectedCourses = new Set(
-      this.groups.filter((g) => g.isSelected).map((g) => g.course.id)
-    );
-
-    let enrolledCourses = new Set(
-      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
-    );
-    let enqueuedCourses = new Set(
-      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
-    );
-    let pinnedCourses = new Set(
-      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
-    );
-
-    let summaryData: Array<CourseWithGroups> = [];
-    for (let course of selectedCourses) {
-      let groups = this.groups.filter(
-        (g) =>
-          !g.isEnrolled &&
-          !g.isEnqueued &&
-          !g.isPinned &&
-          g.isSelected &&
-          g.course.id == course
-      );
-
-      if (groups.length == 0) {
-        continue;
-      }
-
-      let courseIsOverlapping =
-        enrolledCourses.has(course) ||
-        enqueuedCourses.has(course) ||
-        pinnedCourses.has(course);
-
-      summaryData.push(
-        new CourseWithGroups(groups[0].course, groups, courseIsOverlapping)
+        new CourseWithGroups(groups[0].course, groups, isCourseRepeating)
       );
     }
     return summaryData;
@@ -206,19 +106,19 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
       </thead>
       <SingleSummary
         summaryType="Grupy, w których jesteś"
-        :summaryData="enrolledSummary"
+        :summaryData="getSummaryData((g) => g.isEnrolled, (g) => false)"
       />
       <SingleSummary
         summaryType="Grupy, do których czekasz w kolejce"
-        :summaryData="enqueuedSummary"
+        :summaryData="getSummaryData((g) => g.isEnqueued, (g) => g.isEnrolled)"
       />
       <SingleSummary
         summaryType="Grupy, które masz przypięte"
-        :summaryData="pinnedSummary"
+        :summaryData="getSummaryData((g) => g.isPinned, (g) => g.isEnrolled || g.isEnqueued)"
       />
       <SingleSummary
         summaryType="Grupy, które masz zaznaczone"
-        :summaryData="selectedSummary"
+        :summaryData="getSummaryData((g) => g.isSelected, (g) => g.isEnrolled || g.isEnqueued || g.isPinned)"
       />
       <tfoot class="table-dark">
         <tr>
