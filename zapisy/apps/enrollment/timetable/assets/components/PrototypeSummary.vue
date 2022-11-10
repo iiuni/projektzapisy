@@ -57,22 +57,7 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
   }
 
   public getTotalPointsFromAllCategories() {
-    let enrolledCourses = new Set(
-      this.groups.filter((g) => g.isEnrolled).map((g) => g.course.id)
-    );
-    let enqueuedCourses = new Set(
-      this.groups.filter((g) => g.isEnqueued).map((g) => g.course.id)
-    );
-    let pinnedCourses = new Set(
-      this.groups.filter((g) => g.isPinned).map((g) => g.course.id)
-    );
-    let selectedCourses = new Set(
-      this.groups.filter((g) => g.isSelected).map((g) => g.course.id)
-    );
-
-    let courses = this.union(enrolledCourses, enqueuedCourses);
-    courses = this.union(courses, pinnedCourses);
-    courses = this.union(courses, selectedCourses);
+    let courses = new Set(this.groups.map((g) => g.course.id));
 
     let sum = 0;
     this.groups.forEach((g) => {
@@ -83,14 +68,6 @@ export default class PrototypeSummary extends PrototypeSummaryProps {
     });
 
     return sum;
-  }
-
-  private union(setA: Set<Number>, setB: Set<Number>) {
-    const _union = new Set(setA);
-    for (const elem of setB) {
-      _union.add(elem);
-    }
-    return _union;
   }
 }
 </script>
