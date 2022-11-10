@@ -1,5 +1,6 @@
 import csv
 import json
+import locale
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,8 @@ from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
 
+
+locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
 
 class GroupData(TypedDict):
     students: List[Student]
@@ -169,7 +172,8 @@ def get_students_from_data(
     preserve_queue_ordering: bool = False,
 ):
     def sort_student_by_name(students: List[Student]) -> List[Student]:
-        return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
+        return sorted(students, key=lambda e: (locale.strxfrm(e.user.last_name),
+                                               locale.strxfrm(e.user.first_name)))
 
     students_in_course = set()
     students_in_queue = []
@@ -265,8 +269,8 @@ def recorded_students_csv(
     status: RecordStatus,
     user: User,
     course_name: Optional[str] = None,
-    exclude_students: Optional[Iterable] = None, *,
-    preserve_ordering: bool = False,
+    exclude_students: Optional[Iterable] = None,
+    *, preserve_ordering: bool = False,
 ) -> HttpResponse:
     """Builds the HttpResponse with list of student enrolled/enqueued in a list of groups."""
     exclude_students = set(exclude_students or [])
@@ -282,7 +286,8 @@ def recorded_students_csv(
                     "email": student.user.email,
                 }))
     if not preserve_ordering:
-        students.sort(key=lambda e: (e[1].get("last_name"), e[1].get("first_name")))
+        students.sort(key=lambda e: (locale.strxfrm(e[1].get("last_name")),
+                                     locale.strxfrm(e[1].get("first_name"))))
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="{}-{}-{}.csv"'.format(
