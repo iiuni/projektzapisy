@@ -17,8 +17,8 @@ from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
 
-
 locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
+
 
 class GroupData(TypedDict):
     students: List[Student]
