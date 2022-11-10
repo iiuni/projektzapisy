@@ -2795,9 +2795,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-loader@npm:8.2.5":
-  version: 8.2.5
-  resolution: "babel-loader@npm:8.2.5"
+"babel-loader@npm:8.3.0":
+  version: 8.3.0
+  resolution: "babel-loader@npm:8.3.0"
   dependencies:
     find-cache-dir: ^3.3.1
     loader-utils: ^2.0.0
@@ -2806,7 +2806,7 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0
     webpack: ">=2"
-  checksum: 6e4d2a308061903437ca70e469bc34ea701d7889ba2943f1992cf10a04c94a182fe747571f32e0da5fa6b0a97dfa8433d6c3a69dfbc315d35fd19d4b700c998e
+  checksum: 0362c514a86b7fffa4e145614253df0936dcc97476e3d6bb4dc1d694fdf0307c0c8404ea2a4cd392fd89a2302ba278fdabc81199b60b6d287d230ed3cf660ba2
   languageName: node
   linkType: hard
 
@@ -5328,7 +5328,7 @@ fsevents@~2.1.2:
     ContentTools: 1.6.16
     autoprefixer: 9.8.8
     axios: 0.21.4
-    babel-loader: 8.2.5
+    babel-loader: 8.3.0
     big-integer: 1.6.51
     bootstrap: 4.6.2
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
