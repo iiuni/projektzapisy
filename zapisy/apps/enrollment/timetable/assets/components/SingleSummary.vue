@@ -118,7 +118,7 @@ export default class SingleSummary extends SingleSummaryProps {
                   {{ getNameDay(term.weekday) }}
                   {{ term.startTimeString }}-{{ term.endTimeString }}
                   sala:
-                  {{ term.getClassrooms }}
+                  {{ term.classrooms }}
                   {{ getPrintableComma(idx, group.terms) }}
                 </span>
               </li>
