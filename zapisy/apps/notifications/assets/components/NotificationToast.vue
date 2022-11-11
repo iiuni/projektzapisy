@@ -4,13 +4,11 @@ import Component from "vue-class-component";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { Notification } from "../store/notifications";
+import { Notification } from "../models";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
-dayjs.extend(timezone);
 dayjs.locale("pl");
 
 const NotificationToastProps = Vue.extend({
@@ -19,16 +17,14 @@ const NotificationToastProps = Vue.extend({
   },
 });
 
-@Component({
-  filters: {
-    Moment: function (str: string) {
-      return dayjs.tz(str, "Europe/Warsaw").fromNow();
-    },
-  },
-})
+@Component
 export default class NotificationToast extends NotificationToastProps {
   deleteOne(id: string) {
     this.$store.dispatch("notifications/delete", id);
+  }
+
+  momentFromDate(date: Date) {
+    return dayjs(date).fromNow();
   }
 }
 </script>
@@ -38,7 +34,7 @@ export default class NotificationToast extends NotificationToastProps {
     <div class="toast-header">
       <strong class="mr-auto"></strong>
       <small class="text-muted mx-2">{{
-        notification.issuedOn | Moment
+        momentFromDate(notification.issuedOn)
       }}</small>
       <button type="button" class="close" @click="deleteOne(notification.id)">
         &times;
