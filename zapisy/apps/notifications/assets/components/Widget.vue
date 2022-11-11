@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { mapState } from "vuex";
-import { Notification } from "../store/notifications";
+import { Notification } from "../models";
 import NotificationToast from "./NotificationToast.vue";
 
 @Component({
