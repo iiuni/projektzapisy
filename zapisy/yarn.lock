@@ -5339,7 +5339,6 @@ fsevents@~2.1.2:
     prettier: 2.7.1
     sass: 1.26.10
     sass-loader: 10.3.1
-    spicery: 1.1.0
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -8261,13 +8260,6 @@ resolve@^1.14.2:
   bin:
     sre: bin/sre
   checksum: 1dd95133df94fe395dab0e430122d4cace2936bc475d99c4345291192fb786042f6d64f5e1f0cdfefcb00f57eb529f1169bd34ffe4649fbea9991a5df5d01616
-  languageName: node
-  linkType: hard
-
-"spicery@npm:1.1.0":
-  version: 1.1.0
-  resolution: "spicery@npm:1.1.0"
-  checksum: e2b37113a208ded87a52c418f2dd1320ea6ab3e0d7523df5bc25831a17291eb32effbcc42133aa10b2bbfb4a8753d45b8c8e1f9d3eb255c7c0ca0a1508eb1fd0
   languageName: node
   linkType: hard
 
