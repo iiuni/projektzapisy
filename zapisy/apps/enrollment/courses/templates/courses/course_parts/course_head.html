@@ -1,15 +1,12 @@
 {% load filters %}
 
 <style>
-    #main-content .btn-group {
-        flex-shrink: 1000;
-        margin-left: 0.5rem;
+    #main-content header {
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
     }
-    #main-content .btn-group a {
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 1000;
-        justify-content: center;
+    #main-content header h1 {
+        margin-bottom: 0;
     }
     #hours span + span::before {
         content: '+';
@@ -17,7 +14,7 @@
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center">
+<header class="d-flex justify-content-between align-items-center flex-wrap">
     <h1 class="d-inline-block">
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
@@ -26,14 +23,14 @@
         {% if user.is_authenticated %}
             <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
         {% endif %}
-        <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w&nbsp;ofercie</a>
+        <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w ofercie</a>
         {% if course.semester.is_current_semester %}
             {% if user.is_staff or course.owner == request.user.employee %}
                 <a class="btn btn-sm btn-outline-info" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
             {% endif %}
         {% endif %}
     </div>
-</div>
+</header>
 
 <table class="table table-bordered table-md-responsive" id="table-info">
     <colgroup>
