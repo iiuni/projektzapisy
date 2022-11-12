@@ -18,43 +18,31 @@
 {% block all-content %}
     <h1>Podsumowanie głosowania</h1>
     {% regroup proposals|semester_order by semester as proposals_per_semester %}
-    <table class="table table-striped">
     {% for semester, proposals_in_semester in proposals_per_semester %}
-        <tbody class="semester">
-            <tr>
-                <th colspan="4"><h2>Semestr {{ semester|semester_display }}</h2></th>
-            </tr>
-        </tbody>
-        {% if proposals_in_semester %}
-        <tbody class="headers">
-            <tr>
-                <th scope="col">Propozycja przedmiotu</th>
-                <th scope="col">Suma punktów</th>
-                <th scope="col">Liczba głosujących</th>
-                <th></th>
-            </tr>
-        </tbody>
-        <tbody class="proposals">
-            {% for proposal in proposals_in_semester %}
-            <tr>
-                <td><a href="{% url 'offer-page' slug=proposal.slug %}">{{ proposal.name }}</a></td>
-                <td class="text-center">{{ proposal.total|default_if_none:0 }}</td>
-                <td class="text-center">{{ proposal.count }}</td>
-                <td><a href="{% url 'proposal-vote-summary' slug=proposal.slug %}">lista</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        {% else %}
-        <tbody class="alert alert-info">
-            <tr>
-                <td>
-                    Nikt na nic jeszcze nie zagłosował.
-                </td>
-            </tr>
-        </tbody>
-        {% endif %}
+        <h2>Semestr {{ semester|semester_display }}</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Propozycja przedmiotu</th>
+                    <th scope="col" class="text-center">Suma punktów</th>
+                    <th scope="col" class="text-center">Liczba głosujących</th>
+                    <th data-sorter="false"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proposal in proposals_in_semester %}
+                <tr>
+                    <td><a href="{% url 'offer-page' slug=proposal.slug %}">{{ proposal.name }}</a></td>
+                    <td class="text-center">{{ proposal.total|default_if_none:0 }}</td>
+                    <td class="text-center">{{ proposal.count }}</td>
+                    <td><a href="{% url 'proposal-vote-summary' slug=proposal.slug %}">lista</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% empty %}
+        <div class="alert alert-info">Nikt na nic jeszcze nie zagłosował.</div>
     {% endfor %}
-    </table>
 
     {% render_bundle 'vote-sortable-table' %}
 {% endblock all-content %}

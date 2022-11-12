@@ -1,46 +1,30 @@
-.table tbody.semester {
-  border: none;
-
-  th {
-    background-color: #ffffff;
-    border: none;
-    cursor: auto;
-    padding-top: 1.75rem;
-    padding-left: 0;
-
-    h2 {
-      margin: 0;
-    }
-  }
+td:first-child {
+  width: 60%;
 }
 
-.table tbody.headers {
-  border-top: none;
+th.tablesorter-header:not(.sorter-false) {
+  cursor: pointer;
 
-  th {
-    background-color: #ffffff;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.075);
   }
 
-  th:not(:last-child) {
-    cursor: pointer;
+  .tablesorter-header-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.075);
-    }
+    .tablesorter-icon {
+      color: #bfbfc1;
+      margin-left: 0.75rem;
 
-    .th-content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      [data-fa-i2svg] {
-        color: #bfbfc1;
-        margin-left: 0.75rem;
+      @media (max-width: 32rem) {
+        display: none;
       }
     }
+  }
 
-    &:first-child .th-content {
-      justify-content: flex-start;
-    }
+  &:first-child .tablesorter-header-inner {
+    justify-content: flex-start;
   }
 }
