@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
+from apps.notifications.datatypes import Notification, NotificationTargetType
 from apps.notifications.forms import PreferencesFormStudent, PreferencesFormTeacher
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
@@ -14,19 +15,11 @@ from apps.notifications.utils import render_description
 
 @login_required
 def get_notifications(request):
-    def trunc(text):
-        """Cuts text at 200 characters and adds dots if it was indeed longer."""
-        return text[:200] + (text[200:] and '...')
-
-    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     repo = get_notifications_repository()
-    notifications = [{
-        'id': notification.id,
-        'description': trunc(
-            render_description(notification.description_id, notification.description_args)),
-        'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
-        'target': notification.target,
-    } for notification in repo.get_all_for_user(request.user)]
+    notifications = [
+        _notification_to_json_format(notification)
+        for notification in repo.get_all_for_user(request.user)
+    ]
     notifications.sort(key=lambda x: x['issued_on'], reverse=True)
 
     return JsonResponse(notifications, safe=False)
@@ -82,3 +75,28 @@ def delete_one(request):
     repo.remove_one_with_id(request.user, uuid)
 
     return get_notifications(request)
+
+
+def _notification_to_json_format(notification: Notification):
+    DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+    return {
+        'id': notification.id,
+        'description':
+            render_description(notification.description_id,
+                               notification.description_args),
+        'issued_on': notification.issued_on.strftime(DATE_TIME_FORMAT),
+        'target': notification.target,
+        'target_info': _get_target_info(notification)
+    }
+
+
+def _get_target_info(notification: Notification):
+    if notification.is_course_related:
+        return {
+            'type': NotificationTargetType.COURSE,
+            'course_id': notification.description_args.get('course_id')
+        }
+    if notification.is_news_related:
+        return {'type': NotificationTargetType.NEWS}
+    if notification.is_thesis_related:
+        return {'type': NotificationTargetType.THESIS}

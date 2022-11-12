@@ -4,7 +4,7 @@ import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import { Notification } from "../models";
 import NotificationToast from "./NotificationToast.vue";
 
@@ -14,8 +14,8 @@ import NotificationToast from "./NotificationToast.vue";
     NotificationToast,
   },
   computed: {
-    ...mapState("notifications", {
-      notifications: "notifications",
+    ...mapGetters("notifications", {
+      notifications: "truncatedNotifications",
     }),
   },
 })

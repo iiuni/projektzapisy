@@ -13,8 +13,10 @@ from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
                                                thesis_voting_activated)
-from apps.notifications.datatypes import Notification
-from apps.notifications.templates import NotificationType
+from apps.notifications.datatypes import (
+    NewsNotificationType, Notification, ThesisNotificationType
+)
+from apps.notifications.datatypes import CourseNotificationType
 from apps.theses.enums import ThesisVote
 from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
@@ -37,7 +39,8 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
     notify_user(
         kwargs['user'],
         Notification(
-            get_id(), get_time(), NotificationType.PULLED_FROM_QUEUE, {
+            get_id(), get_time(), CourseNotificationType.PULLED_FROM_QUEUE, {
+                'course_id': group.course.id,
                 'course_name': group.course.name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
@@ -52,7 +55,8 @@ def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> N
     notify_user(
         kwargs['user'],
         Notification(
-            get_id(), get_time(), NotificationType.NOT_PULLED_FROM_QUEUE, {
+            get_id(), get_time(), CourseNotificationType.NOT_PULLED_FROM_QUEUE, {
+                'course_id': group.course.name,
                 'course_name': group.course.name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
@@ -67,6 +71,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
         return
     course_groups = Group.objects.filter(course=group.course)
     course_name = group.course.name
+    course_id = group.course.id
     target = reverse(course_view, args=[group.course.slug])
 
     if group.teacher is not None:
@@ -74,8 +79,11 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
 
         notify_user(
             teacher,
-            Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                         {'course_name': course_name}, target))
+            Notification(
+                get_id(), get_time(), CourseNotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
+                    'course_id': course_id,
+                    'course_name': course_name
+                }, target))
 
     enrolled_or_queued = [RecordStatus.ENROLLED, RecordStatus.QUEUED]
     records = Record.objects.filter(group__in=course_groups,
@@ -84,8 +92,9 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
     users = {element.student.user for element in records}
     notify_selected_users(
         users,
-        Notification(get_id(), get_time(), NotificationType.ADDED_NEW_GROUP, {
+        Notification(get_id(), get_time(), CourseNotificationType.ADDED_NEW_GROUP, {
             'course_name': course_name,
+            'course_id': course_id,
             'teacher': group.get_teacher_full_name()
         }, target))
 
@@ -97,12 +106,16 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
         return
     teacher = group.teacher.user
     course_name = group.course.name
+    course_id = group.course.id
     target = reverse(course_view, args=[group.course.slug])
 
     notify_user(
         teacher,
-        Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                     {'course_name': course_name}, target))
+        Notification(
+            get_id(), get_time(), CourseNotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
+                'course_id': course_id,
+                'course_name': course_name
+            }, target))
 
     queued_users = User.objects.filter(
         student__record__group=group, student__record__status=RecordStatus.QUEUED)
@@ -113,7 +126,8 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     notify_selected_users(
         queued_users,
         Notification(
-            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
+            get_id(), get_time(), CourseNotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
+                'course_id': course_id,
                 'course_name': course_name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
@@ -122,7 +136,8 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     notify_selected_users(
         enrolled_users,
         Notification(
-            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
+            get_id(), get_time(), CourseNotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
+                'course_id': course_id,
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
                 'type': group.get_type_display(),
@@ -143,9 +158,9 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
     elif news.priority == PriorityChoices.LOW:
         return
     elif news.priority == PriorityChoices.NORMAL:
-        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED
+        notification_type = NewsNotificationType.NEWS_HAS_BEEN_ADDED
     else:
-        notification_type = NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY
+        notification_type = NewsNotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY
 
     records = set(Employee.get_actives().select_related('user')) | set(
         Student.get_active_students().select_related('user'))
@@ -172,6 +187,6 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
-                     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
+                     ThesisNotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))

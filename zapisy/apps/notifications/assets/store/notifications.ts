@@ -2,6 +2,12 @@ import axios from "axios";
 import { ActionContext } from "vuex";
 import { Notification } from "../models";
 import { parseNotificationsArray } from "../parser";
+import { clone } from "lodash";
+
+function truncateDescription(description: string) {
+  if (description.length <= 200) return description;
+  return description.substr(0, 200) + "...";
+}
 
 interface State {
   notifications: Array<Notification>;
@@ -12,7 +18,15 @@ const state: State = {
 };
 
 const getters = {
-  notifications: (state: State) => state.notifications,
+  truncatedNotifications(state: State): Notification[] {
+    return state.notifications.map((notification) => {
+      let notificationClone = clone(notification);
+      notificationClone.description = truncateDescription(
+        notification.description
+      );
+      return notificationClone;
+    });
+  },
 };
 
 const mutations = {
