@@ -63,7 +63,7 @@ class SemesterAdmin(admin.ModelAdmin):
         semester = queryset.get()
         if semester.records_opening is None:
             self.message_user(
-                    request, "Proszę uzupelnić szczegóły odpowiedniego semestru.",
+                    request, "Należy ustawić czas otwarcia zapisów dla wybranego semestru.",
                     level=messages.ERROR)
             return
 
