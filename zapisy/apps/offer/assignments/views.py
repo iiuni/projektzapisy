@@ -205,15 +205,15 @@ def create_assignments_sheet(request):
     # update Assignments sheet
     try:
         suggested_groups = suggest_teachers(new_picks, proposals)
-        all_groups = list(flatten(current_assignments.values())) + suggested_groups
-        suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
-        update_assignments_sheet(assignments_sheet, suggested_groups)
     except KeyError as error:
         messages.error(
             request, f"""<p>
             Nieznane ID propozycji przedmiotu.</p>
             {error}""")
         return redirect(reverse('assignments-wizard'))
+    all_groups = list(flatten(current_assignments.values())) + suggested_groups
+    suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
+    update_assignments_sheet(assignments_sheet, suggested_groups)
 
     # update Employees sheet
     new_usernames = set(
@@ -257,7 +257,7 @@ def create_assignments_sheet(request):
         )
     courses_data.sort(key=attrgetter('semester', 'name'))
     update_courses_sheet(assignments_sheet, courses_data)
-    return redirect(reverse('assignments-wizard') + '#step-3')
+    return redirect(reverse('assignments-wizard')+'#step-3')
 
 
 @staff_member_required
@@ -269,7 +269,7 @@ def create_voting_sheet(request):
     years = get_last_years(3)
     voting = get_votes(years)
     update_voting_results_sheet(voting_sheet, voting, years)
-    return redirect(reverse('assignments-wizard') + '#step-1')
+    return redirect(reverse('assignments-wizard')+'#step-1')
 
 
 @staff_member_required
@@ -288,10 +288,10 @@ def generate_scheduler_file(request, semester, fmt):
         File in the desired format in a response.
     """
     if semester not in ['z', 'l']:
-        messages.error(request, f"Niepoprawny semestr: '{semester}'")
+        messages.error(request, f"Niepoprawny semestr: '{ semester }'")
         return redirect('assignments-wizard')
     if fmt not in ['csv', 'json']:
-        messages.error(request, f"Niepoprawny format: '{fmt}'")
+        messages.error(request, f"Niepoprawny format: '{ fmt }'")
         return redirect('assignments-wizard')
 
     try:
