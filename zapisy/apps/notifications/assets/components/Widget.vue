@@ -118,7 +118,7 @@ export default class NotificationsComponent extends Vue {
           <font-awesome-icon :icon="farBell" size="lg" />
         </div>
       </a>
-      <div class="dropdown-menu">
+      <div class="dropdown-menu dropdown-menu-end">
         <form class="p-1 place-for-notifications">
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">

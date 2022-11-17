@@ -19,7 +19,7 @@
         </h1>
         <form action="{% url 'theses:delete_thesis' id %}" method="POST" class="post-form">
             {% csrf_token %}
-            <div class="text-right">
+            <div class="text-end">
             <input class="btn btn-default btn-danger confirm-delete float-end align-bottom ml-3" name="delete" type="submit" value="Usuń pracę"/>
             <script>
                 $(document).on('click', '.confirm-delete', function(){
