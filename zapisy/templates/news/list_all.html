@@ -16,7 +16,7 @@
 
 {% block all-content %}
 
-<h1 class="display-1 p-2">Aktualności</h1>
+<h1 class="display-5 p-2">Aktualności</h1>
 
 <div class="row">
     <div class="col-auto mr-auto">
@@ -46,7 +46,7 @@
         {% if items %}
             {% for news in items %}
             <div class="od-news-item" id="od-news-{{news.id}}">
-                <h3 class="display-3">{{ news.title }}</h3>
+                <h3 class="display-6">{{ news.title }}</h3>
                 <div>
                     <span class="od-news-date">{{ news.date|date:"l, d.m.Y · G:i" }}</span>
                     <span class="od-news-author">{{ news.author.get_full_name }}</span>
