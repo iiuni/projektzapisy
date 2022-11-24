@@ -228,13 +228,13 @@ def add_defect_post_request(request):
 
 
 @employee_required
-def print_defects(request):
-    defects_list = parse_names(request.GET, "defects_ids")
-    if defects_list is None or defects_list == []:
-        return render(request, 'defectsPrint.html', {'defects': Defect.objects.all()})
+def print_defects(request, defects_ids = None):
+    if defects_ids is None:
+        return render(request, 'defectsPrint.html', {'defects': Defect.objects.all().order_by('-last_modification').values()})
     else:
-        defects = {defect.id: defect for defect in Defect.objects.filter(pk__in=defects_list)}
-        defects = [defects[i] for i in defects_list if i in defects.keys()]
+        defects_ids = list(map(int, defects_ids.split(",")))
+        defects = {defect.id: defect for defect in Defect.objects.filter(pk__in=defects_ids)}
+        defects = [defects[i] for i in defects_ids if i in defects.keys()]
         return render(request, 'defectsPrint.html', {'defects': defects})
 
 

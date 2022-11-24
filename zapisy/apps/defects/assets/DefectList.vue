@@ -70,9 +70,21 @@ export default class DefectList extends Vue {
   select(event) {
     // @ts-ignore
     !event.currentTarget.classList.toggle("selected");
-    if (document.getElementsByClassName("selected").length > 0) {
+    let list_of_defects = document.getElementsByClassName("selected");
+    if (list_of_defects.length > 0) {
       // @ts-ignore
-      document.getElementById("print-form-button").value = "Drukuj zaznaczone";
+      let len = list_of_defects.length;
+      let link = "print/";
+      document.getElementById("print-button").textContent = "Drukuj zaznaczone";
+      for (let i = 0; i <= len - 1; i++ ){
+        if (i == len - 1) {
+          link = link + list_of_defects[i].id;
+        }
+        else {
+          link = link + list_of_defects[i].id + ",";
+        }
+      }
+      document.getElementById("print-button").setAttribute("href", link);
       // @ts-ignore
       let delete_button = document.getElementById("delete-form-button");
       if (delete_button)
@@ -80,7 +92,8 @@ export default class DefectList extends Vue {
         document.getElementById("delete-form-button").disabled = false;
     } else {
       // @ts-ignore
-      document.getElementById("print-form-button").value = "Drukuj wszystkie";
+      document.getElementById("print-button").textContent = "Drukuj wszystkie";
+      document.getElementById("print-button").href = "print";
       // @ts-ignore
       let delete_button = document.getElementById("delete-form-button");
       if (delete_button)

@@ -4,51 +4,57 @@
 {% load render_bundle from webpack_loader %}
 
 {% block bread %}
-    <li class="breadcrumb-item">
-        <a href="{% url 'main-page' %}">Strona główna</a>
-    </li>
+<li class="breadcrumb-item">
+    <a href="{% url 'main-page' %}">Strona główna</a>
+</li>
 
-    <li class="breadcrumb-item active">
-        Usterki
-    </li>
+<li class="breadcrumb-item active">
+    Usterki
+</li>
 {% endblock %}
 
 {% block all-content %}
 
-    {{ visibleDefects|json_script:"defect-data" }}
+{{ visibleDefects|json_script:"defect-data" }}
 
 
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="d-inline-block">
-            Usterki
-        </h1>
-        <div>
-            <div style="float: left; padding: 2px;"><a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a></div>
-            <div style="float: left; padding: 2px;"><form method="get" action="{% url 'defects:print' %}" id="action-form-print">
-                <input type="submit" id="print-form-button" class="btn btn-primary" value="Drukuj wszystkie">
-                <input type="hidden" name="defects_ids" id="defects_ids_print" value="">
-            </form></div>
-            {% if is_defect_manager %}
-                <div style="float: left; padding: 2px;"><form method="post" action="{% url 'defects:delete' %}" class="action-form-delete">
-                    {% csrf_token %}
-                    <input type="submit" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone" disabled="">
-                    <input type="hidden" name="defects_ids" id="defects_ids_delete" class="defect_ids" value="">
-                </form></div>
-            {% endif %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="d-inline-block">
+        Usterki
+    </h1>
+    <div>
+        <div style="float: left; padding: 2px;">
+            <a href="{% url 'defects:new' %}" class="btn btn-outline-info" role="button">Dodaj nową usterkę</a>
         </div>
+        <div style="float: left; padding: 2px;">
+            <a href="{% url 'defects:print' %}" role="button" id="print-button" class="btn btn-primary">Drukuj
+                wszystkie</a>
+            <input type="hidden" name="defects_ids" id="defects_ids_print" value="">
+        </div>
+        {% if is_defect_manager %}
+        <div style="float: left; padding: 2px;">
+            <form method="post" action="{% url 'defects:delete' %}" class="action-form-delete">
+                {% csrf_token %}
+                <input type="submit" id="delete-form-button" class="btn btn-primary" value="Usuń zaznaczone"
+                    disabled="">
+                <input type="hidden" name="defects_ids" id="defects_ids_delete" class="defect_ids" value="">
+            </form>
+        </div>
+        {% endif %}
     </div>
+</div>
 
 
 
-        <p class="row justify-content-center">
+<p class="row justify-content-center">
 
-        <div id="defects-filter"></div>
+<div id="defects-filter"></div>
 
-        <p class="row justify-content-center">
+<p class="row justify-content-center">
 
-        <div id="defects-list"></div>
+<div id="defects-list"></div>
 {% endblock %}
 
 {% block rendered_bundles %}
-    {% render_bundle 'defect-widget' %}
+{% render_bundle 'defect-widget' %}
 {% endblock %}
