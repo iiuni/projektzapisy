@@ -1,13 +1,11 @@
 import bigInt from "big-integer";
 import { sha256 } from "js-sha256";
-import { get as getCookie } from "js-cookie";
 import axios from "axios";
 
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
 const axiosInstance = axios.create({
   baseURL: "/grade/ticket/",
-  headers: {
-    "X-CSRFToken": getCookie("csrftoken"),
-  },
 });
 
 type PollDataDict = { [pollId: number]: PollData };
