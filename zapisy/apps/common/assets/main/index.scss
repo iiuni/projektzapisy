@@ -29,7 +29,10 @@ footer {
   text-decoration: none;
 }
 
-.btn:hover, .btn:focus, .page-link:hover, .page-link:focus {
+.btn:hover,
+.btn:focus,
+.page-link:hover,
+.page-link:focus {
   text-decoration: none;
 }
 
@@ -38,9 +41,10 @@ footer {
   text-decoration: none;
 }
 
-.btn-link:hover, .btn-link:focus {
+.btn-link:hover,
+.btn-link:focus {
   color: #0056b3;
-  text-decoration: underline;  
+  text-decoration: underline;
 }
 
 a {
@@ -60,29 +64,32 @@ a.badge:hover {
   color: #fff;
 }
 
-a.bg-secondary:hover, a.bg-secondary:focus {
+a.bg-secondary:hover,
+a.bg-secondary:focus {
   background-color: #545b62 !important;
 }
 
-a.bg-info:hover, a.bg-info:focus {
+a.bg-info:hover,
+a.bg-info:focus {
   background-color: #117a8b !important;
 }
 
-a.bg-success:hover, a.bg-success:focus {
+a.bg-success:hover,
+a.bg-success:focus {
   background-color: #00401e !important;
 }
 
 a.bg-info:focus {
-  box-shadow: 0 0 0 .2rem rgba(23,162,184,.5);
+  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.5);
 }
 
 a.bg-success:focus {
-  box-shadow: 0 0 0 .2rem rgba(0,115,54,.5);
+  box-shadow: 0 0 0 0.2rem rgba(0, 115, 54, 0.5);
 }
 
 a.bg-secondary:focus {
   outline: 0;
-  box-shadow: 0 0 0 .2rem rgba(108,117,125,.5);
+  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
 }
 
 @media print {

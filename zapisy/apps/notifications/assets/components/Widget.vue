@@ -100,7 +100,10 @@ export default class NotificationsComponent extends Vue {
 
 <template>
   <div>
-    <li id="notification-dropdown" class="nav-item dropdown btn-group text-center">
+    <li
+      id="notification-dropdown"
+      class="nav-item dropdown btn-group text-center"
+    >
       <a
         class="nav-link dropdown-toggle specialdropdown ml-1"
         href="#"
@@ -126,7 +129,11 @@ export default class NotificationsComponent extends Vue {
               <small class="text-muted mx-2">{{
                 elem.issuedOn | Moment
               }}</small>
-              <button type="button" class="btn-close" @click="deleteOne(elem.id)"></button>
+              <button
+                type="button"
+                class="btn-close"
+                @click="deleteOne(elem.id)"
+              ></button>
             </div>
             <a :href="elem.target" class="toast-link">
               <div class="toast-body text-body">{{ elem.description }}</div>
