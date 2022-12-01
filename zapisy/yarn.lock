@@ -1845,6 +1845,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/bootstrap5@npm:^5.11.3":
+  version: 5.11.3
+  resolution: "@fullcalendar/bootstrap5@npm:5.11.3"
+  dependencies:
+    "@fullcalendar/common": ~5.11.3
+    tslib: ^2.1.0
+  checksum: 176d170e4e80b5cda42fd81c8b23cd5682c47cdc27a0554d749c212399716b2eb0693019f151667d47e3f3dc5394e56ada3c3ff29747d0d139b0422e1309c010
+  languageName: node
+  linkType: hard
+
 "@fullcalendar/bootstrap@npm:5.11.3":
   version: 5.11.3
   resolution: "@fullcalendar/bootstrap@npm:5.11.3"
@@ -5281,6 +5291,7 @@ fsevents@~2.1.2:
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/vue-fontawesome": 2.0.8
     "@fullcalendar/bootstrap": 5.11.3
+    "@fullcalendar/bootstrap5": ^5.11.3
     "@fullcalendar/core": 5.11.3
     "@fullcalendar/daygrid": 5.11.3
     "@fullcalendar/timegrid": 5.11.3

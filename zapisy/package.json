@@ -13,6 +13,7 @@
   "dependencies": {
     "@bokeh/bokehjs": "2.4.3",
     "@fullcalendar/bootstrap": "5.11.3",
+    "@fullcalendar/bootstrap5": "^5.11.3",
     "@fullcalendar/core": "5.11.3",
     "@fullcalendar/daygrid": "5.11.3",
     "@fullcalendar/timegrid": "5.11.3",
