@@ -71,12 +71,11 @@ export default class DefectList extends Vue {
     // @ts-ignore
     !event.currentTarget.classList.toggle("selected");
     let list_of_defects = document.getElementsByClassName("selected");
+    let print_button = document.getElementById("print-button");
     if (list_of_defects.length > 0) {
-      // @ts-ignore
       let len = list_of_defects.length;
       let link = "print/";
-      document.getElementById("print-button").textContent = "Drukuj zaznaczone";
-      for (let i = 0; i <= len - 1; i++ ){
+      for (let i = 0; i <= len - 1; i++) {
         if (i == len - 1) {
           link = link + list_of_defects[i].id;
         }
@@ -84,16 +83,20 @@ export default class DefectList extends Vue {
           link = link + list_of_defects[i].id + ",";
         }
       }
-      document.getElementById("print-button").setAttribute("href", link);
+      if (print_button != null) {
+        print_button.textContent = "Drukuj zaznaczone";
+        print_button.setAttribute("href", link);
+      }
       // @ts-ignore
       let delete_button = document.getElementById("delete-form-button");
       if (delete_button)
         // @ts-ignore
         document.getElementById("delete-form-button").disabled = false;
     } else {
-      // @ts-ignore
-      document.getElementById("print-button").textContent = "Drukuj wszystkie";
-      document.getElementById("print-button").href = "print";
+      if (print_button != null) {
+        print_button.textContent = "Drukuj wszystkie";
+        print_button.setAttribute("href", "print");
+      }
       // @ts-ignore
       let delete_button = document.getElementById("delete-form-button");
       if (delete_button)
@@ -112,6 +115,7 @@ export default class DefectList extends Vue {
   -ms-user-select: none;
   user-select: none;
 }
+
 .selected {
   background-color: #c2dbff !important;
 }
@@ -142,15 +146,10 @@ export default class DefectList extends Vue {
       </tr>
     </thead>
     <tbody id="defects-table-body">
-      <tr
-        v-on:click="select"
-        v-for="defect of visibleDefects"
-        :key="defect.id"
-        :id="defect.id"
-      >
+      <tr v-on:click="select" v-for="defect of visibleDefects" :key="defect.id" :id="defect.id">
         <td class="text-center align-middle">
           <a class="btn-link" :href="'/defects/' + defect.id">{{
-            defect.name
+              defect.name
           }}</a>
         </td>
         <td class="text-center align-middle">
