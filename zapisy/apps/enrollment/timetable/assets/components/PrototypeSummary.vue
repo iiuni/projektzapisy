@@ -24,33 +24,33 @@ const PrototypeSummaryProps = Vue.extend({
 })
 export default class PrototypeSummary extends PrototypeSummaryProps {
   public getSummaryData(
-    groupTypeFilter: Function,
-    groupSupremacyFilter: Function
+    groupIncludeFilter: Function,
+    groupOverrideFilter: Function
   ): CourseWithGroups[] {
-    let courses = new Set(
-      this.groups.filter((g) => groupTypeFilter(g)).map((g) => g.course.id)
-    );
-    let supremeCourses = new Set(
-      this.groups.filter((g) => groupSupremacyFilter(g)).map((g) => g.course.id)
+    let includeGroups = this.groups.filter((g) => groupIncludeFilter(g));
+    let includingCourses = new Set(includeGroups.map((g) => g.course.id));
+    let overridingCourses = new Set(
+      this.groups.filter((g) => groupOverrideFilter(g)).map((g) => g.course.id)
     );
 
     let summaryData: Array<CourseWithGroups> = [];
-    for (let course of courses) {
-      let groups = this.groups.filter(
-        (g) =>
-          !groupSupremacyFilter(g) &&
-          groupTypeFilter(g) &&
-          g.course.id == course
+    for (let course of includingCourses) {
+      let courseGroups = includeGroups.filter(
+        (g) => !groupOverrideFilter(g) && g.course.id == course
       );
 
-      if (groups.length == 0) {
+      if (courseGroups.length == 0) {
         continue;
       }
 
-      let isCourseRepeating = supremeCourses.has(course);
+      let isCourseRepeating = overridingCourses.has(course);
 
       summaryData.push(
-        new CourseWithGroups(groups[0].course, groups, isCourseRepeating)
+        new CourseWithGroups(
+          courseGroups[0].course,
+          courseGroups,
+          isCourseRepeating
+        )
       );
     }
     return summaryData;
