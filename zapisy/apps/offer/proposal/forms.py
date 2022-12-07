@@ -389,12 +389,12 @@ class CollapsableFieldset(layout.Fieldset):
 
 
 class FormRow(layout.Div):
-    """Represents Booststrap 4 form layout row."""
-    css_class = 'form-row'
+    """Represents Booststrap 5 form layout row."""
+    css_class = 'row'
 
 
 class Column(layout.Column):
-    """Represents Bootstrap 4 layout column."""
+    """Represents Bootstrap 5 layout column."""
     css_class = 'col-12 col-sm'
 
 

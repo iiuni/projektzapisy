@@ -67,12 +67,12 @@ export default class StatisticsList extends Vue {
           <td colspan="6">
             <span
               v-for="waiting_course in course.waiting_students"
-              class="badge badge-danger"
+              class="badge bg-danger"
               title="Oczekujących niezapisanych"
               style="margin-right: 5px"
             >
               {{ waiting_course.name }}
-              <span class="badge badge-light">
+              <span class="badge bg-light">
                 {{ waiting_course.number }}
               </span>
             </span>
@@ -99,7 +99,7 @@ export default class StatisticsList extends Vue {
           <td>{{ group.pinned }}</td>
           <td>
             <a
-              class="badge badge-sm badge-primary"
+              class="badge badge-sm bg-primary"
               :href="group.url"
               target="_blank"
             >

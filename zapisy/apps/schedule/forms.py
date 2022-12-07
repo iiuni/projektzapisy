@@ -71,7 +71,7 @@ class TermForm(forms.ModelForm):
                     '<button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
                 ),
                     css_class='col-3 mb-0'),
-                css_class='form-row p-2'),
+                css_class='row p-2'),
                 'room',
                 'id',
                 Div('DELETE', css_class='d-none'),

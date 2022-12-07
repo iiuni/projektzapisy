@@ -74,8 +74,8 @@
       {% for group_name, entries in polls.items %}
       {% with index=iterator|next %}
       <div class="card">
-        <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
-          data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
+        <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-bs-toggle="collapse"
+          data-bs-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
           <div class="d-flex w-100 justify-content-between">
             <span>{{ group_name }}</span>
             <span class="text-end text-nowrap">
