@@ -25,6 +25,10 @@ footer {
   }
 }
 
+.custom-select {
+  @extend .form-select
+}
+
 .nav-link:hover {
   text-decoration: none;
 }

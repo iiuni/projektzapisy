@@ -87,6 +87,11 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     var self = this;
     var date = $(".active-term").find(".form-day").val();
 
+    if (date === undefined){
+      // Definetly something better should be done here
+      date = "2022-12-07"
+    }
+
     if (date === "") {
       self.classrooms = [];
       self.unoccupiedClassrooms = [];
