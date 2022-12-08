@@ -240,7 +240,7 @@ def print_defects(request, defects_ids = None):
 
 def delete_image(request, image_id):
     if request.method == "POST":
-        defect_id = do_delete_image(image_id)
+        defect_id = do_delete_image(request, image_id)
         messages.success(request, "Pomyślnie usunięto zdjęcie")
         return redirect('defects:edit_defect', defect_id=defect_id)
     raise Http404

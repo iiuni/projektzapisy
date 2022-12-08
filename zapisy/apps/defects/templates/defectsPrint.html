@@ -37,8 +37,9 @@
         <th scope="col" class="text-center">Data</th>
     </tr>
     </thead>
-    <tbody>
+
     {% for defect in defects %}
+    <tbody>
     <tr id="{{ defect.id }}">
         <td class="text-center"> {{ defect.name }}</td>
         <td class="text-center">{{ defect.place }}</td>
@@ -46,9 +47,9 @@
         <td class="text-center">{{ defect.get_state_display }}</td>
         <td class="text-center">{{ defect.creation_date }}</td>
     </tr>
+    {% if defect.description != '' or defect.information_from_defect_manager != '' %}
     <tr>
-        <td class="text" colspan="5" style="word-break: break-all;
-            {% if defect.description == '' and defect.information_from_defect_manager == '' %} display:none; {% endif %}">
+        <td class="text" colspan="5" style="word-break: break-all">
             {% if defect.description != "" %}
             <div>{{ defect.description|linebreaksbr }}</div>
             {% endif %}
@@ -57,8 +58,10 @@
             {% endif %}
         </td>
     </tr>
-    {% endfor %}
+    {% endif %}
     </tbody>
+    {% endfor %}
+
 </table>
 
 <script>

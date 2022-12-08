@@ -1,25 +1,18 @@
-.delete-checkbox {
+.btn-toggle-delete-photo {
   position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-/* source: https://www.w3schools.com/howto/howto_css_custom_checkbox.asp*/
-.delete-label {
-  display: block;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  font-size: 22px;
+  top: 8px;
+  left: 23px;
+
+  padding: 0.15rem 0.35rem;
+
+  font-size: 15px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
-.delete-label input {
+.btn-toggle-delete-photo input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -27,39 +20,59 @@
   width: 0;
 }
 
-.checkmark {
-  position: absolute;
-  top: 15px;
-  left: 5px;
-  height: 25px;
-  width: 25px;
-  background-color: #eee;
-  border: solid black 0.01em;
+.btn-toggle-delete-photo {
+  color: #252528;
+  background-color: #adafb2;
+  border-color: #6c757d;
 }
 
-.delete-label:hover input ~ .checkmark {
-  background-color: #ccc;
+.btn-toggle-delete-photo:hover {
+  color: #35353a;
+  background-color: #c8cace;
+  border-color: #545b62;
 }
 
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
+.btn-toggle-delete-photo:focus,
+.btn-toggle-delete-photo.focus {
+  color: #35353a;
+  background-color: #c8cace;
+  border-color: #545b62;
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
 }
 
-.delete-label input:checked ~ .checkmark:after {
-  display: block;
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active,
+.show > .btn-toggle-delete-photo.dropdown-toggle {
+  color: #fbfbfb;
+  background-color: #dc3545;
+  border-color: #b72323;
 }
 
-.delete-label .checkmark:after {
-  content: "×";
-  font-size: 40px;
-  color: #e01414;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active:focus,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active.focus,
+.show > .btn-toggle-delete-photo.dropdown-toggle:focus {
+  color: #fbfbfb;
+  background-color: #b9313f;
+  border-color: #b73737;
+  box-shadow: 0 0 0 0.2rem rgba(105, 24, 24, 0.5);
+}
+
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active:hover,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active:hover,
+.show > .btn-toggle-delete-photo.dropdown-toggle:hover {
+  color: #fbfbfb;
+  background-color: #b9313f;
+  border-color: #b73737;
+}
+
+.defect-info{
+  border-top-width: 0;
+}
+
+.defect-info tr{
+  background-color: #ffffff;
+}
+
+.defect-info:nth-child(even) tr{
+  background-color: #f2f2f2;
 }
