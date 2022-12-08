@@ -23,7 +23,7 @@ import Component from "vue-class-component";
   },
 })
 export default class DefectList extends Vue {
-  // The list should be initialised to contain all the defects and then apply
+  // The list should be initialized to contain all the defects and then apply
   // filters and sorting whenever they update.
   visibleDefects: DefectInfo[] = [];
 
@@ -43,6 +43,7 @@ export default class DefectList extends Vue {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.set_forms_values();
+          break;
         case "sorting/changeSorting":
           this.visibleDefects = this.defects.filter(this.tester);
           this.visibleDefects.sort(this.compare);
@@ -68,7 +69,13 @@ export default class DefectList extends Vue {
   }
 
   select(event) {
-    !event.currentTarget.classList.toggle("selected");
+    let isSelected = event.currentTarget.classList.toggle("selected");
+    let checkboxForSelectedRow = document.getElementById(
+      "checkbox-" + event.currentTarget.id
+    ) as HTMLInputElement | null;
+    if (checkboxForSelectedRow != null) {
+      checkboxForSelectedRow.checked = isSelected;
+    }
     let selected_defects = document.getElementsByClassName("selected");
     let print_button = document.getElementById("print-button")!;
     if (selected_defects.length > 0) {
@@ -112,6 +119,7 @@ export default class DefectList extends Vue {
   <table class="table table-hover selection-none table-responsive-md">
     <thead id="table-header">
       <tr class="text-center" id="headers">
+        <th></th>
         <th>
           <SorterField property="name" label="Nazwa" />
         </th>
@@ -139,6 +147,9 @@ export default class DefectList extends Vue {
         :key="defect.id"
         :id="defect.id"
       >
+        <td>
+          <input type="checkbox" :id="'checkbox-' + defect.id" />
+        </td>
         <td class="text-center align-middle">
           <a class="btn-link" :href="'/defects/' + defect.id">{{
             defect.name
