@@ -59,7 +59,7 @@
     <form action="" method="POST" class="post-form" enctype="multipart/form-data" id="main-form">
         {% csrf_token %}
         {% crispy form %}
-        <input type="submit" hidden />
+
         <hr>
 
         <div id="image-formset" class="mb-5">
@@ -103,7 +103,7 @@
             </div>
 
 
-            <button class="btn btn-primary" id="new-image-form">Dodaj kolejne zdjęcie</button>
+            <button type="button" class="btn btn-primary" id="new-image-form">Dodaj kolejne zdjęcie</button>
         </div>
 
         <button type="submit" class="save btn btn-success mt-3" id="save-defect">Zapisz</button>

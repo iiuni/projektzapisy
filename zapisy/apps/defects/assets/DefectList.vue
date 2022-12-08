@@ -78,8 +78,7 @@ export default class DefectList extends Vue {
       for (let i = 0; i <= len - 1; i++) {
         if (i == len - 1) {
           link = link + list_of_defects[i].id;
-        }
-        else {
+        } else {
           link = link + list_of_defects[i].id + ",";
         }
       }
@@ -146,10 +145,15 @@ export default class DefectList extends Vue {
       </tr>
     </thead>
     <tbody id="defects-table-body">
-      <tr v-on:click="select" v-for="defect of visibleDefects" :key="defect.id" :id="defect.id">
+      <tr
+        v-on:click="select"
+        v-for="defect of visibleDefects"
+        :key="defect.id"
+        :id="defect.id"
+      >
         <td class="text-center align-middle">
           <a class="btn-link" :href="'/defects/' + defect.id">{{
-              defect.name
+            defect.name
           }}</a>
         </td>
         <td class="text-center align-middle">
