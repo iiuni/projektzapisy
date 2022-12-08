@@ -228,9 +228,10 @@ def add_defect_post_request(request):
 
 
 @employee_required
-def print_defects(request, defects_ids = None):
+def print_defects(request, defects_ids=None):
     if defects_ids is None:
-        return render(request, 'defectsPrint.html', {'defects': Defect.objects.all().order_by('-last_modification').values()})
+        return render(request, 'defectsPrint.html',
+                      {'defects': Defect.objects.all().order_by('-last_modification').values()})
     else:
         defects_ids = list(map(int, defects_ids.split(",")))
         defects = {defect.id: defect for defect in Defect.objects.filter(pk__in=defects_ids)}

@@ -52,49 +52,43 @@ export default class DefectList extends Vue {
   }
 
   set_forms_values() {
-    // @ts-ignore
     let selected = Array.prototype.map
       .call(document.getElementsByClassName("selected"), function (x) {
         return x.id;
       })
       .join(",");
-    // @ts-ignore
-    document.getElementById("defects_ids_print").value = selected;
-    // @ts-ignore
-    let delete_button = document.getElementById("defects_ids_delete");
-    // @ts-ignore
+    let defects_ids_print = document.getElementById(
+      "defects_ids_print"
+    )! as HTMLInputElement;
+    defects_ids_print.value = selected;
+    let delete_button = document.getElementById(
+      "defects_ids_delete"
+    )! as HTMLButtonElement;
     if (delete_button) delete_button.value = selected;
   }
 
-  // @ts-ignore
   select(event) {
-    // @ts-ignore
     !event.currentTarget.classList.toggle("selected");
     let selected_defects = document.getElementsByClassName("selected");
-    let print_button = document.getElementById("print-button");
+    let print_button = document.getElementById("print-button")!;
     if (selected_defects.length > 0) {
       let link = "print/";
-      let selected_ids = Array.prototype.map
-        .call(selected_defects, x => { return x.id }).join(",");
-      if (print_button != null) {
-        print_button.textContent = "Drukuj zaznaczone";
-        print_button.setAttribute("href", link + selected_ids);
-      }
-      // @ts-ignore
-      let delete_button = document.getElementById("delete-form-button");
-      if (delete_button)
-        // @ts-ignore
-        document.getElementById("delete-form-button").disabled = false;
+      let selected_ids = Array.from(selected_defects)
+        .map((x) => x.id)
+        .join(",");
+      print_button.textContent = "Drukuj zaznaczone";
+      print_button.setAttribute("href", link + selected_ids);
+      let delete_button = document.getElementById(
+        "delete-form-button"
+      )! as HTMLButtonElement;
+      if (delete_button) delete_button.disabled = false;
     } else {
-      if (print_button != null) {
-        print_button.textContent = "Drukuj wszystkie";
-        print_button.setAttribute("href", "print");
-      }
-      // @ts-ignore
-      let delete_button = document.getElementById("delete-form-button");
-      if (delete_button)
-        // @ts-ignore
-        document.getElementById("delete-form-button").disabled = true;
+      print_button.textContent = "Drukuj wszystkie";
+      print_button.setAttribute("href", "print");
+      let delete_button = document.getElementById(
+        "delete-form-button"
+      )! as HTMLButtonElement;
+      if (delete_button) delete_button.disabled = true;
     }
     this.set_forms_values();
   }
