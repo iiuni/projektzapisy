@@ -70,22 +70,15 @@ export default class DefectList extends Vue {
   select(event) {
     // @ts-ignore
     !event.currentTarget.classList.toggle("selected");
-    let list_of_defects = document.getElementsByClassName("selected");
+    let selected_defects = document.getElementsByClassName("selected");
     let print_button = document.getElementById("print-button");
-    if (list_of_defects.length > 0) {
-      let len = list_of_defects.length;
+    if (selected_defects.length > 0) {
       let link = "print/";
-      for (let i = 0; i <= len - 1; i++) {
-        if (i == len - 1) {
-          link = link + list_of_defects[i].id;
-        }
-        else {
-          link = link + list_of_defects[i].id + ",";
-        }
-      }
+      let selected_ids = Array.prototype.map
+        .call(selected_defects, x => { return x.id }).join(",");
       if (print_button != null) {
         print_button.textContent = "Drukuj zaznaczone";
-        print_button.setAttribute("href", link);
+        print_button.setAttribute("href", link + selected_ids);
       }
       // @ts-ignore
       let delete_button = document.getElementById("delete-form-button");
