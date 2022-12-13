@@ -3867,10 +3867,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:1.11.6":
-  version: 1.11.6
-  resolution: "dayjs@npm:1.11.6"
-  checksum: a1c0a3a3e3d3bbb55bf1a0f03904ead6a11026dd7f19af0e60d08879c789250f0ef564555c4db70b8a3cd364b43304e1a68b0af1b98e6a64dd63baa3c905e3c8
+"dayjs@npm:1.11.7":
+  version: 1.11.7
+  resolution: "dayjs@npm:1.11.7"
+  checksum: a0c375582a951b8c49b02601448680f0faca84042d3b228e78d72f40cdde4a85b029179c17acb9041ac5b2a6f725c08c55d0fc36d554e81eae837fee857286b9
   languageName: node
   linkType: hard
 
@@ -5327,7 +5327,7 @@ fsevents@~2.1.2:
     clean-webpack-plugin: 3.0.0
     cookieconsent: 3.1.1
     css-loader: 4.3.0
-    dayjs: 1.11.6
+    dayjs: 1.11.7
     file-loader: 6.2.0
     fork-ts-checker-webpack-plugin: 5.2.1
     jquery: 3.6.1
