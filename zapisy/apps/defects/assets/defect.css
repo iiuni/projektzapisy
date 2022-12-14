@@ -65,14 +65,3 @@
   border-color: #b73737;
 }
 
-.defect-info {
-  border-top-width: 0;
-}
-
-.defect-info tr {
-  background-color: #ffffff;
-}
-
-.defect-info:nth-child(even) tr {
-  background-color: #f2f2f2;
-}

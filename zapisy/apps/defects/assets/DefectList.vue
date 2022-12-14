@@ -72,10 +72,8 @@ export default class DefectList extends Vue {
     let isSelected = event.currentTarget.classList.toggle("selected");
     let checkboxForSelectedRow = document.getElementById(
       "checkbox-" + event.currentTarget.id
-    ) as HTMLInputElement | null;
-    if (checkboxForSelectedRow != null) {
-      checkboxForSelectedRow.checked = isSelected;
-    }
+    )! as HTMLInputElement;
+    checkboxForSelectedRow.checked = isSelected;
     let selected_defects = document.getElementsByClassName("selected");
     let print_button = document.getElementById("print-button")!;
     if (selected_defects.length > 0) {
@@ -148,7 +146,11 @@ export default class DefectList extends Vue {
         :id="defect.id"
       >
         <td>
-          <input type="checkbox" :id="'checkbox-' + defect.id" />
+          <input
+            type="checkbox"
+            :id="'checkbox-' + defect.id"
+            autocomplete="off"
+          />
         </td>
         <td class="text-center align-middle">
           <a class="btn-link" :href="'/defects/' + defect.id">{{
