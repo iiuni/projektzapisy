@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block bread %}
+    <li class="breadcrumb-item"><a href="/">Strona główna</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Moje studia</li>
+{% endblock %}
+
+{% block main-subtitle %}Moje studia{% endblock %}
+
+{% block all-content %}
+    <div class="mb-5">
+        <h2>Wymagania</h2>
+        <table class="table table-condensed">
+            <thead>
+                <th>
+                    Wymaganie
+                </th>
+                <th>
+                    Pozostała liczba przedmiotów
+                </th>
+                <th>
+                    Pozostała liczba ECTS
+                </th>
+            </thead>
+            {% for requirement in requirements %}
+                <tr>
+                    <td>{{requirement.description}}</td>
+                    <td>{{requirement.courses}}</td>
+                    <td>{{requirement.ects}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

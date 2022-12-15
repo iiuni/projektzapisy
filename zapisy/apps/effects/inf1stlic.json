@@ -1,0 +1,108 @@
+{
+  "_meta_comment": "rzeczy, które będziemy ignorować przy przetwarzaniu, ale pozwolą lepiej (z)rozumieć czytelnikowi, na co właściwie patrzy",
+  "meta": {
+    "nazwa": "Informatyka, dzienne I stopnia",
+    "_nazwa_comment": "dla porządku taka sama, jak w modelu users.program, stąd brak adnotacji 'inżynierskie'",
+    "wariant": "Rozpoczęcie od 2019-10-01 do 2022-09-30",
+    "_wariant_comment": "prawdopodobnie wprowadzimy dodatkowy model, dziedziczący po users.program, choćby do trzymania tych właśnie JSONów",
+    "url": "https://ii.uni.wroc.pl/media/uploads/Program_studiow_Inf_LI(2)_WECibSo.pdf"
+  },
+  "wymagania": [
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS",
+      "ogolem_ects": 170,
+      "_ogolem_ects_comment": "klucz celowo nazywa się inaczej, bo to chcemy czytać wprost z modelu users.student, a nie agregować",
+      "dodatkowe_info": "Wymóg do zaliczenia ostatniego semestru studiów; do ukończenia studiów potrzebnych jest o 10 ECTS więcej, które otrzymuje się za przedłożenie pracy dyplomowej itd.",
+      "_dodatkowe_info_comment": "to powinno wyświetlać się jako komentarz koło głównej informacji"
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty informatyczne (I)",
+      "liczba_ects": 54,
+      "liczba_przedmiotow": 0,
+      "typy_przedmiotow": ["I1", "Iinż", "I2", "I2.T", "I2.Z"],
+      "tagi_przedmiotow": []
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu typu projekt programistyczny (P)",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["P"]
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu O, I, K, P",
+      "liczba_ects": 140,
+      "typy_przedmiotow": ["O1", "O2", "O3", "I1", "Iinż", "I2", "I2.T", "I2.Z", "K1", "K.inż", "K2", "K", "P"],
+      "tagi_przedmiotow": []
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu I1, Iinż, K1, K.inż z odpowiednimi znacznikami tematycznymi",
+      "liczba_ects": 28,
+      "liczba_przedmiotow": 0,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["RPiS", "IO", "PiPO", "ASK", "SO", "SK", "BD"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym RPIS",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["RPiS"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym IO",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["IO"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym PiPO",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["PiPO"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym ASK",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["ASK"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym SO",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["SO"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym SK",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["SK"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu ze znacznikiem tematycznym BD",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
+      "tagi_przedmiotow": ["BD"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu typu proseminarium (PS)",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["PS", "S"]
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu HS",
+      "liczba_ects": 5,
+      "typy_przedmiotow": ["HS", "N"]
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty ze znacznikiem tematycznym OWI",
+      "liczba_ects": 1,
+      "tagi_przedmiotow": ["OWI"]
+    }
+  ],
+  "wymagania_niezakodowane": [
+    "Zaliczenie przedmiotów obowiązkowych przewidzianych dla poszczególnych semestrów 1–4",
+    "Przedłożenie pracy dyplomowej i zdanie egzaminu dyplomowego",
+    "Zaliczenie pracy zespołowej",
+    "Praktyka zawodowa: co najmniej 3 tygodnie (3 ECTS)",
+    "Angielski na poziomie B2"
+  ]
+}
