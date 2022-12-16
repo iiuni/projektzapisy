@@ -131,9 +131,9 @@ class Thesis(models.Model):
 
     @property
     def is_reserved(self):
-        return self.students.exists() and ((self.reserved_until and 
-                (self.status == ThesisStatus.DEFENDED
-                or date.today() <= self.reserved_until))
+        return self.students.exists() and ((self.reserved_until and
+                (date.today() <= self.reserved_until
+                or self.status == ThesisStatus.DEFENDED))
                 or (not self.reserved_until))
 
     @property
