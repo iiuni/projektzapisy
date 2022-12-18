@@ -18,9 +18,7 @@
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty informatyczne (I)",
       "liczba_ects": 54,
-      "liczba_przedmiotow": 0,
-      "typy_przedmiotow": ["I1", "Iinż", "I2", "I2.T", "I2.Z"],
-      "tagi_przedmiotow": []
+      "typy_przedmiotow": ["I1", "Iinż", "I2", "I2.T", "I2.Z"]
     },
     {
       "nazwa": "Zaliczenie przedmiotu typu projekt programistyczny (P)",
@@ -30,13 +28,25 @@
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu O, I, K, P",
       "liczba_ects": 140,
-      "typy_przedmiotow": ["O1", "O2", "O3", "I1", "Iinż", "I2", "I2.T", "I2.Z", "K1", "K.inż", "K2", "K", "P"],
-      "tagi_przedmiotow": []
+      "typy_przedmiotow": [
+        "O1",
+        "O2",
+        "O3",
+        "I1",
+        "Iinż",
+        "I2",
+        "I2.T",
+        "I2.Z",
+        "K1",
+        "K.inż",
+        "K2",
+        "K",
+        "P"
+      ]
     },
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu I1, Iinż, K1, K.inż z odpowiednimi znacznikami tematycznymi",
       "liczba_ects": 28,
-      "liczba_przedmiotow": 0,
       "typy_przedmiotow": ["I1", "Iinż", "K1", "K.inż"],
       "tagi_przedmiotow": ["RPiS", "IO", "PiPO", "ASK", "SO", "SK", "BD"]
     },
