@@ -36,35 +36,23 @@ class CompletedCourses(models.Model):
     ) -> Tuple[int, int]:
         """Returns count and sum of ects of completed courses that meet given requirements.
 
-        Courses must be completed by given student, be of given type and have any of given tags.
+        Courses must be completed by given student,
+        be of given type and have at least one of given tags.
 
-        If course_types is empty, then courses of any type are matched.
-        If course_tags is empty, then courses with any tags are matched.
+        If course_types is None, then courses of any type are matched.
+        If course_tags is None, then courses with any tags are matched.
         """
-        if course_types and course_tags:
-            # TODO: Add filtering by course tags
-            completed_courses = CompletedCourses.objects.filter(
-                student=student,
-                program=student.program,
-                course__course_type__in=course_types,
-            )
-        elif not course_types:
-            # TODO: Add filtering by course tags
-            completed_courses = CompletedCourses.objects.filter(
-                student=student,
-                program=student.program,
-            )
-        elif not course_tags:
-            completed_courses = CompletedCourses.objects.filter(
-                student=student,
-                program=student.program,
-                course__course_type__in=course_types,
-            )
-        else:
-            completed_courses = CompletedCourses.objects.filter(
-                student=student,
-                program=student.program,
-            )
+        if course_types is None:
+            course_types = CourseType.objects.all()
+        if course_tags is None:
+            course_tags = CourseTag.objects.all()
+
+        # TODO: Add filtering by course tags
+        completed_courses = CompletedCourses.objects.filter(
+            student=student,
+            program=student.program,
+            course__course_type__in=course_types,
+        )
 
         count = len(completed_courses)
         ects = sum([record.course.points for record in completed_courses])
