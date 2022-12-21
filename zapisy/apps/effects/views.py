@@ -16,35 +16,47 @@ logger = logging.getLogger()
 
 @student_required
 def my_studies(request):
-    """User profile page.
+    """User studies page.
 
-    The profile page displays user settings (e-mail address, notifications). If
-    he is a student, his opening times will be displayed. If the user is an
-    employee, the page allows him to modify his public information (office,
-    consultations).
+    The page displays user progress in graduating the university.
     """
-    data = {}
+    data = {'requirements': []}
     student: Student = request.user.student
+
+    # TODO: Check student program and choose corresponding requirements data
 
     with open(os.path.join(os.path.dirname(__file__), 'inf1stlic.json')) as requirements_file:
         requirements_data = json.load(requirements_file)
         requirements = requirements_data['wymagania']
-        example_requirement = requirements[4]
-        course_types = CourseType.objects.filter(short_name__in=example_requirement['typy_przedmiotow'])
-        course_tags = CourseTag.objects.filter(short_name__in=example_requirement['tagi_przedmiotow'])
-        count, ects = CompletedCourses.get_count_and_ects_by_types_and_tags(student, course_types, course_tags)
-        courses_needed = example_requirement['liczba_przedmiotow'] - count
-        ects_needed = example_requirement['liczba_ects'] - ects
-        data.update(
-            {
-                'requirements': [
-                    {
-                        'description': example_requirement['nazwa'],
-                        'courses': max(courses_needed, 0),
-                        'ects': max(ects_needed, 0),
-                    }
-                ]
+        for requirement in requirements:
+            requirement_summary = {
+                'description': requirement['nazwa'],
+                'fulfilled': 'Tak'
             }
-        )
+
+            if 'dodatkowe_info' in requirement:
+                requirement_summary.update({'additional_info': requirement['dodatkowe_info']})
+
+            course_types, course_tags = None, None
+            if 'typy_przedmiotow' in requirement:
+                course_types = CourseType.objects.filter(short_name__in=requirement['typy_przedmiotow'])
+            if 'tagi_przedmiotow' in requirement:
+                course_tags = CourseTag.objects.filter(short_name__in=requirement['tagi_przedmiotow'])
+
+            courses, ects = CompletedCourses.get_count_and_ects_by_types_and_tags(student, course_types, course_tags)
+            if 'liczba_przedmiotow' in requirement:
+                courses_needed = max(requirement['liczba_przedmiotow'] - courses, 0)
+                requirement_summary.update({'courses': courses_needed})
+                if courses_needed > 0:
+                    requirement_summary.update({'fulfilled': 'Nie'})
+                if requirement['liczba_przedmiotow'] == 1:
+                    requirement_summary.update({'course_done': courses_needed == 0})
+            if 'liczba_ects' in requirement:
+                ects_needed = max(requirement['liczba_ects'] - ects, 0)
+                requirement_summary.update({'ects': ects_needed})
+                if ects_needed > 0:
+                    requirement_summary.update({'fulfilled': 'Nie'})
+
+            data['requirements'].append(requirement_summary)
 
     return render(request, 'my_studies.html', data)
