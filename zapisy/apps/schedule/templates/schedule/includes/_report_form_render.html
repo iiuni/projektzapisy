@@ -4,7 +4,7 @@
     {{ hidden }}
 {% endfor %}
 
-<div class="form-group">
+<div class="form-group mb-3">
     <div class="input-group d-flex">
         {{ form_table.rooms }}
         <div class="input-group-append" style="width: 5em;">
@@ -19,22 +19,18 @@
 </div>
 
 {% if form.beg_date and form.end_date %}
-<div class="form-group">
+<div class="form-group mb-3">
     <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text">{{ form_table.beg_date.label }}</label>
-        </div>
+        <label class="input-group-text">{{ form_table.beg_date.label }}</label>
         {{ form_table.beg_date }}
-        <div class="input-group-prepend input-group-append">
-            <label class="input-group-text">{{ form_table.end_date.label }}</label>
-        </div>
+        <label class="input-group-text">{{ form_table.end_date.label }}</label>
         {{ form_table.end_date }}
     </div>
 </div>
 {% endif %}
 
 {% if form.week %}
-<div class="form-group">
+<div class="form-group mb-3">
     {{ form.week }}
     {{ form.week.errors }}
 </div>

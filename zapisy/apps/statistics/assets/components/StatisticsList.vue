@@ -72,7 +72,7 @@ export default class StatisticsList extends Vue {
               style="margin-right: 5px"
             >
               {{ waiting_course.name }}
-              <span class="badge bg-light">
+              <span class="badge bg-light text-dark">
                 {{ waiting_course.number }}
               </span>
             </span>
