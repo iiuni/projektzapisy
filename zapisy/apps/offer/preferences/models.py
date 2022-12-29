@@ -54,10 +54,16 @@ class Preference(models.Model):
         (0, "Nie"),
     )
 
-    employee = models.ForeignKey(Employee, verbose_name="pracownik", on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee,
+                                 verbose_name="pracownik",
+                                 on_delete=models.CASCADE,
+                                 null=False
+                                 )
     question = models.ForeignKey(PreferencesQuestion,
                                  verbose_name="pytanie",
-                                 on_delete=models.CASCADE)
+                                 on_delete=models.CASCADE,
+                                 null=False
+                                 )
     answer = models.PositiveSmallIntegerField("wola",
                                               choices=PREFERENCE_CHOICES,
                                               null=True,
