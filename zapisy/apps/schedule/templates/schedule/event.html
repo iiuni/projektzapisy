@@ -94,7 +94,7 @@
 
 {% if event.author == user or perms.schedule.manage_events %}
     <nav>
-        <div class="nav nav-tabs"ole="tablist">
+        <div class="nav nav-tabs" role="tablist">
             <a class="nav-item nav-link active" id="nav-moderation-messages-tab" data-bs-toggle="tab" href="#nav-moderation-messages"
                 role="tab" aria-controls="nav-moderation-messages" aria-selected="true">
                 Wiadomości moderatorskie ({{ moderation_messages.count }})
@@ -198,7 +198,9 @@
                                     Akceptuj
                                 </button>
                             {% endif %}
-                            <button type="submit" value='2' name="status" class="btn btn-danger" {% if event.status == '2' %}disabled{% endif %}>Odrzuć</button>
+                            <button type="submit" value='2' name="status" class="btn btn-danger" {% if event.status == '2' %}disabled{% endif %}>
+                                Odrzuć
+                            </button>
                             <div>
                                 <small class="form-text text-muted">
                                     Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.

@@ -2,6 +2,8 @@ from django.urls import path, re_path
 
 from . import feeds, views
 
+
+app_name = "schedule"
 urlpatterns = [
     path('classrooms/', views.classrooms, name='classrooms'),
     re_path(r'^classrooms/get_terms/(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})/$',
@@ -22,7 +24,7 @@ urlpatterns = [
     path('events/feed/', feeds.LatestEvents(), name='events_feed'),
     path('events/', views.events, name='event_show'),
     path('events/ajax/', views.EventsTermsAjaxView.as_view(), name='events_ajax'),
-    path('events/<int:event_id>/decision/', views.decision, name='decision'),
+    path('events/<int:event_id>/decision/', views.decision, name='decision'),  # XD
     path('events/history/', views.history, name='history'),
     path('session/', views.session, name='session'),
     path('session/feed/', feeds.LatestExams(), name='session_feed'),
