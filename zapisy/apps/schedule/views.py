@@ -178,7 +178,7 @@ def decision(request, event_id):
             messages.error(request, "Status wydarzenia nie został zmieniony")
         else:
             event_obj = form.save()
-            notify_that_event_has_been_decided(event)  # Tutaj sę dodalismy
+            notify_that_event_has_been_decided(event)
             msg = EventModerationMessage()
             msg.author = request.user
             msg.message = "Status wydarzenia został zmieniony na " + \

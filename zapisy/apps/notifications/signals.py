@@ -129,7 +129,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
             }, target))
 
 
-@receiver(post_save, sender=News)  # Jak modele (News) zostana zmienione to aktywuje sie ten ogur
+@receiver(post_save, sender=News)
 def notify_that_news_was_added(sender: News, **kwargs) -> None:
     news: News = kwargs['instance']
 
@@ -177,7 +177,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
         }, target))
 
 
-def notify_that_event_has_been_decided(event) -> None:  # MOJE !
+def notify_that_event_has_been_decided(event) -> None:
     target = reverse('schedule:show', args=[event.id])
     if event.status == event.STATUS_ACCEPTED:
         notification_type = NotificationType.EVENT_HAS_BEEN_ACCEPTED
@@ -189,6 +189,6 @@ def notify_that_event_has_been_decided(event) -> None:  # MOJE !
         Notification(
             get_id(), get_time(), notification_type, {
                 'title': event.title,
-                'contents': event.description,  # Dodatkowe wpisy (poza title) wywalaja sie
-                'type': event.type,  #
+                'contents': event.description,
+                'type': event.type,
             }, target))
