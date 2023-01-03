@@ -189,6 +189,4 @@ def notify_that_event_has_been_decided(event) -> None:
         Notification(
             get_id(), get_time(), notification_type, {
                 'title': event.title,
-                'contents': event.description,
-                'type': event.type,
             }, target))
