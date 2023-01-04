@@ -13,10 +13,10 @@ DEFECT_MAX_PLACE_SIZE = 35
 
 
 class StateChoices(models.IntegerChoices):
-    CREATED = 0, "Zgłoszone"
+    CREATED = 0, "Zgłoszona"
     WAITING = 1, "Oczekująca"
     IN_PROGRESS = 2, "W realizacji"
-    DONE = 3, "Zakończone"
+    DONE = 3, "Zakończona"
 
 
 class Defect(models.Model):
@@ -25,7 +25,7 @@ class Defect(models.Model):
     last_modification = models.DateTimeField(auto_now=True)
     place = models.CharField(max_length=DEFECT_MAX_PLACE_SIZE, verbose_name="Miejsce")
     description = models.TextField("Opis usterki", blank=True)
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE)
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Osoba zgłaszająca")
     state = models.PositiveSmallIntegerField("Stan", choices=StateChoices.choices, default=StateChoices.CREATED)
     information_from_defect_manager = models.TextField("Informacja o zmianach", blank=True)
 

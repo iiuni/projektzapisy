@@ -12,10 +12,10 @@ export interface DefectInfo {
 }
 
 export type PossibleStates =
-  | "Zgłoszone"
+  | "Zgłoszona"
   | "Oczekująca"
   | "W realizacji"
-  | "Zakończone";
+  | "Zakończona";
 
 export interface KVDict {
   [key: number]: string;
