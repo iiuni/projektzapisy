@@ -52,7 +52,7 @@ export default Vue.extend({
         </div>
         <div class="col">
           <LabelsFilter
-            title="Stany"
+            title="Stany usterek"
             filterKey="state-filter"
             property="state_id"
             :allLabels="allStates"
