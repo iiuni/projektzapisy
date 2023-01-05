@@ -53,10 +53,8 @@ export default class DefectList extends Vue {
   }
 
   set_forms_values() {
-    let selected = Array.prototype.map
-      .call(document.getElementsByClassName("selected"), function (x) {
-        return x.id;
-      })
+    let selected = Array.from(document.getElementsByClassName("selected"))
+      .map((x) => x.id)
       .join(",");
     let defects_ids_print = document.getElementById(
       "defects_ids_print"
@@ -68,10 +66,11 @@ export default class DefectList extends Vue {
     if (delete_button) delete_button.value = selected;
   }
 
-  select(event) {
-    let isSelected = event.currentTarget.classList.toggle("selected");
+  select(event: PointerEvent) {
+    let defectTable = event.currentTarget! as HTMLTableElement;
+    let isSelected = defectTable.classList.toggle("selected");
     let checkboxForSelectedRow = document.getElementById(
-      "checkbox-" + event.currentTarget.id
+      "checkbox-" + defectTable.id
     )! as HTMLInputElement;
     checkboxForSelectedRow.checked = isSelected;
     let selected_defects = document.getElementsByClassName("selected");
@@ -85,7 +84,7 @@ export default class DefectList extends Vue {
       print_button.setAttribute("href", link + selected_ids);
       let delete_button = document.getElementById(
         "delete-form-button"
-      )! as HTMLButtonElement;
+      ) as HTMLButtonElement;
       if (delete_button) delete_button.disabled = false;
     } else {
       print_button.textContent = "Drukuj wszystkie";
@@ -174,7 +173,7 @@ export default class DefectList extends Vue {
         </td>
       </tr>
       <tr v-if="!visibleDefects.length" class="text-center">
-        <td colspan="6">
+        <td colspan="7">
           <em class="text-muted">Brak widocznych usterek.</em>
         </td>
       </tr>

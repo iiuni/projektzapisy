@@ -16,10 +16,10 @@ export default Vue.extend({
   data: function () {
     return {
       allStates: {
-        0: "Zgłoszone",
+        0: "Zgłoszona",
         1: "Oczekująca",
         2: "W realizacji",
-        3: "Zakończone",
+        3: "Zakończona",
       },
     };
   },
@@ -40,7 +40,7 @@ export default Vue.extend({
           <TextFilter
             filter-key="reporter-filter"
             :properties="['reporter']"
-            placeholder="Zgłaszający"
+            placeholder="Osoba zgłaszająca"
           />
         </div>
         <div class="col">
@@ -52,7 +52,7 @@ export default Vue.extend({
         </div>
         <div class="col">
           <LabelsFilter
-            title="Stany"
+            title="Stany usterek"
             filterKey="state-filter"
             property="state_id"
             :allLabels="allStates"

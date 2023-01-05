@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('last_modification', models.DateTimeField(auto_now=True)),
                 ('place', models.CharField(max_length=35, verbose_name='Miejsce')),
                 ('description', models.TextField(blank=True, verbose_name='Opis usterki')),
-                ('state', models.PositiveSmallIntegerField(choices=[(0, 'Zgłoszone'), (1, 'Oczekująca'), (2, 'W realizacji'), (3, 'Zakończone')], default=0, verbose_name='Stan')),
+                ('state', models.PositiveSmallIntegerField(choices=[(0, 'Zgłoszona'), (1, 'Oczekująca'), (2, 'W realizacji'), (3, 'Zakończona')], default=0, verbose_name='Stan')),
                 ('information_from_defect_manager', models.TextField(blank=True, verbose_name='Informacja o zmianach')),
                 ('reporter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

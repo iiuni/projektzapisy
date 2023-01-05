@@ -8,7 +8,7 @@
 {% render_bundle "show-defect" %}
 {% endblock %}
 
-{% block main-subtitle %}{{ defect.name }} - System raportowania usterek{% endblock %}
+{% block main-subtitle %}{{ defect.name }} – System raportowania usterek{% endblock %}
 
 {% block bread %}
 <li class="breadcrumb-item">
@@ -98,13 +98,7 @@
         <form action="{% url 'defects:repair_info' defect.id %}" method="post" id="info-form">
             {% csrf_token %}
             {% crispy info_form %}
-            <button class="btn btn-success" type="submit">
-                {% if defect.information_from_defect_manager %}
-                Edytuj
-                {% else %}
-                Dodaj
-                {% endif %}
-            </button>
+            <button class="btn btn-success" type="submit">Edytuj</button>
         </form>
     </div>
     {% else %}
