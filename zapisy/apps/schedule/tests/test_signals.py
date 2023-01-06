@@ -68,6 +68,7 @@ class TermModificationsOnSignalTest(test.TestCase):
                                       start_time=time(12),
                                       end_time=time(14))
         t.classrooms.add(self.classrooms[0])
+
         # Now we move the class to the other time.
         t.dayOfWeek = days_of_week.FRIDAY
         t.save()
@@ -89,6 +90,21 @@ class TermModificationsOnSignalTest(test.TestCase):
         ])
         self.assertFalse(Term.objects.filter(room=self.classrooms[0]).exists())
         self.assertEqual(Term.objects.filter(room=self.classrooms[1]).count(), 5)
+
+        # Now let's apply modifications without saving the term along the way.
+        t.dayOfWeek = days_of_week.THURSDAY
+        t.start_time = time(10)
+        t.end_time = time(12)
+        t.classrooms.set(self.classrooms[:1])
+        t.save()
+        self.assertCountEqual(Term.objects.all().values_list('day', 'start', 'end'), [
+            (date(2019, 5, 2), time(10), time(12)),
+            (date(2019, 5, 17), time(10), time(12)),
+            (date(2019, 5, 23), time(10), time(12)),
+            (date(2019, 5, 30), time(10), time(12)),
+        ])
+        self.assertFalse(Term.objects.filter(room=self.classrooms[1]).exists())
+        self.assertEqual(Term.objects.filter(room=self.classrooms[0]).count(), 4)
 
     def test_class_with_many_terms(self):
         # We create one term just as before
