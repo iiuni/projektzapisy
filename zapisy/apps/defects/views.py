@@ -64,7 +64,7 @@ def delete_images(images_to_delete):
 def parse_names(form_fields, field):
     try:
         return list(map(int, form_fields.get(field).split(',')))
-    except Exception:
+    except KeyError:
         []
 
 
