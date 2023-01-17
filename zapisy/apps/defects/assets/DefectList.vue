@@ -4,6 +4,7 @@ import { mapGetters } from "vuex";
 import { DefectInfo } from "@/defects/assets/models";
 import SorterField from "@/theses/assets/components/sorters/SorterField.vue";
 import Component from "vue-class-component";
+import defects from "@/defects/assets/store/defects";
 
 @Component({
   components: {
@@ -53,17 +54,25 @@ export default class DefectList extends Vue {
   }
 
   set_forms_values() {
-    let selected = Array.from(document.getElementsByClassName("selected"))
-      .map((x) => x.id)
-      .join(",");
+    let selected = Array.from(document.getElementsByClassName("selected")).map(
+      (x) => x.id
+    );
+    let selected_str_rep = selected.join(",");
     let defects_ids_print = document.getElementById(
       "defects_ids_print"
     )! as HTMLInputElement;
-    defects_ids_print.value = selected;
-    let delete_button = document.getElementById(
+    defects_ids_print.value = selected_str_rep;
+    let defect_ids_delete = document.getElementById(
       "defects_ids_delete"
     )! as HTMLButtonElement;
-    if (delete_button) delete_button.value = selected;
+    if (defect_ids_delete) defect_ids_delete.value = selected_str_rep;
+    let delete_button = document.getElementById(
+      "delete-form-button"
+    )! as HTMLButtonElement;
+    if (delete_button)
+      delete_button.onclick = function () {
+        return confirm(generate_delete_message_for_n_defects(selected.length));
+      };
   }
 
   select(event: PointerEvent) {
@@ -95,6 +104,16 @@ export default class DefectList extends Vue {
       if (delete_button) delete_button.disabled = true;
     }
     this.set_forms_values();
+  }
+}
+function generate_delete_message_for_n_defects(n: number) {
+  //https://rjp.pan.pl/porady-jezykowe-main/1011-skadnia-liczebnikow-70
+  if (n == 1) {
+    return "Czy na pewno chcesz usunąć 1 usterkę?";
+  } else if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 > 20)) {
+    return "Czy na pewno chcesz usunąć " + n + " usterki?";
+  } else {
+    return "Czy na pewno chcesz usunąć " + n + " usterek?";
   }
 }
 </script>

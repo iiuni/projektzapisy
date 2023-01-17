@@ -36,7 +36,9 @@
             </a>
             {% if can_delete %}
             <a
-                    class="btn btn-danger" href="{% url 'defects:delete_defect' defect.id %}">
+                    class="btn btn-danger"
+                    href="{% url 'defects:delete_defect' defect.id %}"
+                    onclick="return confirm('Czy na pewno chcesz usunąć tę usterkę?');">
                 Usuń
             </a>
             {% endif %}
