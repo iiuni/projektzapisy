@@ -162,6 +162,7 @@ class PollSummarizedResultsEntry:
                 plot_height=250,
                 toolbar_location=None,
                 tools='',
+                tooltips="@values"
             )
 
             source = bokeh.models.sources.ColumnDataSource(
