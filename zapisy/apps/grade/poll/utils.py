@@ -157,8 +157,10 @@ class PollSummarizedResultsEntry:
         """
         if not self._components:
             answers = len(self.answers)
-            percents = [f"{100 * occurences / answers:.1f}"
-                for occurences in self._choices_occurences]
+            percents = []
+            for occurences in self._choices_occurences:
+                percent = 100 * occurences / answers
+                percents.append(f"{percent:.1f}")
 
             plot = bokeh.plotting.figure(
                 y_range=self._choices,
