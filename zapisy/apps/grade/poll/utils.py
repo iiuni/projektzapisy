@@ -156,17 +156,23 @@ class PollSummarizedResultsEntry:
             used for embedding plots in the template.
         """
         if not self._components:
+            answers = len(self.answers)
+            percents = [f"{100 * occurences / answers:.1f}"
+                for occurences in self._choices_occurences]
+
             plot = bokeh.plotting.figure(
                 y_range=self._choices,
                 sizing_mode='scale_width',
                 plot_height=250,
                 toolbar_location=None,
                 tools='',
-                tooltips="@values"
+                tooltips="@percents% (@values)"
             )
 
             source = bokeh.models.sources.ColumnDataSource(
-                data=dict(choices=self._choices, values=self._choices_occurences)
+                data=dict(
+                    choices=self._choices, values=self._choices_occurences, percents=percents
+                )
             )
 
             plot.hbar(y='choices', right='values', source=source, height=0.8)
