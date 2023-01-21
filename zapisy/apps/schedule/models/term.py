@@ -210,59 +210,87 @@ class Term(models.Model):
         return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
 
 
-@receiver(models.signals.pre_delete, sender=CourseTerm)
-@receiver(models.signals.pre_save, sender=CourseTerm)
-@receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
-def delete_course_terms(**kwargs):
-    """Deletes the Term when a corresponding CourseTerm is deleted or modified.
-
-    This will be triggered before the modifications are saved, and the function
-    below will be triggered on the modified instance.
-    """
-    instance: CourseTerm = kwargs['instance']
-    if not kwargs.get('action', 'pre_save').startswith('pre_'):
-        # We are in a post_save action of m2m_changed signal receiver.
-        # The function below is handling that.
-        return
-    if not instance.pk:
-        return
-    instance = CourseTerm.objects.get(pk=instance.pk)
-    dates = instance.group.course.semester.get_all_days_of_week(instance.dayOfWeek)
-    matching_terms = Term.objects.filter(event__group=instance.group,
+def delete_terms(course_term):
+    """Deletes all Terms corresponding to a CourseTerm."""
+    dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
+    matching_terms = Term.objects.filter(event__group=course_term.group,
                                          day__in=dates,
-                                         start=instance.start_time,
-                                         end=instance.end_time)
+                                         start=course_term.start_time,
+                                         end=course_term.end_time)
     matching_terms.delete()
 
 
-@receiver(models.signals.post_save, sender=CourseTerm)
-@receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
-def create_course_terms(**kwargs):
-    """Creates matching Terms when a new CourseTerm is created."""
-    if not kwargs.get('action', 'post_save').startswith('post_'):
-        # We are in a post_save action of m2m_changed signal receiver.
-        # The function above is handling that.
-        return
-    instance: CourseTerm = kwargs['instance']
-    dates = instance.group.course.semester.get_all_days_of_week(instance.dayOfWeek)
-    event, _ = Event.objects.get_or_create(group=instance.group,
-                                           course=instance.group.course,
-                                           title=instance.group.course.get_short_name(),
+def create_terms(course_term):
+    """Creates Terms corresponding to a CourseTerm."""
+    dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
+    event, _ = Event.objects.get_or_create(group=course_term.group,
+                                           course=course_term.group.course,
+                                           title=course_term.group.course.get_short_name(),
                                            type=Event.TYPE_CLASS,
                                            visible=True,
                                            status=Event.STATUS_ACCEPTED,
-                                           author=instance.group.teacher.user)
+                                           author=course_term.group.teacher.user)
+    rooms = course_term.classrooms.all() if course_term.pk else None
     for day in dates:
-        rooms = instance.classrooms.all()
-        for room in rooms:
+        if rooms:
+            for room in rooms:
+                Term.objects.create(event=event,
+                                    day=day,
+                                    start=course_term.start_time,
+                                    end=course_term.end_time,
+                                    room=room)
+        else:
             Term.objects.create(event=event,
                                 day=day,
-                                start=instance.start_time,
-                                end=instance.end_time,
-                                room=room)
-        if not rooms:
-            Term.objects.create(event=event,
-                                day=day,
-                                start=instance.start_time,
-                                end=instance.end_time,
+                                start=course_term.start_time,
+                                end=course_term.end_time,
                                 room=None)
+
+
+"""
+In the functions below instance_db is the version of a CourseTerm found in
+the database and instance_curr is its most recent version.
+We want to keep the following invariant:
+All fields of Terms associated with a CourseTerm correspond to the fields of
+the CourseTerm's version currently stored in the database.
+"""
+
+
+@receiver(models.signals.pre_delete, sender=CourseTerm)
+def sync_course_term_delete(**kwargs):
+    """Deletes all Terms associated with a CourseTerm when it is deleted."""
+    instance_curr: CourseTerm = kwargs['instance']
+    if instance_curr.pk:
+        instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+        delete_terms(instance_db)
+
+
+@receiver(models.signals.pre_save, sender=CourseTerm)
+def sync_course_term_save(**kwargs):
+    """Creates or updates Terms associated with a CourseTerm when it is saved.
+
+    If the CourseTerm is already in the database, all Terms associated with it
+    are deleted and new ones (with updated fields) are created.
+    """
+    instance_curr: CourseTerm = kwargs['instance']
+    if instance_curr.pk:
+        instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+        delete_terms(instance_db)
+    create_terms(instance_curr)
+
+
+@receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
+def sync_course_term_m2m(**kwargs):
+    """Creates or deletes Terms associated with a CourseTerm when its set of classrooms changes.
+
+    The Terms associated with the CourseTerm are simply deleted and recreated.
+    If a classroom has been removed from the set, Terms having its id in their
+    'room' field will not be recreated. If a classroom has been added to the
+    set, new Terms having its id in their 'room' field will be created.
+    """
+    if kwargs['action'].startswith('post_'):
+        instance_curr: CourseTerm = kwargs['instance']
+        instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+        delete_terms(instance_db)
+        # calling create_terms with instance_curr would violate the invariant
+        create_terms(instance_db)
