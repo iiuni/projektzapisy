@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "nazwa": "Informatyka, dzienne II stopnia inżynierskie, 4-semestralne",
+    "wariant": "Rozpoczęcie od 2019-10-01 do 2022-09-30",
+    "url": "https://ii.uni.wroc.pl/media/uploads/Program_studiow_Inf_M(1).pdf"
+  },
+  "wymagania": [
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS",
+      "liczba_ects": 70,
+      "typy_przedmiotow": ["O3", "I2.T", "I2.Z", "S", "K2", "P", "HS"],
+      "dodatkowe_info": "Wymóg do zaliczenia ostatniego semestru studiów; do ukończenia studiów potrzebnych jest o 20 ECTS więcej, które otrzymuje się za przedłożenie pracy dyplomowej itd. Limit maksymalny 6 punktów ECTS za przedmioty typu HS"
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty informatyczne 2 (I2)",
+      "liczba_ects": 36,
+      "typy_przedmiotow": ["I2.T", "I2.Z"]
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty oznaczone znacznikiem specjalistycznym AZ",
+      "liczba_ects": 12,
+      "tagi_przedmiotow": ["AZ"],
+      "dodatkowe_info": "Jeśli podczas rekrutacji student otrzymał co najmniej 50 punktów z zakresu przedmiotu `Algorytmy i struktury danych M` bądź `Matematyka dyskretna M`, to od powyższego limitu odejmuje się 6 ECTS za każdy taki przedmiot." 
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty oznaczone znacznikimi specjalistycznymi SY, PD, NG",
+      "liczba_ects": 12,
+      "tagi_przedmiotow": ["SY", "PD", "NG"],
+      "dodatkowe_info": "Jeśli podczas rekrutacji student otrzymał co najmniej 50 punktów z zakresu przedmiotu `Analiza numeryczna M`, to od powyższego limitu odejmuje się 6 ECTS."
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty oznaczone tym samym znacznikiem specjalistycznym",
+      "alternatywnie": [
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["AZ"]
+        },
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["SY"]
+        },
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["PD"]
+        },
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["NG"]
+        },
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["DS"]
+        },
+        {
+          "liczba_ects": 15,
+          "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+          "tagi_przedmiotow": ["JP"]
+        }
+      ],
+      "_znaczniki_specjalistyczne_comment": "Należy zweryfikować, które tagi są znacznikami specjalistycznymi" 
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu seminarium (S)",
+      "liczba_ects": 6,
+      "tagi_przedmiotow": ["S"]
+    },
+    {
+      "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu HS",
+      "liczba_ects": 5,
+      "typy_przedmiotow": ["HS", "N"]
+    },
+    {
+      "nazwa": "Zaliczenie przedmiotu typu I2 lub S w języku angielskim",
+      "liczba_przedmiotow": 1,
+      "typy_przedmiotow": ["I2.T", "I2.Z", "S"],
+      "jezyk_wykladowy": "en"
+    }
+  ],
+  "wymagania_niezakodowane": [
+    "Zaliczenie przedmiotów obowiązkowych O3 (Języki programowania, Języki formalne i złożoność obliczeniowa)",
+    "Zaliczenie pracy zespołowej",
+    "Przedłożenie pracy dyplomowej i zdanie egzaminu dyplomowego",
+    "Angielski na poziomie B2+"
+  ]
+}
