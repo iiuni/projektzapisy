@@ -71,7 +71,7 @@
             <th scope="row">Tagi</th>
             <td>
                 {% for tag in course.tags.all %}
-                    <span class="badge bg-success mr-2">{{ tag }}</span>
+                    <span class="badge bg-success ms-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -81,7 +81,7 @@
             <th>Grupy efektów kształcenia</th>
             <td>
                 {% for effect in course.effects.all %}
-                    <span class="badge bg-info mr-2">{{ effect }}</span>
+                    <span class="badge bg-info ms-2">{{ effect }}</span>
                 {% endfor %}
             </td>
         </tr>

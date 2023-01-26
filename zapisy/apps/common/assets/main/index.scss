@@ -26,7 +26,7 @@ footer {
 }
 
 .custom-select {
-  @extend .form-select;
+  @extend .form-select !optional;
 }
 
 .nav-link:hover {
