@@ -64,7 +64,7 @@ export default Vue.extend({
       type="button"
       @click="pattern = ''"
     >
-    &times;
+      &times;
     </button>
   </div>
 </template>
