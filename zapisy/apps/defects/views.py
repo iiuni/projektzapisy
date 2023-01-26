@@ -1,18 +1,14 @@
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 
-from . import models
 from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
 from .models import Defect, StateChoices, DefectManager
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
-
-storage = models.select_storage()
 
 
 @employee_required
@@ -38,27 +34,16 @@ def delete_defects_endpoint(request):
             return redirect('defects:main')
 
         to_delete = Defect.objects.filter(pk__in=defects_list)
-        images_to_delete = []
-
-        for defect in to_delete:
-            for image in defect.defectimage_set.all():
-                images_to_delete.append(image.image.name)
 
         query_set = ", ".join(map(lambda x: x['name'], list(to_delete.values())))
         messages.info(request, "Usunięto następujące usterki: " + query_set)
 
-        to_delete.delete()
-        delete_images(images_to_delete)
+        for defect in to_delete:
+            defect.soft_delete()
+
     else:
         messages.error(request, "Nieprawidłowa metoda zapytania http.")
     return redirect('defects:main')
-
-
-def delete_images(images_to_delete):
-    for image_name in images_to_delete:
-        image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image_name
-        if storage.exists(image_path):
-            storage.delete(image_path)
 
 
 def parse_names(form_fields, field):
@@ -127,11 +112,7 @@ def delete_defect(request, defect_id):
     try:
         defect = Defect.objects.get(pk=defect_id)
         if can_delete_defect(request, defect):
-            images_to_delete = []
-            for image in defect.defectimage_set.all():
-                images_to_delete.append(image.image.name)
-            delete_images(images_to_delete)
-            defect.delete()
+            defect.soft_delete()
             messages.success(request, "Pomyślnie usunięto usterkę")
             return redirect("defects:main")
         else:
@@ -250,12 +231,8 @@ def delete_image(request, image_id):
 def do_delete_image(request, image_id):
     image = get_object_or_404(DefectImage, id=image_id)
     defect_id = image.defect.id
-    image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + image.image.name
 
     image.delete()
-
-    if storage.exists(image_path):
-        storage.delete(image_path)
 
     if request.user.id != image.defect.reporter.id:
         defect_modified.send_robust(

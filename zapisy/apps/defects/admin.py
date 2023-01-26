@@ -33,6 +33,14 @@ class DefectAdmin(admin.ModelAdmin):
     list_display = ("name", "reporter", "state", "place", "creation_date", "last_modification")
     inlines = [DefectImageInline]
 
+    def get_queryset(self, request):
+        qs = self.model.all_objects.get_queryset()
+
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
+
 
 @admin.register(DefectManager)
 class DefectManagerAdmin(admin.ModelAdmin):
