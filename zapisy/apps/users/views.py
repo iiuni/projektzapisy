@@ -184,7 +184,7 @@ def my_profile(request):
             'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
         groups_times = []
         got: GroupOpeningTimes
-        if is_ii_program(student.program.name):
+        if student.program and is_ii_program(student.program.name):
             for got in groups_opening_times:
                 group: Group = got.group
                 group.opening_time = got.time
