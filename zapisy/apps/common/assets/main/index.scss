@@ -51,6 +51,11 @@ footer {
   text-decoration: underline;
 }
 
+.btn-outline-info:hover,
+.btn-outline-info:active {
+  color: white !important;
+}
+
 a {
   cursor: pointer;
   text-decoration: none;

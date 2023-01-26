@@ -13,6 +13,10 @@ class PreferenceForm(forms.ModelForm):
         labels = {
             'answer': "",
         }
+    def __init__(self, *args, **kwargs):
+        super(PreferenceForm, self).__init__(*args, **kwargs)
+        self.fields['answer'].widget.attrs['class'] = 'form-select'
+
 
 
 def prepare_formset(employee: Employee, post=None):

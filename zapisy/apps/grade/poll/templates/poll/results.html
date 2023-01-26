@@ -74,7 +74,7 @@
       {% for group_name, entries in polls.items %}
       {% with index=iterator|next %}
       <div class="accordion-item">
-        <button class="accordion-button" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-bs-toggle="collapse"
+        <button class="accordion-button collapsed" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-bs-toggle="collapse"
           data-bs-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
           <div class="d-flex w-100 justify-content-between me-1">
             <span>{{ group_name }}</span>
