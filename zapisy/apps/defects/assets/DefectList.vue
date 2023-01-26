@@ -4,7 +4,6 @@ import { mapGetters } from "vuex";
 import { DefectInfo } from "@/defects/assets/models";
 import SorterField from "@/theses/assets/components/sorters/SorterField.vue";
 import Component from "vue-class-component";
-import defects from "@/defects/assets/store/defects";
 
 @Component({
   components: {
