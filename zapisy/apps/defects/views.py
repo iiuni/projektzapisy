@@ -49,7 +49,7 @@ def delete_defects_endpoint(request):
 def parse_names(form_fields, field):
     try:
         return list(map(int, form_fields.get(field).split(',')))
-    except Exception:
+    except KeyError:
         []
 
 
@@ -199,7 +199,7 @@ def add_defect_post_request(request):
     defect.save()
     try:
         formset.save()
-    except Exception as exception:
+    except ValueError as exception:
         messages.error(request, "Wystąpił problem podczas zapisu zdjęć. Niektóre z nich mogły zostać niedodane.")
         logging.getLogger().error("Error during uploading files to GoogleDrive: {}".format(str(exception)))
         return redirect('defects:edit_defect', defect_id=defect.id)
