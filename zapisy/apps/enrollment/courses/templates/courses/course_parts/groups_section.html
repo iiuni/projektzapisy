@@ -8,7 +8,7 @@
     {% if class_type in waiting_students %}
         <span class="badge bg-danger d-inline-block align-text-bottom me-2">
             Niezapisanych&mdash;oczekujących
-            <span class="badge bg-light">{{ waiting_students|lookup:class_type }}</span>
+            <span class="badge text-dark bg-light">{{ waiting_students|lookup:class_type }}</span>
         </span>
     {% endif %}
     <table class="table table-bordered text-center">
