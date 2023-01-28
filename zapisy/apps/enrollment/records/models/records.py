@@ -282,8 +282,9 @@ class Record(models.Model):
         """
         enrolled_agg = models.Count('id', filter=models.Q(status=RecordStatus.ENROLLED))
         enqueued_agg = models.Count('id', filter=models.Q(status=RecordStatus.QUEUED))
-        records = cls.objects.filter(group__in=groups).exclude(
-            status=RecordStatus.REMOVED).values('group_id').annotate(
+        records_distinct = cls.objects.filter(group__in=groups).exclude(
+            status=RecordStatus.REMOVED).distinct('student_id', 'group_id')
+        records = cls.objects.filter(id__in=records_distinct).values('group_id').annotate(
                 num_enrolled=enrolled_agg, num_enqueued=enqueued_agg).values(
                     'group_id', 'num_enrolled', 'num_enqueued')
         ret_dict: Dict[int, Dict[str, int]] = {
