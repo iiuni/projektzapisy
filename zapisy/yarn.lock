@@ -1941,13 +1941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/vue-fontawesome@npm:2.0.9":
-  version: 2.0.9
-  resolution: "@fortawesome/vue-fontawesome@npm:2.0.9"
+"@fortawesome/vue-fontawesome@npm:2.0.10":
+  version: 2.0.10
+  resolution: "@fortawesome/vue-fontawesome@npm:2.0.10"
   peerDependencies:
     "@fortawesome/fontawesome-svg-core": ~1 || ~6
     vue: ~2
-  checksum: 4ab9ad6425dda9d7553ba7c09584cad0703c335a72ae037299a862dff39b4cbb97efb9f9d1d473abb6f65ddea00863fe5c4553e633344e989b63004c75deae23
+  checksum: 02660595bc39ef0461e2d321c1f10c6716180027e9ce66661b7f0c545e8232ea10c7f5acd98feab2319fd66f2835e76008b06bc6627080f15b07ac8b88499b01
   languageName: node
   linkType: hard
 
@@ -5355,7 +5355,7 @@ fsevents@~2.1.2:
     "@fortawesome/free-brands-svg-icons": 5.15.4
     "@fortawesome/free-regular-svg-icons": 5.15.4
     "@fortawesome/free-solid-svg-icons": 5.15.4
-    "@fortawesome/vue-fontawesome": 2.0.9
+    "@fortawesome/vue-fontawesome": 2.0.10
     "@fullcalendar/bootstrap": 5.11.3
     "@fullcalendar/core": 5.11.3
     "@fullcalendar/daygrid": 5.11.3
