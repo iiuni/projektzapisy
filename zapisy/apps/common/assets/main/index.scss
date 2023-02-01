@@ -92,7 +92,7 @@ div.top .topbar .inline-inputs label {
 
 #sidebar {
   @media (max-width: 992px) {
-    #sidebar-inner {
+    #sidebar-collapsable {
       overflow-y: hidden;
 
       &.folded {
