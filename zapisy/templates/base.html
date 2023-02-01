@@ -199,8 +199,12 @@
                 <nav class="col-lg-3 col-12
                         d-print-none order-first
                         order-lg-last mb-3" id="sidebar">
+                    <div id="sidebar-header">
+                        {% block sidebar-header %}
+                        {% endblock %}
+                    </div>
                     <div class="folded" id="sidebar-inner">
-                        {% block sidebar %}
+                        {% block sidebar-collapsable %}
                         {% endblock %}
                     </div>
                     <a class="text-dark" href="#" id="fold-toggler">zwiń / rozwiń</a>
