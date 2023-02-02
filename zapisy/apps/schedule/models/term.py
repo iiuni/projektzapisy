@@ -210,7 +210,7 @@ class Term(models.Model):
         return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
 
 
-def delete_terms(course_term):
+def delete_terms(course_term: CourseTerm):
     """Deletes all Terms corresponding to a CourseTerm."""
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     matching_terms = Term.objects.filter(event__group=course_term.group,
@@ -220,7 +220,7 @@ def delete_terms(course_term):
     matching_terms.delete()
 
 
-def create_terms(course_term):
+def create_terms(course_term: CourseTerm):
     """Creates Terms corresponding to a CourseTerm."""
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     event, _ = Event.objects.get_or_create(group=course_term.group,
@@ -247,20 +247,19 @@ def create_terms(course_term):
                                 room=None)
 
 
-"""
-In the functions below instance_db is the version of a CourseTerm found in
-the database and instance_curr is its most recent version.
-We want to keep the following invariant:
-All fields of Terms associated with a CourseTerm correspond to the fields of
-the CourseTerm's version currently stored in the database.
-"""
-
-
 @receiver(models.signals.pre_delete, sender=CourseTerm)
 def sync_course_term_delete(**kwargs):
-    """Deletes all Terms associated with a CourseTerm when it is deleted."""
+    """Deletes all Terms associated with a CourseTerm when it is deleted.
+
+    When deleting Terms, this function uses the following invariant:
+    The day, start time and end time of Terms associated with a CourseTerm
+    correspond to its day of week, start time and end time currently stored
+    in the database.
+    """
+    # the current version of the CourseTerm, possibly with unsaved changes
     instance_curr: CourseTerm = kwargs['instance']
     if instance_curr.pk:
+        # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
         delete_terms(instance_db)
 
@@ -271,9 +270,19 @@ def sync_course_term_save(**kwargs):
 
     If the CourseTerm is already in the database, all Terms associated with it
     are deleted and new ones (with updated fields) are created.
+    When deleting Terms, this function uses the following invariant:
+    The day, start time and end time of Terms associated with a CourseTerm
+    correspond to its day of week, start time and end time currently stored
+    in the database.
+    The newly created Terms may temporarily violate the invariant, because
+    this function is called before the CourseTerm is actually saved.
+    The invariant is thus preserved across calls to save() but not inside them.
     """
+    # the current version of the CourseTerm, possibly with unsaved changes
+    # that are about to be saved
     instance_curr: CourseTerm = kwargs['instance']
     if instance_curr.pk:
+        # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
         delete_terms(instance_db)
     create_terms(instance_curr)
@@ -284,13 +293,22 @@ def sync_course_term_m2m(**kwargs):
     """Creates or deletes Terms associated with a CourseTerm when its set of classrooms changes.
 
     The Terms associated with the CourseTerm are simply deleted and recreated.
-    If a classroom has been removed from the set, Terms having its id in their
-    'room' field will not be recreated. If a classroom has been added to the
-    set, new Terms having its id in their 'room' field will be created.
+    If a classroom has been removed from the set, Terms taking place in it
+    will not be recreated. If a classroom has been added to the set, new Terms
+    taking place in it will be created.
+    When deleting Terms, this function uses the following invariant:
+    The day, start time and end time of Terms associated with a CourseTerm
+    correspond to its day of week, start time and end time currently stored
+    in the database.
+    The invariant is preserved after creating new Terms, because the day,
+    start time and end time of the newly created Terms correspond to the
+    CourseTerm's day of week, start time and end time stored in the database.
     """
     if kwargs['action'].startswith('post_'):
+        # the current version of the CourseTerm, possibly with unsaved changes
         instance_curr: CourseTerm = kwargs['instance']
+        # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
         delete_terms(instance_db)
-        # calling create_terms with instance_curr would violate the invariant
+        # calling create_terms with instance_curr could violate the invariant
         create_terms(instance_db)
