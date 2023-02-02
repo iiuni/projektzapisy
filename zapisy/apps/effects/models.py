@@ -16,6 +16,7 @@ class CompletedCourses(models.Model):
     class Meta:
         unique_together = ('student', 'course', 'program')
 
+    @staticmethod
     def get_completed_effects(student: Student) -> Set[str]:
         completed_courses = (
             CompletedCourses.objects.filter(student=student, program=student.program)
@@ -29,6 +30,7 @@ class CompletedCourses(models.Model):
 
         return done_effects
 
+    @staticmethod
     def get_count_and_ects_by_types_and_tags(
         student: Student,
         course_types: Iterable[CourseType] = None,
@@ -58,3 +60,19 @@ class CompletedCourses(models.Model):
         ects = sum([record.course.points for record in completed_courses])
 
         return count, ects
+
+
+class Variant(models.Model):
+    name = models.CharField(max_length=300, verbose_name='Nazwa')
+    requirements = models.JSONField(verbose_name='Wymagania', blank=True)
+    program = models.ForeignKey(
+        Program, on_delete=models.CASCADE, verbose_name='Program studiów'
+    )
+
+    class Meta:
+        verbose_name: str = 'Wariant'
+        verbose_name_plural: str = 'Warianty'
+        unique_together = ('name', 'program')
+
+    def __str__(self):
+        return self.name
