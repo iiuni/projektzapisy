@@ -4,14 +4,14 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
-type CourseGroup = {[key: string]: CourseInfo[]};
+type CourseGroup = { [key: string]: CourseInfo[] };
 
 export default Vue.extend({
   data() {
     return {
       courses: [] as CourseInfo[],
       groups: {} as CourseGroup,
-      visibleCourses: [] as CourseInfo[]
+      visibleCourses: [] as CourseInfo[],
     };
   },
   computed: {
@@ -37,19 +37,18 @@ export default Vue.extend({
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
           this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
-          
+
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
           break;
-        }
-      });
+      }
+    });
   },
 });
 
-
 function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
-  const names: {[key: number]: string} = {
+  const names: { [key: number]: string } = {
     5: "informatyczne 1",
     7: "informatyczne inż.",
     8: "obowiązkowe",
@@ -65,7 +64,7 @@ function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
     40: "kursy inż.",
     41: "proseminaria",
     42: "humanistyczno-społeczne",
-    43: "matematyczne"
+    43: "matematyczne",
   };
 
   const { courseType } = course;
@@ -92,9 +91,8 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-
     <span v-for="(g, i) in groups" v-bind:key="g.id">
-      <div v-if="Object.keys(groups).length > 1" class="group"> 
+      <div v-if="Object.keys(groups).length > 1" class="group">
         {{ i }}
       </div>
 
@@ -106,7 +104,6 @@ function updateSemesterLinks() {
         </li>
       </span>
     </span>
-
   </ul>
 </template>
 
