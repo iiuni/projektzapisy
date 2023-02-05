@@ -4,11 +4,14 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
+type CourseGroup = {[key: string]: CourseInfo[]};
+
 export default Vue.extend({
   data() {
     return {
       courses: [] as CourseInfo[],
-      visibleCourses: [] as CourseInfo[],
+      groups: {} as CourseGroup,
+      visibleCourses: [] as CourseInfo[]
     };
   },
   computed: {
@@ -24,6 +27,7 @@ export default Vue.extend({
     ) as CourseInfo[];
     this.courses = courseData;
     this.visibleCourses = courseData.filter(this.tester);
+    this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
@@ -32,14 +36,44 @@ export default Vue.extend({
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
+          this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
+          
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
           break;
-      }
-    });
+        }
+      });
   },
 });
+
+
+function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
+  const names: {[key: number]: string} = {
+    5: "informatyczne 1",
+    7: "informatyczne inż.",
+    8: "obowiązkowe",
+    9: "obowiązkowe",
+    13: "projekty",
+    14: "seminaria",
+    15: "nieinformatyczne",
+    35: "inne",
+    36: "kursy 1",
+    37: "kursy 2",
+    38: "informatyczne 2",
+    39: "informatyczne 2",
+    40: "kursy inż.",
+    41: "proseminaria",
+    42: "humanistyczno-społeczne",
+    43: "matematyczne"
+  };
+
+  const { courseType } = course;
+  const groupName = names[courseType || 35];
+  group[groupName] = group[groupName] || [];
+  group[groupName].push(course);
+  return group;
+}
 
 // Replaces the query string of links in the semester dropdown with the current query string.
 function updateSemesterLinks() {
@@ -58,10 +92,30 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <li v-for="c in visibleCourses" v-bind:key="c.id">
-      <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">{{
-        c.name
-      }}</a>
-    </li>
+
+    <span v-for="(g, i) in groups" v-bind:key="g.id">
+      <div v-if="Object.keys(groups).length > 1" class="group"> 
+        {{ i }}
+      </div>
+
+      <span v-for="c in g" v-bind:key="c.id">
+        <li>
+          <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">
+            {{ c.name }}
+          </a>
+        </li>
+      </span>
+    </span>
+
   </ul>
 </template>
+
+<style lang="scss" scoped>
+.group {
+  font-weight: 500;
+  font-size: larger;
+  margin: 5px;
+  text-transform: capitalize;
+  color: #212529;
+}
+</style>

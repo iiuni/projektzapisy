@@ -19,7 +19,8 @@ export interface CourseInfo {
   tags: Array<number>;
   owner: number;
   recommendedForFirstYear: boolean;
-
+  
+  courseType?: number;
   groups?: Array<number>;
 }
 
