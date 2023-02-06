@@ -25,6 +25,7 @@ export default Vue.extend({
     const courseData = JSON.parse(
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
+    console.log(courseData.map(({ courseTypeName }) => courseTypeName));
     this.courses = courseData;
     this.visibleCourses = courseData.filter(this.tester);
     this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
@@ -48,27 +49,29 @@ export default Vue.extend({
 });
 
 function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
-  const names: { [key: number]: string } = {
-    5: "informatyczne 1",
-    7: "informatyczne inż.",
-    8: "obowiązkowe",
-    9: "obowiązkowe",
-    13: "projekty",
-    14: "seminaria",
-    15: "nieinformatyczne",
-    35: "inne",
-    36: "kursy 1",
-    37: "kursy 2",
-    38: "informatyczne 2",
-    39: "informatyczne 2",
-    40: "kursy inż.",
-    41: "proseminaria",
-    42: "humanistyczno-społeczne",
-    43: "matematyczne",
+  const defaultType = "?";
+  const groupNames: { [key: string]: string } = {
+    I1: "informatyczne 1",
+    Iinż: "informatyczne inż.",
+    O1: "obowiązkowe",
+    O2: "obowiązkowe",
+    P: "projekty",
+    S: "seminaria",
+    N: "nieinformatyczne",
+    K1: "kursy 1",
+    K2: "kursy 2",
+    I2: "informatyczne 2",
+    "I2.T": "informatyczne 2",
+    "I2.Z": "informatyczne 2",
+    "K.inż": "kursy inż.",
+    PS: "proseminaria",
+    HS: "humanistyczno-społeczne",
+    MAT: "matematyczne",
+    [defaultType]: "inne",
   };
 
-  const { courseType } = course;
-  const groupName = names[courseType || 35];
+  const { courseTypeName } = course;
+  const groupName = groupNames[courseTypeName || defaultType];
   group[groupName] = group[groupName] || [];
   group[groupName].push(course);
   return group;

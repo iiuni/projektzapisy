@@ -118,6 +118,7 @@ class CourseInformation(models.Model):
             'id': self.id,
             'name': self.name,
             'courseType': self.course_type_id,
+            'courseTypeName': self.course_type.short_name,
             'recommendedForFirstYear': self.recommended_for_first_year,
             'owner': self.owner_id,
             'effects': [effect.pk for effect in self.effects.all()],

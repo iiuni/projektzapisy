@@ -21,6 +21,7 @@ export interface CourseInfo {
   recommendedForFirstYear: boolean;
 
   courseType?: number;
+  courseTypeName?: string;
   groups?: Array<number>;
 }
 
