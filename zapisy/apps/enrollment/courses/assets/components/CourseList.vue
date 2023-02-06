@@ -25,7 +25,6 @@ export default Vue.extend({
     const courseData = JSON.parse(
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
-    console.log(courseData.map(({ courseTypeName }) => courseTypeName));
     this.courses = courseData;
     this.visibleCourses = courseData.filter(this.tester);
     this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
