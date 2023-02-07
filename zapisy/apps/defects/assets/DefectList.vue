@@ -43,6 +43,8 @@ export default class DefectList extends Vue {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.set_forms_values();
+          this.visibleDefects = this.defects.filter(this.tester);
+          this.visibleDefects.sort(this.compare);
           break;
         case "sorting/changeSorting":
           this.visibleDefects = this.defects.filter(this.tester);
