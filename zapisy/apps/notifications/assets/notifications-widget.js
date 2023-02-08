@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Widget from "./components/Widget.vue";
-import store from "./store";
 
 new Vue({
   el: "#notificationswidget",
@@ -10,5 +9,4 @@ new Vue({
   render: function (h) {
     return h(Widget);
   },
-  store,
 });

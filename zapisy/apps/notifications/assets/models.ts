@@ -19,6 +19,6 @@ export interface NotificationJson {
 /* Runtime type guard for NotifiactionJson */
 export const isJsonNotificationType = (object: any) =>
   !isNil(object.id) &&
-  !isNil(object.id) &&
   !isNil(object.description) &&
+  !isNil(object.issued_on) &&
   !isNil(object.target);

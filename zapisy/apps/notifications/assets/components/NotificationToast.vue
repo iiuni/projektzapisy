@@ -6,6 +6,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/pl";
 import { Notification } from "../models";
+import { NotificationsUpdateEvent } from "../events";
+import NotificationRepository from "../repository";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -19,12 +21,19 @@ const NotificationToastProps = Vue.extend({
 
 @Component
 export default class NotificationToast extends NotificationToastProps {
-  deleteOne(id: string) {
-    this.$store.dispatch("notifications/delete", id);
+  updateNotificationsEvent!: NotificationsUpdateEvent;
+
+  async deleteOne(id: string) {
+    let notifications = await NotificationRepository.delete(id);
+    this.updateNotificationsEvent.dispatch(notifications);
   }
 
   momentFromDate(date: Date) {
     return dayjs(date).fromNow();
+  }
+
+  mounted() {
+    this.updateNotificationsEvent = new NotificationsUpdateEvent();
   }
 }
 </script>
