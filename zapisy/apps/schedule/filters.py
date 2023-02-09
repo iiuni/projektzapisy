@@ -1,5 +1,7 @@
 import django_filters
 
+from django import forms
+
 from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.term import Term
@@ -10,15 +12,19 @@ BOOLEAN_CHOICES = [(True, "Tak"),
 
 class EventFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(field_name='title',
-                                      lookup_expr='icontains')
+                                      lookup_expr='icontains',
+                                      widget = forms.TextInput(attrs={'class':'my-2'}))
     type = django_filters.ChoiceFilter(choices=Event.TYPES,
                                        label='Typ',
-                                       empty_label="Dowolny")
+                                       empty_label="Dowolny",
+                                       widget = forms.Select(attrs={'class':'form-select my-2'}))
     status = django_filters.ChoiceFilter(choices=Event.STATUSES,
                                          label='Status',
-                                         empty_label="Dowolny")
+                                         empty_label="Dowolny",
+                                         widget = forms.Select(attrs={'class':'form-select mt-2 mb-4'}))
     visible = django_filters.ChoiceFilter(choices=BOOLEAN_CHOICES,
-                                          empty_label="Dowolne")
+                                          empty_label="Dowolne",
+                                          widget = forms.Select(attrs={'class':'form-select my-2'}))
 
     class Meta:
         model = Event
