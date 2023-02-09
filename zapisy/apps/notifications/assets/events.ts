@@ -4,7 +4,7 @@ enum NotificationEventType {
   UPDATE = "NotificationsUpdate",
 }
 
-class NotificationEvent {
+abstract class NotificationEvent {
   constructor(private type: NotificationEventType) {}
 
   protected dispatchEvent(eventInit: CustomEventInit) {
@@ -12,8 +12,8 @@ class NotificationEvent {
     document.body.dispatchEvent(event);
   }
 
-  public subscribe(callback: EventListener) {
-    document.body.addEventListener(this.type, callback);
+  protected subscribeToEvent(listener: EventListener) {
+    document.body.addEventListener(this.type, listener);
   }
 }
 
@@ -24,5 +24,11 @@ export class NotificationsUpdateEvent extends NotificationEvent {
 
   public dispatch(notifications: Notification[]) {
     super.dispatchEvent({ detail: { notifications } });
+  }
+
+  public subscribe(callback: (notifications: Notification[]) => void) {
+    super.subscribeToEvent(((event: CustomEvent) => {
+      callback(event.detail.notifications);
+    }) as EventListener);
   }
 }

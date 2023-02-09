@@ -30,6 +30,7 @@ function truncateNotifications(notifications: Notification[]): Notification[] {
 export default class NotificationsComponent extends Vue {
   notifications: Notification[] = [];
   updateNotificationsEvent!: NotificationsUpdateEvent;
+  notificationRepository!: NotificationRepository;
 
   get truncatedNotifications() {
     return truncateNotifications(this.notifications);
@@ -43,20 +44,25 @@ export default class NotificationsComponent extends Vue {
   fasBell = fasBell;
 
   async deleteAll() {
-    let notifications = await NotificationRepository.deleteAll();
+    let notifications = await this.notificationRepository.deleteAll();
     this.updateNotificationsEvent.dispatch(notifications);
   }
 
   async created() {
-    this.notifications = await NotificationRepository.getAll();
-    setInterval(async () => {
-      this.notifications = await NotificationRepository.getAll();
-    }, 30000);
+    this.notificationRepository = new NotificationRepository();
 
     this.updateNotificationsEvent = new NotificationsUpdateEvent();
-    this.updateNotificationsEvent.subscribe(((event: CustomEvent) => {
-      this.notifications = event.detail.notifications;
-    }) as EventListener);
+    this.updateNotificationsEvent.subscribe((notifications) => {
+      this.notifications = notifications;
+    });
+
+    this.getNotifications();
+  }
+
+  async getNotifications() {
+    let notifications = await this.notificationRepository.getAll();
+    this.updateNotificationsEvent.dispatch(notifications);
+    setTimeout(this.getNotifications, 30000);
   }
 }
 </script>

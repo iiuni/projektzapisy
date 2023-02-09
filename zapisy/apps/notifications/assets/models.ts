@@ -69,5 +69,5 @@ export const isJsonTargetInfoType = (object: any) =>
   !isNil(object.type) &&
   (object.type == "course" ||
     object.type == "thesis" ||
-    object.type == "course") &&
+    object.type == "news") &&
   (object.type != "courses" || !isNil(object.course_id));

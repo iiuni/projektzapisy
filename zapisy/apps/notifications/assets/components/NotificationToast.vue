@@ -22,9 +22,10 @@ const NotificationToastProps = Vue.extend({
 @Component
 export default class NotificationToast extends NotificationToastProps {
   updateNotificationsEvent!: NotificationsUpdateEvent;
+  notificationRepository!: NotificationRepository;
 
   async deleteOne(id: string) {
-    let notifications = await NotificationRepository.delete(id);
+    let notifications = await this.notificationRepository.delete(id);
     this.updateNotificationsEvent.dispatch(notifications);
   }
 
@@ -32,7 +33,8 @@ export default class NotificationToast extends NotificationToastProps {
     return dayjs(date).fromNow();
   }
 
-  mounted() {
+  created() {
+    this.notificationRepository = new NotificationRepository();
     this.updateNotificationsEvent = new NotificationsUpdateEvent();
   }
 }

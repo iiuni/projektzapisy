@@ -3,13 +3,15 @@ import { Notification } from "./models";
 import { parseNotificationsArray } from "./parser";
 
 class NotificationRepository {
-  static async getAll(): Promise<Notification[]> {
+  constructor() {}
+
+  public async getAll(): Promise<Notification[]> {
     let response = await axios.get("/notifications/get");
     let notifications = parseNotificationsArray(response.data);
     return notifications;
   }
 
-  static async delete(id: string): Promise<Notification[]> {
+  public async delete(id: string): Promise<Notification[]> {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
     let response = await axios.post("/notifications/delete", {
@@ -19,7 +21,7 @@ class NotificationRepository {
     return notifications;
   }
 
-  static async deleteAll(): Promise<Notification[]> {
+  public async deleteAll(): Promise<Notification[]> {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
     let response = await axios.post("/notifications/delete/all");
