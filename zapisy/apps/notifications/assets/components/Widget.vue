@@ -84,7 +84,7 @@ export default class NotificationsComponent extends Vue {
       <div class="dropdown-menu dropdown-menu-right">
         <form class="p-1 place-for-notifications">
           <NotificationToast
-            v-for="notification in notifications"
+            v-for="notification in truncatedNotifications"
             :key="notification.id"
             :notification="notification"
           />
