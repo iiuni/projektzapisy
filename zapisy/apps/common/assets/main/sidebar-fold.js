@@ -1,7 +1,7 @@
 // Implements folding sidebar contents on small devices.
 
 function toggleSidebarFolded(event) {
-  const sidebarInner = document.getElementById("sidebar-collapsable");
+  const sidebarInner = document.getElementById("sidebar-inner");
   sidebarInner.classList.toggle("folded");
   event.preventDefault();
 }
