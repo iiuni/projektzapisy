@@ -96,12 +96,12 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <li v-for="(g, i) in groups" v-bind:key="g.id">
+    <li v-for="g in Object.keys(groups).sort()" v-bind:key="g.id">
       <h5 class="my-2 text-capitalize">
-        {{ i }}
+        {{ g }}
       </h5>
 
-      <ul v-for="c in g" v-bind:key="c.id" class="list-unstyled">
+      <ul v-for="c in groups[g]" v-bind:key="c.id" class="list-unstyled">
         <li>
           <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">
             {{ c.name }}
