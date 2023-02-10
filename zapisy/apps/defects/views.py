@@ -14,10 +14,14 @@ from ..users.decorators import employee_required
 @employee_required
 def index(request):
     is_defect_manager_val = is_defect_manager(request.user.id)
-    return render(request, "defectsMain.html", {"defects": Defect.objects.all().select_related("reporter"),
-                                                "visibleDefects": [parse_defect(defect) for defect in
-                                                                   Defect.objects.all().select_related("reporter")],
-                                                'is_defect_manager': is_defect_manager_val})
+    return render(
+        request, "defectsMain.html", {
+            "defects": Defect.objects.all().select_related("reporter"),
+            "visibleDefects": [
+                parse_defect(defect) for defect in Defect.objects.all().select_related("reporter")
+            ],
+            'is_defect_manager': is_defect_manager_val
+        })
 
 
 def delete_defects_endpoint(request):
@@ -29,8 +33,9 @@ def delete_defects_endpoint(request):
             return redirect('defects:main')
 
         if not is_defect_manager_val:
-            messages.error(request,
-                           "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
+            messages.error(
+                request,
+                "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
             return redirect('defects:main')
 
         to_delete = Defect.objects.filter(pk__in=defects_list)
@@ -54,11 +59,17 @@ def parse_names(form_fields, field):
 
 
 def parse_defect(defect: Defect):
-    return {"id": defect.id, "name": defect.name, "place": defect.place, "status_color": defect.get_status_color(),
-            "state": defect.get_state_display(), "state_id": [defect.state],
-            "reporter": defect.reporter.first_name + " " + defect.reporter.last_name,
-            "creation_date": defect.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
-            "last_modification": defect.last_modification.strftime('%Y-%m-%d %H:%M:%S')}
+    return {
+        "id": defect.id,
+        "name": defect.name,
+        "place": defect.place,
+        "status_color": defect.get_status_color(),
+        "state": defect.get_state_display(),
+        "state_id": [defect.state],
+        "reporter": defect.reporter.first_name + " " + defect.reporter.last_name,
+        "creation_date": defect.creation_date.strftime('%Y-%m-%d %H:%M:%S'),
+        "last_modification": defect.last_modification.strftime('%Y-%m-%d %H:%M:%S')
+    }
 
 
 @employee_required
@@ -74,9 +85,14 @@ def show_defect(request, defect_id):
         info_form = InformationFromDefectManagerForm(instance=defect)
         is_manager = is_defect_manager(request.user.id)
 
-        return render(request, 'showDefect.html', {'defect': defect, 'image_urls': image_urls, 'info_form': info_form,
-                                                   'is_defect_manager': is_manager,
-                                                   "can_delete": can_delete_defect(request, defect, is_manager)})
+        return render(
+            request, 'showDefect.html', {
+                'defect': defect,
+                'image_urls': image_urls,
+                'info_form': info_form,
+                'is_defect_manager': is_manager,
+                "can_delete": can_delete_defect(request, defect, is_manager)
+            })
     except Defect.DoesNotExist:
         messages.error(request, "Nie istnieje usterka o podanym id.")
         return redirect('defects:main')
@@ -102,8 +118,15 @@ def edit_defect_helper(request, defect):
 
     for image in DefectImage.objects.filter(defect=defect):
         images.append((image.id, image.image.url[:-16]))
-    context = {'form': form, 'formset': formset, "response": request.method, "edit": True, 'images': images,
-               'extra_images_number': ExtraImagesNumber, 'defect': defect}
+    context = {
+        'form': form,
+        'formset': formset,
+        "response": request.method,
+        "edit": True,
+        'images': images,
+        'extra_images_number': ExtraImagesNumber,
+        'defect': defect
+    }
     return render(request, 'editDefect.html', context)
 
 
@@ -126,7 +149,8 @@ def delete_defect(request, defect_id):
 def can_delete_defect(request, defect, is_defect_manager_val=None):
     if is_defect_manager_val is None:
         is_defect_manager_val = is_defect_manager(request.user.id)
-    return is_defect_manager_val or (defect.state == StateChoices.CREATED and defect.reporter == request.user)
+    return is_defect_manager_val or (defect.state == StateChoices.CREATED and
+                                     defect.reporter == request.user)
 
 
 @employee_required
@@ -137,15 +161,25 @@ def add_defect(request):
     else:
         form = DefectForm()
         formset = DefectImageFormSet()
-    context = {'form': form, 'formset': formset, "response": request.method, 'extra_images_number': ExtraImagesNumber}
+    context = {
+        'form': form,
+        'formset': formset,
+        "response": request.method,
+        'extra_images_number': ExtraImagesNumber
+    }
     return render(request, 'editDefect.html', context)
 
 
 def return_error_and_reload(request, form, edit, errors):
     messages.error(request, errors)
     formset = DefectImageFormSet()
-    context = {'form': form, 'formset': formset, "response": request.method,
-               'extra_images_number': ExtraImagesNumber, "edit": edit}
+    context = {
+        'form': form,
+        'formset': formset,
+        "response": request.method,
+        'extra_images_number': ExtraImagesNumber,
+        "edit": edit
+    }
     return render(request, 'editDefect.html', context)
 
 
@@ -162,20 +196,20 @@ def edit_defect_post_request(request, defect_id):
     if not formset.is_valid():
         return return_error_and_reload(request, form, True, str(formset.errors))
 
-    defect.update(name=form_data['name'], last_modification=now(),
-                  description=form_data['description'], place=form_data['place'])
+    defect.update(name=form_data['name'],
+                  last_modification=now(),
+                  description=form_data['description'],
+                  place=form_data['place'])
     formset.save()
     selected_images = request.POST.getlist('files-to-delete[]')
     for image in selected_images:
         do_delete_image(request, image)
 
     if request.user.id != defect.get().reporter.id:
-        defect_modified.send_robust(
-            sender=Defect,
-            instance=defect.get(),
-            user=defect.get().reporter,
-            executor=request.user
-        )
+        defect_modified.send_robust(sender=Defect,
+                                    instance=defect.get(),
+                                    user=defect.get().reporter,
+                                    executor=request.user)
 
     messages.success(request, "Edytowano usterkę")
     return redirect('defects:show_defect', defect_id=defect_id)
@@ -188,8 +222,12 @@ def add_defect_post_request(request):
 
     creation_date = now()
     form_data = form.cleaned_data
-    defect = Defect(name=form_data['name'], creation_date=creation_date, last_modification=creation_date,
-                    place=form_data['place'], description=form_data['description'], reporter=request.user,
+    defect = Defect(name=form_data['name'],
+                    creation_date=creation_date,
+                    last_modification=creation_date,
+                    place=form_data['place'],
+                    description=form_data['description'],
+                    reporter=request.user,
                     state=0)
 
     formset = DefectImageFormSet(request.POST, request.FILES, instance=defect)
@@ -200,8 +238,11 @@ def add_defect_post_request(request):
     try:
         formset.save()
     except ValueError as exception:
-        messages.error(request, "Wystąpił problem podczas zapisu zdjęć. Niektóre z nich mogły zostać niedodane.")
-        logging.getLogger().error("Error during uploading files to GoogleDrive: {}".format(str(exception)))
+        messages.error(
+            request,
+            "Wystąpił problem podczas zapisu zdjęć. Niektóre z nich mogły zostać niedodane.")
+        logging.getLogger().error("Error during uploading files to GoogleDrive: {}".format(
+            str(exception)))
         return redirect('defects:edit_defect', defect_id=defect.id)
 
     messages.success(request, "Dodano pomyślnie usterkę")
@@ -210,13 +251,17 @@ def add_defect_post_request(request):
 
 @employee_required
 def print_defects(request, defects_ids=None):
+    all_defects = Defect.objects.all().order_by('-last_modification')
     if defects_ids is None:
         return render(request, 'defectsPrint.html',
-                      {'defects': Defect.objects.all().order_by('-last_modification')})
+                      {'defects': all_defects})
     else:
         defects_ids = list(map(int, defects_ids.split(",")))
         defects = {defect.id: defect for defect in Defect.objects.filter(pk__in=defects_ids)}
         defects = [defects[i] for i in defects_ids if i in defects.keys()]
+        if defects == []:
+            return render(request, 'defectsPrint.html',
+                          {'defects': all_defects})
         return render(request, 'defectsPrint.html', {'defects': defects})
 
 
@@ -235,20 +280,19 @@ def do_delete_image(request, image_id):
     image.delete()
 
     if request.user.id != image.defect.reporter.id:
-        defect_modified.send_robust(
-            sender=Defect,
-            instance=image.defect,
-            user=image.defect.reporter,
-            executor=request.user
-        )
+        defect_modified.send_robust(sender=Defect,
+                                    instance=image.defect,
+                                    user=image.defect.reporter,
+                                    executor=request.user)
     return defect_id
 
 
 def post_information_from_defect_manager(request, defect_id):
     if request.method == "POST":
         if not is_defect_manager(request.user.id):
-            messages.error(request, "Informacja o zmianach"
-                                    " może zostać wypełniona tylko przez osoby do tego wyznaczone.")
+            messages.error(
+                request, "Informacja o zmianach"
+                " może zostać wypełniona tylko przez osoby do tego wyznaczone.")
             return redirect('defects:show_defect', defect_id=defect_id)
         info_form = InformationFromDefectManagerForm(request.POST)
         if not info_form.is_valid():
@@ -257,16 +301,15 @@ def post_information_from_defect_manager(request, defect_id):
 
         info_form_data = info_form.cleaned_data
         defect = Defect.objects.filter(pk=defect_id)
-        defect.update(information_from_defect_manager=info_form_data['information_from_defect_manager'],
-                      state=info_form_data["state"])
+        defect.update(
+            information_from_defect_manager=info_form_data['information_from_defect_manager'],
+            state=info_form_data["state"])
 
         if request.user.id != defect.get().reporter.id:
-            defect_modified.send_robust(
-                sender=Defect,
-                instance=defect.get(),
-                user=defect.get().reporter,
-                executor=request.user
-            )
+            defect_modified.send_robust(sender=Defect,
+                                        instance=defect.get(),
+                                        user=defect.get().reporter,
+                                        executor=request.user)
 
         messages.success(request, "Pomyślnie zmodyfikowano informację o zmianach")
         return redirect('defects:show_defect', defect_id=defect_id)

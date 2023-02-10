@@ -57,7 +57,7 @@
         </td>
     </tr>
     <tr>
-        <th scope="row">Zgłoszone przez</th>
+        <th scope="row">Zgłoszona przez</th>
         <td>{% if defect.reporter %}
             {% with defect.reporter.first_name|add:' '|add:defect.reporter.last_name as name %}
             {{ name }}
