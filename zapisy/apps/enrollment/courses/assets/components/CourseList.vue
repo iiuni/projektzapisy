@@ -94,7 +94,7 @@ function updateSemesterLinks() {
 <template>
   <ul class="nav d-block">
     <li v-for="(g, i) in groups" v-bind:key="g.id">
-      <h5 v-if="Object.keys(groups).length > 1" class="my-2 text-capitalize">
+      <h5 class="my-2 text-capitalize">
         {{ i }}
       </h5>
 
