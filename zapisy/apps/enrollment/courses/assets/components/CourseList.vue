@@ -51,17 +51,20 @@ function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
   const defaultType = "?";
   const groupNames: { [key: string]: string } = {
     I1: "informatyczne 1",
+    I2: "informatyczne 2",
+    "I2.T": "informatyczne 2",
+    "I2.Z": "informatyczne 2",
     Iinż: "informatyczne inż.",
+    O: "obowiązkowe",
     O1: "obowiązkowe",
     O2: "obowiązkowe",
+    O3: "obowiązkowe",
+    Oinż: "obowiązkowe",
     P: "projekty",
     S: "seminaria",
     N: "nieinformatyczne",
     K1: "kursy 1",
     K2: "kursy 2",
-    I2: "informatyczne 2",
-    "I2.T": "informatyczne 2",
-    "I2.Z": "informatyczne 2",
     "K.inż": "kursy inż.",
     PS: "proseminaria",
     HS: "humanistyczno-społeczne",
@@ -70,7 +73,7 @@ function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
   };
 
   const { courseTypeName } = course;
-  const groupName = groupNames[courseTypeName || defaultType];
+  const groupName = groupNames[courseTypeName || defaultType] || groupNames[defaultType];
   group[groupName] = group[groupName] || [];
   group[groupName].push(course);
   return group;
