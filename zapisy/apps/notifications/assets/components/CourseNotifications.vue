@@ -54,6 +54,7 @@ export default class CourseNotifications extends Vue {
         v-for="notification in courseRelatedNotifications.slice(0, limit)"
         :key="notification.id"
         :notification="notification"
+        :clickable="false"
         class="course-notification-toast"
       />
     </div>

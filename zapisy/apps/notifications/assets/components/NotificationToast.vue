@@ -16,6 +16,10 @@ dayjs.locale("pl");
 const NotificationToastProps = Vue.extend({
   props: {
     notification: Notification,
+    clickable: {
+      type: Boolean,
+      default: true,
+    },
   },
 });
 
@@ -37,6 +41,12 @@ export default class NotificationToast extends NotificationToastProps {
     this.notificationRepository = new NotificationRepository();
     this.updateNotificationsEvent = new NotificationsUpdateEvent();
   }
+
+  redirectToTarget() {
+    if (this.clickable) {
+      window.location.href = this.notification.target;
+    }
+  }
 }
 </script>
 
@@ -51,15 +61,15 @@ export default class NotificationToast extends NotificationToastProps {
         &times;
       </button>
     </div>
-    <a :href="notification.target" class="toast-link">
+    <div :class="[{ clickable }, 'toast-link']" @click="redirectToTarget">
       <div class="toast-body text-body">{{ notification.description }}</div>
-    </a>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-a.toast-link:hover {
-  text-decoration: none;
+div.toast-link.clickable:hover {
+  cursor: pointer;
   .toast-body {
     background-color: var(--light);
   }
