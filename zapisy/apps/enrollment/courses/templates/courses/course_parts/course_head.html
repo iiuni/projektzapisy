@@ -1,8 +1,11 @@
 {% load filters %}
 {% load render_bundle from webpack_loader %}
 
-<div id="notifications-course" data-course-id="{{ course.id }}"></div>
-{% render_bundle 'notifications-notifications-course' %}
+
+{% if user.is_authenticated %}
+    <div id="notifications-course" data-course-id="{{ course.id }}"></div>
+    {% render_bundle 'notifications-notifications-course' %}
+{% endif %}
 
 <div class="d-flex justify-content-between align-items-center">
     <h1 class="d-inline-block">

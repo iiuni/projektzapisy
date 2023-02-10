@@ -56,7 +56,7 @@ def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> N
         kwargs['user'],
         Notification(
             get_id(), get_time(), CourseNotificationType.NOT_PULLED_FROM_QUEUE, {
-                'course_id': group.course.name,
+                'course_id': group.course.id,
                 'course_name': group.course.name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
