@@ -21,9 +21,6 @@ def select_storage():
         return FileSystemStorage(location="defect/")
 
 
-storage = select_storage()
-
-
 class StateChoices(models.IntegerChoices):
     CREATED = 0, "Zgłoszona"
     WAITING = 1, "Oczekująca"
@@ -32,12 +29,11 @@ class StateChoices(models.IntegerChoices):
     HIDDEN = 4, "Ukryta"
 
 
-class SoftDeleteManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().exclude(state=StateChoices.HIDDEN)
-
-
 class Defect(models.Model):
+    class SoftDeleteManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().exclude(state=StateChoices.HIDDEN)
+
     name = models.CharField(max_length=DEFECT_MAX_NAME_SIZE, verbose_name='Nazwa')
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
@@ -70,13 +66,13 @@ class DefectImage(models.Model):
     image = models.ImageField(storage=select_storage, upload_to='defects')
     defect = models.ForeignKey(Defect, on_delete=models.CASCADE, null=False, blank=True)
 
-    def delete(self, using=None, keep_parents=False):
+    def delete(self,  *args, **kwargs):
         image_path = settings.GOOGLE_DRIVE_STORAGE_DEFECT_IMAGES_DIR + "/" + self.image.name
 
-        if storage.exists(image_path):
-            storage.delete(image_path)
+        if self.image.storage.exists(image_path):
+            self.image.storage.delete(image_path)
 
-        super().delete(using, keep_parents)
+        super().delete(*args, **kwargs)
 
 
 class DefectManager(models.Model):
