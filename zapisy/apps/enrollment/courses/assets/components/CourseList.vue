@@ -73,7 +73,8 @@ function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
   };
 
   const { courseTypeName } = course;
-  const groupName = groupNames[courseTypeName || defaultType] || groupNames[defaultType];
+  const groupName =
+    groupNames[courseTypeName || defaultType] || groupNames[defaultType];
   group[groupName] = group[groupName] || [];
   group[groupName].push(course);
   return group;
