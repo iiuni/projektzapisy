@@ -93,28 +93,18 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <span v-for="(g, i) in groups" v-bind:key="g.id">
-      <div v-if="Object.keys(groups).length > 1" class="group">
+    <li v-for="(g, i) in groups" v-bind:key="g.id">
+      <h5 v-if="Object.keys(groups).length > 1" class="my-2 text-capitalize">
         {{ i }}
-      </div>
+      </h5>
 
-      <span v-for="c in g" v-bind:key="c.id">
+      <ul v-for="c in g" v-bind:key="c.id" class="list-unstyled">
         <li>
           <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">
             {{ c.name }}
           </a>
         </li>
-      </span>
-    </span>
+      </ul>
+    </li>
   </ul>
 </template>
-
-<style lang="scss" scoped>
-.group {
-  font-weight: 500;
-  font-size: larger;
-  margin: 5px;
-  text-transform: capitalize;
-  color: #212529;
-}
-</style>
