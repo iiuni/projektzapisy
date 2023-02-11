@@ -12,7 +12,7 @@ const typeNames: { [key: string]: string } = {
   O2: "obowiązkowe 2",
   O3: "obowiązkowe 3",
   Oinż: "obowiązkowe inż.",
-  
+
   I1: "informatyczne 1",
   Iinż: "informatyczne inż.",
   I2: "informatyczne 2",
@@ -29,11 +29,11 @@ const typeNames: { [key: string]: string } = {
   S: "seminaria",
 
   N: "nieinformatyczne",
-  
+
   HS: "humanistyczno-społeczne",
-  
+
   [defaultType]: "inne",
-  
+
   MAT: "matematyczne",
 };
 
@@ -91,7 +91,7 @@ function groupCoursesByType(groups: GroupedCourses, course: CourseInfo) {
   return groups;
 }
 
-// sorts groups by the order defined in `typeNames`
+// Sorts groups by the order defined in `typeNames`
 function reorder(groups: GroupedCourses) {
   const order = Object.values(typeNames);
   return order.reduce(
