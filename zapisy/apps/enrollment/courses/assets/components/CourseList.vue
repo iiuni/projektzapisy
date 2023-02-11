@@ -50,7 +50,9 @@ export default Vue.extend({
     ) as CourseInfo[];
     this.courses = courseData;
     this.visibleCourses = courseData.filter(this.tester);
-    this.groupedCourses = this.visibleCourses.reduce(groupCoursesByType, {});
+    this.groupedCourses = reorder(
+      this.visibleCourses.reduce(groupCoursesByType, {})
+    );
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
@@ -59,7 +61,9 @@ export default Vue.extend({
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
-          this.groupedCourses = this.visibleCourses.reduce(groupCoursesByType, {});
+          this.groupedCourses = reorder(
+            this.visibleCourses.reduce(groupCoursesByType, {})
+          );
 
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
@@ -70,13 +74,23 @@ export default Vue.extend({
   },
 });
 
-function groupCoursesByType(group: GroupedCourses, course: CourseInfo) {
+function groupCoursesByType(groups: GroupedCourses, course: CourseInfo) {
   const { courseTypeName } = course;
   const groupName =
     typeNames[courseTypeName || defaultType] || typeNames[defaultType];
-  group[groupName] = group[groupName] || [];
-  group[groupName].push(course);
-  return group;
+  groups[groupName] = groups[groupName] || [];
+  groups[groupName].push(course);
+  return groups;
+}
+
+// sorts groups by the order defined in `typeNames`
+function reorder(groups: GroupedCourses) {
+  const order = Object.values(typeNames);
+  return order.reduce(
+    (ordered, item) =>
+      groups[item] ? { ...ordered, [item]: groups[item] } : { ...ordered },
+    {}
+  );
 }
 
 // Replaces the query string of links in the semester dropdown with the current query string.
@@ -96,12 +110,12 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <li v-for="g in Object.keys(groupedCourses).sort()" v-bind:key="g.id">
+    <li v-for="(g, i) in groupedCourses" v-bind:key="g.id">
       <h5 class="my-2 text-capitalize">
-        {{ g }}
+        {{ i }}
       </h5>
 
-      <ul v-for="c in groupedCourses[g]" v-bind:key="c.id" class="list-unstyled">
+      <ul v-for="c in g" v-bind:key="c.id" class="list-unstyled">
         <li>
           <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">
             {{ c.name }}
