@@ -8,25 +8,33 @@ type GroupedCourses = { [key: string]: CourseInfo[] };
 
 const defaultType = "?";
 const typeNames: { [key: string]: string } = {
+  O1: "obowiązkowe 1",
+  O2: "obowiązkowe 2",
+  O3: "obowiązkowe 3",
+  Oinż: "obowiązkowe inż.",
+  
   I1: "informatyczne 1",
+  Iinż: "informatyczne inż.",
   I2: "informatyczne 2",
   "I2.T": "informatyczne 2",
   "I2.Z": "informatyczne 2",
-  Iinż: "informatyczne inż.",
-  O1: "obowiązkowe",
-  O2: "obowiązkowe",
-  O3: "obowiązkowe",
-  Oinż: "obowiązkowe",
-  P: "projekty",
-  S: "seminaria",
-  N: "nieinformatyczne",
+
   K1: "kursy 1",
-  K2: "kursy 2",
   "K.inż": "kursy inż.",
+  K2: "kursy 2",
+
+  P: "projekty",
+
   PS: "proseminaria",
+  S: "seminaria",
+
+  N: "nieinformatyczne",
+  
   HS: "humanistyczno-społeczne",
-  MAT: "matematyczne",
+  
   [defaultType]: "inne",
+  
+  MAT: "matematyczne",
 };
 
 export default Vue.extend({
