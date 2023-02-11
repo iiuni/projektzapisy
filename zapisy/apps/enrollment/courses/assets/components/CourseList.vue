@@ -4,13 +4,36 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
-type CourseGroup = { [key: string]: CourseInfo[] };
+type GroupedCourses = { [key: string]: CourseInfo[] };
+
+const defaultType = "?";
+const typeNames: { [key: string]: string } = {
+  I1: "informatyczne 1",
+  I2: "informatyczne 2",
+  "I2.T": "informatyczne 2",
+  "I2.Z": "informatyczne 2",
+  Iinż: "informatyczne inż.",
+  O1: "obowiązkowe",
+  O2: "obowiązkowe",
+  O3: "obowiązkowe",
+  Oinż: "obowiązkowe",
+  P: "projekty",
+  S: "seminaria",
+  N: "nieinformatyczne",
+  K1: "kursy 1",
+  K2: "kursy 2",
+  "K.inż": "kursy inż.",
+  PS: "proseminaria",
+  HS: "humanistyczno-społeczne",
+  MAT: "matematyczne",
+  [defaultType]: "inne",
+};
 
 export default Vue.extend({
   data() {
     return {
       courses: [] as CourseInfo[],
-      groups: {} as CourseGroup,
+      groupedCourses: {} as GroupedCourses,
       visibleCourses: [] as CourseInfo[],
     };
   },
@@ -27,7 +50,7 @@ export default Vue.extend({
     ) as CourseInfo[];
     this.courses = courseData;
     this.visibleCourses = courseData.filter(this.tester);
-    this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
+    this.groupedCourses = this.visibleCourses.reduce(groupCoursesByType, {});
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
@@ -36,7 +59,7 @@ export default Vue.extend({
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
-          this.groups = this.visibleCourses.reduce(groupCoursesByType, {});
+          this.groupedCourses = this.visibleCourses.reduce(groupCoursesByType, {});
 
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
@@ -47,34 +70,10 @@ export default Vue.extend({
   },
 });
 
-function groupCoursesByType(group: CourseGroup, course: CourseInfo) {
-  const defaultType = "?";
-  const groupNames: { [key: string]: string } = {
-    I1: "informatyczne 1",
-    I2: "informatyczne 2",
-    "I2.T": "informatyczne 2",
-    "I2.Z": "informatyczne 2",
-    Iinż: "informatyczne inż.",
-    O: "obowiązkowe",
-    O1: "obowiązkowe",
-    O2: "obowiązkowe",
-    O3: "obowiązkowe",
-    Oinż: "obowiązkowe",
-    P: "projekty",
-    S: "seminaria",
-    N: "nieinformatyczne",
-    K1: "kursy 1",
-    K2: "kursy 2",
-    "K.inż": "kursy inż.",
-    PS: "proseminaria",
-    HS: "humanistyczno-społeczne",
-    MAT: "matematyczne",
-    [defaultType]: "inne",
-  };
-
+function groupCoursesByType(group: GroupedCourses, course: CourseInfo) {
   const { courseTypeName } = course;
   const groupName =
-    groupNames[courseTypeName || defaultType] || groupNames[defaultType];
+    typeNames[courseTypeName || defaultType] || typeNames[defaultType];
   group[groupName] = group[groupName] || [];
   group[groupName].push(course);
   return group;
@@ -97,12 +96,12 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <li v-for="g in Object.keys(groups).sort()" v-bind:key="g.id">
+    <li v-for="g in Object.keys(groupedCourses).sort()" v-bind:key="g.id">
       <h5 class="my-2 text-capitalize">
         {{ g }}
       </h5>
 
-      <ul v-for="c in groups[g]" v-bind:key="c.id" class="list-unstyled">
+      <ul v-for="c in groupedCourses[g]" v-bind:key="c.id" class="list-unstyled">
         <li>
           <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">
             {{ c.name }}
