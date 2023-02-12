@@ -5,7 +5,9 @@ import {
   TargetInfo,
   TargetInfoJson,
   isJsonTargetInfoType,
-  TargetInfoType,
+  CourseTargetInfo,
+  ThesisTargetInfo,
+  NewsTargetInfo,
 } from "./models";
 
 function parseTargetInfo(jsonTargetInfo: TargetInfoJson): TargetInfo {
@@ -16,18 +18,11 @@ function parseTargetInfo(jsonTargetInfo: TargetInfoJson): TargetInfo {
   }
   switch (jsonTargetInfo.type) {
     case "course":
-      return {
-        type: TargetInfoType.COURSE,
-        courseId: jsonTargetInfo.course_id,
-      };
+      return new CourseTargetInfo(jsonTargetInfo.course_id);
     case "thesis":
-      return {
-        type: TargetInfoType.THESIS,
-      };
+      return new ThesisTargetInfo();
     case "news":
-      return {
-        type: TargetInfoType.NEWS,
-      };
+      return new NewsTargetInfo();
   }
 }
 

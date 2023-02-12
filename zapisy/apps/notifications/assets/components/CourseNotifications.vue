@@ -2,7 +2,7 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import NotificationToast from "./NotificationToast.vue";
-import { Notification, TargetInfoType } from "../models";
+import { Notification, CourseTargetInfo } from "../models";
 import { NotificationsUpdateEvent } from "../events";
 import NotificationRepository from "../repository";
 
@@ -20,10 +20,7 @@ export default class CourseNotifications extends Vue {
 
   get courseRelatedNotifications() {
     return this.notifications.filter((notification) => {
-      if (
-        notification.targetInfo &&
-        notification.targetInfo.type == TargetInfoType.COURSE
-      )
+      if (notification.targetInfo instanceof CourseTargetInfo)
         return notification.targetInfo.courseId == this.$props.courseId;
       return false;
     });

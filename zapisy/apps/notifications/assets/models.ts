@@ -10,26 +10,13 @@ export class Notification {
   ) {}
 }
 
-export enum TargetInfoType {
-  NEWS,
-  THESIS,
-  COURSE,
-}
-
-interface NewsTargetInfo {
-  type: TargetInfoType.NEWS;
-}
-
-interface ThesisTargetInfo {
-  type: TargetInfoType.THESIS;
-}
-
-interface CourseTargetInfo {
-  type: TargetInfoType.COURSE;
-  courseId: string;
-}
-
 export type TargetInfo = NewsTargetInfo | ThesisTargetInfo | CourseTargetInfo;
+
+export class NewsTargetInfo {}
+export class ThesisTargetInfo {}
+export class CourseTargetInfo {
+  constructor(public courseId: string) {}
+}
 
 export interface NotificationJson {
   id: string;
