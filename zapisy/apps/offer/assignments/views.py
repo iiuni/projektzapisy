@@ -208,7 +208,7 @@ def create_assignments_sheet(request):
     except KeyError as error:
         messages.error(
             request, f"""<p>
-            Nieznane ID propozycji przedmiotu.</p>
+            Nieznane ID propozycji przedmiotu. Nie wprowadzono zmian w arkuszach.</p>
             {error}""")
         return redirect(reverse('assignments-wizard'))
     all_groups = list(flatten(current_assignments.values())) + suggested_groups
