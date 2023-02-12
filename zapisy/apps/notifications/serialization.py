@@ -27,13 +27,20 @@ class JsonNotificationSerializer(NotificationSerializer):
         # standard library we need to process it manually
         json_friendly_issued_on = notification.issued_on.strftime(
             self.DATE_TIME_FORMAT)
-        return json.dumps({
+
+        notification_dict = {
             'id': notification.id,
             'issued_on': json_friendly_issued_on,
             'description_id': notification.description_id,
             'description_args': notification.description_args,
             'target': notification.target,
-        }, sort_keys=True, indent=None)
+        }
+
+        # for legacy reasons target_info should be included only if not empty
+        if notification.target_info:
+            notification_dict['target_info'] = notification.target_info
+
+        return json.dumps(notification_dict, sort_keys=True, indent=None)
 
     def deserialize(self, serialized: str) -> Notification:
         notification_as_dict = json.loads(serialized)

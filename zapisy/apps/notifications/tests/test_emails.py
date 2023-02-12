@@ -6,7 +6,7 @@ from django.utils.html import strip_tags
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.tests.factories import GroupFactory
 from apps.notifications.custom_signals import teacher_changed
-from apps.notifications.datatypes import CourseNotificationType
+from apps.notifications.datatypes import NotificationType
 from apps.notifications.utils import render_description
 from apps.users.tests.factories import EmployeeFactory
 
@@ -23,7 +23,7 @@ class NotificationsEmailTestCase(TestCase):
         ctx = {
             'content':
             render_description(
-                CourseNotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
+                NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
                     "course_name": group.course.name
                 }),
             'greeting':
