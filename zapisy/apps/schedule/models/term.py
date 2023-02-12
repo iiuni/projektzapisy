@@ -249,13 +249,7 @@ def create_terms(course_term: CourseTerm):
 
 @receiver(models.signals.pre_delete, sender=CourseTerm)
 def sync_course_term_delete(**kwargs):
-    """Deletes all Terms associated with a CourseTerm when it is deleted.
-
-    When deleting Terms, this function uses the following invariant:
-    The day, start time and end time of Terms associated with a CourseTerm
-    correspond to its day of week, start time and end time currently stored
-    in the database.
-    """
+    """Deletes all Terms associated with a CourseTerm when it is deleted."""
     # the current version of the CourseTerm, possibly with unsaved changes
     instance_curr: CourseTerm = kwargs['instance']
     if instance_curr.pk:
@@ -270,13 +264,9 @@ def sync_course_term_save(**kwargs):
 
     If the CourseTerm is already in the database, all Terms associated with it
     are deleted and new ones (with updated fields) are created.
-    When deleting Terms, this function uses the following invariant:
-    The day, start time and end time of Terms associated with a CourseTerm
-    correspond to its day of week, start time and end time currently stored
-    in the database.
-    The newly created Terms may temporarily violate the invariant, because
-    this function is called before the CourseTerm is actually saved.
-    The invariant is thus preserved across calls to save() but not inside them.
+    The Terms are created using the attributes of instance_curr, because these
+    attributes are about to be saved to the database (this is a pre_save
+    signal receiver).
     """
     # the current version of the CourseTerm, possibly with unsaved changes
     # that are about to be saved
@@ -296,13 +286,15 @@ def sync_course_term_m2m(**kwargs):
     If a classroom has been removed from the set, Terms taking place in it
     will not be recreated. If a classroom has been added to the set, new Terms
     taking place in it will be created.
-    When deleting Terms, this function uses the following invariant:
-    The day, start time and end time of Terms associated with a CourseTerm
-    correspond to its day of week, start time and end time currently stored
-    in the database.
-    The invariant is preserved after creating new Terms, because the day,
-    start time and end time of the newly created Terms correspond to the
-    CourseTerm's day of week, start time and end time stored in the database.
+    As opposed to sync_course_term_save, the Terms are not created using the
+    attributes of instance_curr. This is because some of these attributes
+    (day, start time and end time) might not have been saved to the database
+    and may not ultimately be saved (this is not a pre_save signal receiver).
+    However, the set of classrooms is up to date for both instance_curr and
+    instance_db (this is a m2m_changed signal receiver for post_* actions only).
+    Thus create_terms(instance_db) has access to an updated set of classrooms.
+    When the attributes of instance_curr are saved, the sync_course_term_save
+    signal receiver will update the Terms created by this function accordingly.
     """
     if kwargs['action'].startswith('post_'):
         # the current version of the CourseTerm, possibly with unsaved changes
@@ -310,5 +302,4 @@ def sync_course_term_m2m(**kwargs):
         # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
         delete_terms(instance_db)
-        # calling create_terms with instance_curr could violate the invariant
         create_terms(instance_db)
