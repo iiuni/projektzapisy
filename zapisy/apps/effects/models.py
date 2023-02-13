@@ -31,10 +31,11 @@ class CompletedCourses(models.Model):
         return done_effects
 
     @staticmethod
-    def get_count_and_ects_by_types_and_tags(
+    def get_count_and_ects(
         student: Student,
         course_types: Iterable[CourseType] = None,
-        course_tags: Iterable[CourseTag] = None
+        course_tags: Iterable[CourseTag] = None,
+        course_languages: Iterable[str] = None,
     ) -> Tuple[int, int]:
         """Returns count and sum of ects of completed courses that meet given requirements.
 
@@ -48,15 +49,18 @@ class CompletedCourses(models.Model):
             course_types = CourseType.objects.all()
         if course_tags is None:
             course_tags = CourseTag.objects.all()
+        if course_languages is None:
+            course_languages = set([course.language for course in CourseInstance.objects.all()])
 
         # TODO: Add filtering by course tags
         completed_courses = CompletedCourses.objects.filter(
             student=student,
             program=student.program,
             course__course_type__in=course_types,
+            course__language__in=course_languages,
         )
 
-        count = len(completed_courses)
+        count = completed_courses.count()
         ects = sum([record.course.points for record in completed_courses])
 
         return count, ects
