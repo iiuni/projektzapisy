@@ -21,6 +21,27 @@ class NotificationTargetType(str, Enum):
     THESIS = 'thesis'
 
 
+class TargetInfo:
+    def __init__(self, target_type: NotificationTargetType):
+        self.type = target_type
+
+
+class CourseTargetInfo(TargetInfo):
+    def __init__(self, course_id: str):
+        super().__init__(NotificationTargetType.COURSE)
+        self.course_id = course_id
+
+
+class NewsTargetInfo(TargetInfo):
+    def __init__(self):
+        super().__init__(NotificationTargetType.NEWS)
+
+
+class ThesisTargetInfo(TargetInfo):
+    def __init__(self):
+        super().__init__(NotificationTargetType.THESIS)
+
+
 class Notification:
 
     def __init__(self, id: str, issued_on: datetime,
