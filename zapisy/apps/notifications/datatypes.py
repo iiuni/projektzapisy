@@ -47,7 +47,7 @@ class Notification:
     def __init__(self, id: str, issued_on: datetime,
                  description_id: NotificationType,
                  description_args: Dict, target: str = "#",
-                 target_info: Dict = {}):
+                 target_info: TargetInfo = None):
         self.id = id
         self.issued_on = issued_on
         self.description_id = description_id
