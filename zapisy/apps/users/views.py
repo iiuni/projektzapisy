@@ -184,7 +184,7 @@ def my_profile(request):
             'group__teacher__user').prefetch_related('group__term', 'group__term__classrooms')
         groups_times = []
         got: GroupOpeningTimes
-        if student.program and is_ii_program(student.program.name):
+        if student.program and student.program.is_ii_program:
             for got in groups_opening_times:
                 group: Group = got.group
                 group.opening_time = got.time
@@ -226,15 +226,3 @@ def personal_data_consent(request):
                                                          defaults={'granted': False})
             messages.success(request, 'Brak zgody zapisany')
     return redirect(request.META.get('HTTP_REFERER'))
-
-
-def is_ii_program(program: str) -> bool:
-    ii_programs = {
-        'Informatyka, dzienne I stopnia',
-        'ISIM, dzienne I stopnia',
-        'Informatyka, dzienne I stopnia inżynierskie',
-        'Informatyka, dzienne II stopnia',
-        'Informatyka, dzienne II stopnia inżynierskie',
-        'Informatyka, dzienne III stopnia',
-    }
-    return program in ii_programs

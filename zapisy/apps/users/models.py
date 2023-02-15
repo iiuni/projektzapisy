@@ -41,6 +41,7 @@ class Employee(models.Model):
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
+
     get_full_name.short_description = 'Użytkownik'
 
     @staticmethod
@@ -103,6 +104,7 @@ class Student(models.Model):
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
+
     get_full_name.short_description = 'Użytkownik'
 
     @classmethod
@@ -118,6 +120,7 @@ class Student(models.Model):
 
 class Program(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
+    is_ii_program = models.BooleanField(default=False, unique=True, verbose_name="Is institute program")
 
     class Meta:
         verbose_name: str = 'Program studiów'
