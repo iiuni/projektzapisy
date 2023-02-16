@@ -12,7 +12,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated)
+                                               thesis_voting_activated, event_decision)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -177,8 +177,10 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
         }, target))
 
 
-def notify_that_event_has_been_decided(event) -> None:
-    target = reverse('schedule:show', args=[event.id])
+@receiver(event_decision, sender=None)
+def notify_event_creator_about_decision(sender: None, **kwargs) -> None:
+    event = kwargs['event']
+    target = reverse('events:show', args=[event.id])
     if event.status == event.STATUS_ACCEPTED:
         notification_type = NotificationType.EVENT_HAS_BEEN_ACCEPTED
     else:
