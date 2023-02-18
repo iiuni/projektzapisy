@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import Dict, List
+import math
 
 import bokeh.embed
 import bokeh.models.sources
@@ -178,12 +179,34 @@ class PollSummarizedResultsEntry:
             )
 
             plot.hbar(y='choices', right='values', source=source, height=0.8)
+
+            ticker_interval, last_tick = self._calculate_ticker_properties(
+                base=10, mantissas=[1, 2, 5], max_num_of_ticks=6
+            )
+
             plot.x_range.start = 0
-            plot.axis.minor_tick_line_color = None
+            plot.x_range.end = max(1, last_tick)
+            plot.xaxis.ticker = bokeh.models.tickers.SingleIntervalTicker(
+                interval=ticker_interval, num_minor_ticks=0
+            )
 
             self._components = bokeh.embed.components(plot)
 
         return self._components
+
+    def _calculate_ticker_properties(self, base, mantissas, max_num_of_ticks):
+        max_choice = max(self._choices_occurences)
+
+        index = 0
+        interval = 0
+        while max_choice > (max_num_of_ticks - 1) * interval:
+            mantissa = mantissas[index % len(mantissas)]
+            base_power = index // len(mantissas)
+            interval = mantissa * base ** base_power
+            index += 1
+
+        last_tick = interval * math.ceil(max_choice / max(1, interval))
+        return interval, last_tick
 
 
 class PollSummarizedResults:
