@@ -26,6 +26,20 @@ class SemesterSerializer(serializers.ModelSerializer):
         return obj.get_name()
 
 
+class SemesterRelatedField(serializers.RelatedField):
+    def display_value(self, instance):
+        return instance
+
+    def to_representation(self, value):
+        return value.usos_kod
+
+    def to_internal_value(self, data):
+        try:
+            return Semester.objects.get(usos_kod=data)
+        except Semester.DoesNotExist:
+            raise serializers.ValidationError("Semestr o podanym usos_kod nie istnieje.")
+
+
 class CourseSerializer(serializers.ModelSerializer):
     """Serializer for CourseInstance class.
 
@@ -33,6 +47,7 @@ class CourseSerializer(serializers.ModelSerializer):
     """
     course_type = serializers.SerializerMethodField()
     usos_kod = serializers.CharField(max_length=20, read_only=False)
+    semester = SemesterRelatedField(queryset=Semester.objects.all())
 
     class Meta:
         model = CourseInstance
@@ -254,9 +269,22 @@ class CompletedCoursesSerializer(serializers.ModelSerializer):
     instead of internal django ids while also validating the input
     """
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
-    course = CourseRelatedField(queryset=CourseInstance.objects.all())
     program = ProgramRelatedField(queryset=Program.objects.all())
+    course = CourseSerializer()
+
+    @transaction.atomic
+    def create(self, validated_data):
+        course_data = validated_data.pop('course')
+        course_usos_kod = course_data['usos_kod']
+        semester__usos_kod = course_data['semester'].usos_kod
+        try:
+            course_instance = CourseInstance.objects.get(
+                usos_kod=course_usos_kod, semester__usos_kod=semester__usos_kod)
+        except CourseInstance.DoesNotExist:
+            raise serializers.ValidationError(
+                "Kurs o podanym usos_kod nie istnieje lub nie występuje w wybranym semestrze.")
+        return CompletedCourses.objects.create(course=course_instance, **validated_data)
 
     class Meta:
         model = CompletedCourses
-        fields = ('id', 'student', 'course', 'program')
+        fields = ('id', 'student', 'program', 'course')
