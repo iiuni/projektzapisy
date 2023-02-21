@@ -106,14 +106,14 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, max_choices_occurrence, choices=None):
+    def __init__(self, question, field_type, max_choices_occurence, choices=None):
         self.question = question
         self._answers = []
         self._choices = choices
         self._choices_occurences = [0] * len(choices) if choices else []
         self._components = None
         self.field_type = field_type
-        self._max_choices_occurrence = max_choices_occurrence
+        self._max_choices_occurence = max_choices_occurence
 
     @property
     def field_choices(self):
@@ -137,13 +137,13 @@ class PollSummarizedResultsEntry:
         if self.field_type == 'radio' and answer in self._choices:
             choice_index = self._choices.index(answer)
             self._choices_occurences[choice_index] += 1
-            self._max_choices_occurrence.maybe_update(self._choices_occurences[choice_index])
+            self._max_choices_occurence.maybe_update(self._choices_occurences[choice_index])
         if self.field_type == 'checkbox':
             # Multiple-choice question will have a list of selected answers.
             for a in answer:
                 choice_index = self._choices.index(a)
                 self._choices_occurences[choice_index] += 1
-                self._max_choices_occurrence.maybe_update(self._choices_occurences[choice_index])
+                self._max_choices_occurence.maybe_update(self._choices_occurences[choice_index])
         self._answers.append(answer)
 
     @property
@@ -183,7 +183,7 @@ class PollSummarizedResultsEntry:
 
             plot.hbar(y='choices', right='values', source=source, height=0.8)
 
-            ticker_interval, last_tick = self._max_choices_occurrence.calculate_ticker_properties(
+            ticker_interval, last_tick = self._max_choices_occurence.calculate_ticker_properties(
                 base=10, mantissas=[1, 2, 5], max_num_of_ticks=6
             )
 
@@ -209,7 +209,7 @@ class PollSummarizedResults:
         self._questions = []
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
-        self._max_choices_occurrence = PollMaxChoicesOccurrence()
+        self._max_choices_occurence = PollMaxChoicesOccurence()
 
     def add_entry(self, question, field_type, answer, choices=None):
         if question in self._questions:
@@ -219,7 +219,7 @@ class PollSummarizedResults:
         else:
             new_entry = PollSummarizedResultsEntry(
                 question=question, field_type=field_type, choices=choices,
-                max_choices_occurrence=self._max_choices_occurrence
+                max_choices_occurence=self._max_choices_occurence
             )
             new_entry.add_answer(answer)
             self._entries.append(new_entry)
@@ -233,23 +233,23 @@ class PollSummarizedResults:
         return self._entries
 
 
-class PollMaxChoicesOccurrence:
-    """Keeps track of the largest choices occurrence in the summary results view of the Poll."""
+class PollMaxChoicesOccurence:
+    """Keeps track of the largest choices occurence in the summary results view of the Poll."""
     def __init__(self):
-        self._max_choices_occurrence = 0
+        self._max_choices_occurence = 0
 
     def maybe_update(self, maybe_max):
-        if maybe_max > self._max_choices_occurrence:
-            self._max_choices_occurrence = maybe_max
+        if maybe_max > self._max_choices_occurence:
+            self._max_choices_occurence = maybe_max
 
     def calculate_ticker_properties(self, base, mantissas, max_num_of_ticks):
         index = 0
         interval = 0
-        while self._max_choices_occurrence > (max_num_of_ticks - 1) * interval:
+        while self._max_choices_occurence > (max_num_of_ticks - 1) * interval:
             mantissa = mantissas[index % len(mantissas)]
             base_power = index // len(mantissas)
             interval = mantissa * base ** base_power
             index += 1
 
-        last_tick = interval * math.ceil(self._max_choices_occurrence / max(1, interval))
+        last_tick = interval * math.ceil(self._max_choices_occurence / max(1, interval))
         return interval, last_tick
