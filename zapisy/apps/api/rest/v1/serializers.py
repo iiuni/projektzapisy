@@ -233,20 +233,6 @@ class RecordSerializer(serializers.ModelSerializer):
         fields = ('id', 'group', 'student')
 
 
-class CourseRelatedField(serializers.RelatedField):
-    def display_value(self, instance):
-        return instance
-
-    def to_representation(self, value):
-        return value.usos_kod
-
-    def to_internal_value(self, data):
-        try:
-            return CourseInstance.objects.get(usos_kod=data)
-        except CourseInstance.DoesNotExist:
-            raise serializers.ValidationError("Kurs o podanym usos_kod nie istnieje.")
-
-
 class StudentRelatedField(serializers.RelatedField):
     def display_value(self, instance):
         return instance
@@ -262,12 +248,7 @@ class StudentRelatedField(serializers.RelatedField):
 
 
 class CompletedCoursesSerializer(serializers.ModelSerializer):
-    """Serializes a CompletedCourses record.
-
-    StudentRelatedField and CourseRelatedField enable the API to use
-    usos_id and usos_kod to represent student and course fields in CompletedCourses
-    instead of internal django ids while also validating the input
-    """
+    """Serializes a CompletedCourses record."""
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
     program = ProgramRelatedField(queryset=Program.objects.all())
     course = CourseSerializer()
