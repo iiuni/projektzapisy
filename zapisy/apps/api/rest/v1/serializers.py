@@ -47,14 +47,13 @@ class CourseSerializer(serializers.ModelSerializer):
     """
     course_type = serializers.SerializerMethodField()
     usos_kod = serializers.CharField(max_length=20, read_only=False)
-    semester = SemesterRelatedField(queryset=Semester.objects.all())
 
     class Meta:
         model = CourseInstance
         fields = ('id', 'name', 'short_name', 'points', 'has_exam', 'description', 'language',
                   'semester', 'course_type', 'usos_kod')
         read_only_fields = ('id', 'name', 'short_name', 'points', 'has_exam', 'description',
-                            'language', 'semester', 'course_type')
+                            'language', 'course_type')
 
     def get_course_type(self, obj):
         if obj.course_type is None:
