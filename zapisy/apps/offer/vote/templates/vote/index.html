@@ -49,9 +49,9 @@
     {% if user.student %}
         <div class="row my-2">
         {% if is_vote_active %}
-            <a href="{% url 'vote' %}" class="btn btn-block btn-primary btn-lg">Głosuj</a>
+            <a href="{% url 'vote' %}" class="btn btn-block btn-info btn-lg">Głosuj</a>
         {% else %}
-            <button class="btn btn-block btn-lg btn-primary" disabled>Głosowanie nie jest aktywne</button>
+            <button class="btn btn-block btn-lg btn-info" disabled>Głosowanie nie jest aktywne</button>
         {% endif %}
         </div>
     {% endif %}

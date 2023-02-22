@@ -35,7 +35,7 @@
             {% endif %}
             {% if can_edit_thesis %}
                 <div class="d-inline-block mb-3 me-1">
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'theses:edit_thesis' thesis.id %}">
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'theses:edit_thesis' thesis.id %}">
                         {% if save_and_verify %}
                             Edytuj i prześlij do komisji
                         {% else %}
