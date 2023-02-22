@@ -26,20 +26,6 @@ class SemesterSerializer(serializers.ModelSerializer):
         return obj.get_name()
 
 
-class SemesterRelatedField(serializers.RelatedField):
-    def display_value(self, instance):
-        return instance
-
-    def to_representation(self, value):
-        return value.usos_kod
-
-    def to_internal_value(self, data):
-        try:
-            return Semester.objects.get(usos_kod=data)
-        except Semester.DoesNotExist:
-            raise serializers.ValidationError("Semestr o podanym usos_kod nie istnieje.")
-
-
 class CourseSerializer(serializers.ModelSerializer):
     """Serializer for CourseInstance class.
 
