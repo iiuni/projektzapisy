@@ -33,25 +33,27 @@ class ThesisFormBase(forms.ModelForm):
         model = Thesis
         fields = '__all__'
 
-    title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN, widget = forms.Select(attrs={'class':'form-select my-2'}))
+    title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN,
+                            widget=forms.Select(attrs={'class': 'form-select my-2'}))
     advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                      label="Promotor",
                                      required=True,
                                      empty_label=None,
-                                     widget = forms.Select(attrs={'class':'form-select my-2'}))
+                                     widget=forms.Select(attrs={'class': 'form-select my-2'}))
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                                 label="Promotor wspierający",
                                                 required=False,
-                                                widget = forms.Select(attrs={'class':'form-select my-2'}))
-    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int, widget = forms.Select(attrs={'class':'form-select my-2'}))
+                                                widget=forms.Select(attrs={'class': 'form-select my-2'}))
+    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int,
+                                  widget=forms.Select(attrs={'class': 'form-select my-2'}))
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
-        widget=forms.SelectMultiple(attrs={'size': '10', 'class' : 'form-select my-2'}))
+        widget=forms.SelectMultiple(attrs={'size': '10', 'class': 'form-select my-2'}))
     reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
                                      "uzupełnij również datę rezerwacji.",
-                                     widget=forms.TextInput(attrs={'type': 'date', 'class' : 'form-select my-2'}),
+                                     widget=forms.TextInput(attrs={'type': 'date', 'class': 'form-select my-2'}),
                                      label="Zarezerwowana do",
                                      required=False)
     description = forms.CharField(
@@ -59,7 +61,7 @@ class ThesisFormBase(forms.ModelForm):
     max_number_of_students = forms.TypedChoiceField(
         label="Maks. liczba studentów", coerce=int,
         choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1)),
-        widget = forms.Select(attrs={'class':'form-select my-2'})
+        widget=forms.Select(attrs={'class': 'form-select my-2'})
     )
 
     def __init__(self, user, *args, **kwargs):
