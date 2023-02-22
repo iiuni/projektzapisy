@@ -152,7 +152,7 @@
                             Wiadomość zostanie również wysłana e-mailem.
                         </small>
                         <textarea rows="10" name="message" id="id_mod_message" required="required"
-                            class="form-control" cols="40"></textarea>
+                            class="form-control my-2" cols="40"></textarea>
 
                     </div>
                     <button type="submit" class="btn btn-success">Wyślij</button>
@@ -199,9 +199,11 @@
                                 </button>
                             {% endif %}
                             <button type="submit" value='2' name="status" class="btn btn-danger" {% if event.status == '2' %}disabled{% endif %}>Odrzuć</button>
-                            <small class="form-text text-muted">
-                                Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
-                            </small>
+                            <div>
+                                <small class="form-text text-muted">
+                                    Informacja o decyzji trafi na adres e-mail osoby zgłaszającej.
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </fieldset>

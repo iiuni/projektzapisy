@@ -1,6 +1,6 @@
 <template>
   <div
-    class="md-editor-wrapper form-control"
+    class="md-editor-wrapper my-2 form-control"
     :class="{ 'is-invalid': is_invalid }"
   >
     <textarea
@@ -81,6 +81,8 @@ export default {
   justify-content: space-between;
   padding: 0;
   height: auto;
+  margin-top: 0.5rem !important; 
+  margin-bottom: 0.5rem !important;
 
   @media (max-width: 767px) {
     flex-direction: column;

@@ -127,6 +127,11 @@ class EventForm(forms.ModelForm):
         super(EventForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.fields['title'].widget.attrs['class'] = 'my-2'
+        self.fields['description'].widget.attrs['class'] = 'my-2'
+        self.fields['type'].widget.attrs['class'] = 'my-2'
+        self.fields['visible'].widget.attrs['class'] = 'my-2'
+        self.fields['course'].widget.attrs['class'] = 'my-2'
 
         if not self.instance.pk:
             self.instance.author = user
@@ -164,11 +169,19 @@ class EventModerationMessageForm(forms.ModelForm):
         model = EventModerationMessage
         fields = ('message', )
 
+    def __init__(self, user, *args, **kwargs):
+        super(EventModerationMessageForm, self).__init__(*args, **kwargs)
+        self.fields['message'].widget.attrs['class'] = 'my-2'
+
 
 class EventMessageForm(forms.ModelForm):
     class Meta:
         model = EventMessage
         fields = ('message', )
+    
+    def __init__(self, user, *args, **kwargs):
+        super(EventMessageForm, self).__init__(*args, **kwargs)
+        self.fields['message'].widget.attrs['class'] = 'my-2'
 
 
 class DecisionForm(forms.ModelForm):
