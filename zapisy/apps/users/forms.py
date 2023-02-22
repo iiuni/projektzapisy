@@ -20,3 +20,10 @@ class EmployeeDataForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ('title', 'room', 'homepage', 'consultations',)
+
+    def __init__(self, *args, **kwargs):
+        super(EmployeeDataForm, self).__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs['class'] = 'my-2'
+        self.fields['room'].widget.attrs['class'] = 'my-2'
+        self.fields['homepage'].widget.attrs['class'] = 'my-2'
+        self.fields['consultations'].widget.attrs['class'] = 'my-2'

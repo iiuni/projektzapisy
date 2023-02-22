@@ -83,6 +83,32 @@ class EditProposalForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.helper = ProposalFormHelper()
+        self.fields['name'].widget.attrs['class'] = 'my-2'
+        self.fields['name_en'].widget.attrs['class'] = 'my-2'
+        self.fields['short_name'].widget.attrs['class'] = 'my-2'
+        self.fields['language'].widget.attrs['class'] = 'my-2'
+        self.fields['semester'].widget.attrs['class'] = 'my-2'
+        self.fields['course_type'].widget.attrs['class'] = 'my-2'
+        self.fields['has_exam'].widget.attrs['class'] = 'my-2'
+        self.fields['recommended_for_first_year'].widget.attrs['class'] = 'my-2'
+        self.fields['description'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_lecture'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_exercise'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_lab'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_exercise_lab'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_seminar'].widget.attrs['class'] = 'my-2'
+        self.fields['hours_recap'].widget.attrs['class'] = 'my-2'
+        self.fields['points'].widget.attrs['class'] = 'my-2'
+        self.fields['status'].widget.attrs['class'] = 'my-2'
+        self.fields['teaching_methods'].widget.attrs['class'] = 'my-2'
+        self.fields['preconditions'].widget.attrs['class'] = 'my-2'
+        self.fields['objectives'].widget.attrs['class'] = 'my-2'
+        self.fields['contents'].widget.attrs['class'] = 'my-2'
+        self.fields['teaching_effects'].widget.attrs['class'] = 'my-2'
+        self.fields['literature'].widget.attrs['class'] = 'my-2'
+        self.fields['verification_methods'].widget.attrs['class'] = 'my-2'
+        self.fields['passing_means'].widget.attrs['class'] = 'my-2'
+        self.fields['student_labour'].widget.attrs['class'] = 'my-2'
 
         # Populate initial values from dictionary.
         for k, val in self.Meta.initial_values.items():
