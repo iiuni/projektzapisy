@@ -178,7 +178,7 @@ class EventMessageForm(forms.ModelForm):
     class Meta:
         model = EventMessage
         fields = ('message', )
-    
+
     def __init__(self, user, *args, **kwargs):
         super(EventMessageForm, self).__init__(*args, **kwargs)
         self.fields['message'].widget.attrs['class'] = 'my-2'
