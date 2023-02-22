@@ -256,10 +256,10 @@ class CompletedCoursesSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         course_data = validated_data.pop('course')
         course_usos_kod = course_data['usos_kod']
-        semester__usos_kod = course_data['semester'].usos_kod
+        semester__id = course_data['semester'].id
         try:
             course_instance = CourseInstance.objects.get(
-                usos_kod=course_usos_kod, semester__usos_kod=semester__usos_kod)
+                usos_kod=course_usos_kod, semester__id=semester__id)
         except CourseInstance.DoesNotExist:
             raise serializers.ValidationError(
                 "Kurs o podanym usos_kod nie istnieje lub nie występuje w wybranym semestrze.")

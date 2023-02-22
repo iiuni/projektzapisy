@@ -25,6 +25,7 @@ class WrapperTests(APILiveServerTestCase):
     django models. So if you have changed some django model and seeing
     below tests failing, it may be the case.
     """
+
     def setUp(self):
         # we ca't use patch decorador
         # because it wouldn't patch inside of setUp method.
@@ -298,14 +299,16 @@ class WrapperTests(APILiveServerTestCase):
         student = StudentFactory(usos_id=222)
         course_instance = CourseInstanceFactory(usos_kod="555")
         program = Program.objects.create(name="Informatyka, dzienne I stopnia inżynierskie")
-
         completed_course_id = self.wrapper.create_completed_course(
-            student.usos_id, course_instance.usos_kod, program.name
+            student.usos_id, course_instance.name, course_instance.short_name, course_instance.points,
+            course_instance.has_exam, course_instance.description, course_instance.language, course_instance.semester.id,
+            course_instance.course_type.short_name, course_instance.usos_kod, program.name
         )
         completed_course = self.wrapper.completed_course(completed_course_id)
 
         self.assertEqual(student.usos_id, completed_course.student)
-        self.assertEqual(course_instance.usos_kod, completed_course.course)
+        self.assertEqual(course_instance.usos_kod, completed_course.course.usos_kod)
+        self.assertEqual(course_instance.semester.id, completed_course.course.semester)
         self.assertEqual(program.name, completed_course.program)
 
     def test_change_program(self):

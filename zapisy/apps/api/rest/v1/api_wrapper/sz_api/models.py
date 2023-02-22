@@ -187,4 +187,5 @@ class CompletedCourse(Model):
 
     @auto_assign
     def __init__(self, id, student, course, program):
+        self.course = CourseInstance.from_dict(course)
         pass
