@@ -88,10 +88,10 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     var date = $(".active-term").find(".form-day").val();
 
     // Workaround till proper waiting till the date select is populated with data is implemented
-    if (date === undefined)
-    {
+    if (date === undefined) {
       let today = new Date();
-      date = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDay();
+      date =
+        today.getFullYear() + "-" + today.getMonth() + "-" + today.getDay();
     }
 
     if (date === "") {
