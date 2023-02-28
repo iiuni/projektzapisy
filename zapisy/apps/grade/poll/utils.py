@@ -160,11 +160,19 @@ class PollSummarizedResultsEntry:
             used for embedding plots in the template.
         """
         if not self._components:
-            answers = len(self._answers)
-            percents = []
-            for occurences in self._choices_occurences:
-                percent = 100 * occurences / max(1, answers)
-                percents.append(f"{percent:.1f}")
+            source_data = dict(choices=self._choices, values=self._choices_occurences)
+
+            answers_length = len(self._answers)
+            if answers_length == 0:
+                tooltips = "@values"
+            else:
+                tooltips = "@percents% (@values)"
+                percents = []
+                for occurences in self._choices_occurences:
+                    percent = 100 * occurences / answers_length
+                    integer, decimal = f"{percent:.1f}".split('.')
+                    percents.append(f"{integer},{decimal}")
+                source_data['percents'] = percents
 
             plot = bokeh.plotting.figure(
                 y_range=self._choices,
@@ -172,15 +180,10 @@ class PollSummarizedResultsEntry:
                 plot_height=250,
                 toolbar_location=None,
                 tools='',
-                tooltips="@percents% (@values)"
+                tooltips=tooltips
             )
 
-            source = bokeh.models.sources.ColumnDataSource(
-                data=dict(
-                    choices=self._choices, values=self._choices_occurences, percents=percents
-                )
-            )
-
+            source = bokeh.models.sources.ColumnDataSource(data=source_data)
             plot.hbar(y='choices', right='values', source=source, height=0.8)
 
             ticker_interval, last_tick = self._max_choices_occurence.calculate_ticker_properties(
