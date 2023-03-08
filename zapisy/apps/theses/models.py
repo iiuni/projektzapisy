@@ -134,6 +134,10 @@ class Thesis(models.Model):
         return self.reserved_until and date.today() <= self.reserved_until
 
     @property
+    def is_available(self):
+        return self.has_no_students_assigned
+
+    @property
     def has_been_accepted(self):
         return self.status != ThesisStatus.RETURNED_FOR_CORRECTIONS and self.status != ThesisStatus.BEING_EVALUATED
 
