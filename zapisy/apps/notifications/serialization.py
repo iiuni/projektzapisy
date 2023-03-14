@@ -2,9 +2,10 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict
+from enum import Enum
 
 from apps.notifications.datatypes import (
-    Notification, TargetInfo, NotificationTargetType, NewsTargetInfo,
+    Notification, TargetInfo, NewsTargetInfo,
     CourseTargetInfo, ThesisTargetInfo
 )
 
@@ -60,18 +61,33 @@ class JsonNotificationSerializer(NotificationSerializer):
         return Notification(**notification_as_dict)
 
 
+class TargetTypes(str, Enum):
+    NEWS = 'news'
+    COURSE = 'course'
+    THESIS = 'thesis'
+
+
 class DictTargetInfoSerializer:
 
     def serialize(self, target_info: TargetInfo) -> Dict:
-        return vars(target_info)
+        target_info_as_dict = vars(target_info)
+        if isinstance(target_info, NewsTargetInfo):
+            target_info_as_dict['type'] = TargetTypes.NEWS
+        elif isinstance(target_info, CourseTargetInfo):
+            target_info_as_dict['type'] = TargetTypes.COURSE
+        elif isinstance(target_info, ThesisTargetInfo):
+            target_info_as_dict['type'] = TargetTypes.THESIS
+        else:
+            raise TypeError("Unknown type of TargetInfo")
+        return target_info_as_dict
 
     def deserialize(sefl, target_info_as_dict: Dict) -> TargetInfo:
         target_type = target_info_as_dict['type']
-        if target_type == NotificationTargetType.NEWS:
+        if target_type == TargetTypes.NEWS:
             return NewsTargetInfo()
-        elif target_type == NotificationTargetType.COURSE:
+        elif target_type == TargetTypes.COURSE:
             return CourseTargetInfo(target_info_as_dict['course_id'])
-        elif target_type == NotificationTargetType.THESIS:
+        elif target_type == TargetTypes.THESIS:
             return ThesisTargetInfo()
         else:
-            return None
+            raise TypeError("Unknown type of TargetInfo")

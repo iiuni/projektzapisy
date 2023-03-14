@@ -15,31 +15,25 @@ class NotificationType(str, Enum):
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
 
 
-class NotificationTargetType(str, Enum):
-    NEWS = 'news'
-    COURSE = 'course'
-    THESIS = 'thesis'
-
-
 class TargetInfo:
-    def __init__(self, target_type: NotificationTargetType):
-        self.type = target_type
+    def __init__(self):
+        pass
 
 
 class CourseTargetInfo(TargetInfo):
     def __init__(self, course_id: str):
-        super().__init__(NotificationTargetType.COURSE)
+        super().__init__()
         self.course_id = course_id
 
 
 class NewsTargetInfo(TargetInfo):
     def __init__(self):
-        super().__init__(NotificationTargetType.NEWS)
+        super().__init__()
 
 
 class ThesisTargetInfo(TargetInfo):
     def __init__(self):
-        super().__init__(NotificationTargetType.THESIS)
+        super().__init__()
 
 
 class Notification:
