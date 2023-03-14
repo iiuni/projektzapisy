@@ -19,11 +19,6 @@ class DesiderataOtherForm(forms.ModelForm):
         model = DesiderataOther
         fields = ('comment', )
 
-    def __init__(self, *args, **kwargs):
-        super(DesiderataOtherForm, self).__init__(*args, **kwargs)
-        self.fields['comment'].widget.attrs['class'] = 'my-2'
-
-
 class DesiderataForm(forms.Form):
     day = forms.CharField(widget=forms.HiddenInput)
     hour = forms.IntegerField(widget=forms.HiddenInput)

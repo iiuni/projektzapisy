@@ -12,19 +12,18 @@ BOOLEAN_CHOICES = [(True, "Tak"),
 
 class EventFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(field_name='title',
-                                      lookup_expr='icontains',
-                                      widget=forms.TextInput(attrs={'class': 'my-2'}))
+                                      lookup_expr='icontains')
     type = django_filters.ChoiceFilter(choices=Event.TYPES,
                                        label='Typ',
                                        empty_label="Dowolny",
-                                       widget=forms.Select(attrs={'class': 'form-select my-2'}))
+                                       widget=forms.Select(attrs={'class': 'form-select'}))
     visible = django_filters.ChoiceFilter(choices=BOOLEAN_CHOICES,
                                           empty_label="Dowolne",
-                                          widget=forms.Select(attrs={'class': 'form-select my-2'}))
+                                          widget=forms.Select(attrs={'class': 'form-select'}))
     status = django_filters.ChoiceFilter(choices=Event.STATUSES,
                                          label='Status',
                                          empty_label="Dowolny",
-                                         widget=forms.Select(attrs={'class': 'form-select mt-2 mb-4'}))
+                                         widget=forms.Select(attrs={'class': 'form-select'}))
 
     class Meta:
         model = Event
