@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Union
 from enum import Enum
 
 
@@ -15,25 +15,22 @@ class NotificationType(str, Enum):
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
 
 
-class TargetInfo:
+class CourseTargetInfo():
+    def __init__(self, course_id: str):
+        self.course_id = course_id
+
+
+class NewsTargetInfo():
     def __init__(self):
         pass
 
 
-class CourseTargetInfo(TargetInfo):
-    def __init__(self, course_id: str):
-        super().__init__()
-        self.course_id = course_id
-
-
-class NewsTargetInfo(TargetInfo):
+class ThesisTargetInfo():
     def __init__(self):
-        super().__init__()
+        pass
 
 
-class ThesisTargetInfo(TargetInfo):
-    def __init__(self):
-        super().__init__()
+TargetInfo = Union[CourseTargetInfo, NewsTargetInfo, ThesisTargetInfo]
 
 
 class Notification:
