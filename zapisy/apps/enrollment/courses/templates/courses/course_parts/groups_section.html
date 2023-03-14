@@ -6,7 +6,7 @@
     </h3>
     <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
     {% if class_type in waiting_students %}
-        <span class="badge bg-danger d-inline-block align-text-bottom me-2">
+        <span class="badge bg-danger d-inline-block align-text-bottom ms-2">
             Niezapisanych&mdash;oczekujących
             <span class="badge text-dark bg-light">{{ waiting_students|lookup:class_type }}</span>
         </span>

@@ -19,7 +19,7 @@
 <h2>{% if is_edit %}Edytuj rezerwację{% else %}Nowa rezerwacja{% endif %}</h2>
 <input id="extra-terms-number" class="d-none" value="{{ extra_terms_number }}">
 <form method="POST" class="post-form" id="main-form">
-    <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="me-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="me-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ms-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ms-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
     {% csrf_token %}
     {% crispy form %}
 

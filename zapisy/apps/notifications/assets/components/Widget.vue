@@ -105,7 +105,7 @@ export default class NotificationsComponent extends Vue {
       class="nav-item dropdown btn-group text-center"
     >
       <a
-        class="nav-link dropdown-toggle specialdropdown me-1"
+        class="nav-link dropdown-toggle specialdropdown ms-1"
         href="#"
         id="navbarDropdown"
         role="button"
@@ -125,7 +125,7 @@ export default class NotificationsComponent extends Vue {
         <form class="p-1 place-for-notifications">
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
-              <strong class="mr-auto"></strong>
+              <strong class="me-auto"></strong>
               <small class="text-muted mx-2">{{
                 elem.issuedOn | Moment
               }}</small>
