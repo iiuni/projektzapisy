@@ -210,7 +210,7 @@ class DoorChartForm(forms.Form):
     """Form for generating door event charts."""
     today = date.today().isoformat()
     rooms = forms.MultipleChoiceField()
-    week = forms.CharField(max_length=10, widget=forms.Select())
+    week = forms.CharField(max_length=10, widget=forms.Select(attrs={'class': 'form-select'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
