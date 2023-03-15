@@ -19,6 +19,7 @@ class DesiderataOtherForm(forms.ModelForm):
         model = DesiderataOther
         fields = ('comment', )
 
+
 class DesiderataForm(forms.Form):
     day = forms.CharField(widget=forms.HiddenInput)
     hour = forms.IntegerField(widget=forms.HiddenInput)
