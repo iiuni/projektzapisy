@@ -66,7 +66,7 @@ export default Vue.extend({
           <CheckFilter
             filterKey="available-filter"
             property="is_available"
-            label="Pokaż tylko dostępne tematy"
+            label="Pokaż tylko niezarezerwowane prace"
           />
         </div>
         <div class="col-lg-4">
