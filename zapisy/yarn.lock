@@ -54,26 +54,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.21.0":
-  version: 7.21.0
-  resolution: "@babel/core@npm:7.21.0"
+"@babel/core@npm:7.21.3":
+  version: 7.21.3
+  resolution: "@babel/core@npm:7.21.3"
   dependencies:
     "@ampproject/remapping": ^2.2.0
     "@babel/code-frame": ^7.18.6
-    "@babel/generator": ^7.21.0
+    "@babel/generator": ^7.21.3
     "@babel/helper-compilation-targets": ^7.20.7
-    "@babel/helper-module-transforms": ^7.21.0
+    "@babel/helper-module-transforms": ^7.21.2
     "@babel/helpers": ^7.21.0
-    "@babel/parser": ^7.21.0
+    "@babel/parser": ^7.21.3
     "@babel/template": ^7.20.7
-    "@babel/traverse": ^7.21.0
-    "@babel/types": ^7.21.0
+    "@babel/traverse": ^7.21.3
+    "@babel/types": ^7.21.3
     convert-source-map: ^1.7.0
     debug: ^4.1.0
     gensync: ^1.0.0-beta.2
     json5: ^2.2.2
     semver: ^6.3.0
-  checksum: 40940706ee1ad4672a7674902ea39e86e9e497786bba2c06fea1297147cdb209b3c898af01fa65288e5feb7a081c9c51bf704f986e3be5bc46b4cee812be06fe
+  checksum: 42e3e003aca9fb139c00b5a3f9b8b207932a1f22d865661bf87506c8c4ccfca730b5af5c3d2e48b28c6c6861304c13ba92b98899c98ab060b0ee324caccc83dd
   languageName: node
   linkType: hard
 
@@ -121,7 +121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.21.0, @babel/generator@npm:^7.21.1":
+"@babel/generator@npm:^7.21.1":
   version: 7.21.1
   resolution: "@babel/generator@npm:7.21.1"
   dependencies:
@@ -130,6 +130,18 @@ __metadata:
     "@jridgewell/trace-mapping": ^0.3.17
     jsesc: ^2.5.1
   checksum: 86da188dd1727c624faf8bbba602c5549f787aaf2181ff4196f0e80b065df24fc6614ed3ed93868ce286499c8956ae26742ae5c0808a0a8ddba647f63bb9710e
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.21.3":
+  version: 7.21.3
+  resolution: "@babel/generator@npm:7.21.3"
+  dependencies:
+    "@babel/types": ^7.21.3
+    "@jridgewell/gen-mapping": ^0.3.2
+    "@jridgewell/trace-mapping": ^0.3.17
+    jsesc: ^2.5.1
+  checksum: a034af1b27d1082d7af8cf4fce09663f84c1b584e0c44d7106d2fe90583bb821a0ee92b1197e848d2010d06146adeb4ae5fddf016a4c088b988461bb88705cb9
   languageName: node
   linkType: hard
 
@@ -405,7 +417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-module-transforms@npm:^7.21.0":
+"@babel/helper-module-transforms@npm:^7.21.2":
   version: 7.21.2
   resolution: "@babel/helper-module-transforms@npm:7.21.2"
   dependencies:
@@ -733,12 +745,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.21.0, @babel/parser@npm:^7.21.2":
+"@babel/parser@npm:^7.21.2":
   version: 7.21.2
   resolution: "@babel/parser@npm:7.21.2"
   bin:
     parser: ./bin/babel-parser.js
   checksum: d6fda96955f05db85d76f5baa3b56c08ba1f5c3ea536432b718eae2db8d7a8ea704fbad1c9c0689fe65b1273009813d6d74c1072fe0b8bc1ba80dc0fff442777
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.21.3":
+  version: 7.21.3
+  resolution: "@babel/parser@npm:7.21.3"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: f181c4144cd0870539102a7ddc8d7574b46c190c4f5acda8aa956ce8f8af912a12a84b4428e966ef9968f8db20e4447114bcd0d17c15875b5d7be7f68d048b4a
   languageName: node
   linkType: hard
 
@@ -1754,6 +1775,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/traverse@npm:^7.21.3":
+  version: 7.21.3
+  resolution: "@babel/traverse@npm:7.21.3"
+  dependencies:
+    "@babel/code-frame": ^7.18.6
+    "@babel/generator": ^7.21.3
+    "@babel/helper-environment-visitor": ^7.18.9
+    "@babel/helper-function-name": ^7.21.0
+    "@babel/helper-hoist-variables": ^7.18.6
+    "@babel/helper-split-export-declaration": ^7.18.6
+    "@babel/parser": ^7.21.3
+    "@babel/types": ^7.21.3
+    debug: ^4.1.0
+    globals: ^11.1.0
+  checksum: 86157ce72475ffe0067ec5185d0aa355763e532837659c6cd52341e2bcef40032eee463f74c56fed4a4bc48d022f84fffbc4eaf870422e04e04ceed3c2ea608b
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.10.4, @babel/types@npm:^7.4.4":
   version: 7.11.5
   resolution: "@babel/types@npm:7.11.5"
@@ -1848,6 +1887,17 @@ __metadata:
     "@babel/helper-validator-identifier": ^7.19.1
     to-fast-properties: ^2.0.0
   checksum: 8a81ccb4e9c21cbff7d581c3e9391b8a897fdcaf61f2747cc73b0c56b11d4448078c1cd93022ec349a643664680db46a38f765121e3ce9ca02c7d3a994897791
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.21.3":
+  version: 7.21.3
+  resolution: "@babel/types@npm:7.21.3"
+  dependencies:
+    "@babel/helper-string-parser": ^7.19.4
+    "@babel/helper-validator-identifier": ^7.19.1
+    to-fast-properties: ^2.0.0
+  checksum: f23188df21dbf6e6a41c8994843d8ce91b41fa7dfad856fc2c1caf0c002965253b1a947a1af63b347db4e7f94791c604f4682e3ef9f733573ce9a4b29af75ff0
   languageName: node
   linkType: hard
 
@@ -5385,7 +5435,7 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ii-zapisy@workspace:."
   dependencies:
-    "@babel/core": 7.21.0
+    "@babel/core": 7.21.3
     "@babel/preset-env": 7.20.2
     "@bokeh/bokehjs": 2.4.3
     "@fortawesome/fontawesome-free": 5.15.4
