@@ -5480,7 +5480,7 @@ fsevents@~2.1.2:
     popper.js: 1.16.1
     postcss: 7.0.39
     postcss-loader: 4.3.0
-    prettier: 2.8.4
+    prettier: 2.8.5
     sass: 1.26.10
     sass-loader: 10.4.1
     spicery: 1.1.0
@@ -7421,12 +7421,12 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.4":
-  version: 2.8.4
-  resolution: "prettier@npm:2.8.4"
+"prettier@npm:2.8.5":
+  version: 2.8.5
+  resolution: "prettier@npm:2.8.5"
   bin:
     prettier: bin-prettier.js
-  checksum: 59758930b2ad33f9335c2bb2c154faa2826c230c2bf21e83d6b1ddf07f66c880a0603a8bdf4cc91cbe24b7fcdd7927bcaadbeab012794e0ff5f171b9993b3573
+  checksum: 5a160e47db2394f9bbcfd677835d7fce6f7b89b89192fbe595987bee3a5c624c24b67382d5839b5760c97d08e8bab951748d84c152ce58c455c98118b5799c15
   languageName: node
   linkType: hard
 
