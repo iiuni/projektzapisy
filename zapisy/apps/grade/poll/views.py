@@ -1,5 +1,6 @@
 import itertools
 import json
+import logging
 from collections import defaultdict
 from operator import attrgetter
 from typing import List
@@ -14,6 +15,8 @@ from apps.grade.poll.models import Poll, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
+
+LOGGER = logging.getLogger(__name__)
 
 
 class TicketsEntry(TemplateView):
@@ -223,9 +226,11 @@ class PollResults(TemplateView):
             )
             return redirect('grade-main')
 
-        available_polls = Poll.get_all_polls_for_semester(
-            user=request.user, semester=selected_semester
+        available_polls, available_polls_own = Poll.get_all_polls_for_semester(
+            user=request.user,
+            semester=selected_semester
         )
+
         current_poll = Poll.objects.filter(id=poll_id).first()
         if poll_id is not None:
             submissions = Submission.objects.filter(poll=poll_id,
@@ -249,17 +254,19 @@ class PollResults(TemplateView):
                 {
                     'is_grade_active': is_grade_active,
                     'polls': group(entries=available_polls, sort=True),
+                    'polls_own': group(entries=available_polls_own, sort=True),
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
                     'current_poll_id': poll_id,
-                    'current_poll': current_poll,
-                    'selected_semester': selected_semester,
+                    'current_poll': current_poll.to_dict() if current_poll is not None else {},
+                    'selected_semester': selected_semester.to_dict(),
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
                     'iterator': itertools.count(),
+                    'is_superuser': request.user.is_superuser
                 },
             )
 

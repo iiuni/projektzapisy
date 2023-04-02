@@ -18,6 +18,7 @@ def check_grade_status() -> bool:
 
 class SubmissionStats:
     """Holds statistics for poll submissions."""
+
     def __init__(self, submissions: List[Submission]):
         self.submitted = 0
         self.submitted_by_category = defaultdict(int)
@@ -88,8 +89,8 @@ def group(entries: List[Poll], sort=False) -> dict:
             subcategory = entry.subcategory
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
-                    output[category].append(entry)
-                grouped_entries[category].append(entry)
+                    output[category].append(entry.to_dict(number_of_submissions=entry.number_of_submissions))
+                grouped_entries[category].append(entry.to_dict(number_of_submissions=entry.number_of_submissions))
 
     if sort:
         grouped_entries = sorted(grouped_entries.items())
@@ -105,6 +106,7 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
+
     def __init__(self, question, field_type, choices=None):
         self.question = question
         self._answers = []
@@ -183,6 +185,7 @@ class PollSummarizedResults:
     A single section is also a self-contained entry, defined by
     the `PollSummarizedResultsEntry` class.
     """
+
     def __init__(self, display_answers_count=True, display_plots=True):
         self._entries = []
         self._questions = []

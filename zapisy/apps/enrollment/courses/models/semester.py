@@ -109,6 +109,12 @@ class Semester(models.Model):
             return '(BŁĄD) {0} {1}'.format(self.year, self.get_type_display())
         return '{0} {1}'.format(self.year, self.get_type_display())
 
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'name': self.get_name()
+        }
+
     def get_short_name(self):
         if self.type == self.TYPE_WINTER:
             return 'zima {0}'.format(self.year)
@@ -188,7 +194,7 @@ class Semester(models.Model):
             week_start += timedelta(days=7)
         return weeks
 
-    @staticmethod
+    @ staticmethod
     def get_semester(date) -> Optional['Semester']:
         """Get semester for a specified date. More versatile than get_current_semester.
 
@@ -209,7 +215,7 @@ class Semester(models.Model):
         except MultipleObjectsReturned:
             raise
 
-    @staticmethod
+    @ staticmethod
     def get_upcoming_semester(strict: bool = False) -> Optional['Semester']:
         """Returns either upcomming or current semester or None.
 
@@ -231,7 +237,7 @@ class Semester(models.Model):
                 return None
             return Semester.get_current_semester()
 
-    @staticmethod
+    @ staticmethod
     def get_current_semester() -> Optional['Semester']:
         """If exists, it returns current semester, otherwise return None.
 
@@ -247,13 +253,13 @@ class Semester(models.Model):
             "type": self.get_type_display()
         }
 
-    @staticmethod
+    @ staticmethod
     def is_visible(id):
         """Answers if semester is set as visible (displayed on course lists)."""
         param = id
         return Semester.objects.get(id=param).visible
 
-    @staticmethod
+    @ staticmethod
     def get_semester_year_from_raw_year(raw_year):
         """Converts a numeric year to the string format used in the Semester model.
 
@@ -276,7 +282,7 @@ class Semester(models.Model):
 class Freeday(models.Model):
     day = models.DateField(verbose_name='dzień wolny', unique=True)
 
-    @classmethod
+    @ classmethod
     def is_free(cls, date):
         """Returns true if date is an extra holiday.
 
@@ -309,9 +315,9 @@ class ChangedDay(models.Model):
             raise ValidationError(message={
                 'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]
             },
-                                  code='invalid')
+                code='invalid')
 
-    @classmethod
+    @ classmethod
     def get_day_of_week(cls, date):
         """Returns actual schedule day, with respect to ChangedDays.
 
@@ -323,7 +329,7 @@ class ChangedDay(models.Model):
         else:
             return Term.get_day_of_week(date)
 
-    @staticmethod
+    @ staticmethod
     def get_added_days_of_week(start_date, end_date, day_of_week=None):
         added_days = ChangedDay.objects.filter(day__gte=start_date, day__lte=end_date)
         if day_of_week is None:

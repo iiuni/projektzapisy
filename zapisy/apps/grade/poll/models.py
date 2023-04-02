@@ -1,6 +1,6 @@
 import json
 import os.path
-from typing import List, Union
+from typing import List, Optional, Union
 
 from django.db import models
 
@@ -121,6 +121,14 @@ class Poll(models.Model):
 
         return result
 
+    def to_dict(self, number_of_submissions=0):
+        return {
+            'id': self.pk,
+            'category': self.category,
+            'subcategory': self.subcategory,
+            'number_of_submissions': number_of_submissions
+        }
+
     def is_student_entitled_to_poll(self, student: Student) -> bool:
         """Checks whether the student is allowed to participate in this Poll.
 
@@ -186,7 +194,7 @@ class Poll(models.Model):
         return polls
 
     @staticmethod
-    def get_all_polls_for_semester(user, semester: Semester = None) -> List['Poll']:
+    def get_all_polls_for_semester(user, semester: Semester = None) -> tuple([List['Poll'], List['Poll']]):
         """Returns all polls that user may see the submissions for.
 
         The polls will be annotated with submission counts.
@@ -199,8 +207,10 @@ class Poll(models.Model):
         is_employee = user.employee
 
         if not is_superuser and not is_employee:
-            return Poll.objects.none()
+            return Poll.objects.none(), Poll.objects.none()
+
         poll_for_semester = Poll.objects.filter(semester=current_semester)
+        polls_for_courses_own, polls_for_groups_own = Poll.objects.none(), Poll.objects.none()
 
         if is_superuser:
             polls_for_courses = Poll.objects.filter(
@@ -208,6 +218,14 @@ class Poll(models.Model):
             )
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester
+            )
+            polls_for_courses_own = Poll.objects.filter(
+                course__semester=current_semester,
+                course__owner=user.employee
+            )
+            polls_for_groups_own = Poll.objects.filter(
+                group__course__semester=current_semester,
+                group__teacher=user.employee
             )
         elif is_employee:
             polls_for_courses = Poll.objects.filter(
@@ -220,10 +238,11 @@ class Poll(models.Model):
                 group__teacher=user.employee,
             )
 
-        qs = poll_for_semester | polls_for_courses | polls_for_groups
-
         sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
-        return list(qs.annotate(number_of_submissions=sub_count_ann))
+        qs = poll_for_semester | polls_for_courses | polls_for_groups
+        qs_superuser_own_courses = poll_for_semester | polls_for_courses_own | polls_for_groups_own
+
+        return list(qs.annotate(number_of_submissions=sub_count_ann)), list(qs_superuser_own_courses.annotate(number_of_submissions=sub_count_ann))
 
 
 class Schema(models.Model):
