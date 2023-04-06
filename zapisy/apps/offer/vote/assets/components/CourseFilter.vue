@@ -6,17 +6,18 @@ import { mapGetters } from "vuex";
 
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
-import MultiselectFilter from "@/enrollment/timetable/assets/components/filters/MultiselectFilter.vue";
+import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
+import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
-import { mapMutations } from "vuex";
 
 export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    MultiselectFilter,
+    SelectFilter,
     CheckFilter,
+    MultiSelectFilter,
   },
   props: { refreshFun: Function },
   data: function () {
@@ -43,20 +44,22 @@ export default Vue.extend({
         return b1.localeCompare(b2, "pl");
       })
       .map(([k, [a, b]]) => {
-        return [Number(k), `${a} ${b}`];
+        return { value: Number(k), label: `${a} ${b}`};
       });
-    this.allTypes = toPairs(filtersData.allTypes).map(([a, b]) => {
-      return [Number(a), b];
-    });
+
+    this.allTypes = Object.keys(filtersData.allTypes)
+        .map(typeKey => (
+            { value: Number(typeKey), label: filtersData.allTypes[typeKey], }
+        ))
     this.allSemesters = [
-      ["z", "zimowy"],
-      ["l", "letni"],
-      ["u", "nieokreślony"],
+      { value: "z", label: "zimowy"},
+      { value: "l", label: "letni" },
+      { value: "u", label: "nieokreślony"},
     ];
     this.allStatuses = [
-      ["IN_OFFER", "w ofercie"],
-      ["IN_VOTE", "poddany pod głosowanie"],
-      ["WITHDRAWN", "wycofany z oferty"],
+      { value: "IN_OFFER", label: "w ofercie"},
+      { value: "IN_VOTE", label: "poddany pod głosowanie"},
+      { value: "WITHDRAWN", label: "wycofany z oferty"},
     ];
   },
   computed: {
@@ -64,12 +67,11 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  mounted: function () {
+  mounted() {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
-
     // Expand the filters if there are any initially specified in the search params.
     const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
@@ -84,9 +86,6 @@ export default Vue.extend({
       }
     });
   },
-  methods: {
-    ...mapMutations("filters", ["clearFilters"]),
-  },
 });
 </script>
 
@@ -97,46 +96,15 @@ export default Vue.extend({
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
+            ref="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
-            ref="name-filter"
-          />
-          <MultiselectFilter
-            filterKey="semester-filter"
-            property="semester"
-            :options="allSemesters"
-            title="Semestr"
-            ref="semester-filter"
-          />
-          <hr />
-          <CheckFilter
-            filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
-            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
-            ref="freshmen-filter"
-          />
-          <hr />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            @click="clearFilters()"
-          >
-            Wyczyść filtry
-          </button>
-        </div>
-        <div class="col-md">
-          <MultiselectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            title="Rodzaj przedmiotu"
-            placeholder="Wszystkie rodzaje"
-            ref="type-filter"
           />
           <hr />
           <LabelsFilter
             title="Tagi"
             filterKey="tags-filter"
+            ref="tags-filter"
             property="tags"
             :allLabels="allTags"
             onClass="bg-success"
@@ -144,18 +112,18 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <MultiselectFilter
-            filterKey="owner-filter"
-            property="owner"
-            :options="allOwners"
-            title="Opiekun przedmiotu"
-            placeholder="Wszyscy opiekunowie"
-            ref="owner-filter"
+          <MultiSelectFilter
+            filterKey="type-filter"
+            ref="type-filter"
+            property="courseType"
+            :options="allTypes"
+            placeholder="Rodzaj przedmiotu"
           />
           <hr />
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
+            ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
             onClass="bg-info"

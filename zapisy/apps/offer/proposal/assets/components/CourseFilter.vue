@@ -1,23 +1,23 @@
 <script lang="ts">
-import { cloneDeep, toPairs } from "lodash";
+import { cloneDeep, sortBy, toPairs } from "lodash";
 import Vue from "vue";
-
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
-import MultiselectFilter from "@/enrollment/timetable/assets/components/filters/MultiselectFilter.vue";
+import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
+import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 import { mapMutations } from "vuex";
-
 export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    MultiselectFilter,
+    SelectFilter,
     CheckFilter,
+    MultiSelectFilter,
   },
   data: function () {
     return {
@@ -27,7 +27,6 @@ export default Vue.extend({
       allSemesters: [] as [string, string][],
       allStatuses: [] as [string, string][],
       allTypes: {},
-
       // The filters are going to be collapsed by default.
       collapsed: true,
     };
@@ -38,25 +37,25 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([k1, [a1, b1]], [k2, [a2, b2]]) => {
-        return b1.localeCompare(b2, "pl");
-      })
-      .map(([k, [a, b]]) => {
-        return [Number(k), `${a} ${b}`];
-      });
-    this.allTypes = toPairs(filtersData.allTypes).map(([a, b]) => {
-      return [Number(a), b];
+    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
+      return b;
+    })
+    .map(([k, [a, b]]) => {
+      return { value: Number(k), label: `${a} ${b}`};
     });
+    this.allTypes = Object.keys(filtersData.allTypes)
+    .map(typeKey => (
+        { value: Number(typeKey), label: filtersData.allTypes[typeKey], }
+    ))
     this.allSemesters = [
-      ["z", "zimowy"],
-      ["l", "letni"],
-      ["u", "nieokreślony"],
+      { value: "z", label: "zimowy"},
+      { value: "l", label: "letni" },
+      { value: "u", label: "nieokreślony"},
     ];
     this.allStatuses = [
-      ["IN_OFFER", "w ofercie"],
-      ["IN_VOTE", "poddany pod głosowanie"],
-      ["WITHDRAWN", "wycofany z oferty"],
+      { value: "IN_OFFER", label: "w ofercie"},
+      { value: "IN_VOTE", label: "poddany pod głosowanie"},
+      { value: "WITHDRAWN", label: "wycofany z oferty"},
     ];
   },
   mounted: function () {
@@ -64,7 +63,6 @@ export default Vue.extend({
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
-
     // Expand the filters if there are any initially specified in the search params.
     const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
@@ -88,18 +86,54 @@ export default Vue.extend({
             placeholder="Nazwa przedmiotu"
             ref="name-filter"
           />
-          <MultiselectFilter
+          <hr />
+          <LabelsFilter
+            title="Tagi"
+            filterKey="tags-filter"
+            property="tags"
+            :allLabels="allTags"
+            onClass="badge-success"
+            ref="tags-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiSelectFilter
+            filterKey="type-filter"
+            property="courseType"
+            :options="allTypes"
+            placeholder="Rodzaj przedmiotu"
+            ref="type-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Efekty kształcenia"
+            filterKey="effects-filter"
+            property="effects"
+            :allLabels="allEffects"
+            onClass="badge-info"
+            ref="effects-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiSelectFilter
+            filterKey="owner-filter"
+            property="owner"
+            :options="allOwners"
+            placeholder="Opiekun przedmiotu"
+            ref="owner-filter"
+          />
+          <MultiSelectFilter
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
-            title="Semestr"
+            placeholder="Semestr"
             ref="semester-filter"
           />
-          <MultiselectFilter
+          <MultiSelectFilter
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
-            title="Status propozycji"
+            placeholder="Status propozycji"
             ref="status-filter"
           />
           <hr />
@@ -168,7 +202,6 @@ export default Vue.extend({
 .collapsed {
   overflow-y: hidden;
   height: 120px;
-
   // Blurs over the bottom of filter card.
   &:after {
     position: absolute;
@@ -196,7 +229,6 @@ export default Vue.extend({
     padding-top: 1em;
   }
 }
-
 .card-footer {
   height: 28px;
 }

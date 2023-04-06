@@ -4,16 +4,16 @@ import Vue from "vue";
 
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
-import MultiselectFilter from "./filters/MultiselectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON } from "./../models";
 import { mapMutations } from "vuex";
+import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 
 export default Vue.extend({
   components: {
+    MultiSelectFilter,
     TextFilter,
     LabelsFilter,
-    MultiselectFilter,
     CheckFilter,
   },
   data: function () {
@@ -31,6 +31,7 @@ export default Vue.extend({
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
+
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
@@ -38,11 +39,13 @@ export default Vue.extend({
         return b1.localeCompare(b2, "pl");
       })
       .map(([k, [a, b]]) => {
-        return [Number(k), `${a} ${b}`];
+        return { value: Number(k), label: `${a} ${b}`};
       });
-    this.allTypes = toPairs(filtersData.allTypes).map(([a, b]) => {
-      return [Number(a), b];
-    });
+
+    this.allTypes = Object.keys(filtersData.allTypes)
+        .map(typeKey => (
+            { value: Number(typeKey), label: filtersData.allTypes[typeKey], }
+        ))
   },
   mounted: function () {
     // Extract filterable properties names from the template.
@@ -90,7 +93,7 @@ export default Vue.extend({
           </button>
         </div>
         <div class="col-md">
-          <MultiselectFilter
+          <MultiSelectFilter
             filterKey="type-filter"
             property="courseType"
             :options="allTypes"
@@ -109,7 +112,7 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <MultiselectFilter
+           <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
