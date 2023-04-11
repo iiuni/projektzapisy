@@ -20,7 +20,7 @@ export default Vue.extend({
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as [number, string][],
+      allOwners: [] as Array<{ value: number; label: string }>,
       allTypes: {},
 
       // The filters are going to be collapsed by default.
@@ -39,13 +39,12 @@ export default Vue.extend({
         return b1.localeCompare(b2, "pl");
       })
       .map(([k, [a, b]]) => {
-        return { value: Number(k), label: `${a} ${b}`};
+        return { value: Number(k), label: `${a} ${b}` };
       });
-
-    this.allTypes = Object.keys(filtersData.allTypes)
-        .map(typeKey => (
-            { value: Number(typeKey), label: filtersData.allTypes[typeKey], }
-        ))
+    this.allTypes = Object.keys(filtersData.allTypes).map((typeKey) => ({
+      value: Number(typeKey),
+      label: filtersData.allTypes[Number(typeKey)],
+    }));
   },
   mounted: function () {
     // Extract filterable properties names from the template.
@@ -112,7 +111,7 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-           <MultiSelectFilter
+          <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"

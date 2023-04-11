@@ -23,9 +23,9 @@ export default Vue.extend({
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as [number, string][],
-      allSemesters: [] as [string, string][],
-      allStatuses: [] as [string, string][],
+      allOwners: [] as Array<{ value: number; label: string }>,
+      allSemesters: [] as Array<{ value: string; label: string }>,
+      allStatuses: [] as Array<{ value: string; label: string }>,
       allTypes: {},
       // The filters are going to be collapsed by default.
       collapsed: true,
@@ -39,23 +39,22 @@ export default Vue.extend({
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
       return b;
-    })
-    .map(([k, [a, b]]) => {
-      return { value: Number(k), label: `${a} ${b}`};
+    }).map(([k, [a, b]]) => {
+      return { value: Number(k), label: `${a} ${b}` };
     });
-    this.allTypes = Object.keys(filtersData.allTypes)
-    .map(typeKey => (
-        { value: Number(typeKey), label: filtersData.allTypes[typeKey], }
-    ))
+    this.allTypes = Object.keys(filtersData.allTypes).map((typeKey) => ({
+      value: Number(typeKey),
+      label: filtersData.allTypes[Number(typeKey)],
+    }));
     this.allSemesters = [
-      { value: "z", label: "zimowy"},
+      { value: "z", label: "zimowy" },
       { value: "l", label: "letni" },
-      { value: "u", label: "nieokreślony"},
+      { value: "u", label: "nieokreślony" },
     ];
     this.allStatuses = [
-      { value: "IN_OFFER", label: "w ofercie"},
-      { value: "IN_VOTE", label: "poddany pod głosowanie"},
-      { value: "WITHDRAWN", label: "wycofany z oferty"},
+      { value: "IN_OFFER", label: "w ofercie" },
+      { value: "IN_VOTE", label: "poddany pod głosowanie" },
+      { value: "WITHDRAWN", label: "wycofany z oferty" },
     ];
   },
   mounted: function () {

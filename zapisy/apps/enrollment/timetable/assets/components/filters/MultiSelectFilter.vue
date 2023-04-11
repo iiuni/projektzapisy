@@ -1,8 +1,8 @@
 <template>
-	<div class="mb-2">
-		<multiselect
-			v-model="selected"
-			:options="options"
+  <div class="mb-2">
+    <multiselect
+      v-model="selected"
+      :options="options"
       :show-labels="showLabels"
       :multiple="true"
       :close-on-select="false"
@@ -13,13 +13,13 @@
       <template slot="option" slot-scope="props">
         <div class="option-row">
           <div class="custom-control custom-checkbox">
-          <input
-            type="checkbox"
-            class="custom-control-input"
-            :checked="selected.includes(props.option)"
-          />
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              :checked="selected.includes(props.option)"
+            />
             <label class="custom-control-label" :for="filterKey"></label>
-        </div>
+          </div>
           {{ props.option.label }}
         </div>
       </template>
@@ -28,24 +28,32 @@
           {{ selectedValue }}
         </span>
       </template>
-      <template slot="clear" >
-        <div v-show="selected.length" class="multiselect__clear" @mousedown.prevent.stop="clearAll">×</div>
+      <template slot="clear">
+        <div
+          v-show="selected.length"
+          class="multiselect__clear"
+          @mousedown.prevent.stop="clearAll"
+        >
+          ×
+        </div>
       </template>
     </multiselect>
-	</div>
+  </div>
 </template>
 
 <script lang="ts">
 import { isEmpty, property } from "lodash";
 import Vue from "vue";
 import { mapMutations } from "vuex";
-import Multiselect from 'vue-multiselect'
+import Multiselect from "vue-multiselect";
 
-import {Filter} from "@/enrollment/timetable/assets/store/filters";
+import { Filter } from "@/enrollment/timetable/assets/store/filters";
 
 class ExactFilter implements Filter {
-  constructor(public ids: string[], public propertyName: string) {}
-
+  constructor(
+    public ids: Array<string | number>,
+    public propertyName: string
+  ) {}
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {
       return true;
@@ -56,12 +64,20 @@ class ExactFilter implements Filter {
   }
 }
 
+interface Option {
+  value: number;
+  label: string;
+}
+const isDefinedOption = (
+  option: undefined | { value: number; label: string }
+): option is Option => option !== undefined && "value" in option;
+
 export default Vue.extend({
-	components: { Multiselect },
+  components: { Multiselect },
   props: {
     property: String,
     filterKey: String,
-    options: Array as Array<{ value: number; label: string}>,
+    options: Array as () => Array<{ value: number; label: string }>,
     title: String,
     placeholder: String,
     showLabels: {
@@ -70,24 +86,29 @@ export default Vue.extend({
     },
     trackBy: {
       type: String,
-      default: 'value',
+      default: "value",
     },
     propAsLabel: {
       type: String,
-      default: 'label',
-    }
+      default: "label",
+    },
   },
-	data () {
-		return {
-			selected: [],
-		}
-	},
+  data() {
+    return {
+      selected: [] as Array<{ value: number; label: string }>,
+    };
+  },
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
     if (searchParams.has(this.property)) {
-      if (searchParams.get(this.property).length) {
+      const property = searchParams.get(this.property);
+      if (property && property.length) {
         const ids = searchParams.get(this.property)!.split(",");
-        this.selected = ids.map((id) => this.options.find((option) => option.value == id))
+        this.selected = ids
+          .map((id) =>
+            this.options.find((option) => String(option.value) == id)
+          )
+          .filter((option) => isDefinedOption(option)) as Option[];
       }
     }
 
@@ -100,13 +121,9 @@ export default Vue.extend({
     });
   },
   methods: {
-        ...mapMutations("filters", ["registerFilter"]),
+    ...mapMutations("filters", ["registerFilter"]),
     clearFilter() {
       this.selected = [];
-    },
-    customLabel(filter) {
-      console.log('filter:', filter);
-      return filter[1];
     },
     clearAll() {
       this.selected = [];
@@ -114,10 +131,10 @@ export default Vue.extend({
   },
   computed: {
     selectedValue() {
-      const result = [];
+      const result: string[] = [];
       let length = 0;
 
-      this.selected.every((value) => {
+      this.selected.every((value: { label: string }) => {
         if (length + value.label.length < 25) {
           length += value.label.length;
           result.push(value.label);
@@ -125,14 +142,20 @@ export default Vue.extend({
         }
       });
 
-      const otherOptions = this.selected.length - result.length;
-      const word = otherOptions > 4 ? 'innych' : otherOptions > 1 ? 'inne' : 'inny';
-      return `${result.join(', ')}${otherOptions > 0 ? ` + ${otherOptions} ${word}` : ''}`;
+      const otherOptions: number = this.selected.length - result.length;
+      const word =
+        otherOptions > 4 ? "innych" : otherOptions > 1 ? "inne" : "inny";
+      return `${result.join(", ")}${
+        otherOptions > 0 ? ` + ${otherOptions} ${word}` : ""
+      }`;
     },
   },
   watch: {
     selected: function () {
-      const selectedIds = this.selected.map(selectedFilter => selectedFilter.value);
+      const selectedIds = this.selected.map(
+        (selectedFilter: { value: number; label: string }) =>
+          selectedFilter.value
+      );
 
       const url = new URL(window.location.href);
       if (isEmpty(selectedIds)) {
@@ -149,20 +172,19 @@ export default Vue.extend({
     },
   },
 });
-
 </script>
 
 <style>
-  .option-row {
-    font-size: 12px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
+.option-row {
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
-  .checkbox-placeholder {
-    margin-right: 12px;
-  }
+.checkbox-placeholder {
+  margin-right: 12px;
+}
 </style>
 
 <style>
