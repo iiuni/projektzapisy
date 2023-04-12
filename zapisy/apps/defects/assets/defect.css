@@ -1,0 +1,66 @@
+.btn-toggle-delete-photo {
+  position: absolute;
+  top: 8px;
+  left: 23px;
+
+  padding: 0.15rem 0.35rem;
+
+  font-size: 15px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn-toggle-delete-photo input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.btn-toggle-delete-photo {
+  color: #252528;
+  background-color: #adafb2;
+  border-color: #6c757d;
+}
+
+.btn-toggle-delete-photo:hover {
+  color: #35353a;
+  background-color: #c8cace;
+  border-color: #545b62;
+}
+
+.btn-toggle-delete-photo:focus,
+.btn-toggle-delete-photo.focus {
+  color: #35353a;
+  background-color: #c8cace;
+  border-color: #545b62;
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active,
+.show > .btn-toggle-delete-photo.dropdown-toggle {
+  color: #fbfbfb;
+  background-color: #dc3545;
+  border-color: #b72323;
+}
+
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active:focus,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active.focus,
+.show > .btn-toggle-delete-photo.dropdown-toggle:focus {
+  color: #fbfbfb;
+  background-color: #b9313f;
+  border-color: #b73737;
+  box-shadow: 0 0 0 0.2rem rgba(105, 24, 24, 0.5);
+}
+
+.btn-toggle-delete-photo:not(:disabled):not(.disabled):active:hover,
+.btn-toggle-delete-photo:not(:disabled):not(.disabled).active:hover,
+.show > .btn-toggle-delete-photo.dropdown-toggle:hover {
+  color: #fbfbfb;
+  background-color: #b9313f;
+  border-color: #b73737;
+}

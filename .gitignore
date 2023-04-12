@@ -32,3 +32,4 @@ zapisy/webpack_resources/webpack-stats.json
 *.sql
 *.sqlite3
 socket
+zapisy/google_drive.json

@@ -5380,7 +5380,7 @@ fsevents@~2.1.2:
     vuex: 3.6.2
     webpack: 4.46.0
     webpack-bundle-analyzer: 3.9.0
-    webpack-bundle-tracker: 0.4.3
+    webpack-bundle-tracker: ^0.4.3
     webpack-cli: 3.3.12
   languageName: unknown
   linkType: soft
@@ -9265,7 +9265,7 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"webpack-bundle-tracker@npm:0.4.3":
+"webpack-bundle-tracker@npm:^0.4.3":
   version: 0.4.3
   resolution: "webpack-bundle-tracker@npm:0.4.3"
   dependencies:

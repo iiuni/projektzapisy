@@ -1,0 +1,113 @@
+{% extends "defectsBase.html" %}
+
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block rendered_bundles %}
+    {% render_bundle "defects-style" %}
+{% endblock %}
+
+{% block js %}
+    {% render_bundle "defect-form" %}
+{% endblock %}
+{% block main-subtitle %}
+    {% if edit %}
+        Edycja {{ defect.name }}
+    {% else %}
+        Dodawanie usterki
+    {% endif %}
+    – System raportowania usterek
+{% endblock %}
+
+{% block bread %}
+    <li class="breadcrumb-item">
+        <a href="{% url "main-page" %}">Strona główna</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url "defects:main" %}">Usterki</a>
+    </li>
+    {% if edit %}
+        <li class="breadcrumb-item">
+            <a href="{% url "defects:show_defect" defect.id %}">{{ defect.name }}</a>
+        </li>
+        <li class="breadcrumb-item active">
+            Edytuj
+        </li>
+    {% else %}
+        <li class="breadcrumb-item active">
+            Stwórz nową
+        </li>
+    {% endif %}
+
+{% endblock %}
+
+{% block all-content %}
+<div id="defect-root">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="d-inline-block">
+            {% if edit %}
+                Edycja usterki
+            {% else %}
+                Dodawanie nowej usterki
+            {% endif %}
+        </h1>
+    </div>
+
+    <input id="extra-images-number" class="d-none" value="{{ extra_images_number }}">
+
+    <form action="" method="POST" class="post-form" enctype="multipart/form-data" id="main-form">
+        {% csrf_token %}
+        {% crispy form %}
+
+        <hr>
+
+        <div id="image-formset" class="mb-5">
+            <h4>Zdjęcia</h4>
+
+            {% if edit and images%}
+                <div class="container-fluid" style="margin: 10px">
+                    Aby usunąć wybrane zdjęcia, zaznacz je za pomocą przycisku w lewym górnym rogu miniaturki.
+                    <div class="row">
+                        {% for image in images %}
+                            <div class="col-md-3 center-block defect-edit-image" data-toggle="buttons">
+                                <label class="btn btn-toggle-delete-photo active">
+                                    <input type="checkbox" name="files-to-delete[]" value="{{ image.0 }}">
+                                    <i class="fa fa-trash fa-fw"></i>
+                                </label>
+                                <img class="img-thumbnail" src={{ image.1 }} >
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {{ formset.management_form }}
+            <div class="container-fluid" id="image-fields">
+                {% for image_form in formset %}
+                    <div class="row no-gutters">
+                        <div class="col">
+                            {% crispy image_form %}
+                        </div>
+                        <div class="col-auto">
+                            <button
+                                    class="btn btn-danger delete-field-button d-none"
+                                    type="button"
+                                    style="margin-top: 22px"
+                            >
+                                Usuń
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <button type="button" class="btn btn-primary" id="new-image-form">Dodaj kolejne zdjęcie</button>
+        </div>
+
+        <button type="submit" class="save btn btn-success mt-3" id="save-defect">Zapisz</button>
+    </form>
+</div>
+
+{% endblock %}

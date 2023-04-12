@@ -16,3 +16,7 @@ teacher_changed = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
 thesis_voting_activated = django.dispatch.Signal()
+# Signal senders must provide the following arguments:
+#   instance: apps.defect.models.Defect
+#   user: django.contrib.auth.models.User
+defect_modified = django.dispatch.Signal()
