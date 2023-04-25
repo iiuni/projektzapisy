@@ -1,10 +1,13 @@
 from collections import defaultdict
 from typing import Dict, List
 import math
+import textwrap
 
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
+
+from bokeh.models import LabelSet
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
@@ -160,27 +163,27 @@ class PollSummarizedResultsEntry:
             used for embedding plots in the template.
         """
         if not self._components:
-            source_data = dict(choices=self._choices, values=self._choices_occurrences)
+            formatted_choices = [textwrap.fill(choice,20) for choice in self._choices]
+            source_data = dict(choices=formatted_choices, values=self._choices_occurrences)
 
             answers_length = len(self._answers)
-            if answers_length == 0:
-                tooltips = "@values"
-            else:
-                tooltips = "@percents% (@values)"
-                percents = []
+            percents = []
+            if answers_length != 0:
                 for occurrences in self._choices_occurrences:
                     percent = 100 * occurrences / answers_length
-                    integer, decimal = f"{percent:.1f}".split('.')
-                    percents.append(f"{integer},{decimal}")
-                source_data['percents'] = percents
+                    if percent == 0:
+                        percents.append(f"")
+                    else:
+                        integer, decimal = f"{percent:.1f}".split('.')
+                        percents.append(f"{integer},{decimal}%")
+            source_data['percents'] = percents
+
 
             plot = bokeh.plotting.figure(
-                y_range=self._choices,
+                y_range=formatted_choices,
                 sizing_mode='scale_width',
                 plot_height=250,
                 toolbar_location=None,
-                tools='',
-                tooltips=tooltips
             )
 
             source = bokeh.models.sources.ColumnDataSource(data=source_data)
@@ -191,10 +194,15 @@ class PollSummarizedResultsEntry:
             )
 
             plot.x_range.start = 0
-            plot.x_range.end = max(1, last_tick)
+            plot.x_range.end = max(1, last_tick*1.1)
             plot.xaxis.ticker = bokeh.models.tickers.SingleIntervalTicker(
                 interval=ticker_interval, num_minor_ticks=0
             )
+
+            labels = LabelSet(y='choices', x='values', text='percents',
+              x_offset=5, y_offset=-6, source=source, render_mode='canvas', text_font_size = '11px')
+            
+            plot.add_layout(labels)
 
             self._components = bokeh.embed.components(plot)
 
