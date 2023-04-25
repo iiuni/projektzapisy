@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import Dict, List
 import math
 import textwrap
+import textwrap
 
 import bokeh.embed
 import bokeh.models.sources
@@ -163,7 +164,7 @@ class PollSummarizedResultsEntry:
             used for embedding plots in the template.
         """
         if not self._components:
-            formatted_choices = [textwrap.fill(choice,20) for choice in self._choices]
+            formatted_choices = [textwrap.fill(choice, 20) for choice in self._choices]
             source_data = dict(choices=formatted_choices, values=self._choices_occurrences)
 
             answers_length = len(self._answers)
@@ -172,7 +173,7 @@ class PollSummarizedResultsEntry:
                 for occurrences in self._choices_occurrences:
                     percent = 100 * occurrences / answers_length
                     if percent == 0:
-                        percents.append(f"")
+                        percents.append("")
                     else:
                         integer, decimal = f"{percent:.1f}".split('.')
                         percents.append(f"{integer},{decimal}%")
@@ -180,6 +181,7 @@ class PollSummarizedResultsEntry:
 
 
             plot = bokeh.plotting.figure(
+                y_range=formatted_choices,
                 y_range=formatted_choices,
                 sizing_mode='scale_width',
                 plot_height=250,
@@ -200,8 +202,8 @@ class PollSummarizedResultsEntry:
             )
 
             labels = LabelSet(y='choices', x='values', text='percents',
-              x_offset=5, y_offset=-6, source=source, render_mode='canvas', text_font_size = '11px')
-            
+                                x_offset=5, y_offset=-6, source=source, render_mode='canvas', text_font_size='11px')
+
             plot.add_layout(labels)
 
             self._components = bokeh.embed.components(plot)
