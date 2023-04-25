@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import Dict, List
 import math
 import textwrap
-import textwrap
 
 import bokeh.embed
 import bokeh.models.sources
@@ -178,7 +177,6 @@ class PollSummarizedResultsEntry:
                         integer, decimal = f"{percent:.1f}".split('.')
                         percents.append(f"{integer},{decimal}%")
             source_data['percents'] = percents
-
 
             plot = bokeh.plotting.figure(
                 y_range=formatted_choices,
