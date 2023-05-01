@@ -56,6 +56,9 @@ class EnrollmentTest(TestCase):
         cls.cooking_lecture_group = Group.objects.get(pk=31)
         cls.cooking_exercise_group_1 = Group.objects.get(pk=32)
         cls.cooking_exercise_group_2 = Group.objects.get(pk=33)
+        cls.cleaning_lecture_group = Group.objects.get(pk=41)
+        cls.cleaning_exercise_group_1 = Group.objects.get(pk=42)
+        cls.cleaning_exercise_group_2 = Group.objects.get(pk=43)
 
         GroupOpeningTimes.populate_opening_times(cls.semester)
 
@@ -273,3 +276,65 @@ class EnrollmentTest(TestCase):
             self.assertDictEqual(
                 Record.list_waiting_students([self.cooking_exercise_group_1.course]),
                 expected_waiting)
+
+    def test_student_exceeds_the_final_limit(self):
+        """Tests the Final ECTS limit constraint.
+
+        Bolek will try to sign up to "Gotowanie", "Sprzątanie" and "Szydełkowanie" in this order.
+        He should be successful with "Gotowanie"(35 ects) and "Szydełkowanie"(5 ects)
+        He shoudn't be signed to "Sprzątanie"(11ects) due to final ects limit(45 ects).
+        """
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12)):
+            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+        self.assertTrue(
+            Record.objects.filter(
+                student=self.bolek, group=self.cooking_exercise_group_1,
+                status=RecordStatus.ENROLLED).exists())
+        self.assertEqual(
+            Record.student_points_in_semester(self.bolek, self.semester), 35)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
+            # He shouldn't be able to join the queue.
+            self.assertFalse(Record.enqueue_student(self.bolek, self.cleaning_lecture_group))
+        # His enrollment with "Gotowanie" should still exist.
+        self.assertTrue(
+            Record.objects.filter(
+                student=self.bolek, group=self.cooking_exercise_group_1,
+                status=RecordStatus.ENROLLED).exists())
+        # His record with "Szydełkowanie" should be removed.
+        self.assertFalse(
+            Record.objects.filter(
+                student=self.bolek, group=self.cleaning_lecture_group).exists())
+        self.assertEqual(
+            Record.student_points_in_semester(self.bolek, self.semester), 35)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
+            # He shouldn't be able to join the queue.
+            self.assertFalse(Record.enqueue_student(self.bolek, self.cleaning_lecture_group))
+        # His enrollment with "Gotowanie" should still exist.
+        self.assertTrue(
+            Record.objects.filter(
+                student=self.bolek, group=self.cooking_exercise_group_1,
+                status=RecordStatus.ENROLLED).exists())
+        # His record with "Szydełkowanie" should be removed.
+        self.assertFalse(
+            Record.objects.filter(
+                student=self.bolek, group=self.cleaning_lecture_group).exists())
+        self.assertEqual(
+            Record.student_points_in_semester(self.bolek, self.semester), 35)
+
+        with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
+            # He should be able to join the queue.
+            self.assertTrue(Record.enqueue_student(self.bolek, self.knitting_lecture_group))
+        # His enrollment with "Gotowanie" should still exist.
+        self.assertTrue(
+            Record.objects.filter(
+                student=self.bolek, group=self.cooking_exercise_group_1,
+                status=RecordStatus.ENROLLED).exists())
+        # His record with "Szydełkowanie" should be removed.
+        self.assertFalse(
+            Record.objects.filter(
+                student=self.bolek, group=self.knitting_lecture_group,
+                status=RecordStatus.ENROLLED).exists())
+        self.assertEqual(
+            Record.student_points_in_semester(self.bolek, self.semester), 40)

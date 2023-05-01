@@ -122,9 +122,33 @@ class Record(models.Model):
         if student is None or not student.is_active:
             return {k.id: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
+        points = Record.student_points_in_semester(
+            student, Semester.get_current_semester()
+        )
+        is_in_courses = Record.are_student_in_courses(student, {g.course for g in groups})
+
         for group in groups:
-            if group.auto_enrollment:
+            if group.auto_enrollment or (
+                points + group.course.points > Semester.get_final_limit()
+                and not is_in_courses[group.course]
+            ):
                 ret[group.id] = False
+        return ret
+
+    @staticmethod
+    def are_student_in_courses(student: Optional[Student],
+                               courses: Set[CourseInstance]) -> Dict[CourseInstance, bool]:
+        records = Record.objects.filter(
+            student=student,
+            group__course__in=courses,
+            status__in=[RecordStatus.ENROLLED, RecordStatus.QUEUED],
+        ).select_related("group__course")
+
+        ret: Dict[CourseInstance, Group] = {course: False for course in courses}
+
+        for rec in records:
+            ret[rec.group.course] = True
+
         return ret
 
     @classmethod
