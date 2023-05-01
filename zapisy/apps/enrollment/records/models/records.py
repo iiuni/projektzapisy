@@ -105,49 +105,61 @@ class Record(models.Model):
     @staticmethod
     def can_enqueue_groups(student: Optional[Student], groups: List[Group],
                            time: datetime = None) -> Dict[int, bool]:
-        """Checks if the student can join the queues of respective course groups.
+        """Checks if the student can join the queues of respective groups.
 
-        For given groups, the function will return a dict representing groups
-        associated with that course. For every group primary key the return
-        value will tell, if the student can enqueue into the group. It will
-        return all False values if student is None. It is not checking if the
-        student is already present in the groups.
+        For given groups, the function will return a dict representing groups.
+        For every group primary key the return value will tell, if the student
+        can enqueue into the group. It will return all False values if student
+        is None. It is not checking if the student is already present in
+        the groups.
 
         This function should be called instead of multiple calls to the
         :func:`~apps.enrollment.records.models.Record.can_enqueue` function to
         save on DB queries.
         """
+        if not groups:
+            return {}
+
+        # Preload groups with realted objects to reduce sql queries
+        groups = Group.objects.filter(pk__in=[g.pk for g in groups]).select_related(
+                    "course",
+                    "course__semester"
+                    ).all()
+
         if time is None:
             time = datetime.now()
         if student is None or not student.is_active:
-            return {k.id: False for k in groups}
+            return {k.pk: False for k in groups}
         ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
         points = Record.student_points_in_semester(
-            student, Semester.get_current_semester()
+            student, groups[0].course.semester
         )
         is_in_courses = Record.are_student_in_courses(student, {g.course for g in groups})
 
         for group in groups:
             if group.auto_enrollment or (
-                points + group.course.points > Semester.get_final_limit()
-                and not is_in_courses[group.course]
-            ):
-                ret[group.id] = False
+                    points + group.course.points > Semester.get_final_limit()
+                    and not is_in_courses[group.course.pk]):
+                ret[group.pk] = False
         return ret
 
     @staticmethod
-    def are_student_in_courses(student: Optional[Student],
-                               courses: Set[CourseInstance]) -> Dict[CourseInstance, bool]:
+    def are_student_in_courses(student: Student,
+                               courses: Set[CourseInstance]) -> Dict[int, bool]:
+        """Checks if the student is enrolled or queued to each course in courses.
+
+        Result: dict with keys as course.pk and value is enrolled or queued.
+        """
         records = Record.objects.filter(
             student=student,
             group__course__in=courses,
             status__in=[RecordStatus.ENROLLED, RecordStatus.QUEUED],
         ).select_related("group__course")
 
-        ret: Dict[CourseInstance, Group] = {course: False for course in courses}
+        ret: Dict[int, bool] = {course.pk: False for course in courses}
 
         for rec in records:
-            ret[rec.group.course] = True
+            ret[rec.group.course.pk] = True
 
         return ret
 
