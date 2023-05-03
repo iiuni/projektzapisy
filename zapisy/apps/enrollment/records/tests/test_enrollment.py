@@ -6,6 +6,7 @@ from django.test import TestCase, override_settings
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus
+from apps.enrollment.records import engine
 from apps.users.models import Student
 
 
@@ -34,9 +35,9 @@ def mock_datetime(year, month, day, hour=0, minute=0):
 # We will patch datetime for records module. This is fairly counterintuitive See
 # https://docs.python.org/3/library/unittest.mock.html#where-to-patch for
 # explanation.
-RECORDS_DATETIME = 'apps.enrollment.records.models.records.datetime'
 SEMESTER_DATETIME = 'apps.enrollment.courses.models.semester.datetime'
 ENGINE_DATETIME = 'apps.enrollment.records.engine.fillup_group.datetime'
+RECORDS_DATETIME = 'apps.enrollment.records.engine.enqueue.datetime'
 
 
 @override_settings(RUN_ASYNC=False)
@@ -73,7 +74,7 @@ class EnrollmentTest(TestCase):
     def test_simple_enrollment(self):
         """Bolek will just enqueue into the group."""
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.knitting_lecture_group))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.knitting_lecture_group))
 
         self.assertTrue(
             Record.objects.filter(
@@ -87,9 +88,9 @@ class EnrollmentTest(TestCase):
         queue of the exercise group.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.cooking_exercise_group_1))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 1)):
-            self.assertTrue(Record.enqueue_student(self.lolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.lolek, self.cooking_exercise_group_1))
 
         self.assertTrue(
             Record.objects.filter(
@@ -118,7 +119,7 @@ class EnrollmentTest(TestCase):
         """
         # Bolek joins group 1.
         with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.washing_up_seminar_1))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.washing_up_seminar_1))
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.washing_up_seminar_1,
@@ -126,7 +127,7 @@ class EnrollmentTest(TestCase):
 
         # Lolek tries to join group 1 and is enqueued.
         with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12)):
-            self.assertTrue(Record.enqueue_student(self.lolek, self.washing_up_seminar_1))
+            self.assertTrue(engine.enqueue_student(self.lolek, self.washing_up_seminar_1))
         self.assertFalse(
             Record.objects.filter(
                 student=self.lolek, group=self.washing_up_seminar_1,
@@ -138,7 +139,7 @@ class EnrollmentTest(TestCase):
 
         # Bolek switches the group.
         with patch(RECORDS_DATETIME, mock_datetime(2011, 12, 5, 12, 5)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.washing_up_seminar_2))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.washing_up_seminar_2))
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.washing_up_seminar_2,
@@ -166,7 +167,7 @@ class EnrollmentTest(TestCase):
         which costs exactly 35 ECTS, but not with the second enrollment.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.cooking_exercise_group_1))
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.cooking_exercise_group_1,
@@ -176,7 +177,7 @@ class EnrollmentTest(TestCase):
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 5)):
             # He should be able to join the queue.
-            self.assertTrue(Record.enqueue_student(self.bolek, self.knitting_lecture_group))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.knitting_lecture_group))
         # His enrollment with "Gotowanie" should still exist.
         self.assertTrue(
             Record.objects.filter(
@@ -203,13 +204,13 @@ class EnrollmentTest(TestCase):
         the places.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
-            self.assertTrue(Record.enqueue_student(self.lolek, self.cooking_exercise_group_2))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.lolek, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
-            self.assertTrue(Record.enqueue_student(self.tola, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_1))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
-            self.assertTrue(Record.enqueue_student(self.tola, self.cooking_exercise_group_2))
+            self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
         self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
@@ -218,9 +219,9 @@ class EnrollmentTest(TestCase):
         self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
-            self.assertTrue(Record.remove_from_group(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.remove_from_group(self.bolek, self.cooking_exercise_group_1))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
-            self.assertTrue(Record.remove_from_group(self.lolek, self.cooking_exercise_group_2))
+            self.assertTrue(engine.remove_from_group(self.lolek, self.cooking_exercise_group_2))
 
         self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
@@ -232,13 +233,13 @@ class EnrollmentTest(TestCase):
         which Bolek and Lolek leave their groups.
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
-            self.assertTrue(Record.enqueue_student(self.lolek, self.cooking_exercise_group_2))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.lolek, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
-            self.assertTrue(Record.enqueue_student(self.tola, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_1))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
-            self.assertTrue(Record.enqueue_student(self.tola, self.cooking_exercise_group_2))
+            self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
         self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
@@ -247,9 +248,9 @@ class EnrollmentTest(TestCase):
         self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
-            self.assertTrue(Record.remove_from_group(self.lolek, self.cooking_exercise_group_2))
+            self.assertTrue(engine.remove_from_group(self.lolek, self.cooking_exercise_group_2))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
-            self.assertTrue(Record.remove_from_group(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.remove_from_group(self.bolek, self.cooking_exercise_group_1))
 
         self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
@@ -269,12 +270,12 @@ class EnrollmentTest(TestCase):
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
             self.cooking_exercise_group_1.limit = 1
             self.cooking_exercise_group_2.limit = 1
-            Record.enqueue_student(self.bolek, self.cooking_exercise_group_1)
-            Record.enqueue_student(self.lolek, self.cooking_exercise_group_2)
-            Record.enqueue_student(self.tola, self.cooking_exercise_group_1)
-            Record.enqueue_student(self.tola, self.cooking_exercise_group_2)
-            Record.enqueue_student(self.bolek, self.cooking_exercise_group_2)
-            Record.enqueue_student(self.lolek, self.cooking_exercise_group_1)
+            engine.enqueue_student(self.bolek, self.cooking_exercise_group_1)
+            engine.enqueue_student(self.lolek, self.cooking_exercise_group_2)
+            engine.enqueue_student(self.tola, self.cooking_exercise_group_1)
+            engine.enqueue_student(self.tola, self.cooking_exercise_group_2)
+            engine.enqueue_student(self.bolek, self.cooking_exercise_group_2)
+            engine.enqueue_student(self.lolek, self.cooking_exercise_group_1)
 
             expected_waiting = {
                 self.cooking_exercise_group_1.course_id: {
@@ -293,7 +294,7 @@ class EnrollmentTest(TestCase):
         He shoudn't be signed to "Sprzątanie"(11ects) due to final ects limit(45 ects).
         """
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12)):
-            self.assertTrue(Record.enqueue_student(self.bolek, self.cooking_exercise_group_1))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.cooking_exercise_group_1))
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.cooking_exercise_group_1,
@@ -303,7 +304,7 @@ class EnrollmentTest(TestCase):
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
             # He shouldn't be able to join the queue.
-            self.assertFalse(Record.enqueue_student(self.bolek, self.cleaning_lecture_group))
+            self.assertFalse(engine.enqueue_student(self.bolek, self.cleaning_lecture_group))
         # His enrollment with "Gotowanie" should still exist.
         self.assertTrue(
             Record.objects.filter(
@@ -318,7 +319,7 @@ class EnrollmentTest(TestCase):
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
             # He should be able to join the queue.
-            self.assertTrue(Record.enqueue_student(self.bolek, self.knitting_lecture_group))
+            self.assertTrue(engine.enqueue_student(self.bolek, self.knitting_lecture_group))
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.knitting_lecture_group,
@@ -332,7 +333,7 @@ class EnrollmentTest(TestCase):
         Num of queries should be independent of the number of groups
         """
         with self.assertNumQueries(4):
-            self.assertTrue(Record.can_enqueue_groups(self.bolek, [
+            self.assertTrue(engine.can_enqueue_groups(self.bolek, [
                 self.cooking_exercise_group_1,
                 self.cleaning_lecture_group,
                 self.cleaning_exercise_group_1,
@@ -344,13 +345,13 @@ class EnrollmentTest(TestCase):
                 ]))
 
         with self.assertNumQueries(4):
-            self.assertTrue(Record.can_enqueue_groups(self.bolek, [
+            self.assertTrue(engine.can_enqueue_groups(self.bolek, [
                 self.cooking_exercise_group_1,
                 self.cleaning_lecture_group,
                 self.cleaning_exercise_group_1,
                 ]))
 
         with self.assertNumQueries(4):
-            self.assertTrue(Record.can_enqueue_groups(self.bolek, [
+            self.assertTrue(engine.can_enqueue_groups(self.bolek, [
                 self.cooking_exercise_group_1,
                 ]))

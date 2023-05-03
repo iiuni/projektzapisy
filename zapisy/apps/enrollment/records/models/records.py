@@ -41,7 +41,6 @@ Record Lifetime:
 import logging
 from collections import defaultdict
 import copy
-from datetime import datetime
 from enum import Enum
 from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
@@ -50,8 +49,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.records.models.opening_times import GroupOpeningTimes
-from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
 
 LOGGER = logging.getLogger(__name__)
@@ -92,96 +89,6 @@ class Record(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-    @staticmethod
-    def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
-        """Checks if the student can join the queue of the group.
-
-        Will return False if student is None. The function will not check if the
-        student already belongs to the queue.
-        """
-        return Record.can_enqueue_groups(student, [group], time)[group.pk]
-
-    @staticmethod
-    def can_enqueue_groups(student: Optional[Student], groups: List[Group],
-                           time: datetime = None) -> Dict[int, bool]:
-        """Checks if the student can join the queues of respective groups.
-
-        For given groups, the function will return a dict representing groups.
-        For every group primary key the return value will tell, if the student
-        can enqueue into the group. It will return all False values if student
-        is None. It is not checking if the student is already present in
-        the groups.
-
-        This function should be called instead of multiple calls to the
-        :func:`~apps.enrollment.records.models.Record.can_enqueue` function to
-        save on DB queries.
-        """
-        if not groups:
-            return {}
-
-        # Preload groups with realted objects to reduce sql queries
-        groups = Group.objects.filter(pk__in=[g.pk for g in groups]).select_related(
-                    "course",
-                    "course__semester"
-                    ).all()
-
-        if time is None:
-            time = datetime.now()
-        if student is None or not student.is_active:
-            return {k.pk: False for k in groups}
-        ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
-        points = Record.student_points_in_semester(
-            student, groups[0].course.semester
-        )
-        is_in_courses = Record.are_student_in_courses(student, {g.course for g in groups})
-
-        for group in groups:
-            if group.auto_enrollment or (
-                    points + group.course.points > Semester.get_final_limit()
-                    and not is_in_courses[group.course.pk]):
-                ret[group.pk] = False
-        return ret
-
-    @staticmethod
-    def are_student_in_courses(student: Student,
-                               courses: Set[CourseInstance]) -> Dict[int, bool]:
-        """Checks if the student is enrolled or queued to each course in courses.
-
-        Result: dict with keys as course.pk and value is enrolled or queued.
-        """
-        records = Record.objects.filter(
-            student=student,
-            group__course__in=courses,
-        ).exclude(status=RecordStatus.REMOVED).select_related("group__course")
-
-        ret: Dict[int, bool] = {course.pk: False for course in courses}
-
-        for rec in records:
-            ret[rec.group.course.pk] = True
-
-        return ret
-
-    @classmethod
-    def can_enroll(cls, student: Optional[Student], group: Group, time: datetime = None) -> CanEnroll:
-        """Checks if the student can join the queue of the group.
-
-        The function will not check if the student is already enrolled
-        into the group or present in its queue.
-        """
-        if time is None:
-            time = datetime.now()
-        if student is None:
-            return CanEnroll.OTHER
-        if not cls.can_enqueue(student, group, time):
-            return CanEnroll.CANNOT_QUEUE
-        # Check if enrolling would not make the student exceed the current ECTS
-        # limit.
-        semester: Semester = group.course.semester
-        points = cls.student_points_in_semester(student, semester, [group.course])
-        if points > semester.get_current_limit(time):
-            return CanEnroll.ECTS_LIMIT
-        return CanEnroll.OK
-
     @classmethod
     def student_points_in_semester(cls, student: Student, semester: Semester,
                                    additional_courses: Iterable[CourseInstance] = []) -> int:
@@ -200,48 +107,6 @@ class Record(models.Model):
         return sum(c.points for c in courses)
 
     @staticmethod
-    def can_dequeue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
-        """Checks if the student can leave the group or its queue.
-
-        This function will return False if student is None. It will not check
-        for student's presence in the group. The function's role is to verify
-        legal constraints.
-        """
-        return Record.can_dequeue_groups(student, [group], time)[group.pk]
-
-    @staticmethod
-    def can_dequeue_groups(student: Optional[Student], groups: List[Group],
-                           time: datetime = None) -> Dict[int, bool]:
-        """Checks which of the groups the student can leave (or leave their queues).
-
-        It is preferable to call this function rather than
-        :func:`~apps.enrollment.records.models.Record.can_dequeue` multiple
-        times to save on database queries. The groups should contain .course and
-        .course.semester.
-
-        If student is None, the function will return all False values. It does
-        not check for student's presence in the groups.
-        """
-        if time is None:
-            time = datetime.now()
-        if student is None or not student.is_active:
-            return {k.id: False for k in groups}
-        ret = {}
-        groups = Record.is_recorded_in_groups(student, groups)
-        for group in groups:
-            if group.auto_enrollment:
-                ret[group.id] = False
-            elif group.course.records_end is not None:
-                ret[group.id] = time <= group.course.records_end
-            elif not group.course.semester.can_remove_record(time):
-                # When disenrolment is closed, QUEUED record can still be
-                # removed, ENROLLED may not.
-                ret[group.id] = getattr(group, 'enqueued', False)
-            else:
-                ret[group.id] = True
-        return ret
-
-    @staticmethod
     def list_waiting_students(
             courses: List[CourseInstance]) -> DefaultDict[int, DefaultDict[int, int]]:
         """Returns students waiting to be enrolled.
@@ -254,7 +119,7 @@ class Record(models.Model):
             group_type to a number of waiting students.
         """
         queued = Record.objects.filter(
-            status=RecordStatus.QUEUED, group__course__in=courses).values(
+            status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED], group__course__in=courses).values(
                 'group__course', 'group__type', 'student__user',
                 'student__user__first_name', 'student__user__last_name')
         enrolled = Record.objects.filter(
@@ -350,62 +215,6 @@ class Record(models.Model):
                 Group.objects.filter(pk__in=[g.pk for g in groups],
                                      teacher=user.employee).values_list('pk', flat=True))
         return common_groups
-
-    @classmethod
-    def enqueue_student(cls, student: Student, group: Group) -> bool:
-        """Puts the student in the queue of the group.
-
-        The function triggers further actions, so the student will be pulled
-        into the group as soon as there is vacancy and he is first in line.
-
-        Concurrency:
-            This function may lead to a race when run concurrently. The race
-            will result in a student enqueued multiple times in the same group.
-            This could be prevented with database locking, but was considered
-            not harmful enough: the student will only be pulled into the group
-            once. Upon second pulling his first ENROLLED record is going to be
-            removed.
-
-        Returns:
-            bool: Whether the student could be enqueued. Will return True if the
-            student had already been enqueued in the group.
-        """
-        cur_time = datetime.now()
-        if not cls.can_enqueue(student, group, cur_time):
-            return False
-        if cls.is_recorded(student, group):
-            return True
-        Record.objects.create(
-            group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
-        LOGGER.info('User %s is enqueued into group %s', student, group)
-        GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
-        return True
-
-    @staticmethod
-    def remove_from_group(student: Student, group: Group) -> bool:
-        """Removes the student from the group.
-
-        The user can only leave the group before unenrolling deadline, and can
-        only leave the queue until the end of enrolling period.
-
-        The function triggers further actions, so another student will be pulled
-        into the group as there is a vacancy caused by the student's departure.
-
-        Returns:
-            bool: Whether the removal was successfull.
-        """
-        if not Record.can_dequeue(student, group):
-            return False
-        try:
-            record = Record.objects.filter(
-                student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
-        except Record.DoesNotExist:
-            return False
-        record.status = RecordStatus.REMOVED
-        record.save()
-        LOGGER.info('User %s removed from group %s', student, group)
-        GROUP_CHANGE_SIGNAL.send(None, group_id=record.group_id)
-        return True
 
     @classmethod
     def set_queue_priority(cls, student: Student, group: Group, priority: int) -> bool:

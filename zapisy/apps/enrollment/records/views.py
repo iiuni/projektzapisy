@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.records import Record
+from apps.enrollment.records import engine
 from apps.users.decorators import student_required
 from apps.users.models import Student
 
@@ -21,7 +22,7 @@ def enqueue(request):
     except (KeyError, Group.DoesNotExist):
         raise Http404
 
-    if Record.enqueue_student(student, group):
+    if engine.enqueue_student(student, group):
         messages.success(
             request, (
                 "Jesteś w kolejce. Jak tylko w grupie będzie wolne miejsce "
@@ -29,7 +30,7 @@ def enqueue(request):
                 "asynchroniczny proces."
             )
         )
-        if not Record.can_enroll(student, group):
+        if not engine.can_enroll(student, group):
             messages.warning(request,
                              ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
                               "Jeśli nie  zmieni się to do czasu wciągania Twojego rekordu "
@@ -51,7 +52,7 @@ def dequeue(request):
     except (KeyError, Group.DoesNotExist):
         raise Http404
 
-    if Record.remove_from_group(student, group):
+    if engine.remove_from_group(student, group):
         messages.success(request, "Usunięto rekord z grupy/kolejki.")
     else:
         messages.warning(request, "Nie udało się usunąć z grupy/kolejki.")

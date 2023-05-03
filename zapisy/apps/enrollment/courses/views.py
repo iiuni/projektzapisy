@@ -13,6 +13,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.enrollment.records import engine
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
@@ -84,9 +85,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
     groups = Record.is_recorded_in_groups(student, groups)
-    student_can_enqueue = Record.can_enqueue_groups(
+    student_can_enqueue = engine.can_enqueue_groups(
         student, course.groups.all())
-    student_can_dequeue = Record.can_dequeue_groups(
+    student_can_dequeue = engine.can_dequeue_groups(
         student, course.groups.all())
 
     for group in groups:

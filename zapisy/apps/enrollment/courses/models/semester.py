@@ -97,6 +97,9 @@ class Semester(models.Model):
     def get_final_limit() -> int:
         return settings.ECTS_FINAL_LIMIT
 
+    def is_initial_limit(self, timestamp: Optional[datetime] = None) -> int:
+        return self.get_current_limit(timestamp) == settings.ECTS_INITIAL_LIMIT
+
     def get_current_limit(self, timestamp: Optional[datetime] = None) -> int:
         """Returns the enrollment ECTS limit at the timestamp."""
         if timestamp is None:

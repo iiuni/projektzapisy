@@ -10,6 +10,7 @@ from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.enrollment.records.models.records import Record, RecordStatus, CanEnroll
+from apps.enrollment.records.engine.enqueue import can_enroll
 
 LOGGER = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ def fill_group(group_id: int):
     This function may raise a DatabaseError when too many transaction errors
     occur.
     """
+    LOGGER.info('Group fill %d', group_id)
     num_transaction_errors = 0
     group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
     can_enroll = GroupOpeningTimes.is_enrollment_open(group.course, datetime.now())
@@ -156,9 +158,9 @@ def enroll_student(record: Record) -> Tuple[bool, List[int]]:
         status=RecordStatus.REMOVED).select_for_update()
 
     # Check if he can be enrolled at all.
-    can_enroll = Record.can_enroll(record.student, record.group)
-    if not can_enroll:
-        if can_enroll == CanEnroll.ECTS_LIMIT:
+    can_be_enrolled = can_enroll(record.student, record.group)
+    if not can_be_enrolled:
+        if can_be_enrolled == CanEnroll.ECTS_LIMIT:
             record.status = RecordStatus.BLOCKED
 
             # Send notifications

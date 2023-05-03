@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import decode_class_type_singular
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.enrollment.records import engine
 from apps.enrollment.timetable.models import Pin
 from apps.schedule.models.term import Term as SchTerm
 from apps.users.decorators import student_required
@@ -153,8 +154,8 @@ def my_prototype(request):
     all_groups_by_id = {r.group_id: r.group for r in records}
     all_groups_by_id.update({p.pk: p for p in pinned})
     all_groups = list(all_groups_by_id.values())
-    can_enqueue_dict = Record.can_enqueue_groups(student, all_groups)
-    can_dequeue_dict = Record.can_dequeue_groups(student, all_groups)
+    can_enqueue_dict = engine.can_enqueue_groups(student, all_groups)
+    can_dequeue_dict = engine.can_dequeue_groups(student, all_groups)
 
     for record in records:
         group = all_groups_by_id.get(record.group_id)
@@ -207,12 +208,12 @@ def prototype_action(request, group_id):
         Pin.objects.filter(student_id=student.pk, group_id=group_id).delete()
         return HttpResponse(status=204)
     if action == 'enqueue':
-        success = Record.enqueue_student(student, group)
+        success = engine.enqueue_student(student, group)
         if not success:
             return HttpResponse(status=403)
         return HttpResponse(status=204)
     if action == 'dequeue':
-        success = Record.remove_from_group(student, group)
+        success = engine.remove_from_group(student, group)
         if not success:
             return HttpResponse(status=403)
         return HttpResponse(status=204)
@@ -229,8 +230,8 @@ def prototype_get_course(request, course_id):
     groups = course.groups.exclude(extra='hidden').select_related(
         'course', 'teacher', 'course__semester', 'teacher__user'
     ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
-    can_enqueue_dict = Record.can_enqueue_groups(student, groups)
-    can_dequeue_dict = Record.can_dequeue_groups(student, groups)
+    can_enqueue_dict = engine.can_enqueue_groups(student, groups)
+    can_dequeue_dict = engine.can_dequeue_groups(student, groups)
     for group in groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
@@ -268,8 +269,8 @@ def prototype_update_groups(request):
             'course', 'teacher', 'course__semester', 'teacher__user').prefetch_related(
                 'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
 
-    can_enqueue_dict = Record.can_enqueue_groups(student, groups)
-    can_dequeue_dict = Record.can_dequeue_groups(student, groups)
+    can_enqueue_dict = engine.can_enqueue_groups(student, groups)
+    can_dequeue_dict = engine.can_dequeue_groups(student, groups)
     for group in groups:
         group.can_enqueue = can_enqueue_dict.get(group.pk)
         group.can_dequeue = can_dequeue_dict.get(group.pk)
