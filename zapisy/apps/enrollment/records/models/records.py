@@ -47,13 +47,11 @@ from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import DatabaseError, models, transaction
+from django.db import models
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.courses.models.group import GuaranteedSpots
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.users.models import Student
 
 LOGGER = logging.getLogger(__name__)
@@ -64,6 +62,7 @@ class RecordStatus(models.IntegerChoices):
     QUEUED = 0
     ENROLLED = 1
     REMOVED = 2
+    BLOCKED = 3
 
 
 class CanEnroll(Enum):
@@ -153,8 +152,7 @@ class Record(models.Model):
         records = Record.objects.filter(
             student=student,
             group__course__in=courses,
-            status__in=[RecordStatus.ENROLLED, RecordStatus.QUEUED],
-        ).select_related("group__course")
+        ).exclude(status=RecordStatus.REMOVED).select_related("group__course")
 
         ret: Dict[int, bool] = {course.pk: False for course in courses}
 
@@ -301,7 +299,7 @@ class Record(models.Model):
             if group.id not in by_group:
                 continue
             record = by_group[group.id]
-            if record.status == RecordStatus.QUEUED:
+            if record.status in [RecordStatus.QUEUED, RecordStatus.BLOCKED]:
                 setattr(group, 'is_enqueued', True)
                 setattr(group, 'priority', record.priority)
             elif record.status == RecordStatus.ENROLLED:
@@ -333,39 +331,6 @@ class Record(models.Model):
             ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
             ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
         return ret_dict
-
-    @classmethod
-    def free_spots_by_role(cls, group: Group) -> Dict[str, int]:
-        """Counts the number of free spots indexed by user role.
-
-        The purpose of this is to establish if the group has free place in it at
-        all and how many students are enrolled according to which
-        GuaranteedSpots rule. Note, that this function will only work
-        deterministically and sanely, if the roles defined in GuaranteedSpots
-        rules are distinct for this groups.
-
-        The number of students not matched to any GuaranteedSpots rule will be
-        indexed with '-'.
-        """
-        ret: Dict[str, int] = {}
-        guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
-        all_enrolled_records = cls.objects.filter(
-            group=group, status=RecordStatus.ENROLLED).select_related(
-                'student', 'student__user').prefetch_related('student__user__groups')
-        all_enrolled_students = set(r.student.user for r in all_enrolled_records)
-
-        for gsr in guaranteed_spots_rules:
-            role = gsr.role
-            counter = 0
-            for user in all_enrolled_students.copy():
-                if role in user.groups.all():
-                    all_enrolled_students.remove(user)
-                    counter += 1
-                    if counter == gsr.limit:
-                        break
-            ret[gsr.role.name] = gsr.limit - counter
-        ret['-'] = group.limit - len(all_enrolled_students)
-        return ret
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
@@ -411,7 +376,7 @@ class Record(models.Model):
         if cls.is_recorded(student, group):
             return True
         Record.objects.create(
-            group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
+            group=group, student=student, status__in=RecordStatus.QUEUED, created=cur_time)
         LOGGER.info('User %s is enqueued into group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
         return True
@@ -454,86 +419,6 @@ class Record(models.Model):
         return num == 1
 
     @classmethod
-    def pull_record_into_group(cls, group_id: int) -> bool:
-        """Checks for vacancies and pulls first student from queue if possible.
-
-        If there is free spot in the group, this function will pick the first
-        record from the queue and try to enroll it into the group. The first
-        record may be removed if the student is not eligible for enrollment.
-
-        Returns:
-          The function will return False if the group is already full, or the
-          queue is empty or the enrollment is closed for the semester. True
-          value will mean, that it should be run again on that group. The
-          function may throw DatabaseError if transaction fails.
-
-        Concurrency:
-          This function may be run concurrently. A data race could potentially
-          lead to number of students enrolled exceeding the limit. It therefore
-          needs to be atomic. A lock is hence obtained on all the records in the
-          same group. This way only one instance of this function can operate on
-          the same group at the same time (the second instance will have to wait
-          for the lock to be released). We optimistically assume that the group
-          limit is not going to change while the function is executing and do
-          not obtain a lock on the group in the database.
-        """
-        group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
-        if not GroupOpeningTimes.is_enrollment_open(group.course, datetime.now()):
-            return False
-        # Groups that will need to be pulled into afterwards.
-        trigger_groups = []
-
-        with transaction.atomic():
-            # We obtain a lock on the records in this group.
-            records = cls.objects.filter(group_id=group_id).exclude(
-                status=RecordStatus.REMOVED).select_for_update()
-            free_spots_by_role = cls.free_spots_by_role(group)
-            no_one_waiting = True
-            # We rely here on the fact, that '-' will be in the order before all
-            # the role names.
-            for role in sorted(free_spots_by_role):
-                if free_spots_by_role[role] <= 0:
-                    continue
-                try:
-                    queue_query = records.filter(status=RecordStatus.QUEUED)
-                    if role != '-':
-                        queue_query = queue_query.filter(student__user__groups__name=role)
-                    first_in_line = queue_query.earliest('created')
-                    no_one_waiting = False
-                    trigger_groups = first_in_line.enroll_or_remove(group)
-                except cls.DoesNotExist:
-                    pass
-
-            if no_one_waiting:
-                return False
-
-        # The tasks should be triggered outside of the transaction
-        for trigger_group_id in trigger_groups:
-            GROUP_CHANGE_SIGNAL.send(None, group_id=trigger_group_id)
-        return True
-
-    @classmethod
-    def fill_group(cls, group_id: int):
-        """Pulls records from the queue into the group as long as possible.
-
-        This function may raise a DatabaseError when too many transaction errors
-        occur.
-        """
-        num_transaction_errors = 0
-        still_free = True
-        while still_free:
-            try:
-                still_free = cls.pull_record_into_group(group_id)
-            except DatabaseError:
-                # Transaction failure probably means that Postgres decided to
-                # terminate the transaction in order to eliminate a deadlock. We
-                # will want to retry then. It would not however be responsible
-                # to retry too many times and obscure some real error.
-                num_transaction_errors += 1
-                if num_transaction_errors == 3:
-                    raise
-
-    @classmethod
     def update_records_in_auto_enrollment_group(cls, group_id: int):
         """Automatically syncs students in an auto-enrollment group.
 
@@ -574,60 +459,3 @@ class Record(models.Model):
         # Drop records of people not in the group.
         cls.objects.filter(group_id=group_id).exclude(status=RecordStatus.REMOVED).exclude(
             student_id__in=(enrolled_other | queued_other)).update(status=RecordStatus.REMOVED)
-
-    def enroll_or_remove(self, group: Group) -> List[int]:
-        """Tries to change a single QUEUED record status to ENROLLED.
-
-        The operation might fail under certain circumstances (enrolling would
-        exceed his ECTS limit).
-
-        The return value is a list of group ids that need to be triggered
-        (pulled from). The function may raise a DatabaseError if transaction
-        fails (it might happen in a deadlock situation or when any exception is
-        raised in running of this function).
-
-        Concurrency:
-            The function may be run concurrently. A data race might potentially
-            lead to a student breaching ECTS limit. To prevent that a lock is
-            obtained on all records of this student. This way, no other instance
-            of this function will try to pull him into another group at the same
-            time.
-        """
-        with transaction.atomic():
-            records = Record.objects.filter(student_id=self.student_id).exclude(
-                status=RecordStatus.REMOVED).select_for_update()
-
-            # Check if he can be enrolled at all.
-            can_enroll = self.can_enroll(self.student, group)
-            if not can_enroll:
-                self.status = RecordStatus.REMOVED
-                self.save()
-
-                # Send notifications
-                student_not_pulled.send_robust(
-                    sender=self.__class__,
-                    instance=self.group,
-                    user=self.student.user,
-                    reason=can_enroll.value)
-
-                return []
-            # Remove him from all parallel groups (and queues of lower
-            # priority). These groups need to be afterwards pulled into
-            # (triggered).
-            other_groups_query = records.filter(
-                group__course__id=group.course_id,
-                group__type=group.type).exclude(id=self.pk).filter(
-                    models.Q(priority__lt=self.priority) | models.Q(status=RecordStatus.ENROLLED))
-            # The list of groups to trigger must be computed now, after the
-            # update it would be empty. Note that this list should have at most
-            # one element.
-            other_groups_query_list = list(
-                other_groups_query.filter(status=RecordStatus.ENROLLED).values_list(
-                    'group_id', flat=True))
-            other_groups_query.update(status=RecordStatus.REMOVED)
-            self.status = RecordStatus.ENROLLED
-            self.save()
-            # Send notification to user
-            student_pulled.send_robust(
-                sender=self.__class__, instance=self.group, user=self.student.user)
-            return other_groups_query_list

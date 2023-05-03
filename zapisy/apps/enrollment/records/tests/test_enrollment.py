@@ -36,10 +36,12 @@ def mock_datetime(year, month, day, hour=0, minute=0):
 # explanation.
 RECORDS_DATETIME = 'apps.enrollment.records.models.records.datetime'
 SEMESTER_DATETIME = 'apps.enrollment.courses.models.semester.datetime'
+ENGINE_DATETIME = 'apps.enrollment.records.engine.datetime'
 
 
 @override_settings(RUN_ASYNC=False)
 @patch(SEMESTER_DATETIME, mock_datetime(2011, 10, 4))
+@patch(ENGINE_DATETIME, mock_datetime(2011, 10, 4))
 class EnrollmentTest(TestCase):
     """Verify correctness of our enrollment logic implementation.
 
@@ -188,7 +190,7 @@ class EnrollmentTest(TestCase):
         self.assertTrue(
             Record.objects.filter(
                 student=self.bolek, group=self.knitting_lecture_group,
-                status=RecordStatus.REMOVED).exists())
+                status=RecordStatus.BLOCKED).exists())
         self.assertEqual(
             Record.student_points_in_semester(self.bolek, self.semester), 35)
 
