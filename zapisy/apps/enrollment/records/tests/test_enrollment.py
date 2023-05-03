@@ -36,7 +36,7 @@ def mock_datetime(year, month, day, hour=0, minute=0):
 # explanation.
 RECORDS_DATETIME = 'apps.enrollment.records.models.records.datetime'
 SEMESTER_DATETIME = 'apps.enrollment.courses.models.semester.datetime'
-ENGINE_DATETIME = 'apps.enrollment.records.engine.datetime'
+ENGINE_DATETIME = 'apps.enrollment.records.engine.fillup_group.datetime'
 
 
 @override_settings(RUN_ASYNC=False)

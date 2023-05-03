@@ -14,13 +14,13 @@ from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.models.records import Record
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.enrollment.records.engine import FillGroup
+from apps.enrollment.records.engine import fill_group
 
 
 @job
 def pull_from_queue(group_id: int):
     """This function will pull students from the queue as long as possible."""
-    FillGroup.fill_group(group_id)
+    fill_group(group_id)
 
 
 @job

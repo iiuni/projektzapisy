@@ -381,8 +381,8 @@ class Record(models.Model):
         GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
         return True
 
-    @classmethod
-    def remove_from_group(cls, student: Student, group: Group) -> bool:
+    @staticmethod
+    def remove_from_group(student: Student, group: Group) -> bool:
         """Removes the student from the group.
 
         The user can only leave the group before unenrolling deadline, and can
@@ -394,13 +394,12 @@ class Record(models.Model):
         Returns:
             bool: Whether the removal was successfull.
         """
-        record = None
-        if not cls.can_dequeue(student, group):
+        if not Record.can_dequeue(student, group):
             return False
         try:
             record = Record.objects.filter(
                 student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
-        except cls.DoesNotExist:
+        except Record.DoesNotExist:
             return False
         record.status = RecordStatus.REMOVED
         record.save()
