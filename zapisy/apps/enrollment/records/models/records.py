@@ -376,7 +376,7 @@ class Record(models.Model):
         if cls.is_recorded(student, group):
             return True
         Record.objects.create(
-            group=group, student=student, status__in=RecordStatus.QUEUED, created=cur_time)
+            group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)
         LOGGER.info('User %s is enqueued into group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
         return True
