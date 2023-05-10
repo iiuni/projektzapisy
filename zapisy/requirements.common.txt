@@ -26,7 +26,6 @@ python-memcached==1.59
 more-itertools==8.14.0
 xhtml2pdf==0.2.8
 # BBCode -> HTML
-postmarkup==1.2.2
 # PyYAML is used for fixtures.
 pyyaml==5.4.1
 # Bokeh - library used for plotting in views displaying Poll results
