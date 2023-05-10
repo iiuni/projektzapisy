@@ -21,7 +21,7 @@
 {% block all-content %}
 <h2>{{ title }}</h2>
 
-<form class="form-inline w-50" action="{% url 'events:conflicts' %}" method="GET">
+<form class="form-inline col col-md-8 col-lg-6" action="{% url 'events:conflicts' %}" method="GET">
     <div class="container p-0">
         <div class="input-group mb-3">
             <label class="input-group-text">{{ form.beg_date.label }}</label>

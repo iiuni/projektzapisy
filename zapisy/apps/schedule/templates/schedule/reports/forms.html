@@ -21,7 +21,7 @@
         <form method="post">
             {% include "schedule/includes/_report_form_render.html" with form=form_table %}
             <input type="hidden" name="report-type" value="table">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+            <button type="submit" class="btn btn-success btn-lg btn-block w-100">Generuj raport</button>
         </form>
     </div>
     {% endif %}
@@ -30,7 +30,7 @@
         <form method="post">
             {% include "schedule/includes/_report_form_render.html" with form=form_doors %}
             <input type="hidden" name="report-type" value="doors">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+            <button type="submit" class="btn btn-success btn-lg btn-block w-100">Generuj raport</button>
         </form>
     </div>
     {% endif %}

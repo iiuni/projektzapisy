@@ -78,7 +78,7 @@
           data-bs-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
           <div class="d-flex w-100 justify-content-between me-1">
             <span>{{ group_name }}</span>
-            <span class="text-end text-nowrap">
+            <span class="text-end text-nowrap align-self-center">
               {{ submissions_count|lookup:group_name|default_if_none:0 }}
             </span>
           </div>

@@ -100,10 +100,7 @@ export default class NotificationsComponent extends Vue {
 
 <template>
   <div>
-    <li
-      id="notification-dropdown"
-      class="nav-item dropdown btn-group text-center"
-    >
+    <li id="notification-dropdown" class="nav-item dropdown">
       <a
         class="nav-link dropdown-toggle specialdropdown ms-1"
         href="#"
