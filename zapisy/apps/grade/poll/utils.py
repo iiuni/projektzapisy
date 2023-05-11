@@ -188,9 +188,7 @@ class PollSummarizedResultsEntry:
             source = bokeh.models.sources.ColumnDataSource(data=source_data)
             plot.hbar(y='choices', right='values', source=source, height=0.8)
 
-            ticker_interval, last_tick = self._max_choice_occurrences.calculate_ticker_properties(
-                base=10, mantissas=[1, 2, 5], max_num_of_ticks=6
-            )
+            ticker_interval, last_tick = self._max_choice_occurrences.calculate_ticker_properties()
 
             plot.x_range.start = 0
             plot.x_range.end = max(1, last_tick*1.1)
@@ -245,6 +243,9 @@ class PollSummarizedResults:
 
 class PollMaxChoiceOccurrences:
     """Keeps track of the largest choices occurrence in the summary results view of the Poll."""
+    max_num_of_ticks = 6
+    mantissas = [1, 2, 5]
+
     def __init__(self):
         self.value = 0
 
@@ -252,14 +253,16 @@ class PollMaxChoiceOccurrences:
         if maybe_max > self.value:
             self.value = maybe_max
 
-    def calculate_ticker_properties(self, base, mantissas, max_num_of_ticks):
-        index = 0
+    def calculate_ticker_properties(self):
+        if self.value == 0:
+            return 0, 0
+
+        base_power = len(str(math.ceil(self.value / (self.max_num_of_ticks-1))))-1
         interval = 0
-        while self.value > (max_num_of_ticks - 1) * interval:
-            mantissa = mantissas[index % len(mantissas)]
-            base_power = index // len(mantissas)
-            interval = mantissa * base ** base_power
+        index = 0
+        while self.value > (self.max_num_of_ticks-1) * interval:
+            interval = self.mantissas[index] * 10 ** base_power
             index += 1
 
-        last_tick = interval * math.ceil(self.value / max(1, interval))
+        last_tick = interval * math.ceil(self.value / interval)
         return interval, last_tick
