@@ -21,7 +21,6 @@ def fill_group(group_id: int):
     This function may raise a DatabaseError when too many transaction errors
     occur.
     """
-    LOGGER.info('Group fill %d', group_id)
     num_transaction_errors = 0
     group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
     can_enroll = GroupOpeningTimes.is_enrollment_open(group.course, datetime.now())
