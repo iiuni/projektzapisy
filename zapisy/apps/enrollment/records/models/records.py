@@ -39,15 +39,14 @@ Record Lifetime:
 """
 
 import logging
-from collections import defaultdict
 from enum import Enum
-from typing import DefaultDict, Dict, List, Set
+from typing import List, Set
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from apps.enrollment.courses.models import CourseInstance, Group
+from apps.enrollment.courses.models import Group
 from apps.users.models import Student
 
 LOGGER = logging.getLogger(__name__)
@@ -87,58 +86,6 @@ class Record(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-
-    @staticmethod
-    def list_waiting_students(
-            courses: List[CourseInstance]) -> DefaultDict[int, DefaultDict[int, int]]:
-        """Returns students waiting to be enrolled.
-
-        Returned students aren't enrolled in any group of given type within
-        given course, but they are enqueued into at least one.
-
-        Returns:
-            A dict indexed by a course_id. Every entry is a dict mapping
-            group_type to a number of waiting students.
-        """
-        queued = Record.objects.filter(
-            status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED], group__course__in=courses).values(
-                'group__course', 'group__type', 'student__user',
-                'student__user__first_name', 'student__user__last_name')
-        enrolled = Record.objects.filter(
-            status=RecordStatus.ENROLLED, group__course__in=courses).values(
-                'group__course', 'group__type', 'student__user', 'student__user__first_name',
-                'student__user__last_name')
-        waiting = queued.difference(enrolled)
-        ret = defaultdict(lambda: defaultdict(int))
-        for w in waiting:
-            ret[w['group__course']][w['group__type']] += 1
-        return ret
-
-    @classmethod
-    def groups_stats(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
-        """For a list of groups returns number of enqueued and enrolled students.
-
-        The data will be returned in the form of a dict indexed by group id.
-        Every entry will be a dict with fields 'num_enrolled' and
-        'num_enqueued'.
-        """
-        enrolled_agg = models.Count('id', filter=models.Q(status=RecordStatus.ENROLLED))
-        enqueued_agg = models.Count('id', filter=models.Q(status=RecordStatus.QUEUED))
-        records = cls.objects.filter(group__in=groups).exclude(
-            status=RecordStatus.REMOVED).values('group_id').annotate(
-                num_enrolled=enrolled_agg, num_enqueued=enqueued_agg).values(
-                    'group_id', 'num_enrolled', 'num_enqueued')
-        ret_dict: Dict[int, Dict[str, int]] = {
-            g.pk: {
-                'num_enrolled': 0,
-                'num_enqueued': 0
-            }
-            for g in groups
-        }
-        for rec in records:
-            ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
-            ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
-        return ret_dict
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:

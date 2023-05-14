@@ -1,6 +1,8 @@
 import copy
 from collections import defaultdict
-from typing import DefaultDict, Iterable, List, Optional
+from typing import DefaultDict, Dict, Iterable, List, Optional
+
+from django.db import models
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.records.models.records import Record, RecordStatus
@@ -87,3 +89,29 @@ def list_waiting_students(
     for w in waiting:
         ret[w['group__course']][w['group__type']] += 1
     return ret
+
+
+def groups_stats(groups: List[Group]) -> Dict[int, Dict[str, int]]:
+    """For a list of groups returns number of enqueued and enrolled students.
+
+    The data will be returned in the form of a dict indexed by group id.
+    Every entry will be a dict with fields 'num_enrolled' and
+    'num_enqueued'.
+    """
+    enrolled_agg = models.Count('id', filter=models.Q(status=RecordStatus.ENROLLED))
+    enqueued_agg = models.Count('id', filter=models.Q(status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED]))
+    records = Record.objects.filter(group__in=groups).exclude(
+        status=RecordStatus.REMOVED).values('group_id').annotate(
+            num_enrolled=enrolled_agg, num_enqueued=enqueued_agg).values(
+                'group_id', 'num_enrolled', 'num_enqueued')
+    ret_dict: Dict[int, Dict[str, int]] = {
+        g.pk: {
+            'num_enrolled': 0,
+            'num_enqueued': 0
+        }
+        for g in groups
+    }
+    for rec in records:
+        ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
+        ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
+    return ret_dict

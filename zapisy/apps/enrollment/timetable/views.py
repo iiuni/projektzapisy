@@ -28,7 +28,7 @@ def build_group_list(groups: List[Group]):
     The information must be sufficient to display information in the timetable
     and perform actions (enqueuing/dequeuing).
     """
-    stats = Record.groups_stats(groups)
+    stats = engine.groups_stats(groups)
     group_dicts = []
     group: Group
     for group in groups:

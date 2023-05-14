@@ -82,7 +82,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
 
     # Collect the general groups statistics.
-    groups_stats = Record.groups_stats(groups)
+    groups_stats = engine.groups_stats(groups)
     # Collect groups information related to the student.
     groups = engine.is_recorded_in_groups(student, groups)
     student_can_enqueue = engine.can_enqueue_groups(
