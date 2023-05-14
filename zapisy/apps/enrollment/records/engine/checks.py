@@ -1,5 +1,6 @@
 import copy
-from typing import Iterable, List, Optional
+from collections import defaultdict
+from typing import DefaultDict, Iterable, List, Optional
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.records.models.records import Record, RecordStatus
@@ -60,3 +61,29 @@ def student_points_in_semester(student: Student, semester: Semester,
     courses = set(r.group.course for r in records)
     courses.update(additional_courses)
     return sum(c.points for c in courses)
+
+
+def list_waiting_students(
+        courses: List[CourseInstance]) -> DefaultDict[int, DefaultDict[int, int]]:
+    """Returns students waiting to be enrolled.
+
+    Returned students aren't enrolled in any group of given type within
+    given course, but they are enqueued into at least one.
+
+    Returns:
+        A dict indexed by a course_id. Every entry is a dict mapping
+        group_type to a number of waiting students.
+    """
+    queued = Record.objects.filter(
+        status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED], group__course__in=courses).values(
+            'group__course', 'group__type', 'student__user',
+            'student__user__first_name', 'student__user__last_name')
+    enrolled = Record.objects.filter(
+        status=RecordStatus.ENROLLED, group__course__in=courses).values(
+            'group__course', 'group__type', 'student__user', 'student__user__first_name',
+            'student__user__last_name')
+    waiting = queued.difference(enrolled)
+    ret = defaultdict(lambda: defaultdict(int))
+    for w in waiting:
+        ret[w['group__course']][w['group__type']] += 1
+    return ret

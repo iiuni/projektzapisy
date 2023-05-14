@@ -283,7 +283,7 @@ class EnrollmentTest(TestCase):
                 }
             }
             self.assertDictEqual(
-                Record.list_waiting_students([self.cooking_exercise_group_1.course]),
+                engine.list_waiting_students([self.cooking_exercise_group_1.course]),
                 expected_waiting)
 
     def test_student_exceeds_the_final_limit(self):

@@ -102,7 +102,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     waiting_students = {}
     if request.user.employee:
-        waiting_students = Record.list_waiting_students([course])[course.id]
+        waiting_students = engine.list_waiting_students([course])[course.id]
 
     data = {
         'course': course,

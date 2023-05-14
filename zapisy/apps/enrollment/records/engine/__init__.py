@@ -18,7 +18,8 @@ from apps.enrollment.records.engine.checks import (
     is_enrolled,
     is_recorded,
     is_recorded_in_groups,
-    student_points_in_semester
+    student_points_in_semester,
+    list_waiting_students
 )
 
 __all__ = ['fill_group',
@@ -34,5 +35,6 @@ __all__ = ['fill_group',
            'is_enrolled',
            'is_recorded',
            'is_recorded_in_groups',
-           'student_points_in_semester'
+           'student_points_in_semester',
+           'list_waiting_students'
            ]
