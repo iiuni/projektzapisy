@@ -7,6 +7,7 @@ from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.models.records import Record, RecordStatus, CanEnroll
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
+from apps.enrollment.records.engine.checks import is_recorded
 
 LOGGER = logging.getLogger(__name__)
 
@@ -141,7 +142,7 @@ def enqueue_student(student: Student, group: Group) -> bool:
     cur_time = datetime.now()
     if not can_enqueue(student, group, cur_time):
         return False
-    if Record.is_recorded(student, group):
+    if is_recorded(student, group):
         return True
     Record.objects.create(
         group=group, student=student, status=RecordStatus.QUEUED, created=cur_time)

@@ -213,18 +213,18 @@ class EnrollmentTest(TestCase):
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
-        self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
-        self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_2))
-        self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_1))
-        self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
+        self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
+        self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_2))
+        self.assertFalse(engine.is_enrolled(self.tola, self.cooking_exercise_group_1))
+        self.assertFalse(engine.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
             self.assertTrue(engine.remove_from_group(self.bolek, self.cooking_exercise_group_1))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
             self.assertTrue(engine.remove_from_group(self.lolek, self.cooking_exercise_group_2))
 
-        self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
-        self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
+        self.assertFalse(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
+        self.assertTrue(engine.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
     def test_higher_priority_2(self):
         """Tests queue priorities.
@@ -242,18 +242,18 @@ class EnrollmentTest(TestCase):
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
             self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
-        self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
-        self.assertTrue(Record.is_recorded(self.tola, self.cooking_exercise_group_2))
-        self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_1))
-        self.assertFalse(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
+        self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
+        self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_2))
+        self.assertFalse(engine.is_enrolled(self.tola, self.cooking_exercise_group_1))
+        self.assertFalse(engine.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 12)):
             self.assertTrue(engine.remove_from_group(self.lolek, self.cooking_exercise_group_2))
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 8, 13)):
             self.assertTrue(engine.remove_from_group(self.bolek, self.cooking_exercise_group_1))
 
-        self.assertFalse(Record.is_recorded(self.tola, self.cooking_exercise_group_1))
-        self.assertTrue(Record.is_enrolled(self.tola, self.cooking_exercise_group_2))
+        self.assertFalse(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
+        self.assertTrue(engine.is_enrolled(self.tola, self.cooking_exercise_group_2))
 
     def test_waiting_students_number(self):
         """Check whether we get correct number of waiting students of given type.
