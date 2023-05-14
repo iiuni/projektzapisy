@@ -197,3 +197,26 @@ def enroll_student(record: Record) -> Tuple[bool, List[int]]:
     student_pulled.send_robust(
         sender=record.__class__, instance=record.group, user=record.student.user)
     return (True, other_groups_query_list)
+
+
+@transaction.atomic()
+def process_ects_limit_change():
+    """Unlock BLOCKED records.
+
+    Function change all BLOCKED records to QUEUED
+    and send GROUP_CHANGE_SIGNAL to all groups where was any blocked record.
+
+    Attention:
+        This function will cause heavy load on the server,
+        so it should be used with care when the load is least
+    """
+    records = Record.objects.filter(
+        status=RecordStatus.BLOCKED,
+        ).select_for_update()
+
+    groups = Group.objects.filter(record__status=RecordStatus.BLOCKED)
+
+    for group in groups:
+        GROUP_CHANGE_SIGNAL.send(None, group_id=group.pk)
+
+    records.update(status=RecordStatus.QUEUED)

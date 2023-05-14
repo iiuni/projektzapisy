@@ -1,4 +1,7 @@
-from apps.enrollment.records.engine.fillup_group import fill_group
+from apps.enrollment.records.engine.fillup_group import (
+    fill_group,
+    process_ects_limit_change
+)
 from apps.enrollment.records.engine.dequeue import (
     remove_from_group,
     can_dequeue,
@@ -25,6 +28,7 @@ from apps.enrollment.records.engine.checks import (
 )
 
 __all__ = ['fill_group',
+           'process_ects_limit_change',
            'remove_from_group',
            'can_dequeue',
            'can_dequeue_groups',
