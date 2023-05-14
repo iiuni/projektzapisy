@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Dict, List, Optional, Set
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
-from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.models.records import Record, RecordStatus, CanEnroll
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
@@ -48,6 +47,7 @@ def can_enqueue_groups(student: Optional[Student], groups: List[Group],
                 "course__semester"
                 ).all()
 
+    from apps.enrollment.records.models.opening_times import GroupOpeningTimes
     ret = GroupOpeningTimes.are_groups_open_for_student(student, groups, time)
     points = student_queue_points(student, groups[0].course.semester)
 

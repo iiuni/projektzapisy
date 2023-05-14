@@ -6,7 +6,6 @@ from django.db import DatabaseError, models, transaction
 
 from apps.enrollment.courses.models import Group
 from apps.enrollment.courses.models.group import GuaranteedSpots
-from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.notifications.custom_signals import student_not_pulled, student_pulled
 from apps.enrollment.records.models.records import Record, RecordStatus, CanEnroll
@@ -21,6 +20,7 @@ def fill_group(group_id: int):
     This function may raise a DatabaseError when too many transaction errors
     occur.
     """
+    from apps.enrollment.records.models.opening_times import GroupOpeningTimes
     num_transaction_errors = 0
     group = Group.objects.select_related('course', 'course__semester').get(id=group_id)
     can_enroll = GroupOpeningTimes.is_enrollment_open(group.course, datetime.now())
