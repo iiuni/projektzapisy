@@ -65,7 +65,7 @@ def students_view(request, user_id: int = None):
         groups = [r.group for r in records]
 
         # Highlight groups shared with the viewer in green.
-        viewer_groups = Record.common_groups(request.user, groups)
+        viewer_groups = engine.common_groups(request.user, groups)
         for g in groups:
             g.is_enrolled = g.pk in viewer_groups
 
@@ -109,7 +109,7 @@ def employees_view(request, user_id: int = None):
         groups = list(groups)
 
         # Highlight groups shared with the viewer in green.
-        viewer_groups = Record.common_groups(request.user, groups)
+        viewer_groups = engine.common_groups(request.user, groups)
         for g in groups:
             g.is_enrolled = g.pk in viewer_groups
 

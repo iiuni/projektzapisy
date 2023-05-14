@@ -1,7 +1,8 @@
 import copy
 from collections import defaultdict
-from typing import DefaultDict, Dict, Iterable, List, Optional
+from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
+from django.contrib.auth.models import User
 from django.db import models
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -115,3 +116,22 @@ def groups_stats(groups: List[Group]) -> Dict[int, Dict[str, int]]:
         ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
         ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
     return ret_dict
+
+
+def common_groups(user: User, groups: List[Group]) -> Set[int]:
+    """Returns ids of those of groups that user is involved in.
+
+    User may be an employee — we then return groups he is teaching. If user
+    is a student, we return those of the groups, he is enrolled into. If
+    user is neither a student nor an employee, an empty set is returned.
+    """
+    common_groups = set()
+    if user.student:
+        student_records = Record.objects.filter(
+            group__in=groups, student=user.student, status=RecordStatus.ENROLLED)
+        common_groups = {r.group_id for r in student_records}
+    if user.employee:
+        common_groups = set(
+            Group.objects.filter(pk__in=[g.pk for g in groups],
+                                 teacher=user.employee).values_list('pk', flat=True))
+    return common_groups
