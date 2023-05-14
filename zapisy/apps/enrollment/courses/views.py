@@ -84,7 +84,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
     # Collect groups information related to the student.
-    groups = Record.is_recorded_in_groups(student, groups)
+    groups = engine.is_recorded_in_groups(student, groups)
     student_can_enqueue = engine.can_enqueue_groups(
         student, course.groups.all())
     student_can_dequeue = engine.can_dequeue_groups(

@@ -15,7 +15,8 @@ from apps.enrollment.records.engine.auto_enrollment import (
 )
 from apps.enrollment.records.engine.checks import (
     is_enrolled,
-    is_recorded
+    is_recorded,
+    is_recorded_in_groups
 )
 
 __all__ = ['fill_group',
@@ -28,5 +29,6 @@ __all__ = ['fill_group',
            'enqueue_student',
            'update_records_in_auto_enrollment_group',
            'is_enrolled',
-           'is_recorded'
+           'is_recorded',
+           'is_recorded_in_groups'
            ]

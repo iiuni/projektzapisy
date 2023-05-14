@@ -6,6 +6,7 @@ from apps.enrollment.courses.models import Group
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.users.models import Student
+from apps.enrollment.records.engine.checks import is_recorded_in_groups
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ def can_dequeue_groups(student: Optional[Student], groups: List[Group],
     if student is None or not student.is_active:
         return {g.pk: False for g in groups}
     ret = {}
-    groups = Record.is_recorded_in_groups(student, groups)
+    groups = is_recorded_in_groups(student, groups)
     for group in groups:
         if group.auto_enrollment:
             ret[group.pk] = False
