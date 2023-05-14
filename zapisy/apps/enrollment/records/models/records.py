@@ -158,13 +158,3 @@ class Record(models.Model):
                 Group.objects.filter(pk__in=[g.pk for g in groups],
                                      teacher=user.employee).values_list('pk', flat=True))
         return common_groups
-
-    @classmethod
-    def set_queue_priority(cls, student: Student, group: Group, priority: int) -> bool:
-        """If the student is in a queue for the group, sets the queue priority.
-
-        Returns true if the priority is changed.
-        """
-        num = cls.objects.filter(
-            student=student, group=group, status=RecordStatus.QUEUED).update(priority=priority)
-        return num == 1

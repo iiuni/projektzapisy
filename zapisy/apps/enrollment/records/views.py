@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group
-from apps.enrollment.records.models.records import Record
 from apps.enrollment.records import engine
 from apps.users.decorators import student_required
 from apps.users.models import Student
@@ -70,7 +69,7 @@ def queue_set_priority(request):
     except (KeyError, Group.DoesNotExist):
         raise Http404
     priority = int(request.POST['priority'])
-    if Record.set_queue_priority(student, group, priority):
+    if engine.set_queue_priority(student, group, priority):
         messages.success(request, "Zmieniono priorytet kolejki.")
     else:
         messages.warning(request, "Priorytet kolejki nie zmieniony.")

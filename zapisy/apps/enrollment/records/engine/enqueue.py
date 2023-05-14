@@ -149,3 +149,14 @@ def enqueue_student(student: Student, group: Group) -> bool:
     LOGGER.info('User %s is enqueued into group %s', student, group)
     GROUP_CHANGE_SIGNAL.send(None, group_id=group.id)
     return True
+
+
+def set_queue_priority(student: Student, group: Group, priority: int) -> bool:
+    """If the student is in a queue for the group, sets the queue priority.
+
+    Returns true if the priority is changed.
+    """
+    num = Record.objects.filter(
+        student=student, group=group, status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED]
+        ).update(priority=priority)
+    return num == 1

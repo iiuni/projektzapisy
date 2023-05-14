@@ -209,9 +209,9 @@ class EnrollmentTest(TestCase):
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_1))
-            self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
+            self.assertTrue(engine.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
-            self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
+            self.assertTrue(engine.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
         self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_2))
@@ -238,9 +238,9 @@ class EnrollmentTest(TestCase):
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 13)):
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_1))
-            self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
+            self.assertTrue(engine.set_queue_priority(self.tola, self.cooking_exercise_group_1, 7))
             self.assertTrue(engine.enqueue_student(self.tola, self.cooking_exercise_group_2))
-            self.assertTrue(Record.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
+            self.assertTrue(engine.set_queue_priority(self.tola, self.cooking_exercise_group_2, 8))
 
         self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_1))
         self.assertTrue(engine.is_recorded(self.tola, self.cooking_exercise_group_2))
