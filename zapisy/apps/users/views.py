@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
+from apps.enrollment.records import engine
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
@@ -196,7 +197,7 @@ def my_profile(request):
         grade_info = StudentGraded.objects.filter(
             student=student).select_related('semester').order_by('-semester__records_opening')
         semesters_participated_in_grade = [x.semester for x in grade_info]
-        current_semester_ects = Record.student_points_in_semester(student, semester)
+        current_semester_ects = engine.student_points_in_semester(student, semester)
         data.update({
             't0_time': t0_time,
             'groups_times': groups_times,

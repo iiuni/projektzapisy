@@ -6,7 +6,7 @@ from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.records.models.records import Record, RecordStatus, CanEnroll
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.users.models import Student
-from apps.enrollment.records.engine.checks import is_recorded
+from apps.enrollment.records.engine.checks import is_recorded, student_points_in_semester
 
 LOGGER = logging.getLogger(__name__)
 
@@ -115,7 +115,7 @@ def can_enroll(student: Optional[Student], group: Group, time: datetime = None) 
     # Check if enrolling would not make the student exceed the current ECTS
     # limit.
     semester: Semester = group.course.semester
-    points = Record.student_points_in_semester(student, semester, [group.course])
+    points = student_points_in_semester(student, semester, [group.course])
     if points > semester.get_current_limit(time):
         return CanEnroll.ECTS_LIMIT
     return CanEnroll.OK

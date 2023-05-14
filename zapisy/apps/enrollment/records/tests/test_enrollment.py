@@ -173,7 +173,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
         self.assertEqual(
-            Record.student_points_in_semester(self.bolek, self.semester), 35)
+            engine.student_points_in_semester(self.bolek, self.semester), 35)
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 1, 12, 5)):
             # He should be able to join the queue.
@@ -193,7 +193,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.knitting_lecture_group,
                 status=RecordStatus.BLOCKED).exists())
         self.assertEqual(
-            Record.student_points_in_semester(self.bolek, self.semester), 35)
+            engine.student_points_in_semester(self.bolek, self.semester), 35)
 
     def test_higher_priority_1(self):
         """Tests queue priorities.
@@ -300,7 +300,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.cooking_exercise_group_1,
                 status=RecordStatus.ENROLLED).exists())
         self.assertEqual(
-            Record.student_points_in_semester(self.bolek, self.semester), 35)
+            engine.student_points_in_semester(self.bolek, self.semester), 35)
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
             # He shouldn't be able to join the queue.
@@ -315,7 +315,7 @@ class EnrollmentTest(TestCase):
             Record.objects.filter(
                 student=self.bolek, group=self.cleaning_lecture_group).exists())
         self.assertEqual(
-            Record.student_points_in_semester(self.bolek, self.semester), 35)
+            engine.student_points_in_semester(self.bolek, self.semester), 35)
 
         with patch(RECORDS_DATETIME, mock_datetime(2011, 10, 4, 12, 5)):
             # He should be able to join the queue.
@@ -325,7 +325,7 @@ class EnrollmentTest(TestCase):
                 student=self.bolek, group=self.knitting_lecture_group,
                 status=RecordStatus.ENROLLED).exists())
         self.assertEqual(
-            Record.student_points_in_semester(self.bolek, self.semester), 40)
+            engine.student_points_in_semester(self.bolek, self.semester), 40)
 
     def test_queries_num(self):
         """Tests num of queries in can_enqueue_groups.

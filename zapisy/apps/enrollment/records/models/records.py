@@ -41,13 +41,13 @@ Record Lifetime:
 import logging
 from collections import defaultdict
 from enum import Enum
-from typing import DefaultDict, Dict, Iterable, List, Set
+from typing import DefaultDict, Dict, List, Set
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from apps.enrollment.courses.models import CourseInstance, Group, Semester
+from apps.enrollment.courses.models import CourseInstance, Group
 from apps.users.models import Student
 
 LOGGER = logging.getLogger(__name__)
@@ -87,23 +87,6 @@ class Record(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-
-    @classmethod
-    def student_points_in_semester(cls, student: Student, semester: Semester,
-                                   additional_courses: Iterable[CourseInstance] = []) -> int:
-        """Returns total points the student has accumulated in semester.
-
-        Args:
-            additional_courses is a list of potential courses a student might
-            also want to enroll into.
-        """
-        records = cls.objects.filter(
-            student=student,
-            group__course__semester=semester, status=RecordStatus.ENROLLED).select_related(
-                'group', 'group__course')
-        courses = set(r.group.course for r in records)
-        courses.update(additional_courses)
-        return sum(c.points for c in courses)
 
     @staticmethod
     def list_waiting_students(
