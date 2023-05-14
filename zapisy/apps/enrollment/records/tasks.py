@@ -12,7 +12,6 @@ from django_rq import job
 
 from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.opening_times import GroupOpeningTimes
-from apps.enrollment.records.models.records import Record
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
 from apps.enrollment.records import engine
 
@@ -31,7 +30,7 @@ def update_auto_enrollment_groups(group_id: int):
     have a state of enrollment reflecting the overall state of the course.
     """
     for group in Group.objects.filter(course__groups=group_id, auto_enrollment=True):
-        Record.update_records_in_auto_enrollment_group(group.id)
+        engine.update_records_in_auto_enrollment_group(group.id)
 
 
 @receiver(GROUP_CHANGE_SIGNAL)

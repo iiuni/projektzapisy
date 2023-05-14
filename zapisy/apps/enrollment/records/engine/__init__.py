@@ -10,6 +10,9 @@ from apps.enrollment.records.engine.enqueue import (
     can_enroll,
     enqueue_student,
 )
+from apps.enrollment.records.engine.auto_enrollment import (
+    update_records_in_auto_enrollment_group
+)
 
 __all__ = ['fill_group',
            'remove_from_group',
@@ -19,4 +22,5 @@ __all__ = ['fill_group',
            'can_enqueue_groups',
            'can_enroll',
            'enqueue_student',
+           'update_records_in_auto_enrollment_group'
            ]
