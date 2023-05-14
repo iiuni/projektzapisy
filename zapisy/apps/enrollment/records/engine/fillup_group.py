@@ -161,22 +161,15 @@ def enroll_student(record: Record) -> Tuple[bool, List[int]]:
     if not can_be_enrolled:
         if can_be_enrolled == CanEnroll.ECTS_LIMIT:
             record.status = RecordStatus.BLOCKED
-
-            # Send notifications
-            # student_not_pulled.send_robust(
-            #     sender=cls.__class__,
-            #     instance=record.group,
-            #     user=record.student.user,
-            #     reason=can_enroll.value)
         else:
             record.status = RecordStatus.REMOVED
 
-            # Send notifications
-            student_not_pulled.send_robust(
-                sender=record.__class__,
-                instance=record.group,
-                user=record.student.user,
-                reason=can_enroll.value)
+        # Send notifications
+        student_not_pulled.send_robust(
+            sender=record.__class__,
+            instance=record.group,
+            user=record.student.user,
+            reason=can_be_enrolled.value)
 
         record.save()
 
