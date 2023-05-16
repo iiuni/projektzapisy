@@ -173,6 +173,9 @@ div.top .topbar .inline-inputs label {
 #sidebar {
   @media (max-width: 992px) {
     #sidebar-inner {
+      /* :after will position itself against nearest positioned parent, so we
+       * need to ensure that it will be this sidebar */
+      position: relative;
       overflow-y: hidden;
 
       &.folded {
@@ -182,9 +185,7 @@ div.top .topbar .inline-inputs label {
         &:after {
           position: absolute;
           display: block;
-          // Height of the card footer.
-          bottom: 1.5em;
-          left: 0;
+          bottom: 0;
           height: 50%;
           width: 100%;
           content: "";
