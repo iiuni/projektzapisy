@@ -1,4 +1,5 @@
 import json
+
 from django import template
 from django.utils import html, safestring
 from webpack_loader import utils as webpack_utils
