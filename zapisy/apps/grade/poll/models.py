@@ -1,6 +1,6 @@
 import json
 import os.path
-from typing import List, Optional, Union
+from typing import List, Union
 
 from django.db import models
 
