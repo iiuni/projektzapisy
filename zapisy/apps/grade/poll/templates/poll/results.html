@@ -64,7 +64,7 @@
   </div>
   <div class="col-lg-4 col-12">
     <select class="form-control mb-3"
-      onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);console.log(this.options[this.selectedIndex]);">
+      onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
       {% for semester in semesters %}
       <option value="{% url 'grade-poll-results' semester_id=semester.id %}"
         {% if semester.id == selected_semester.id  %}selected{% endif %}>{{ semester }}</option>
