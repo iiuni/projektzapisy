@@ -12,23 +12,31 @@ from apps.users.models import Student
 
 
 class PollType(models.IntegerChoices):
-    LECTURE = 1, 'ankieta dla wykładu'
-    EXERCISE = 2, 'ankieta dla ćwiczeń'
-    LABS = 3, 'ankieta dla pracowni'
-    EXERCISE_LABS = 5, 'ankieta dla ćwiczenio-pracowni'
-    SEMINAR = 6, 'ankieta dla seminarium'
-    LECTORATE = 7, 'ankieta dla lektoratu'
-    PHYSICAL_EDUCATION = 8, 'ankieta dla zajęć wf'
-    REPETITORY = 9, 'ankieta dla repetytorium'
-    PROJECT = 10, 'ankieta dla projektu'
-    EXAM = 1000, 'ankieta dla egzaminu'
-    GENERAL = 1001, 'ankieta ogólna'
+    LECTURE = 1, "ankieta dla wykładu"
+    EXERCISE = 2, "ankieta dla ćwiczeń"
+    LABS = 3, "ankieta dla pracowni"
+    EXERCISE_LABS = 5, "ankieta dla ćwiczenio-pracowni"
+    SEMINAR = 6, "ankieta dla seminarium"
+    LECTORATE = 7, "ankieta dla lektoratu"
+    PHYSICAL_EDUCATION = 8, "ankieta dla zajęć wf"
+    REPETITORY = 9, "ankieta dla repetytorium"
+    PROJECT = 10, "ankieta dla projektu"
+    EXAM = 1000, "ankieta dla egzaminu"
+    GENERAL = 1001, "ankieta ogólna"
 
 
 class PollManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'group', 'group__teacher__user', 'course', 'course__owner__user', 'semester'
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "group",
+                "group__teacher__user",
+                "course",
+                "course__owner__user",
+                "semester",
+            )
         )
 
 
@@ -48,6 +56,7 @@ class Poll(models.Model):
     :param semester: if present, the created poll will be of
         `PollType.GENERAL` type
     """
+
     objects = PollManager()
 
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
@@ -55,8 +64,8 @@ class Poll(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
 
     class Meta:
-        verbose_name = 'ankieta'
-        verbose_name_plural = 'ankiety'
+        verbose_name = "ankieta"
+        verbose_name_plural = "ankiety"
 
     @property
     def type(self) -> Union[PollType, GroupType]:
@@ -117,16 +126,16 @@ class Poll(models.Model):
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
+        result = {"id": self.pk, "name": self.subcategory, "type": self.category}
 
         return result
 
     def to_dict(self, number_of_submissions=0):
         return {
-            'id': self.pk,
-            'category': self.category,
-            'subcategory': self.subcategory,
-            'number_of_submissions': number_of_submissions
+            "id": self.pk,
+            "category": self.category,
+            "subcategory": self.subcategory,
+            "number_of_submissions": number_of_submissions,
         }
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
@@ -141,7 +150,7 @@ class Poll(models.Model):
             return records_models.Record.objects.filter(
                 student=student,
                 group__course=self.course,
-                status=records_models.RecordStatus.ENROLLED
+                status=records_models.RecordStatus.ENROLLED,
             ).exists()
         return True
 
@@ -174,7 +183,7 @@ class Poll(models.Model):
             student=student,
             status=records_models.RecordStatus.ENROLLED,
             group__course__semester=current_semester,
-        ).select_related('group')
+        ).select_related("group")
 
         for record in records:
             group = record.group
@@ -194,7 +203,9 @@ class Poll(models.Model):
         return polls
 
     @staticmethod
-    def get_all_polls_for_semester(user, semester: Semester = None) -> tuple([List['Poll'], List['Poll']]):
+    def get_all_polls_for_semester(
+        user, semester: Semester = None
+    ) -> tuple([List["Poll"], List["Poll"]]):
         """Returns all polls that user may see the submissions for.
 
         The polls will be annotated with submission counts.
@@ -210,39 +221,46 @@ class Poll(models.Model):
             return Poll.objects.none(), Poll.objects.none()
 
         poll_for_semester = Poll.objects.filter(semester=current_semester)
-        polls_for_courses_own, polls_for_groups_own = Poll.objects.none(), Poll.objects.none()
+        polls_for_courses_own, polls_for_groups_own = (
+            Poll.objects.none(),
+            Poll.objects.none(),
+        )
 
         if is_superuser:
-            polls_for_courses = Poll.objects.filter(
-                course__semester=current_semester
-            )
+            polls_for_courses = Poll.objects.filter(course__semester=current_semester)
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester
             )
             polls_for_courses_own = Poll.objects.filter(
-                course__semester=current_semester,
-                course__owner=user.employee
+                course__semester=current_semester, course__owner=user.employee
             )
             polls_for_groups_own = Poll.objects.filter(
-                group__course__semester=current_semester,
-                group__teacher=user.employee
+                group__course__semester=current_semester, group__teacher=user.employee
             )
         elif is_employee:
             polls_for_courses = Poll.objects.filter(
                 course__semester=current_semester,
                 course__owner=user.employee,
-            ) | Poll.objects.filter(group__course__semester=current_semester,
-                                    group__course__owner=user.employee)
+            ) | Poll.objects.filter(
+                group__course__semester=current_semester,
+                group__course__owner=user.employee,
+            )
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester,
                 group__teacher=user.employee,
             )
 
-        sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
+        sub_count_ann = models.Count(
+            "submission", filter=models.Q(submission__submitted=True)
+        )
         qs = poll_for_semester | polls_for_courses | polls_for_groups
-        qs_superuser_own_courses = poll_for_semester | polls_for_courses_own | polls_for_groups_own
+        qs_superuser_own_courses = (
+            poll_for_semester | polls_for_courses_own | polls_for_groups_own
+        )
 
-        return list(qs.annotate(number_of_submissions=sub_count_ann)), list(qs_superuser_own_courses.annotate(number_of_submissions=sub_count_ann))
+        return list(qs.annotate(number_of_submissions=sub_count_ann)), list(
+            qs_superuser_own_courses.annotate(number_of_submissions=sub_count_ann)
+        )
 
 
 class Schema(models.Model):
@@ -275,8 +293,8 @@ class Schema(models.Model):
     type = models.SmallIntegerField("Kategoria", choices=PollType.choices)
 
     class Meta:
-        verbose_name = 'szablon'
-        verbose_name_plural = 'szablony'
+        verbose_name = "szablon"
+        verbose_name_plural = "szablony"
 
     def __str__(self):
         return self.get_type_display()
@@ -294,9 +312,9 @@ class Schema(models.Model):
         """
         if schema_path is None:
             schema_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), 'assets/default_schema.json'
+                os.path.dirname(os.path.abspath(__file__)), "assets/default_schema.json"
             )
-        with open(schema_path, 'r') as schema_file:
+        with open(schema_path, "r") as schema_file:
             schema = json.load(schema_file)
 
             # For the purposes of compatibility with old GroupType tuple
@@ -307,11 +325,11 @@ class Schema(models.Model):
                 poll_type = options[values.index(int(poll_type))]
             elif isinstance(poll_type, tuple):
                 poll_type = poll_type[0]
-            schema_name = f'{poll_type.__class__.__name__}.{poll_type.name}'
+            schema_name = f"{poll_type.__class__.__name__}.{poll_type.name}"
 
             if schema_name in schema:
                 return schema[schema_name]
-            return schema['default']
+            return schema["default"]
 
     @classmethod
     def get_latest(cls, poll_type):
@@ -335,29 +353,37 @@ class Schema(models.Model):
         :returns: a schema with additional `answer` keys.
         """
         if (
-            self.questions and
-            'version' in self.questions and
-            self.questions['version'] == 1 and
-            'schema' in self.questions
+            self.questions
+            and "version" in self.questions
+            and self.questions["version"] == 1
+            and "schema" in self.questions
         ):
             updated_schema_entries = []
-            for entry in self.questions['schema']:
-                entry['answer'] = ""
+            for entry in self.questions["schema"]:
+                entry["answer"] = ""
                 updated_schema_entries.append(entry)
 
             return {
-                'version': self.questions['version'],
-                'schema': updated_schema_entries,
+                "version": self.questions["version"],
+                "schema": updated_schema_entries,
             }
 
-        return {'version': 1, 'schema': []}
+        return {"version": 1, "schema": []}
 
 
 class SubmissionManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'poll', 'poll__group', 'poll__group__teacher__user', 'poll__course',
-            'poll__course__owner__user', 'poll__semester'
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                "poll",
+                "poll__group",
+                "poll__group__teacher__user",
+                "poll__course",
+                "poll__course__owner__user",
+                "poll__semester",
+            )
         )
 
 
@@ -374,6 +400,7 @@ class Submission(models.Model):
     inside the `answers` JSON field with all the necessary information
     used for recreating the form.
     """
+
     objects = SubmissionManager()
 
     schema = models.ForeignKey(Schema, on_delete=models.SET_NULL, null=True)
@@ -385,8 +412,8 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'złoszenie'
-        verbose_name_plural = 'zgłoszenia'
+        verbose_name = "złoszenie"
+        verbose_name_plural = "zgłoszenia"
 
     def __str__(self):
         return str(self.poll)
