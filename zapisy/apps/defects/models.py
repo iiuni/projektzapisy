@@ -73,10 +73,3 @@ class DefectImage(models.Model):
             self.image.storage.delete(image_path)
 
         super().delete(*args, **kwargs)
-
-
-class DefectManager(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user_id.first_name + " " + self.user_id.last_name
