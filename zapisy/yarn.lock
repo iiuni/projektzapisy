@@ -5471,7 +5471,7 @@ fsevents@~2.1.2:
     dayjs: 1.11.7
     file-loader: 6.2.0
     fork-ts-checker-webpack-plugin: 5.2.1
-    jquery: 3.6.4
+    jquery: 3.7.0
     js-cookie: 2.2.1
     js-sha256: 0.9.0
     katex: 0.13.18
@@ -5893,10 +5893,10 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"jquery@npm:3.6.4":
-  version: 3.6.4
-  resolution: "jquery@npm:3.6.4"
-  checksum: 123ec6a284d995da7a795d72e4978afd63264cb3c3d58fd249673716474eb9bcd885d58d8a883ac91029082689834bd5aff3dde97cf4b864422bdfe9876b4e7e
+"jquery@npm:3.7.0":
+  version: 3.7.0
+  resolution: "jquery@npm:3.7.0"
+  checksum: a25e8c9c006c0f42f588cee518f2e189a7a8ae129d8d038f4a637e3f306219d533fe06382ced6376f494a7e501e5cf34e2216bbc1087deb244c2b3235a2a2c4b
   languageName: node
   linkType: hard
 
