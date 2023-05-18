@@ -9,30 +9,55 @@
 
 {% block all-content %}
     <div class="mb-5">
-        <h2>Wymagania</h2>
+        <h2>Moje studia</h2>
         <table class="table table-condensed">
-            <thead>
-                <th>
-                    Wymaganie
-                </th>
-                <th>
-                    Pozostała liczba przedmiotów
-                </th>
-                <th>
-                    Pozostała liczba ECTS
-                </th>
-                <th>
-                    Spełnione
-                </th>
-            </thead>
-            {% for requirement in requirements %}
-                <tr>
-                    <td>{{requirement.name}}</td>
-                    <td>{{requirement.courses}}</td>
-                    <td>{{requirement.ects}}</td>
-                    <td>{{requirement.fulfilled}}</td>
-                </tr>
-            {% endfor %}
+            <colgroup>
+                <col class="table-info-type"></col>
+                <col></col>
+            </colgroup>
+            <tr>
+                <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
+                <td>{{ student.ects }}</td>
+            </tr>
+            <tr>
+                <th>Program</th>
+                <td>{{ student.program }}</td>
+            </tr>
+            <tr>
+                <th>Semestr studiów</th>
+                <td>{{ student.semestr }}</td>
+            </tr>
+            <tr>
+                <th>Aktualny semestr</th>
+                <td>{{ semester }}</td>
+            </tr>
         </table>
+    </div>
+
+    <h2 class="mb-4">Wymagania</h2>
+    <div class="container">
+        {% for requirement in requirements %}
+        <div class="row py-4">
+            {% if requirement.fulfilled %}
+            <i class="fa fa-check fa-xl fa-fw text-success col-auto p-0"></i>
+            {% else %}
+            <i class="fa fa-times fa-xl fa-fw text-danger col-auto p-0"></i>
+            {% endif %}
+            <div class="col px-3">
+                <div class="mb-2">{{ requirement.name }}</div>
+                <div class="text-secondary">{{ requirement.additional_info }}</div>
+            </div>
+            <div class="col pr-0">
+                {% if requirement.ects %}
+                <div style="padding: 0.425rem 0;">
+                    <div class="progress" style="height: 0.5rem;">
+                        <div class="progress-bar w-75 bg-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="text-secondary p-1 position-absolute" style="left: 50%; transform: translateX(-50%);">151 / 170</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
 {% endblock %}
