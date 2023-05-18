@@ -7,6 +7,7 @@ from apps.enrollment.courses.models.course_type import Type as CourseType
 from apps.enrollment.courses.models.tag import Tag as CourseTag
 from apps.effects.models import CompletedCourses, Variant
 from apps.users.decorators import student_required
+from apps.enrollment.courses.models import Semester
 
 from .models import Student
 
@@ -94,8 +95,8 @@ def my_studies(request):
 
     The page displays user progress in graduating the university.
     """
-    data = {}
     student: Student = request.user.student
+    data = {'student': student, 'semester': Semester.get_upcoming_semester()}
 
     variant = Variant.objects.filter(program=student.program).first()
     requirements: list[dict] = variant.requirements.get('wymagania')
