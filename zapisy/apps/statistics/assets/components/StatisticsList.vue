@@ -99,7 +99,7 @@ export default class StatisticsList extends Vue {
           <td>{{ group.pinned }}</td>
           <td>
             <a
-              class="badge badge-sm bg-primary"
+              class="badge bg-primary"
               :href="group.url"
               target="_blank"
             >
