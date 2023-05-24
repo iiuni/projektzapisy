@@ -98,11 +98,7 @@ export default class StatisticsList extends Vue {
           <td>{{ group.queued }}</td>
           <td>{{ group.pinned }}</td>
           <td>
-            <a
-              class="badge bg-primary"
-              :href="group.url"
-              target="_blank"
-            >
+            <a class="badge bg-primary" :href="group.url" target="_blank">
               Admin <i class="fas fas-sm fa-external-link-alt"></i>
             </a>
           </td>
