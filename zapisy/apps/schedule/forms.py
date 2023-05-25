@@ -104,9 +104,17 @@ class EventForm(forms.ModelForm):
         model = Event
         exclude = ('status', 'author', 'created', 'edited', 'group', 'interested')
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if cleaned_data['type'] == Event.TYPE_GENERIC and cleaned_data['title'] == '':
+            raise forms.ValidationError("Tytuł wydarzenia nie może być pusty")
+        else:
+            return cleaned_data
+
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
+        required=False,
         help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne;"
         " widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
@@ -117,6 +125,7 @@ class EventForm(forms.ModelForm):
         label="Wydarzenie widoczne dla wszystkich użytkowników systemu",
         widget=forms.CheckboxInput(attrs={'class': ""}),
         required=False,
+        initial=True,
         help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
