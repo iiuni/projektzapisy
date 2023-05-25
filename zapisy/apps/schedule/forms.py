@@ -108,6 +108,8 @@ class EventForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         if cleaned_data['type'] == Event.TYPE_GENERIC and cleaned_data['title'] == '':
             raise forms.ValidationError("Tytuł wydarzenia nie może być pusty")
+        elif cleaned_data['type'] != Event.TYPE_GENERIC and cleaned_data['course'] is None:
+            raise forms.ValidationError("Wybierz przedmiot, którego dotyczy wydarzenie")
         else:
             return cleaned_data
 
