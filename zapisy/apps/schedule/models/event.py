@@ -39,7 +39,7 @@ class Event(models.Model):
                          (TYPE_GENERIC, 'Wydarzenie')]
 
     title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
-    description = models.TextField(verbose_name='Opis', blank=True)
+    description = models.TextField(verbose_name='Opis', null=True, blank=True)
     type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
     visible = models.BooleanField(verbose_name='Wydarzenie jest publiczne', default=False)
     status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
