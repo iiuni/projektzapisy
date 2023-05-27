@@ -43,7 +43,7 @@
     {% endif %}
 {% endblock %}
 
-{% block sidebar %}
+{% block sidebar-inner %}
     {% if employees_dict %}
         {{ employees_dict|json_script:"user-list-json-script" }}
     {% elif students %}
