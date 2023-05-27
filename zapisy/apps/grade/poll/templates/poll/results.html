@@ -32,16 +32,16 @@
     {% for entry in results.entries %}
     <div class="card mb-3">
       <div class="card-body">
-        <h5 class="card-title">{{ entry.question }}</h5>
+        <h5 class="card-title px-1">{{ entry.question }}</h5>
         {% if entry.field_type == "radio" or entry.field_type == "checkbox" %}
-        {{ entry.plot.1 | safe }}
-        {{ entry.plot.0 | safe }}
+          {{ entry.plot.1 | safe }}
+          {{ entry.plot.0 | safe }}
         {% else %}
-        {% for answer in entry.answers %}
-        {% if answer %}
-        <div class="{% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2">{{ answer }}</div>
-        {% endif %}
-        {% endfor %}
+          {% for answer in entry.answers %}
+            {% if answer.opinion and answer.opinion != "-" %}
+              <div class="{% if not answer.viewed %} alert-danger {% endif %} {% if not forloop.last %}border-bottom {% endif %}pb-2 pt-2 px-1">{{ answer.opinion }}</div>
+            {% endif %}
+          {% endfor %}
         {% endif %}
       </div>
       {% if results.display_answers_count %}
@@ -74,9 +74,9 @@
       {% for group_name, entries in polls.items %}
       {% with index=iterator|next %}
       <div class="card">
-        <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
+        <div class="card-header {% if not read_cat|lookup:group_name %} bg-danger text-white {% endif %}" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
           data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
-          <div class="d-flex w-100 justify-content-between">
+            <div class="d-flex w-100 justify-content-between">
             <span>{{ group_name }}</span>
             <span class="text-right text-nowrap">
               {{ submissions_count|lookup:group_name|default_if_none:0 }}
@@ -97,9 +97,11 @@
           </a>
           {% else %}
           <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.subcategory }}</span>
+            class="list-group-item {% if not read_poll|lookup:entry%} list-group-item-danger {% endif %} list-group-item-action">
+            <div class=" d-flex w-100 justify-content-between">
+              <span> 
+                {{ entry.subcategory }}
+              </span>
               <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
           </a>

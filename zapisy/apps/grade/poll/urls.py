@@ -18,8 +18,5 @@ urlpatterns = [
     path('results/semester/<int:semester_id>/poll/<int:poll_id>/',
          views.PollResults.as_view(),
          name='grade-poll-results'),
-    path('results/semester/<int:semester_id>/poll/<int:poll_id>/submission/<int:submission_id>/',
-         views.PollResults.as_view(),
-         name='grade-poll-results'),
     path('clear/', views.ClearSession.as_view(), name='grade-poll-clear-session'),
 ]

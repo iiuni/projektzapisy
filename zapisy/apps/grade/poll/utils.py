@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import bokeh.embed
 import bokeh.models.sources
@@ -99,13 +99,22 @@ def group(entries: List[Poll], sort=False) -> dict:
     return dict(output)
 
 
+class PollResultsAnswer:
+    """A single open question answer with view status."""
+    def __init__(self, opinion: str, viewed: Optional[bool]):
+        if viewed is None:
+            raise ValueError("Attempted to assign None to PollResultsAnswer.viewed, should be boolean.")
+        self.opinion = opinion
+        self.viewed = viewed
+
+
 class PollSummarizedResultsEntry:
     """A single entry in a summary view for a Poll.
 
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, choices=None):
+    def __init__(self, question, field_type, choices):
         self.question = question
         self._answers = []
         self._choices = choices
@@ -122,25 +131,35 @@ class PollSummarizedResultsEntry:
             return self._choices
         return []
 
-    def add_answer(self, answer):
+    def add_answer(self, answer, viewed):
         """Adds an answer to the container.
 
+        The value of `viewed` is only used for text answers and should be
+        boolean; `None` will cause an exception. For single or multiple
+        choice, the value does not matter and ideally should be `None`.
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
-        If the field_tyoe of the entry is set to `checkbox`, each answer will be
+        If the field_type of the entry is set to `checkbox`, each answer will be
         counted separately.
         """
         if not answer:
             return
-        if self.field_type == 'radio' and answer in self._choices:
-            choice_index = self._choices.index(answer)
-            self._choices_occurences[choice_index] += 1
-        if self.field_type == 'checkbox':
+        if self.field_type == 'radio':
+            try:
+                choice_index = self._choices.index(answer)
+                self._choices_occurences[choice_index] += 1
+            except ValueError:
+                return
+        elif self.field_type == 'checkbox':
             # Multiple-choice question will have a list of selected answers.
             for a in answer:
-                choice_index = self._choices.index(a)
-                self._choices_occurences[choice_index] += 1
-        self._answers.append(answer)
+                try:
+                    choice_index = self._choices.index(a)
+                    self._choices_occurences[choice_index] += 1
+                except ValueError:
+                    continue
+        else:
+            self._answers.append(PollResultsAnswer(opinion=answer, viewed=viewed))
 
     @property
     def answers(self):
@@ -189,16 +208,17 @@ class PollSummarizedResults:
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
 
-    def add_entry(self, question, field_type, answer, choices=None):
+    def add_entry(self, question, field_type, answer, choices, viewed):
         if question in self._questions:
             index = self._questions.index(question)
             existing_entry = self._entries[index]
-            existing_entry.add_answer(answer)
+            existing_entry.add_answer(answer, viewed)
         else:
             new_entry = PollSummarizedResultsEntry(
-                question=question, field_type=field_type, choices=choices
+                question=question, field_type=field_type,
+                choices=choices
             )
-            new_entry.add_answer(answer)
+            new_entry.add_answer(answer, viewed)
             self._entries.append(new_entry)
             self._questions.append(question)
 

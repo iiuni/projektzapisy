@@ -8,7 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import Student
+from apps.users.models import Employee, Student
 
 
 class PollType(models.IntegerChoices):
@@ -311,7 +311,7 @@ class Schema(models.Model):
         return schema
 
     def get_schema_with_default_answers(self):
-        """Fetches the Submission's schema and populates it with default answers.
+        """Fetches the schema and populates it with default (empty) answers.
 
         :returns: a schema with additional `answer` keys.
         """
@@ -354,6 +354,11 @@ class Submission(models.Model):
     intact. The schema is fetched at the creation time and stored
     inside the `answers` JSON field with all the necessary information
     used for recreating the form.
+
+    The possible format of `answers` object is as for Schema (see its
+    docstring) but with extra keys in the objects of the `schema` array:
+    `answer` and optionally `modified` (storing the last modification
+    timestamp of an individual answer to an open question).
     """
     objects = SubmissionManager()
 
@@ -366,7 +371,7 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'złoszenie'
+        verbose_name = 'zgłoszenie'
         verbose_name_plural = 'zgłoszenia'
 
     def __str__(self):
@@ -395,3 +400,17 @@ class Submission(models.Model):
             submission.save()
 
         return submission
+
+
+class PollView(models.Model):
+    """Represents the last time employee viewed the poll results."""
+    user = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'poll'], name='unique_user_poll'
+            )
+        ]

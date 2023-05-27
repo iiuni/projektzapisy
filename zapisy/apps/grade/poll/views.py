@@ -1,8 +1,9 @@
+import datetime
 import itertools
 import json
 from collections import defaultdict
 from operator import attrgetter
-from typing import List
+from typing import Dict, Iterable, List, Tuple
 
 from django.contrib import messages
 from django.shortcuts import redirect, render, reverse
@@ -10,10 +11,11 @@ from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
-from apps.grade.poll.models import Poll, Submission
+from apps.grade.poll.models import Poll, PollView, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
+from apps.users.models import Employee
 
 
 class TicketsEntry(TemplateView):
@@ -148,7 +150,7 @@ class SubmissionEntry(UpdateView):
         return self.active_submission
 
     def get_success_url(self):
-        """Manages how the user is redirected after submitting his answers.
+        """Manages how the user is redirected after submitting answers.
 
         By default, when the form is validated successfully, the user
         is redirected to the next unfinished submission in the list.
@@ -183,53 +185,102 @@ class PollResults(TemplateView):
         return number_of_submissions_for_category
 
     @staticmethod
-    def __get_processed_results(submissions):
+    def __modified_status(polls: Iterable[Poll], user: Employee) -> Tuple[Dict[str, bool], Dict[Poll, bool]]:
+        """Checks for unviewed modifications in the polls and their categories.
+
+        For all specified polls and their categories, checks whether any
+        submission within them has been modified since last view by the
+        employee, and returns this data as two dictionaries with boolean values.
+        """
+        is_read_category = defaultdict(True.__bool__)
+        is_read_poll = dict()
+
+        last_views: Dict[Poll, datetime.datetime] = dict(
+                PollView.objects.filter(user=user, poll__in=polls).values_list('poll', 'time')
+            )
+
+        last_modifieds: Dict[Poll, datetime.datetime] = dict(
+            Submission.objects.filter(poll__in=polls, submitted=True)
+            .order_by('poll', 'modified')
+            .distinct('poll')
+            .values_list('poll', 'modified')
+        )
+        for poll in polls:
+            is_read_poll[poll] = poll.id not in last_modifieds or (
+                poll.id in last_views and last_views[poll.id] > last_modifieds[poll.id]
+            )
+            is_read_category[poll.category] &= is_read_poll[poll]
+        return (is_read_category, is_read_poll)
+
+    @staticmethod
+    def __get_processed_results(current_poll, user, submissions):
         poll_results = PollSummarizedResults(
             display_answers_count=True, display_plots=True
         )
 
+        if not submissions:
+            return poll_results
+        try:
+            last_time = PollView.objects.get(user=user, poll=current_poll).time
+        except PollView.DoesNotExist:
+            last_time = None
+
         for submission in submissions:
-            if 'schema' in submission.answers:
-                for entry in submission.answers['schema']:
+            if 'schema' not in submission.answers:
+                continue
+            for entry in submission.answers['schema']:
+                if 'choices' in entry:
+                    choices = entry['choices']
+                else:
                     choices = None
-                    if 'choices' in entry:
-                        choices = entry['choices']
-                    poll_results.add_entry(
-                        question=entry['question'],
-                        field_type=entry['type'],
-                        answer=entry['answer'],
-                        choices=choices,
-                    )
+
+                if entry['type'] in ['radio', 'checkbox']:
+                    viewed = None
+                elif not last_time:
+                    viewed = False
+                elif 'modified' in entry:
+                    viewed = datetime.datetime.fromisoformat(entry['modified']) < last_time
+                else:
+                    viewed = submission.modified < last_time
+
+                poll_results.add_entry(
+                    question=entry['question'],
+                    field_type=entry['type'],
+                    answer=entry['answer'],
+                    choices=choices,
+                    viewed=viewed
+                )
 
         return poll_results
 
-    def get(self, request, semester_id=None, poll_id=None, submission_id=None):
+    def get(self, request, semester_id=None, poll_id=None):
         """The main logic of passing data to the template presenting the results of the poll.
 
         :param semester_id: if given, fetches polls from requested semester.
         :param poll_id: if given, displays summary for a given poll.
-        :param submission_id: if given, displays detailed submission view.
         """
-        is_grade_active = check_grade_status()
-        if semester_id is None:
-            semester_id = Semester.get_current_semester().id
-        current_semester = Semester.get_current_semester()
-
-        try:
-            selected_semester = Semester.objects.filter(pk=semester_id).get()
-        except Semester.DoesNotExist:
-            messages.error(
-                request, "Wybrany semestr nie istnieje."
-            )
+        if not request.user.is_superuser and not request.user.employee:
+            messages.error(request, "Nie masz uprawnień do wyświetlania wyników oceny.")
             return redirect('grade-main')
 
+        is_grade_active = check_grade_status()
+        current_semester = Semester.get_current_semester()
+        if semester_id is None:
+            semester_id = current_semester.id
+            selected_semester = current_semester
+        else:
+            try:
+                selected_semester = Semester.objects.get(pk=semester_id)
+            except Semester.DoesNotExist:
+                messages.error(
+                    request, "Wybrany semestr nie istnieje."
+                )
+                return redirect('grade-main')
         available_polls = Poll.get_all_polls_for_semester(
             user=request.user, semester=selected_semester
         )
-        current_poll = Poll.objects.filter(id=poll_id).first()
-        if poll_id is not None:
-            submissions = Submission.objects.filter(poll=poll_id,
-                                                    submitted=True).order_by('modified')
+        try:
+            current_poll = Poll.objects.get(id=poll_id)
             if current_poll not in available_polls:
                 # User does not have permission to view details about
                 # the selected poll
@@ -237,34 +288,46 @@ class PollResults(TemplateView):
                     request, "Nie masz uprawnień do wyświetlenia tej ankiety."
                 )
                 return redirect('grade-poll-results', semester_id=semester_id)
-        else:
+            submissions = Submission.objects.filter(poll=poll_id,
+                                                    submitted=True).order_by('modified')
+            results = self.__get_processed_results(
+                    current_poll, request.user.employee, submissions
+                )
+            PollView.objects.update_or_create(
+                poll=current_poll, user=request.user.employee
+            )
+        except Poll.DoesNotExist:
+            results = []
+            current_poll = None
             submissions = []
 
         semesters = Semester.objects.all()
 
-        if request.user.is_superuser or request.user.employee:
-            return render(
-                request,
-                self.template_name,
-                {
-                    'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
-                    'results': self.__get_processed_results(submissions),
-                    'results_iterator': itertools.count(),
-                    'semesters': semesters,
-                    'current_semester': current_semester,
-                    'current_poll_id': poll_id,
-                    'current_poll': current_poll,
-                    'selected_semester': selected_semester,
-                    'submissions_count': self.__get_counter_for_categories(
-                        available_polls
-                    ),
-                    'iterator': itertools.count(),
-                },
+        read_cat, read_poll = self.__modified_status(
+                available_polls, request.user.employee
             )
 
-        messages.error(request, "Nie masz uprawnień do wyświetlania wyników oceny.")
-        return redirect('grade-main')
+        return render(
+            request,
+            self.template_name,
+            {
+                'is_grade_active': is_grade_active,
+                'polls': group(entries=available_polls, sort=True),
+                'results': results,
+                'results_iterator': itertools.count(),
+                'semesters': semesters,
+                'current_semester': current_semester,
+                'current_poll_id': poll_id,
+                'current_poll': current_poll,
+                'selected_semester': selected_semester,
+                'submissions_count': self.__get_counter_for_categories(
+                    available_polls
+                ),
+                'read_cat': read_cat,
+                'read_poll': read_poll,
+                'iterator': itertools.count(),
+            },
+        )
 
 
 class GradeDetails(TemplateView):

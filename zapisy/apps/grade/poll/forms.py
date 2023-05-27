@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict
 
 from django import forms
@@ -46,9 +47,11 @@ class SubmissionEntryForm(forms.ModelForm):
         if self.is_grade_active:
             updated_answers = self.instance.answers
             for index, field in enumerate(self.jsonfields):
-                field_name = f"field_{index}"
-                updated_answers["schema"][index]["answer"] = self.cleaned_data.get(field_name)
-
+                field_name = f'field_{index}'
+                updated_answers['schema'][index]['answer'] = self.cleaned_data.get(field_name)
+                if updated_answers['schema'][index]['type'] not in ['radio', 'checkbox']:
+                    if self.initial.get(field_name) != updated_answers['schema'][index]['answer']:
+                        updated_answers['schema'][index]['modified'] = datetime.datetime.now().isoformat()
             self.instance.submitted = True
             self.instance.answers = updated_answers
 
