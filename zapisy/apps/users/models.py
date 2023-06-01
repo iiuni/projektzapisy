@@ -118,6 +118,7 @@ class Student(models.Model):
 
 class Program(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
+    is_native = models.BooleanField(verbose_name="Program rodzimy", default=False, help_text="Określa czy program studiów jest z instytutu informatyki czy spoza np. matematyka")
 
     class Meta:
         verbose_name: str = 'Program studiów'
