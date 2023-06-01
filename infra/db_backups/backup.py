@@ -151,7 +151,7 @@ def main():
             err_desc = traceback.format_exc()
         else:
             break
-    if attempts <= 5:
+    if attempts > 5:
         print(err_desc)
         send_error_notification(slack, err_desc, secrets_env.str('SLACK_CHANNEL_ID'))
 
