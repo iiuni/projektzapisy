@@ -136,16 +136,22 @@ def perform_full_backup(secrets_env) -> str:
 
 
 def main():
+    attempts = 1
+    err_desc = ""
     secrets_env = get_secrets_env()
     slack = get_connected_slack_client(secrets_env)
-    try:
-        start_time = datetime.now()
-        shared_link = perform_full_backup(secrets_env)
-        end_time = datetime.now()
-        seconds_elapsed = (end_time - start_time).seconds
-        send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'))
-    except Exception:
-        err_desc = traceback.format_exc()
+    while attempts <= 5:
+        try:
+            start_time = datetime.now()
+            shared_link = perform_full_backup(secrets_env)
+            end_time = datetime.now()
+            seconds_elapsed = (end_time - start_time).seconds
+            send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'), attempts)
+        except Exception:
+            err_desc = traceback.format_exc()
+        else:
+            break
+    if attempts <= 5:
         print(err_desc)
         send_error_notification(slack, err_desc, secrets_env.str('SLACK_CHANNEL_ID'))
 
