@@ -94,7 +94,7 @@ class T0Times(models.Model):
             record.time = semester.records_opening
             # We give opening time bonuses only to students enrolled in programs native
             # to our institute.
-            if (student.program.is_native):
+            if (student.is_enrolled_in_native_program()):
                 # Every ECTS gives 5 minutes bonus, but with logic splitting
                 # that over nighttime. 720 minutes is equal to12 hours. If
                 # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
@@ -273,8 +273,8 @@ class GroupOpeningTimes(models.Model):
                                 # in programs native to our institute.
                                 (t0times.get(single_vote.student_id, semester.records_opening) -
                                  timedelta(days=single_vote.val))
-                                if single_vote.student.program.is_native else t0times.get(
-                                    single_vote.student_id, semester.records_opening),
+                                if single_vote.student.is_enrolled_in_native_program() else
+                                t0times.get(single_vote.student_id, semester.records_opening),
                             )))
                     opening_time_objects.append(bonus_obj)
         cls.objects.bulk_create(opening_time_objects)

@@ -103,6 +103,9 @@ class Student(models.Model):
 
     get_full_name.short_description = 'Użytkownik'
 
+    def is_enrolled_in_native_program(self) -> bool:
+        return self.program and self.program.is_native
+
     @classmethod
     def get_active_students(cls) -> QuerySet:
         return cls.objects.filter(is_active=True)
