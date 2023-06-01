@@ -132,7 +132,7 @@ class PollSummarizedResultsEntry:
 
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
-        If the field_tyoe of the entry is set to `checkbox`, each answer will be
+        If the field_type of the entry is set to `checkbox`, each answer will be
         counted separately.
         """
         if not answer:
@@ -244,7 +244,7 @@ class PollSummarizedResults:
 class PollMaxChoiceOccurrences:
     """Keeps track of the largest choices occurrence in the summary results view of the Poll."""
     max_num_of_ticks = 6
-    mantissas = [1, 2, 5]
+    mantissas = [1, 2, 5, 10]
 
     def __init__(self):
         self.value = 0
