@@ -1,10 +1,9 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div
 from django import forms
-from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
-from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, DefectImage, DefectManager, StateChoices
+from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, DefectImage, StateChoices
 
 
 class DefectFormBase(forms.ModelForm):
@@ -65,19 +64,3 @@ class InformationFromDefectManagerForm(forms.ModelForm):
             [(choice.value, choice.label) for choice in StateChoices if choice != StateChoices.HIDDEN]
         self.helper = FormHelper()
         self.helper.form_tag = False
-
-
-class DefectManagerAdminForm(forms.ModelForm):
-    class Meta:
-        model = DefectManager
-        fields = ["user_id"]
-
-    @staticmethod
-    def label_from_instance(obj):
-        return "%s %s" % (obj.first_name, obj.last_name)
-
-    def __init__(self, *args, **kwargs):
-        super(DefectManagerAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user_id'].queryset = \
-            User.objects.select_related('employee').filter(employee__isnull=False).order_by("first_name", "last_name")
-        self.fields['user_id'].label_from_instance = self.label_from_instance

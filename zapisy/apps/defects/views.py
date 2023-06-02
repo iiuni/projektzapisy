@@ -6,33 +6,32 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 
 from .forms import DefectForm, DefectImage, DefectImageFormSet, ExtraImagesNumber, InformationFromDefectManagerForm
-from .models import Defect, StateChoices, DefectManager
+from .models import Defect, StateChoices
 from ..notifications.custom_signals import defect_modified
 from ..users.decorators import employee_required
+from .users import is_defect_manager
 
 
 @employee_required
 def index(request):
-    is_defect_manager_val = is_defect_manager(request.user.id)
     return render(
         request, "defectsMain.html", {
             "defects": Defect.objects.all().select_related("reporter"),
             "visibleDefects": [
                 parse_defect(defect) for defect in Defect.objects.all().select_related("reporter")
             ],
-            'is_defect_manager': is_defect_manager_val
+            "is_defect_manager": is_defect_manager(request.user)
         })
 
 
 def delete_defects_endpoint(request):
-    is_defect_manager_val = is_defect_manager(request.user.id)
     if request.method == "POST":
         defects_list = parse_names(request.POST, "defects_ids")
         if len(defects_list) == 0:
             messages.error(request, "Akcja wymaga zaznaczenia elementów")
             return redirect('defects:main')
 
-        if not is_defect_manager_val:
+        if not is_defect_manager(request.user):
             messages.error(
                 request,
                 "Z tego poziomu usterka może zostać usunięta tylko przez osoby do tego wyznaczone")
@@ -83,7 +82,7 @@ def show_defect(request, defect_id):
             image_urls.append(image.image.url[:-16])
 
         info_form = InformationFromDefectManagerForm(instance=defect)
-        is_manager = is_defect_manager(request.user.id)
+        is_manager = is_defect_manager(request.user)
 
         return render(
             request, 'showDefect.html', {
@@ -148,7 +147,7 @@ def delete_defect(request, defect_id):
 
 def can_delete_defect(request, defect, is_defect_manager_val=None):
     if is_defect_manager_val is None:
-        is_defect_manager_val = is_defect_manager(request.user.id)
+        is_defect_manager_val = is_defect_manager(request.user)
     return is_defect_manager_val or (defect.state == StateChoices.CREATED and
                                      defect.reporter == request.user)
 
@@ -289,7 +288,7 @@ def do_delete_image(request, image_id):
 
 def post_information_from_defect_manager(request, defect_id):
     if request.method == "POST":
-        if not is_defect_manager(request.user.id):
+        if not is_defect_manager(request.user):
             messages.error(
                 request, "Informacja o zmianach"
                 " może zostać wypełniona tylko przez osoby do tego wyznaczone.")
@@ -314,7 +313,3 @@ def post_information_from_defect_manager(request, defect_id):
         messages.success(request, "Pomyślnie zmodyfikowano informację o zmianach")
         return redirect('defects:show_defect', defect_id=defect_id)
     raise Http404
-
-
-def is_defect_manager(user_id):
-    return DefectManager.objects.filter(user_id=user_id).exists()

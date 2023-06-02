@@ -19,7 +19,6 @@ from apps.theses.enums import ThesisVote
 from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
 from apps.users.models import Employee, Student
-
 from apps.defects.models import Defect
 
 
