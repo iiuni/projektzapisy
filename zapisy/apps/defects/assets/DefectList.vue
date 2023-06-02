@@ -42,38 +42,70 @@ export default class DefectList extends Vue {
     this.$store.subscribe((mutation, state) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.set_forms_values();
           this.visibleDefects = this.defects.filter(this.tester);
           this.visibleDefects.sort(this.compare);
+          this.deselect_hidden_defects();
+          this.set_forms_values();
           break;
         case "sorting/changeSorting":
           this.visibleDefects = this.defects.filter(this.tester);
           this.visibleDefects.sort(this.compare);
+          this.set_forms_values();
           break;
       }
     });
-  }
 
-  set_forms_values() {
-    let selected = Array.from(document.getElementsByClassName("selected")).map(
-      (x) => x.id
-    );
-    let selected_str_rep = selected.join(",");
-    let defects_ids_print = document.getElementById(
-      "defects_ids_print"
-    )! as HTMLInputElement;
-    defects_ids_print.value = selected_str_rep;
-    let defect_ids_delete = document.getElementById(
-      "defects_ids_delete"
-    )! as HTMLButtonElement;
-    if (defect_ids_delete) defect_ids_delete.value = selected_str_rep;
+    let print_button = document.getElementById("print-button")!;
     let delete_button = document.getElementById(
       "delete-form-button"
     )! as HTMLButtonElement;
-    if (delete_button)
-      delete_button.onclick = function () {
-        return confirm(generate_delete_message_for_n_defects(selected.length));
-      };
+
+    delete_button.onclick = () => {
+      let selected = this.visibleDefects
+        .filter((x) => x.selected)
+        .map((x) => x.id);
+      let defect_ids_delete = document.getElementById(
+        "defects_ids_delete"
+      )! as HTMLButtonElement;
+
+      defect_ids_delete.value = selected.join(",");
+      return confirm(generate_delete_message_for_n_defects(selected.length));
+    };
+
+    print_button.onclick = () => {
+      let link = "print/";
+
+      if (this.visibleDefects.some((x) => x.selected)) {
+        let selected = this.visibleDefects
+          .filter((x) => x.selected)
+          .map((x) => x.id)
+          .join(",");
+
+        print_button.setAttribute("href", link + selected);
+      } else {
+        let visible_defects = this.visibleDefects.map((x) => x.id).join(",");
+        print_button.setAttribute("href", link + visible_defects);
+      }
+    };
+  }
+
+  set_forms_values() {
+    let delete_button = document.getElementById(
+      "delete-form-button"
+    )! as HTMLButtonElement;
+    let print_button = document.getElementById("print-button")!;
+
+    if (this.visibleDefects.some((x) => x.selected)) {
+      print_button.textContent = "Drukuj zaznaczone";
+      if (delete_button) {
+        delete_button.disabled = false;
+      }
+    } else {
+      if (this.defects.length - this.visibleDefects.length > 0)
+        print_button.textContent = "Drukuj widoczne";
+      else print_button.textContent = "Drukuj wszystkie";
+      if (delete_button) delete_button.disabled = true;
+    }
   }
 
   select(event: PointerEvent) {
@@ -82,29 +114,17 @@ export default class DefectList extends Vue {
     let checkboxForSelectedRow = document.getElementById(
       "checkbox-" + defectTable.id
     )! as HTMLInputElement;
+    this.defects.find((x) => x.id == Number(defectTable.id))!.selected =
+      isSelected;
     checkboxForSelectedRow.checked = isSelected;
-    let selected_defects = document.getElementsByClassName("selected");
-    let print_button = document.getElementById("print-button")!;
-    if (selected_defects.length > 0) {
-      let link = "print/";
-      let selected_ids = Array.from(selected_defects)
-        .map((x) => x.id)
-        .join(",");
-      print_button.textContent = "Drukuj zaznaczone";
-      print_button.setAttribute("href", link + selected_ids);
-      let delete_button = document.getElementById(
-        "delete-form-button"
-      ) as HTMLButtonElement;
-      if (delete_button) delete_button.disabled = false;
-    } else {
-      print_button.textContent = "Drukuj wszystkie";
-      print_button.setAttribute("href", "print");
-      let delete_button = document.getElementById(
-        "delete-form-button"
-      )! as HTMLButtonElement;
-      if (delete_button) delete_button.disabled = true;
-    }
     this.set_forms_values();
+  }
+
+  deselect_hidden_defects() {
+    let defectsToDeselect = this.defects.filter(
+      (x) => x.selected && !this.visibleDefects.includes(x)
+    );
+    defectsToDeselect.forEach((x) => (x.selected = false));
   }
 }
 function generate_delete_message_for_n_defects(n: number) {
