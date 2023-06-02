@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
-from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, DefectImage, DefectManager
+from .models import Defect, DEFECT_MAX_PLACE_SIZE, DEFECT_MAX_NAME_SIZE, DefectImage, DefectManager, StateChoices
 
 
 class DefectFormBase(forms.ModelForm):
@@ -61,6 +61,8 @@ class InformationFromDefectManagerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(InformationFromDefectManagerForm, self).__init__(*args, **kwargs)
         self.fields['information_from_defect_manager'].label = ""
+        self.fields['state'].choices = \
+            [(choice.value, choice.label) for choice in StateChoices if choice != StateChoices.HIDDEN]
         self.helper = FormHelper()
         self.helper.form_tag = False
 
