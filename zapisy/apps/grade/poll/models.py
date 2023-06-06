@@ -335,7 +335,8 @@ class Schema(models.Model):
 
     def get_schema_with_random_answers(self):
         """Fetches the Submission's schema and populates it with randomly generated answers.
-        For system testing purpose.
+
+        Dedicated for system testing purpose.
 
         :returns: a schema with additional `answer` keys.
         """
