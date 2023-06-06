@@ -1,6 +1,6 @@
-import factory
 import random
 
+import factory
 from factory.django import DjangoModelFactory
 
 from ..models import Submission
