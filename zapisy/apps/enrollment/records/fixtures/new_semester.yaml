@@ -29,6 +29,11 @@
     name: "I2"
 
 # We will have three students.
+- model: users.Program
+  pk: 1
+  fields:
+    name: "Informatyka"
+    is_native: True
 - model: auth.User
   pk: 1
   fields:
@@ -38,6 +43,7 @@
   fields:
     user_id: 1
     matricula: 100001
+    program: 1
 
 - model: auth.User
   pk: 2
@@ -48,6 +54,7 @@
   fields:
     user_id: 2
     matricula: 100002
+    program: 1
 
 - model: auth.User
   pk: 3
@@ -58,6 +65,7 @@
   fields:
     user_id: 3
     matricula: 100003
+    program: 1
 
 # Bolek's T0 will be 25 hours after Lolek's. Tola's T0 is two days after.
 - model: records.T0Times
