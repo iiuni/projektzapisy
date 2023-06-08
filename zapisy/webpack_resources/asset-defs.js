@@ -4,12 +4,14 @@ const AssetDefs = {
   // Common app
 
   "common-main": [
-    path.resolve("apps/common/assets/main/expose_libs.ts"),
     path.resolve("apps/common/assets/main/_variables.scss"),
     path.resolve("apps/common/assets/main/index.scss"),
     path.resolve("apps/common/assets/cookieconsent/display-cookieconsent.ts"),
     path.resolve("apps/common/assets/main/icons-library.js"),
     path.resolve("apps/common/assets/main/sidebar-fold.js"),
+  ],
+  "common-main-end": [
+    path.resolve("apps/common/assets/main-end/expose_libs.ts"),
   ],
   "common-render-markdown": [
     path.resolve("apps/common/assets/markdown/render-markdown.ts"),
