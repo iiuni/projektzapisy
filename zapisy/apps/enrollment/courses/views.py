@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
@@ -98,7 +99,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     teachers = {g.teacher for g in groups}
 
-    course.is_enrollment_on = any(g.can_enqueue for g in groups)
+    course.can_enqueue_any = any(g.can_enqueue for g in groups)
+    times = GroupOpeningTimes.are_groups_open_for_student(student, groups)
+    course.is_enrollment_on = any(list(times.values()))
 
     waiting_students = {}
     if request.user.employee:
