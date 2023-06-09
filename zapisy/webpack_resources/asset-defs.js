@@ -4,6 +4,7 @@ const AssetDefs = {
   // Common app
 
   "common-main": [
+    path.resolve("apps/common/assets/main/expose_libs.ts"),
     path.resolve("apps/common/assets/main/_variables.scss"),
     path.resolve("apps/common/assets/main/index.scss"),
     path.resolve("apps/common/assets/cookieconsent/display-cookieconsent.ts"),
