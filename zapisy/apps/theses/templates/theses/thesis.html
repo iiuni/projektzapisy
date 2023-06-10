@@ -46,9 +46,9 @@
             {% endif %}
             {% if is_staff %}
                 <div class="d-inline-block mb-3 ms-1">
-                    <btn class="btn btn-sm btn-primary" href="{% url 'admin:theses_thesis_change' thesis.id %}">
+                    <a class="btn btn-sm btn-primary" href="{% url 'admin:theses_thesis_change' thesis.id %}">
                         Administruj
-                    </btn>
+                    </a>
                 </div>
             {% endif %}
         </div>
