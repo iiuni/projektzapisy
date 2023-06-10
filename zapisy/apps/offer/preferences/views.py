@@ -17,7 +17,7 @@ def main(request):
             messages.info(request, "Zapisano głos.")
         else:
             # note: this is a temporary diagnostic message.
-            messages.error(request, f"A validation error has occured - please reload the app.")
+            messages.error(request, "A validation error has occured - please reload the app.")
     else:
         formset = prepare_formset(employee)
         messages.info(request, formset.initial_form_count())

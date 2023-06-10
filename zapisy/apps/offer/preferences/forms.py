@@ -18,8 +18,8 @@ class PreferenceForm(forms.ModelForm):
         """Mark emplayee and question fields as hidden in the html.
 
         Now received values of these fields will be properly checked in is_valid.
-        This will prevent null value insertion attempts if variables controlling the formset on the fornt-end
-        are manipulated.
+        This will prevent null value insertion attempts if variables
+        controlling the formset on the fornt-end are manipulated.
         """
         super().__init__(*args, **kwargs)
         self.fields['employee'].widget = forms.HiddenInput()
