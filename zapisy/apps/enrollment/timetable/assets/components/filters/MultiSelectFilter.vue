@@ -120,6 +120,14 @@ export default Vue.extend({
       }
     });
   },
+  mounted() {
+    this.updateDropdownWidth();
+
+    window.addEventListener("resize", this.updateDropdownWidth);
+  },
+  unmounted() {
+    window.removeEventListener("resize", this.updateDropdownWidth);
+  },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
     clearFilter() {
@@ -127,6 +135,19 @@ export default Vue.extend({
     },
     clearAll() {
       this.selected = [];
+    },
+    updateDropdownWidth() {
+      const multiselectInputs = document.getElementsByClassName("multiselect");
+
+      Array.from(multiselectInputs).forEach((multiselectInput, index) => {
+        const dropdown = document.getElementsByClassName(
+          "multiselect__content-wrapper"
+        )[index];
+
+        if (dropdown) {
+          dropdown.style.width = `${multiselectInput.offsetWidth}px`;
+        }
+      });
     },
   },
   computed: {
@@ -440,7 +461,7 @@ fieldset[disabled] .multiselect {
   display: none;
 }
 .multiselect__content-wrapper {
-  position: absolute;
+  position: fixed;
   display: block;
   background: #fff;
   width: 100%;

@@ -65,15 +65,53 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="card bg-light">
+  <div class="card bg-light filters-card">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
-      <div class="row">
+      <div class="row position-relative">
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
             ref="name-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Tagi"
+            filterKey="tags-filter"
+            property="tags"
+            :allLabels="allTags"
+            onClass="bg-success"
+            ref="tags-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiSelectFilter
+            filterKey="type-filter"
+            property="courseType"
+            :options="allTypes"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
+            ref="type-filter"
+          />
+          <hr />
+          <LabelsFilter
+            title="Efekty kształcenia"
+            filterKey="effects-filter"
+            property="effects"
+            :allLabels="allEffects"
+            onClass="bg-info"
+            ref="effects-filter"
+          />
+        </div>
+        <div class="col-md">
+          <MultiSelectFilter
+            filterKey="owner-filter"
+            property="owner"
+            :options="allOwners"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
+            ref="owner-filter"
           />
           <hr />
           <CheckFilter
@@ -90,58 +128,6 @@ export default Vue.extend({
           >
             Wyczyść filtry
           </button>
-        </div>
-        <div class="col-md">
-          <MultiSelectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            title="Rodzaj przedmiotu"
-            placeholder="Wszystkie rodzaje"
-            ref="type-filter"
-          />
-          <hr />
-          <LabelsFilter
-            title="Tagi"
-            filterKey="tags-filter"
-            property="tags"
-            :allLabels="allTags"
-            onClass="badge-success"
-            ref="tags-filter"
-          />
-        </div>
-        <div class="col-md">
-          <MultiSelectFilter
-            filterKey="owner-filter"
-            property="owner"
-            :options="allOwners"
-            title="Opiekun przedmiotu"
-            placeholder="Wszyscy opiekunowie"
-            ref="owner-filter"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md">
-          <LabelsFilter
-            title="Tagi"
-            filterKey="tags-filter"
-            property="tags"
-            :allLabels="allTags"
-            onClass="bg-success"
-            ref="tags-filter"
-          />
-        </div>
-        <div class="col-md">
-          <hr />
-          <LabelsFilter
-            title="Efekty kształcenia"
-            filterKey="effects-filter"
-            property="effects"
-            :allLabels="allEffects"
-            onClass="bg-info"
-            ref="effects-filter"
-          />
         </div>
       </div>
     </div>
@@ -186,5 +172,10 @@ export default Vue.extend({
 
 .card-footer {
   height: 28px;
+}
+
+.filters-card {
+  transform: scale(1);
+  z-index: 2;
 }
 </style>

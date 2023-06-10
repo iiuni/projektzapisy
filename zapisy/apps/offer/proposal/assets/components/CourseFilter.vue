@@ -75,9 +75,9 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="card bg-light">
+  <div class="card bg-light filters-card">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
-      <div class="row">
+      <div class="row position-relative">
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
@@ -230,5 +230,10 @@ export default Vue.extend({
 }
 .card-footer {
   height: 28px;
+}
+
+.filters-card {
+  transform: scale(1);
+  z-index: 2;
 }
 </style>
