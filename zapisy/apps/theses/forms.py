@@ -33,8 +33,7 @@ class ThesisFormBase(forms.ModelForm):
         model = Thesis
         fields = '__all__'
 
-    title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN,
-                            widget=forms.Select(attrs={'class': 'form-select'}))
+    title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN)
     advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                      label="Promotor",
                                      required=True,
@@ -50,10 +49,10 @@ class ThesisFormBase(forms.ModelForm):
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
-        widget=forms.SelectMultiple(attrs={'size': '10', 'class': 'form-select my-2'}))
+        widget=forms.SelectMultiple(attrs={'size': '10', 'class': 'form-select'}))
     reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
                                      "uzupełnij również datę rezerwacji.",
-                                     widget=forms.TextInput(attrs={'type': 'date', 'class': 'form-select'}),
+                                     widget=forms.TextInput(attrs={'type': 'date'}),
                                      label="Zarezerwowana do",
                                      required=False)
     description = forms.CharField(
