@@ -9,10 +9,21 @@ from .models import Preference
 class PreferenceForm(forms.ModelForm):
     class Meta:
         model = Preference
-        fields = ('answer',)
+        fields = ('answer', 'question', 'employee')
         labels = {
             'answer': "",
         }
+
+    def __init__(self, *args, **kwargs):
+        """Mark emplayee and question fields as hidden in the html.
+
+        Now received values of these fields will be properly checked in is_valid.
+        This will prevent null value insertion attempts if variables controlling the formset on the fornt-end
+        are manipulated.
+        """
+        super().__init__(*args, **kwargs)
+        self.fields['employee'].widget = forms.HiddenInput()
+        self.fields['question'].widget = forms.HiddenInput()
 
 
 def prepare_formset(employee: Employee, post=None):
