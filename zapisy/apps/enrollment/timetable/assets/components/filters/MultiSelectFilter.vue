@@ -1,49 +1,6 @@
-<template>
-  <div class="mb-2">
-    <multiselect
-      v-model="selected"
-      :options="options"
-      :show-labels="showLabels"
-      :multiple="true"
-      :close-on-select="false"
-      :track-by="trackBy"
-      :label="propAsLabel"
-      :placeholder="placeholder"
-    >
-      <template slot="option" slot-scope="props">
-        <div class="option-row">
-          <div class="custom-control custom-checkbox">
-            <input
-              type="checkbox"
-              class="custom-control-input"
-              :checked="selected.includes(props.option)"
-            />
-            <label class="custom-control-label" :for="filterKey"></label>
-          </div>
-          {{ props.option.label }}
-        </div>
-      </template>
-      <template slot="selection" slot-scope="{ values, isOpen }">
-        <span class="multiselect__single" v-if="values.length" v-show="!isOpen">
-          {{ selectedValue }}
-        </span>
-      </template>
-      <template slot="clear">
-        <div
-          v-show="selected.length"
-          class="multiselect__clear"
-          @mousedown.prevent.stop="clearAll"
-        >
-          ×
-        </div>
-      </template>
-    </multiselect>
-  </div>
-</template>
-
 <script lang="ts">
 import { isEmpty, property } from "lodash";
-import Vue from "vue";
+import { defineComponent } from "vue";
 import { mapMutations } from "vuex";
 import Multiselect from "vue-multiselect";
 
@@ -72,12 +29,40 @@ const isDefinedOption = (
   option: undefined | { value: number; label: string }
 ): option is Option => option !== undefined && "value" in option;
 
-export default Vue.extend({
+type Options = Array<{ value: number; label: string }>;
+
+type Props = {
+  property: string;
+  filterKey: string;
+  options: Options;
+  title: string;
+  placeholder: string;
+  showLabels?: boolean;
+  trackBy?: string;
+  propAsLabel?: string;
+}
+
+type Data = {
+  selected: Options;
+}
+
+type Computed = {
+  selectedValue: () => string;
+};
+
+type Methods = {
+  registerFilter: Function;
+  clearFilter: () => void;
+  clearAll: () => void;
+  updateDropdownWidth: () => void;
+}
+
+export default defineComponent<Props, any, Data, Computed, Methods>({
   components: { Multiselect },
   props: {
     property: String,
     filterKey: String,
-    options: Array as () => Array<{ value: number; label: string }>,
+    options: Array as () => Options,
     title: String,
     placeholder: String,
     showLabels: {
@@ -106,13 +91,13 @@ export default Vue.extend({
         const ids = searchParams.get(this.property)!.split(",");
         this.selected = ids
           .map((id) =>
-            this.options.find((option) => String(option.value) == id)
+            this.options.find((option: { value: number; label: string }) => String(option.value) == id)
           )
           .filter((option) => isDefinedOption(option)) as Option[];
       }
     }
 
-    this.$store.subscribe((mutation, _) => {
+    this.$store.subscribe((mutation: { type: string } ) => {
       switch (mutation.type) {
         case "filters/clearFilters":
           this.selected = [];
@@ -137,11 +122,11 @@ export default Vue.extend({
       this.selected = [];
     },
     updateDropdownWidth() {
-      const multiselectInputs = document.getElementsByClassName("multiselect");
+      const multiselectInputs = document.querySelectorAll<HTMLElement>(".multiselect");
 
       Array.from(multiselectInputs).forEach((multiselectInput, index) => {
-        const dropdown = document.getElementsByClassName(
-          "multiselect__content-wrapper"
+        const dropdown = document.querySelectorAll<HTMLElement>(
+          ".multiselect__content-wrapper"
         )[index];
 
         if (dropdown) {
@@ -151,7 +136,7 @@ export default Vue.extend({
     },
   },
   computed: {
-    selectedValue() {
+    selectedValue(): string {
       const result: string[] = [];
       let length = 0;
 
@@ -194,6 +179,49 @@ export default Vue.extend({
   },
 });
 </script>
+
+<template>
+  <div class="mb-2">
+    <multiselect
+      v-model="selected"
+      :options="options"
+      :show-labels="showLabels"
+      :multiple="true"
+      :close-on-select="false"
+      :track-by="trackBy"
+      :label="propAsLabel"
+      :placeholder="placeholder"
+    >
+      <template slot="option" slot-scope="props">
+        <div class="option-row">
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              :checked="selected.includes(props.option)"
+            />
+            <label class="custom-control-label" :for="filterKey"></label>
+          </div>
+          {{ props.option.label }}
+        </div>
+      </template>
+      <template slot="selection" slot-scope="{ values, isOpen }">
+        <span class="multiselect__single" v-if="values.length" v-show="!isOpen">
+          {{ selectedValue }}
+        </span>
+      </template>
+      <template slot="clear">
+        <div
+          v-show="selected.length"
+          class="multiselect__clear"
+          @mousedown.prevent.stop="clearAll"
+        >
+          ×
+        </div>
+      </template>
+    </multiselect>
+  </div>
+</template>
 
 <style>
 .option-row {

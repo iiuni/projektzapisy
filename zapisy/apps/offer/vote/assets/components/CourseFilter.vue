@@ -27,7 +27,7 @@ export default Vue.extend({
       allOwners: [] as Array<{ value: number; label: string }>,
       allSemesters: [] as Array<{ value: string; label: string }>,
       allStatuses: [] as Array<{ value: string; label: string }>,
-      allTypes: {},
+      allTypes: {} as Array<{ value: number; label: string }>,
 
       // The filters are going to be collapsed by default.
       collapsed: true,
