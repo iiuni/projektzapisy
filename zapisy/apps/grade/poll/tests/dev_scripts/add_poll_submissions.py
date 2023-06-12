@@ -9,8 +9,8 @@ def add_submissions(poll_id, number_of_submissions):
     # 'Poll_id' can be found in keys to polls generated for student.
     # 'Number of submissions' specify how many submissions should be added to database.
     # Be aware that submission added this way won't be preserved between vagrant sessions.
-    # You can find instruction how achive persistency by saving database snapshot on wiki.
-    # Instruction how run code on virtual machine also can be found on wiki.
+    # You can find instructions on achieving persistence by saving database snapshots on wiki.
+    # Instruction on how to run a code on a virtual machine can also be found on the wiki.
 
     polls = Poll.objects.filter(id=poll_id)
     if len(polls) != 1:
