@@ -137,23 +137,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   },
   computed: {
     selectedValue(): string {
-      const result: string[] = [];
-      let length = 0;
-
-      this.selected.every((value: { label: string }) => {
-        if (length + value.label.length < 25) {
-          length += value.label.length;
-          result.push(value.label);
-          return value;
-        }
-      });
-
-      const otherOptions: number = this.selected.length - result.length;
-      const word =
-        otherOptions > 4 ? "innych" : otherOptions > 1 ? "inne" : "inny";
-      return `${result.join(", ")}${
-        otherOptions > 0 ? ` + ${otherOptions} ${word}` : ""
-      }`;
+      return this.selected.map(({ label }: { label: string }) => label).join(', ');
     },
   },
   watch: {
@@ -301,14 +285,18 @@ fieldset[disabled] .multiselect {
   font-family: inherit;
   font-size: 0.9rem;
   touch-action: manipulation;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .multiselect {
   box-sizing: content-box;
-  display: block;
   position: relative;
   width: 100%;
   text-align: left;
   color: #35495e;
+  display: table;
+  table-layout: fixed;
 }
 .multiselect * {
   box-sizing: border-box;
@@ -382,7 +370,7 @@ fieldset[disabled] .multiselect {
 }
 .multiselect__tags {
   min-height: calc(1.5em + 0.75rem + 2px);
-  padding: 0.375rem 40px 0.375rem 0.75rem;
+  padding: 0.375rem 4rem 0.375rem 0.75rem;
   display: block;
   border-radius: 5px;
   border: 1px solid #e8e8e8;
