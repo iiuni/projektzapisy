@@ -7,7 +7,6 @@ import { mapGetters } from "vuex";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
-import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
 
@@ -15,7 +14,6 @@ export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    SelectFilter,
     CheckFilter,
     MultiSelectFilter,
   },
@@ -40,11 +38,14 @@ export default Vue.extend({
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([k1, [a1, b1]], [k2, [a2, b2]]) => {
-        return b1.localeCompare(b2, "pl");
+      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+        return lastNamesComparison === 0
+          ? firstname.localeCompare(firstname2, "pl")
+          : lastNamesComparison;
       })
-      .map(([k, [a, b]]) => {
-        return { value: Number(k), label: `${a} ${b}` };
+      .map(([id, [firstname, lastname]]) => {
+        return { value: Number(id), label: `${firstname} ${lastname}` };
       });
 
     this.allTypes = Object.keys(filtersData.allTypes).map(

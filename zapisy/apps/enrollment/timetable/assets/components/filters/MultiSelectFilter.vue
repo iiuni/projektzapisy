@@ -40,11 +40,11 @@ type Props = {
   showLabels?: boolean;
   trackBy?: string;
   propAsLabel?: string;
-}
+};
 
 type Data = {
   selected: Options;
-}
+};
 
 type Computed = {
   selectedValue: () => string;
@@ -55,7 +55,7 @@ type Methods = {
   clearFilter: () => void;
   clearAll: () => void;
   updateDropdownWidth: () => void;
-}
+};
 
 export default defineComponent<Props, any, Data, Computed, Methods>({
   components: { Multiselect },
@@ -91,13 +91,16 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         const ids = searchParams.get(this.property)!.split(",");
         this.selected = ids
           .map((id) =>
-            this.options.find((option: { value: number; label: string }) => String(option.value) == id)
+            this.options.find(
+              (option: { value: number; label: string }) =>
+                String(option.value) == id
+            )
           )
           .filter((option) => isDefinedOption(option)) as Option[];
       }
     }
 
-    this.$store.subscribe((mutation: { type: string } ) => {
+    this.$store.subscribe((mutation: { type: string }) => {
       switch (mutation.type) {
         case "filters/clearFilters":
           this.selected = [];
@@ -122,7 +125,8 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       this.selected = [];
     },
     updateDropdownWidth() {
-      const multiselectInputs = document.querySelectorAll<HTMLElement>(".multiselect");
+      const multiselectInputs =
+        document.querySelectorAll<HTMLElement>(".multiselect");
 
       Array.from(multiselectInputs).forEach((multiselectInput, index) => {
         const dropdown = document.querySelectorAll<HTMLElement>(
@@ -137,7 +141,9 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   },
   computed: {
     selectedValue(): string {
-      return this.selected.map(({ label }: { label: string }) => label).join(', ');
+      return this.selected
+        .map(({ label }: { label: string }) => label)
+        .join(", ");
     },
   },
   watch: {

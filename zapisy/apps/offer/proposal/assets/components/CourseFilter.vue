@@ -1,9 +1,8 @@
 <script lang="ts">
-import { cloneDeep, sortBy, toPairs } from "lodash";
+import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
-import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import {
@@ -15,7 +14,6 @@ export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    SelectFilter,
     CheckFilter,
     MultiSelectFilter,
   },
@@ -37,11 +35,16 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
-      return b;
-    }).map(([k, [a, b]]) => {
-      return { value: Number(k), label: `${a} ${b}` };
-    });
+    this.allOwners = toPairs(filtersData.allOwners)
+      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+        return lastNamesComparison === 0
+          ? firstname.localeCompare(firstname2, "pl")
+          : lastNamesComparison;
+      })
+      .map(([id, [firstname, lastname]]) => {
+        return { value: Number(id), label: `${firstname} ${lastname}` };
+      });
     this.allTypes = Object.keys(filtersData.allTypes).map((typeKey) => ({
       value: Number(typeKey),
       label: filtersData.allTypes[Number(typeKey)],
