@@ -226,7 +226,7 @@ class PollResults(TemplateView):
             )
             return redirect('grade-main')
 
-        available_polls, available_polls_own = Poll.get_all_polls_for_semester(
+        available_polls = Poll.get_all_polls_for_semester(
             user=request.user,
             semester=selected_semester
         )
@@ -247,6 +247,10 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
+        for poll in available_polls:
+            if request.user.employee in [poll.owner, poll.teacher, poll.gcowner]:
+                poll.is_own = True
+
         if request.user.is_superuser or request.user.employee:
             return render(
                 request,
@@ -254,7 +258,6 @@ class PollResults(TemplateView):
                 {
                     'is_grade_active': is_grade_active,
                     'polls': group(entries=available_polls, sort=True),
-                    'polls_own': group(entries=available_polls_own, sort=True),
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,

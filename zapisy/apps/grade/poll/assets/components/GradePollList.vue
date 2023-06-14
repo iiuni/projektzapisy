@@ -1,12 +1,13 @@
 <template>
   <div class="accordion" id="course-sections">
-    <div v-if="isSuperuser" class="mt-4 mb-4">
+    <div v-if="isSuperuser" style="display: flex; align-items: center;">
       <input
         type="checkbox"
         v-model="showOnlyMyCourses"
         @change="updateCurrentList"
+        style="margin-right: 10px;"
       />
-      <label>Show only my courses:</label>
+      <label>Pokaż tylko ankiety dotyczące moich grup i przedmiotów</label>
     </div>
     <div
       v-for="(entries, group_name, index) in currentList"
@@ -71,10 +72,6 @@ export default Vue.extend({
       type: Object,
       required: true,
     },
-    pollsOwn: {
-      type: Object,
-      required: true,
-    },
     submissionsCount: {
       type: Object,
       required: true,
@@ -101,14 +98,32 @@ export default Vue.extend({
   methods: {
     updateCurrentList() {
       if (this.showOnlyMyCourses) {
-        this.currentList = this.pollsOwn;
+        let filteredCourses = {};
+
+        Object.keys(this.fullList).forEach(key => {
+          let array = this.fullList[key];
+          if (key == 'Ankiety ogólne') {
+            filteredCourses[key] = array;
+
+          }
+          else {
+            let filteredArray = array.filter(poll => poll.is_own === true);
+
+            if (filteredArray.length > 0) {
+              filteredCourses[key] = filteredArray;
+            }
+          }
+        });
+        this.currentList = filteredCourses
       } else {
-        this.currentList = this.polls;
+        this.currentList = this.fullList;
       }
     },
   },
   created() {
-    this.currentList = this.polls;
+    this.fullList = this.polls;
+    console.log(this.fullList)
+    this.currentList = this.fullList;
     this.baseHtml = `${window.location.protocol}//${window.location.host}`;
   },
 });

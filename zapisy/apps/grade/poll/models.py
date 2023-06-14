@@ -63,6 +63,10 @@ class Poll(models.Model):
     course = models.ForeignKey(CourseInstance, on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_own = False
+
     class Meta:
         verbose_name = "ankieta"
         verbose_name_plural = "ankiety"
@@ -75,6 +79,30 @@ class Poll(models.Model):
         if self.course:
             return PollType.EXAM
         return PollType.GENERAL
+
+    @property
+    def teacher(self) -> str:
+        if self.group:
+            return self.group.teacher
+
+    @property
+    def owner(self) -> str:
+        if self.course:
+            return self.course.owner
+
+    @property
+    def gcowner(self) -> str:
+        if self.group:
+            if self.group.course:
+                return self.group.course.owner
+
+    @property
+    def is_own(self):
+        return self._is_own
+
+    @is_own.setter
+    def is_own(self, value):
+        self._is_own = value
 
     @property
     def get_semester(self):
@@ -136,6 +164,7 @@ class Poll(models.Model):
             "category": self.category,
             "subcategory": self.subcategory,
             "number_of_submissions": number_of_submissions,
+            "is_own": self._is_own
         }
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
@@ -205,7 +234,7 @@ class Poll(models.Model):
     @staticmethod
     def get_all_polls_for_semester(
         user, semester: Semester = None
-    ) -> tuple([List["Poll"], List["Poll"]]):
+    ) -> List["Poll"]:
         """Returns all polls that user may see the submissions for.
 
         The polls will be annotated with submission counts.
@@ -218,24 +247,16 @@ class Poll(models.Model):
         is_employee = user.employee
 
         if not is_superuser and not is_employee:
-            return Poll.objects.none(), Poll.objects.none()
+            return Poll.objects.none()
 
         poll_for_semester = Poll.objects.filter(semester=current_semester)
-        polls_for_courses_own, polls_for_groups_own = (
-            Poll.objects.none(),
-            Poll.objects.none(),
-        )
 
         if is_superuser:
-            polls_for_courses = Poll.objects.filter(course__semester=current_semester)
+            polls_for_courses = Poll.objects.filter(
+                course__semester=current_semester
+            )
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester
-            )
-            polls_for_courses_own = Poll.objects.filter(
-                course__semester=current_semester, course__owner=user.employee
-            )
-            polls_for_groups_own = Poll.objects.filter(
-                group__course__semester=current_semester, group__teacher=user.employee
             )
         elif is_employee:
             polls_for_courses = Poll.objects.filter(
@@ -243,7 +264,7 @@ class Poll(models.Model):
                 course__owner=user.employee,
             ) | Poll.objects.filter(
                 group__course__semester=current_semester,
-                group__course__owner=user.employee,
+                group__course__owner=user.employee
             )
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester,
@@ -254,13 +275,8 @@ class Poll(models.Model):
             "submission", filter=models.Q(submission__submitted=True)
         )
         qs = poll_for_semester | polls_for_courses | polls_for_groups
-        qs_superuser_own_courses = (
-            poll_for_semester | polls_for_courses_own | polls_for_groups_own
-        )
 
-        return list(qs.annotate(number_of_submissions=sub_count_ann)), list(
-            qs_superuser_own_courses.annotate(number_of_submissions=sub_count_ann)
-        )
+        return list(qs.annotate(number_of_submissions=sub_count_ann))
 
 
 class Schema(models.Model):
