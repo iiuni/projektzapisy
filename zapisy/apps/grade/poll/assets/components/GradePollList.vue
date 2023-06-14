@@ -1,7 +1,11 @@
 <template>
   <div class="accordion" id="course-sections">
     <div v-if="isSuperuser" class="mt-4 mb-4">
-      <input type="checkbox" v-model="showOnlyMyCourses" @change="updateCurrentList">
+      <input
+        type="checkbox"
+        v-model="showOnlyMyCourses"
+        @change="updateCurrentList"
+      />
       <label>Show only my courses:</label>
     </div>
     <div
