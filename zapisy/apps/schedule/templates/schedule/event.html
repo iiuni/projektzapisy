@@ -29,7 +29,7 @@
         <tr>
             <th class="text-light bg-info"">Zgłasza</th>
             <td colspan="3">
-                <a href="">{{ event.author.get_full_name }}</a>
+                {{ event.author.get_full_name }}
             </td>
         </tr>
         <tr>
@@ -126,7 +126,7 @@
                     <div class="row">
                         <div class="col">
                         <h5>
-                            <a href="">{{ message.author.get_full_name }}</a>
+                            {{ message.author.get_full_name }}
                         </h5>
                         </div>
                         <div class="col text-end">
@@ -167,7 +167,7 @@
             {% if event.interested.all %}
                 <ul>
                 {% for user in event.interested.all %}
-                    <li><a href="">{{ user.get_full_name }}</a></li>
+                    <li>{{ user.get_full_name }}</li>
                 {% endfor %}
                 </ul>
             {% else %}
@@ -223,7 +223,7 @@
             <div class="row">
                     <div class="col">
                     <h5 class="display-5">
-                        <a href="">{{ message.author.get_full_name }}</a>
+                        {{ message.author.get_full_name }}
                     </h5>
                     </div>
                     <div class="col text-end">
