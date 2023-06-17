@@ -219,10 +219,10 @@
 
     <h4>Wiadomości</h4>
     {% for message in event_messages %}
-        <div class="jumbotron p-2 bg-light border">
+        <div class="p-2 mb-3 bg-light border rounded-3">
             <div class="row">
                     <div class="col">
-                    <h5 class="display-5">
+                    <h5>
                         {{ message.author.get_full_name }}
                     </h5>
                     </div>
