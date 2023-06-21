@@ -8,11 +8,12 @@
 {{ block.super }}
 <style>
     @media (max-width: 768px) {
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            background: none; display:none;
+        input[type="time"]::-webkit-calendar-picker-indicator,
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display:none;
         }
     }
-
 </style>
 {% endblock %}
 
