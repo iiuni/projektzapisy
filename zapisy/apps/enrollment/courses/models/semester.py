@@ -314,8 +314,7 @@ class ChangedDay(models.Model):
         if Term.get_day_of_week(self.day) == self.weekday:
             raise ValidationError(message={
                 'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]
-            },
-                code='invalid')
+            }, code='invalid')
 
     @classmethod
     def get_day_of_week(cls, date):

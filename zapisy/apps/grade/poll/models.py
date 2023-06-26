@@ -63,9 +63,6 @@ class Poll(models.Model):
     course = models.ForeignKey(CourseInstance, on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     class Meta:
         verbose_name = 'ankieta'
         verbose_name_plural = 'ankiety'
