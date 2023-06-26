@@ -70,7 +70,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll], sort=False) -> dict:
+def group(entries: List[Poll], employee: str, sort: bool = False) -> dict:
     """Groups a list of polls/submissions into a dictionary.
 
     The polls and submissions are combined into a dictionary of nested
@@ -85,12 +85,17 @@ def group(entries: List[Poll], sort=False) -> dict:
 
     for entry in entries:
         if entry is not None:
+            is_own = False
+            if employee in [entry.owner, entry.teacher, entry.gcowner]:
+                is_own = True
             category = entry.category
             subcategory = entry.subcategory
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
-                    output[category].append(entry.to_dict(number_of_submissions=entry.number_of_submissions))
-                grouped_entries[category].append(entry.to_dict(number_of_submissions=entry.number_of_submissions))
+                    output[category].append(entry.to_dict(
+                        number_of_submissions=entry.number_of_submissions, is_own=is_own))
+                grouped_entries[category].append(entry.to_dict(
+                    number_of_submissions=entry.number_of_submissions, is_own=is_own))
 
     if sort:
         grouped_entries = sorted(grouped_entries.items())

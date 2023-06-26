@@ -247,17 +247,13 @@ class PollResults(TemplateView):
 
         semesters = Semester.objects.all()
 
-        for poll in available_polls:
-            if request.user.employee in [poll.owner, poll.teacher, poll.gcowner]:
-                poll.is_own = True
-
         if request.user.is_superuser or request.user.employee:
             return render(
                 request,
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
+                    'polls': group(entries=available_polls, employee=request.user.employee, sort=True),
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,

@@ -38,7 +38,7 @@ def minimum(first, second):
     return min(first, second)
 
 
-@register.filter(name="to_json")
+@register.filter
 def to_json(dictionary: dict) -> str:
     return json.dumps(dictionary)
 
@@ -51,12 +51,12 @@ def markdown_text(context, text, autoescape=True):
     will include JS asset ('common-render-markdown' bundle) on the first use in
     the template, but not on subsequent uses.
     """
-    includes = ""
-    if "render_markdown_src" not in context:
+    includes = ''
+    if 'render_markdown_src' not in context:
         # The first markdown in the template - include JS.
-        context["render_markdown_src"] = True
+        context['render_markdown_src'] = True
         # Ask Webpack for the location of the asset.
-        includes = "\n".join(webpack_utils.get_as_tags("common-render-markdown"))
+        includes = '\n'.join(webpack_utils.get_as_tags('common-render-markdown'))
     result_html = html.format_html(
         '<span class="markdown">{}</span>{}',
         text,

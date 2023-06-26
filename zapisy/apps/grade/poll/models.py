@@ -12,17 +12,17 @@ from apps.users.models import Student
 
 
 class PollType(models.IntegerChoices):
-    LECTURE = 1, "ankieta dla wykładu"
-    EXERCISE = 2, "ankieta dla ćwiczeń"
-    LABS = 3, "ankieta dla pracowni"
-    EXERCISE_LABS = 5, "ankieta dla ćwiczenio-pracowni"
-    SEMINAR = 6, "ankieta dla seminarium"
-    LECTORATE = 7, "ankieta dla lektoratu"
-    PHYSICAL_EDUCATION = 8, "ankieta dla zajęć wf"
-    REPETITORY = 9, "ankieta dla repetytorium"
-    PROJECT = 10, "ankieta dla projektu"
-    EXAM = 1000, "ankieta dla egzaminu"
-    GENERAL = 1001, "ankieta ogólna"
+    LECTURE = 1, 'ankieta dla wykładu'
+    EXERCISE = 2, 'ankieta dla ćwiczeń'
+    LABS = 3, 'ankieta dla pracowni'
+    EXERCISE_LABS = 5, 'ankieta dla ćwiczenio-pracowni'
+    SEMINAR = 6, 'ankieta dla seminarium'
+    LECTORATE = 7, 'ankieta dla lektoratu'
+    PHYSICAL_EDUCATION = 8, 'ankieta dla zajęć wf'
+    REPETITORY = 9, 'ankieta dla repetytorium'
+    PROJECT = 10, 'ankieta dla projektu'
+    EXAM = 1000, 'ankieta dla egzaminu'
+    GENERAL = 1001, 'ankieta ogólna'
 
 
 class PollManager(models.Manager):
@@ -31,11 +31,11 @@ class PollManager(models.Manager):
             super()
             .get_queryset()
             .select_related(
-                "group",
-                "group__teacher__user",
-                "course",
-                "course__owner__user",
-                "semester",
+                'group',
+                'group__teacher__user',
+                'course',
+                'course__owner__user',
+                'semester',
             )
         )
 
@@ -65,11 +65,10 @@ class Poll(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._is_own = False
 
     class Meta:
-        verbose_name = "ankieta"
-        verbose_name_plural = "ankiety"
+        verbose_name = 'ankieta'
+        verbose_name_plural = 'ankiety'
 
     @property
     def type(self) -> Union[PollType, GroupType]:
@@ -95,14 +94,6 @@ class Poll(models.Model):
         if self.group:
             if self.group.course:
                 return self.group.course.owner
-
-    @property
-    def is_own(self):
-        return self._is_own
-
-    @is_own.setter
-    def is_own(self, value):
-        self._is_own = value
 
     @property
     def get_semester(self):
@@ -154,17 +145,17 @@ class Poll(models.Model):
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
         """
-        result = {"id": self.pk, "name": self.subcategory, "type": self.category}
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
 
         return result
 
-    def to_dict(self, number_of_submissions=0):
+    def to_dict(self, number_of_submissions=0, is_own=True):
         return {
-            "id": self.pk,
-            "category": self.category,
-            "subcategory": self.subcategory,
-            "number_of_submissions": number_of_submissions,
-            "is_own": self._is_own
+            'id': self.pk,
+            'category': self.category,
+            'subcategory': self.subcategory,
+            'number_of_submissions': number_of_submissions,
+            'is_own': is_own
         }
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
