@@ -28,7 +28,7 @@
 {% block all-content %}
     {% regroup proposals_list|dictsort:"status" by get_status_display as statuses %}
     {% with active_status=proposal.status|default:1 %}
-    <div class="px-4 mb-4 bg-light rounded-3">
+    <div class="px-4 mb-4 background-gray rounded-3">
         <div class="container-fluid py-5 d-print-none">
             <div class="row row-cols-1 row-cols-md-2">
                 <div class="col order-1 order-md-2">
