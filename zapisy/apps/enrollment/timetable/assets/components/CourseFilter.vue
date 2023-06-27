@@ -5,7 +5,7 @@ import Vue from "vue";
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
-import { FilterDataJSON } from "./../models";
+import { FilterDataJSON, MultiselectFilterData } from "./../models";
 import { mapMutations } from "vuex";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 
@@ -20,8 +20,8 @@ export default Vue.extend({
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as Array<{ value: number; label: string }>,
-      allTypes: {},
+      allOwners: [] as MultiselectFilterData<number>,
+      allTypes: [] as MultiselectFilterData<number>,
 
       // The filters are going to be collapsed by default.
       collapsed: true,

@@ -21,10 +21,10 @@ export default Vue.extend({
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as Array<{ value: number; label: string }>,
-      allSemesters: [] as Array<{ value: string; label: string }>,
-      allStatuses: [] as Array<{ value: string; label: string }>,
-      allTypes: {},
+      allOwners: [] as MultiselectFilterData<number>,
+      allSemesters: [] as MultiselectFilterData<string>,
+      allStatuses: [] as MultiselectFilterData<string>,
+      allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
     };

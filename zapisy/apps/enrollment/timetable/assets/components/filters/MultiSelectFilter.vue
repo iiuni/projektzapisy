@@ -129,10 +129,10 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       const multiselectInputs =
         document.querySelectorAll<HTMLElement>(".multiselect");
 
-      Array.from(multiselectInputs).forEach((multiselectInput, index) => {
-        const dropdown = document.querySelectorAll<HTMLElement>(
+      Array.from(multiselectInputs).forEach((multiselectInput) => {
+        const dropdown = multiselectInput.querySelectorAll<HTMLElement>(
           ".multiselect__content-wrapper"
-        )[index];
+        )[0];
 
         if (dropdown) {
           dropdown.style.width = `${multiselectInput.offsetWidth}px`;

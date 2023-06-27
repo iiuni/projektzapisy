@@ -8,7 +8,10 @@ import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFil
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
-import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import {
+  FilterDataJSON,
+  MultiselectFilterData,
+} from "@/enrollment/timetable/assets/models";
 
 export default Vue.extend({
   components: {
@@ -22,10 +25,9 @@ export default Vue.extend({
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as Array<{ value: number; label: string }>,
-      allSemesters: [] as Array<{ value: string; label: string }>,
-      allStatuses: [] as Array<{ value: string; label: string }>,
-      allTypes: {} as Array<{ value: number; label: string }>,
+      allOwners: [] as MultiselectFilterData<number>,
+      allSemesters: [] as MultiselectFilterData<string>,
+      allTypes: [] as MultiselectFilterData<number>,
 
       // The filters are going to be collapsed by default.
       collapsed: true,
@@ -58,11 +60,6 @@ export default Vue.extend({
       { value: "z", label: "zimowy" },
       { value: "l", label: "letni" },
       { value: "u", label: "nieokreślony" },
-    ];
-    this.allStatuses = [
-      { value: "IN_OFFER", label: "w ofercie" },
-      { value: "IN_VOTE", label: "poddany pod głosowanie" },
-      { value: "WITHDRAWN", label: "wycofany z oferty" },
     ];
   },
   computed: {
