@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 interface Poll {
   id: string;
@@ -118,7 +118,9 @@ export default defineComponent({
           if (key == "Ankiety ogólne") {
             filteredCourses[key] = array;
           } else {
-            let filteredArray = array.filter((poll: Poll) => poll.is_own === true);
+            let filteredArray = array.filter(
+              (poll: Poll) => poll.is_own === true
+            );
 
             if (filteredArray.length > 0) {
               filteredCourses[key] = filteredArray;
