@@ -16,6 +16,9 @@ let formsetCounter = 0;
 let maxFormsetNumber = 0;
 let extraTermsNumber = 0;
 
+// Communicate with ./components/ClassroomPicker.vue class
+const vue_change_event = new Event("vue-change-event");
+
 // List of positions of empty term forms that are available
 // to add to the formset as new term forms. If list contains
 // number n, it means, that the nth form from the top is
@@ -125,11 +128,13 @@ function newTermClick(event) {
   const newTermForm = $(".term-form").eq(first);
   newTermForm.removeClass("d-none");
   setEditable(newTermForm);
+  document.dispatchEvent(vue_change_event);
 }
 
 function editTermClick(event) {
   event.preventDefault();
   setEditable(event.target);
+  document.dispatchEvent(vue_change_event);
 }
 
 // Handles setting outside location. The place field is
