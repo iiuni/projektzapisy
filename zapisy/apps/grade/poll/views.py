@@ -260,7 +260,7 @@ class PollResults(TemplateView):
                     'current_semester': current_semester,
                     'current_poll_id': poll_id,
                     'current_poll': current_poll.to_dict() if current_poll is not None else {},
-                    'selected_semester': selected_semester.to_dict(),
+                    'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),

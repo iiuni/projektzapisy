@@ -109,12 +109,6 @@ class Semester(models.Model):
             return '(BŁĄD) {0} {1}'.format(self.year, self.get_type_display())
         return '{0} {1}'.format(self.year, self.get_type_display())
 
-    def to_dict(self):
-        return {
-            'id': self.pk,
-            'name': self.get_name()
-        }
-
     def get_short_name(self):
         if self.type == self.TYPE_WINTER:
             return 'zima {0}'.format(self.year)

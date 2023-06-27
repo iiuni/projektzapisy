@@ -167,7 +167,7 @@ class Poll(models.Model):
             return records_models.Record.objects.filter(
                 student=student,
                 group__course=self.course,
-                status=records_models.RecordStatus.ENROLLED,
+                status=records_models.RecordStatus.ENROLLED
             ).exists()
         return True
 
@@ -200,7 +200,7 @@ class Poll(models.Model):
             student=student,
             status=records_models.RecordStatus.ENROLLED,
             group__course__semester=current_semester,
-        ).select_related("group")
+        ).select_related('group')
 
         for record in records:
             group = record.group
@@ -297,8 +297,8 @@ class Schema(models.Model):
     type = models.SmallIntegerField("Kategoria", choices=PollType.choices)
 
     class Meta:
-        verbose_name = "szablon"
-        verbose_name_plural = "szablony"
+        verbose_name = 'szablon'
+        verbose_name_plural = 'szablony'
 
     def __str__(self):
         return self.get_type_display()
@@ -318,7 +318,7 @@ class Schema(models.Model):
             schema_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "assets/default_schema.json"
             )
-        with open(schema_path, "r") as schema_file:
+        with open(schema_path, 'r') as schema_file:
             schema = json.load(schema_file)
 
             # For the purposes of compatibility with old GroupType tuple
@@ -329,11 +329,11 @@ class Schema(models.Model):
                 poll_type = options[values.index(int(poll_type))]
             elif isinstance(poll_type, tuple):
                 poll_type = poll_type[0]
-            schema_name = f"{poll_type.__class__.__name__}.{poll_type.name}"
+            schema_name = f'{poll_type.__class__.__name__}.{poll_type.name}'
 
             if schema_name in schema:
                 return schema[schema_name]
-            return schema["default"]
+            return schema['default']
 
     @classmethod
     def get_latest(cls, poll_type):
@@ -357,37 +357,29 @@ class Schema(models.Model):
         :returns: a schema with additional `answer` keys.
         """
         if (
-            self.questions
-            and "version" in self.questions
-            and self.questions["version"] == 1
-            and "schema" in self.questions
+            self.questions and
+            'version' in self.questions and
+            self.questions['version'] == 1 and
+            'schema' in self.questions
         ):
             updated_schema_entries = []
-            for entry in self.questions["schema"]:
-                entry["answer"] = ""
+            for entry in self.questions['schema']:
+                entry['answer'] = ""
                 updated_schema_entries.append(entry)
 
             return {
-                "version": self.questions["version"],
-                "schema": updated_schema_entries,
+                'version': self.questions['version'],
+                'schema': updated_schema_entries,
             }
 
-        return {"version": 1, "schema": []}
+        return {'version': 1, 'schema': []}
 
 
 class SubmissionManager(models.Manager):
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related(
-                "poll",
-                "poll__group",
-                "poll__group__teacher__user",
-                "poll__course",
-                "poll__course__owner__user",
-                "poll__semester",
-            )
+        return super().get_queryset().select_related(
+            'poll', 'poll__group', 'poll__group__teacher__user', 'poll__course',
+            'poll__course__owner__user', 'poll__semester'
         )
 
 
@@ -416,8 +408,8 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "złoszenie"
-        verbose_name_plural = "zgłoszenia"
+        verbose_name = 'zgłoszenie'
+        verbose_name_plural = 'zgłoszenia'
 
     def __str__(self):
         return str(self.poll)

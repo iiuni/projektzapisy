@@ -11,13 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
       h(GradePollList, {
         props: {
           polls: JSON.parse(courseSectionsElement.dataset.polls),
-          pollsOwn: JSON.parse(courseSectionsElement.dataset.pollsOwn),
           submissionsCount: JSON.parse(
             courseSectionsElement.dataset.submissionsCount
           ),
           currentPoll: JSON.parse(courseSectionsElement.dataset.currentPoll),
-          selectedSemester: JSON.parse(
-            courseSectionsElement.dataset.selectedSemester
+          selectedSemesterId: JSON.parse(
+            courseSectionsElement.dataset.selectedSemesterId
           ),
           isSuperuser: JSON.parse(courseSectionsElement.dataset.isSuperuser),
         },

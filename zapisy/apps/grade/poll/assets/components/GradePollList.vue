@@ -41,7 +41,7 @@
           :href="
             baseHtml +
             '/grade/poll/results/semester/' +
-            selectedSemester.id +
+            selectedSemesterId +
             '/poll/' +
             entry.id
           "
@@ -64,12 +64,20 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+interface Poll {
+  id: string;
+  category: string;
+  subcategory: string;
+  number_of_submissions: number;
+  is_own: boolean;
+}
+
+export default defineComponent({
   props: {
     polls: {
-      type: Object,
+      type: Object as () => Record<string, Poll[]>,
       required: true,
     },
     submissionsCount: {
@@ -77,10 +85,11 @@ export default Vue.extend({
       required: true,
     },
     currentPoll: {
-      type: Object,
+      type: Object as () => Poll | null,
+      default: null,
     },
-    selectedSemester: {
-      type: Object,
+    selectedSemesterId: {
+      type: Number,
       required: true,
     },
     isSuperuser: {
@@ -90,31 +99,36 @@ export default Vue.extend({
   },
   data() {
     return {
-      currentList: {},
+      currentList: {} as Record<string, Poll[]>,
       showOnlyMyCourses: false,
       baseHtml: "",
-      fullList: {},
+      fullList: {} as Record<string, Poll[]>,
     };
   },
   methods: {
     updateCurrentList() {
+      // @ts-ignore
       if (this.showOnlyMyCourses) {
-        let filteredCourses = {};
+        let filteredCourses: Record<string, Poll[]> = {};
 
+        // @ts-ignore
         Object.keys(this.fullList).forEach((key) => {
+          // @ts-ignore
           let array = this.fullList[key];
           if (key == "Ankiety ogólne") {
             filteredCourses[key] = array;
           } else {
-            let filteredArray = array.filter((poll) => poll.is_own === true);
+            let filteredArray = array.filter((poll: Poll) => poll.is_own === true);
 
             if (filteredArray.length > 0) {
               filteredCourses[key] = filteredArray;
             }
           }
         });
+        // @ts-ignore
         this.currentList = filteredCourses;
       } else {
+        // @ts-ignore
         this.currentList = this.fullList;
       }
     },
