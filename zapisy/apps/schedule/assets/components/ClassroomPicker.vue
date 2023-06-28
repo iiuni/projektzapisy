@@ -40,7 +40,7 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     };
 
     // Vanilla JS give us know when change active term
-    document.addEventListener("vue-change-event", f);
+    document.addEventListener("refresh-classroom-picker", f);
   }
 
   getUnoccupied() {
