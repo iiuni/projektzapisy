@@ -446,6 +446,7 @@ class Record(models.Model):
         If ECTS limit is set to initial value and the student has status ENROLLED
         in this group,  his records in all gropus change status to QUEUED
         and triger accion will be emitted to fill this groups.
+
         Returns:
             bool: Whether the removal was successfull.
         """
