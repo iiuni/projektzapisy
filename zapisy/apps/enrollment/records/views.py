@@ -35,8 +35,8 @@ def enqueue(request):
             messages.warning(request,
                              ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
                               "Jeśli nie  zmieni się to do czasu wciągania Twojego rekordu "
-                              "z  kolejki, zostanie on zablokowany. Zostanie on przywrócony "
-                              "po zwniesieniu limitu ECTS lub jeśli wypiszesz się z dowolnej grupy."))
+                              "z  kolejki, zostanie on zablokowany. Rekord zostanie przywrócony "
+                              "po zniesieniu limitu ECTS lub jeśli wypiszesz się z dowolnej grupy."))
         elif not student_can_enroll:
             messages.warning(request,
                              ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
