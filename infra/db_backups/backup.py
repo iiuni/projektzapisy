@@ -140,7 +140,7 @@ def main():
     err_desc = ""
     secrets_env = get_secrets_env()
     slack = get_connected_slack_client(secrets_env)
-    for attempt in range(1, attemtps + 1):
+    for attempt in range(1, attempts + 1):
         try:
             start_time = datetime.now()
             shared_link = perform_full_backup(secrets_env)
