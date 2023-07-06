@@ -164,25 +164,23 @@ class PollSummarizedResultsEntry:
         """
         if not self._components:
             formatted_choices = [textwrap.fill(choice, 20) for choice in self._choices]
-            source_data = dict(choices=formatted_choices, values=self._choices_occurrences)
 
             answers_length = len(self._answers)
             percents = []
             if answers_length != 0:
                 for occurrences in self._choices_occurrences:
                     percent = 100 * occurrences / answers_length
-                    if percent == 0:
-                        percents.append("")
-                    else:
-                        integer, decimal = f"{percent:.1f}".split('.')
-                        percents.append(f"{integer},{decimal}%")
-            source_data['percents'] = percents
+                    percents.append(f"{percent:.1f} %".replace('.', ','))
+
+            source_data = dict(choices=formatted_choices, values=self._choices_occurrences, percents=percents)
 
             plot = bokeh.plotting.figure(
                 y_range=formatted_choices,
                 sizing_mode='scale_width',
                 plot_height=250,
                 toolbar_location=None,
+                tools='',
+                min_border_left=100,
             )
 
             source = bokeh.models.sources.ColumnDataSource(data=source_data)
@@ -217,7 +215,7 @@ class PollSummarizedResults:
         self._questions = []
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
-        self._max_choice_occurrences = PollMaxChoiceOccurrences()
+        self._max_choice_occurrences = self.PollMaxChoiceOccurrences()
 
     def add_entry(self, question, field_type, answer, choices=None):
         if question in self._questions:
@@ -240,29 +238,28 @@ class PollSummarizedResults:
     def entries(self):
         return self._entries
 
+    class PollMaxChoiceOccurrences:
+        """Keeps track of the largest choices occurrence in the summary results view of the Poll"""
+        max_num_of_ticks = 6
+        mantissas = [1, 2, 5, 10]
 
-class PollMaxChoiceOccurrences:
-    """Keeps track of the largest choices occurrence in the summary results view of the Poll."""
-    max_num_of_ticks = 6
-    mantissas = [1, 2, 5, 10]
+        def __init__(self):
+            self.value = 0
 
-    def __init__(self):
-        self.value = 0
+        def update(self, maybe_max):
+            if maybe_max > self.value:
+                self.value = maybe_max
 
-    def update(self, maybe_max):
-        if maybe_max > self.value:
-            self.value = maybe_max
+        def calculate_ticker_properties(self):
+            if self.value == 0:
+                return 0, 0
 
-    def calculate_ticker_properties(self):
-        if self.value == 0:
-            return 0, 0
+            base_power = len(str(math.ceil(self.value / (self.max_num_of_ticks-1))))-1
+            interval = 0
+            index = 0
+            while self.value > (self.max_num_of_ticks-1) * interval:
+                interval = self.mantissas[index] * 10 ** base_power
+                index += 1
 
-        base_power = len(str(math.ceil(self.value / (self.max_num_of_ticks-1))))-1
-        interval = 0
-        index = 0
-        while self.value > (self.max_num_of_ticks-1) * interval:
-            interval = self.mantissas[index] * 10 ** base_power
-            index += 1
-
-        last_tick = interval * math.ceil(self.value / interval)
-        return interval, last_tick
+            last_tick = interval * math.ceil(self.value / interval)
+            return interval, last_tick
