@@ -346,7 +346,7 @@ class Schema(models.Model):
 
             if entry["type"] == "textarea":
                 length = random.randint(1, 400)
-                letters = string.ascii_lowercase
+                letters = string.ascii_lowercase + " "
                 return ''.join(random.choice(letters) for _ in range(length))
 
             elif entry["type"] == "radio" and "choices" in entry:
