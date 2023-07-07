@@ -24,7 +24,7 @@ def update_course_types(requirement: dict, summary: dict) -> Iterable[CourseType
 
 def update_course_tags(requirement: dict, summary: dict) -> Iterable[CourseTag]:
     if 'tagi_przedmiotow' not in requirement:
-        return CourseTag.objects.all()
+        return CourseTag.objects.none()
 
     summary.update({'tags': requirement.get('tagi_przedmiotow')})
     return CourseTag.objects.filter(short_name__in=requirement.get('tagi_przedmiotow'))
@@ -54,15 +54,20 @@ def update_courses(requirement: dict, courses: int, summary: dict) -> int:
 
 
 def update_ects(requirement: dict, ects: int, summary: dict) -> int:
-    ects_needed = max(requirement.get('liczba_ects') - ects, 0)
-    summary.update({'ects': ects_needed})
+    ects_required = requirement.get('liczba_ects')
+    ects_needed = max(ects_required - ects, 0)
+    summary.update({'ects_required': ects_required})
+    summary.update({'ects_acquired': ects})
+    summary.update({'ects_needed': ects_needed})
     if ects_needed > 0:
         summary.update({'fulfilled': False})
     return ects_needed
 
 
 def update_alternatives(requirement: dict, student: Student, summary: dict) -> "list[dict]":
-    alternatives = [get_requirement_summary(student, req) for req in requirement.get('alternatywnie')]
+    alternatives = [
+        get_requirement_summary(student, req) for req in requirement.get('alternatywnie')
+    ]
     summary.update({'alternatively': alternatives})
     if all([not alternative.get('fulfilled') for alternative in alternatives]):
         summary.update({'fulfilled': False})
@@ -75,7 +80,8 @@ def get_requirement_summary(student: Student, requirement: dict) -> dict:
     course_types = update_course_types(requirement, summary)
     course_tags = update_course_tags(requirement, summary)
     course_languages = update_course_languages(requirement, summary)
-    count, ects = CompletedCourses.get_count_and_ects(student, course_types, course_tags, course_languages)
+    count, ects = CompletedCourses.get_count_and_ects(student, course_types, course_tags,
+                                                      course_languages)
 
     if 'dodatkowe_info' in requirement:
         update_additional_info(requirement, summary)
@@ -100,7 +106,9 @@ def my_studies(request):
 
     variant = Variant.objects.filter(program=student.program).first()
     requirements: list[dict] = variant.requirements.get('wymagania')
+    uncoded_requirements: list[str] = variant.requirements.get('wymagania_niezakodowane')
     summaries = [get_requirement_summary(student, requirement) for requirement in requirements]
     data.update({'requirements': summaries})
+    data.update({'uncoded_requirements': uncoded_requirements})
 
     return render(request, 'my_studies.html', data)

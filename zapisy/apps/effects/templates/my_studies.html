@@ -48,14 +48,24 @@
                 <div class="text-secondary">{{ requirement.additional_info }}</div>
             </div>
             <div class="col pr-0">
-                {% if requirement.ects %}
+                {% if requirement.ects_acquired %}
                 <div style="padding: 0.425rem 0;">
                     <div class="progress" style="height: 0.5rem;">
                         <div class="progress-bar w-75 bg-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
-                <div class="text-secondary p-1 position-absolute" style="left: 50%; transform: translateX(-50%);">151 / 170</div>
+                <div class="text-secondary p-1 position-absolute" style="left: 50%; transform: translateX(-50%);">{{ requirement.ects_acquired}} / {{ requirement.ects_required }}</div>
                 {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h2 class="mb-4">Wymagania Dodatkowe</h2>
+    <div class="container">
+        {% for extra_requirement in uncoded_requirements %}
+        <div class="row py-4">
+            <div class="col px-3">
+                <div class="mb-2">{{ extra_requirement}}</div>
             </div>
         </div>
         {% endfor %}

@@ -1,6 +1,7 @@
 from typing import Iterable, Set, Tuple
 
 from django.db import models
+# from django.db.models import FilteredRelation, Q
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type as CourseType
@@ -18,10 +19,9 @@ class CompletedCourses(models.Model):
 
     @staticmethod
     def get_completed_effects(student: Student) -> Set[str]:
-        completed_courses = (
-            CompletedCourses.objects.filter(student=student, program=student.program)
-            .select_related('course').prefetch_related('course__effects')
-        )
+        completed_courses = (CompletedCourses.objects.filter(
+            student=student,
+            program=student.program).select_related('course').prefetch_related('course__effects'))
 
         done_effects = set()
         for record in completed_courses:
@@ -47,21 +47,28 @@ class CompletedCourses(models.Model):
         """
         if course_types is None:
             course_types = CourseType.objects.all()
-        if course_tags is None:
-            course_tags = CourseTag.objects.all()
+        # # if course_tags is None:
+        # course_tags = CourseTag.objects.all()
         if course_languages is None:
             course_languages = set([course.language for course in CourseInstance.objects.all()])
 
         # TODO: Add filtering by course tags
-        completed_courses = CompletedCourses.objects.filter(
+        # tags = CourseTag.objects.all().prefetch_related(course_tags).filter(pk__in=course_ids)
+        completed_courses = CompletedCourses.objects.prefetch_related("course__tags").filter(
             student=student,
             program=student.program,
             course__course_type__in=course_types,
             course__language__in=course_languages,
         )
+        if course_tags:
+            res = CompletedCourses.objects.none()
+            for tag in course_tags:
+                res = res.union(completed_courses.filter(course__tags=tag))
+        else:
+            res = completed_courses
 
-        count = completed_courses.count()
-        ects = sum([record.course.points for record in completed_courses])
+        count = res.count()
+        ects = sum([record.course.points for record in res])
 
         return count, ects
 
@@ -69,9 +76,7 @@ class CompletedCourses(models.Model):
 class Variant(models.Model):
     name = models.CharField(max_length=300, verbose_name='Nazwa')
     requirements = models.JSONField(verbose_name='Wymagania', blank=True)
-    program = models.ForeignKey(
-        Program, on_delete=models.CASCADE, verbose_name='Program studiów'
-    )
+    program = models.ForeignKey(Program, on_delete=models.CASCADE, verbose_name='Program studiów')
 
     class Meta:
         verbose_name: str = 'Wariant'
