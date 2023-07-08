@@ -21,10 +21,10 @@ class ExactFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a thesis.
+// SelectFilter applies the string filtering on a property of a defect.
 export default Vue.extend({
   props: {
-    // Property of a thesis on which we are filtering.
+    // Property of a defect on which we are filtering.
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,

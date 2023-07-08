@@ -26,10 +26,10 @@ class TextFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a thesis.
+// TextFilter applies the string filtering on a property of a defect.
 export default Vue.extend({
   props: {
-    // Properties of a thesis on which we are filtering.
+    // Properties of a defect on which we are filtering.
     properties: Array,
     // Every filter needs a unique identifier.
     filterKey: String,
