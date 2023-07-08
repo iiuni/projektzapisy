@@ -33,6 +33,12 @@ class DefectAdmin(admin.ModelAdmin):
     inlines = [DefectImageInline]
 
     def get_queryset(self, request):
+        """
+        get_query_set() had to be overwritten because self.model._default_manager.get_queryset()
+        does not contain HIDDEN defects due to changes to the default Manager in Defect class.
+        The following code mirrors the default behaviour of get_query_set(), because there might
+        exist a component that relies on said behaviour.
+        """
         qs = self.model.all_objects.get_queryset()
 
         ordering = self.get_ordering(request)
