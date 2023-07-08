@@ -97,14 +97,13 @@ export default class DefectList extends Vue {
 
     if (this.visibleDefects.some((x) => x.selected)) {
       print_button.textContent = "Drukuj zaznaczone";
-      if (delete_button) {
-        delete_button.disabled = false;
-      }
+
+      delete_button.disabled = false;
     } else {
       if (this.defects.length - this.visibleDefects.length > 0)
         print_button.textContent = "Drukuj widoczne";
       else print_button.textContent = "Drukuj wszystkie";
-      if (delete_button) delete_button.disabled = true;
+      delete_button.disabled = true;
     }
   }
 
