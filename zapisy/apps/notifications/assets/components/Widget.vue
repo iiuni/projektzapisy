@@ -2,98 +2,67 @@
 import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import axios from "axios";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import "dayjs/locale/pl";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
 import Vue from "vue";
 import Component from "vue-class-component";
+import { Notification } from "../models";
+import NotificationToast from "./NotificationToast.vue";
+import NotificationRepository from "../repository";
+import { NotificationsUpdateEvent } from "../events";
 
-class Notification {
-  constructor(
-    public id: string,
-    public description: string,
-    public issuedOn: string,
-    public target: string
-  ) {}
+function truncateDescription(description: string) {
+  if (description.length <= 200) return description;
+  return description.substr(0, 200) + "...";
 }
 
-// Defines a parser that validates and parses Notifications from JSON.
-const notifications: ParseFn<Notification> = (x: any) =>
-  new Notification(
-    fromMap(x, "id", aString),
-    fromMap(x, "description", aString),
-    fromMap(x, "issued_on", aString),
-    fromMap(x, "target", aString)
-  );
-const notificationsArray = anArrayContaining(notifications);
-
-dayjs.extend(relativeTime);
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.locale("pl");
+function truncateNotifications(notifications: Notification[]): Notification[] {
+  return notifications.map((notification) => {
+    notification.description = truncateDescription(notification.description);
+    return notification;
+  });
+}
 
 @Component({
   components: {
     FontAwesomeIcon,
-  },
-  filters: {
-    Moment: function (str: string) {
-      return dayjs.tz(str, "Europe/Warsaw").fromNow();
-    },
+    NotificationToast,
   },
 })
 export default class NotificationsComponent extends Vue {
-  n_list: Notification[] = [];
+  notifications: Notification[] = [];
+  updateNotificationsEvent!: NotificationsUpdateEvent;
+  notificationRepository!: NotificationRepository;
+
+  get truncatedNotifications() {
+    return truncateNotifications(this.notifications);
+  }
 
   get n_counter(): number {
-    return this.n_list.length;
+    return this.notifications.length;
   }
 
   farBell = farBell;
   fasBell = fasBell;
 
-  getNotifications() {
-    return axios
-      .get("/notifications/get")
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  deleteAll(): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete/all")
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  deleteOne(i: number): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete", {
-        uuid: i,
-      })
-      .then((r) => parse(notificationsArray)(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
+  async deleteAll() {
+    let notifications = await this.notificationRepository.deleteAll();
+    this.updateNotificationsEvent.dispatch(notifications);
   }
 
   async created() {
+    this.notificationRepository = new NotificationRepository();
+
+    this.updateNotificationsEvent = new NotificationsUpdateEvent();
+    this.updateNotificationsEvent.subscribe((notifications) => {
+      this.notifications = notifications;
+    });
+
     this.getNotifications();
-    setInterval(this.getNotifications, 30000);
+  }
+
+  async getNotifications() {
+    let notifications = await this.notificationRepository.getAll();
+    this.updateNotificationsEvent.dispatch(notifications);
+    setTimeout(this.getNotifications, 30000);
   }
 }
 </script>
@@ -120,20 +89,11 @@ export default class NotificationsComponent extends Vue {
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <form class="p-1 place-for-notifications">
-          <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
-            <div class="toast-header">
-              <strong class="mr-auto"></strong>
-              <small class="text-muted mx-2">{{
-                elem.issuedOn | Moment
-              }}</small>
-              <button type="button" class="close" @click="deleteOne(elem.id)">
-                &times;
-              </button>
-            </div>
-            <a :href="elem.target" class="toast-link">
-              <div class="toast-body text-body">{{ elem.description }}</div>
-            </a>
-          </div>
+          <NotificationToast
+            v-for="notification in truncatedNotifications"
+            :key="notification.id"
+            :notification="notification"
+          />
         </form>
         <form>
           <div v-if="n_counter" class="pt-2 border-top text-center w-100">
@@ -162,17 +122,6 @@ export default class NotificationsComponent extends Vue {
 // Hide arrow, displayed by default for tag <a> in .dropdown-menu.
 .specialdropdown::after {
   content: none;
-}
-
-a.toast-link:hover {
-  text-decoration: none;
-  .toast-body {
-    background-color: var(--light);
-  }
-}
-
-.toast-body {
-  white-space: pre-wrap;
 }
 
 .place-for-notifications {

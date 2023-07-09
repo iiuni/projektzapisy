@@ -1,17 +1,4 @@
-from enum import Enum
-
-
-class NotificationType(str, Enum):
-    NOT_PULLED_FROM_QUEUE = 'not_pulled_from_queue'
-    PULLED_FROM_QUEUE = 'pulled_from_queue'
-    ADDED_NEW_GROUP = 'added_new_group'
-    ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER = 'assigned_to_new_group_as_teacher'
-    TEACHER_HAS_BEEN_CHANGED_ENROLLED = 'teacher_has_been_changed_enrolled'
-    TEACHER_HAS_BEEN_CHANGED_QUEUED = 'teacher_has_been_changed_queued'
-    NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
-    NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY = 'news_has_been_added_high_priority'
-    THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
-
+from apps.notifications.datatypes import NotificationType
 
 mapping = {
     NotificationType.NOT_PULLED_FROM_QUEUE:

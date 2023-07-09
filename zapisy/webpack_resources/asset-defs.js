@@ -56,6 +56,10 @@ const AssetDefs = {
     path.resolve("apps/notifications/assets/notifications-widget.js"),
   ],
 
+  "notifications-notifications-course": [
+    path.resolve("apps/notifications/assets/notifications-course.js"),
+  ],
+
   // Desiderata app
 
   "desiderata-checkboxes": [

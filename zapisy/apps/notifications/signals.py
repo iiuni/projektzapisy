@@ -13,8 +13,10 @@ from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
                                                thesis_voting_activated)
-from apps.notifications.datatypes import Notification
-from apps.notifications.templates import NotificationType
+from apps.notifications.datatypes import (
+    Notification, NotificationType, CourseTargetInfo, NewsTargetInfo,
+    ThesisTargetInfo
+)
 from apps.theses.enums import ThesisVote
 from apps.theses.models import Thesis
 from apps.theses.users import get_theses_board
@@ -33,6 +35,7 @@ def get_time() -> datetime:
 def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
     target = reverse(course_view, args=[group.course.slug])
+    target_info = CourseTargetInfo(group.course.id)
 
     notify_user(
         kwargs['user'],
@@ -41,13 +44,14 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
                 'course_name': group.course.name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
-            }, target))
+            }, target, target_info))
 
 
 @receiver(student_not_pulled, sender=Record)
 def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
     target = reverse(course_view, args=[group.course.slug])
+    target_info = CourseTargetInfo(group.course.id)
 
     notify_user(
         kwargs['user'],
@@ -57,7 +61,7 @@ def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> N
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
                 'reason': kwargs['reason']
-            }, target))
+            }, target, target_info))
 
 
 @receiver(post_save, sender=Group)
@@ -68,14 +72,18 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
     course_groups = Group.objects.filter(course=group.course)
     course_name = group.course.name
     target = reverse(course_view, args=[group.course.slug])
+    target_info = CourseTargetInfo(group.course.id)
 
     if group.teacher is not None:
         teacher = group.teacher.user
 
         notify_user(
             teacher,
-            Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                         {'course_name': course_name}, target))
+            Notification(
+                get_id(), get_time(),
+                NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
+                    'course_name': course_name
+                }, target, target_info))
 
     enrolled_or_queued = [RecordStatus.ENROLLED, RecordStatus.QUEUED]
     records = Record.objects.filter(group__in=course_groups,
@@ -87,7 +95,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
         Notification(get_id(), get_time(), NotificationType.ADDED_NEW_GROUP, {
             'course_name': course_name,
             'teacher': group.get_teacher_full_name()
-        }, target))
+        }, target, target_info))
 
 
 @receiver(teacher_changed, sender=Group)
@@ -98,11 +106,15 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     teacher = group.teacher.user
     course_name = group.course.name
     target = reverse(course_view, args=[group.course.slug])
+    target_info = CourseTargetInfo(group.course.id)
 
     notify_user(
         teacher,
-        Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
-                     {'course_name': course_name}, target))
+        Notification(
+            get_id(), get_time(),
+            NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER, {
+                'course_name': course_name
+            }, target, target_info))
 
     queued_users = User.objects.filter(
         student__record__group=group, student__record__status=RecordStatus.QUEUED)
@@ -113,20 +125,22 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
     notify_selected_users(
         queued_users,
         Notification(
-            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
+            get_id(), get_time(),
+            NotificationType.TEACHER_HAS_BEEN_CHANGED_QUEUED, {
                 'course_name': course_name,
                 'teacher': group.get_teacher_full_name(),
                 'type': group.get_type_display(),
-            }, target))
+            }, target, target_info))
 
     notify_selected_users(
         enrolled_users,
         Notification(
-            get_id(), get_time(), NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
+            get_id(), get_time(),
+            NotificationType.TEACHER_HAS_BEEN_CHANGED_ENROLLED, {
                 'course_name': course_name,
                 'teacher': teacher.get_full_name(),
                 'type': group.get_type_display(),
-            }, target))
+            }, target, target_info))
 
 
 @receiver(post_save, sender=News)
@@ -151,13 +165,14 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
         Student.get_active_students().select_related('user'))
     users = [element.user for element in records]
     target = reverse('news-one', args=[news.id])
+    target_info = NewsTargetInfo()
 
     notify_selected_users(
         users,
         Notification(get_id(), get_time(), notification_type, {
             'title': news.title,
             'contents': news.body
-        }, target))
+        }, target, target_info))
 
 
 @receiver(thesis_voting_activated, sender=Thesis)
@@ -168,10 +183,12 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
     users = [voter.user for voter in all_voters if voter not in accepting_voters]
     target = reverse('theses:selected_thesis', args=[thesis.id])
+    target_info = ThesisTargetInfo()
 
     notify_selected_users(
         users,
-        Notification(get_id(), get_time(),
-                     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
-            'title': thesis.title
-        }, target))
+        Notification(
+            get_id(), get_time(),
+            NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
+                'title': thesis.title
+            }, target, target_info))

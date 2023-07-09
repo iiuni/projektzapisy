@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from apps.notifications.exceptions import DescriptionArgumentMissingException
-from apps.notifications.templates import NotificationType
+from apps.notifications.datatypes import NotificationType
 from apps.notifications.utils import render_description
 
 
