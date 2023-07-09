@@ -15,6 +15,8 @@ from slack_notifications import (
 DROPBOX_DEV_DUMPS_DIRNAME = '/dev_dumps'
 DROPBOX_PROD_DUMPS_DIRNAME = '/prod_dumps'
 DUMPS_THRESHOLD = timedelta(weeks=-4)
+BACKUP_DELAY_AFTER_FAILURE = 60
+BACKUP_MAX_ATTEMPTS = 5
 
 
 def get_script_dir():
@@ -136,11 +138,10 @@ def perform_full_backup(secrets_env) -> str:
 
 
 def main():
-    attempts = 5
     err_desc = ""
     secrets_env = get_secrets_env()
     slack = get_connected_slack_client(secrets_env)
-    for attempt in range(1, attempts + 1):
+    for attempt in range(1, BACKUP_MAX_ATTEMPTS + 1):
         try:
             start_time = datetime.now()
             shared_link = perform_full_backup(secrets_env)
@@ -149,7 +150,7 @@ def main():
             send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'), attempt)
         except Exception:
             err_desc = traceback.format_exc()
-            time.sleep(60)
+            time.sleep(BACKUP_DELAY_AFTER_FAILURE)
         else:
             return
     print(err_desc)
