@@ -81,7 +81,7 @@ class DictTargetInfoSerializer:
             raise TypeError("Unknown type of TargetInfo")
         return target_info_as_dict
 
-    def deserialize(sefl, target_info_as_dict: Dict) -> TargetInfo:
+    def deserialize(self, target_info_as_dict: Dict) -> TargetInfo:
         target_type = target_info_as_dict['type']
         if target_type == TargetTypes.NEWS:
             return NewsTargetInfo()
