@@ -139,6 +139,7 @@ def perform_full_backup(secrets_env) -> str:
 
 def main():
     err_desc = ""
+    attachments = []
     secrets_env = get_secrets_env()
     slack = get_connected_slack_client(secrets_env)
     for attempt in range(1, BACKUP_MAX_ATTEMPTS + 1):
@@ -150,6 +151,7 @@ def main():
             send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'), attempt)
         except Exception:
             err_desc = traceback.format_exc()
+            attachments.append({"pre-text": f"Fail {attemt}", "text": err_desc})
             time.sleep(BACKUP_DELAY_AFTER_FAILURE)
         else:
             return
