@@ -149,6 +149,7 @@ def main():
             send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'), attempt)
         except Exception:
             err_desc = traceback.format_exc()
+            time.sleep(60)
         else:
             return
     print(err_desc)
