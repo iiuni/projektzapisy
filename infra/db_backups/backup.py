@@ -151,7 +151,7 @@ def main():
             send_success_notification(slack, shared_link.url, seconds_elapsed, secrets_env.str('SLACK_CHANNEL_ID'), attempt)
         except Exception:
             err_desc = traceback.format_exc()
-            attachments.append({"pre-text": f"Fail {attemt}", "text": err_desc})
+            attachments.append({"pre-text": f"Fail {attempt}", "text": err_desc})
             time.sleep(BACKUP_DELAY_AFTER_FAILURE)
         else:
             return
