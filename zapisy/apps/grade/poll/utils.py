@@ -7,7 +7,7 @@ import bokeh.plotting
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
-from apps.users.models import Student
+from apps.users.models import Student, Employee
 
 
 def check_grade_status() -> bool:
@@ -70,7 +70,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll], employee: str, sort: bool = False) -> dict:
+def group(entries: List[Poll], employee: Employee, sort: bool = False) -> dict:
     """Groups a list of polls/submissions into a dictionary.
 
     The polls and submissions are combined into a dictionary of nested

@@ -4,7 +4,6 @@ import GradePollList from "./components/GradePollList.vue";
 
 document.addEventListener("DOMContentLoaded", () => {
   const courseSectionsElement = document.getElementById("course-sections");
-  console.log(courseSectionsElement.dataset);
   new Vue({
     el: "#course-sections",
     render: (h) =>

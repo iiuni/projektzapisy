@@ -8,7 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import Student
+from apps.users.models import Employee, Student
 
 
 class PollType(models.IntegerChoices):
@@ -77,20 +77,19 @@ class Poll(models.Model):
         return PollType.GENERAL
 
     @property
-    def teacher(self) -> str:
+    def teacher(self) -> Employee:
         if self.group:
             return self.group.teacher
 
     @property
-    def owner(self) -> str:
+    def owner(self) -> Employee:
         if self.course:
             return self.course.owner
 
     @property
-    def gcowner(self) -> str:
-        if self.group:
-            if self.group.course:
-                return self.group.course.owner
+    def gcowner(self) -> Employee:
+        if self.group and self.group.course:
+            return self.group.course.owner
 
     @property
     def get_semester(self):
@@ -259,9 +258,7 @@ class Poll(models.Model):
                 group__teacher=user.employee,
             )
 
-        sub_count_ann = models.Count(
-            "submission", filter=models.Q(submission__submitted=True)
-        )
+        sub_count_ann = models.Count('submission', filter=models(submission__submitted=True))
         qs = poll_for_semester | polls_for_courses | polls_for_groups
 
         return list(qs.annotate(number_of_submissions=sub_count_ann))
@@ -408,8 +405,8 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'zgłoszenie'
-        verbose_name_plural = 'zgłoszenia'
+        verbose_name = "zgłoszenie"
+        verbose_name_plural = "zgłoszenia"
 
     def __str__(self):
         return str(self.poll)

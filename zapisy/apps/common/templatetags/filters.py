@@ -43,7 +43,7 @@ def to_json(dictionary: dict) -> str:
     return json.dumps(dictionary)
 
 
-@register.simple_tag(name="markdown", takes_context=True)
+@register.simple_tag(name='markdown', takes_context=True)
 def markdown_text(context, text, autoescape=True):
     """This renders Markdown string as HTML.
 
