@@ -6,6 +6,7 @@ import Multiselect from "vue-multiselect";
 import "./MultiSelectFilter.scss";
 
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
+import { MultiselectFilterData, MultiselectFilterDataItem } from "../../models";
 
 class ExactFilter implements Filter {
   constructor(
@@ -22,20 +23,17 @@ class ExactFilter implements Filter {
   }
 }
 
-interface Option {
-  value: number;
-  label: string;
-}
 const isDefinedOption = (
-  option: undefined | { value: number; label: string }
-): option is Option => option !== undefined && "value" in option;
-
-type Options = Array<{ value: number; label: string }>;
+  option: undefined | MultiselectFilterDataItem<number | string>
+): option is MultiselectFilterDataItem<number | string> =>
+  option !== undefined &&
+  "value" in option &&
+  (typeof option.value === "string" || typeof option.value === "number");
 
 type Props = {
   property: string;
   filterKey: string;
-  options: Options;
+  options: MultiselectFilterData<string | number>;
   title: string;
   placeholder: string;
   showLabels?: boolean;
@@ -44,7 +42,7 @@ type Props = {
 };
 
 type Data = {
-  selected: Options;
+  selected: MultiselectFilterData<string | number>;
 };
 
 type Computed = {
@@ -63,7 +61,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   props: {
     property: String,
     filterKey: String,
-    options: Array as () => Options,
+    options: Array as () => MultiselectFilterData<string | number>,
     title: String,
     placeholder: String,
     showLabels: {
@@ -97,7 +95,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
                 String(option.value) == id
             )
           )
-          .filter((option) => isDefinedOption(option)) as Option[];
+          .filter((option) => isDefinedOption(option));
       }
     }
 
