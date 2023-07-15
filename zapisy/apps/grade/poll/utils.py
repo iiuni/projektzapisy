@@ -5,10 +5,11 @@ import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
 
+from django.urls import reverse
+
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
 from apps.users.models import Student, Employee
-from django.urls import reverse
 
 
 def check_grade_status() -> bool:
