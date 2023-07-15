@@ -1,3 +1,7 @@
+// Styles taken from https://github.com/shentao/vue-multiselect/blob/master/src/Multiselect.vue
+// and customized to fit system styles. There are no extra class added except default one from library, so
+// any style-related tips posted on vue-multiselect page should be valid.
+
 fieldset[disabled] .multiselect {
   pointer-events: none;
 }

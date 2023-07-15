@@ -34,7 +34,6 @@ type Props = {
   property: string;
   filterKey: string;
   options: MultiselectFilterData<string | number>;
-  title: string;
   placeholder: string;
   showLabels?: boolean;
   trackBy?: string;
@@ -62,7 +61,6 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
     property: String,
     filterKey: String,
     options: Array as () => MultiselectFilterData<string | number>,
-    title: String,
     placeholder: String,
     showLabels: {
       type: Boolean,
@@ -148,7 +146,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   watch: {
     selected: function () {
       const selectedIds = this.selected.map(
-        (selectedFilter: { value: number; label: string }) =>
+        (selectedFilter: MultiselectFilterDataItem<number | string>) =>
           selectedFilter.value
       );
 
