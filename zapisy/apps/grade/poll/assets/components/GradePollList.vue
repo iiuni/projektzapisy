@@ -1,13 +1,15 @@
 <template>
   <div class="accordion" id="course-sections">
     <div v-if="isSuperuser" style="display: flex; align-items: center">
-      <input
-        type="checkbox"
-        v-model="showOnlyMyCourses"
-        @change="updateCurrentList"
-        style="margin-right: 10px"
-      />
-      <label>Pokaż tylko ankiety dotyczące moich grup i przedmiotów</label>
+      <label style="display: flex; align-items: center">
+        <input
+          type="checkbox"
+          v-model="showOnlyMyCourses"
+          @change="updateCurrentList"
+          style="margin-right: 10px"
+        />
+        Pokaż tylko ankiety dotyczące moich grup i przedmiotów
+      </label>
     </div>
     <div
       v-for="(entries, group_name, index) in currentList"
@@ -38,13 +40,7 @@
         <a
           v-for="entry in entries"
           :key="entry.id"
-          :href="
-            baseHtml +
-            '/grade/poll/results/semester/' +
-            selectedSemesterId +
-            '/poll/' +
-            entry.id
-          "
+          :href="entry.href"
           class="list-group-item list-group-item-action"
           :class="{ active: currentPoll && entry.id === currentPoll.id }"
         >
@@ -64,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 interface Poll {
   id: string;
@@ -97,24 +93,17 @@ export default defineComponent({
       required: true,
     },
   },
-  data() {
-    return {
-      currentList: {} as Record<string, Poll[]>,
-      showOnlyMyCourses: false,
-      baseHtml: "",
-      fullList: {} as Record<string, Poll[]>,
-    };
-  },
-  methods: {
-    updateCurrentList() {
-      // @ts-ignore
-      if (this.showOnlyMyCourses) {
+  setup(props) {
+    const fullList = ref(props.polls);
+    const currentList = ref(fullList.value);
+    const showOnlyMyCourses = ref(false);
+
+    const updateCurrentList = () => {
+      if (showOnlyMyCourses.value) {
         let filteredCourses: Record<string, Poll[]> = {};
 
-        // @ts-ignore
-        Object.keys(this.fullList).forEach((key) => {
-          // @ts-ignore
-          let array = this.fullList[key];
+        Object.keys(fullList.value).forEach((key) => {
+          let array = fullList.value[key];
           if (key == "Ankiety ogólne") {
             filteredCourses[key] = array;
           } else {
@@ -127,18 +116,19 @@ export default defineComponent({
             }
           }
         });
-        // @ts-ignore
-        this.currentList = filteredCourses;
+        currentList.value = filteredCourses;
       } else {
-        // @ts-ignore
-        this.currentList = this.fullList;
+        currentList.value = fullList.value;
       }
-    },
-  },
-  created() {
-    this.fullList = this.polls;
-    this.currentList = this.fullList;
-    this.baseHtml = `${window.location.protocol}//${window.location.host}`;
+    };
+
+    console.dir(fullList);
+    return {
+      fullList,
+      currentList,
+      showOnlyMyCourses,
+      updateCurrentList,
+    };
   },
 });
 </script>

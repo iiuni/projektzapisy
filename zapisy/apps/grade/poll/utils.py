@@ -8,6 +8,7 @@ import bokeh.plotting
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
 from apps.users.models import Student, Employee
+from django.urls import reverse
 
 
 def check_grade_status() -> bool:
@@ -70,7 +71,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll], employee: Employee, sort: bool = False) -> dict:
+def group(entries: List[Poll], employee: Employee, sort: bool = False, semester_id: int = None) -> dict:
     """Groups a list of polls/submissions into a dictionary.
 
     The polls and submissions are combined into a dictionary of nested
@@ -85,17 +86,17 @@ def group(entries: List[Poll], employee: Employee, sort: bool = False) -> dict:
 
     for entry in entries:
         if entry is not None:
-            is_own = False
-            if employee in [entry.owner, entry.teacher, entry.gcowner]:
-                is_own = True
+            is_own = employee in [entry.owner, entry.teacher, entry.gcowner]
             category = entry.category
             subcategory = entry.subcategory
+            href = reverse('grade-poll-results',
+                           kwargs={'semester_id': semester_id, 'poll_id': entry.id})
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
                     output[category].append(entry.to_dict(
-                        number_of_submissions=entry.number_of_submissions, is_own=is_own))
+                        number_of_submissions=entry.number_of_submissions, is_own=is_own, href=href))
                 grouped_entries[category].append(entry.to_dict(
-                    number_of_submissions=entry.number_of_submissions, is_own=is_own))
+                    number_of_submissions=entry.number_of_submissions, is_own=is_own, href=href))
 
     if sort:
         grouped_entries = sorted(grouped_entries.items())

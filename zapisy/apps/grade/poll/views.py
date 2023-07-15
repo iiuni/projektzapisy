@@ -253,7 +253,10 @@ class PollResults(TemplateView):
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, employee=request.user.employee, sort=True),
+                    'polls': group(entries=available_polls,
+                                   employee=request.user.employee,
+                                   sort=True,
+                                   semester_id=selected_semester.id),
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,

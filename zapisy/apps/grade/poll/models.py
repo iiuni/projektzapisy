@@ -145,13 +145,14 @@ class Poll(models.Model):
 
         return result
 
-    def to_dict(self, number_of_submissions=0, is_own=True):
+    def to_dict(self, number_of_submissions=0, is_own=True, href=""):
         return {
             'id': self.pk,
             'category': self.category,
             'subcategory': self.subcategory,
             'number_of_submissions': number_of_submissions,
-            'is_own': is_own
+            'is_own': is_own,
+            'href': href
         }
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
@@ -258,7 +259,7 @@ class Poll(models.Model):
                 group__teacher=user.employee,
             )
 
-        sub_count_ann = models.Count('submission', filter=models(submission__submitted=True))
+        sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
         qs = poll_for_semester | polls_for_courses | polls_for_groups
 
         return list(qs.annotate(number_of_submissions=sub_count_ann))
@@ -313,7 +314,7 @@ class Schema(models.Model):
         """
         if schema_path is None:
             schema_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "assets/default_schema.json"
+                os.path.dirname(os.path.abspath(__file__)), 'assets/default_schema.json'
             )
         with open(schema_path, 'r') as schema_file:
             schema = json.load(schema_file)
