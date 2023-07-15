@@ -6,7 +6,7 @@ import Multiselect from "vue-multiselect";
 import "./MultiSelectFilter.scss";
 
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
-import { MultiselectFilterData, MultiselectFilterDataItem } from "../../models";
+import { MultiselectFilterDataItem } from "../../models";
 
 class ExactFilter implements Filter {
   constructor(
@@ -23,9 +23,7 @@ class ExactFilter implements Filter {
   }
 }
 
-const isDefinedOption = (
-  option: undefined | MultiselectFilterDataItem<number | string>
-): option is MultiselectFilterDataItem<number | string> =>
+const isDefinedOption = (option: undefined | Option): option is Option =>
   option !== undefined &&
   "value" in option &&
   (typeof option.value === "string" || typeof option.value === "number");
@@ -33,15 +31,18 @@ const isDefinedOption = (
 type Props = {
   property: string;
   filterKey: string;
-  options: MultiselectFilterData<string | number>;
+  options: Options;
   placeholder: string;
   showLabels?: boolean;
   trackBy?: string;
   propAsLabel?: string;
 };
 
+type Options = Option[];
+type Option = MultiselectFilterDataItem<string | number>;
+
 type Data = {
-  selected: MultiselectFilterData<string | number>;
+  selected: Options;
 };
 
 type Computed = {
@@ -60,7 +61,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   props: {
     property: String,
     filterKey: String,
-    options: Array as () => MultiselectFilterData<string | number>,
+    options: Array as () => Options,
     placeholder: String,
     showLabels: {
       type: Boolean,
@@ -77,7 +78,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   },
   data() {
     return {
-      selected: [] as Array<{ value: number; label: string }>,
+      selected: [] as Options,
     };
   },
   created: function () {
@@ -86,14 +87,12 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       const property = searchParams.get(this.property);
       if (property && property.length) {
         const ids = searchParams.get(this.property)!.split(",");
+
         this.selected = ids
           .map((id) =>
-            this.options.find(
-              (option: { value: number; label: string }) =>
-                String(option.value) == id
-            )
+            this.options.find((option: Option) => String(option.value) == id)
           )
-          .filter((option) => isDefinedOption(option));
+          .filter((el) => isDefinedOption(el)) as Options;
       }
     }
 
@@ -146,8 +145,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   watch: {
     selected: function () {
       const selectedIds = this.selected.map(
-        (selectedFilter: MultiselectFilterDataItem<number | string>) =>
-          selectedFilter.value
+        (selectedFilter: Option) => selectedFilter.value
       );
 
       const url = new URL(window.location.href);
