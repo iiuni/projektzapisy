@@ -165,14 +165,23 @@ class PollSummarizedResultsEntry:
         if not self._components:
             formatted_choices = [textwrap.fill(choice, 20) for choice in self._choices]
 
+            choices_with_non_zero_values = []
+            for i in range(len(self._choices)):
+                if self._choices_occurrences[i] != 0:
+                    choices_with_non_zero_values.append(formatted_choices[i])
+
             answers_length = len(self._answers)
             percents = []
+            text_values = []
             if answers_length != 0:
                 for occurrences in self._choices_occurrences:
                     percent = 100 * occurrences / answers_length
                     percents.append(f"{percent:.1f} %".replace('.', ','))
+                    occurrences_str = str(occurrences)
+                    text_values.append("  "*(max(0, 3-len(occurrences_str)))+occurrences_str)
 
-            source_data = dict(choices=formatted_choices, values=self._choices_occurrences, percents=percents)
+            source_data = dict(choices=formatted_choices, values=self._choices_occurrences, percents=percents,
+                               text_values=text_values)
 
             plot = bokeh.plotting.figure(
                 y_range=formatted_choices,
@@ -180,7 +189,7 @@ class PollSummarizedResultsEntry:
                 plot_height=250,
                 toolbar_location=None,
                 tools='',
-                min_border_left=100,
+                min_border_left=130,
             )
 
             source = bokeh.models.sources.ColumnDataSource(data=source_data)
@@ -195,9 +204,14 @@ class PollSummarizedResultsEntry:
             )
 
             labels = LabelSet(y='choices', x='values', text='percents',
-                                x_offset=5, y_offset=-6, source=source, render_mode='canvas', text_font_size='11px')
+                              x_offset=5, y_offset=-6, source=source, render_mode='canvas', text_font_size='11px')
+
+            labels2 = LabelSet(y='choices', x='values', text='text_values',
+                               x_offset=-22, y_offset=-4, source=source,
+                               render_mode='canvas', text_font_size='11px', text_color="white")
 
             plot.add_layout(labels)
+            plot.add_layout(labels2)
 
             self._components = bokeh.embed.components(plot)
 
