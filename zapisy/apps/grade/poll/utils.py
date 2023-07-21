@@ -253,7 +253,8 @@ class PollSummarizedResults:
         return self._entries
 
     class PollMaxChoiceOccurrences:
-        """Keeps track of the largest choices occurrence in the summary results view of the Poll"""
+        """Keeps track of the largest choices occurrence
+        in the summary results view of the Poll."""
         max_num_of_ticks = 6
         mantissas = [1, 2, 5, 10]
 
