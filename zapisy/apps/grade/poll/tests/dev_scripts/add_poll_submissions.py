@@ -11,6 +11,8 @@ def add_submissions(poll_id, number_of_submissions):
     Be aware that submission added this way won't be preserved between vagrant sessions.
     You can find instructions on achieving persistence by saving database snapshots on wiki:
     https://github.com/iiuni/projektzapisy/wiki/Tworzenie-dumpa-bazy-danych-zmodyfikowanej-w-trakcie-sesji-vagranta
+    Instruction on how to run a code on a virtual machine can also be found on the wiki:
+    https://github.com/iiuni/projektzapisy/wiki/Na-co-uwa%C5%BCa%C4%87-przy-programowaniu%3F
     """
     try:
         poll = Poll.objects.get(pk=poll_id)
