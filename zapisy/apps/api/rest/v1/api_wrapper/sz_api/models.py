@@ -9,7 +9,7 @@ class Model:
 
     @classmethod
     def from_dict(cls, obj):
-        if type(obj) == cls or obj is None:
+        if type(obj) is cls or obj is None:
             return obj
         try:
             return cls(**obj)
