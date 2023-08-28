@@ -86,7 +86,6 @@ def list_courses_in_semester(semester: Semester):
 
 def student_timetable_data(student: Student, semester: Optional[Semester]):
     """Collects the timetable data for a student."""
-    all_semesters = Semester.objects.filter(visible=True)
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
         student=student,
@@ -100,8 +99,6 @@ def student_timetable_data(student: Student, semester: Optional[Semester]):
     points_for_courses = {r.group.course.id: r.group.course.points for r in records}
 
     data = {
-        'semester': semester,
-        'all_semesters': all_semesters,
         'groups': groups,
         'sum_points': sum(points_for_courses.values()),
         'groups_dicts': group_dicts,
@@ -111,14 +108,11 @@ def student_timetable_data(student: Student, semester: Optional[Semester]):
 
 def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     """Collects the timetable data for an employee."""
-    all_semesters = Semester.objects.filter(visible=True)
     groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
         'teacher', 'teacher__user', 'course').prefetch_related(
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
     group_dicts = build_group_list(groups)
     data = {
-        'semester': semester,
-        'all_semesters': all_semesters,
         'groups_dicts': group_dicts,
     }
     return data
@@ -134,11 +128,14 @@ def my_timetable(request, semester_id: Optional[int] = None):
         semester = Semester.get_current_semester()
     else:
         semester = get_object_or_404(Semester, pk=semester_id)
+    all_semesters = Semester.objects.filter(visible=True)
     data = collections.Counter()
     if request.user.student:
         data.update(student_timetable_data(request.user.student, semester))
     if request.user.employee:
         data.update(employee_timetable_data(request.user.employee, semester))
+    data['semester'] = semester
+    data['all_semesters'] = all_semesters
 
     return render(request, 'timetable/timetable.html', data)
 
