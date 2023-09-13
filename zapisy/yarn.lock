@@ -5291,7 +5291,7 @@ fsevents@~2.1.2:
     vue-template-compiler: 2.7.14
     vue-timers: 2.0.4
     vuex: 3.6.2
-    webpack: 4.46.0
+    webpack: 4.47.0
     webpack-bundle-analyzer: 3.9.0
     webpack-bundle-tracker: 0.4.3
     webpack-cli: 3.3.12
@@ -9168,9 +9168,9 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"webpack@npm:4.46.0":
-  version: 4.46.0
-  resolution: "webpack@npm:4.46.0"
+"webpack@npm:4.47.0":
+  version: 4.47.0
+  resolution: "webpack@npm:4.47.0"
   dependencies:
     "@webassemblyjs/ast": 1.9.0
     "@webassemblyjs/helper-module-context": 1.9.0
@@ -9202,7 +9202,7 @@ typescript@4.0.2:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 1e3bc97c01c19e96946be044cd9e323a476844b147c270185f7224bc8e0eda91946defbc120cb262f14e517e4c3071c6c90097e1a8b71a6a7afcacf37992763f
+  checksum: b2a776d66a66bbe045c3a715dede152daf81e6f3d4bcf6c98b7b2849bebb989f777fccab8474cd78a8cd605bb99506704590292196980ec02a0fa6d7a9497dfa
   languageName: node
   linkType: hard
 
