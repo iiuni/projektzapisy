@@ -3319,12 +3319,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:5.3.0":
-  version: 5.3.0
-  resolution: "bootstrap@npm:5.3.0"
+"bootstrap@npm:5.3.1":
+  version: 5.3.1
+  resolution: "bootstrap@npm:5.3.1"
   peerDependencies:
-    "@popperjs/core": ^2.11.7
-  checksum: 8f0e9f5ae799edc9c3f0399d042972ca8160cc102444f3186e428b133531f8ab8f2ea30c69d805a73f1094e88bc934f3a43c69920b289a8e64010569b290ebef
+    "@popperjs/core": ^2.11.8
+  checksum: 67c31a5fde8397e453e853aeebbf4b1db7e539c8b2c056f26b222d8d01a797b15e64f6c5ba6ddc27556992dc62e8998af681aae7cc61e0aa2eeb401b21cea679
   languageName: node
   linkType: hard
 
@@ -4211,10 +4211,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:1.11.7":
-  version: 1.11.7
-  resolution: "dayjs@npm:1.11.7"
-  checksum: a0c375582a951b8c49b02601448680f0faca84042d3b228e78d72f40cdde4a85b029179c17acb9041ac5b2a6f725c08c55d0fc36d554e81eae837fee857286b9
+"dayjs@npm:1.11.9":
+  version: 1.11.9
+  resolution: "dayjs@npm:1.11.9"
+  checksum: c5680b889ffae637b9c65e7b1ecf97e18ec1fe8fec4599ab47836ba75e2b6f542b0e977de5397f0bf77bc78e6121037fca8ac8982c5c47658cbe34f6b1d2e66e
   languageName: node
   linkType: hard
 
@@ -5673,17 +5673,17 @@ fsevents@~2.1.2:
     axios: 0.21.4
     babel-loader: 8.3.0
     big-integer: 1.6.51
-    bootstrap: 5.3.0
+    bootstrap: 5.3.1
     bootstrap-print-css: 1.0.1
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
     cookieconsent: 3.1.1
     css-loader: 4.3.0
-    dayjs: 1.11.7
+    dayjs: 1.11.9
     file-loader: 6.2.0
     fork-ts-checker-webpack-plugin: 5.2.1
-    jquery: 3.7.0
+    jquery: 3.7.1
     js-cookie: 2.2.1
     js-sha256: 0.9.0
     katex: 0.13.18
@@ -6105,10 +6105,10 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"jquery@npm:3.7.0":
-  version: 3.7.0
-  resolution: "jquery@npm:3.7.0"
-  checksum: a25e8c9c006c0f42f588cee518f2e189a7a8ae129d8d038f4a637e3f306219d533fe06382ced6376f494a7e501e5cf34e2216bbc1087deb244c2b3235a2a2c4b
+"jquery@npm:3.7.1":
+  version: 3.7.1
+  resolution: "jquery@npm:3.7.1"
+  checksum: 5d2ea78250a8bdfa8e1232b064e11d86b1bc0c7b3e1ebbfee9ed21f1138cff606a07083709fa9d64bbbf94cdba3119b45604a078ba88e9c48fa5ae894eaf8ec6
   languageName: node
   linkType: hard
 
