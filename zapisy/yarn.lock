@@ -1820,13 +1820,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/bootstrap@npm:5.11.5":
+"@fullcalendar/bootstrap5@npm:5.11.5":
   version: 5.11.5
-  resolution: "@fullcalendar/bootstrap@npm:5.11.5"
+  resolution: "@fullcalendar/bootstrap5@npm:5.11.5"
   dependencies:
     "@fullcalendar/common": ~5.11.5
     tslib: ^2.1.0
-  checksum: ae6b2e8f8cb69e4df53ef0e0be6eee06afd757db45b5a2de5f85f46e6850294dac75e23966a99836e075262ab7488b7d4352bbf73397ef7a34a36c187de761d3
+  checksum: 816d57b2bef44217ec135e751bb5c416be87102c299e07dd58b586749c5542506d01c51b596e645dbdcd81723f8b77c46076c230d2ecfd3429b68e1ba3b3178a
   languageName: node
   linkType: hard
 
@@ -1962,6 +1962,13 @@ __metadata:
   dependencies:
     mkdirp: ^1.0.4
   checksum: ed2cb75eefe218113794416fae43b5307f7c30476506942ed6c6c51f702713323842f81102ae1327f9134130bec0360312e6f858ddef143c21d9e269e90737ac
+  languageName: node
+  linkType: hard
+
+"@popperjs/core@npm:2.11.7":
+  version: 2.11.7
+  resolution: "@popperjs/core@npm:2.11.7"
+  checksum: 2474e230c1f6b8daf07f6865cc916e17fb69e7d2afd978840472422ed4d2849606b51edf928d6e3611cbf9c63cf04cfd987adef57b0db16096615dd6f5819886
   languageName: node
   linkType: hard
 
@@ -2944,6 +2951,13 @@ __metadata:
     raw-body: 2.4.0
     type-is: ~1.6.17
   checksum: 18c2a81df5eabc7e3541bc9ace394b88e6fbd390989b5e764ff34c3f9dbd097e19986c31baa9b855ec5c2cff2b79157449afb0cdfb97bb99c11d6239b2c47a34
+  languageName: node
+  linkType: hard
+
+"bootstrap-print-css@npm:1.0.1":
+  version: 1.0.1
+  resolution: "bootstrap-print-css@npm:1.0.1"
+  checksum: a6dc9006345d9f027a83cf9eed31fed7e0b2dbac44661928efe2c1bb7a3183de8e92a01e506a80493a5266c0ddc3add8ffcacaff12bfe5198d02068770b70ff9
   languageName: node
   linkType: hard
 
@@ -5262,10 +5276,11 @@ fsevents@~2.1.2:
     "@fortawesome/free-regular-svg-icons": 5.15.4
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/vue-fontawesome": 2.0.10
-    "@fullcalendar/bootstrap": 5.11.5
+    "@fullcalendar/bootstrap5": 5.11.5
     "@fullcalendar/core": 5.11.5
     "@fullcalendar/daygrid": 5.11.5
     "@fullcalendar/timegrid": 5.11.5
+    "@popperjs/core": 2.11.7
     "@types/bootstrap": 5.2.6
     "@types/jquery": 3.5.18
     "@types/js-cookie": 2.2.7
@@ -5279,6 +5294,7 @@ fsevents@~2.1.2:
     babel-loader: 8.3.0
     big-integer: 1.6.51
     bootstrap: 5.3.1
+    bootstrap-print-css: 1.0.1
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
