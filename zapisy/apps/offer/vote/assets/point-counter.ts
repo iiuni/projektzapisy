@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   coursesDataStr = document.getElementById("courses-data")!.innerHTML;
   coursesDataArray = FormatCoursesData(coursesDataStr);
 
-  const inputs = document.querySelectorAll(".select");
+  const inputs = document.querySelectorAll(".limit select");
 
   // Highlight "voted for" proposals ones where the current value is not a
   // minimum option.
