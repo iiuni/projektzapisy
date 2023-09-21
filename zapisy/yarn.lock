@@ -2968,12 +2968,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:5.3.1":
-  version: 5.3.1
-  resolution: "bootstrap@npm:5.3.1"
+"bootstrap@npm:5.3.2":
+  version: 5.3.2
+  resolution: "bootstrap@npm:5.3.2"
   peerDependencies:
     "@popperjs/core": ^2.11.8
-  checksum: 67c31a5fde8397e453e853aeebbf4b1db7e539c8b2c056f26b222d8d01a797b15e64f6c5ba6ddc27556992dc62e8998af681aae7cc61e0aa2eeb401b21cea679
+  checksum: f01ee2a6cde4a1dab9e52080d0ca811c727c6804272e99eabc993436dd15e47f571002104d2ae9f0458b9ee3b1c72eff03037729ebdbd05bd05ac94ab21555de
   languageName: node
   linkType: hard
 
@@ -5293,7 +5293,7 @@ fsevents@~2.1.2:
     axios: 0.21.4
     babel-loader: 8.3.0
     big-integer: 1.6.51
-    bootstrap: 5.3.1
+    bootstrap: 5.3.2
     bootstrap-print-css: 1.0.1
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
