@@ -190,7 +190,7 @@ export default class TermControlsComponent extends TermControlsProps {
 }
 
 // For devices with large screens where days are displayed one below another.
-// Bootstrap's convention: https://getbootstrap.com/docs/4.5/layout/overview/#containers
+// Bootstrap's convention: https://getbootstrap.com/docs/5.0/layout/containers/
 @media (max-width: 992px) {
   .controls {
     position: absolute;

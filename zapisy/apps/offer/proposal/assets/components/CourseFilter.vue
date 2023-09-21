@@ -180,7 +180,7 @@ export default Vue.extend({
   }
 }
 
-// Follows the Bootstrap 4 media query breakpoint.
+// Follows the Bootstrap 5 media query breakpoint.
 @media (max-width: 767px) {
   .col-md + .col-md {
     border-top: 1px solid rgba(0, 0, 0, 0.1);

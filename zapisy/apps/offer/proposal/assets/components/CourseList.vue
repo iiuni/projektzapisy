@@ -64,7 +64,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 // Defines clear colour-codes for the proposal list statuses.
 //
-// Refers to palette of Bootstrap 4.
+// Refers to palette of Bootstrap 5.
 
 .in_vote a {
   color: var(--bs-green);
