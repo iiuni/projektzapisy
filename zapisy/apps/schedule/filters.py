@@ -17,13 +17,13 @@ class EventFilter(django_filters.FilterSet):
                                        label='Typ',
                                        empty_label="Dowolny",
                                        widget=forms.Select(attrs={'class': 'form-select'}))
-    visible = django_filters.ChoiceFilter(choices=BOOLEAN_CHOICES,
-                                          empty_label="Dowolne",
-                                          widget=forms.Select(attrs={'class': 'form-select'}))
     status = django_filters.ChoiceFilter(choices=Event.STATUSES,
                                          label='Status',
                                          empty_label="Dowolny",
                                          widget=forms.Select(attrs={'class': 'form-select'}))
+    visible = django_filters.ChoiceFilter(choices=BOOLEAN_CHOICES,
+                                          empty_label="Dowolne",
+                                          widget=forms.Select(attrs={'class': 'form-select'}))
 
     class Meta:
         model = Event

@@ -85,14 +85,12 @@ export default {
   @media (max-width: 767px) {
     flex-direction: column;
   }
-
   textarea {
     @media (min-width: 768px) {
       width: calc(50% - 0.25em);
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
-
     padding: 1em;
     border: none;
   }
@@ -101,7 +99,6 @@ export default {
     @media (min-width: 768px) {
       width: calc(50% - 0.25em);
     }
-
     position: relative;
     padding: 1em;
 
