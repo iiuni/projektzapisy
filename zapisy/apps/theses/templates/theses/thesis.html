@@ -18,7 +18,7 @@
         <h1 class="d-inline-block">
             {{ thesis.title }}
         </h1>
-        <div class="ml-2 d-flex align-items-center justify-content-end flex-wrap">
+        <div class="ms-2 d-flex align-items-center justify-content-end flex-wrap">
             {% if show_master_rejecter %}
                 <div class="d-inline-block">
                     <form action="{% url 'theses:rejecter_thesis' thesis.id %}" method="POST" class="post-form">
@@ -26,7 +26,7 @@
                         {% crispy rejecter_rejected %}
                     </form>
                 </div>
-                <div class="d-inline-block ml-1">
+                <div class="d-inline-block ms-1">
                     <form action="{% url 'theses:rejecter_thesis' thesis.id %}" method="POST" class="post-form">
                         {% csrf_token %}
                         {% crispy rejecter_accepted %}
@@ -34,7 +34,7 @@
                 </div>
             {% endif %}
             {% if can_edit_thesis %}
-                <div class="d-inline-block mb-3 ml-1">
+                <div class="d-inline-block mb-3 ms-1">
                     <a class="btn btn-sm btn-outline-info" href="{% url 'theses:edit_thesis' thesis.id %}">
                         {% if save_and_verify %}
                             Edytuj i prześlij do komisji
@@ -45,8 +45,8 @@
                 </div>
             {% endif %}
             {% if is_staff %}
-                <div class="d-inline-block mb-3 ml-1">
-                    <a class="btn btn-sm badge-primary" href="{% url 'admin:theses_thesis_change' thesis.id %}">
+                <div class="d-inline-block mb-3 ms-1">
+                    <a class="btn btn-sm btn-primary" href="{% url 'admin:theses_thesis_change' thesis.id %}">
                         Administruj
                     </a>
                 </div>

@@ -1,6 +1,6 @@
 import { Calendar } from "@fullcalendar/core";
 import plLocale from "@fullcalendar/core/locales/pl";
-import bootstrapPlugin from "@fullcalendar/bootstrap";
+import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 
@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new Calendar(calendarEl, {
-    plugins: [dayGridPlugin, timeGridPlugin, bootstrapPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, bootstrap5Plugin],
 
-    themeSystem: "bootstrap",
+    themeSystem: "bootstrap5",
     initialView: "timeGridWeek",
     locale: plLocale,
 

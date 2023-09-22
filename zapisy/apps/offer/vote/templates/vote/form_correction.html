@@ -31,7 +31,7 @@
             <table class="table table-sm table-borderless table-hover">
             <style>
                 .form-group {
-                    margin-bottom: 0;
+                    margin-bottom: 0 !important;
                 }
             </style>
             {% for form in formset.forms %}
@@ -50,7 +50,7 @@
                             <i class="fa fa-sm fa-external-link-alt"></i>
                         </a>
                         {% if form.instance.proposal.course_type.free_in_vote %}
-                            <small class="text-muted ml-2">Przedmiot darmowy</small>
+                            <small class="text-muted ms-2">Przedmiot darmowy</small>
                         {% endif %}
                     </th>
                     <td>

@@ -39,11 +39,8 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
       $(".active-term").find(".form-day").on("change", self.onChangedDate);
     };
 
-    // The only two ways to change active term is clicking on
-    // edit term form or new term form, so we set handlers to
-    // the click events on all of these buttons in the document.
-    $(document).on("click", ".edit-term-form", f);
-    $(document).on("click", "#new-term-form", f);
+    // Vanilla JS give us know when change active term
+    document.addEventListener("refresh-classroom-picker", f);
   }
 
   getUnoccupied() {

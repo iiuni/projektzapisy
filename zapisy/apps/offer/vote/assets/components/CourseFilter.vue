@@ -99,7 +99,7 @@ export default Vue.extend({
             ref="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
           />
         </div>
         <div class="col-md">
@@ -117,7 +117,7 @@ export default Vue.extend({
             ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
           />
         </div>
         <div class="col-md">
@@ -176,7 +176,7 @@ export default Vue.extend({
   }
 }
 
-// Follows the Bootstrap 4 media query breakpoint.
+// Follows the Bootstrap 5 media query breakpoint.
 @media (max-width: 767px) {
   .col-md + .col-md {
     border-top: 1px solid rgba(0, 0, 0, 0.1);

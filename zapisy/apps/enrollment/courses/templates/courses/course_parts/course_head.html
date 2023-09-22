@@ -6,10 +6,10 @@
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'course-student-list' course.slug %}">Lista</a>
+        <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'course-student-list' course.slug %}">Lista</a>
         {% if user.is_staff or course.owner == request.user.employee %}
             {% if course.semester.is_current_semester %}
-                <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+                <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
             {% endif %}
         {% endif %}
     </div>
@@ -71,7 +71,7 @@
             <th scope="row">Tagi</th>
             <td>
                 {% for tag in course.tags.all %}
-                    <span class="badge badge-success mr-2">{{ tag }}</span>
+                    <span class="badge bg-success me-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -81,7 +81,7 @@
             <th>Grupy efektów kształcenia</th>
             <td>
                 {% for effect in course.effects.all %}
-                    <span class="badge badge-info mr-2">{{ effect }}</span>
+                    <span class="badge bg-info me-2">{{ effect }}</span>
                 {% endfor %}
             </td>
         </tr>

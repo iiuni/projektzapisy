@@ -1,7 +1,11 @@
 // Displays the data consent modal right when the page loads.
-import $ from "jquery";
-import "bootstrap";
+import * as bootstrap from "bootstrap";
 
-$(document).ready(() => {
-  $("#consentDialog").modal("show");
+window.addEventListener("load", () => {
+  const modal = document.getElementById("consentDialog");
+
+  if (modal) {
+    const bootstrapModal = new bootstrap.Modal(modal, {});
+    bootstrapModal.show();
+  }
 });

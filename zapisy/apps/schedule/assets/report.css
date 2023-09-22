@@ -3,5 +3,5 @@ select[name="rooms"] {
 }
 
 select[name="rooms"] option:hover {
-  background-color: var(--light);
+  background-color: var(--bs-light);
 }

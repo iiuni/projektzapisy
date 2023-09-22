@@ -4,15 +4,15 @@
 <div class="table-responsive tutorial">
     <h3 class="d-inline-block">{{ class_type|decode_class_type_plural }}
     </h3>
-    <a class="btn btn-sm btn-outline-info float-right align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
+    <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'class-type-student-list' course.slug class_type %}">Lista</a>
     {% if class_type in waiting_students %}
-        <span class="badge badge-danger d-inline-block align-text-bottom ml-2">
+        <span class="badge bg-danger d-inline-block align-text-bottom ms-2">
             Niezapisanych&mdash;oczekujących
-            <span class="badge badge-light">{{ waiting_students|lookup:class_type }}</span>
+            <span class="badge text-dark bg-light">{{ waiting_students|lookup:class_type }}</span>
         </span>
     {% endif %}
     <table class="table table-bordered text-center">
-        <thead class="thead-dark">
+        <thead class="table-dark">
             <tr>
                 <th>Prowadzący</th>
                 <th scope="col">Termin zajęć</th>
@@ -42,7 +42,7 @@
                         {% endif %}
                         <br>
                         {% for tag, tooltip in group.get_extra_tags %}
-                            <span class="badge badge-secondary" {% if tooltip %}title="{{ tooltip }}"{% endif %}>{{ tag }}</span>
+                            <span class="badge bg-secondary" {% if tooltip %}title="{{ tooltip }}"{% endif %}>{{ tag }}</span>
                         {% endfor %}
                     </td>
                     <td>
@@ -90,8 +90,8 @@
                             </form>
                             {% elif group.auto_enrollment %}
                             <div class="d-inline-block"
-                                 data-toggle="popover" data-trigger="hover" tabindex="0"
-                            data-content="Grupa z auto-zapisem. Stan tej grupy
+                                 data-bs-toggle="popover" data-bs-trigger="hover" tabindex="0"
+                                 data-bs-content="Grupa z auto-zapisem. Stan tej grupy
                                           jest automatycznie synchronizowany z innymi grupami
                                           tego przedmiotu. Zapisz się do innych grup, a
                                           automatycznie się w niej znajdziesz.">

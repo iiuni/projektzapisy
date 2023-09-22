@@ -1,5 +1,6 @@
 @import "variables";
 @import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-print-css/css/bootstrap-print";
 
 @page {
   size: auto;
@@ -17,7 +18,6 @@ footer {
   margin-top: auto;
   padding-top: 5rem;
   .container-fluid {
-    background-color: var(--light);
     padding: 1rem 0;
     p {
       margin: 0.5rem 0;
@@ -25,16 +25,95 @@ footer {
   }
 }
 
+.form-group {
+  margin-bottom: 1rem !important;
+}
+
+.form-group > label {
+  margin-bottom: 0.5rem;
+}
+
+.custom-select {
+  @extend .form-select !optional;
+}
+
+.nav-link:hover {
+  text-decoration: none;
+}
+
+.btn:hover,
+.btn:focus,
+.page-link:hover,
+.page-link:focus {
+  text-decoration: none;
+}
+
+.btn-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.btn-link:hover,
+.btn-link:focus {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:active {
+  color: white !important;
+}
+
 a {
   cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a.badge {
+  text-decoration: none;
+}
+
+a.badge:hover {
+  color: #fff;
+}
+
+a.bg-secondary:hover,
+a.bg-secondary:focus {
+  background-color: #545b62 !important;
+}
+
+a.bg-info:hover,
+a.bg-info:focus {
+  background-color: #117a8b !important;
+}
+
+a.bg-success:hover,
+a.bg-success:focus {
+  background-color: #00401e !important;
+}
+
+a.bg-info:focus {
+  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.5);
+}
+
+a.bg-success:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 115, 54, 0.5);
+}
+
+a.bg-secondary:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
 }
 
 @media print {
   // Some browsers do not handle printing layouts with flexbox. This should be
   // fixed in Bootstrap.
   // https://github.com/twbs/bootstrap/issues/26781
-  .row,
-  .form-row {
+  .row {
     display: block;
   }
 }
@@ -93,6 +172,9 @@ div.top .topbar .inline-inputs label {
 #sidebar {
   @media (max-width: 992px) {
     #sidebar-inner {
+      /* :after will position itself against nearest positioned parent, so we
+       * need to ensure that it will be this sidebar */
+      position: relative;
       overflow-y: hidden;
 
       &.folded {
@@ -102,9 +184,7 @@ div.top .topbar .inline-inputs label {
         &:after {
           position: absolute;
           display: block;
-          // Height of the card footer.
-          bottom: 1.5em;
-          left: 0;
+          bottom: 0;
           height: 50%;
           width: 100%;
           content: "";
@@ -139,6 +219,7 @@ div.loginbox {
 
 #system_menu {
   width: 100%;
+  padding: unset;
   ul#main-menu-list {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -170,17 +251,17 @@ colgroup col.table-info-type {
 // Required field marker in forms.
 .asteriskField {
   padding-left: 0.25em;
-  color: var(--red);
+  color: var(--bs-red);
 }
 
 // News items on the main page and the news page.
 .od-news-item {
   margin: 2rem 0;
   padding: 4rem;
-  background: var(--light);
+  background: var(--bs-light);
 
   .od-news-date {
-    color: var(--dark);
+    color: var(--bs-dark);
     font-style: italic;
     display: block;
     @media (min-width: 992px) {
@@ -203,4 +284,8 @@ colgroup col.table-info-type {
     transform: scale(1.01, 1.01);
     transition: transform 250ms;
   }
+}
+
+.background-gray {
+  background-color: $gray-200;
 }

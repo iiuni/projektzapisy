@@ -28,27 +28,35 @@
 {% block all-content %}
     {% regroup proposals_list|dictsort:"status" by get_status_display as statuses %}
     {% with active_status=proposal.status|default:1 %}
-    <div class="jumbotron d-print-none">
-        <a href="{% url 'proposal-form' %}" class="btn btn-success float-md-right mb-3">Dodaj nową propozycję przedmiotu</a>
-        <dl>
-            {% for status, proposals in statuses %}
-                <dt class="nav-item">{{ status|capfirst }}</dt>
-                <dd>
-                    <ul>
-                        {% for prp in proposals %}
-                        <li>
-                            <a href="{% url 'my-proposal-show' prp.slug %}"
-                                    {% if prp == proposal %}class="font-weight-bolder"{% endif %}>
-                                {{ prp.name }}
-                            </a>
-                        </li>
+    <div class="px-4 mb-4 background-gray rounded-3 d-print-none">
+        <div class="container-fluid py-5">
+            <div class="row row-cols-1 row-cols-md-2">
+                <div class="col order-1 order-md-2">
+                    <a href="{% url 'proposal-form' %}" class="btn btn-success float-md-end mb-3">Dodaj nową propozycję przedmiotu</a>
+                </div>
+                <div class="col order-2 order-md-1"> 
+                    <dl>
+                        {% for status, proposals in statuses %}
+                            <dt class="nav-item">{{ status|capfirst }}</dt>
+                            <dd>
+                                <ul>
+                                    {% for prp in proposals %}
+                                    <li>
+                                        <a href="{% url 'my-proposal-show' prp.slug %}"
+                                                {% if prp == proposal %}class="font-weight-bolder"{% endif %}>
+                                            {{ prp.name }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </dd>
+                        {% empty %}
+                            <p class="lead">Brak propozycji przedmiotów.</p>
                         {% endfor %}
-                    </ul>
-                </dd>
-            {% empty %}
-                <p class="lead">Brak propozycji przedmiotów.</p>
-            {% endfor %}
-        </dl>
+                    </dl>
+                </div>
+            </div>
+        </div>
     </div>
     {% endwith %}
     {% if proposal %}
