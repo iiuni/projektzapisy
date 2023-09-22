@@ -37,19 +37,16 @@ class ThesisFormBase(forms.ModelForm):
     advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                      label="Promotor",
                                      required=True,
-                                     empty_label=None,
-                                     widget=forms.Select(attrs={'class': 'form-select'}))
+                                     empty_label=None)
     supporting_advisor = forms.ModelChoiceField(queryset=Employee.objects.none(),
                                                 label="Promotor wspierający",
-                                                required=False,
-                                                widget=forms.Select(attrs={'class': 'form-select'}))
-    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int,
-                                  widget=forms.Select(attrs={'class': 'form-select'}))
+                                                required=False)
+    kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int)
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         required=False,
         label="Przypisani studenci",
-        widget=forms.SelectMultiple(attrs={'size': '10', 'class': 'form-select'}))
+        widget=forms.SelectMultiple(attrs={'size': '10'}))
     reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
                                      "uzupełnij również datę rezerwacji.",
                                      widget=forms.TextInput(attrs={'type': 'date'}),
@@ -59,8 +56,7 @@ class ThesisFormBase(forms.ModelForm):
         label="Opis", widget=common_widgets.MarkdownArea, required=False)
     max_number_of_students = forms.TypedChoiceField(
         label="Maks. liczba studentów", coerce=int,
-        choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1)),
-        widget=forms.Select(attrs={'class': 'form-select'})
+        choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
     )
 
     def __init__(self, user, *args, **kwargs):
