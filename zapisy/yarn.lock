@@ -43,6 +43,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/compat-data@npm:^7.22.20":
+  version: 7.22.20
+  resolution: "@babel/compat-data@npm:7.22.20"
+  checksum: 326c11b2483c74b9ffaa66e620aa3a660c751031189a0dbe4ea3521d5f8780cecd42648ca182632ae44a7b8a47a51fab758f932eb5ee3a6994afc28871dec704
+  languageName: node
+  linkType: hard
+
 "@babel/compat-data@npm:^7.22.5":
   version: 7.22.5
   resolution: "@babel/compat-data@npm:7.22.5"
@@ -64,26 +71,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.22.19":
-  version: 7.22.19
-  resolution: "@babel/core@npm:7.22.19"
+"@babel/core@npm:7.22.20":
+  version: 7.22.20
+  resolution: "@babel/core@npm:7.22.20"
   dependencies:
     "@ampproject/remapping": ^2.2.0
     "@babel/code-frame": ^7.22.13
     "@babel/generator": ^7.22.15
     "@babel/helper-compilation-targets": ^7.22.15
-    "@babel/helper-module-transforms": ^7.22.19
+    "@babel/helper-module-transforms": ^7.22.20
     "@babel/helpers": ^7.22.15
     "@babel/parser": ^7.22.16
     "@babel/template": ^7.22.15
-    "@babel/traverse": ^7.22.19
+    "@babel/traverse": ^7.22.20
     "@babel/types": ^7.22.19
     convert-source-map: ^1.7.0
     debug: ^4.1.0
     gensync: ^1.0.0-beta.2
     json5: ^2.2.3
     semver: ^6.3.1
-  checksum: 836e508d1a60d8f56220645c350d0f2cac8a610ff8519f13b770c9fefb829ef94bbd62ce277edb853339797e21760ed2730469f36f580aa20c54d8b01cca8d52
+  checksum: 86f3a30bf8f56662e06188df674bc9b911da5c936b18296c707e131db3423fa972adf85af5330922b658fa9a10139d7719f85c55fb3baa22dfbfa67720fcdf86
   languageName: node
   linkType: hard
 
@@ -343,7 +350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-module-transforms@npm:^7.22.19":
+"@babel/helper-module-transforms@npm:^7.22.20":
   version: 7.22.20
   resolution: "@babel/helper-module-transforms@npm:7.22.20"
   dependencies:
@@ -1485,11 +1492,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.22.15":
-  version: 7.22.15
-  resolution: "@babel/preset-env@npm:7.22.15"
+"@babel/preset-env@npm:7.22.20":
+  version: 7.22.20
+  resolution: "@babel/preset-env@npm:7.22.20"
   dependencies:
-    "@babel/compat-data": ^7.22.9
+    "@babel/compat-data": ^7.22.20
     "@babel/helper-compilation-targets": ^7.22.15
     "@babel/helper-plugin-utils": ^7.22.5
     "@babel/helper-validator-option": ^7.22.15
@@ -1563,7 +1570,7 @@ __metadata:
     "@babel/plugin-transform-unicode-regex": ^7.22.5
     "@babel/plugin-transform-unicode-sets-regex": ^7.22.5
     "@babel/preset-modules": 0.1.6-no-external-plugins
-    "@babel/types": ^7.22.15
+    "@babel/types": ^7.22.19
     babel-plugin-polyfill-corejs2: ^0.4.5
     babel-plugin-polyfill-corejs3: ^0.8.3
     babel-plugin-polyfill-regenerator: ^0.5.2
@@ -1571,7 +1578,7 @@ __metadata:
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 06d38a98760eb0dbf70a7e35153a467803da8f8ebb506b142872c8e361d102431670e943c36a7d04f6184393d2e24bb2a0f477f8fb4ea03ef8ae19add867a996
+  checksum: e083335d8fa7bdc004a69cc9655096586ed32b88c4233046fb89902d956bc93571cd1dead60d95ceb528d5214aa0fc4ecd80e474d6076d0e5a41650c1ae0fc28
   languageName: node
   linkType: hard
 
@@ -1644,7 +1651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.22.19":
+"@babel/traverse@npm:^7.22.20":
   version: 7.22.20
   resolution: "@babel/traverse@npm:7.22.20"
   dependencies:
@@ -5298,8 +5305,8 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ii-zapisy@workspace:."
   dependencies:
-    "@babel/core": 7.22.19
-    "@babel/preset-env": 7.22.15
+    "@babel/core": 7.22.20
+    "@babel/preset-env": 7.22.20
     "@bokeh/bokehjs": 2.4.3
     "@fortawesome/fontawesome-free": 5.15.4
     "@fortawesome/fontawesome-svg-core": 1.3.0
