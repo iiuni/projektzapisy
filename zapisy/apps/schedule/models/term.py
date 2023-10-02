@@ -1,5 +1,6 @@
 import collections
 import datetime
+from typing import Set, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -210,17 +211,24 @@ class Term(models.Model):
         return '{0:s}: {1:s} - {2:s}'.format(self.day, self.start, self.end)
 
 
-def delete_terms(course_term: CourseTerm):
-    """Deletes all Terms corresponding to a CourseTerm."""
+def get_terms(course_term: CourseTerm):
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     matching_terms = Term.objects.filter(event__group=course_term.group,
                                          day__in=dates,
                                          start=course_term.start_time,
                                          end=course_term.end_time)
+    return matching_terms
+
+
+def delete_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None):
+    """Deletes all Terms corresponding to a CourseTerm."""
+    matching_terms = get_terms(course_term)
+    if room_pk_set:
+        matching_terms = matching_terms.filter(room__pk__in=room_pk_set)
     matching_terms.delete()
 
 
-def create_terms(course_term: CourseTerm):
+def create_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None):
     """Creates Terms corresponding to a CourseTerm."""
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     event, _ = Event.objects.get_or_create(group=course_term.group,
@@ -230,7 +238,13 @@ def create_terms(course_term: CourseTerm):
                                            visible=True,
                                            status=Event.STATUS_ACCEPTED,
                                            author=course_term.group.teacher.user)
-    rooms = course_term.classrooms.all() if course_term.pk else None
+    if course_term.pk:
+        if room_pk_set:
+            rooms = Classroom.objects.filter(pk__in=room_pk_set)
+        else:
+            rooms = course_term.classrooms.all()
+    else:
+        rooms = None
     for day in dates:
         if rooms:
             for room in rooms:
@@ -301,5 +315,14 @@ def sync_course_term_m2m(**kwargs):
         instance_curr: CourseTerm = kwargs['instance']
         # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
-        delete_terms(instance_db)
-        create_terms(instance_db)
+        if kwargs['action'] == 'post_add' and kwargs['pk_set']:
+            if get_terms(instance_db).filter(room=None):
+                delete_terms(instance_db)
+            create_terms(instance_db, kwargs['pk_set'])
+        if kwargs['action'] == 'post_remove' and kwargs['pk_set']:
+            delete_terms(instance_db, kwargs['pk_set'])
+            if not get_terms(instance_db):
+                create_terms(instance_db)
+        if kwargs['action'] == 'post_clear':
+            delete_terms(instance_db)
+            create_terms(instance_db)
