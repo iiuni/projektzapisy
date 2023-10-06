@@ -2023,14 +2023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@popperjs/core@npm:2.11.7":
-  version: 2.11.7
-  resolution: "@popperjs/core@npm:2.11.7"
-  checksum: 2474e230c1f6b8daf07f6865cc916e17fb69e7d2afd978840472422ed4d2849606b51edf928d6e3611cbf9c63cf04cfd987adef57b0db16096615dd6f5819886
-  languageName: node
-  linkType: hard
-
-"@popperjs/core@npm:^2.9.2":
+"@popperjs/core@npm:2.11.8, @popperjs/core@npm:^2.9.2":
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
   checksum: 8c170d4eb56b6604b190eb5ed9dd6ab4b9e9cdb6ef6ee5b3884fe14af37a3a4289af1bfa0373e4dab288fddb12b43d94a565f313beaae023cd1da742173b050b
@@ -5336,7 +5329,7 @@ fsevents@~2.1.2:
     "@fullcalendar/core": 5.11.5
     "@fullcalendar/daygrid": 5.11.5
     "@fullcalendar/timegrid": 5.11.5
-    "@popperjs/core": 2.11.7
+    "@popperjs/core": 2.11.8
     "@types/bootstrap": 5.2.6
     "@types/jquery": 3.5.20
     "@types/js-cookie": 2.2.7
