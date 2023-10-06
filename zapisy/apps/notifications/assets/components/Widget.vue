@@ -102,11 +102,11 @@ export default class NotificationsComponent extends Vue {
   <div>
     <li id="notification-dropdown" class="nav-item dropdown">
       <a
-        class="nav-link dropdown-toggle specialdropdown ml-1"
+        class="nav-link dropdown-toggle specialdropdown ms-1"
         href="#"
         id="navbarDropdown"
         role="button"
-        data-toggle="dropdown"
+        data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
@@ -118,17 +118,19 @@ export default class NotificationsComponent extends Vue {
           <font-awesome-icon :icon="farBell" size="lg" />
         </div>
       </a>
-      <div class="dropdown-menu dropdown-menu-right">
+      <div class="dropdown-menu dropdown-menu-end">
         <form class="p-1 place-for-notifications">
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
-              <strong class="mr-auto"></strong>
+              <strong class="me-auto"></strong>
               <small class="text-muted mx-2">{{
                 elem.issuedOn | Moment
               }}</small>
-              <button type="button" class="close" @click="deleteOne(elem.id)">
-                &times;
-              </button>
+              <button
+                type="button"
+                class="btn-close"
+                @click="deleteOne(elem.id)"
+              ></button>
             </div>
             <a :href="elem.target" class="toast-link">
               <div class="toast-body text-body">{{ elem.description }}</div>
@@ -167,7 +169,7 @@ export default class NotificationsComponent extends Vue {
 a.toast-link:hover {
   text-decoration: none;
   .toast-body {
-    background-color: var(--light);
+    background-color: var(--bs-light);
   }
 }
 
@@ -181,7 +183,7 @@ a.toast-link:hover {
 }
 
 .counter-badge {
-  background-color: var(--pink);
+  background-color: var(--bs-pink);
   border-radius: 2px;
   color: white;
   font-weight: bold;

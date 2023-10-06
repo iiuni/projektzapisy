@@ -19,8 +19,8 @@
         </h1>
         <form action="{% url 'theses:delete_thesis' id %}" method="POST" class="post-form">
             {% csrf_token %}
-            <div class="text-right">
-            <input class="btn btn-default btn-danger confirm-delete float-right align-bottom ml-3" name="delete" type="submit" value="Usuń pracę"/>
+            <div class="text-end">
+            <input class="btn btn-default btn-danger confirm-delete float-end align-bottom ms-3" name="delete" type="submit" value="Usuń pracę"/>
             <script>
                 $(document).on('click', '.confirm-delete', function(){
                     return confirm('Czy na pewno chcesz usunąć tę pracę dyplomową?');
@@ -31,12 +31,12 @@
         {% endif %}
     </div>
     {% if confirm_changes %}
-    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+    <div class="alert alert-warning d-flex justify-content-between align-items-center mt-2">
         <div class="d-inline-block">
             Temat został już zaakceptowany przez komisję. Wprowadzenie zmian innych niż dotyczące
             daty rezerwacji i przypisanych studentów spowoduje przesłanie go z powrotem do decyzji komisji.
         </div>
-        <button class="btn btn-primary float-righ edit-term-form ml-3" id="resetbtn" style="display: inline-block; white-space: normal; word-wrap: break-word;"> 
+        <button class="btn btn-primary float-end edit-term-form ms-3" id="resetbtn" style="display: inline-block; white-space: normal; word-wrap: break-word;"> 
             Cofnij zmiany wymagające zgody komisji 
         </button>
     </div>

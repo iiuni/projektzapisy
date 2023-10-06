@@ -6,12 +6,12 @@
 <ul class="nav nav-pills nav-fill mb-3" role="tablist">
     {% if form_table %}
     <li class="nav-item">
-        <a class="nav-link active" href="#table-form-tab" role="tab" data-toggle="tab">Raport tabelkowy</a>
+        <a class="nav-link active" href="#table-form-tab" role="tab" data-bs-toggle="tab">Raport tabelkowy</a>
     </li>
     {% endif %}
     {% if form_doors %}
     <li class="nav-item">
-        <a class="nav-link" href="#doors-form-tab" role="tab" data-toggle="tab">Wykazy na drzwi</a>
+        <a class="nav-link" href="#doors-form-tab" role="tab" data-bs-toggle="tab">Wykazy na drzwi</a>
     </li>
     {% endif %}
 </ul>
@@ -21,7 +21,7 @@
         <form method="post">
             {% include "schedule/includes/_report_form_render.html" with form=form_table %}
             <input type="hidden" name="report-type" value="table">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+            <button type="submit" class="btn btn-success btn-lg btn-block w-100">Generuj raport</button>
         </form>
     </div>
     {% endif %}
@@ -30,7 +30,7 @@
         <form method="post">
             {% include "schedule/includes/_report_form_render.html" with form=form_doors %}
             <input type="hidden" name="report-type" value="doors">
-            <input type="submit" value="Generuj raport" class="btn btn-success btn-lg btn-block">
+            <button type="submit" class="btn btn-success btn-lg btn-block w-100">Generuj raport</button>
         </form>
     </div>
     {% endif %}

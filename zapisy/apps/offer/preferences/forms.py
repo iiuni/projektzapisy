@@ -14,6 +14,10 @@ class PreferenceForm(forms.ModelForm):
             'answer': "",
         }
 
+    def __init__(self, *args, **kwargs):
+        super(PreferenceForm, self).__init__(*args, **kwargs)
+        self.fields['answer'].widget.attrs['class'] = 'form-select'
+
 
 def prepare_formset(employee: Employee, post=None):
     """Creates missing vote objects and returns a formset for the employee."""

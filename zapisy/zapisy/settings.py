@@ -331,7 +331,7 @@ ROLLBAR = {
     ]
 }
 
-# Message classes set to be compatible with Bootstrap 4 alerts.
+# Message classes set to be compatible with Bootstrap 5 alerts.
 MESSAGE_TAGS = {
     messages.ERROR: 'danger error',
     messages.DEBUG: 'dark',

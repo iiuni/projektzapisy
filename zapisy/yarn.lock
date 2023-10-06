@@ -1878,13 +1878,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/bootstrap@npm:5.11.5":
+"@fullcalendar/bootstrap5@npm:5.11.5":
   version: 5.11.5
-  resolution: "@fullcalendar/bootstrap@npm:5.11.5"
+  resolution: "@fullcalendar/bootstrap5@npm:5.11.5"
   dependencies:
     "@fullcalendar/common": ~5.11.5
     tslib: ^2.1.0
-  checksum: ae6b2e8f8cb69e4df53ef0e0be6eee06afd757db45b5a2de5f85f46e6850294dac75e23966a99836e075262ab7488b7d4352bbf73397ef7a34a36c187de761d3
+  checksum: 816d57b2bef44217ec135e751bb5c416be87102c299e07dd58b586749c5542506d01c51b596e645dbdcd81723f8b77c46076c230d2ecfd3429b68e1ba3b3178a
   languageName: node
   linkType: hard
 
@@ -2023,6 +2023,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@popperjs/core@npm:2.11.7":
+  version: 2.11.7
+  resolution: "@popperjs/core@npm:2.11.7"
+  checksum: 2474e230c1f6b8daf07f6865cc916e17fb69e7d2afd978840472422ed4d2849606b51edf928d6e3611cbf9c63cf04cfd987adef57b0db16096615dd6f5819886
+  languageName: node
+  linkType: hard
+
+"@popperjs/core@npm:^2.9.2":
+  version: 2.11.8
+  resolution: "@popperjs/core@npm:2.11.8"
+  checksum: 8c170d4eb56b6604b190eb5ed9dd6ab4b9e9cdb6ef6ee5b3884fe14af37a3a4289af1bfa0373e4dab288fddb12b43d94a565f313beaae023cd1da742173b050b
+  languageName: node
+  linkType: hard
+
 "@types/anymatch@npm:*":
   version: 1.3.1
   resolution: "@types/anymatch@npm:1.3.1"
@@ -2030,13 +2044,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bootstrap@npm:4.6.3":
-  version: 4.6.3
-  resolution: "@types/bootstrap@npm:4.6.3"
+"@types/bootstrap@npm:5.2.6":
+  version: 5.2.6
+  resolution: "@types/bootstrap@npm:5.2.6"
   dependencies:
-    "@types/jquery": "*"
-    popper.js: ^1.14.1
-  checksum: 18b2e596245afe0e5c73416f710c0e167a8c2affb150c04b4c93f30f5d95dc0de2a5e3d5e1d0615ddbc8f9833b71649078222c02ca94eedd495f53555e0851d3
+    "@popperjs/core": ^2.9.2
+  checksum: f9d342f903385d2e1574e8bbb98037c24dee851681f2ef39396f9dc05063f2bb6ad9eda627129d31a552df7c13b8624a66e1e999540cef3b3d860c124ef52577
   languageName: node
   linkType: hard
 
@@ -2999,6 +3012,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bootstrap-print-css@npm:1.0.1":
+  version: 1.0.1
+  resolution: "bootstrap-print-css@npm:1.0.1"
+  checksum: a6dc9006345d9f027a83cf9eed31fed7e0b2dbac44661928efe2c1bb7a3183de8e92a01e506a80493a5266c0ddc3add8ffcacaff12bfe5198d02068770b70ff9
+  languageName: node
+  linkType: hard
+
 "bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87":
   version: 1.11.2
   resolution: "bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#commit=ff650fd17cc2872f4031d355fa6382066d064e87"
@@ -3006,13 +3026,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:4.6.2":
-  version: 4.6.2
-  resolution: "bootstrap@npm:4.6.2"
+"bootstrap@npm:5.3.2":
+  version: 5.3.2
+  resolution: "bootstrap@npm:5.3.2"
   peerDependencies:
-    jquery: 1.9.1 - 3
-    popper.js: ^1.16.1
-  checksum: 2f93c502edbdee6e962f18f3a4d6e1190849638d1a5d651f8035d4206d710c2eb4fb94e11b349a9f32f47c6934379fbc03d1758d04dac85cb546a9f553719ef0
+    "@popperjs/core": ^2.11.8
+  checksum: f01ee2a6cde4a1dab9e52080d0ca811c727c6804272e99eabc993436dd15e47f571002104d2ae9f0458b9ee3b1c72eff03037729ebdbd05bd05ac94ab21555de
   languageName: node
   linkType: hard
 
@@ -5313,11 +5332,12 @@ fsevents@~2.1.2:
     "@fortawesome/free-regular-svg-icons": 5.15.4
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/vue-fontawesome": 2.0.10
-    "@fullcalendar/bootstrap": 5.11.5
+    "@fullcalendar/bootstrap5": 5.11.5
     "@fullcalendar/core": 5.11.5
     "@fullcalendar/daygrid": 5.11.5
     "@fullcalendar/timegrid": 5.11.5
-    "@types/bootstrap": 4.6.3
+    "@popperjs/core": 2.11.7
+    "@types/bootstrap": 5.2.6
     "@types/jquery": 3.5.20
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.8
@@ -5329,7 +5349,8 @@ fsevents@~2.1.2:
     axios: 0.21.4
     babel-loader: 8.3.0
     big-integer: 1.6.51
-    bootstrap: 4.6.2
+    bootstrap: 5.3.2
+    bootstrap-print-css: 1.0.1
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
@@ -7155,7 +7176,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"popper.js@npm:1.16.1, popper.js@npm:^1.14.1":
+"popper.js@npm:1.16.1":
   version: 1.16.1
   resolution: "popper.js@npm:1.16.1"
   checksum: eb53806fb7680e31c7d1db096f95438a40a7cb869f7ee0e27100c0860f11583a0d322606c6073618e7fe8865f834ec36482901b547256d9a0cf2b22434bca75d

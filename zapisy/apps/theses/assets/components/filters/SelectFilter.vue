@@ -55,7 +55,7 @@ export default Vue.extend({
 
 <template>
   <div class="input-group mb-2">
-    <select class="custom-select" v-model="selected">
+    <select class="form-select" v-model="selected">
       <option selected :value="undefined">-- {{ placeholder }} --</option>
       <option v-for="[k, o] of options" :value="k">{{ o }}</option>
     </select>

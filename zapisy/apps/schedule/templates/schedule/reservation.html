@@ -4,6 +4,19 @@
 {% load crispy_forms_tags %}
 {% block schedule_reservation %} class="active"{% endblock %}
 
+{% block styles %}
+{{ block.super }}
+<style>
+    @media (max-width: 768px) {
+        input[type="time"]::-webkit-calendar-picker-indicator,
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display:none;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block bread %}
     <li class="breadcrumb-item"><a href="{% url 'main-page' %}">Strona główna</a></li>
     <li class="breadcrumb-item"><a href="{% url 'events:classrooms' %}">Sale</a></li>
@@ -19,7 +32,7 @@
 <h2>{% if is_edit %}Edytuj rezerwację{% else %}Nowa rezerwacja{% endif %}</h2>
 <input id="extra-terms-number" class="d-none" value="{{ extra_terms_number }}">
 <form method="POST" class="post-form" id="main-form">
-    <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ml-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ml-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+    <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ms-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ms-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
     {% csrf_token %}
     {% crispy form %}
 
@@ -29,7 +42,7 @@
 
     <div class="container">
         <div class="row font-weight-bold mb-2 border-bottom">
-            <div class="col-2 p-2 border">
+            <div class="col-3 col-lg-2 p-2 border">
                 Dzień
             </div>
             <div class="col-2 p-2 border">
@@ -38,7 +51,7 @@
             <div class="col-2 p-2 border">
                 Koniec
             </div>
-            <div class="col-3 p-2 border">
+            <div class="col-2 col-lg-3 p-2 border">
                 Lokalizacja
             </div>
             <div class="col-3 p-2 border">
@@ -59,7 +72,7 @@
             <a
                 class="nav-item nav-link active"
                 id="nav-place-in-tab"
-                data-toggle="tab"
+                data-bs-toggle="tab"
                 href="#nav-place-in"
                 role="tab"
                 aria-controls="nav-place-in"
@@ -68,7 +81,7 @@
             <a
                 class="nav-item nav-link"
                 id="nav-place-out-tab"
-                data-toggle="tab"
+                data-bs-toggle="tab"
                 href="#nav-place-out"
                 role="tab"
                 aria-controls="nav-place-out"
@@ -94,9 +107,7 @@
             >
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     Musisz samemu zatroszczyć się o rezerwację!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div id="inputplacediv" class="container">
                     <div class="form-group row">

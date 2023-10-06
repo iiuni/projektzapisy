@@ -6,10 +6,10 @@
 {% block all-content %}
 
     
-    <h1 class="display-1">Aktualności</h1>
+    <h1 class="display-5">Aktualności</h1>
     {% for news in recent_news %}
     <div class="od-news-item">
-        <h3 class="display-3">{{ news.title }}</h3>
+        <h3 class="display-6">{{ news.title }}</h3>
         <div>
             <span class="od-news-date">{{ news.date|date:"l, d.m.Y · G:i" }}</span>
             <span class="od-news-author">{{ news.author.get_full_name }}</span>
@@ -20,22 +20,24 @@
     </div>
     {% endfor %}
     <div class="row justify-content-end px-3">
-        <a class="float-right btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
+        <div class="col p-0">
+            <a class="float-end btn btn-primary" href="{% url 'news-all' %}">Więcej aktualności</a>
+        </div>
     </div>
     
     <div class="row mt-5 align-items-end">
         <div class="col-12 col-md-4 my-3">
-            <h1 class="display-1">System Zapisów</h1>
+            <h1 class="display-5">System Zapisów</h1>
             <p class="lead">System zapisów na zajęcia w Instytucie Informatyki Uniwersytetu Wrocławskiego.</p>
             <a class="btn btn-secondary" href="{% url 'course-list' %}">Przejdź</a>
         </div>
         <div class="col-12 col-md-4 my-3">
-            <h1 class="display-1">Oferta Dydaktyczna</h1>
+            <h1 class="display-5">Oferta Dydaktyczna</h1>
             <p class="lead">Kształtowanie oferty dydaktycznej w Instytucie Informatyki.</p>
             <a class="btn btn-secondary" href="{% url 'offer-main' %}">Przejdź</a>
         </div>
         <div class="col-12 col-md-4 my-3">
-            <h1 class="display-1">Ocena zajęć</h1>
+            <h1 class="display-5">Ocena zajęć</h1>
             <p class="lead">Anonimowa ocena zajęć w Instytucie Informatyki Uniwersytetu Wrocławskiego.</p>
             <a class="btn btn-secondary" href="{% url 'grade-main' %}">Przejdź</a>
         </div>
