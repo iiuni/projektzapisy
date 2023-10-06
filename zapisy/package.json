@@ -22,7 +22,7 @@
     "big-integer": "1.6.51",
     "bootstrap": "5.3.2",
     "bootstrap-print-css": "1.0.1",
-    "bootstrap-sortable": "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87",
+    "bootstrap-sortable": "https://github.com/drvic10k/bootstrap-sortable.git#cdd390753e394b60b72f24ff74a1607d3fa0866d",
     "checkboxes.js": "1.2.2",
     "dayjs": "1.11.10",
     "jquery": "3.7.1",
