@@ -8,7 +8,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { parse, ParseFn, fromObject, aString, anArrayContaining } from "spicery";
+import {
+  parse,
+  ParseFn,
+  fromObject,
+  aString,
+  anArrayContaining,
+} from "spicery";
 import Vue from "vue";
 import Component from "vue-class-component";
 
