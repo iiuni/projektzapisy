@@ -8,7 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
+import { parse, ParseFn, fromObject, aString, anArrayContaining } from "spicery";
 import Vue from "vue";
 import Component from "vue-class-component";
 
@@ -24,10 +24,10 @@ class Notification {
 // Defines a parser that validates and parses Notifications from JSON.
 const notifications: ParseFn<Notification> = (x: any) =>
   new Notification(
-    fromMap(x, "id", aString),
-    fromMap(x, "description", aString),
-    fromMap(x, "issued_on", aString),
-    fromMap(x, "target", aString)
+    fromObject(x, "id", aString),
+    fromObject(x, "description", aString),
+    fromObject(x, "issued_on", aString),
+    fromObject(x, "target", aString)
   );
 const notificationsArray = anArrayContaining(notifications);
 
