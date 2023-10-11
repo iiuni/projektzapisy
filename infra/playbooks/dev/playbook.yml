@@ -11,6 +11,11 @@
     - name: Wait for any possibly running unattended upgrade to finish
       raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
+      
+    - name: Change permissions to /home/vagrant
+      ansible.builtin.file:
+        path: /home/vagrant
+        mode: "775"
 
     - name: Install yarn
       apt:
