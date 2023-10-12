@@ -2087,12 +2087,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:3.5.20":
-  version: 3.5.20
-  resolution: "@types/jquery@npm:3.5.20"
+"@types/jquery@npm:3.5.21":
+  version: 3.5.21
+  resolution: "@types/jquery@npm:3.5.21"
   dependencies:
     "@types/sizzle": "*"
-  checksum: b6f196d4bfdffc8709a1cd1587f87747480afd9361f5a605bab87ceb7b54c46f308dc371ad3c90cc4c975e52b572f94ce66dfa2ebd93571db8ca4d8727713d18
+  checksum: c90fb54642adc5c24aeb4933e2588cfa3803feae63c74f701d5ebbaace499d265d9c252172f95a54a5f4bd94ed3338952010811f0a1aae272133df732b829f23
   languageName: node
   linkType: hard
 
@@ -5331,7 +5331,7 @@ fsevents@~2.1.2:
     "@fullcalendar/timegrid": 5.11.5
     "@popperjs/core": 2.11.8
     "@types/bootstrap": 5.2.7
-    "@types/jquery": 3.5.20
+    "@types/jquery": 3.5.21
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.8
     "@types/katex": 0.11.1
