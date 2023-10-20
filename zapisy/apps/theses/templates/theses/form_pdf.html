@@ -41,7 +41,7 @@
     {% if thesis.supporting_advisor %}
       <h3>IIa. Dane promotora</h3>
       <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.advisor }}</strong></p>
-      <h3>IIb. Dane promotora pomocniczego</h3>
+      <h3>IIb. Dane promotora wspierającego</h3>
       <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.supporting_advisor }}</strong></p>
     {% else %}
       <h3>II. Dane promotora</h3>
@@ -69,7 +69,7 @@
         .................................................................</br>Data i podpis studenta</br></br></br></br></br>
         .................................................................</br>Data i podpis promotora</br></br></br></br></br>
         {% if thesis.supporting_advisor %}
-          .................................................................</br>Data i podpis promotora pomocniczego</br></br></br></br></br>
+          .................................................................</br>Data i podpis promotora wspierającego</br></br></br></br></br>
         {% endif %}
     <strong>UWAGA:</strong></br>
     Jeśli zadeklarowana praca nie zostanie złożona w Dziekanacie przed upływem podanego terminu rezerwacji, promotor może odmówić dalszej współpracy przy realizacji tematu oraz może przydzielić temat innej osobie. Do kontynuacji współpracy wymagane jest ponowne złożenie deklaracji.
