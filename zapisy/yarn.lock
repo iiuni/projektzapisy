@@ -5344,7 +5344,6 @@ fsevents@~2.1.2:
     prettier: 2.8.8
     sass: 1.26.10
     sass-loader: 10.5.2
-    spicery: 1.1.0
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -5358,6 +5357,7 @@ fsevents@~2.1.2:
     webpack-bundle-analyzer: 3.9.0
     webpack-bundle-tracker: 0.4.3
     webpack-cli: 3.3.12
+    zod: 3.22.4
   languageName: unknown
   linkType: soft
 
@@ -8245,13 +8245,6 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"spicery@npm:1.1.0":
-  version: 1.1.0
-  resolution: "spicery@npm:1.1.0"
-  checksum: e2b37113a208ded87a52c418f2dd1320ea6ab3e0d7523df5bc25831a17291eb32effbcc42133aa10b2bbfb4a8753d45b8c8e1f9d3eb255c7c0ca0a1508eb1fd0
-  languageName: node
-  linkType: hard
-
 "split-string@npm:^3.0.1, split-string@npm:^3.0.2":
   version: 3.1.0
   resolution: "split-string@npm:3.1.0"
@@ -9431,5 +9424,12 @@ typescript@4.0.2:
     y18n: ^4.0.0
     yargs-parser: ^13.1.2
   checksum: 92c612cd14a9217d7421ae4f42bc7c460472633bfc2e45f7f86cd614a61a845670d3bac7c2228c39df7fcecce0b8c12b2af65c785b1f757de974dcf84b5074f9
+  languageName: node
+  linkType: hard
+
+"zod@npm:3.22.4":
+  version: 3.22.4
+  resolution: "zod@npm:3.22.4"
+  checksum: cb84164addb36b38981135d945e969e2e3ee25aa8d8313361ebc474200893405c7781533300b792eda9a9feaa8a7c06df821cdddf08ee0cf45da258e18f60b83
   languageName: node
   linkType: hard

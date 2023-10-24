@@ -8,28 +8,21 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
+import { z } from "zod";
 import Vue from "vue";
 import Component from "vue-class-component";
 
-class Notification {
-  constructor(
-    public id: string,
-    public description: string,
-    public issuedOn: string,
-    public target: string
-  ) {}
-}
+// Defines a notification scheme to validate and parse Notifications from JSON.
+const notificationScheme = z.object({
+    id: z.string(),
+    description: z.string(),
+    issued_on: z.string(),
+    target: z.string()
+});
 
-// Defines a parser that validates and parses Notifications from JSON.
-const notifications: ParseFn<Notification> = (x: any) =>
-  new Notification(
-    fromMap(x, "id", aString),
-    fromMap(x, "description", aString),
-    fromMap(x, "issued_on", aString),
-    fromMap(x, "target", aString)
-  );
-const notificationsArray = anArrayContaining(notifications);
+const notificationSchemeArray = z.array(notificationScheme);
+
+type Notification = z.infer<typeof notificationScheme>;
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -59,7 +52,7 @@ export default class NotificationsComponent extends Vue {
   getNotifications() {
     return axios
       .get("/notifications/get")
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -71,7 +64,7 @@ export default class NotificationsComponent extends Vue {
 
     return axios
       .post("/notifications/delete/all")
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -85,7 +78,7 @@ export default class NotificationsComponent extends Vue {
       .post("/notifications/delete", {
         uuid: i,
       })
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -124,7 +117,7 @@ export default class NotificationsComponent extends Vue {
             <div class="toast-header">
               <strong class="me-auto"></strong>
               <small class="text-muted mx-2">{{
-                elem.issuedOn | Moment
+                elem.issued_on | Moment
               }}</small>
               <button
                 type="button"
