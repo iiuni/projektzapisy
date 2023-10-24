@@ -14,10 +14,10 @@ import Component from "vue-class-component";
 
 // Defines a notification scheme to validate and parse Notifications from JSON.
 const notificationScheme = z.object({
-    id: z.string(),
-    description: z.string(),
-    issued_on: z.string(),
-    target: z.string()
+  id: z.string(),
+  description: z.string(),
+  issued_on: z.string(),
+  target: z.string(),
 });
 
 const notificationSchemeArray = z.array(notificationScheme);
