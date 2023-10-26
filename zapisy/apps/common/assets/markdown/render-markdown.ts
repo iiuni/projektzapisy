@@ -15,8 +15,8 @@ let callback = function (_mutations: any, _observer: any) {
     element.classList.remove("markdown");
     element.classList.add("markdown-rendered");
     // Style images generated in markdown to  be responsive
-    for (const element_image of element.querySelectorAll("img")) 
-        element_image.classList.add("img-fluid");
+    for (const element_image of element.querySelectorAll("img"))
+      element_image.classList.add("img-fluid");
   }
 };
 
