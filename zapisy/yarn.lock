@@ -2214,14 +2214,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/compiler-sfc@npm:2.7.14":
-  version: 2.7.14
-  resolution: "@vue/compiler-sfc@npm:2.7.14"
+"@vue/compiler-sfc@npm:2.7.15":
+  version: 2.7.15
+  resolution: "@vue/compiler-sfc@npm:2.7.15"
   dependencies:
     "@babel/parser": ^7.18.4
     postcss: ^8.4.14
     source-map: ^0.6.1
-  checksum: e99c478edb2f66dd6082fb583302cef7198924f40916a6356368e6789b1675f6f5785aeeb249468d13d75ec83f75309e52dc5a5c4a9c37ca5ffdd1d051671379
+  checksum: 4c5484ae74cb1746425d2c0ee6ceea17d78058d6a561d080080602b52ef4efe268355ee27d351b66edba898c07298e05fc586a1d6da1e067f2cbb660326ebbc2
   languageName: node
   linkType: hard
 
@@ -5379,10 +5379,10 @@ fsevents@~2.1.2:
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
-    vue: 2.7.14
+    vue: 2.7.15
     vue-class-component: 7.2.6
     vue-loader: 15.11.1
-    vue-template-compiler: 2.7.14
+    vue-template-compiler: 2.7.15
     vue-timers: 2.0.4
     vuex: 3.6.2
     webpack: 4.47.0
@@ -9147,13 +9147,13 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"vue-template-compiler@npm:2.7.14":
-  version: 2.7.14
-  resolution: "vue-template-compiler@npm:2.7.14"
+"vue-template-compiler@npm:2.7.15":
+  version: 2.7.15
+  resolution: "vue-template-compiler@npm:2.7.15"
   dependencies:
     de-indent: ^1.0.2
     he: ^1.2.0
-  checksum: 40f77d7da21df7da9d308a00172c2c4f6e70ecd2c870670ba380a5d8ebbabc1d8e421de2433c049de8bb98b9e84a803087750cf450588b245be11eba453dd7e5
+  checksum: 8d441837132883170b4e10409dd52a400c0348b1fb61092ed03771f8f3cff9e3e337278e47fd9f25dc28d7f257501c2529ff12f2f1a9d6428ba45fc4173036e5
   languageName: node
   linkType: hard
 
@@ -9171,13 +9171,13 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"vue@npm:2.7.14":
-  version: 2.7.14
-  resolution: "vue@npm:2.7.14"
+"vue@npm:2.7.15":
+  version: 2.7.15
+  resolution: "vue@npm:2.7.15"
   dependencies:
-    "@vue/compiler-sfc": 2.7.14
+    "@vue/compiler-sfc": 2.7.15
     csstype: ^3.1.0
-  checksum: 7aafbb1e438c16bb7ec7b6bce3a59fe0494ed26ac80579627c0be0f88a37328af7a7e3996e4574df23f26a5a6a33041f55f93d332d5724004316530e4dfaf25e
+  checksum: 7a94273d71825caa2ca0c9e473ba4e6b24ddf88d4b64e9401d1d9af6daa2a9c9ddd04be168d49230a1e8bda174a88231c59241f5de0e1eede18a2a9814494dea
   languageName: node
   linkType: hard
 
