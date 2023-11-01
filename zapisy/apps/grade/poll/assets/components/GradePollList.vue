@@ -1,6 +1,6 @@
 <template>
   <div class="accordion" id="course-sections">
-    <div v-if="isSuperuser" style="display: flex; align-items: center">
+    <div v-if="isSuperuser" style="display: flex; align-items: center" class="mb-3">
       <label style="display: flex; align-items: center">
         <input
           type="checkbox"
