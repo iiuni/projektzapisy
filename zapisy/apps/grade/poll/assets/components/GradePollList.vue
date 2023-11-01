@@ -1,6 +1,10 @@
 <template>
   <div class="accordion" id="course-sections">
-    <div v-if="isSuperuser" style="display: flex; align-items: center" class="mb-3">
+    <div
+      v-if="isSuperuser"
+      style="display: flex; align-items: center"
+      class="mb-3"
+    >
       <label style="display: flex; align-items: center">
         <input
           type="checkbox"
@@ -8,7 +12,7 @@
           @change="updateCurrentList"
           style="margin-right: 10px"
         />
-        Pokaż tylko ankiety dotyczące moich grup i przedmiotów
+        Pokaż tylko ankiety dotyczące moich grup i przedmiotów:
       </label>
     </div>
     <div
