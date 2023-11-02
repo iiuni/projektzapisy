@@ -76,9 +76,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student = request.user.student
 
     groups = course.groups.select_related(
-        'teacher',
-        'teacher__user',
-    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
+        'teacher', 'teacher__user',
+    ).prefetch_related(
+        'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
     ).order_by('term__dayOfWeek', 'term__start_time', 'teacher__user__first_name', 'teacher__user__last_name')
 
     # Collect the general groups statistics.
