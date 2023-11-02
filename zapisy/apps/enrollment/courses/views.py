@@ -78,16 +78,8 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     groups = course.groups.select_related(
         'teacher',
         'teacher__user',
-    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
-
-    def group_sort_key(group):
-        first_term = group.term.first()
-        day_nr = first_term.day_in_zero_base()
-        start_time = first_term.time_from()
-        teacher_name = str(group.teacher)
-        return (day_nr, start_time, teacher_name)
-
-    groups = sorted(groups, key=group_sort_key)
+    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
+    ).order_by('term__dayOfWeek', 'term__start_time', 'teacher__user__first_name', 'teacher__user__last_name')
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
