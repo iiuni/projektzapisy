@@ -108,7 +108,6 @@ export default Vue.extend({
             property="tags"
             :allLabels="allTags"
             onClass="bg-success"
-            ref="tags-filter"
           />
         </div>
         <div class="col-md">
@@ -127,7 +126,6 @@ export default Vue.extend({
             property="effects"
             :allLabels="allEffects"
             onClass="bg-info"
-            ref="effects-filter"
           />
         </div>
       </div>
