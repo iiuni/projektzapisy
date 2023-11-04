@@ -1,9 +1,13 @@
 from collections import defaultdict
 from typing import Dict, List
+import math
+import textwrap
 
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
+
+from bokeh.models import LabelSet
 
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
@@ -105,13 +109,14 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-    def __init__(self, question, field_type, choices=None):
+    def __init__(self, question, field_type, max_choice_occurrences, choices=None):
         self.question = question
         self._answers = []
         self._choices = choices
-        self._choices_occurences = [0] * len(choices) if choices else []
+        self._choices_occurrences = [0] * len(choices) if choices else []
         self._components = None
         self.field_type = field_type
+        self._max_choice_occurrences = max_choice_occurrences
 
     @property
     def field_choices(self):
@@ -127,19 +132,21 @@ class PollSummarizedResultsEntry:
 
         If the field_type of the entry is set to `radio`, the answer will be
         counted if and only if it is present in the set of predefined choices.
-        If the field_tyoe of the entry is set to `checkbox`, each answer will be
+        If the field_type of the entry is set to `checkbox`, each answer will be
         counted separately.
         """
         if not answer:
             return
         if self.field_type == 'radio' and answer in self._choices:
             choice_index = self._choices.index(answer)
-            self._choices_occurences[choice_index] += 1
+            self._choices_occurrences[choice_index] += 1
+            self._max_choice_occurrences.update(self._choices_occurrences[choice_index])
         if self.field_type == 'checkbox':
             # Multiple-choice question will have a list of selected answers.
             for a in answer:
                 choice_index = self._choices.index(a)
-                self._choices_occurences[choice_index] += 1
+                self._choices_occurrences[choice_index] += 1
+                self._max_choice_occurrences.update(self._choices_occurrences[choice_index])
         self._answers.append(answer)
 
     @property
@@ -156,21 +163,49 @@ class PollSummarizedResultsEntry:
             used for embedding plots in the template.
         """
         if not self._components:
+            formatted_choices = [textwrap.fill(choice, 20) for choice in self._choices]
+
+            answers_length = len(self._answers)
+            percents = []
+            text_values = []
+            if answers_length != 0:
+                for occurrences in self._choices_occurrences:
+                    percent = 100 * occurrences / answers_length
+                    percents.append(f"{percent:.1f}%".replace('.', ','))
+                    occurrences_str = str(occurrences)
+                    text_values.append("  "*(max(0, 3-len(occurrences_str)))+occurrences_str)
+
+            source_data = dict(choices=formatted_choices, values=self._choices_occurrences, percents=percents,
+                               text_values=text_values)
+
             plot = bokeh.plotting.figure(
-                y_range=self._choices,
+                y_range=formatted_choices,
                 sizing_mode='scale_width',
                 plot_height=250,
                 toolbar_location=None,
                 tools='',
+                min_border_left=130,  # it is set to uniform width of text labels on vertical axis
             )
 
-            source = bokeh.models.sources.ColumnDataSource(
-                data=dict(choices=self._choices, values=self._choices_occurences)
-            )
-
+            source = bokeh.models.sources.ColumnDataSource(data=source_data)
             plot.hbar(y='choices', right='values', source=source, height=0.8)
+
+            ticker_interval, last_tick = self._max_choice_occurrences.calculate_ticker_properties()
+
             plot.x_range.start = 0
-            plot.axis.minor_tick_line_color = None
+            plot.x_range.end = max(1, last_tick*1.1)
+            plot.ygrid.grid_line_color = None
+            plot.xaxis.ticker = bokeh.models.tickers.SingleIntervalTicker(
+                interval=ticker_interval, num_minor_ticks=0
+            )
+
+            plot.add_layout(LabelSet(y='choices', x='values', text='percents',
+                                     x_offset=5, y_offset=-6, source=source, render_mode='canvas',
+                                     text_font_size='11px', background_fill_color="white"))
+
+            plot.add_layout(LabelSet(y='choices', x='values', text='text_values',
+                                     x_offset=-22, y_offset=-6, source=source, render_mode='canvas',
+                                     text_font_size='11px', text_color="white"))
 
             self._components = bokeh.embed.components(plot)
 
@@ -188,6 +223,7 @@ class PollSummarizedResults:
         self._questions = []
         self.display_answers_count = display_answers_count
         self.display_plots = display_plots
+        self._max_choice_occurrences = self.PollMaxChoiceOccurrences()
 
     def add_entry(self, question, field_type, answer, choices=None):
         if question in self._questions:
@@ -196,7 +232,8 @@ class PollSummarizedResults:
             existing_entry.add_answer(answer)
         else:
             new_entry = PollSummarizedResultsEntry(
-                question=question, field_type=field_type, choices=choices
+                question=question, field_type=field_type, choices=choices,
+                max_choice_occurrences=self._max_choice_occurrences
             )
             new_entry.add_answer(answer)
             self._entries.append(new_entry)
@@ -208,3 +245,33 @@ class PollSummarizedResults:
     @property
     def entries(self):
         return self._entries
+
+    class PollMaxChoiceOccurrences:
+        """Helper class for uniform ranges in Poll results.
+
+        It keeps track of the largest choices occurrence
+        in the summary results view of the Poll.
+        """
+        max_num_of_ticks = 6
+        mantissas = [1, 2, 5, 10]
+
+        def __init__(self):
+            self.value = 0
+
+        def update(self, maybe_max):
+            if maybe_max > self.value:
+                self.value = maybe_max
+
+        def calculate_ticker_properties(self):
+            if self.value == 0:
+                return 0, 0
+
+            base_power = len(str(math.ceil(self.value / (self.max_num_of_ticks-1))))-1
+            interval = 0
+            index = 0
+            while self.value > (self.max_num_of_ticks-1) * interval:
+                interval = self.mantissas[index] * 10 ** base_power
+                index += 1
+
+            last_tick = interval * math.ceil(self.value / interval)
+            return interval, last_tick
