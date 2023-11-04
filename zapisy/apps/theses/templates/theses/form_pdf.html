@@ -50,7 +50,7 @@
     <h3>III. Dane pracy</h3>
     <p>Proponowany tytuł pracy: <strong>{{ thesis.title }}</strong></p>
     {% if thesis.reserved_until %}
-        <p>Temat jest zarezerwowany dla ww. studenta/ów do: {{ thesis.reserved_until }}</p>
+        <p>Temat jest zarezerwowany dla ww. studenta/ów do: {{ thesis.reserved_until|date:'d.m.Y' }}</p>
     {% endif %}
     <p>Temat zawiera część programistyczną: <strong>TAK/NIE</strong></p>
     <p>Temat będzie realizowany przez <strong>{{ students_num }}</strong> {% if students_num == 1 %}studenta{% else %}studentów{% endif %}.</p>
