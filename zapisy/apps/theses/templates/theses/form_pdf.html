@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <title>{{ thesis.title }}</title>
     <style>
-      body{
+      body {
         font-size: 12px;
       }
       h1 {
@@ -15,14 +15,14 @@
         font-size: 14px;
         text-align: center;
       }
-      h3{
-          font-size: 13px;
-          text-decoration: underline;
+      h3 {
+        font-size: 13px;
+        text-decoration: underline;
       }
-      p{
-          text-indent: 2em;
-          margin: 0;
-          padding: 0;
+      p {
+        text-indent: 2em;
+        margin: 0;
+        padding: 0;
       }
     </style>
   </head>
@@ -38,14 +38,11 @@
     <h3>I. Dane studenta</h3>
     <p>Imię i nazwisko: <strong>{{ first_student.get_full_name }}</strong></p>
     <p>Numer albumu: <strong>{{ first_student.matricula }}</strong></p>
+    <h3>II{% if thesis.supporting_advisor %}a{% endif %}. Dane promotora</h3>
+    <p>Imię, nazwisko, st. naukowy: <strong>{{ thesis.advisor }}</strong></p>
     {% if thesis.supporting_advisor %}
-      <h3>IIa. Dane promotora</h3>
-      <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.advisor }}</strong></p>
       <h3>IIb. Dane promotora wspierającego</h3>
-      <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.supporting_advisor }}</strong></p>
-    {% else %}
-      <h3>II. Dane promotora</h3>
-      <p>Imię, nazwisko, st. naukowy:  <strong>{{ thesis.advisor }}</strong></p>
+      <p>Imię, nazwisko, st. naukowy: <strong>{{ thesis.supporting_advisor }}</strong></p>
     {% endif %}
     <h3>III. Dane pracy</h3>
     <p>Proponowany tytuł pracy: <strong>{{ thesis.title }}</strong></p>
