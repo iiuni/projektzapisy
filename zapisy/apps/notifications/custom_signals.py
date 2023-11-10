@@ -16,5 +16,6 @@ teacher_changed = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
 thesis_voting_activated = django.dispatch.Signal()
-
-# dodaj definicję sygału o zaakceptowaniu pracy
+# Signal senders must provide an argument:
+#   instance: apps.theses.models.Thesis
+thesis_accepted = django.dispatch.Signal()
