@@ -177,6 +177,43 @@
     type: "2" # Exercises
     limit: 1
 
+- model: courses.CourseInformation
+  pk: 4
+  fields:
+    name: "Sprzątanie"
+    course_type: 1
+    points: 11
+    owner: 10
+    slug: "sprzatanie"
+    created: 2011-08-27T12:32:41+02:00
+    modified: 2011-08-31T12:33:18+02:00
+- model: proposal.Proposal
+  fields:
+    courseinformation_ptr: 4
+- model: courses.CourseInstance
+  fields:
+    courseinformation_ptr: 4
+    offer: 3
+    semester: 1
+- model: courses.Group
+  pk: 41
+  fields:
+    course: 4
+    type: "1" # Lecture
+    limit: 3
+- model: courses.Group
+  pk: 42
+  fields:
+    course: 4
+    type: "2" # Exercises
+    limit: 1
+- model: courses.Group
+  pk: 43
+  fields:
+    course: 4
+    type: "2" # Exercises
+    limit: 1
+
 # Bolek has voted for 'Szydełkowanie' with 2 points
 - model: vote.SingleVote
   pk: 1

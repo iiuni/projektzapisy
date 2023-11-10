@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 
 from apps.enrollment.courses.tests.factories import (CourseInstanceFactory, GroupFactory, GroupType)
 from apps.enrollment.records.models import (GroupOpeningTimes, Record, RecordStatus, T0Times)
+from apps.enrollment.records import engine
 from apps.users.tests.factories import StudentFactory
 
 
@@ -63,7 +64,7 @@ class AutoEnrollmentGroupTest(TestCase):
         Bolek will just enqueue into the exercises group. He should also be
         enrolled into the lecture, since it is an auto-enrollment group.
         """
-        self.assertTrue(Record.enqueue_student(self.bolek, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.bolek, self.exercise_1))
         self.assertTrue(
             Record.objects.filter(student=self.bolek,
                                   group=self.exercise_1,
@@ -81,7 +82,7 @@ class AutoEnrollmentGroupTest(TestCase):
         will unenroll from the group and he should be removed from the lecture
         group as well, as the lecture group is a auto-enrollment group.
         """
-        self.assertTrue(Record.enqueue_student(self.bolek, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.bolek, self.exercise_1))
         self.assertTrue(
             Record.objects.filter(student=self.bolek,
                                   group=self.exercise_1,
@@ -92,10 +93,10 @@ class AutoEnrollmentGroupTest(TestCase):
                                   status=RecordStatus.ENROLLED).exists())
 
         # One cannot leave the auto-enrollment group.
-        self.assertFalse(Record.remove_from_group(self.bolek, self.lecture))
+        self.assertFalse(engine.remove_from_group(self.bolek, self.lecture))
         # One cannot leave the group he is not in.
-        self.assertFalse(Record.remove_from_group(self.bolek, self.exercise_2))
-        self.assertTrue(Record.remove_from_group(self.bolek, self.exercise_1))
+        self.assertFalse(engine.remove_from_group(self.bolek, self.exercise_2))
+        self.assertTrue(engine.remove_from_group(self.bolek, self.exercise_1))
         self.assertFalse(
             Record.objects.filter(student=self.bolek,
                                   group=self.exercise_1,
@@ -109,8 +110,8 @@ class AutoEnrollmentGroupTest(TestCase):
     def test_auto_enrollment_group_queue(self):
         """Tests that auto-enrollment queue state reflects that of a course."""
         # Bolek enrolls into one exercise group. Lolek into the other.
-        self.assertTrue(Record.enqueue_student(self.bolek, self.exercise_1))
-        self.assertTrue(Record.enqueue_student(self.lolek, self.exercise_2))
+        self.assertTrue(engine.enqueue_student(self.bolek, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.lolek, self.exercise_2))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -136,7 +137,7 @@ class AutoEnrollmentGroupTest(TestCase):
             ])
         # Tola enqueues into the first group. She should also be in the queue
         # for the lecture group even though there is space there.
-        self.assertTrue(Record.enqueue_student(self.tola, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.tola, self.exercise_1))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -172,7 +173,7 @@ class AutoEnrollmentGroupTest(TestCase):
             ])
         # Bolek enqueues into the second group. He is still enrolled into the
         # first, so he should be in the lecture group.
-        self.assertTrue(Record.enqueue_student(self.bolek, self.exercise_2))
+        self.assertTrue(engine.enqueue_student(self.bolek, self.exercise_2))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -213,7 +214,7 @@ class AutoEnrollmentGroupTest(TestCase):
             ])
         # Lolek leaves the second group. Bolek should pop into his spot, leaving
         # place for Tola in the first group.
-        self.assertTrue(Record.remove_from_group(self.lolek, self.exercise_2))
+        self.assertTrue(engine.remove_from_group(self.lolek, self.exercise_2))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -257,8 +258,8 @@ class AutoEnrollmentGroupTest(TestCase):
     def test_transition_enrolled_to_enqueued(self):
         """Tests that auto-enrollment catches transition from enrolled to queued."""
         # Bolek enrolls into one exercise group. Lolek into the other.
-        self.assertTrue(Record.enqueue_student(self.bolek, self.exercise_1))
-        self.assertTrue(Record.enqueue_student(self.lolek, self.exercise_2))
+        self.assertTrue(engine.enqueue_student(self.bolek, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.lolek, self.exercise_2))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -283,7 +284,7 @@ class AutoEnrollmentGroupTest(TestCase):
                 },
             ])
         # Lolek prefers the first group to the second.
-        self.assertTrue(Record.enqueue_student(self.lolek, self.exercise_1))
+        self.assertTrue(engine.enqueue_student(self.lolek, self.exercise_1))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
@@ -314,7 +315,7 @@ class AutoEnrollmentGroupTest(TestCase):
             ])
         # Finally Lolek leaves his group and becomes unenrolled - but still
         # in the queue.
-        self.assertTrue(Record.remove_from_group(self.lolek, self.exercise_2))
+        self.assertTrue(engine.remove_from_group(self.lolek, self.exercise_2))
         self.assertCountEqual(
             Record.objects.all().values('group__extra', 'student__user__username', 'status'), [
                 {
