@@ -51,7 +51,7 @@ class StudentAdmin(admin.ModelAdmin):
             return
         if semester.records_opening is None:
             self.message_user(
-                    request, "Proszę uzupelnić szczegóły odpowiedniego semestru.",
+                    request, "Należy ustawić czas otwarcia zapisów dla nadchodzącego semestru.",
                     level=messages.ERROR)
             return
 
