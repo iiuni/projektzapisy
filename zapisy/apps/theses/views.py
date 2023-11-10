@@ -262,6 +262,8 @@ def vote_for_thesis(request, id):
             post = form.save(commit=False)
             post.save()
             messages.success(request, 'Zapisano głos')
+            # if number of votes >= 3 chyba to nie musi być tu
+            # send signal
     return redirect('theses:selected_thesis', id=id)
 
 

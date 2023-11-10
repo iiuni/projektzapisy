@@ -15,6 +15,7 @@ def auto_accept(sender, instance: Vote, **kwargs):
     if vote == ThesisVote.ACCEPTED and thesis.get_accepted_votes() >= get_num_required_votes():
         if thesis.has_no_students_assigned:
             thesis.status = ThesisStatus.ACCEPTED
+            # tutaj lepiej chyba wysłać powiadomienie
         else:
             thesis.status = ThesisStatus.IN_PROGRESS
         thesis.save()
