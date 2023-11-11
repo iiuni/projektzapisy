@@ -29,10 +29,16 @@ export default class TermControlsComponent extends TermControlsProps {
   }
 
   // Determines if a new enrollment record can be created into the group.
-  get canEnqueue(): boolean {
+  get canEnqueueNotFull(): boolean {
     if (this.term.group.isEnrolled) return false;
     if (this.term.group.isEnqueued) return false;
-    return this.term.group.canEnqueue;
+    return this.term.group.canEnqueue && !this.term.group.isFull;
+  }
+
+  get canEnqueueFull(): boolean {
+    if (this.term.group.isEnrolled) return false;
+    if (this.term.group.isEnqueued) return false;
+    return this.term.group.canEnqueue && this.term.group.isFull;
   }
 
   // Determines if an enrollment record exists and can be removed.
@@ -126,9 +132,17 @@ export default class TermControlsComponent extends TermControlsProps {
         </span>
 
         <span
-          v-if="canEnqueue"
+          v-if="canEnqueueNotFull"
           class="enqueue"
           title="Zapisz do grupy/kolejki."
+          @click="enqueue()"
+        >
+          <font-awesome-icon icon="pencil-alt" fixed-width />
+        </span>
+        <span
+          v-if="canEnqueueFull"
+          class="enqueue"
+          title="Ta grupa jest pełna. Zapisz do kolejki"
           @click="enqueue()"
         >
           <font-awesome-icon icon="pencil-alt" fixed-width />
