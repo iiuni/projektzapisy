@@ -18,4 +18,10 @@
   h3 {
     font-size: $h5-font-size * 0.75;
   }
+
+  // equivalent of adding class .img-fluid to element
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
