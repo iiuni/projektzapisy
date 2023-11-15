@@ -2075,10 +2075,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-yaml@npm:3.12.9":
-  version: 3.12.9
-  resolution: "@types/js-yaml@npm:3.12.9"
-  checksum: f25be2c8d4bdeb4e5dc77ead0178f8bbd19d416c711b64b68656c0ed2477ceb3cb6eb1924ae579b6ed9ba1d1eb71f18ade214bcd4fed8b712714d068422eda19
+"@types/js-yaml@npm:3.12.10":
+  version: 3.12.10
+  resolution: "@types/js-yaml@npm:3.12.10"
+  checksum: 3f8d00e7d8887176f5beb98d554cc6c4928cc605680e48a7c38f376e1630666fbc4b8efb788c63c7e03c6ee02aef941724544b070ef6d9008ffead7fd5a85460
   languageName: node
   linkType: hard
 
@@ -5342,7 +5342,7 @@ fsevents@~2.1.2:
     "@types/bootstrap": 5.2.9
     "@types/jquery": 3.5.27
     "@types/js-cookie": 2.2.7
-    "@types/js-yaml": 3.12.9
+    "@types/js-yaml": 3.12.10
     "@types/katex": 0.11.1
     "@types/lodash": 4.14.192
     "@types/markdown-it": 10.0.3
