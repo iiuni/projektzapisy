@@ -2009,12 +2009,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bootstrap@npm:5.2.8":
-  version: 5.2.8
-  resolution: "@types/bootstrap@npm:5.2.8"
+"@types/bootstrap@npm:5.2.9":
+  version: 5.2.9
+  resolution: "@types/bootstrap@npm:5.2.9"
   dependencies:
     "@popperjs/core": ^2.9.2
-  checksum: 5f239be654935e4e6c6fa3b0a55cf5aeeb42f490d183a8344e48f49785987ce6e3eabf4218237c4f1c316ccc3c749cb5e417ad0bace80b6f957981b954ead0fb
+  checksum: fa56b34e7b71027761e92c8e6890e80a2cc1b9c508a502150d346fbb11f9058dfb79fd6b2b5751320c64984c0ced77d5fe963f1e8b91c9d7ac09bddbcd76adc2
   languageName: node
   linkType: hard
 
@@ -5339,7 +5339,7 @@ fsevents@~2.1.2:
     "@fullcalendar/daygrid": 5.11.5
     "@fullcalendar/timegrid": 5.11.5
     "@popperjs/core": 2.11.8
-    "@types/bootstrap": 5.2.8
+    "@types/bootstrap": 5.2.9
     "@types/jquery": 3.5.26
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.9
