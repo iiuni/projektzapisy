@@ -3,9 +3,9 @@ import json
 import locale
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
-from django.db.models import Min
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Min
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
