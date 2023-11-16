@@ -3,6 +3,7 @@ import json
 import locale
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
+from django.db.models import Min
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
@@ -79,7 +80,11 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         'teacher', 'teacher__user',
     ).prefetch_related(
         'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
-    ).order_by('term__dayOfWeek', 'term__start_time', 'teacher__user__first_name', 'teacher__user__last_name')
+    ).annotate(
+        earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
+    ).order_by(
+        'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
+        )
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
