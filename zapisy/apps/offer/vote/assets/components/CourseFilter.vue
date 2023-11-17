@@ -152,7 +152,7 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
           />
-        </div>        
+        </div>
       </div>
     </div>
     <div class="card-footer p-1 text-center">
