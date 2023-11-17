@@ -551,6 +551,7 @@ class Record(models.Model):
 
     def change_status_to_enrolled(self):
         """Changes record status (and linked data) to enrolled.
+
         Does not return any value.
         """
         self.status = RecordStatus.ENROLLED
@@ -559,6 +560,7 @@ class Record(models.Model):
 
     def change_status_to_removed(self):
         """Changes record status (and linked data) to removed.
+
         Does not return any value.
         """
         self.status = RecordStatus.REMOVED

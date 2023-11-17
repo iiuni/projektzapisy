@@ -3,13 +3,14 @@
 A group may have multiple terms - that is, students may meet with the teacher
 more than one time a week.
 """
+from datetime import datetime
+
 from django.db import models, transaction
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
-from datetime import datetime
 
 
 class GroupType(models.IntegerChoices):
@@ -182,7 +183,8 @@ class Group(models.Model):
         }
 
     def request_modified_records_data(self):
-        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
+        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED.
+
         For each one of these RecordStatus returns list of records which status
         changed to this after last_record_changes_check.
         """
