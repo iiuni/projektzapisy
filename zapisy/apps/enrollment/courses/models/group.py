@@ -5,10 +5,8 @@ more than one time a week.
 """
 from django.db import models, transaction
 from django.urls import reverse
-from typing import Dict, List
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
-from apps.enrollment.records.models import RecordStatus, Record
 from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
 from datetime import datetime
@@ -155,7 +153,9 @@ class Group(models.Model):
         copy.term.set(copied_terms)
         return copy
 
-    def _get_modified_records(self, comparison_datetime: datetime) -> Dict[RecordStatus, List[Record]]:
+    def _get_modified_records(self, comparison_datetime: datetime):
+        from apps.enrollment.records.models import RecordStatus, Record
+
         """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
         For each one of these RecordStatus returns list of records which status
         changed to this after comparison_datetime.
@@ -181,7 +181,7 @@ class Group(models.Model):
             RecordStatus.REMOVED: removed_records,
         }
 
-    def request_modified_records_data(self) -> Dict[RecordStatus, List[Record]]:
+    def request_modified_records_data(self):
         """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
         For each one of these RecordStatus returns list of records which status
         changed to this after last_record_changes_check.
