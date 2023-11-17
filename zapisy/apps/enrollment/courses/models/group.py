@@ -72,7 +72,7 @@ class Group(models.Model):
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
     usos_nr = models.IntegerField("Nr grupy w usos", null=True, blank=True)
 
-    last_record_changes_check = models.DateTimeField(null=True, blank=True)
+    last_record_changes_check = models.DateTimeField(auto_now_add=True)
 
     def get_teacher_full_name(self):
         """Return teacher's full name for current group."""
@@ -155,7 +155,7 @@ class Group(models.Model):
         copy.term.set(copied_terms)
         return copy
 
-    def get_modified_records(self, comparison_datetime: datetime) -> Dict[RecordStatus, List[Record]]:
+    def _get_modified_records(self, comparison_datetime: datetime) -> Dict[RecordStatus, List[Record]]:
         """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
         For each one of these RecordStatus returns list of records which status changed to this after comparison_datetime.
         """
@@ -180,6 +180,19 @@ class Group(models.Model):
             RecordStatus.ENROLLED: enrolled_records,
             RecordStatus.REMOVED: removed_records,
         }
+
+
+    def request_modified_records_data(self) -> Dict[RecordStatus, List[Record]]:
+        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
+        For each one of these RecordStatus returns list of records which status changed to this after last_record_changes_check.
+        """
+        result = self._get_modified_records(
+            self.last_record_changes_check
+        )
+        
+        self.last_record_changes_check = datetime.now()
+        return result
+
 
     def save(self, *args, **kwargs):
         """Overloaded save method.
