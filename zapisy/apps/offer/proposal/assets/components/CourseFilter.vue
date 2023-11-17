@@ -103,7 +103,8 @@ export default Vue.extend({
             filterKey="type-filter"
             property="courseType"
             :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
             ref="type-filter"
           />
           <hr />
@@ -121,7 +122,8 @@ export default Vue.extend({
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
-            placeholder="Opiekun przedmiotu"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
             ref="owner-filter"
           />
           <MultiSelectFilter
@@ -135,7 +137,8 @@ export default Vue.extend({
             filterKey="status-filter"
             property="status"
             :options="allStatuses"
-            placeholder="Status propozycji"
+            title="Status propozycji"
+            placeholder="Wszystkie statusy propozycji"
             ref="status-filter"
           />
           <hr />

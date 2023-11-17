@@ -112,6 +112,7 @@ export default Vue.extend({
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
+            title="Opiekun przedmiotu"
             placeholder="Wszyscy opiekunowie"
             ref="owner-filter"
           />

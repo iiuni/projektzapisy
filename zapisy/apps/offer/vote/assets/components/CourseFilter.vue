@@ -116,7 +116,8 @@ export default Vue.extend({
             ref="type-filter"
             property="courseType"
             :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
           />
           <hr />
           <LabelsFilter
@@ -134,7 +135,8 @@ export default Vue.extend({
             ref="owner-filter"
             property="owner"
             :options="allOwners"
-            placeholder="Opiekun przedmiotu"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
           />
           <MultiSelectFilter
             filterKey="semester-filter"
