@@ -72,6 +72,8 @@ class Group(models.Model):
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
     usos_nr = models.IntegerField("Nr grupy w usos", null=True, blank=True)
 
+    last_record_changes_check = models.DateTimeField(null=True, blank=True)
+
     def get_teacher_full_name(self):
         """Return teacher's full name for current group."""
         if self.teacher is None:
