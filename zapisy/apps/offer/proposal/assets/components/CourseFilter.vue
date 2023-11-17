@@ -94,7 +94,7 @@ export default Vue.extend({
             filterKey="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
             ref="tags-filter"
           />
         </div>
@@ -112,7 +112,7 @@ export default Vue.extend({
             filterKey="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
             ref="effects-filter"
           />
         </div>
@@ -153,44 +153,6 @@ export default Vue.extend({
           >
             Wyczyść filtry
           </button>
-        </div>
-        <div class="col-md">
-          <MultiselectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            title="Rodzaj przedmiotu"
-            placeholder="Wszystkie rodzaje"
-            ref="type-filter"
-          />
-          <hr />
-          <LabelsFilter
-            title="Tagi"
-            filterKey="tags-filter"
-            property="tags"
-            :allLabels="allTags"
-            onClass="bg-success"
-            ref="tags-filter"
-          />
-        </div>
-        <div class="col-md">
-          <MultiselectFilter
-            filterKey="owner-filter"
-            property="owner"
-            :options="allOwners"
-            title="Opiekun przedmiotu"
-            placeholder="Wszyscy opiekunowie"
-            ref="owner-filter"
-          />
-          <hr />
-          <LabelsFilter
-            title="Efekty kształcenia"
-            filterKey="effects-filter"
-            property="effects"
-            :allLabels="allEffects"
-            onClass="bg-info"
-            ref="effects-filter"
-          />
         </div>
       </div>
     </div>

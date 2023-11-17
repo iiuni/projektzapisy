@@ -128,6 +128,29 @@ export default Vue.extend({
             onClass="bg-info"
           />
         </div>
+        <div class="col-md">
+          <MultiSelectFilter
+            filterKey="owner-filter"
+            ref="owner-filter"
+            property="owner"
+            :options="allOwners"
+            placeholder="Opiekun przedmiotu"
+          />
+          <MultiSelectFilter
+            filterKey="semester-filter"
+            ref="semester-filter"
+            property="semester"
+            :options="allSemesters"
+            placeholder="Semestr"
+          />
+          <hr />
+          <CheckFilter
+            filterKey="freshmen-filter"
+            ref="freshmen-filter"
+            property="recommendedForFirstYear"
+            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+          />
+        </div>        
       </div>
     </div>
     <div class="card-footer p-1 text-center">
