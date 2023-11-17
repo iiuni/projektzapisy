@@ -91,10 +91,9 @@ class Record(models.Model):
         default=5,
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     created = models.DateTimeField(auto_now_add=True)
-    
+
     modified_to_enrolled = models.DateTimeField(null=True, blank=True)
-    modified_to_removed  = models.DateTimeField(null=True, blank=True)
-    
+    modified_to_removed = models.DateTimeField(null=True, blank=True)
 
     @staticmethod
     def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
@@ -404,9 +403,9 @@ class Record(models.Model):
                 student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
         except cls.DoesNotExist:
             return False
-        
+
         record.change_status_to_removed()
-        
+
         LOGGER.info('User %s removed from group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=record.group_id)
         return True
@@ -557,7 +556,7 @@ class Record(models.Model):
         self.status = RecordStatus.ENROLLED
         self.modified_to_enrolled = datetime.now()
         self.save()
-        
+
     def change_status_to_removed(self):
         """Changes record status (and linked data) to removed.
         Does not return any value.
@@ -615,11 +614,11 @@ class Record(models.Model):
                 other_groups_query.filter(status=RecordStatus.ENROLLED).values_list(
                     'group_id', flat=True))
             other_groups_query.update(
-                status=RecordStatus.REMOVED, 
+                status=RecordStatus.REMOVED,
                 modified_to_removed=datetime.now()
             )
             self.change_status_to_enrolled()
-            
+
             # Send notification to user
             student_pulled.send_robust(
                 sender=self.__class__, instance=self.group, user=self.student.user)

@@ -157,42 +157,41 @@ class Group(models.Model):
 
     def _get_modified_records(self, comparison_datetime: datetime) -> Dict[RecordStatus, List[Record]]:
         """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
-        For each one of these RecordStatus returns list of records which status changed to this after comparison_datetime.
+        For each one of these RecordStatus returns list of records which status
+        changed to this after comparison_datetime.
         """
-        
         # Only records, that has been enrolled before comparison_datetime
         # and removed after comparison_datetime
         removed_records = Record.objects.filter(
-            group=self, 
+            group=self,
             status=RecordStatus.REMOVED,
             modified_to_enrolled__lt=comparison_datetime,
             modified_to_removed__gt=comparison_datetime,
         )
-        
+
         # Only records, that has been enrolled after comparison_datetime
         enrolled_records = Record.objects.filter(
-            group=self, 
+            group=self,
             status=RecordStatus.ENROLLED,
             modified_to_enrolled__gt=comparison_datetime,
         )
-        
+
         return {
             RecordStatus.ENROLLED: enrolled_records,
             RecordStatus.REMOVED: removed_records,
         }
 
-
     def request_modified_records_data(self) -> Dict[RecordStatus, List[Record]]:
         """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
-        For each one of these RecordStatus returns list of records which status changed to this after last_record_changes_check.
+        For each one of these RecordStatus returns list of records which status
+        changed to this after last_record_changes_check.
         """
         result = self._get_modified_records(
             self.last_record_changes_check
         )
-        
+
         self.last_record_changes_check = datetime.now()
         return result
-
 
     def save(self, *args, **kwargs):
         """Overloaded save method.
