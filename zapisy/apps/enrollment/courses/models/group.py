@@ -5,10 +5,13 @@ more than one time a week.
 """
 from django.db import models, transaction
 from django.urls import reverse
+from typing import Dict, List
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.records.models import RecordStatus, Record
 from apps.notifications.custom_signals import teacher_changed
 from apps.users.models import Employee
+from datetime import datetime
 
 
 class GroupType(models.IntegerChoices):
@@ -149,6 +152,32 @@ class Group(models.Model):
         copy.save()
         copy.term.set(copied_terms)
         return copy
+
+    def get_modified_records(self, comparison_datetime: datetime) -> Dict[RecordStatus, List[Record]]:
+        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
+        For each one of these RecordStatus returns list of records which status changed to this after comparison_datetime.
+        """
+        
+        # Only records, that has been enrolled before comparison_datetime
+        # and removed after comparison_datetime
+        removed_records = Record.objects.filter(
+            group=self, 
+            status=RecordStatus.REMOVED,
+            modified_to_enrolled__lt=comparison_datetime,
+            modified_to_removed__gt=comparison_datetime,
+        )
+        
+        # Only records, that has been enrolled after comparison_datetime
+        enrolled_records = Record.objects.filter(
+            group=self, 
+            status=RecordStatus.ENROLLED,
+            modified_to_enrolled__gt=comparison_datetime,
+        )
+        
+        return {
+            RecordStatus.ENROLLED: enrolled_records,
+            RecordStatus.REMOVED: removed_records,
+        }
 
     def save(self, *args, **kwargs):
         """Overloaded save method.
