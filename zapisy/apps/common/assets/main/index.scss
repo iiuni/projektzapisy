@@ -17,10 +17,8 @@ html {
 footer {
   margin-top: auto;
   padding-top: 5rem;
-
   .container-fluid {
     padding: 1rem 0;
-
     p {
       margin: 0.5rem 0;
     }
@@ -196,18 +194,15 @@ div.top .topbar .inline-inputs label {
             rgba(255, 255, 255, 1) 0%,
             rgba(255, 255, 255, 0) 100%
           );
-          pointer-events: none;
-          /* so the text is still selectable */
+          pointer-events: none; /* so the text is still selectable */
         }
       }
     }
-
     #fold-toggler {
       display: block;
       text-align: center;
     }
   }
-
   @media (min-width: 992px) {
     #fold-toggler {
       display: none;
@@ -225,18 +220,15 @@ div.loginbox {
 #system_menu {
   width: 100%;
   padding: unset;
-
   ul#main-menu-list {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     border-bottom: 0;
-
     li {
       flex: 0 0 auto;
       margin: 0 2px;
-
       a {
         background-color: #005f92;
         color: #ffffff;
@@ -272,7 +264,6 @@ colgroup col.table-info-type {
     color: var(--bs-dark);
     font-style: italic;
     display: block;
-
     @media (min-width: 992px) {
       float: right;
     }
@@ -297,4 +288,8 @@ colgroup col.table-info-type {
 
 .background-gray {
   background-color: $gray-200;
+}
+
+.my-3 img {
+  max-width: 100%;
 }
