@@ -63,9 +63,14 @@ def view_thesis(request, id):
     """Show subpage for one thesis."""
     thesis = get_object_or_404(Thesis, id=id)
     board_member = is_theses_board_member(request.user)
+    is_student_assigned = thesis.students.filter(user=request.user).exists()
 
-    user_privileged_for_thesis = thesis.is_among_advisors(
-        request.user) or request.user.is_staff or board_member
+    user_privileged_for_thesis = (
+        thesis.is_among_advisors(request.user) or
+        request.user.is_staff or
+        board_member or
+        is_student_assigned
+    )
 
     if not thesis.has_been_accepted and not user_privileged_for_thesis:
         raise PermissionDenied
