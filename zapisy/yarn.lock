@@ -2831,10 +2831,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:1.6.51":
-  version: 1.6.51
-  resolution: "big-integer@npm:1.6.51"
-  checksum: 5f04a0e1ecd60592b8491a00350145069fc9d632cc226a2c0d943c8132e758f93a4fdb18f8a5eabe4503f7673d2a0e5703394e12b6206fe5c1230925f5a399c3
+"big-integer@npm:1.6.52":
+  version: 1.6.52
+  resolution: "big-integer@npm:1.6.52"
+  checksum: e8bd5ff0ec50a38dc06e19726e1c933649247e000b18667c6b415c5995b7e746fee5ef6511405b2a106a2ec04569250afc640b51e604aefb00f00eaddabc0333
   languageName: node
   linkType: hard
 
@@ -5252,7 +5252,7 @@ fsevents@~2.1.2:
     autoprefixer: 9.8.8
     axios: 0.21.4
     babel-loader: 8.3.0
-    big-integer: 1.6.51
+    big-integer: 1.6.52
     bootstrap: 5.3.2
     bootstrap-print-css: 1.0.1
     bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
