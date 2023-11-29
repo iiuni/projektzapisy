@@ -195,6 +195,10 @@ class Group(models.Model):
         self.last_record_changes_check = datetime.now()
         return result
 
+    @property
+    def any_record_changes_check_made(self):
+        return self.last_record_changes_check != datetime.min
+
     def save(self, *args, **kwargs):
         """Overloaded save method.
 
