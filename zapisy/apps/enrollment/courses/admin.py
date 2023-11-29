@@ -192,12 +192,12 @@ class TypeAdmin(admin.ModelAdmin):
     list_filter = ('group', 'meta_type')
 
 
-class RecordAdmin(admin.ModelAdmin):
-    search_fields = ('id',)
-    readonly_fields = ('id', 'group', 'student',)
+# class RecordAdmin(admin.ModelAdmin):
+#     search_fields = ('id',)
+#     readonly_fields = ('id', 'group', 'student',)
 
 
-admin.site.register(Record, RecordAdmin)  # for testing only
+# admin.site.register(Record, RecordAdmin)  # for testing only
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Tag)
 admin.site.register(Effects)
