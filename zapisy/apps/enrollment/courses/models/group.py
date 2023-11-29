@@ -71,7 +71,9 @@ class Group(models.Model):
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
     usos_nr = models.IntegerField("Nr grupy w usos", null=True, blank=True)
 
-    last_record_changes_check = models.DateTimeField(default=datetime.min)
+    last_record_changes_check = models.DateTimeField(
+        "czas ostatniego sprawdzenia listy członków grupy",
+        default=datetime.min)
 
     def get_teacher_full_name(self):
         """Return teacher's full name for current group."""
@@ -193,6 +195,7 @@ class Group(models.Model):
         )
 
         self.last_record_changes_check = datetime.now()
+        self.save()
         return result
 
     @property
