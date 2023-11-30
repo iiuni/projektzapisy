@@ -80,7 +80,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         'teacher', 'teacher__user',
     ).prefetch_related(
         'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
-    ).alias(
+    ).annotate(
         earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
     ).order_by(
         'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
