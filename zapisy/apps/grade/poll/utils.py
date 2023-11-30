@@ -86,6 +86,7 @@ def group(entries: List[Poll], sort=False) -> dict:
         if entry is not None:
             category = entry.category
             subcategory = entry.subcategory
+            # TODO: isn't the condition always true, since subcategory is a string and grouped_entries[category] contains objects of type Poll?
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
                     output[category].append(entry)
