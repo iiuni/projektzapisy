@@ -87,23 +87,13 @@
           class="border-top collapse {% if current_poll and current_poll.category == group_name %}show{% endif %} list-group list-group-flush"
           id="course-section-{{ index }}" aria-labelledby="course-section-{{ index }}-heading">
           {% for entry in entries %}
-          {% if current_poll and entry.id == current_poll.id %}
           <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action active">
+            class="list-group-item list-group-item-action {% if current_poll and entry.id == current_poll.id %}active{% endif %}">
             <div class="d-flex w-100 justify-content-between">
               <span>{{ entry.subcategory }}</span>
               <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
           </a>
-          {% else %}
-          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.subcategory }}</span>
-              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
-            </div>
-          </a>
-          {% endif %}
           {% endfor %}
         </div>
       </div>
