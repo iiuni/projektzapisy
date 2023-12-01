@@ -16,10 +16,13 @@
         padding: 0.5rem 0 0.5rem 0;
         float: right;
     }
+    .course-header {
+        float: left;
+    }
 </style>
 
 <header>
-    <h1>
+    <h1 class="course-header">
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
