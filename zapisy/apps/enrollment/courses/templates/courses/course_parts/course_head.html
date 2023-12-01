@@ -13,12 +13,16 @@
         margin: 0 .5em;
     }
     .more-options {
-        padding: 0.5rem 0 0 0.5rem;
+        padding: 0.5rem 0 0.5rem 0;
         float: right;
     }
 </style>
 
 <header>
+    <h1>
+        {{ course.name }}
+        <small class="text-muted">{{ course.semester.get_short_name }}</small>
+    </h1>
     <div class="btn-group more-options" role="group" aria-label="Basic example">
         {% if user.is_authenticated %}
             <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
@@ -30,10 +34,6 @@
             {% endif %}
         {% endif %}
     </div>
-    <h1>
-        {{ course.name }}
-        <small class="text-muted">{{ course.semester.get_short_name }}</small>
-    </h1>
 </header>
 
 <table class="table table-bordered table-md-responsive" id="table-info">
