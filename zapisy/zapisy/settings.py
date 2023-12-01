@@ -402,3 +402,4 @@ REST_FRAMEWORK = {
     # specifying `filterset_fields` in a view
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
+
