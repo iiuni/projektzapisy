@@ -46,7 +46,7 @@ type Data = {
 };
 
 type Computed = {
-  selectedValue: () => string;
+  selectionDescription: () => string;
 };
 
 type Methods = {
@@ -136,7 +136,10 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
     },
   },
   computed: {
-    selectedValue(): string {
+    selectionDescription(): string {
+      if (this.selected.length === 0) {
+        return this.placeholder;
+      }
       return this.selected
         .map(({ label }: { label: string }) => label)
         .join(", ");
@@ -175,7 +178,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       :close-on-select="false"
       :track-by="trackBy"
       :label="propAsLabel"
-      :placeholder="placeholder"
+      :placeholder="selectionDescription"
     >
       <template slot="option" slot-scope="props">
         <div class="option-row">
@@ -192,7 +195,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       </template>
       <template slot="selection" slot-scope="{ values, isOpen }">
         <span class="multiselect__single" v-if="values.length" v-show="!isOpen">
-          {{ selectedValue }}
+          {{ selectionDescription }}
         </span>
       </template>
       <template slot="clear">
