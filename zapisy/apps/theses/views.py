@@ -32,7 +32,7 @@ def list_all(request):
             request.user) or p.is_supporting_advisor_assigned(request.user)
         advisor = str(p.advisor) + (f" ({p.supporting_advisor})" if p.supporting_advisor else "")
         advisor_last_name = p.advisor.user.last_name if p.advisor else p.advisor.__str__()
-        students = ", ".join(s.get_full_name() for s in p.students.all())
+        students = ", ".join(s.get_full_name() if s.consent_granted() else s.matricula for s in p.students.all())
         url = reverse('theses:selected_thesis', None, [str(p.id)])
 
         record = {
@@ -78,6 +78,7 @@ def view_thesis(request, id):
         request.user) or user_privileged_for_thesis
 
     students = thesis.students.all()
+    students_str = ", ".join(str(s) if s.consent_granted() else s.matricula for s in students)
 
     all_voters = get_theses_board()
     votes = []
@@ -128,6 +129,7 @@ def view_thesis(request, id):
         request, 'theses/thesis.html', {
             'thesis': thesis,
             'students': students,
+            'students_str': students_str,
             'board_member': board_member,
             'show_master_rejecter': show_master_rejecter,
             'can_see_remarks': user_privileged_for_thesis,
