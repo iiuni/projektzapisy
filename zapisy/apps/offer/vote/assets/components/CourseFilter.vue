@@ -28,7 +28,6 @@ export default Vue.extend({
       allOwners: [] as MultiselectFilterData<number>,
       allSemesters: [] as MultiselectFilterData<string>,
       allTypes: [] as MultiselectFilterData<number>,
-
       // The filters are going to be collapsed by default.
       collapsed: true,
     };
@@ -49,7 +48,6 @@ export default Vue.extend({
       .map(([id, [firstname, lastname]]) => {
         return { value: Number(id), label: `${firstname} ${lastname}` };
       });
-
     this.allTypes = Object.keys(filtersData.allTypes).map(
       (typeKey: string) => ({
         value: Number(typeKey),
@@ -67,7 +65,7 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  mounted() {
+  mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
@@ -96,61 +94,61 @@ export default Vue.extend({
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
-            ref="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
+            ref="name-filter"
           />
           <hr />
           <LabelsFilter
             title="Tagi"
             filterKey="tags-filter"
-            ref="tags-filter"
             property="tags"
             :allLabels="allTags"
             onClass="bg-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
           <MultiSelectFilter
             filterKey="type-filter"
-            ref="type-filter"
             property="courseType"
             :options="allTypes"
             title="Rodzaj przedmiotu"
             placeholder="Wszystkie rodzaje"
+            ref="type-filter"
           />
           <hr />
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
-            ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
             onClass="bg-info"
+            ref="effects-filter"
           />
         </div>
         <div class="col-md">
           <MultiSelectFilter
             filterKey="owner-filter"
-            ref="owner-filter"
             property="owner"
             :options="allOwners"
             title="Opiekun przedmiotu"
             placeholder="Wszyscy opiekunowie"
+            ref="owner-filter"
           />
           <MultiSelectFilter
             filterKey="semester-filter"
-            ref="semester-filter"
             property="semester"
             :options="allSemesters"
             placeholder="Semestr"
+            ref="semester-filter"
           />
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            ref="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
           />
         </div>
       </div>

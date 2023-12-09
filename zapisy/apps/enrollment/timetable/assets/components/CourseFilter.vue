@@ -2,19 +2,20 @@
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
+import { mapMutations } from "vuex";
+
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
+import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
-import { mapMutations } from "vuex";
-import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 
 export default Vue.extend({
   components: {
-    MultiSelectFilter,
     TextFilter,
     LabelsFilter,
     CheckFilter,
+    MultiSelectFilter,
   },
   data: function () {
     return {
@@ -22,7 +23,6 @@ export default Vue.extend({
       allTags: {},
       allOwners: [] as MultiselectFilterData<number>,
       allTypes: [] as MultiselectFilterData<number>,
-
       // The filters are going to be collapsed by default.
       collapsed: true,
     };
@@ -31,7 +31,6 @@ export default Vue.extend({
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
-
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
@@ -44,17 +43,18 @@ export default Vue.extend({
       .map(([id, [firstname, lastname]]) => {
         return { value: Number(id), label: `${firstname} ${lastname}` };
       });
-    this.allTypes = Object.keys(filtersData.allTypes).map((typeKey) => ({
-      value: Number(typeKey),
-      label: filtersData.allTypes[Number(typeKey)],
-    }));
+    this.allTypes = Object.keys(filtersData.allTypes).map(
+      (typeKey: string) => ({
+        value: Number(typeKey),
+        label: filtersData.allTypes[Number(typeKey)],
+      })
+    );
   },
   mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
-
     // Expand the filters if there are any initially specified in the search params.
     const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {

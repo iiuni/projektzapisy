@@ -1,6 +1,9 @@
 <script lang="ts">
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
+
+import { mapMutations } from "vuex";
+
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
@@ -9,7 +12,7 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
-import { mapMutations } from "vuex";
+
 export default Vue.extend({
   components: {
     TextFilter,
@@ -45,10 +48,12 @@ export default Vue.extend({
       .map(([id, [firstname, lastname]]) => {
         return { value: Number(id), label: `${firstname} ${lastname}` };
       });
-    this.allTypes = Object.keys(filtersData.allTypes).map((typeKey) => ({
-      value: Number(typeKey),
-      label: filtersData.allTypes[Number(typeKey)],
-    }));
+    this.allTypes = Object.keys(filtersData.allTypes).map(
+      (typeKey: string) => ({
+        value: Number(typeKey),
+        label: filtersData.allTypes[Number(typeKey)],
+      })
+    );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
       { value: "l", label: "letni" },
@@ -169,6 +174,7 @@ export default Vue.extend({
 .collapsed {
   overflow-y: hidden;
   height: 120px;
+
   // Blurs over the bottom of filter card.
   &:after {
     position: absolute;
@@ -196,6 +202,7 @@ export default Vue.extend({
     padding-top: 1em;
   }
 }
+
 .card-footer {
   height: 28px;
 }
