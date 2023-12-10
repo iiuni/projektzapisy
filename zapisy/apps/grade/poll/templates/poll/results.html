@@ -24,7 +24,7 @@
     {% endif %}
     {% if current_poll %}
     <div class="mb-3">
-      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}</span></h3>
+      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}{% if polls|lookup:current_poll.category|lookup:current_poll.subcategory|length > 1 %} ({{ current_poll.group.get_terms_as_short_string }}){% endif %}</span></h3>
       <h5>Kategoria: <span class="text-secondary">{{ current_poll.category }}</span></h5>
     </div>
     {% endif %}
@@ -86,14 +86,16 @@
         <div
           class="border-top collapse {% if current_poll and current_poll.category == group_name %}show{% endif %} list-group list-group-flush"
           id="course-section-{{ index }}" aria-labelledby="course-section-{{ index }}-heading">
-          {% for entry in entries %}
-          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action {% if current_poll and entry.id == current_poll.id %}active{% endif %}">
+          {% for subcategory, ps in entries.items %}
+          {% for poll in ps %}
+          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=poll.id %}"
+            class="list-group-item list-group-item-action {% if current_poll and poll.id == current_poll.id %}active{% endif %}">
             <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.subcategory }}</span>
-              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
+              <span>{{ subcategory }}{% if ps|length > 1 %} ({{ poll.group.get_terms_as_short_string }}){% endif %}</span>
+              <span class="text-end text-nowrap">{{ poll.number_of_submissions }}</span>
             </div>
           </a>
+          {% endfor %}
           {% endfor %}
         </div>
       </div>
