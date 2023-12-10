@@ -137,10 +137,14 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   },
   computed: {
     selectionDescription(): string {
+      const compareOptions = (left: Option, right: Option) =>
+        this.options.indexOf(left) - this.options.indexOf(right); // sort according to all options display order
+
       if (this.selected.length === 0) {
         return this.placeholder;
       }
       return this.selected
+        .sort(compareOptions)
         .map(({ label }: { label: string }) => label)
         .join(", ");
     },
