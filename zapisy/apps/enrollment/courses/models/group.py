@@ -85,6 +85,9 @@ class Group(models.Model):
                                        x.start_time.hour, x.end_time.hour) for x in self.term.all()])
     get_terms_as_string.short_description = 'Terminy zajęć'
 
+    def get_terms_as_short_string(self):
+        return ", ".join(["%s %s" % (x.get_dayOfWeek_display_short(), x.start_time.hour) for x in self.term.all()])
+
     @staticmethod
     def teacher_in_present(employees, semester):
         teachers = Group.objects.filter(
