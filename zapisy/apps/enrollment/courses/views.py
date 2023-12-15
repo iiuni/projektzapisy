@@ -232,6 +232,7 @@ def course_list_view(request, course_slug: str, class_type: int = None):
             'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
             'class_type': class_type,
     }
+    data.update(prepare_courses_list_data(course.semester))
     return render(request, 'courses/course_parts/course_list.html', data)
 
 
