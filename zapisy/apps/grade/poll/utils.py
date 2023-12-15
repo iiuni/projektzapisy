@@ -80,8 +80,11 @@ def group(entries: List[Poll]) -> dict:
     handly tables in views such as the one responsible for summarizing
     the results of students' submissions.
     """
-    return {category: {subcategory: list(polls) for subcategory, polls in groupby(sorted(es, key=lambda e: e.subcategory), lambda e: e.subcategory)}
-            for category, es in groupby(sorted(filter(lambda e: e is not None, entries), key=lambda e: e.category), lambda e: e.category)}
+    return {category: {subcategory: list(polls)
+                       for subcategory, polls in groupby(sorted(es, key=lambda e: e.subcategory),
+                                                         lambda e: e.subcategory)}
+            for category, es in groupby(sorted(filter(lambda e: e is not None, entries), key=lambda e: e.category),
+                                        lambda e: e.category)}
 
 
 class PollSummarizedResultsEntry:
