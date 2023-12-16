@@ -24,7 +24,7 @@
     {% endif %}
     {% if current_poll %}
     <div class="mb-3">
-      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}{% if polls|lookup:current_poll.category|lookup:current_poll.subcategory|length > 1 %} ({{ current_poll.group.get_terms_as_short_string }}){% endif %}</span></h3>
+      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}{% if polls|lookup:current_poll.category|lookup:current_poll.subcategory|length > 1 %} ({{ current_poll.group.get_terms_as_string }}){% endif %}</span></h3>
       <h5>Kategoria: <span class="text-secondary">{{ current_poll.category }}</span></h5>
     </div>
     {% endif %}
