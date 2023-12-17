@@ -90,7 +90,7 @@
         </tr>
         <tr>
             <th scope="row">Studenci</th>
-            <td>{{ students_str }}</td>
+            <td>{{ students_str|default:"Brak" }}</td>
         </tr>
         <tr>
             <th scope="row">Zarezerwowana do</th>
