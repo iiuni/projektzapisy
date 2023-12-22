@@ -3,9 +3,9 @@ from django.dispatch import receiver
 
 from .enums import ThesisVote, ThesisStatus
 from .models import Vote
+from apps.notifications.custom_signals import thesis_in_progress
 from .system_settings import get_num_required_votes
 
-from apps.notifications.custom_signals import thesis_in_progress
 
 
 @receiver(post_save, sender=Vote)

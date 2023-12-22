@@ -176,6 +176,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
             'title': thesis.title
         }, target))
 
+
 @receiver(thesis_in_progress, sender=Vote)
 def notify_students_that_thesis_has_been_in_progress(sender: Vote, **kwargs) -> None:
     thesis = kwargs['instance']
@@ -187,3 +188,4 @@ def notify_students_that_thesis_has_been_in_progress(sender: Vote, **kwargs) -> 
                      NotificationType.THESIS_HAS_BEEN_IN_PROGRESS, {
             'title': thesis.title
         }, target))
+    
