@@ -7,7 +7,6 @@ from apps.notifications.custom_signals import thesis_in_progress
 from .system_settings import get_num_required_votes
 
 
-
 @receiver(post_save, sender=Vote)
 def auto_accept(sender, instance: Vote, **kwargs):
     """Accepts thesis when enough accepting votes have been submitted."""
