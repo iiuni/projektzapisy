@@ -1,9 +1,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from apps.notifications.custom_signals import thesis_in_progress
 from .enums import ThesisVote, ThesisStatus
 from .models import Vote
-from apps.notifications.custom_signals import thesis_in_progress
 from .system_settings import get_num_required_votes
 
 

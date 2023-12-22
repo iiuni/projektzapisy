@@ -188,4 +188,3 @@ def notify_students_that_thesis_has_been_in_progress(sender: Vote, **kwargs) -> 
                      NotificationType.THESIS_HAS_BEEN_IN_PROGRESS, {
             'title': thesis.title
         }, target))
-    
