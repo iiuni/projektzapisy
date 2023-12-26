@@ -99,8 +99,9 @@ def my_studies(request):
     data = {'student': student, 'semester': Semester.get_upcoming_semester()}
 
     variant = Variant.objects.filter(program=student.program).first()
-    requirements: list[dict] = variant.requirements.get('wymagania')
-    summaries = [get_requirement_summary(student, requirement) for requirement in requirements]
-    data.update({'requirements': summaries})
+    if variant:
+        requirements: list[dict] = variant.requirements.get('wymagania')
+        summaries = [get_requirement_summary(student, requirement) for requirement in requirements]
+        data.update({'requirements': summaries})
 
     return render(request, 'my_studies.html', data)
