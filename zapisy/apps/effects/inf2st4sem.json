@@ -20,7 +20,7 @@
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty oznaczone znacznikiem specjalistycznym AZ",
       "liczba_ects": 12,
       "tagi_przedmiotow": ["AZ"],
-      "dodatkowe_info": "Jeśli podczas rekrutacji student otrzymał co najmniej 50 punktów z zakresu przedmiotu `Algorytmy i struktury danych M` bądź `Matematyka dyskretna M`, to od powyższego limitu odejmuje się 6 ECTS za każdy taki przedmiot." 
+      "dodatkowe_info": "Jeśli podczas rekrutacji student otrzymał co najmniej 50 punktów z zakresu przedmiotu `Algorytmy i struktury danych M` bądź `Matematyka dyskretna M`, to od powyższego limitu odejmuje się 6 ECTS za każdy taki przedmiot."
     },
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty oznaczone znacznikimi specjalistycznymi SY, PD, NG",
@@ -62,7 +62,7 @@
           "tagi_przedmiotow": ["JP"]
         }
       ],
-      "_znaczniki_specjalistyczne_comment": "Należy zweryfikować, które tagi są znacznikami specjalistycznymi" 
+      "_znaczniki_specjalistyczne_comment": "Należy zweryfikować, które tagi są znacznikami specjalistycznymi"
     },
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS za przedmioty typu seminarium (S)",

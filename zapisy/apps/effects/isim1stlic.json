@@ -21,19 +21,19 @@
         "Języki formalne i złożoność obliczeniowa"
       ],
       "zamienniki": [
-        { 
+        {
           "nazwa_przedmiotu": "Logika dla informatyków",
           "zamiennik": "Wstęp do matematyki R"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Matematyka dyskretna (M)",
           "zamiennik": "Matematyka dyskretna (L)"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Analiza numeryczna (M)",
           "zamiennik": "Analiza numeryczna (L)"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Algorytmy i struktury danych (M)",
           "zamiennik": "Algorytmy i struktury danych (L)"
         }
@@ -52,23 +52,23 @@
         "Rachunek prawdopodobieństwa dla informatyków"
       ],
       "zamienniki": [
-        { 
+        {
           "nazwa_przedmiotu": "Rachunek prawdopodobieństwa dla informatyków",
           "zamiennik": "Rachunek prawdopodobieństwa 1R"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Analiza matematyczna II",
           "zamiennik": "Analiza matematyczna 2"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Algebra I",
           "zamiennik": "Algebra 1"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Algebra II",
           "zamiennik": "Algebra liniowa 2"
         },
-        { 
+        {
           "nazwa_przedmiotu": "Równania różniczkowe 1R",
           "zamiennik": "Równania różniczkowe 1"
         }
@@ -119,7 +119,16 @@
     {
       "nazwa": "Uzyskanie co najmniej 12 punktów za przedmioty informatyczne",
       "liczba_ects": 12,
-      "typy_przedmiotow": ["I1", "Iinż", "I2.T", "I2.Z", "K", "K1", "K2", "K.inż"]
+      "typy_przedmiotow": [
+        "I1",
+        "Iinż",
+        "I2.T",
+        "I2.Z",
+        "K",
+        "K1",
+        "K2",
+        "K.inż"
+      ]
     },
     {
       "nazwa": "Uzyskanie co najmniej 12 punktów za przedmioty matematyczne",
@@ -130,7 +139,20 @@
     {
       "nazwa": "Uzyskanie odpowiedniej liczby punktów ECTS",
       "liczba_ects": 182,
-      "typy_przedmiotow": ["O1", "O2", "O3", "I1", "Iinż", "I2.T", "I2.Z", "K", "K1", "K2", "K.inż", "MAT"],
+      "typy_przedmiotow": [
+        "O1",
+        "O2",
+        "O3",
+        "I1",
+        "Iinż",
+        "I2.T",
+        "I2.Z",
+        "K",
+        "K1",
+        "K2",
+        "K.inż",
+        "MAT"
+      ],
       "dodatkowe_info": "Nie wszystkie przedmioty matamatyczne znajdują się w Systemie Zapisów"
     },
     {
