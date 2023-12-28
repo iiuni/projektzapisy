@@ -123,7 +123,7 @@ LOGGING = {
         'rq.worker': {
             'handlers': ['rq_logfile'],
             'level': 'DEBUG',
-            'propagate': False,
+            'propagate': True,
         },
     },
     'root': {
