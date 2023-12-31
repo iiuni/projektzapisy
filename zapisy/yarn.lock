@@ -587,15 +587,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.18.4":
-  version: 7.18.9
-  resolution: "@babel/parser@npm:7.18.9"
-  bin:
-    parser: ./bin/babel-parser.js
-  checksum: 92d9d0b81439e216fc2e6e58cb64aba10027676a82485304de1d124cda51a56b095bb7709154bbaba23461a4a66c688783e5d3bed3f2cfa71a02255b56eb4540
-  languageName: node
-  linkType: hard
-
 "@babel/parser@npm:^7.22.15":
   version: 7.22.16
   resolution: "@babel/parser@npm:7.22.16"
@@ -614,7 +605,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.23.6":
+"@babel/parser@npm:^7.23.5, @babel/parser@npm:^7.23.6":
   version: 7.23.6
   resolution: "@babel/parser@npm:7.23.6"
   bin:
@@ -2174,14 +2165,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/compiler-sfc@npm:2.7.15":
-  version: 2.7.15
-  resolution: "@vue/compiler-sfc@npm:2.7.15"
+"@vue/compiler-sfc@npm:2.7.16":
+  version: 2.7.16
+  resolution: "@vue/compiler-sfc@npm:2.7.16"
   dependencies:
-    "@babel/parser": ^7.18.4
+    "@babel/parser": ^7.23.5
     postcss: ^8.4.14
+    prettier: ^1.18.2 || ^2.0.0
     source-map: ^0.6.1
-  checksum: 4c5484ae74cb1746425d2c0ee6ceea17d78058d6a561d080080602b52ef4efe268355ee27d351b66edba898c07298e05fc586a1d6da1e067f2cbb660326ebbc2
+  dependenciesMeta:
+    prettier:
+      optional: true
+  checksum: 64ad1202556bd912adba94c34f135a48298df540866e69dc114afe7b4086edf723b92ce7e145e65ac4400e99b9870d51c75df3a87d7a25649f5d5fd9ac3ddcf7
   languageName: node
   linkType: hard
 
@@ -5351,10 +5346,10 @@ fsevents@~2.1.2:
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
-    vue: 2.7.15
+    vue: 2.7.16
     vue-class-component: 7.2.6
     vue-loader: 15.11.1
-    vue-template-compiler: 2.7.15
+    vue-template-compiler: 2.7.16
     vue-timers: 2.0.4
     vuex: 3.6.2
     webpack: 4.47.0
@@ -7292,7 +7287,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.8":
+"prettier@npm:2.8.8, prettier@npm:^1.18.2 || ^2.0.0":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -9105,13 +9100,13 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"vue-template-compiler@npm:2.7.15":
-  version: 2.7.15
-  resolution: "vue-template-compiler@npm:2.7.15"
+"vue-template-compiler@npm:2.7.16":
+  version: 2.7.16
+  resolution: "vue-template-compiler@npm:2.7.16"
   dependencies:
     de-indent: ^1.0.2
     he: ^1.2.0
-  checksum: 8d441837132883170b4e10409dd52a400c0348b1fb61092ed03771f8f3cff9e3e337278e47fd9f25dc28d7f257501c2529ff12f2f1a9d6428ba45fc4173036e5
+  checksum: 5217847e19d260f091c660eae327872a47d187d2c6020fc17c9871b16068ddf9ad2db12e4c5bddc766b0be8afbf80ac8e0f7a7d1d8a4ec9fe7ee5ff78d61df7d
   languageName: node
   linkType: hard
 
@@ -9129,13 +9124,13 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"vue@npm:2.7.15":
-  version: 2.7.15
-  resolution: "vue@npm:2.7.15"
+"vue@npm:2.7.16":
+  version: 2.7.16
+  resolution: "vue@npm:2.7.16"
   dependencies:
-    "@vue/compiler-sfc": 2.7.15
+    "@vue/compiler-sfc": 2.7.16
     csstype: ^3.1.0
-  checksum: 7a94273d71825caa2ca0c9e473ba4e6b24ddf88d4b64e9401d1d9af6daa2a9c9ddd04be168d49230a1e8bda174a88231c59241f5de0e1eede18a2a9814494dea
+  checksum: ba2ab021d24327ba1b9f692809f818a90374ff20a4d69f6900efb315870c7004c134c7ac1320b496d2084782077781474e32cb6108d1ac7414b8f304ee819d25
   languageName: node
   linkType: hard
 
