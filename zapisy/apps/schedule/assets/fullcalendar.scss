@@ -5,4 +5,18 @@
   a {
     color: var(--bs-dark);
   }
+  .free-day,
+  .change-day {
+    background-clip: padding-box;
+    a {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+  }
+  .free-day {
+    background-color: gainsboro;
+  }
+  .change-day {
+    background-color: beige;
+  }
 }

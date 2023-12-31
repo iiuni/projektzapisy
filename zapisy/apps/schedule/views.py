@@ -13,9 +13,10 @@ from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from rest_framework import generics, serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
@@ -335,6 +336,41 @@ class EventsTermsAjaxView(FullCalendarView):
         queryset = super(EventsTermsAjaxView, self).get_queryset()
         queryset = queryset.filter(event__type='2', event__visible=True)
         return queryset
+
+
+class FreedayAPIView(generics.ListAPIView):
+    class OutputSerializer(serializers.Serializer):
+        day = serializers.CharField()
+
+    queryset = Freeday.objects.all()
+    serializer_class = OutputSerializer
+
+    def get_queryset(self):
+        input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
+        output_date_format = "%Y-%m-%d"
+        start = datetime.datetime.strptime(self.request.query_params.get('start'), input_date_format)
+        end = datetime.datetime.strptime(self.request.query_params.get('end'), input_date_format)
+        formatted_start = start.strftime(output_date_format)
+        formatted_end = end.strftime(output_date_format)
+        return super().get_queryset().filter(day__gte=formatted_start, day__lte=formatted_end)
+
+
+class ChangedDayAPIView(generics.ListAPIView):
+    class OutputSerializer(serializers.Serializer):
+        day = serializers.CharField()
+        weekday = serializers.CharField()
+
+    queryset = ChangedDay.objects.all()
+    serializer_class = OutputSerializer
+
+    def get_queryset(self):
+        input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
+        output_date_format = "%Y-%m-%d"
+        start = datetime.datetime.strptime(self.request.query_params.get('start'), input_date_format)
+        end = datetime.datetime.strptime(self.request.query_params.get('end'), input_date_format)
+        formatted_start = start.strftime(output_date_format)
+        formatted_end = end.strftime(output_date_format)
+        return super().get_queryset().filter(day__gte=formatted_start, day__lte=formatted_end)
 
 
 @login_required
