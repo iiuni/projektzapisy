@@ -1,6 +1,5 @@
 from django.apps import AppConfig
 from django.contrib.auth import get_user_model
-from django.contrib.auth import models as auth_models
 
 
 class UsersConfig(AppConfig):
@@ -27,6 +26,7 @@ class UsersConfig(AppConfig):
         setattr(UserModel, 'student', property(get_student))
         setattr(UserModel, 'employee', property(get_employee))
 
+        from django.contrib.auth import models as auth_models
         setattr(auth_models.AnonymousUser, 'student', None)
         setattr(auth_models.AnonymousUser, 'employee', None)
 

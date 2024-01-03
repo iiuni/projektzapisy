@@ -7,8 +7,6 @@ from django.db.models import signals
 
 from apps.common import days_of_week
 
-from .semester import ChangedDay, Freeday
-
 backup_logger = logging.getLogger('project.backup')
 
 HOURS = [(str(hour), "%s.00" % hour) for hour in range(8, 23)]
@@ -121,6 +119,7 @@ class Term(models.Model):
         :param semester: enrollment.courses.model.Semester
         :param day: DAYS_OF_WEEK or datetime.date
         """
+        from .semester import ChangedDay, Freeday
         query = cls.objects.filter(group__course__semester=semester)
 
         if day is None:

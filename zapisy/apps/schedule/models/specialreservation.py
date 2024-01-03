@@ -10,6 +10,7 @@ from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 
 from .term import Term
+from .event import Event
 
 
 class SpecialReservationQuerySet(models.query.QuerySet):
