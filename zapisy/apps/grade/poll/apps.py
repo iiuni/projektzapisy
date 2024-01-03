@@ -6,4 +6,4 @@ class PollAppConfig(AppConfig):
     verbose_name = "Ocena zajęć"
 
     def ready(self):
-        import apps.grade.poll.signals  # noqa
+        import apps.grade.poll.signals  # noqa: F401

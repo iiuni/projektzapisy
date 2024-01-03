@@ -9,8 +9,8 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.models.event import Event
 
-from .event import Event
 from .term import Term
+
 
 class SpecialReservationQuerySet(models.query.QuerySet):
     def on_day_of_week(self, day_of_week):

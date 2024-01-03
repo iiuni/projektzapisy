@@ -13,6 +13,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 
 from .term import Term
 
+
 class Event(models.Model):
     TYPE_EXAM = '0'
     TYPE_TEST = '1'
