@@ -7,7 +7,6 @@ from apps.common import days_of_week
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
-from apps.schedule.models.event import Event
 
 from .term import Term
 from .event import Event
