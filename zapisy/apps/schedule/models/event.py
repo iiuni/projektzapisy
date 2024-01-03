@@ -5,11 +5,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import ValidationError
 from django.db import models
 from django.http import Http404
+from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
 
+from .term import Term
 
 class Event(models.Model):
     TYPE_EXAM = '0'
@@ -58,7 +60,6 @@ class Event(models.Model):
     edited = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        from django.urls import reverse
 
         if self.group:
             return reverse('group-view', args=[str(self.group_id)])
@@ -114,7 +115,6 @@ class Event(models.Model):
 
                 # if status changes to accepted, validate all term objects
                 if self.status == Event.STATUS_ACCEPTED:
-                    from .term import Term
                     for term in Term.objects.filter(event=self):
                         term.clean()
 
@@ -122,7 +122,6 @@ class Event(models.Model):
 
     def remove(self):
         """Removing all terms bounded with given event."""
-        from .term import Term
         terms = Term.objects.filter(event=self)
         for term in terms:
             term.delete()

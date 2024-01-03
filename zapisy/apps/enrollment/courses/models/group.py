@@ -7,7 +7,9 @@ from django.db import models, transaction
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.courses.models.term import Term
 from apps.notifications.custom_signals import teacher_changed
+from apps.schedulersync.models import TermSyncData
 from apps.users.models import Employee
 
 
@@ -128,8 +130,6 @@ class Group(models.Model):
         This function is operating inside a transaction. If it fails, no changes
         are made to the DB.
         """
-        from apps.enrollment.courses.models.term import Term
-        from apps.schedulersync.models import TermSyncData
 
         def copy_term(t: Term) -> Term:
             classrooms = list(t.classrooms.all())
