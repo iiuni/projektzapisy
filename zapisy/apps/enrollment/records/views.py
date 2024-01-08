@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group
-from apps.enrollment.records.models.records import Record
+from apps.enrollment.records.models.records import Record, CanEnroll
 from apps.users.decorators import student_required
 from apps.users.models import Student
 
@@ -29,7 +29,15 @@ def enqueue(request):
                 "asynchroniczny proces."
             )
         )
-        if not Record.can_enroll(student, group):
+
+        student_can_enroll = Record.can_enroll(student, group)
+        if student_can_enroll == CanEnroll.ECTS_LIMIT:
+            messages.warning(request,
+                             ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
+                              "Jeśli nie  zmieni się to do czasu wciągania Twojego rekordu "
+                              "z  kolejki, zostanie on zablokowany. Rekord zostanie przywrócony "
+                              "po zniesieniu limitu ECTS lub jeśli wypiszesz się z dowolnej grupy."))
+        elif not student_can_enroll:
             messages.warning(request,
                              ("W tym momencie nie spełniasz kryteriów zapisu do tej grupy. "
                               "Jeśli nie  zmieni się to do czasu wciągania Twojego rekordu "
