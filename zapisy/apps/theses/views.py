@@ -51,8 +51,11 @@ def list_all(request):
 
         theses_list.append(record)
 
+    unused_variable = 10
+
     return render(request, 'theses/list_all.html', {
         'theses_list': theses_list,
+        'unused_variable': 10,
     })
 
 
