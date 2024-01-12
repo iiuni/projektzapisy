@@ -53,7 +53,6 @@ def list_all(request):
 
     return render(request, 'theses/list_all.html', {
         'theses_list': theses_list,
-        'unused_variable': 10,
     })
 
 
