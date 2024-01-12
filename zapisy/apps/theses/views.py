@@ -20,7 +20,6 @@ def list_all(request):
     """Display list of all visible theses."""
     visible_theses = Thesis.objects.visible(request.user).select_related(
         'advisor', 'advisor__user').prefetch_related('students', 'students__user')
-    board_member = is_theses_board_member(request.user)
 
     theses_list = []
     for p in visible_theses:
@@ -54,7 +53,6 @@ def list_all(request):
 
     return render(request, 'theses/list_all.html', {
         'theses_list': theses_list,
-        'board_member': board_member,
     })
 
 
