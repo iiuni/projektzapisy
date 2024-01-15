@@ -943,22 +943,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-classes@npm:^7.23.5":
-  version: 7.23.5
-  resolution: "@babel/plugin-transform-classes@npm:7.23.5"
+"@babel/plugin-transform-classes@npm:^7.23.8":
+  version: 7.23.8
+  resolution: "@babel/plugin-transform-classes@npm:7.23.8"
   dependencies:
     "@babel/helper-annotate-as-pure": ^7.22.5
-    "@babel/helper-compilation-targets": ^7.22.15
+    "@babel/helper-compilation-targets": ^7.23.6
     "@babel/helper-environment-visitor": ^7.22.20
     "@babel/helper-function-name": ^7.23.0
-    "@babel/helper-optimise-call-expression": ^7.22.5
     "@babel/helper-plugin-utils": ^7.22.5
     "@babel/helper-replace-supers": ^7.22.20
     "@babel/helper-split-export-declaration": ^7.22.6
     globals: ^11.1.0
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 248c0a657b8927eff3571622898be9d71b8a3f77d8d6d3317d0a2a64bfbd66502237f3d5bd0ff9a7952df7a008e7d9352257ee782c7f1234327ff17cd1629a53
+  checksum: 76acc6eb8a7fbaa6585f8e43ecd65f8acd4ce323d99a02c7dee43655b83e152f6ac159670b9917ab95001ab712113686b6dd5d27edc0d450e60c125be07d123f
   languageName: node
   linkType: hard
 
@@ -1452,9 +1451,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.23.7":
-  version: 7.23.7
-  resolution: "@babel/preset-env@npm:7.23.7"
+"@babel/preset-env@npm:7.23.8":
+  version: 7.23.8
+  resolution: "@babel/preset-env@npm:7.23.8"
   dependencies:
     "@babel/compat-data": ^7.23.5
     "@babel/helper-compilation-targets": ^7.23.6
@@ -1489,7 +1488,7 @@ __metadata:
     "@babel/plugin-transform-block-scoping": ^7.23.4
     "@babel/plugin-transform-class-properties": ^7.23.3
     "@babel/plugin-transform-class-static-block": ^7.23.4
-    "@babel/plugin-transform-classes": ^7.23.5
+    "@babel/plugin-transform-classes": ^7.23.8
     "@babel/plugin-transform-computed-properties": ^7.23.3
     "@babel/plugin-transform-destructuring": ^7.23.3
     "@babel/plugin-transform-dotall-regex": ^7.23.3
@@ -1538,7 +1537,7 @@ __metadata:
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 23e756f397ec10bb5bee00593ccb310bd58bd058d14b288017c60f03d457eca49c05e17c3120ef01fd79862df4aa99bcc4dc2289c388d60ccaf0e31afadc4d86
+  checksum: afd35caa5d7cc4883c27a9320650375e9a9a92c7684bcec438bf74ae9bcd0ea9211d437efb4a44d49581eee6b9870da0844aae673ef8c9e649275bbbcc1bd16b
   languageName: node
   linkType: hard
 
@@ -5265,7 +5264,7 @@ fsevents@~2.1.2:
   resolution: "ii-zapisy@workspace:."
   dependencies:
     "@babel/core": 7.23.7
-    "@babel/preset-env": 7.23.7
+    "@babel/preset-env": 7.23.8
     "@bokeh/bokehjs": 2.4.3
     "@fortawesome/fontawesome-free": 5.15.4
     "@fortawesome/fontawesome-svg-core": 1.3.0
