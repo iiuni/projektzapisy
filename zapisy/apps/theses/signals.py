@@ -17,5 +17,5 @@ def auto_accept(sender, instance: Vote, **kwargs):
             thesis.status = ThesisStatus.ACCEPTED
         else:
             thesis.status = ThesisStatus.IN_PROGRESS
-            thesis_accepted.send(sender=Vote, instance=thesis)
+        thesis_accepted.send(sender=Vote, instance=thesis)
         thesis.save()
