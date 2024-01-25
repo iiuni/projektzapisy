@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from apps.notifications.custom_signals import thesis_in_progress
+from apps.notifications.custom_signals import thesis_accepted
 from .enums import ThesisVote, ThesisStatus
 from .models import Vote
 from .system_settings import get_num_required_votes
@@ -17,5 +17,5 @@ def auto_accept(sender, instance: Vote, **kwargs):
             thesis.status = ThesisStatus.ACCEPTED
         else:
             thesis.status = ThesisStatus.IN_PROGRESS
-            thesis_in_progress.send(sender=Vote, instance=thesis)
+            thesis_accepted.send(sender=Vote, instance=thesis)
         thesis.save()

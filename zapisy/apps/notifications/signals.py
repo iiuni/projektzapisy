@@ -12,7 +12,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated, thesis_in_progress)
+                                               thesis_voting_activated, thesis_accepted)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -177,14 +177,14 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
         }, target))
 
 
-@receiver(thesis_in_progress, sender=Vote)
-def notify_students_that_thesis_has_been_in_progress(sender: Vote, **kwargs) -> None:
+@receiver(thesis_accepted, sender=Vote)
+def notify_students_that_thesis_has_been_accepted(sender: Vote, **kwargs) -> None:
     thesis = kwargs['instance']
     users = [student.user for student in thesis.students.all()]
     target = reverse('theses:selected_thesis', args=[thesis.id])
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
-                     NotificationType.THESIS_HAS_BEEN_IN_PROGRESS, {
+                     NotificationType.THESIS_HAS_BEEN_ACCEPTED, {
             'title': thesis.title
         }, target))

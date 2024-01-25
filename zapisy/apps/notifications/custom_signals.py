@@ -18,4 +18,4 @@ teacher_changed = django.dispatch.Signal()
 thesis_voting_activated = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
-thesis_in_progress = django.dispatch.Signal()
+thesis_accepted = django.dispatch.Signal()
