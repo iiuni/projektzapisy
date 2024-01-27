@@ -23,6 +23,10 @@ class NotificationPreferencesStudent(models.Model):
         """High-priority news is sent to all active students."""
         return self.user.student.is_active
 
+    @property
+    def thesis_has_been_accepted(self):
+        return True
+
 
 class NotificationPreferencesTeacher(models.Model):
     user = models.OneToOneField(
@@ -33,6 +37,8 @@ class NotificationPreferencesTeacher(models.Model):
         "Nowa wiadomość w Aktualnościach", default=True)
     thesis_voting_has_been_activated = models.BooleanField(
         "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
+    thesis_has_been_accepted = models.BooleanField(
+        "Powiadomienie o akceptacji pracy dyplomowej (dotyczy promotora i promotora wspierającego)", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
