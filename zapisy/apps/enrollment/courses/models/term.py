@@ -83,10 +83,6 @@ class Term(models.Model):
         }[self.dayOfWeek]
 
     @staticmethod
-    def get_day_of_week(date):
-        return days_of_week.DAYS_OF_WEEK[date.weekday()][0]
-
-    @staticmethod
     def get_python_day_of_week(day_of_week):
         try:
             return [x[0] for x in days_of_week.DAYS_OF_WEEK].index(day_of_week)
@@ -128,7 +124,7 @@ class Term(models.Model):
             if isinstance(day, date):
                 if Freeday.is_free(day):
                     return cls.objects.none()
-                day_of_week = ChangedDay.get_day_of_week(day)
+                day_of_week = ChangedDay.get_official_day_of_week(day)
             else:
                 day_of_week = day
             query = query.filter(dayOfWeek=day_of_week)

@@ -42,12 +42,8 @@ class ChangedDay(models.Model):
             },
                                   code='invalid')
 
-    @staticmethod
-    def get_actual_day_of_week(date):
-        return days_of_week.DAYS_OF_WEEK[date.weekday()][0]
-
     @classmethod
-    def get_day_of_week(cls, date):
+    def get_official_day_of_week(cls, date):
         """Returns actual schedule day, with respect to ChangedDays.
 
         :param date:
@@ -56,7 +52,7 @@ class ChangedDay(models.Model):
         if changes:
             return changes[0].day
         else:
-            return ChangedDay.get_actual_day_of_week(date)
+            return days_of_week.get_day_of_week(date)
 
     @staticmethod
     def get_added_days_of_week(start_date, end_date, day_of_week=None):

@@ -91,7 +91,7 @@ class SpecialReservation(models.Model):
 
         if day is not None:
             if isinstance(day, date):
-                day_of_week = CourseTerm.get_day_of_week(day)
+                day_of_week = days_of_week.get_day_of_week(day)
             else:
                 day_of_week = day
             query = query.on_day_of_week(day_of_week)

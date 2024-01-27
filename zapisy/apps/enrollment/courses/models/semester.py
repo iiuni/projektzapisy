@@ -6,6 +6,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.core.validators import ValidationError
 from django.db import models
 
+from apps.common import days_of_week
 
 from .specialdays import ChangedDay, Freeday
 from .term import Term
@@ -140,14 +141,14 @@ class Semester(models.Model):
         else:
             date += timedelta(days=7 - date.weekday() + python_weekday)
 
-        assert Term.get_day_of_week(date) == day_of_week
+        assert days_of_week.get_day_of_week(date) == day_of_week
 
         dates = []
         while date <= self.lectures_ending:
             # if its not a free day
             if not Freeday.is_free(date):
                 # if it wasnt changed
-                if ChangedDay.get_day_of_week(date) == day_of_week:
+                if ChangedDay.get_official_day_of_week(date) == day_of_week:
                     # add to list
                     dates.append(date)
             # move date to next week

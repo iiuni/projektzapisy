@@ -13,3 +13,7 @@ DAYS_OF_WEEK = [(MONDAY, 'poniedziałek'),
                 (FRIDAY, 'piątek'),
                 (SATURDAY, 'sobota'),
                 (SUNDAY, 'niedziela')]
+
+
+def get_day_of_week(date):
+    return DAYS_OF_WEEK[date.weekday()][0]
