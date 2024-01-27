@@ -114,16 +114,14 @@ class Event(models.Model):
 
                 # if status changes to accepted, validate all term objects
                 if self.status == Event.STATUS_ACCEPTED:
-                    from .term import Term
-                    for term in Term.objects.filter(event=self):
+                    for term in self.term_set.all():
                         term.clean()
 
         super(Event, self).clean()
 
     def remove(self):
         """Removing all terms bounded with given event."""
-        from .term import Term
-        terms = Term.objects.filter(event=self)
+        terms = self.term_set.all()
         for term in terms:
             term.delete()
         self.delete()
