@@ -36,7 +36,7 @@ class ChangedDay(models.Model):
         verbose_name='zmieniony na')
 
     def clean(self):
-        if ChangedDay.get_actual_day_of_week(self.day) == self.weekday:
+        if ChangedDay.get_official_day_of_week(self.day) == self.weekday:
             raise ValidationError(message={
                 'weekday': ['To już jest ' + days_of_week.DAYS_OF_WEEK[self.day.weekday()][1]]
             },
