@@ -25,6 +25,7 @@ from apps.schedule.models.event import Event
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
+from apps.notifications.custom_signals import event_decision
 
 from .forms import DoorChartForm, TableReportForm
 from .fullcalendar import FullCalendarView
@@ -172,12 +173,12 @@ def decision(request, event_id):
     conflicts = event.get_conflicted()
     if conflicts:
         event.term_set.update(ignore_conflicts=True)
-
     if form.is_valid():
         if event_status == form.cleaned_data['status']:
             messages.error(request, "Status wydarzenia nie został zmieniony")
         else:
             event_obj = form.save()
+            event_decision.send(sender=None, event=event)
             msg = EventModerationMessage()
             msg.author = request.user
             msg.message = "Status wydarzenia został zmieniony na " + \
