@@ -5368,7 +5368,7 @@ fsevents@~2.1.2:
     sass: 1.26.10
     sass-loader: 10.4.1
     spicery: 1.1.0
-    tablesorter: ^2.31.3
+    tablesorter: 2.31.3
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -8513,7 +8513,7 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"tablesorter@npm:^2.31.3":
+"tablesorter@npm:2.31.3":
   version: 2.31.3
   resolution: "tablesorter@npm:2.31.3"
   dependencies:
