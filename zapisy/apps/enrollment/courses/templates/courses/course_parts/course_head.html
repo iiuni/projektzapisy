@@ -26,7 +26,7 @@
     <h1 class="course-header">
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
-        <span class="btn-group more-options" role="group" aria-label="Basic example">
+        <span class="btn-group more-options" role="group">
             {% if user.is_authenticated %}
                 <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
             {% endif %}
