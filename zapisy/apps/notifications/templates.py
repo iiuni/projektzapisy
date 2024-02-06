@@ -61,5 +61,5 @@ mapping_title = {
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
-    'Praca dyplomowa "{title}" została zaakceptowana i jest w realizacji.',
+    'Praca dyplomowa "{title}" została zaakceptowana.',
 }
