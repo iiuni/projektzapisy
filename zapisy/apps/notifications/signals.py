@@ -181,8 +181,8 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 def notify_students_and_advisors_that_thesis_has_been_accepted(sender: Vote, **kwargs) -> None:
     thesis = kwargs['instance']
     users = [student.user for student in thesis.students.all()]
-    advisor = thesis.get("advisor")
-    supporting_advisor = thesis.get("supporting_advisor")
+    advisor = thesis.advisor
+    supporting_advisor = thesis.supporting_advisor
     if advisor is not None:
         users.append(advisor.user)
     if supporting_advisor is not None:
