@@ -178,7 +178,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 
 
 @receiver(thesis_accepted, sender=Vote)
-def notify_students_that_thesis_has_been_accepted(sender: Vote, **kwargs) -> None:
+def notify_students_and_advisors_that_thesis_has_been_accepted(sender: Vote, **kwargs) -> None:
     thesis = kwargs['instance']
     users = [student.user for student in thesis.students.all()]
     advisors = ["advisor", "supporting_advisor"]
