@@ -35,10 +35,10 @@ class NotificationPreferencesTeacher(models.Model):
         "Przydzielenie do grupy", default=True)
     news_has_been_added = models.BooleanField(
         "Nowa wiadomość w Aktualnościach", default=True)
-    thesis_voting_has_been_activated = models.BooleanField(
-        "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
     thesis_has_been_accepted = models.BooleanField(
         "Powiadomienie o akceptacji tematu pracy dyplomowej", default=True)
+    thesis_voting_has_been_activated = models.BooleanField(
+        "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
