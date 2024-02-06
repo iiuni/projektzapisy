@@ -181,11 +181,12 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 def notify_students_and_advisors_that_thesis_has_been_accepted(sender: Vote, **kwargs) -> None:
     thesis = kwargs['instance']
     users = [student.user for student in thesis.students.all()]
-    advisors = ["advisor", "supporting_advisor"]
-    for a in advisors:
-        a_obj = getattr(thesis, a)
-        if a_obj is not None:
-            users.append(a_obj.user)
+    advisor = thesis["advisor"]
+    supporting_advisor = thesis["supporting_advisor"]
+    if advisor is not None:
+        users.append(advisor.user)
+    if supporting_advisor is not None:
+        supporting_advisor.append(advisor.user)
     target = reverse('theses:selected_thesis', args=[thesis.id])
     notify_selected_users(
         users,
