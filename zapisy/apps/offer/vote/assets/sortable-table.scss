@@ -18,7 +18,7 @@ th.tablesorter-header:not(.sorter-false) {
       color: #bfbfc1;
       margin-left: 0.75rem;
 
-      @media (max-width: 32rem) {
+      @media (max-width: 768px) {
         display: none;
       }
     }
