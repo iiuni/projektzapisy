@@ -33,12 +33,6 @@ library.add(faBan);
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons/faPencilAlt";
 library.add(faPencilAlt);
 
-import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
-library.add(faCheck);
-
-import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
-library.add(faTimes);
-
 import { faSort } from "@fortawesome/free-solid-svg-icons/faSort";
 library.add(faSort);
 
