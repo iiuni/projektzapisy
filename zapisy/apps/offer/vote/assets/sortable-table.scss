@@ -1,0 +1,34 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+td:first-child {
+  width: 60%;
+}
+
+th.tablesorter-header:not(.sorter-false) {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+  }
+
+  .tablesorter-header-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .tablesorter-icon {
+      color: #bfbfc1;
+      margin-left: 0.75rem;
+
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
+    }
+  }
+
+  &:first-child .tablesorter-header-inner {
+    justify-content: flex-start;
+  }
+}
