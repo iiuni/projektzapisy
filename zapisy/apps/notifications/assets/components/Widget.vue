@@ -18,6 +18,10 @@ const notificationScheme = z.object({
   description: z.string(),
   issued_on: z.string(),
   target: z.string(),
+}).transform(parsedObject => {
+  parsedObject['issuedOn'] = parsedObject['issued_on'];
+  delete parsedObject['issued_on'];
+  return parsedObject;
 });
 
 const notificationSchemeArray = z.array(notificationScheme);
@@ -117,7 +121,7 @@ export default class NotificationsComponent extends Vue {
             <div class="toast-header">
               <strong class="me-auto"></strong>
               <small class="text-muted mx-2">{{
-                elem.issued_on | Moment
+                elem.issuedOn | Moment
               }}</small>
               <button
                 type="button"
