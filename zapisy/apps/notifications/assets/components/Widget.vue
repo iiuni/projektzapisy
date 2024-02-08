@@ -21,9 +21,12 @@ const notificationScheme = z
     target: z.string(),
   })
   .transform((parsedObject) => {
-    parsedObject["issuedOn"] = parsedObject["issued_on"];
-    delete parsedObject["issued_on"];
-    return parsedObject;
+    return {
+      id: parsedObject.id,
+      description: parsedObject.description,
+      issuedOn: parsedObject.issued_on,
+      target: parsedObject.target,
+    };
   });
 
 const notificationSchemeArray = z.array(notificationScheme);
