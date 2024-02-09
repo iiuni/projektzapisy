@@ -5344,6 +5344,7 @@ fsevents@~2.1.2:
     prettier: 2.8.8
     sass: 1.26.10
     sass-loader: 10.5.2
+    tablesorter: 2.31.3
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -5752,7 +5753,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"jquery@npm:3.7.1":
+"jquery@npm:3.7.1, jquery@npm:>=1.2.6":
   version: 3.7.1
   resolution: "jquery@npm:3.7.1"
   checksum: 5d2ea78250a8bdfa8e1232b064e11d86b1bc0c7b3e1ebbfee9ed21f1138cff606a07083709fa9d64bbbf94cdba3119b45604a078ba88e9c48fa5ae894eaf8ec6
@@ -8472,6 +8473,15 @@ resolve@^1.14.2:
   version: 1.2.0
   resolution: "symbol-observable@npm:1.2.0"
   checksum: 268834a1d4cba19d40f367e5c2755f612969c8418e43a3be17408e392802a667f8bb542893440d58a080a8ea8da05ea98e27e472b9f4ff6fbda78a21a1a41c53
+  languageName: node
+  linkType: hard
+
+"tablesorter@npm:2.31.3":
+  version: 2.31.3
+  resolution: "tablesorter@npm:2.31.3"
+  dependencies:
+    jquery: ">=1.2.6"
+  checksum: 1c0304f2976973bb8f0edffb1c46e8118dcc4fae966f55c8d7b9407a32b30b92ac8e8a984d4ec6de8af1be05799adf1f904c0bb865acd861cdf575046ee3e0e6
   languageName: node
   linkType: hard
 
