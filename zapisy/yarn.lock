@@ -9081,7 +9081,7 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"vue-multiselect@npm:^2.1.7":
+"vue-multiselect@npm:2.1.7":
   version: 2.1.7
   resolution: "vue-multiselect@npm:2.1.7"
   checksum: b5796aac46b19ac14546752df4752bab4d660326c4a7b71e6396de126fc7d8934b3487ee2862d3563d8616bb7f435357d67235825fa00b6680d3e7905f792ca9
