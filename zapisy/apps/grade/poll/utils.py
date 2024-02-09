@@ -70,7 +70,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll]) -> dict:
+def group(entries: List[Poll], sort=False) -> dict:
     """Groups a list of polls/submissions into a dictionary.
 
     The polls and submissions are combined into a dictionary of nested
@@ -80,11 +80,32 @@ def group(entries: List[Poll]) -> dict:
     handly tables in views such as the one responsible for summarizing
     the results of students' submissions.
     """
-    return {category: {subcategory: list(polls)
-                       for subcategory, polls in groupby(sorted(es, key=lambda e: e.subcategory),
-                                                         lambda e: e.subcategory)}
-            for category, es in groupby(sorted(filter(lambda e: e is not None, entries), key=lambda e: e.category),
-                                        lambda e: e.category)}
+    grouped_entries = defaultdict(list)
+    output = defaultdict(list)
+
+    for entry in entries:
+        if entry is not None:
+            category = entry.category
+            subcategory = entry.subcategory
+            if subcategory not in grouped_entries[category]:
+                if entry.semester:  # whether the entry is a general poll
+                    output[category].append(entry)
+                grouped_entries[category].append(entry)
+
+    if sort:
+        grouped_entries = sorted(grouped_entries.items())
+
+    output.update(grouped_entries)
+
+    return {category: group_by_subcategory(polls)
+            for category, polls in output.items()}
+
+
+def group_by_subcategory(polls: List[Poll]) -> Dict[str, List[Poll]]:
+    key_extractor = lambda e: e.subcategory
+    return {key: list(group)
+            for key, group in groupby(sorted(polls, key=key_extractor),
+                                      key_extractor)}
 
 
 class PollSummarizedResultsEntry:
