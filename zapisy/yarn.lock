@@ -2969,13 +2969,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87":
-  version: 1.11.2
-  resolution: "bootstrap-sortable@https://github.com/drvic10k/bootstrap-sortable.git#commit=ff650fd17cc2872f4031d355fa6382066d064e87"
-  checksum: 5d91772b8523bbb7493f1e3a43c752f34e9eb9a1138c3b75e69090c9ac2909fab93a0a07b58bbc72f5fd03e9b43411581e0bb45e8e25824e5007d96fbebdc33d
-  languageName: node
-  linkType: hard
-
 "bootstrap@npm:5.3.2":
   version: 5.3.2
   resolution: "bootstrap@npm:5.3.2"
@@ -5322,7 +5315,6 @@ fsevents@~2.1.2:
     big-integer: 1.6.52
     bootstrap: 5.3.2
     bootstrap-print-css: 1.0.1
-    bootstrap-sortable: "https://github.com/drvic10k/bootstrap-sortable.git#ff650fd17cc2872f4031d355fa6382066d064e87"
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
     cookieconsent: 3.1.1
