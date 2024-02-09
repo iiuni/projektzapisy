@@ -102,7 +102,9 @@ def group(entries: List[Poll], sort=False) -> dict:
 
 
 def group_by_subcategory(polls: List[Poll]) -> Dict[str, List[Poll]]:
-    key_extractor = lambda e: e.subcategory
+    def key_extractor(e):
+        return e.subcategory
+
     return {key: list(group)
             for key, group in groupby(sorted(polls, key=key_extractor),
                                       key_extractor)}
