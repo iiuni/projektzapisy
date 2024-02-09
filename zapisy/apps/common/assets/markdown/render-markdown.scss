@@ -6,6 +6,8 @@
 // Bootstrap.
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/images";
 
 .markdown-rendered {
   // H1 in the description must be visibly smaller than H3 outside.
@@ -17,5 +19,10 @@
   }
   h3 {
     font-size: $h5-font-size * 0.75;
+  }
+
+  // Make images responsive
+  img {
+    @extend .img-fluid;
   }
 }
