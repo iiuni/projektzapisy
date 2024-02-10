@@ -92,7 +92,6 @@ def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
                        polls)
         return set(map(lambda p: p.category, polls))
 
-
     entries = list(filter(lambda e: e is not None, entries))
 
     grouped_polls = {category: group_polls_by_key(polls,
@@ -103,7 +102,6 @@ def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
 
     ordered_categories = sorted(extract_categories(entries, is_general=True))\
                          + sorted(extract_categories(entries, is_general=False))
-
     # dict maintains the insertion order, so upon iteration the items will be
     # sorted according to the order of the categories in `ordered_categories`
     return {category: grouped_polls[category]
