@@ -73,9 +73,10 @@ def group_submissions(submissions: List[Submission]) -> dict:
 def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
     """Groups a list of polls into a dictionary of dictionaries.
 
-    The polls are grouped by their category into a dictionary of dictionaries
-    which contain grouping by subcategory of the polls within a category.
-    
+    The polls are grouped by their category into a dictionary of dictionaries,
+    and those nested dictionaries contain grouping by subcategory of the polls
+    within a category.
+
     The iteration order of keys of the returned dictionary matters - firstly,
     the categories of general polls are at the beginning, and secondly, the
     categories are sorted alphabetically.
