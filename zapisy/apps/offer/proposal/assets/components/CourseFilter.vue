@@ -135,6 +135,7 @@ export default Vue.extend({
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
+            title="Semestr"
             placeholder="Semestr"
             ref="semester-filter"
           />
