@@ -1,13 +1,13 @@
 from collections import defaultdict
 from itertools import groupby
-from typing import Dict, List
+from typing import Callable, Dict, List, Set
 
 import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
 
 from apps.enrollment.courses.models.semester import Semester
-from apps.grade.poll.models import Poll, Submission
+from apps.grade.poll.models import Poll, PollType, Submission
 from apps.users.models import Student
 
 
@@ -70,44 +70,43 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll], sort=False) -> dict:
-    """Groups a list of polls/submissions into a dictionary.
+def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
+    """Groups a list of polls into a dictionary of dictionaries.
 
-    The polls and submissions are combined into a dictionary of nested
-    categories and original entries.
-
-    This method is structuring data that allows for easy displaying
-    handly tables in views such as the one responsible for summarizing
-    the results of students' submissions.
+    The polls are grouped by their category into a dictionary of dictionaries
+    which contain grouping by subcategory of the polls within a category.
+    
+    The iteration order of keys of the returned dictionary matters - firstly,
+    the categories of general polls are at the beginning, and secondly, the
+    categories are sorted alphabetically.
     """
-    grouped_entries = defaultdict(list)
-    output = defaultdict(list)
+    def group_polls_by_key(polls: List[Poll],
+                           key_extractor: Callable[[Poll], str]) -> dict:
+        return {key: list(group)
+                for key, group in groupby(sorted(polls, key=key_extractor),
+                                          key_extractor)}
 
-    for entry in entries:
-        if entry is not None:
-            category = entry.category
-            subcategory = entry.subcategory
-            if subcategory not in grouped_entries[category]:
-                if entry.semester:  # whether the entry is a general poll
-                    output[category].append(entry)
-                grouped_entries[category].append(entry)
-
-    if sort:
-        grouped_entries = sorted(grouped_entries.items())
-
-    output.update(grouped_entries)
-
-    return {category: group_by_subcategory(polls)
-            for category, polls in output.items()}
+    def extract_categories(polls: List[Poll], is_general: bool) -> Set[str]:
+        polls = filter(lambda p: (p.type == PollType.GENERAL) == is_general,
+                       polls)
+        return set(map(lambda p: p.category, polls))
 
 
-def group_by_subcategory(polls: List[Poll]) -> Dict[str, List[Poll]]:
-    def key_extractor(e):
-        return e.subcategory
+    entries = list(filter(lambda e: e is not None, entries))
 
-    return {key: list(group)
-            for key, group in groupby(sorted(polls, key=key_extractor),
-                                      key_extractor)}
+    grouped_polls = {category: group_polls_by_key(polls,
+                                                  lambda p: p.subcategory)
+                     for category, polls
+                     in group_polls_by_key(entries,
+                                           lambda p: p.category).items()}
+
+    ordered_categories = sorted(extract_categories(entries, is_general=True))\
+                         + sorted(extract_categories(entries, is_general=False))
+
+    # dict maintains the insertion order, so upon iteration the items will be
+    # sorted according to the order of the categories in `ordered_categories`
+    return {category: grouped_polls[category]
+            for category in ordered_categories}
 
 
 class PollSummarizedResultsEntry:
