@@ -81,34 +81,25 @@ def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
     the categories of general polls are at the beginning, and secondly, the
     categories are sorted alphabetically.
     """
-    def group_polls_by_key(polls: List[Poll],
-                           key_extractor: Callable[[Poll], str]) -> dict:
-        return {key: list(group)
-                for key, group in groupby(sorted(polls, key=key_extractor),
-                                          key_extractor)}
+    def group_polls_by_key(polls: List[Poll], key_extractor: Callable[[Poll], str]) -> Dict[str, List[Poll]]:
+        return {key: list(group) for key, group in groupby(sorted(polls, key=key_extractor),
+                                                           key_extractor)}
 
     def extract_categories(polls: List[Poll], is_general: bool) -> Set[str]:
-        polls = filter(lambda p: (p.type == PollType.GENERAL) == is_general,
-                       polls)
+        polls = filter(lambda p: (p.type == PollType.GENERAL) == is_general, polls)
         return set(map(lambda p: p.category, polls))
 
     entries = list(filter(lambda e: e is not None, entries))
 
-    grouped_polls = {category: group_polls_by_key(polls,
-                                                  lambda p: p.subcategory)
-                     for category, polls
-                     in group_polls_by_key(entries,
-                                           lambda p: p.category).items()}
+    grouped_polls = {category: group_polls_by_key(polls, lambda p: p.subcategory)
+                     for category, polls in group_polls_by_key(entries, lambda p: p.category).items()}
 
-    ordered_categories = (sorted(extract_categories(entries,
-                                                    is_general=True))
-                          + sorted(extract_categories(entries,
-                                                      is_general=False)))
+    ordered_categories = (sorted(extract_categories(entries, is_general=True))
+                          + sorted(extract_categories(entries, is_general=False)))
 
     # dict maintains the insertion order, so upon iteration the items will be
     # sorted according to the order of the categories in `ordered_categories`
-    return {category: grouped_polls[category]
-            for category in ordered_categories}
+    return {category: grouped_polls[category] for category in ordered_categories}
 
 
 class PollSummarizedResultsEntry:
