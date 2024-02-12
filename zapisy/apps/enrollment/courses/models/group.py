@@ -164,7 +164,6 @@ class Group(models.Model):
 
 class GuaranteedSpotsManager(models.Manager):
     """This thin manager always pulls auth.Group names for efficiency."""
-
     def get_queryset(self):
         return super().get_queryset().select_related('role')
 
