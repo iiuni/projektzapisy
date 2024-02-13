@@ -17,3 +17,10 @@ DAYS_OF_WEEK = [(MONDAY, 'poniedziałek'),
 
 def get_day_of_week(date):
     return DAYS_OF_WEEK[date.weekday()][0]
+
+
+def get_python_day_of_week(day_of_week):
+    try:
+        return [x[0] for x in DAYS_OF_WEEK].index(day_of_week)
+    except ValueError:
+        return None

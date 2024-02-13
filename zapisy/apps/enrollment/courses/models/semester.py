@@ -9,7 +9,6 @@ from django.db import models
 from apps.common import days_of_week
 
 from .specialdays import ChangedDay, Freeday
-from .term import Term
 
 
 class Semester(models.Model):
@@ -131,7 +130,7 @@ class Semester(models.Model):
         date = self.lectures_beginning
         if start_date:
             date = start_date
-        python_weekday = Term.get_python_day_of_week(day_of_week)
+        python_weekday = days_of_week.get_python_day_of_week(day_of_week)
 
         # ensure first date in while loop is a candidate
         if date.weekday() < python_weekday:
