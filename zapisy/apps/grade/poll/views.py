@@ -250,7 +250,6 @@ class PollResults(TemplateView):
                     'is_grade_active': is_grade_active,
                     'polls': group_polls(available_polls),
                     'results': self.__get_processed_results(submissions),
-                    'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
                     'current_poll_id': poll_id,
