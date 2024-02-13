@@ -86,8 +86,7 @@ def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
                                                            key_extractor)}
 
     def extract_categories(polls: List[Poll], is_general: bool) -> Set[str]:
-        polls = filter(lambda p: (p.type == PollType.GENERAL) == is_general, polls)
-        return set(map(lambda p: p.category, polls))
+        return {p.category for p in polls if (p.type == PollType.GENERAL) == is_general}
 
     entries = list(filter(lambda e: e is not None, entries))
 
