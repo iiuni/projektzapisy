@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import groupby
-from typing import Callable, Dict, List, Set
+from typing import Callable, Dict, List
 
 import bokeh.embed
 import bokeh.models.sources
@@ -70,7 +70,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
+def group_polls(polls: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
     """Groups a list of polls into a dictionary of dictionaries.
 
     The polls are grouped by their category into a dictionary of dictionaries,
@@ -85,16 +85,15 @@ def group_polls(entries: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
         return {key: list(group) for key, group in groupby(sorted(polls, key=key_extractor),
                                                            key_extractor)}
 
-    def extract_categories(polls: List[Poll], is_general: bool) -> Set[str]:
-        return {p.category for p in polls if (p.type == PollType.GENERAL) == is_general}
-
-    entries = list(filter(lambda e: e is not None, entries))
+    polls = [p for p in polls if p is not None]
 
     grouped_polls = {category: group_polls_by_key(polls, lambda p: p.subcategory)
-                     for category, polls in group_polls_by_key(entries, lambda p: p.category).items()}
+                     for category, polls in group_polls_by_key(polls, lambda p: p.category).items()}
 
-    ordered_categories = (sorted(extract_categories(entries, is_general=True))
-                          + sorted(extract_categories(entries, is_general=False)))
+    # for sorting purpose, the polls are mapped to tuples in the form of (is_not_general, category)
+    # those tuples are sorted lexicographically: the goal is to put the categories of the general
+    # polls at the beginning, and that assured sort categeries alphabetically
+    ordered_categories = [category for _, category in sorted([(p.type != PollType.GENERAL, p.category) for p in polls])]
 
     # dict maintains the insertion order, so upon iteration the items will be
     # sorted according to the order of the categories in `ordered_categories`
