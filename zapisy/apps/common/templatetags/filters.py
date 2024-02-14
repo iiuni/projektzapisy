@@ -1,5 +1,3 @@
-import json
-
 from django import template
 from django.utils import html, safestring
 from webpack_loader import utils as webpack_utils
@@ -36,11 +34,6 @@ def minimum(first, second):
     if isinstance(first, str):
         first = type(second)(first)
     return min(first, second)
-
-
-@register.filter
-def to_json(dictionary: dict) -> str:
-    return json.dumps(dictionary)
 
 
 @register.simple_tag(name='markdown', takes_context=True)

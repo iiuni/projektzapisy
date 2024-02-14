@@ -136,7 +136,7 @@ class Poll(models.Model):
         """
         return self.__str__()
 
-    def serialize_for_signing_protocol(self) -> dict:
+    def to_dict(self) -> dict:
         """Serializes the Poll to the format accepted by TicketCreate.
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
@@ -144,16 +144,6 @@ class Poll(models.Model):
         result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
 
         return result
-
-    def to_dict(self, number_of_submissions=0, is_own=True, href=""):
-        return {
-            'id': self.pk,
-            'category': self.category,
-            'subcategory': self.subcategory,
-            'number_of_submissions': number_of_submissions,
-            'is_own': is_own,
-            'href': href
-        }
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
         """Checks whether the student is allowed to participate in this Poll.

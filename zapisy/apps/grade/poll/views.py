@@ -1,6 +1,5 @@
 import itertools
 import json
-import logging
 from collections import defaultdict
 from operator import attrgetter
 from typing import List
@@ -15,8 +14,6 @@ from apps.grade.poll.models import Poll, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
                                    group)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
-
-LOGGER = logging.getLogger(__name__)
 
 
 class TicketsEntry(TemplateView):

@@ -70,13 +70,12 @@
         {% if semester.id == selected_semester.id  %}selected{% endif %}>{{ semester }}</option>
       {% endfor %}
     </select>
-    <div class="accordion" id="course-sections" 
-      data-polls="{{ polls | to_json }}" 
-      data-submissions-count="{{ submissions_count | to_json }}" 
-      data-current-poll="{{ current_poll | to_json }}" 
-      data-selected-semester-id="{{ selected_semester.id }}" 
-      data-is-superuser="{{ is_superuser | to_json }}">
-    </div>
+    <div class="accordion" id="course-sections"></div>
+    {{ polls|json_script:"data-polls" }}
+    {{ submissions_count|json_script:"data-submissions-count" }}
+    {{ current_poll|json_script:"data-current-poll" }}
+    {{ selected_semester.id|json_script:"data-selected-semester-id" }}
+    {{ is_superuser|json_script:"data-is-superuser" }}
     {% render_bundle 'poll-grade-poll-list' %}
   </div>
 </div>

@@ -37,7 +37,7 @@
       </div>
       <div
         class="border-top collapse list-group list-group-flush"
-        :class="{ show: currentPoll && currentPoll.category === group_name }"
+        :class="{ show: currentPoll && currentPoll.type === group_name }"
         :id="'course-section-' + index"
         :aria-labelledby="'course-section-' + index + '-heading'"
       >
@@ -49,7 +49,7 @@
           :class="{ active: currentPoll && entry.id === currentPoll.id }"
         >
           <div class="d-flex w-100 justify-content-between">
-            <span>{{ entry.subcategory }}</span>
+            <span>{{ entry.name }}</span>
             <span class="text-right text-nowrap">{{
               entry.number_of_submissions
             }}</span>
@@ -68,8 +68,8 @@ import { defineComponent, ref } from "vue";
 
 interface Poll {
   id: string;
-  category: string;
-  subcategory: string;
+  type: string;
+  name: string;
   number_of_submissions: number;
   is_own: boolean;
 }

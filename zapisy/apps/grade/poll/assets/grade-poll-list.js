@@ -9,15 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
     render: (h) =>
       h(GradePollList, {
         props: {
-          polls: JSON.parse(courseSectionsElement.dataset.polls),
+          polls: JSON.parse(document.getElementById("data-polls").innerHTML),
           submissionsCount: JSON.parse(
-            courseSectionsElement.dataset.submissionsCount
+            document.getElementById("data-submissions-count").innerHTML
           ),
-          currentPoll: JSON.parse(courseSectionsElement.dataset.currentPoll),
+          currentPoll: JSON.parse(
+            document.getElementById("data-current-poll").innerHTML
+          ),
           selectedSemesterId: JSON.parse(
-            courseSectionsElement.dataset.selectedSemesterId
+            document.getElementById("data-selected-semester-id").innerHTML
           ),
-          isSuperuser: JSON.parse(courseSectionsElement.dataset.isSuperuser),
+          isSuperuser: JSON.parse(
+            document.getElementById("data-is-superuser").innerHTML
+          ),
         },
       }),
   });
