@@ -21,11 +21,6 @@
 
 {% block enrollment_menu_courses %} class="active"{% endblock %}
 
-{% block top-content %}
-    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
-    <div id="course-filter"></div>
-{% endblock top-content %}
-
 {% block content %}
     {% if course %}
         {% include "courses/course_info.html" with course=course %}
