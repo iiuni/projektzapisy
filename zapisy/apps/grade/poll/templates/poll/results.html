@@ -24,8 +24,8 @@
     {% endif %}
     {% if current_poll %}
     <div class="mb-3">
-      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}</span></h3>
-      <h5>Kategoria: <span class="text-secondary">{{ current_poll.category }}</span></h5>
+      <h3>Podsumowanie: <span class="text-info">{{ current_poll.name }}</span></h3>
+      <h5>Kategoria: <span class="text-secondary">{{ current_poll.type }}</span></h5>
     </div>
     {% endif %}
     {% if results %}

@@ -18,25 +18,26 @@
     <div
       v-for="(entries, group_name, index) in currentList"
       :key="group_name"
-      class="card"
+      class="accordion-item"
     >
-      <div
-        class="card-header"
+      <button
+        class="accordion-button collapsed border-top"
+        style="cursor: pointer"
         :id="'course-section-' + index + '-heading'"
-        data-toggle="collapse"
-        :data-target="'#course-section-' + index"
+        data-bs-toggle="collapse"
+        :data-bs-target="'#course-section-' + index"
         aria-expanded="false"
         :aria-controls="'course-section-' + index"
       >
-        <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex w-100 justify-content-between me-1">
           <span>{{ group_name }}</span>
-          <span class="text-right text-nowrap">{{
+          <span class="text-end text-nowrap align-self-center">{{
             submissionsCount[group_name] || 0
           }}</span>
         </div>
-      </div>
+      </button>
       <div
-        class="border-top collapse list-group list-group-flush"
+        class="collapse list-group list-group-flush"
         :class="{ show: currentPoll && currentPoll.type === group_name }"
         :id="'course-section-' + index"
         :aria-labelledby="'course-section-' + index + '-heading'"
