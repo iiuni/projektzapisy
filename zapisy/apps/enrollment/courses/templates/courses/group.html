@@ -30,7 +30,10 @@
 {% block content %}
     <header class="d-flex justify-content-between align-items-center">
         <div>
-            <h1>{{ group.course }}</h1>
+            <h1 class="d-inline-block">
+                {{ group.course.name }}
+                <small class="text-muted">{{ group.course.semester.get_short_name }}</small>
+            </h1>
             <h4>{{group.get_type_display}}:
                     {% if group.teacher %}
                         <a href="{% url 'employee-profile' group.teacher.user_id %}"
