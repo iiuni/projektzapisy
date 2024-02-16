@@ -42,12 +42,12 @@ export default defineComponent({
           if (key == "Ankiety ogólne") {
             filteredCourses[key] = category;
           } else {
-            let filteredSubcategory = category.filter(
+            let filteredCategory = category.filter(
               (poll: Poll) => poll.is_own === true
             );
 
-            if (filteredSubcategory.length > 0) {
-              filteredCourses[key] = filteredSubcategory;
+            if (filteredCategory.length > 0) {
+              filteredCourses[key] = filteredCategory;
             }
           }
         });
