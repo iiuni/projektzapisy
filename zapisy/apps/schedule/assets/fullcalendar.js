@@ -16,10 +16,10 @@ async function fetchEvents(fetchInfo) {
   return response.json();
 }
 
-// Fetches freedays from the url provided in classroom.html template.
+// Fetches days from the url provided in classroom.html template.
 
-async function fetchFreedays(start, end) {
-  const url = new URL(window.freedays, window.location.origin);
+async function fetchDaysFromEndpoint(endpoint, start, end) {
+  const url = new URL(endpoint, window.location.origin);
   url.search = new URLSearchParams({
     start: start.toISOString(),
     end: end.toISOString(),
@@ -28,67 +28,20 @@ async function fetchFreedays(start, end) {
   return response.json();
 }
 
-// Fetches changed days from the url provided in classroom.html template.
+// Sets apropriate css classes for given dates
 
-async function fetchChangeddays(start, end) {
-  const url = new URL(window.changeddays, window.location.origin);
-  url.search = new URLSearchParams({
-    start: start.toISOString(),
-    end: end.toISOString(),
-  });
-  const response = await fetch(url);
-  return response.json();
-}
-
-// Sets apropriate css classes for freedays
-
-async function handleFreedays(start, end) {
-  const freeDates = await fetchFreedays(start, end);
-  if (freeDates.length !== 0) {
+async function handleDaysFromEndpoint(dates, className, title, messageForDay) {
+  if (dates.length !== 0) {
     const days = document.querySelectorAll(
       ".fc-daygrid-day, .fc-col-header-cell"
     );
     for (const day of days) {
-      const index = freeDates.findIndex(
+      const index = dates.findIndex(
         (e) => e.day === day.getAttribute("data-date")
       );
       if (index > -1) {
-        day.classList.add("free-day");
-        day.setAttribute("title", "W tym dniu nie odbywają się zajęcia");
-      }
-    }
-  }
-}
-
-// Sets apropriate css classes for changed days
-
-async function handleChangeddays(start, end) {
-  const changeDatesMapping = [
-    "poniedziałkowe",
-    "wtorkowe",
-    "środowe",
-    "czwartkowe",
-    "piątkowe",
-    "sobotnie",
-    "niedzielne",
-  ];
-  const changeDates = await fetchChangeddays(start, end);
-  if (changeDates.length !== 0) {
-    const days = document.querySelectorAll(
-      ".fc-col-header-cell, .fc-daygrid-day"
-    );
-    for (const day of days) {
-      const index = changeDates.findIndex(
-        (e) => e.day === day.getAttribute("data-date")
-      );
-      if (index > -1) {
-        day.classList.add("change-day");
-        day.setAttribute(
-          "title",
-          "W tym dniu odbywają się " +
-            changeDatesMapping[changeDates[index].weekday - 1] +
-            " zajęcia"
-        );
+        day.classList.add(className);
+        day.setAttribute("title", title + messageForDay(index));
       }
     }
   }
@@ -101,8 +54,37 @@ document.addEventListener("DOMContentLoaded", function () {
     plugins: [dayGridPlugin, timeGridPlugin, bootstrap5Plugin],
 
     datesSet: async function (dateInfo) {
-      handleFreedays(dateInfo.start, dateInfo.end);
-      handleChangeddays(dateInfo.start, dateInfo.end);
+      const changedDatesMapping = [
+        "poniedziałkowe",
+        "wtorkowe",
+        "środowe",
+        "czwartkowe",
+        "piątkowe",
+        "sobotnie",
+        "niedzielne",
+      ];
+      const freeDates = await fetchDaysFromEndpoint(
+        window.freedays,
+        dateInfo.start,
+        dateInfo.end
+      );
+      const changedDates = await fetchDaysFromEndpoint(
+        window.changeddays,
+        dateInfo.start,
+        dateInfo.end
+      );
+      handleDaysFromEndpoint(
+        freeDates,
+        "free-day",
+        "W tym dniu nie odbywają się zajęcia",
+        (x) => ""
+      );
+      handleDaysFromEndpoint(
+        changedDates,
+        "change-day",
+        "W tym dniu odbywają się zajęcia ",
+        (x) => changedDatesMapping[changedDates[x].weekday - 1]
+      );
     },
 
     themeSystem: "bootstrap5",
