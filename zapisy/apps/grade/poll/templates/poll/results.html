@@ -63,7 +63,7 @@
 
   </div>
   <div class="col-lg-4 col-12">
-    <select class="form-control mb-3"
+    <select class="form-select mb-3"
       onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
       {% for semester in semesters %}
       <option value="{% url 'grade-poll-results' semester_id=semester.id %}"
@@ -74,7 +74,6 @@
     {{ polls|json_script:"data-polls" }}
     {{ submissions_count|json_script:"data-submissions-count" }}
     {{ current_poll|json_script:"data-current-poll" }}
-    {{ selected_semester.id|json_script:"data-selected-semester-id" }}
     {{ is_superuser|json_script:"data-is-superuser" }}
     {% render_bundle 'poll-grade-poll-list' %}
   </div>

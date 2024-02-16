@@ -1,69 +1,3 @@
-<template>
-  <div class="accordion" id="course-sections">
-    <div
-      v-if="isSuperuser"
-      style="display: flex; align-items: center"
-      class="mb-3"
-    >
-      <label style="display: flex; align-items: center">
-        <input
-          type="checkbox"
-          v-model="showOnlyMyCourses"
-          @change="updateCurrentList"
-          style="margin-right: 10px"
-        />
-        Pokaż tylko ankiety dotyczące moich grup i przedmiotów
-      </label>
-    </div>
-    <div
-      v-for="(entries, group_name, index) in currentList"
-      :key="group_name"
-      class="accordion-item"
-    >
-      <button
-        class="accordion-button collapsed border-top"
-        style="cursor: pointer"
-        :id="'course-section-' + index + '-heading'"
-        data-bs-toggle="collapse"
-        :data-bs-target="'#course-section-' + index"
-        aria-expanded="false"
-        :aria-controls="'course-section-' + index"
-      >
-        <div class="d-flex w-100 justify-content-between me-1">
-          <span>{{ group_name }}</span>
-          <span class="text-end text-nowrap align-self-center">{{
-            submissionsCount[group_name] || 0
-          }}</span>
-        </div>
-      </button>
-      <div
-        class="collapse list-group list-group-flush"
-        :class="{ show: currentPoll && currentPoll.type === group_name }"
-        :id="'course-section-' + index"
-        :aria-labelledby="'course-section-' + index + '-heading'"
-      >
-        <a
-          v-for="entry in entries"
-          :key="entry.id"
-          :href="entry.href"
-          class="list-group-item list-group-item-action"
-          :class="{ active: currentPoll && entry.id === currentPoll.id }"
-        >
-          <div class="d-flex w-100 justify-content-between">
-            <span>{{ entry.name }}</span>
-            <span class="text-right text-nowrap">{{
-              entry.number_of_submissions
-            }}</span>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div v-if="Object.keys(currentList).length === 0" class="alert alert-info">
-      Brak przesłanych ankiet w wybranym semestrze.
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
@@ -89,10 +23,6 @@ export default defineComponent({
       type: Object as () => Poll | null,
       default: null,
     },
-    selectedSemesterId: {
-      type: Number,
-      required: true,
-    },
     isSuperuser: {
       type: Boolean,
       required: true,
@@ -108,16 +38,16 @@ export default defineComponent({
         let filteredCourses: Record<string, Poll[]> = {};
 
         Object.keys(fullList.value).forEach((key) => {
-          let array = fullList.value[key];
+          let category = fullList.value[key];
           if (key == "Ankiety ogólne") {
-            filteredCourses[key] = array;
+            filteredCourses[key] = category;
           } else {
-            let filteredArray = array.filter(
+            let filteredSubcategory = category.filter(
               (poll: Poll) => poll.is_own === true
             );
 
-            if (filteredArray.length > 0) {
-              filteredCourses[key] = filteredArray;
+            if (filteredSubcategory.length > 0) {
+              filteredCourses[key] = filteredSubcategory;
             }
           }
         });
@@ -127,7 +57,6 @@ export default defineComponent({
       }
     };
 
-    console.dir(fullList);
     return {
       fullList,
       currentList,
@@ -137,3 +66,74 @@ export default defineComponent({
   },
 });
 </script>
+
+<template>
+  <div>
+    <div
+      v-if="isSuperuser"
+      style="display: flex; align-items: center"
+      class="mb-3"
+    >
+      <label style="display: flex; align-items: center">
+        <input
+          type="checkbox"
+          v-model="showOnlyMyCourses"
+          @change="updateCurrentList"
+          style="margin-right: 10px"
+        />
+        Pokaż tylko ankiety dotyczące moich grup i przedmiotów
+      </label>
+    </div>
+    <div class="accordion" id="course-sections">
+      <div
+        v-for="(entries, group_name, index) in currentList"
+        :key="group_name"
+        class="accordion-item"
+      >
+        <button
+          class="accordion-button collapsed"
+          style="cursor: pointer"
+          :id="'course-section-' + index + '-heading'"
+          data-bs-toggle="collapse"
+          :data-bs-target="'#course-section-' + index"
+          aria-expanded="false"
+          :aria-controls="'course-section-' + index"
+        >
+          <div class="d-flex w-100 justify-content-between me-1">
+            <span>{{ group_name }}</span>
+            <span class="text-end text-nowrap align-self-center">{{
+              submissionsCount[group_name] || 0
+            }}</span>
+          </div>
+        </button>
+        <div
+          class="border-top collapse list-group list-group-flush"
+          :class="{ show: currentPoll && currentPoll.type === group_name }"
+          :id="'course-section-' + index"
+          :aria-labelledby="'course-section-' + index + '-heading'"
+        >
+          <a
+            v-for="entry in entries"
+            :key="entry.id"
+            :href="entry.href"
+            class="list-group-item list-group-item-action"
+            :class="{ active: currentPoll && entry.id === currentPoll.id }"
+          >
+            <div class="d-flex w-100 justify-content-between">
+              <span>{{ entry.name }}</span>
+              <span class="text-right text-nowrap">{{
+                entry.number_of_submissions
+              }}</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div
+        v-if="Object.keys(currentList).length === 0"
+        class="alert alert-info"
+      >
+        Brak przesłanych ankiet w wybranym semestrze.
+      </div>
+    </div>
+  </div>
+</template>

@@ -3,7 +3,6 @@ import Vue from "vue";
 import GradePollList from "./components/GradePollList.vue";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const courseSectionsElement = document.getElementById("course-sections");
   new Vue({
     el: "#course-sections",
     render: (h) =>
@@ -15,9 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
           ),
           currentPoll: JSON.parse(
             document.getElementById("data-current-poll").innerHTML
-          ),
-          selectedSemesterId: JSON.parse(
-            document.getElementById("data-selected-semester-id").innerHTML
           ),
           isSuperuser: JSON.parse(
             document.getElementById("data-is-superuser").innerHTML

@@ -99,7 +99,6 @@ def group(entries: List[Poll], employee: Employee, sort: bool, semester_id: int)
                 'href': href})
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
-                    entrydict[is_own] = True
                     output[category].append(entrydict)
                 grouped_entries[category].append(entrydict)
 
