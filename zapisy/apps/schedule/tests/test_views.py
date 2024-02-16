@@ -30,7 +30,7 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         formatted_start = self.monday.strftime(self.output_date_format)
         formatted_end = self.friday.strftime(self.output_date_format)
 
-        response = client.get('/freeday/', {
+        response = client.get('/freedays/', {
             'start': formatted_start,
             'end': formatted_end
         })
@@ -46,7 +46,7 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         formatted_start = self.friday.strftime(self.output_date_format)
         formatted_end = self.friday.strftime(self.output_date_format)
 
-        response = client.get('/freeday/', {
+        response = client.get('/freedays/', {
             'start': formatted_start,
             'end': formatted_end
         })
@@ -60,7 +60,7 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         formatted_start = self.monday.strftime(self.output_date_format)
         formatted_end = self.friday.strftime(self.output_date_format)
 
-        response = client.get('/changeday/', {
+        response = client.get('/changeddays/', {
             'start': formatted_start,
             'end': formatted_end
         })
@@ -78,7 +78,7 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         formatted_start = self.friday.strftime(self.output_date_format)
         formatted_end = self.friday.strftime(self.output_date_format)
 
-        response = client.get('/changeday/', {
+        response = client.get('/changeddays/', {
             'start': formatted_start,
             'end': formatted_end
         })

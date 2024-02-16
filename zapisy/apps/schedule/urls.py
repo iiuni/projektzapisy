@@ -27,6 +27,6 @@ urlpatterns = [
     path('session/', views.session, name='session'),
     path('session/feed/', feeds.LatestExams(), name='session_feed'),
     path('events/report/', views.events_report, name='events_report'),
-    path('freeday/', views.FreedayAPIView.as_view(), name='freeday'),
-    path('changeday/', views.ChangedDayAPIView.as_view(), name='changeday'),
+    path('freedays/', views.FreedayAPIView.as_view(), name='freedays'),
+    path('changeddays/', views.ChangedDayAPIView.as_view(), name='changeddays'),
 ]
