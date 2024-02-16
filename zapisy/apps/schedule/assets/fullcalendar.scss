@@ -8,7 +8,7 @@
   .free-day,
   .change-day {
     background-clip: padding-box;
-    a {
+    .fc-col-header-cell-cushion, .fc-daygrid-day-number{
       text-decoration: underline;
       text-decoration-style: dotted;
     }
