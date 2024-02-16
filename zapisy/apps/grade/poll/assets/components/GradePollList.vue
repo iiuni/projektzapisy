@@ -12,7 +12,7 @@
           @change="updateCurrentList"
           style="margin-right: 10px"
         />
-        Pokaż tylko ankiety dotyczące moich grup i przedmiotów:
+        Pokaż tylko ankiety dotyczące moich grup i przedmiotów
       </label>
     </div>
     <div
