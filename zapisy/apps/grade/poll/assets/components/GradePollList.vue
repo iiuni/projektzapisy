@@ -121,7 +121,7 @@ export default defineComponent({
           >
             <div class="d-flex w-100 justify-content-between">
               <span>{{ entry.name }}</span>
-              <span class="text-right text-nowrap">{{
+              <span class="text-end text-nowrap">{{
                 entry.number_of_submissions
               }}</span>
             </div>
