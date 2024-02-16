@@ -8,12 +8,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from rest_framework import generics, serializers
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
@@ -338,39 +337,38 @@ class EventsTermsAjaxView(FullCalendarView):
         return queryset
 
 
-class FreedayAPIView(generics.ListAPIView):
-    class OutputSerializer(serializers.Serializer):
-        day = serializers.CharField()
+def freedays(request):
+    freedays = Freeday.objects.all()
+    try:
+        start = request.GET['start']
+        end = request.GET['end']
+    except Exception:
+        raise Http404
+    input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
+    output_date_format = "%Y-%m-%d"
+    start = datetime.datetime.strptime(start, input_date_format)
+    end = datetime.datetime.strptime(end, input_date_format)
+    formatted_start = start.strftime(output_date_format)
+    formatted_end = end.strftime(output_date_format)
+    response = freedays.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    return JsonResponse(list(response), safe=False)
 
-    queryset = Freeday.objects.all()
-    serializer_class = OutputSerializer
 
-    def get_queryset(self):
-        input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
-        output_date_format = "%Y-%m-%d"
-        start = datetime.datetime.strptime(self.request.query_params.get('start'), input_date_format)
-        end = datetime.datetime.strptime(self.request.query_params.get('end'), input_date_format)
-        formatted_start = start.strftime(output_date_format)
-        formatted_end = end.strftime(output_date_format)
-        return super().get_queryset().filter(day__gte=formatted_start, day__lte=formatted_end)
-
-
-class ChangedDayAPIView(generics.ListAPIView):
-    class OutputSerializer(serializers.Serializer):
-        day = serializers.CharField()
-        weekday = serializers.CharField()
-
-    queryset = ChangedDay.objects.all()
-    serializer_class = OutputSerializer
-
-    def get_queryset(self):
-        input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
-        output_date_format = "%Y-%m-%d"
-        start = datetime.datetime.strptime(self.request.query_params.get('start'), input_date_format)
-        end = datetime.datetime.strptime(self.request.query_params.get('end'), input_date_format)
-        formatted_start = start.strftime(output_date_format)
-        formatted_end = end.strftime(output_date_format)
-        return super().get_queryset().filter(day__gte=formatted_start, day__lte=formatted_end)
+def changed_days(request):
+    changed_days = ChangedDay.objects.all()
+    try:
+        start = request.GET['start']
+        end = request.GET['end']
+    except Exception:
+        raise Http404
+    input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
+    output_date_format = "%Y-%m-%d"
+    start = datetime.datetime.strptime(start, input_date_format)
+    end = datetime.datetime.strptime(end, input_date_format)
+    formatted_start = start.strftime(output_date_format)
+    formatted_end = end.strftime(output_date_format)
+    response = changed_days.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    return JsonResponse(list(response), safe=False)
 
 
 @login_required

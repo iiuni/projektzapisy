@@ -19,10 +19,10 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         self.thursday = datetime.datetime.strptime('2024-02-08', self.input_date_format)
         self.friday = datetime.datetime.strptime('2024-02-09', self.input_date_format)
 
-        enrollment_factories.ChangedDayForFridayFactory(day=self.wednesday)
-        enrollment_factories.ChangedDayForFridayFactory(day=self.thursday)
-        enrollment_factories.FreedayFactory(day=self.monday)
-        enrollment_factories.FreedayFactory(day=self.tuesday)
+        self.changed_day1 = enrollment_factories.ChangedDayForFridayFactory(day=self.wednesday)
+        self.changed_day2 = enrollment_factories.ChangedDayForFridayFactory(day=self.thursday)
+        self.freeday1 = enrollment_factories.FreedayFactory(day=self.monday)
+        self.freeday2 = enrollment_factories.FreedayFactory(day=self.tuesday)
 
     def test_freeday_endpoint(self):
         client = APIClient()
@@ -36,9 +36,9 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['day'], self.monday.strftime(self.input_date_format))
-        self.assertEqual(response.data[1]['day'], self.tuesday.strftime(self.input_date_format))
+        self.assertJSONEqual(response.content, [
+            {"id": self.freeday1.id, "day": "2024-02-05"},
+            {"id": self.freeday2.id, "day": "2024-02-06"}])
 
     def test_freeday_endpoint_empty_response(self):
         client = APIClient()
@@ -52,9 +52,20 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertJSONEqual(response.content, [])
 
-    def test_changeday_endpoint(self):
+    def test_freeday_endpoint_missing_params_returns_404(self):
+        client = APIClient()
+        client.force_authenticate(user=self.staff_member)
+        formatted_start = self.friday.strftime(self.output_date_format)
+
+        response = client.get('/freedays/', {
+            'start': formatted_start
+        })
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_changeddays_endpoint(self):
         client = APIClient()
         client.force_authenticate(user=self.staff_member)
         formatted_start = self.monday.strftime(self.output_date_format)
@@ -66,13 +77,12 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]['day'], self.wednesday.strftime(self.input_date_format))
-        self.assertEqual(response.data[1]['day'], self.thursday.strftime(self.input_date_format))
-        self.assertEqual(response.data[0]['weekday'], '5')
-        self.assertEqual(response.data[1]['weekday'], '5')
+        self.assertJSONEqual(response.content, [
+            {"id": self.changed_day1.id, "day": "2024-02-07", "weekday": self.changed_day1.weekday},
+            {"id": self.changed_day2.id, "day": "2024-02-08", "weekday": self.changed_day2.weekday}
+            ])
 
-    def test_changeday_endpoint_empty_response(self):
+    def test_changeddays_endpoint_empty_response(self):
         client = APIClient()
         client.force_authenticate(user=self.staff_member)
         formatted_start = self.friday.strftime(self.output_date_format)
@@ -84,4 +94,15 @@ class ChangedDayFreedayEndpointTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertJSONEqual(response.content, [])
+
+    def test_changeddays_endpoint_missing_params_returns_404(self):
+        client = APIClient()
+        client.force_authenticate(user=self.staff_member)
+        formatted_start = self.friday.strftime(self.output_date_format)
+
+        response = client.get('/changeddays/', {
+            'start': formatted_start
+        })
+
+        self.assertEqual(response.status_code, 404)

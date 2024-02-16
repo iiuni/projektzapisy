@@ -30,7 +30,7 @@
     <script>
         window.eventsURL = "{% url 'events:events_ajax' %}";
         window.freedays = "{% url 'events:freedays' %}";
-        window.changedays = "{% url 'events:changeddays' %}";
+        window.changeddays = "{% url 'events:changeddays' %}";
     </script>
     {% render_bundle 'schedule-fullcalendar' %}
 {% endblock %}

@@ -30,8 +30,8 @@ async function fetchFreedays(start, end) {
 
 // Fetches changed days from the url provided in classroom.html template.
 
-async function fetchChangedays(start, end) {
-  const url = new URL(window.changedays, window.location.origin);
+async function fetchChangeddays(start, end) {
+  const url = new URL(window.changeddays, window.location.origin);
   url.search = new URLSearchParams({
     start: start.toISOString(),
     end: end.toISOString(),
@@ -62,7 +62,7 @@ async function handleFreedays(start, end) {
 
 // Sets apropriate css classes for changed days
 
-async function handleChangedays(start, end) {
+async function handleChangeddays(start, end) {
   const changeDatesMapping = [
     "poniedziałkowe",
     "wtorkowe",
@@ -72,7 +72,7 @@ async function handleChangedays(start, end) {
     "sobotnie",
     "niedzielne",
   ];
-  const changeDates = await fetchChangedays(start, end);
+  const changeDates = await fetchChangeddays(start, end);
   if (changeDates.length !== 0) {
     const days = document.querySelectorAll(
       ".fc-col-header-cell, .fc-daygrid-day"
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     datesSet: async function (dateInfo) {
       handleFreedays(dateInfo.start, dateInfo.end);
-      handleChangedays(dateInfo.start, dateInfo.end);
+      handleChangeddays(dateInfo.start, dateInfo.end);
     },
 
     themeSystem: "bootstrap5",
