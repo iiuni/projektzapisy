@@ -338,6 +338,11 @@ class EventsTermsAjaxView(FullCalendarView):
 
 
 def freedays(request):
+    """Returns list of freedays between 'start' and 'end' dates.
+
+    Both dates has to be given in 'input_date_format'. Date is returned in 'output_date_format'.
+    Returns 404 if one or both paramas are missing.
+    """
     freedays = Freeday.objects.all()
     try:
         start = request.GET['start']
@@ -355,6 +360,11 @@ def freedays(request):
 
 
 def changed_days(request):
+    """Returns list of changed days between 'start' and 'end' dates.
+
+    Both dates has to be given in 'input_date_format'. Date is returned in 'output_date_format'.
+    Returns 404 if one or both paramas are missing.
+    """
     changed_days = ChangedDay.objects.all()
     try:
         start = request.GET['start']
