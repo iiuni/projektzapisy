@@ -28,3 +28,6 @@ class ThesisVote(models.IntegerChoices):
     NONE = 1, "brak głosu"
     REJECTED = 2, "odrzucona"
     ACCEPTED = 3, "zaakceptowana"
+
+
+SIGNIFICANT_FIELDS = ['title', 'supporting_advisor', 'kind', 'max_number_of_students', 'description']

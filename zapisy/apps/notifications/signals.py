@@ -12,7 +12,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated, thesis_accepted)
+                                               thesis_voting_activated, thesis_accepted, thesis_changed)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -192,5 +192,21 @@ def notify_students_and_advisors_that_thesis_has_been_accepted(sender: Vote, **k
         users,
         Notification(get_id(), get_time(),
                      NotificationType.THESIS_HAS_BEEN_ACCEPTED, {
+            'title': thesis.title
+        }, target))
+
+
+
+@receiver(thesis_changed, sender=Thesis)
+def notify_thesis_changed(sender: Thesis, **kwargs) -> None:
+    thesis: Thesis = kwargs['instance']
+    already_voted = [v.owner for v in thesis.thesis_votes.all() if v.vote != ThesisVote.NONE]
+    users = [voter.user for voter in already_voted]
+    target = reverse('theses:selected_thesis', args=[thesis.id])
+
+    notify_selected_users(
+        users,
+        Notification(get_id(), get_time(),
+                     NotificationType.THESIS_CHANGED, {
             'title': thesis.title
         }, target))

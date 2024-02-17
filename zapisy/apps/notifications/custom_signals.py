@@ -19,3 +19,6 @@ thesis_voting_activated = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
 thesis_accepted = django.dispatch.Signal()
+# Signal senders must provide an argument:
+#   instance: apps.theses.models.Thesis
+thesis_changed = django.dispatch.Signal()
