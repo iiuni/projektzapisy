@@ -239,27 +239,22 @@ def create_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None
                                            visible=True,
                                            status=Event.STATUS_ACCEPTED,
                                            author=course_term.group.teacher.user)
-    if course_term.pk:
-        if room_pk_set:
-            rooms = Classroom.objects.filter(pk__in=room_pk_set)
-        else:
-            rooms = course_term.classrooms.all()
-    else:
-        rooms = None
+
+    rooms = []
+    if course_term.pk and room_pk_set:
+        rooms = Classroom.objects.filter(pk__in=room_pk_set)
+    elif course_term.pk and not room_pk_set:
+        rooms = course_term.classrooms.all()
+    if not rooms:
+        rooms = [None]
+
     for day in dates:
-        if rooms:
-            for room in rooms:
-                Term.objects.create(event=event,
-                                    day=day,
-                                    start=course_term.start_time,
-                                    end=course_term.end_time,
-                                    room=room)
-        else:
+        for room in rooms:
             Term.objects.create(event=event,
                                 day=day,
                                 start=course_term.start_time,
                                 end=course_term.end_time,
-                                room=None)
+                                room=room)
 
 
 @receiver(models.signals.pre_delete, sender=CourseTerm)
