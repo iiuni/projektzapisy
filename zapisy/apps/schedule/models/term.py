@@ -212,6 +212,7 @@ class Term(models.Model):
 
 
 def get_terms(course_term: CourseTerm):
+    """Retrieves Terms corresponding to a CourseTerm."""
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     matching_terms = Term.objects.filter(event__group=course_term.group,
                                          day__in=dates,
@@ -221,7 +222,7 @@ def get_terms(course_term: CourseTerm):
 
 
 def delete_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None):
-    """Deletes all Terms corresponding to a CourseTerm."""
+    """Deletes Terms corresponding to a CourseTerm and (optionally) a set of rooms."""
     matching_terms = get_terms(course_term)
     if room_pk_set:
         matching_terms = matching_terms.filter(room__pk__in=room_pk_set)
@@ -229,7 +230,7 @@ def delete_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None
 
 
 def create_terms(course_term: CourseTerm, room_pk_set: Optional[Set[int]] = None):
-    """Creates Terms corresponding to a CourseTerm."""
+    """Creates Terms corresponding to a CourseTerm and (optionally) a set of rooms."""
     dates = course_term.group.course.semester.get_all_days_of_week(course_term.dayOfWeek)
     event, _ = Event.objects.get_or_create(group=course_term.group,
                                            course=course_term.group.course,
@@ -296,10 +297,13 @@ def sync_course_term_save(**kwargs):
 def sync_course_term_m2m(**kwargs):
     """Creates or deletes Terms associated with a CourseTerm when its set of classrooms changes.
 
-    The Terms associated with the CourseTerm are simply deleted and recreated.
     If a classroom has been removed from the set, Terms taking place in it
-    will not be recreated. If a classroom has been added to the set, new Terms
-    taking place in it will be created.
+    will be deleted. If there are no Terms left after the deletion,
+    Terms with the room set to None will be created.
+    If the set of classrooms has been cleared, all Terms associated with the
+    CourseTerm will be deleted and Terms with the room set to None will be created.
+    If a classroom has been added to the set, new Terms taking place in it
+    will be created. Any existing Terms with the room set to None will be deleted.
     As opposed to sync_course_term_save, the Terms are not created using the
     attributes of instance_curr. This is because some of these attributes
     (day, start time and end time) might not have been saved to the database
@@ -315,14 +319,18 @@ def sync_course_term_m2m(**kwargs):
         instance_curr: CourseTerm = kwargs['instance']
         # the version of the CourseTerm stored in the database
         instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
-        if kwargs['action'] == 'post_add' and kwargs['pk_set']:
-            if get_terms(instance_db).filter(room=None):
-                delete_terms(instance_db)
-            create_terms(instance_db, kwargs['pk_set'])
         if kwargs['action'] == 'post_remove' and kwargs['pk_set']:
             delete_terms(instance_db, kwargs['pk_set'])
+            # if there are no Terms left after the deletion,
+            # create Terms with the room set to None
             if not get_terms(instance_db):
                 create_terms(instance_db)
         if kwargs['action'] == 'post_clear':
             delete_terms(instance_db)
+            # create Terms with the room set to None
             create_terms(instance_db)
+        if kwargs['action'] == 'post_add' and kwargs['pk_set']:
+            # if there are any Terms with the room set to None, delete them
+            if get_terms(instance_db).filter(room=None):
+                delete_terms(instance_db)
+            create_terms(instance_db, kwargs['pk_set'])
