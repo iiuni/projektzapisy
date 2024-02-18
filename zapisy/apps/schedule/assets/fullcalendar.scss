@@ -1,3 +1,5 @@
+@import "~bootstrap/scss/bootstrap";
+
 #calendar {
   th {
     font-weight: normal;
@@ -6,7 +8,7 @@
     color: var(--bs-dark);
   }
   .free-day,
-  .change-day {
+  .changed-day {
     background-clip: padding-box;
     .fc-col-header-cell-cushion,
     .fc-daygrid-day-number {
@@ -15,9 +17,9 @@
     }
   }
   .free-day {
-    background-color: gainsboro;
+    background-color: $gray-300;
   }
-  .change-day {
-    background-color: beige;
+  .changed-day {
+    background-color: $yellow-200;
   }
 }

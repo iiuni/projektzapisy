@@ -30,7 +30,7 @@ async function fetchDaysFromEndpoint(endpoint, start, end) {
 
 // Sets apropriate css classes for given dates
 
-async function handleDaysFromEndpoint(dates, className, title, messageForDay) {
+async function handleDaysFromEndpoint(dates, className, title) {
   if (dates.length !== 0) {
     const days = document.querySelectorAll(
       ".fc-daygrid-day, .fc-col-header-cell"
@@ -41,7 +41,7 @@ async function handleDaysFromEndpoint(dates, className, title, messageForDay) {
       );
       if (index > -1) {
         day.classList.add(className);
-        day.setAttribute("title", title + messageForDay(index));
+        day.setAttribute("title", title(dates[index]));
       }
     }
   }
@@ -76,14 +76,14 @@ document.addEventListener("DOMContentLoaded", function () {
       handleDaysFromEndpoint(
         freeDates,
         "free-day",
-        "W tym dniu nie odbywają się zajęcia",
-        (x) => ""
+        () => "W tym dniu nie odbywają się zajęcia"
       );
       handleDaysFromEndpoint(
         changedDates,
-        "change-day",
-        "W tym dniu odbywają się zajęcia ",
-        (x) => changedDatesMapping[changedDates[x].weekday - 1]
+        "changed-day",
+        (date) =>
+          "W tym dniu odbywają się zajęcia " +
+          changedDatesMapping[date.weekday - 1]
       );
     },
 

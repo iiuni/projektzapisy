@@ -8,11 +8,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
@@ -337,47 +337,34 @@ class EventsTermsAjaxView(FullCalendarView):
         return queryset
 
 
-def freedays(request):
-    """Returns list of freedays between 'start' and 'end' dates.
+@require_GET
+def special_days(request, day_type):
+    """Returns list of special days between 'start' and 'end' dates based on day_type.
 
-    Both dates has to be given in 'input_date_format'. Date is returned in 'output_date_format'.
-    Returns 404 if one or both paramas are missing.
+    Both dates have to be given in 'input_date_format'.
+    Dates are returned from databse in 'output_date_format'.
+    Returns Freedays objects if day_type == 'freedays'
+    Returns ChangedDay objects if day_type == 'changeddays'
+    Responds with 400 if one or both params are missing.
+    Responds with 500 if unknown 'day_type' is set.
     """
-    freedays = Freeday.objects.all()
     try:
         start = request.GET['start']
         end = request.GET['end']
-    except Exception:
-        raise Http404
+    except KeyError:
+        return HttpResponseBadRequest("Params are missing")
     input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
     output_date_format = "%Y-%m-%d"
     start = datetime.datetime.strptime(start, input_date_format)
     end = datetime.datetime.strptime(end, input_date_format)
     formatted_start = start.strftime(output_date_format)
     formatted_end = end.strftime(output_date_format)
-    response = freedays.filter(day__gte=formatted_start, day__lte=formatted_end).values()
-    return JsonResponse(list(response), safe=False)
-
-
-def changed_days(request):
-    """Returns list of changed days between 'start' and 'end' dates.
-
-    Both dates has to be given in 'input_date_format'. Date is returned in 'output_date_format'.
-    Returns 404 if one or both paramas are missing.
-    """
-    changed_days = ChangedDay.objects.all()
-    try:
-        start = request.GET['start']
-        end = request.GET['end']
-    except Exception:
-        raise Http404
-    input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
-    output_date_format = "%Y-%m-%d"
-    start = datetime.datetime.strptime(start, input_date_format)
-    end = datetime.datetime.strptime(end, input_date_format)
-    formatted_start = start.strftime(output_date_format)
-    formatted_end = end.strftime(output_date_format)
-    response = changed_days.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    if day_type == 'changeddays':
+        response = ChangedDay.objects.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    elif day_type == 'freedays':
+        response = Freeday.objects.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    else:
+        return HttpResponseServerError("Unknown 'day_type' value")
     return JsonResponse(list(response), safe=False)
 
 
