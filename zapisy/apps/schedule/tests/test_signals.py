@@ -34,6 +34,29 @@ class TermModificationsOnSignalTest(test.TestCase):
 
         cls.classrooms = [ClassroomFactory(), ClassroomFactory()]
 
+    def test_terms_without_rooms_added(self):
+        """We create a term and assign it no classrooms."""
+        CourseTerm.objects.create(group=self.group,
+                                  dayOfWeek=days_of_week.THURSDAY,
+                                  start_time=time(12),
+                                  end_time=time(14))
+        self.assertCountEqual(Term.objects.all().values_list('room', flat=True), [None] * 4)
+
+    def test_terms_untouched_after_save(self):
+        """We create a term and save it without making changes."""
+        t = CourseTerm.objects.create(group=self.group,
+                                      dayOfWeek=days_of_week.THURSDAY,
+                                      start_time=time(12),
+                                      end_time=time(14))
+        t.classrooms.add(self.classrooms[0])
+
+        fields = ['id', 'event', 'day', 'start', 'end', 'room']
+        terms1 = Term.objects.all().values_list(*fields)
+        t.save()
+        terms2 = Term.objects.all().values_list(*fields)
+
+        self.assertCountEqual(terms1, terms2)
+
     def test_thursday_terms_added(self):
         """A simple scenario where we just add a term."""
         t = CourseTerm.objects.create(group=self.group,
