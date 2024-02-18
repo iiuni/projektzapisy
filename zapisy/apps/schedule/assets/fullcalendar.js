@@ -54,6 +54,13 @@ document.addEventListener("DOMContentLoaded", function () {
     plugins: [dayGridPlugin, timeGridPlugin, bootstrap5Plugin],
 
     datesSet: async function (dateInfo) {
+      /*
+        dateInfo.start - Date before the beginning of the range calendar need events for.
+
+        This means endpoint will sometimes return additional date, that won't be visible in calendar view.
+        It's not a problem here, as we only add additional classes.
+        If you want to change functionality here, be aware of that behaviour and take it into consideration.
+      */
       const changedDatesMapping = [
         "poniedziałkowe",
         "wtorkowe",
