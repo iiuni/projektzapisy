@@ -3,7 +3,7 @@ from datetime import date
 from django.db import models
 from django.db.models import Q
 
-from apps.notifications.custom_signals import thesis_voting_activated, thesis_changed
+from apps.notifications.custom_signals import thesis_voting_activated
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.users import is_theses_board_member
 from apps.theses.validators import validate_master_rejecter, validate_num_required_votes, \
@@ -107,14 +107,20 @@ class Thesis(models.Model):
         """
         old = self.pk and type(self).objects.get(pk=self.pk)
         super(Thesis, self).save(*args, **kwargs)
-        if not old or (old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED):
-            # in case of change in thesis status send notification to all board members
+        if not old:
             self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
             thesis_voting_activated.send(sender=self.__class__, instance=self)
-    
-        if  old and (old.status == ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED and self.significant_field_changed):
-            # send notification only to the board memebers who have already accepted the thesis
-            thesis_changed.send(sender=self.__class__, instance=self)
+
+        if old and old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED:
+            # in case of new thesis titile send notification to all board members
+            self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
+            thesis_voting_activated.send(sender=self.__class__, instance=self, operation='modify')
+        if old and (old.status == ThesisStatus.BEING_EVALUATED and
+                    self.status == ThesisStatus.BEING_EVALUATED and
+                    self.significant_field_changed):
+            # send notification only to the board memebers who already accepted the thesis
+            thesis_voting_activated.send(sender=self.__class__, instance=self, operation='modify',
+                                         notify_only_voted=True)
             self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
 
     def get_accepted_votes(self):

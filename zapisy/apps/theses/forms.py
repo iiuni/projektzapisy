@@ -2,12 +2,13 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Column, Layout, Row, Submit
 from django import forms
 from django.utils import timezone
+
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote, SIGNIFICANT_FIELDS
 from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
-from apps.notifications.custom_signals import thesis_voting_activated
+
 
 class ThesisFormAdmin(forms.ModelForm):
     class Meta:
@@ -127,7 +128,7 @@ class EditThesisForm(ThesisFormBase):
 
         status = self.status
         instance.significant_field_changed = False
-        
+
         if len(set(self.changed_data).intersection(SIGNIFICANT_FIELDS)) > 0:
             instance.status = ThesisStatus.BEING_EVALUATED.value
             instance.significant_field_changed = True
