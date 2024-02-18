@@ -272,20 +272,44 @@ def sync_course_term_delete(**kwargs):
 def sync_course_term_save(**kwargs):
     """Creates or updates Terms associated with a CourseTerm when it is saved.
 
-    If the CourseTerm is already in the database, all Terms associated with it
-    are deleted and new ones (with updated fields) are created.
-    The Terms are created using the attributes of instance_curr, because these
-    attributes are about to be saved to the database (this is a pre_save
+    If the CourseTerm is not present in the database yet, new Terms
+    corresponding to it will be created.
+    If the CourseTerm is already in the database and its start time or end time
+    are being changed, Terms corresponding to it will be updated accordingly.
+    However, if the day of the week is also being changed, the Terms will
+    instead be deleted and new ones (with updated fields) will be created.
+    New terms are created using the attributes of instance_curr, because
+    these attributes are about to be saved to the database (this is a pre_save
     signal receiver).
+    Recreating Terms is the most suitable solution in this last case, because
+    updating them would be too complex and error-prone.
     """
     # the current version of the CourseTerm, possibly with unsaved changes
     # that are about to be saved
     instance_curr: CourseTerm = kwargs['instance']
-    if instance_curr.pk:
-        # the version of the CourseTerm stored in the database
-        instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+
+    if not instance_curr.pk:
+        create_terms(instance_curr)
+        return
+
+    # the version of the CourseTerm stored in the database
+    instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+
+    changed_fields = []
+    for field in ['dayOfWeek', 'start_time', 'end_time']:
+        if getattr(instance_db, field) != getattr(instance_curr, field):
+            changed_fields.append(field)
+
+    if len(changed_fields) == 0:
+        return
+    elif 'dayOfWeek' in changed_fields:
         delete_terms(instance_db)
-    create_terms(instance_curr)
+        create_terms(instance_curr)
+    else:
+        for term in get_terms(instance_db):
+            term.start = instance_curr.start_time
+            term.end = instance_curr.end_time
+            term.save()
 
 
 @receiver(models.signals.m2m_changed, sender=CourseTerm.classrooms.through)
@@ -309,23 +333,28 @@ def sync_course_term_m2m(**kwargs):
     When the attributes of instance_curr are saved, the sync_course_term_save
     signal receiver will update the Terms created by this function accordingly.
     """
-    if kwargs['action'].startswith('post_'):
-        # the current version of the CourseTerm, possibly with unsaved changes
-        instance_curr: CourseTerm = kwargs['instance']
-        # the version of the CourseTerm stored in the database
-        instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
-        if kwargs['action'] == 'post_remove' and kwargs['pk_set']:
-            delete_terms(instance_db, kwargs['pk_set'])
-            # if there are no Terms left after the deletion,
-            # create Terms with the room set to None
-            if not get_terms(instance_db):
-                create_terms(instance_db)
-        if kwargs['action'] == 'post_clear':
-            delete_terms(instance_db)
-            # create Terms with the room set to None
+    action = kwargs['action']
+    if not action.startswith('post_'):
+        return
+
+    pk_set = kwargs['pk_set']
+    # the current version of the CourseTerm, possibly with unsaved changes
+    instance_curr: CourseTerm = kwargs['instance']
+    # the version of the CourseTerm stored in the database
+    instance_db: CourseTerm = CourseTerm.objects.get(pk=instance_curr.pk)
+
+    if action == 'post_remove' and pk_set:
+        delete_terms(instance_db, pk_set)
+        # if there are no Terms left after the deletion,
+        # create Terms with the room set to None
+        if not get_terms(instance_db):
             create_terms(instance_db)
-        if kwargs['action'] == 'post_add' and kwargs['pk_set']:
-            # if there are any Terms with the room set to None, delete them
-            if get_terms(instance_db).filter(room=None):
-                delete_terms(instance_db)
-            create_terms(instance_db, kwargs['pk_set'])
+    elif action == 'post_clear':
+        delete_terms(instance_db)
+        # create Terms with the room set to None
+        create_terms(instance_db)
+    elif action == 'post_add' and pk_set:
+        # if there are any Terms with the room set to None, delete them
+        if get_terms(instance_db).filter(room=None):
+            delete_terms(instance_db)
+        create_terms(instance_db, pk_set)
