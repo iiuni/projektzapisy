@@ -3,7 +3,6 @@ import { isEmpty, property } from "lodash";
 import { defineComponent } from "vue";
 import { mapMutations } from "vuex";
 import Multiselect from "vue-multiselect";
-import "./MultiSelectFilter.scss";
 
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
@@ -212,7 +211,98 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   </div>
 </template>
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
 <style>
+.multiselect__clear {
+  position: absolute;
+  right: 34px;
+  height: 100%;
+  width: 40px;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.multiselect {
+  display: table;
+  table-layout: fixed;
+  min-height: unset;
+}
+
+.multiselect--active .multiselect__select {
+  transform: none;
+}
+
+.multiselect--active .multiselect__select:before {
+  transform: rotateZ(180deg);
+}
+
+.multiselect__input {
+  padding: 0;
+}
+
+.multiselect__input,
+.multiselect__single {
+  padding: initial;
+  margin-bottom: initial;
+}
+
+.multiselect__tags {
+  min-height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 4rem 0.375rem 0.75rem;
+}
+
+.multiselect__select {
+  line-height: unset;
+  width: auto;
+  height: auto;
+  right: 0px;
+  top: 0px;
+  padding: 0.375rem 0.75rem;
+  background: rgb(248, 249, 250);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: 1px solid #6c757d;
+}
+
+.multiselect__select::before {
+  display: inline-block;
+  top: 18%;
+}
+
+.multiselect__placeholder {
+  height: 20px;
+  font-size: unset;
+  font-size: 0.9rem;
+  margin-bottom: unset;
+  padding-top: unset;
+}
+
+.multiselect__content-wrapper {
+  position: fixed;
+}
+
+.multiselect__option--highlight,
+.multiselect__option--selected.multiselect__option--highlight,
+.multiselect__option--selected.multiselect__option--highlight::after {
+  background: rgb(234, 236, 239);
+  color: unset;
+}
+
 .option-row {
   font-size: 12px;
   display: flex;
