@@ -4,10 +4,13 @@ from django import forms
 from django.utils import timezone
 
 from apps.common import widgets as common_widgets
-from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote, SIGNIFICANT_FIELDS
+from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
 from apps.theses.models import MAX_THESIS_TITLE_LEN, Remark, Thesis, Vote
 from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
+
+
+SIGNIFICANT_FIELDS = ['title', 'supporting_advisor', 'kind', 'max_number_of_students', 'description']
 
 
 class ThesisFormAdmin(forms.ModelForm):

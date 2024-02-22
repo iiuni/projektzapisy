@@ -107,20 +107,21 @@ class Thesis(models.Model):
         """
         old = self.pk and type(self).objects.get(pk=self.pk)
         super(Thesis, self).save(*args, **kwargs)
+
         if not old:
-            self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
-            thesis_voting_activated.send(sender=self.__class__, instance=self)
+            thesis_voting_activated.send(sender=self.__class__, instance=self, is_new=True, notify_all=True)
 
         if old and old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED:
-            # in case of new thesis titile send notification to all board members
+            # in case of new thesis title send notification to all board members
             self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
-            thesis_voting_activated.send(sender=self.__class__, instance=self, operation='modify')
+            thesis_voting_activated.send(sender=self.__class__, instance=self, is_new=False, notify_all=True)
+
         if old and (old.status == ThesisStatus.BEING_EVALUATED and
                     self.status == ThesisStatus.BEING_EVALUATED and
                     self.significant_field_changed):
-            # send notification only to the board memebers who already accepted the thesis
-            thesis_voting_activated.send(sender=self.__class__, instance=self, operation='modify',
-                                         notify_only_voted=True)
+            # send notification only to the board members who already voted on the thesis
+            thesis_voting_activated.send(sender=self.__class__, instance=self, is_new=False,
+                                         notify_all=False)
             self.thesis_votes.filter(vote__in=[ThesisVote.ACCEPTED, ThesisVote.REJECTED]).update(vote=ThesisVote.NONE)
 
     def get_accepted_votes(self):
