@@ -52,7 +52,7 @@
         </p>
 
         {% if students_in_course %}
-            {% include "courses/students_list.html" with students=students_in_course %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_course %}
             
             {% if request.user.is_staff or request.user.employee %}
             <div class="d-print-none">
@@ -76,7 +76,7 @@
             <h3>Lista osób oczekujących na zapis:</h3>
             <p>Liczba osób oczekujących na zapis: {{students_in_queue|length}}</p>
 
-            {% include "courses/students_list.html" with students=students_in_queue %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_queue %}
             
             {% if request.user.is_staff or request.user.employee %}
                 <h5>Wyślij wiadomość do kolejki</h5>

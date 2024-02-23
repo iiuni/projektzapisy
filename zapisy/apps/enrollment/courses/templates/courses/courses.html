@@ -25,7 +25,7 @@
 
 {% block content %}
     {% if course %}
-        {% include "courses/course_info.html" with course=course %}
+        {% include "courses/course_parts/course_info.html" with course=course %}
     {% else %}
         <div class="alert alert-primary" role="alert">Wybierz przedmiot z listy</div>
     {% endif %}
