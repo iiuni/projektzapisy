@@ -32,7 +32,7 @@
         <div>
             <h1 class="d-inline-block">
                 {{ group.course.name }}
-                <small class="text-muted">({{ group.course.semester.get_short_name }})</small>
+                <small class="text-muted">{{ group.course.semester.get_short_name }}</small>
             </h1>
             <h4>{{group.get_type_display}}:
                     {% if group.teacher %}

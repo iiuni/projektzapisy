@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center">
     <h1 class="d-inline-block">
         {{ course.name }}
-        <small class="text-muted">({{ course.semester.get_short_name }})</small>
+        <small class="text-muted">{{ course.semester.get_short_name }}</small>
     </h1>
     <div class="btn-group" role="group" aria-label="Basic example">
         <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'course-student-list' course.slug %}">Lista</a>
