@@ -13,9 +13,11 @@
         <a href="{% url "course-list" %}">Przedmioty</a>
     </li>
 
-    <li class="breadcrumb-item active">
-        {{ course.name }} ({{ course.semester.get_short_name }})
-    </li>
+    {% if course %}
+        <li class="breadcrumb-item active">
+            {{ course.name }} ({{ course.semester.get_short_name }})
+        </li>
+    {% endif %}
 {% endblock %}
 
 
