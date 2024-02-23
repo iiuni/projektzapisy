@@ -233,7 +233,7 @@ def course_list_view(request, course_slug: str, class_type: int = None):
             'class_type': class_type,
     }
     data.update(prepare_courses_list_data(course.semester))
-    return render(request, 'courses/course_parts/course_list.html', data)
+    return render(request, 'courses/course_list.html', data)
 
 
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
