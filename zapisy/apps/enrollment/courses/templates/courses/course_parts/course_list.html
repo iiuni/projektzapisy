@@ -19,7 +19,7 @@
 
     <li class="breadcrumb-item">
 	    <a href="{% url 'course-page' course.slug %}">
-            {{course.name}}
+            {{course.name}} ({{ course.semester.get_short_name }})
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
