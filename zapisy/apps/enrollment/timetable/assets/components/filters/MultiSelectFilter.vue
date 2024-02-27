@@ -211,9 +211,11 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   </div>
 </template>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style lang="scss" scoped>
+@import "~vue-multiselect/dist/vue-multiselect.min.css";
+</style>
 
-<style>
+<style lang="scss">
 .multiselect__clear {
   position: absolute;
   right: 34px;
@@ -241,11 +243,16 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   min-height: unset;
 }
 
+/* We intentionally disable transforming this element to enable it on
+the ::before pseudo-element below.
+This is needed because the "actual" element has border now,
+and its rotating is unaestheticly baroque.
+Instead, we only want the inner arrow to rotate. */
 .multiselect--active .multiselect__select {
   transform: none;
 }
 
-.multiselect--active .multiselect__select:before {
+.multiselect--active .multiselect__select::before {
   transform: rotateZ(180deg);
 }
 
@@ -253,21 +260,10 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   padding: 0;
 }
 
-.multiselect__input,
-.multiselect__single {
-  padding: initial;
-  margin-bottom: initial;
-}
-
-.multiselect__tags {
-  min-height: calc(1.5em + 0.75rem + 2px);
-  padding: 0.375rem 4rem 0.375rem 0.75rem;
-}
-
 .multiselect__select {
   line-height: unset;
-  width: auto;
-  height: auto;
+  width: unset;
+  height: unset;
   right: 0px;
   top: 0px;
   padding: 0.375rem 0.75rem;
@@ -286,13 +282,15 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 
 .multiselect__placeholder {
   height: 20px;
-  font-size: unset;
   font-size: 0.9rem;
   margin-bottom: unset;
   padding-top: unset;
 }
 
 .multiselect__content-wrapper {
+  /* Other positions either make the options list totally invisible,
+  or prevent it from sticking out of the filters card (in other words,
+  when the list is expanded, but the card is not, the list is cut). */
   position: fixed;
 }
 
