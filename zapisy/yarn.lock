@@ -2969,12 +2969,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:5.3.2":
-  version: 5.3.2
-  resolution: "bootstrap@npm:5.3.2"
+"bootstrap@npm:5.3.3":
+  version: 5.3.3
+  resolution: "bootstrap@npm:5.3.3"
   peerDependencies:
     "@popperjs/core": ^2.11.8
-  checksum: f01ee2a6cde4a1dab9e52080d0ca811c727c6804272e99eabc993436dd15e47f571002104d2ae9f0458b9ee3b1c72eff03037729ebdbd05bd05ac94ab21555de
+  checksum: c8170b9a6904d36781836a49561944b5784d5b834cfd98aa6d7e29a387ef252fd224a695ecca39e32996e39d29ec7a791100e63f79338c218c370fd9236925aa
   languageName: node
   linkType: hard
 
@@ -5313,7 +5313,7 @@ fsevents@~2.1.2:
     axios: 0.21.4
     babel-loader: 8.3.0
     big-integer: 1.6.52
-    bootstrap: 5.3.2
+    bootstrap: 5.3.3
     bootstrap-print-css: 1.0.1
     checkboxes.js: 1.2.2
     clean-webpack-plugin: 3.0.0
