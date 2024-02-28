@@ -1,8 +1,10 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import type { PropType } from 'vue'
 
 interface Poll {
   id: string;
+  href : string;
   type: string;
   name: string;
   number_of_submissions: number;
@@ -12,16 +14,16 @@ interface Poll {
 export default defineComponent({
   props: {
     polls: {
-      type: Object as () => Record<string, Poll[]>,
+      type: Object as PropType < Record<string, Poll[]> >,
       required: true,
     },
     submissionsCount: {
-      type: Object,
+      type: Object as PropType < Record<string, number> > ,
       required: true,
     },
     currentPoll: {
-      type: Object as () => Poll | null,
-      default: null,
+      type: Object as PropType<Poll | null >,
+      required: true
     },
     isSuperuser: {
       type: Boolean,
