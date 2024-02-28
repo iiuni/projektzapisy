@@ -333,6 +333,50 @@ class Schema(models.Model):
 
         return {'version': 1, 'schema': []}
 
+    def get_schema_with_random_answers(self):
+        """Fetches the Submission's schema and populates it with randomly generated answers.
+
+        Dedicated for system testing purpose.
+
+        :returns: a schema with additional `answer` keys.
+        """
+        def _random_answer_based_on_question_type(entry):
+            import random
+            import string
+
+            if entry["type"] == "textarea":
+                length = random.randint(1, 400)
+                letters = string.ascii_lowercase + " "
+                return ''.join(random.choice(letters) for _ in range(length))
+
+            elif entry["type"] == "radio" and "choices" in entry:
+                return random.choice(entry["choices"])
+
+            elif entry["type"] == "checkbox" and "choices" in entry:
+                number_of_choices = random.randint(0, len(entry["choices"]-1))
+                return "[" + ', '.join(random.choices(entry["choices"], k=number_of_choices)) + "]"
+
+            else:
+                return ''
+
+        if (
+            self.questions and
+            'version' in self.questions and
+            self.questions['version'] == 1 and
+            'schema' in self.questions
+        ):
+            updated_schema_entries = []
+            for entry in self.questions['schema']:
+                entry['answer'] = _random_answer_based_on_question_type(entry)
+                updated_schema_entries.append(entry)
+
+            return {
+                'version': self.questions['version'],
+                'schema': updated_schema_entries,
+            }
+
+        return {'version': 1, 'schema': []}
+
 
 class SubmissionManager(models.Manager):
     def get_queryset(self):
