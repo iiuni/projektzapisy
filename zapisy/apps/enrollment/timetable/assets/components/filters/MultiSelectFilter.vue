@@ -215,7 +215,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 @import "~vue-multiselect/dist/vue-multiselect.min.css";
 </style>
 
-<style lang="scss">
+<style>
 .multiselect__clear {
   position: absolute;
   right: 34px;
@@ -256,8 +256,15 @@ Instead, we only want the inner arrow to rotate. */
   transform: rotateZ(180deg);
 }
 
-.multiselect__input {
-  padding: 0;
+.multiselect__input,
+.multiselect__single {
+  padding: unset;
+  margin-bottom: unset;
+}
+
+.multiselect__tags {
+  min-height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 4rem 0.375rem 0.75rem;
 }
 
 .multiselect__select {
