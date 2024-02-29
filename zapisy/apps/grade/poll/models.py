@@ -136,12 +136,17 @@ class Poll(models.Model):
         """
         return self.__str__()
 
+    @property
+    def hours(self) -> str:
+        """Determines the hours of the polled course."""
+        return self.group.get_terms_as_short_string() if self.group else ""
+
     def to_dict(self) -> dict:
         """Serializes the Poll to the format accepted by TicketCreate.
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
 
         return result
 

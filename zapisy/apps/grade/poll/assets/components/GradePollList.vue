@@ -5,6 +5,7 @@ import type { PropType } from 'vue'
 interface Poll {
   id: string;
   href : string;
+  hours: string;
   type: string;
   name: string;
   number_of_submissions: number;
@@ -30,6 +31,11 @@ export default defineComponent({
       required: true,
     },
   },
+  methods : {
+      orderEntriesAlph: function (entries: any[]) {
+        return entries.sort((a, b) => a.name.localeCompare(b.name));
+      }
+    },
   setup(props) {
     const fullList = ref(props.polls);
     const currentList = ref(fullList.value);
@@ -115,14 +121,21 @@ export default defineComponent({
           :aria-labelledby="'course-section-' + index + '-heading'"
         >
           <a
-            v-for="entry in entries"
+            v-for="entry in orderEntriesAlph(entries)"
             :key="entry.id"
             :href="entry.href"
             class="list-group-item list-group-item-action"
             :class="{ active: currentPoll && entry.id === currentPoll.id }"
           >
             <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.name }}</span>
+              
+              <span class="inline" v-if="entries.filter(x => x.name == entry.name).length > 1" >
+                {{ entry.name }} {{entry.hours}}
+              </span>
+              <span class="inline" v-else>
+                {{ entry.name }} 
+              </span>
+
               <span class="text-end text-nowrap">{{
                 entry.number_of_submissions
               }}</span>
