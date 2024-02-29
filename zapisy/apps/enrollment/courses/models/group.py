@@ -82,7 +82,7 @@ class Group(models.Model):
 
     def get_terms_as_string(self):
         return "; ".join(["%s, %s-%s" % (x.get_dayOfWeek_display(),
-            x.start_time.hour, x.end_time.hour) for x in self.term.all()])
+                                         x.start_time.hour, x.end_time.hour) for x in self.term.all()])
     get_terms_as_string.short_description = 'Terminy zajęć'
 
     def get_terms_as_short_string(self):
