@@ -1,10 +1,10 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import type { PropType } from 'vue'
+import type { PropType } from "vue";
 
 interface Poll {
   id: string;
-  href : string;
+  href: string;
   hours: string;
   type: string;
   name: string;
@@ -15,27 +15,27 @@ interface Poll {
 export default defineComponent({
   props: {
     polls: {
-      type: Object as PropType < Record<string, Poll[]> >,
+      type: Object as PropType<Record<string, Poll[]>>,
       required: true,
     },
     submissionsCount: {
-      type: Object as PropType < Record<string, number> > ,
+      type: Object as PropType<Record<string, number>>,
       required: true,
     },
     currentPoll: {
-      type: Object as PropType<Poll | null >,
-      required: true
+      type: Object as PropType<Poll | null>,
+      required: true,
     },
     isSuperuser: {
       type: Boolean,
       required: true,
     },
   },
-  methods : {
-      orderEntriesAlph: function (entries: any[]) {
-        return entries.sort((a, b) => a.name.localeCompare(b.name));
-      }
+  methods: {
+    orderEntriesAlph: function (entries: any[]) {
+      return entries.sort((a, b) => a.name.localeCompare(b.name));
     },
+  },
   setup(props) {
     const fullList = ref(props.polls);
     const currentList = ref(fullList.value);
@@ -128,12 +128,14 @@ export default defineComponent({
             :class="{ active: currentPoll && entry.id === currentPoll.id }"
           >
             <div class="d-flex w-100 justify-content-between">
-              
-              <span class="inline" v-if="entries.filter(x => x.name == entry.name).length > 1" >
-                {{ entry.name }} {{entry.hours}}
+              <span
+                class="inline"
+                v-if="entries.filter((x) => x.name == entry.name).length > 1"
+              >
+                {{ entry.name }} {{ entry.hours }}
               </span>
               <span class="inline" v-else>
-                {{ entry.name }} 
+                {{ entry.name }}
               </span>
 
               <span class="text-end text-nowrap">{{
