@@ -215,7 +215,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 @import "~vue-multiselect/dist/vue-multiselect.min.css";
 </style>
 
-<style>
+<style lang="scss">
 .multiselect__clear {
   position: absolute;
   right: 34px;
