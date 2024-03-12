@@ -25,6 +25,12 @@ class Semester(models.Model):
         blank=True,
         verbose_name='Czas otwarcia zapisów',
         help_text='Godzina powinna być ustawiona na 00:00:00, by studenci mieli otwarcie między 10:00 a 22:00.')
+    records_pause = models.IntegerField(
+        null=True,
+        blank=True,
+        default=settings.ECTS_BONUS,
+        verbose_name='Przerwa między grupami studentów',
+        help_text='Co ile minut powinny otwierać się zapisy dla kolejnej grupy studentów (według rankingu ECTS)')
     records_closing = models.DateTimeField(
         null=True, blank=True, verbose_name='Czas zamkniecia zapisów')
     records_ending = models.DateTimeField(

@@ -86,28 +86,39 @@ class T0Times(models.Model):
                 ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
                     'student_id', 'num_tickets'))
 
-        student: Student
+        students_grouped = dict()
         for student in students:
-            record = cls(student=student, semester=semester)
-            record.time = semester.records_opening
-            # Every ECTS gives 5 minutes bonus, but with logic splitting
-            # that over nighttime. 720 minutes is equal to12 hours. If
-            # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
-            # additional 12 hours from T0. This way T0's are separated by
-            # ECTS_BONUS minutes per point, but never fall in the nighttime.
-            record.time -= timedelta(
-                minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
-            record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
-            # Every participation in classes grading gives a day worth
-            # advantage.
-            student_generated_tickets = generated_tickets.get(student.pk, 0)
-            record.time -= timedelta(days=1) * student_generated_tickets
-            # We may add some bonus by hand.
-            record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
-            # Finally, everyone gets 2 hours. This way, nighttime pause is
-            # shifted from 00:00-12:00 to 22:00-10:00.
-            record.time -= timedelta(hours=2)
-            created.append(record)
+            students_grouped.setdefault(student.ects, []).append(student)
+
+        sorted_students_grouped: Dict[int, Student] = \
+            dict(sorted(students_grouped.items(), key=lambda x: x[0]))
+
+        for group_id, students in enumerate(sorted_students_grouped.values()):
+
+            # The ECTS bonus is now based on the position in the ECTS
+            # ranking list. Students with the same amount of ECTS have
+            # the same position in the ranking. Each subsequent position
+            # in the ranking gives an additional 2 minutes (by default) of bonus.
+            ects_bonus = timedelta(minutes=semester.records_pause) * group_id
+
+            student: Student
+            for student in students:
+                record = cls(student=student, semester=semester)
+                record.time = semester.records_opening
+
+                # Every student gets bonus based on ECTS ranking.
+                record.time -= ects_bonus
+                # Every participation in classes grading gives a day worth
+                # advantage.
+                student_generated_tickets = generated_tickets.get(student.pk, 0)
+                record.time -= timedelta(days=1) * student_generated_tickets
+                # We may add some bonus by hand.
+                record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
+                # Finally, everyone gets 2 hours. This way, nighttime pause is
+                # shifted from 00:00-12:00 to 22:00-10:00.
+                record.time -= timedelta(hours=2)
+                created.append(record)
+
         cls.objects.bulk_create(created)
 
 
