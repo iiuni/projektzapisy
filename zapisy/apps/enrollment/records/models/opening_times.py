@@ -9,7 +9,6 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List
 
-from django.conf import settings
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
