@@ -56,7 +56,7 @@ class T0Times(models.Model):
 
     @classmethod
     @transaction.atomic
-    def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
+    def populate_t0(cls, semester: Semester, students_to_count: Iterable[Student] = None):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed and the
@@ -70,11 +70,13 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-        if not students:
-            students = Student.get_active_students()
+        students_ranking = Student.get_active_students()
+
+        if not students_to_count:
+            students_to_count = students_ranking
 
         # First we delete T0 records in the semester for the selected students
-        cls.objects.filter(student__in=students, semester=semester).delete()
+        cls.objects.filter(student__in=students_to_count, semester=semester).delete()
 
         created: List[cls] = []
         # For each student_id we want to know, how many times they have
@@ -82,11 +84,11 @@ class T0Times(models.Model):
         generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
-                    'student_id', 'num_tickets'))
+                ], student__in=students_to_count).values('student_id').annotate(
+                    num_tickets=models.Count('id')).values_list('student_id', 'num_tickets'))
 
         students_grouped: Dict[int, Student] = dict()
-        for student in students:
+        for student in students_ranking:
             students_grouped.setdefault(student.ects, []).append(student)
 
         sorted_students_grouped: Dict[int, Student] = \
@@ -102,6 +104,9 @@ class T0Times(models.Model):
 
             student: Student
             for student in students:
+                if student not in students_to_count:
+                    continue
+
                 record = cls(student=student, semester=semester)
                 record.time = semester.records_opening
 
