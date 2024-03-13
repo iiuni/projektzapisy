@@ -38,7 +38,7 @@ class PopulateT0Test(TestCase):
 
     def test_t0_times_order(self):
         """Tests that checks if t0 times is in correct oreder and correct intervals."""
-        groups_spacing = self.semester.records_pause
+        groups_spacing = self.semester.get_records_spacing()
         global_t0_opening = self.semester.records_opening - timedelta(hours=2)
 
         bolek_t0_opening = T0Times.objects.get(
@@ -51,13 +51,13 @@ class PopulateT0Test(TestCase):
             student=self.zosia, semester=self.semester).time
 
         assert global_t0_opening == tosia_t0_opening  # tosia has the fewest ECTS in the group
-        assert tosia_t0_opening - bolek_t0_opening == timedelta(minutes=groups_spacing)
-        assert tosia_t0_opening - zosia_t0_opening == timedelta(minutes=groups_spacing) * 2
-        assert lolek_t0_opening - zosia_t0_opening == timedelta(minutes=groups_spacing)
+        assert tosia_t0_opening - bolek_t0_opening == groups_spacing
+        assert tosia_t0_opening - zosia_t0_opening == groups_spacing * 2
+        assert lolek_t0_opening - zosia_t0_opening == groups_spacing
 
     def test_maximum_interval_between_records(self):
         """Checks that the maximum interval between records is at most 'groups_spacing'."""
-        groups_spacing = self.semester.records_pause
+        groups_spacing = self.semester.get_records_spacing()
 
         bolek_t0_opening = T0Times.objects.get(
             student=self.bolek, semester=self.semester).time
@@ -80,4 +80,4 @@ class PopulateT0Test(TestCase):
 
         maximum = max([x[1] - x[0] for x in zip(t0_openings[:-1], t0_openings[1:])])
 
-        assert maximum == timedelta(minutes=groups_spacing)
+        assert maximum == groups_spacing

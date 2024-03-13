@@ -85,20 +85,20 @@ class T0Times(models.Model):
                 ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
                     'student_id', 'num_tickets'))
 
-        students_grouped = dict()
+        students_grouped: Dict[int, Student] = dict()
         for student in students:
             students_grouped.setdefault(student.ects, []).append(student)
 
         sorted_students_grouped: Dict[int, Student] = \
             dict(sorted(students_grouped.items(), key=lambda x: x[0]))
 
-        for group_id, students in enumerate(sorted_students_grouped.values()):
+        for group_position, students in enumerate(sorted_students_grouped.values()):
 
             # The ECTS bonus is now based on the position in the ECTS
             # ranking list. Students with the same amount of ECTS have
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
-            ects_bonus = timedelta(minutes=semester.records_pause) * group_id
+            ects_bonus = semester.get_records_spacing() * group_position
 
             student: Student
             for student in students:
