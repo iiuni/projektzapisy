@@ -7,7 +7,7 @@ from datetime import timedelta
 
 from django.test import TestCase
 
-from apps.enrollment.courses.models import Group, Semester
+from apps.enrollment.courses.models import Semester
 from apps.enrollment.records.models import T0Times
 from apps.users.models import Student
 
@@ -24,6 +24,7 @@ class PopulateT0Test(TestCase):
         cls.lolek = Student.objects.get(pk=2)
         cls.tosia = Student.objects.get(pk=3)
         cls.zosia = Student.objects.get(pk=4)
+        cls.marek = Student.objects.get(pk=5)
 
         T0Times.populate_t0(cls.semester)
 
@@ -53,3 +54,30 @@ class PopulateT0Test(TestCase):
         assert tosia_t0_opening - bolek_t0_opening == timedelta(minutes=groups_spacing)
         assert tosia_t0_opening - zosia_t0_opening == timedelta(minutes=groups_spacing) * 2
         assert lolek_t0_opening - zosia_t0_opening == timedelta(minutes=groups_spacing)
+
+    def test_maximum_interval_between_records(self):
+        """Checks that the maximum interval between records is at most 'groups_spacing'."""
+        groups_spacing = self.semester.records_pause
+
+        bolek_t0_opening = T0Times.objects.get(
+            student=self.bolek, semester=self.semester).time
+        lolek_t0_opening = T0Times.objects.get(
+            student=self.lolek, semester=self.semester).time
+        tosia_t0_opening = T0Times.objects.get(
+            student=self.tosia, semester=self.semester).time
+        zosia_t0_opening = T0Times.objects.get(
+            student=self.zosia, semester=self.semester).time
+        marek_t0_opening = T0Times.objects.get(
+            student=self.marek, semester=self.semester).time
+
+        t0_openings = sorted([
+            bolek_t0_opening,
+            lolek_t0_opening,
+            tosia_t0_opening,
+            zosia_t0_opening,
+            marek_t0_opening,
+        ])
+
+        maximum = max([x[1] - x[0] for x in zip(t0_openings[:-1], t0_openings[1:])])
+
+        assert maximum == timedelta(minutes=groups_spacing)
