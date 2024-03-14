@@ -66,7 +66,7 @@ class T0Times(models.Model):
         distinct_ects: Set[int] = set([student.ects for student in students])
 
         ects_position: Dict[int, int] = \
-            {ects: position for position, ects in enumerate(sorted(list(distinct_ects)))}
+            {ects: position for position, ects in enumerate(sorted(distinct_ects))}
 
         return ects_position
 
