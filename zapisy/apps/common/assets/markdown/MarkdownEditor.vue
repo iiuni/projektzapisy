@@ -1,30 +1,3 @@
-<template>
-  <div
-    class="md-editor-wrapper form-control"
-    :class="{ 'is-invalid': is_invalid }"
-  >
-    <textarea
-      class="form-control text-monospace bg-light"
-      rows="10"
-      :value="input"
-      :name="name"
-      :placeholder="placeholder"
-      @input="update"
-    ></textarea>
-    <div class="preview">
-      <span v-html="compiledMarkdown"></span>
-      <a
-        class="doc-link"
-        href="https://guides.github.com/features/mastering-markdown/#examples"
-        target="_blank"
-      >
-        <font-awesome-icon :icon="faMarkdown" />
-      </a>
-    </div>
-    <slot></slot>
-  </div>
-</template>
-
 <script>
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons/faMarkdown";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -73,6 +46,33 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div
+    class="md-editor-wrapper form-control"
+    :class="{ 'is-invalid': is_invalid }"
+  >
+    <textarea
+      class="form-control text-monospace bg-light"
+      rows="10"
+      :value="input"
+      :name="name"
+      :placeholder="placeholder"
+      @input="update"
+    ></textarea>
+    <div class="preview">
+      <span v-html="compiledMarkdown"></span>
+      <a
+        class="doc-link"
+        href="https://guides.github.com/features/mastering-markdown/#examples"
+        target="_blank"
+      >
+        <font-awesome-icon :icon="faMarkdown" />
+      </a>
+    </div>
+    <slot></slot>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .md-editor-wrapper {

@@ -1,27 +1,3 @@
-<template>
-  <div class="card bg-light">
-    <div class="card-body">
-      <input
-        class="form-control"
-        type="text"
-        :value="input_value"
-        @input="emitInputFilter"
-        placeholder="Filtrowanie"
-      />
-      <hr />
-      <button
-        v-for="char in chars"
-        :key="char"
-        class="btn btn-link p-1"
-        v-on:click="emitCharFilter(char)"
-        :class="{ 'text-dark': selectedChar === char }"
-      >
-        {{ char }}
-      </button>
-    </div>
-  </div>
-</template>
-
 <script>
 import { EventBus } from "./event-bus";
 
@@ -49,3 +25,27 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="card bg-light">
+    <div class="card-body">
+      <input
+        class="form-control"
+        type="text"
+        :value="input_value"
+        @input="emitInputFilter"
+        placeholder="Filtrowanie"
+      />
+      <hr />
+      <button
+        v-for="char in chars"
+        :key="char"
+        class="btn btn-link p-1"
+        v-on:click="emitCharFilter(char)"
+        :class="{ 'text-dark': selectedChar === char }"
+      >
+        {{ char }}
+      </button>
+    </div>
+  </div>
+</template>
