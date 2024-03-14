@@ -90,13 +90,7 @@
         </tr>
         <tr>
             <th scope="row">Studenci</th>
-            <td>
-                {% for student in students %}
-                    {{ student }}&nbsp;
-                {% empty %}
-                    Brak
-                {% endfor %}
-            </td>
+            <td>{{ students_str|default:"Brak" }}</td>
         </tr>
         <tr>
             <th scope="row">Zarezerwowana do</th>
