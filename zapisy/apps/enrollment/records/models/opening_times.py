@@ -7,7 +7,7 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Set
 
 from django.db import models, transaction
 
@@ -55,8 +55,24 @@ class T0Times(models.Model):
         return True
 
     @classmethod
+    def get_ects_ranking(cls) -> Dict[int, int]:
+        """Computes ECTS ranking, the higher the ranking the greater the time bonus.
+
+        The populate_t0 function uses this ranking to calculate
+        the opening time for selected students.
+        """
+        students = Student.get_active_students()
+
+        distinct_ects: Set[int] = set([student.ects for student in students])
+
+        ects_position: Dict[int, int] = \
+            {ects: position for position, ects in enumerate(sorted(list(distinct_ects)))}
+
+        return ects_position
+
+    @classmethod
     @transaction.atomic
-    def populate_t0(cls, semester: Semester, students_to_count: Iterable[Student] = None):
+    def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
         """Computes T0s for selected students.
 
         The arguments are the semester of the T0s to be computed and the
@@ -70,13 +86,11 @@ class T0Times(models.Model):
 
         The function will throw a DatabaseError if something goes wrong.
         """
-        students_ranking = Student.get_active_students()
-
-        if not students_to_count:
-            students_to_count = students_ranking
+        if not students:
+            students = Student.get_active_students()
 
         # First we delete T0 records in the semester for the selected students
-        cls.objects.filter(student__in=students_to_count, semester=semester).delete()
+        cls.objects.filter(student__in=students, semester=semester).delete()
 
         created: List[cls] = []
         # For each student_id we want to know, how many times they have
@@ -84,44 +98,34 @@ class T0Times(models.Model):
         generated_tickets: Dict[int, int] = dict(
                 StudentGraded.objects.filter(semester_id__in=[
                     semester.first_grade_semester_id, semester.second_grade_semester_id
-                ], student__in=students_to_count).values('student_id').annotate(
-                    num_tickets=models.Count('id')).values_list('student_id', 'num_tickets'))
+                ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
+                    'student_id', 'num_tickets'))
 
-        students_grouped: Dict[int, Student] = dict()
-        for student in students_ranking:
-            students_grouped.setdefault(student.ects, []).append(student)
+        ranking = cls.get_ects_ranking()
 
-        sorted_students_grouped: Dict[int, Student] = \
-            dict(sorted(students_grouped.items(), key=lambda x: x[0]))
-
-        for group_position, students in enumerate(sorted_students_grouped.values()):
-
+        student: Student
+        for student in students:
             # The ECTS bonus is now based on the position in the ECTS
             # ranking list. Students with the same amount of ECTS have
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
-            ects_bonus = semester.get_records_spacing() * group_position
+            ects_bonus = semester.get_records_spacing() * ranking[student.ects]
 
-            student: Student
-            for student in students:
-                if student not in students_to_count:
-                    continue
+            record = cls(student=student, semester=semester)
+            record.time = semester.records_opening
 
-                record = cls(student=student, semester=semester)
-                record.time = semester.records_opening
-
-                # Every student gets bonus based on ECTS ranking.
-                record.time -= ects_bonus
-                # Every participation in classes grading gives a day worth
-                # advantage.
-                student_generated_tickets = generated_tickets.get(student.pk, 0)
-                record.time -= timedelta(days=1) * student_generated_tickets
-                # We may add some bonus by hand.
-                record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
-                # Finally, everyone gets 2 hours. This way, nighttime pause is
-                # shifted from 00:00-12:00 to 22:00-10:00.
-                record.time -= timedelta(hours=2)
-                created.append(record)
+            # Every student gets bonus based on ECTS ranking.
+            record.time -= ects_bonus
+            # Every participation in classes grading gives a day worth
+            # advantage.
+            student_generated_tickets = generated_tickets.get(student.pk, 0)
+            record.time -= timedelta(days=1) * student_generated_tickets
+            # We may add some bonus by hand.
+            record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
+            # Finally, everyone gets 2 hours. This way, nighttime pause is
+            # shifted from 00:00-12:00 to 22:00-10:00.
+            record.time -= timedelta(hours=2)
+            created.append(record)
 
         cls.objects.bulk_create(created)
 
