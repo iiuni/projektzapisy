@@ -33,6 +33,7 @@
     "popper.js": "1.16.1",
     "tablesorter": "2.31.3",
     "vue": "2.7.16",
+    "vue-multiselect": "2.1.7",
     "vue-timers": "2.0.4",
     "vuex": "3.6.2"
   },
