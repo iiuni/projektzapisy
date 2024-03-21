@@ -28,7 +28,13 @@
   fields:
     name: "I2"
 
-# We will have three students.
+# We will have four students.
+- model: users.Program
+  pk: 1
+  fields:
+    name: "Informatyka"
+    is_native: True
+
 - model: auth.User
   pk: 1
   fields:
@@ -38,6 +44,7 @@
   fields:
     user_id: 1
     matricula: 100001
+    program: 1
 
 - model: auth.User
   pk: 2
@@ -48,6 +55,7 @@
   fields:
     user_id: 2
     matricula: 100002
+    program: 1
 
 - model: auth.User
   pk: 3
@@ -58,8 +66,26 @@
   fields:
     user_id: 3
     matricula: 100003
+    program: 1
 
-# Bolek's T0 will be 25 hours after Lolek's. Tola's T0 is two days after.
+- model: users.Program
+  pk: 2
+  fields:
+    name: "Dziennikarstwo"
+    is_native: False
+
+- model: auth.User
+  pk: 4
+  fields:
+    username: lola
+- model: users.Student
+  pk: 4
+  fields:
+    user_id: 4
+    matricula: 100004
+    program: 2
+
+# Bolek's T0 will be 25 hours after Lolek's. Tola's T0 is two days after. Lola's TO is same as Lolek's
 - model: records.T0Times
   pk: 1
   fields:
@@ -78,6 +104,12 @@
     student_id: 3 # Tola
     semester_id: 1
     time: 2011-09-26T13:00:00+02:00
+- model: records.T0Times
+  pk: 4
+  fields:
+    student_id: 4 # Lola
+    semester_id: 1
+    time: 2011-09-24T11:00:00+02:00
 
 # There will be three courses.
 - model: courses.CourseInformation
@@ -201,3 +233,12 @@
     student_id: 2
     proposal_id: 1
     correction: 1
+
+# Lola cast 3 points for 'Szydełkowanie'
+- model: vote.SingleVote
+  pk: 4
+  fields:
+    state_id: 1
+    student_id: 4
+    proposal_id: 1
+    correction: 3

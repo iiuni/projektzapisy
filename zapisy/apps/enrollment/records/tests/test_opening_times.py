@@ -23,6 +23,7 @@ class OpeningTimesTest(TestCase):
         cls.semester = Semester.objects.get(pk=1)
         cls.bolek = Student.objects.get(pk=1)
         cls.lolek = Student.objects.get(pk=2)
+        cls.lola = Student.objects.get(pk=4)
 
         cls.knitting_lecture_group = Group.objects.get(pk=11)
         cls.washing_up_seminar_group = Group.objects.get(pk=22)
@@ -30,12 +31,20 @@ class OpeningTimesTest(TestCase):
         GroupOpeningTimes.populate_opening_times(cls.semester)
 
     def test_populated_times(self):
-        """Tests that GroupOpeningTimes are correctly based on T0 and votes."""
+        """Tests that GroupOpeningTimes are correctly based on T0 and votes.
+
+        Bolek and Lolek are both studying a native program thus they receive
+        extra time bonus based on their votes. Lola is studying an external
+        program and receives no bonus.
+        """
         bolek_knitting_opening = GroupOpeningTimes.objects.get(
             student=self.bolek, group=self.knitting_lecture_group).time
         lolek_knitting_opening = GroupOpeningTimes.objects.get(
             student=self.lolek, group=self.knitting_lecture_group).time
+        lola_knitting_opening = GroupOpeningTimes.objects.get(
+            student=self.lola, group=self.knitting_lecture_group).time
         assert bolek_knitting_opening - lolek_knitting_opening == timedelta(hours=1)
+        assert lola_knitting_opening - lolek_knitting_opening == timedelta(days=1)
 
     def test_group_openings(self):
         """Tests that the functions correctly assert the group opened or closed.
