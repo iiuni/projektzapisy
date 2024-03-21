@@ -3,6 +3,8 @@
 A group may have multiple terms - that is, students may meet with the teacher
 more than one time a week.
 """
+from datetime import datetime
+
 from django.db import models, transaction
 from django.urls import reverse
 
@@ -68,6 +70,10 @@ class Group(models.Model):
                    f"dodany tooltip z wyjaśnieniem: {GroupTooltips}"))
     export_usos = models.BooleanField(default=True, verbose_name='czy eksportować do usos?')
     usos_nr = models.IntegerField("Nr grupy w usos", null=True, blank=True)
+
+    last_record_changes_check = models.DateTimeField(
+        "czas ostatniego sprawdzenia listy członków grupy",
+        default=datetime.min)
 
     def get_teacher_full_name(self):
         """Return teacher's full name for current group."""
@@ -149,6 +155,52 @@ class Group(models.Model):
         copy.save()
         copy.term.set(copied_terms)
         return copy
+
+    def _get_modified_records(self, comparison_datetime: datetime):
+        from apps.enrollment.records.models import RecordStatus, Record
+
+        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED
+        For each one of these RecordStatus returns list of records which status
+        changed to this after comparison_datetime.
+        """
+        # Only records, that has been enrolled before comparison_datetime
+        # and removed after comparison_datetime
+        removed_records = Record.objects.filter(
+            group=self,
+            status=RecordStatus.REMOVED,
+            modified_to_enrolled__lt=comparison_datetime,
+            modified_to_removed__gt=comparison_datetime,
+        )
+
+        # Only records, that has been enrolled after comparison_datetime
+        enrolled_records = Record.objects.filter(
+            group=self,
+            status=RecordStatus.ENROLLED,
+            modified_to_enrolled__gt=comparison_datetime,
+        )
+
+        return {
+            RecordStatus.ENROLLED: enrolled_records,
+            RecordStatus.REMOVED: removed_records,
+        }
+
+    def request_modified_records_data(self):
+        """Returns dictionary consisting keys RecordStatus.ENROLLED and RecordStatus.REMOVED.
+
+        For each one of these RecordStatus returns list of records which status
+        changed to this after last_record_changes_check.
+        """
+        result = self._get_modified_records(
+            self.last_record_changes_check
+        )
+
+        self.last_record_changes_check = datetime.now()
+        self.save()
+        return result
+
+    @property
+    def any_record_changes_check_made(self):
+        return self.last_record_changes_check != datetime.min
 
     def save(self, *args, **kwargs):
         """Overloaded save method.
