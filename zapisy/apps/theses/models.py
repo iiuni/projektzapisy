@@ -48,7 +48,8 @@ class ThesesQuerySet(models.QuerySet):
         return self.filter(
             (~Q(status=ThesisStatus.BEING_EVALUATED) & ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) |
             Q(advisor__user=user) |
-            Q(supporting_advisor__user=user))
+            Q(supporting_advisor__user=user) |
+            Q(students__user=user))
 
 
 class Thesis(models.Model):
