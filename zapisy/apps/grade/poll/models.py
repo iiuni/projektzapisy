@@ -8,7 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import Student
+from apps.users.models import Employee, Student
 
 
 class PollType(models.IntegerChoices):
@@ -27,8 +27,16 @@ class PollType(models.IntegerChoices):
 
 class PollManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'group', 'group__teacher__user', 'course', 'course__owner__user', 'semester'
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'group',
+                'group__teacher__user',
+                'course',
+                'course__owner__user',
+                'semester',
+            )
         )
 
 
@@ -48,6 +56,7 @@ class Poll(models.Model):
     :param semester: if present, the created poll will be of
         `PollType.GENERAL` type
     """
+
     objects = PollManager()
 
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
@@ -66,6 +75,21 @@ class Poll(models.Model):
         if self.course:
             return PollType.EXAM
         return PollType.GENERAL
+
+    @property
+    def teacher(self) -> Employee:
+        if self.group:
+            return self.group.teacher
+
+    @property
+    def owner(self) -> Employee:
+        if self.course:
+            return self.course.owner
+
+    @property
+    def gcowner(self) -> Employee:
+        if self.group and self.group.course:
+            return self.group.course.owner
 
     @property
     def get_semester(self):
@@ -112,12 +136,17 @@ class Poll(models.Model):
         """
         return self.__str__()
 
-    def serialize_for_signing_protocol(self) -> dict:
+    @property
+    def hours(self) -> str:
+        """Determines the hours of the polled course."""
+        return self.group.get_terms_as_short_string() if self.group else ""
+
+    def to_dict(self) -> dict:
         """Serializes the Poll to the format accepted by TicketCreate.
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
 
         return result
 
@@ -186,7 +215,9 @@ class Poll(models.Model):
         return polls
 
     @staticmethod
-    def get_all_polls_for_semester(user, semester: Semester = None) -> List['Poll']:
+    def get_all_polls_for_semester(
+        user, semester: Semester = None
+    ) -> List["Poll"]:
         """Returns all polls that user may see the submissions for.
 
         The polls will be annotated with submission counts.
@@ -200,6 +231,7 @@ class Poll(models.Model):
 
         if not is_superuser and not is_employee:
             return Poll.objects.none()
+
         poll_for_semester = Poll.objects.filter(semester=current_semester)
 
         if is_superuser:
@@ -213,16 +245,18 @@ class Poll(models.Model):
             polls_for_courses = Poll.objects.filter(
                 course__semester=current_semester,
                 course__owner=user.employee,
-            ) | Poll.objects.filter(group__course__semester=current_semester,
-                                    group__course__owner=user.employee)
+            ) | Poll.objects.filter(
+                group__course__semester=current_semester,
+                group__course__owner=user.employee
+            )
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester,
                 group__teacher=user.employee,
             )
 
+        sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
         qs = poll_for_semester | polls_for_courses | polls_for_groups
 
-        sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
         return list(qs.annotate(number_of_submissions=sub_count_ann))
 
 
@@ -355,6 +389,7 @@ class Submission(models.Model):
     inside the `answers` JSON field with all the necessary information
     used for recreating the form.
     """
+
     objects = SubmissionManager()
 
     schema = models.ForeignKey(Schema, on_delete=models.SET_NULL, null=True)
@@ -366,8 +401,8 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'złoszenie'
-        verbose_name_plural = 'zgłoszenia'
+        verbose_name = "zgłoszenie"
+        verbose_name_plural = "zgłoszenia"
 
     def __str__(self):
         return str(self.poll)

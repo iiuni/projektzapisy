@@ -5,9 +5,11 @@ import bokeh.embed
 import bokeh.models.sources
 import bokeh.plotting
 
+from django.urls import reverse
+
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.models import Poll, Submission
-from apps.users.models import Student
+from apps.users.models import Student, Employee
 
 
 def check_grade_status() -> bool:
@@ -18,6 +20,7 @@ def check_grade_status() -> bool:
 
 class SubmissionStats:
     """Holds statistics for poll submissions."""
+
     def __init__(self, submissions: List[Submission]):
         self.submitted = 0
         self.submitted_by_category = defaultdict(int)
@@ -69,7 +72,7 @@ def group_submissions(submissions: List[Submission]) -> dict:
     return grouped_submissions
 
 
-def group(entries: List[Poll], sort=False) -> dict:
+def group(entries: List[Poll], employee: Employee, sort: bool, semester_id: int) -> dict:
     """Groups a list of polls/submissions into a dictionary.
 
     The polls and submissions are combined into a dictionary of nested
@@ -84,12 +87,20 @@ def group(entries: List[Poll], sort=False) -> dict:
 
     for entry in entries:
         if entry is not None:
+            is_own = employee in [entry.owner, entry.teacher, entry.gcowner]
             category = entry.category
             subcategory = entry.subcategory
+            href = reverse('grade-poll-results',
+                           kwargs={'semester_id': semester_id, 'poll_id': entry.id})
+            entrydict = entry.to_dict()
+            entrydict.update({
+                'number_of_submissions': entry.number_of_submissions,
+                'is_own': is_own,
+                'href': href})
             if subcategory not in grouped_entries[category]:
                 if entry.semester:  # whether the entry is a general poll
-                    output[category].append(entry)
-                grouped_entries[category].append(entry)
+                    output[category].append(entrydict)
+                grouped_entries[category].append(entrydict)
 
     if sort:
         grouped_entries = sorted(grouped_entries.items())
@@ -105,6 +116,7 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
+
     def __init__(self, question, field_type, choices=None):
         self.question = question
         self._answers = []
@@ -183,6 +195,7 @@ class PollSummarizedResults:
     A single section is also a self-contained entry, defined by
     the `PollSummarizedResultsEntry` class.
     """
+
     def __init__(self, display_answers_count=True, display_plots=True):
         self._entries = []
         self._questions = []

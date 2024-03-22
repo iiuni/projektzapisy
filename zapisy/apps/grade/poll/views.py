@@ -224,8 +224,10 @@ class PollResults(TemplateView):
             return redirect('grade-main')
 
         available_polls = Poll.get_all_polls_for_semester(
-            user=request.user, semester=selected_semester
+            user=request.user,
+            semester=selected_semester
         )
+
         current_poll = Poll.objects.filter(id=poll_id).first()
         if poll_id is not None:
             submissions = Submission.objects.filter(poll=poll_id,
@@ -248,18 +250,22 @@ class PollResults(TemplateView):
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
+                    'polls': group(entries=available_polls,
+                                   employee=request.user.employee,
+                                   sort=True,
+                                   semester_id=selected_semester.id),
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
                     'current_poll_id': poll_id,
-                    'current_poll': current_poll,
+                    'current_poll': current_poll.to_dict() if current_poll is not None else {},
                     'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
                     'iterator': itertools.count(),
+                    'is_superuser': request.user.is_superuser
                 },
             )
 
