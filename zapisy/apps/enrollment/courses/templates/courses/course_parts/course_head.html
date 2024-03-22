@@ -16,6 +16,13 @@
 </div>
 
 <table class="table table-bordered table-md-responsive" id="table-info">
+    <style>
+        #table-info ul{
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
     <colgroup>
         <col class="table-info-type"></col>
     </colgroup>
@@ -35,18 +42,27 @@
             <th scope="row">Liczba godzin</th>
             <td id="hours">
                 <style>
-                    #hours span + span::before {
+                    #hours ul li {
+                        display: inline-block;
+                    }
+            
+                    #hours ul li + li::before {
                         content: '+';
                         margin: 0 .5em;
                     }
                 </style>
-                {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
-                {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
-                {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
-                {% if course.hours_exercise_lab %}<span>{{ course.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
-                {% if course.hours_seminar %}<span>{{ course.hours_seminar }} (sem.)</span>{% endif %}
-                {% if course.hours_recap %}<span>{{ course.hours_recap }} (rep.)</span>{% endif %}
+                {% spaceless %}
+                <ul>
+                    {% if course.hours_lecture %}<li>{{ course.hours_lecture }} (wyk.)</li>{% endif %}
+                    {% if course.hours_exercise %}<li>{{ course.hours_exercise }} (ćw.)</li>{% endif %}
+                    {% if course.hours_lab %}<li>{{ course.hours_lab }} (prac.)</li>{% endif %}
+                    {% if course.hours_exercise_lab %}<li>{{ course.hours_exercise_lab }} (ćw-prac.)</li>{% endif %}
+                    {% if course.hours_seminar %}<li>{{ course.hours_seminar }} (sem.)</li>{% endif %}
+                    {% if course.hours_recap %}<li>{{ course.hours_recap }} (rep.)</li>{% endif %}
+                </ul>
+                {% endspaceless %}
             </td>
+            
         </tr>
         <tr>
             <th scope="row">Rodzaj</th>
@@ -70,9 +86,11 @@
         <tr>
             <th scope="row">Tagi</th>
             <td>
-                {% for tag in course.tags.all %}
-                    <span class="badge bg-success me-2">{{ tag }}</span>
-                {% endfor %}
+                <ul>
+                    {% for tag in course.tags.all %}    
+                        <li class="badge bg-success me-2">{{ tag }}</li>
+                    {% endfor %}
+                </ul>
             </td>
         </tr>
         {% endif %}
@@ -80,9 +98,11 @@
         <tr>
             <th>Grupy efektów kształcenia</th>
             <td>
-                {% for effect in course.effects.all %}
-                    <span class="badge bg-info me-2">{{ effect }}</span>
-                {% endfor %}
+                <ul>
+                    {% for effect in course.effects.all %}
+                        <il class="badge bg-info me-2">{{ effect }}</il>
+                    {% endfor %}
+                </ul>
             </td>
         </tr>
         {% endif %}
