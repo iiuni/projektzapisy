@@ -24,7 +24,7 @@
     {% endif %}
     {% if current_poll %}
     <div class="mb-3">
-      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}</span></h3>
+      <h3>Podsumowanie: <span class="text-info">{{ current_poll.subcategory }}{% if polls|lookup:current_poll.category|lookup:current_poll.subcategory|length > 1 %} ({{ current_poll.group.get_terms_as_string }}){% endif %}</span></h3>
       <h5>Kategoria: <span class="text-secondary">{{ current_poll.category }}</span></h5>
     </div>
     {% endif %}
@@ -71,39 +71,31 @@
       {% endfor %}
     </select>
     <div class="accordion" id="course-sections">
-      {% for group_name, entries in polls.items %}
+      {% for category, category_polls in polls.items %}
       {% with index=iterator|next %}
       <div class="accordion-item">
         <button class="accordion-button collapsed" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-bs-toggle="collapse"
           data-bs-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
           <div class="d-flex w-100 justify-content-between me-1">
-            <span>{{ group_name }}</span>
+            <span>{{ category }}</span>
             <span class="text-end text-nowrap align-self-center">
-              {{ submissions_count|lookup:group_name|default_if_none:0 }}
+              {{ submissions_count|lookup:category|default_if_none:0 }}
             </span>
           </div>
         </button>
         <div
-          class="border-top collapse {% if current_poll and current_poll.category == group_name %}show{% endif %} list-group list-group-flush"
+          class="border-top collapse {% if current_poll and current_poll.category == category %}show{% endif %} list-group list-group-flush"
           id="course-section-{{ index }}" aria-labelledby="course-section-{{ index }}-heading">
-          {% for entry in entries %}
-          {% if current_poll and entry.id == current_poll.id %}
-          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action active">
+          {% for subcategory, subcategory_polls in category_polls.items %}
+          {% for poll in subcategory_polls %}
+          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=poll.id %}"
+            class="list-group-item list-group-item-action {% if current_poll and poll.id == current_poll.id %}active{% endif %}">
             <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.subcategory }}</span>
-              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
+              <span>{{ subcategory }}{% if subcategory_polls|length > 1 %} ({{ poll.group.get_terms_as_short_string }}){% endif %}</span>
+              <span class="text-end text-nowrap">{{ poll.number_of_submissions }}</span>
             </div>
           </a>
-          {% else %}
-          <a href="{% url 'grade-poll-results' semester_id=selected_semester.id poll_id=entry.id %}"
-            class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <span>{{ entry.subcategory }}</span>
-              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
-            </div>
-          </a>
-          {% endif %}
+          {% endfor %}
           {% endfor %}
         </div>
       </div>
