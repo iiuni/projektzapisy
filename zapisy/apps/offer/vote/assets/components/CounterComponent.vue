@@ -1,9 +1,3 @@
-<template>
-  <div class="alert alert-info" :class="{ 'alert-danger': exceedsLimit }">
-    Wykorzystano {{ total }} z {{ limit }} punktów
-  </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -30,3 +24,9 @@ export default class CounterComponent extends counterComponentProps {
   }
 }
 </script>
+
+<template>
+  <div class="alert alert-info" :class="{ 'alert-danger': exceedsLimit }">
+    Wykorzystano {{ total }} z {{ limit }} punktów
+  </div>
+</template>

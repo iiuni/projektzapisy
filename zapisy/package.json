@@ -5,7 +5,7 @@
     "dev:watch": "NODE_ENV=development yarn webpack-cli --watch --config webpack_resources/webpack.config.js",
     "dev:tc": "NODE_ENV=test yarn webpack-cli --config webpack_resources/webpack.config.js",
     "build": "NODE_ENV=production yarn webpack-cli --config webpack_resources/webpack.config.js",
-    "lint": "prettier --check ."
+    "lint": "prettier --check . ; eslint --ext .vue ."
   },
   "installConfig": {
     "pnp": true
@@ -53,11 +53,15 @@
     "@types/katex": "0.11.1",
     "@types/lodash": "4.14.192",
     "@types/markdown-it": "10.0.3",
+    "@typescript-eslint/eslint-plugin": "4.33.0",
+    "@typescript-eslint/parser": "4.33.0",
     "autoprefixer": "9.8.8",
     "babel-loader": "8.3.0",
     "clean-webpack-plugin": "3.0.0",
     "cookieconsent": "3.1.1",
     "css-loader": "4.3.0",
+    "eslint": "7.32.0",
+    "eslint-plugin-vue": "7.20.0",
     "file-loader": "6.2.0",
     "fork-ts-checker-webpack-plugin": "5.2.1",
     "mini-css-extract-plugin": "0.12.0",
@@ -71,6 +75,7 @@
     "ts-loader": "8.4.0",
     "typescript": "4.0.2",
     "vue-class-component": "7.2.6",
+    "vue-eslint-parser": "7.11.0",
     "vue-loader": "15.11.1",
     "vue-template-compiler": "2.7.16",
     "webpack": "4.47.0",

@@ -1,12 +1,3 @@
-<template>
-  <ul>
-    <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
-      <a :href="userLinkUrl + user.id"
-        >{{ user.first_name }} {{ user.last_name }}</a
-      >
-    </li>
-  </ul>
-</template>
 <script>
 import { EventBus } from "./event-bus";
 import { sortBy, some, every, map, get, filter } from "lodash";
@@ -71,3 +62,13 @@ export default {
   },
 };
 </script>
+
+<template>
+  <ul>
+    <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
+      <a :href="userLinkUrl + user.id"
+        >{{ user.first_name }} {{ user.last_name }}</a
+      >
+    </li>
+  </ul>
+</template>
