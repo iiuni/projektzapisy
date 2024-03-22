@@ -18,17 +18,15 @@ from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.filters import EventFilter, ExamFilter
-from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
-                                 EventModerationMessageForm, EditTermFormSet, NewTermFormSet,
+from apps.schedule.forms import (ConflictsForm, DecisionForm, DoorChartForm, EventForm, EventMessageForm,
+                                 EventModerationMessageForm, TableReportForm, EditTermFormSet, NewTermFormSet,
                                  ExtraTermsNumber)
+from apps.schedule.fullcalendar import FullCalendarView
 from apps.schedule.models.event import Event
+from apps.schedule.models.message import EventModerationMessage, EventMessage
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.schedule.models.term import Term
 from apps.schedule.utils import EventAdapter, get_week_range_by_date
-
-from .forms import DoorChartForm, TableReportForm
-from .fullcalendar import FullCalendarView
-from .models.message import EventModerationMessage
 
 
 @login_required
@@ -111,7 +109,6 @@ def edit_reservation(request, event_id=None):
 
 
 def session(request, semester=None):
-    from apps.enrollment.courses.models.semester import Semester
 
     exams_filter = ExamFilter(request.GET, queryset=Term.get_exams())
 
@@ -199,7 +196,6 @@ def events(request):
 
 
 def event(request, event_id):
-    from apps.schedule.models.message import EventModerationMessage, EventMessage
 
     event = Event.get_event_or_404(event_id, request.user)
     moderation_messages = EventModerationMessage.get_event_messages(event)
