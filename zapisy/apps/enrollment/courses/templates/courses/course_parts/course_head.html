@@ -62,7 +62,6 @@
                 </ul>
                 {% endspaceless %}
             </td>
-            
         </tr>
         <tr>
             <th scope="row">Rodzaj</th>
@@ -100,7 +99,7 @@
             <td>
                 <ul>
                     {% for effect in course.effects.all %}
-                        <il class="badge bg-info me-2">{{ effect }}</il>
+                        <li class="badge bg-info me-2">{{ effect }}</li>
                     {% endfor %}
                 </ul>
             </td>
@@ -108,7 +107,6 @@
         {% endif %}
     </tbody>
 </table>
-
 <div class="description">
     <h2>Opis przedmiotu:</h2>
     {% markdown course.description|default:"Brak" %}
