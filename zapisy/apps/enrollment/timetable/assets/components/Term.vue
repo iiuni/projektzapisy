@@ -64,7 +64,9 @@ export default class TermComponent extends TermProps {
   get boxClass(): string {
     if (this.term.group.isEnrolled) return "enrolled";
     if (this.term.group.isEnqueued) return "enqueued";
+    if (this.term.group.isPinned && this.group.isFull) return "pinned-full";
     if (this.term.group.isPinned) return "pinned";
+    if (this.term.group.isFull) return "full";
     return "";
   }
 
@@ -145,6 +147,12 @@ export default class TermComponent extends TermProps {
   right: 0;
 }
 
+.term-box.full,
+.term-box.full .classrooms,
+.term-box.full .group-type {
+  background: #e4e2e2;
+}
+
 .term-box.enrolled,
 .term-box.enrolled .classrooms,
 .term-box.enrolled .group-type {
@@ -161,6 +169,12 @@ export default class TermComponent extends TermProps {
 .term-box.pinned .classrooms,
 .term-box.pinned .group-type {
   background: #fae8f8;
+}
+
+.term-box.pinned-full,
+.term-box.pinned-full .classrooms,
+.term-box.pinned-full .group-type {
+  background: #e6cee6;
 }
 
 .short-name {
