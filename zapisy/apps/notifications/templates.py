@@ -36,7 +36,7 @@ mapping = {
     NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
     "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
-    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    'W {status} temacie pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
     'Praca dyplomowa "{title}" została zaakceptowana przez komisję.',
 }
@@ -59,7 +59,7 @@ mapping_title = {
     NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
     "{title}",
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
-    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    'W {status} temacie pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
     'Praca dyplomowa "{title}" została zaakceptowana.',
 }

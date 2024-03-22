@@ -163,17 +163,28 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
 @receiver(thesis_voting_activated, sender=Thesis)
 def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     thesis = kwargs['instance']
+    notify_all = kwargs['notify_all']
+    is_new = kwargs['is_new']
 
     all_voters = get_theses_board()
     accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
     users = [voter.user for voter in all_voters if voter not in accepting_voters]
     target = reverse('theses:selected_thesis', args=[thesis.id])
 
+    status = 'nowym'
+    if not is_new:
+        status = 'zmodyfikowanym'
+
+    if not notify_all:
+        already_voted = [v.owner for v in thesis.thesis_votes.all() if v.vote != ThesisVote.NONE]
+        users = [voter.user for voter in already_voted]
+
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
                      NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
-            'title': thesis.title
+            'title': thesis.title,
+            'status': status,
         }, target))
 
 
