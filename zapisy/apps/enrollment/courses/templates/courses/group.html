@@ -58,8 +58,8 @@
         <h3>Lista osób zapisanych na przedmiot:</h3>
         <p>
             Liczba zapisanych osób: {{students_in_group|length}} / {{group.limit}}
-            {% for gs in guaranteed_spots %}
-                + 
+            {% for gs in group.guaranteed_spots.all %}
+                +
                 <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
                     {{ gs.limit }}
                     <span class="badge bg-dark">{{ gs.role.name }}</span>
