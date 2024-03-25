@@ -39,7 +39,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'short_name', 'points', 'has_exam', 'description', 'language',
                   'semester', 'course_type', 'usos_kod')
         read_only_fields = ('id', 'name', 'short_name', 'points', 'has_exam', 'description',
-                            'language', 'semester', 'course_type')
+                            'language', 'course_type')
 
     def get_course_type(self, obj):
         if obj.course_type is None:
@@ -218,20 +218,6 @@ class RecordSerializer(serializers.ModelSerializer):
         fields = ('id', 'group', 'student')
 
 
-class CourseRelatedField(serializers.RelatedField):
-    def display_value(self, instance):
-        return instance
-
-    def to_representation(self, value):
-        return value.usos_kod
-
-    def to_internal_value(self, data):
-        try:
-            return CourseInstance.objects.get(usos_kod=data)
-        except CourseInstance.DoesNotExist:
-            raise serializers.ValidationError("Kurs o podanym usos_kod nie istnieje.")
-
-
 class StudentRelatedField(serializers.RelatedField):
     def display_value(self, instance):
         return instance
@@ -247,16 +233,24 @@ class StudentRelatedField(serializers.RelatedField):
 
 
 class CompletedCoursesSerializer(serializers.ModelSerializer):
-    """Serializes a CompletedCourses record.
-
-    StudentRelatedField and CourseRelatedField enable the API to use
-    usos_id and usos_kod to represent student and course fields in CompletedCourses
-    instead of internal django ids while also validating the input
-    """
+    """Serializes a CompletedCourses record."""
     student = StudentRelatedField(queryset=Student.objects.filter(is_active=True))
-    course = CourseRelatedField(queryset=CourseInstance.objects.all())
     program = ProgramRelatedField(queryset=Program.objects.all())
+    course = CourseSerializer()
+
+    @transaction.atomic
+    def create(self, validated_data):
+        course_data = validated_data.pop('course')
+        course_usos_kod = course_data['usos_kod']
+        semester__id = course_data['semester'].id
+        try:
+            course_instance = CourseInstance.objects.get(
+                usos_kod=course_usos_kod, semester__id=semester__id)
+        except CourseInstance.DoesNotExist:
+            raise serializers.ValidationError(
+                "Kurs o podanym usos_kod nie istnieje lub nie występuje w wybranym semestrze.")
+        return CompletedCourses.objects.create(course=course_instance, **validated_data)
 
     class Meta:
         model = CompletedCourses
-        fields = ('id', 'student', 'course', 'program')
+        fields = ('id', 'student', 'program', 'course')
