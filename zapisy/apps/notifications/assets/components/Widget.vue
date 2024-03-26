@@ -109,6 +109,7 @@ export default class NotificationsComponent extends Vue {
         id="navbarDropdown"
         role="button"
         data-bs-toggle="dropdown"
+        data-bs-auto-close="outside"
         aria-haspopup="true"
         aria-expanded="false"
       >
