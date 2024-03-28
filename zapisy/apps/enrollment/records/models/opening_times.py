@@ -7,9 +7,8 @@ for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Set
 
-from django.conf import settings
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -56,6 +55,22 @@ class T0Times(models.Model):
         return True
 
     @classmethod
+    def get_ects_ranking(cls) -> Dict[int, int]:
+        """Computes ECTS ranking, the higher the ranking the greater the time bonus.
+
+        The populate_t0 function uses this ranking to calculate
+        the opening time for selected students.
+        """
+        students = Student.get_active_students()
+
+        distinct_ects: Set[int] = set([student.ects for student in students])
+
+        ects_position: Dict[int, int] = \
+            {ects: position for position, ects in enumerate(sorted(distinct_ects))}
+
+        return ects_position
+
+    @classmethod
     @transaction.atomic
     def populate_t0(cls, semester: Semester, students: Iterable[Student] = None):
         """Computes T0s for selected students.
@@ -86,18 +101,21 @@ class T0Times(models.Model):
                 ], student__in=students).values('student_id').annotate(num_tickets=models.Count('id')).values_list(
                     'student_id', 'num_tickets'))
 
+        ranking = cls.get_ects_ranking()
+
         student: Student
         for student in students:
+            # The ECTS bonus is now based on the position in the ECTS
+            # ranking list. Students with the same amount of ECTS have
+            # the same position in the ranking. Each subsequent position
+            # in the ranking gives an additional 2 minutes (by default) of bonus.
+            ects_bonus = semester.get_records_spacing() * ranking[student.ects]
+
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
-            # Every ECTS gives 5 minutes bonus, but with logic splitting
-            # that over nighttime. 720 minutes is equal to12 hours. If
-            # ((student.ects * ECTS_BONUS) // 12 hours) is odd, we subtract
-            # additional 12 hours from T0. This way T0's are separated by
-            # ECTS_BONUS minutes per point, but never fall in the nighttime.
-            record.time -= timedelta(
-                minutes=((student.ects * settings.ECTS_BONUS) // 720) * 720)
-            record.time -= timedelta(minutes=settings.ECTS_BONUS) * student.ects
+
+            # Every student gets bonus based on ECTS ranking.
+            record.time -= ects_bonus
             # Every participation in classes grading gives a day worth
             # advantage.
             student_generated_tickets = generated_tickets.get(student.pk, 0)
@@ -108,6 +126,7 @@ class T0Times(models.Model):
             # shifted from 00:00-12:00 to 22:00-10:00.
             record.time -= timedelta(hours=2)
             created.append(record)
+
         cls.objects.bulk_create(created)
 
 
