@@ -335,15 +335,15 @@ class Record(models.Model):
     def taken_spots_by_role(cls, group: Group) -> Tuple[int, Dict[str, int]]:
         """Counts the number of taken spots indexed by user role.
 
-          The purpose of this is to establish how many students are enrolled according to which
-        GuaranteedSpots rule. Note, that this function will only work
-        deterministically and sanely, if the roles defined in GuaranteedSpots
-        rules are distinct for this groups.
+        The purpose of this method is to determine how many students are enrolled
+        according to each GuaranteedSpots rule.
+        Note that this function assumes the roles defined in GuaranteedSpots rules
+        are distinct for these groups.
 
-        The first item in the returned tuple is the number of students not matched to any GuaranteedSpots rule.
-        The second item is a dictionary with the key of role name and the number of enrolled students.
+        Method returns a tuple containing:
+        int: The number of students not matched to any GuaranteedSpots rule.
+        dict: A dictionary with role names as keys and the number of enrolled students as values.
         """
-
         ret: Dict[str, int] = {}
         guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
         all_enrolled_records = cls.objects.filter(
