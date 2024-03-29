@@ -84,7 +84,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
     ).order_by(
         'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
-        )
+    )
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
@@ -96,7 +96,8 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student, course.groups.all())
 
     for group in groups:
-        group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
+        group.num_enrolled = Record.taken_spots_by_role(group)[0]
+        group.num_enrolled_by_role = Record.taken_spots_by_role(group)[1]
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
@@ -173,9 +174,9 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Di
 
 
 def get_students_from_data(
-    groups_data_enrolled: Dict[int, GroupData],
-    groups_data_queued: Dict[int, GroupData],
-    preserve_queue_ordering: bool = False,
+        groups_data_enrolled: Dict[int, GroupData],
+        groups_data_queued: Dict[int, GroupData],
+        preserve_queue_ordering: bool = False,
 ):
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (locale.strxfrm(e.user.last_name),
@@ -222,15 +223,15 @@ def course_list_view(request, course_slug: str, class_type: int = None):
     )
 
     data = {
-            'students_in_course': students_in_course,
-            'students_in_queue': students_in_queue,
-            'course': course,
-            'can_user_see_all_students_here': can_user_see_all_students_here,
-            'mailto_group': mailto(request.user, students_in_course, bcc=False),
-            'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
-            'mailto_group_bcc': mailto(request.user, students_in_course, bcc=True),
-            'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
-            'class_type': class_type,
+        'students_in_course': students_in_course,
+        'students_in_queue': students_in_queue,
+        'course': course,
+        'can_user_see_all_students_here': can_user_see_all_students_here,
+        'mailto_group': mailto(request.user, students_in_course, bcc=False),
+        'mailto_queue': mailto(request.user, students_in_queue, bcc=False),
+        'mailto_group_bcc': mailto(request.user, students_in_course, bcc=True),
+        'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
+        'class_type': class_type,
     }
     data.update(prepare_courses_list_data(course.semester))
     return render(request, 'courses/course_list.html', data)
@@ -272,12 +273,12 @@ def group_view(request, group_id):
 
 
 def recorded_students_csv(
-    group_ids: List[int],
-    status: RecordStatus,
-    user: User,
-    course_name: Optional[str] = None,
-    exclude_students: Optional[Iterable] = None,
-    *, preserve_ordering: bool = False,
+        group_ids: List[int],
+        status: RecordStatus,
+        user: User,
+        course_name: Optional[str] = None,
+        exclude_students: Optional[Iterable] = None,
+        *, preserve_ordering: bool = False,
 ) -> HttpResponse:
     """Builds the HttpResponse with list of student enrolled/enqueued in a list of groups."""
     exclude_students = set(exclude_students or [])
@@ -304,8 +305,8 @@ def recorded_students_csv(
     writer = csv.writer(response)
     for matricula, student in students:
         writer.writerow([
-                student["first_name"], student["last_name"], matricula, student["email"]
-            ])
+            student["first_name"], student["last_name"], matricula, student["email"]
+        ])
     return response
 
 

@@ -64,7 +64,15 @@
                             </abbr>
                         {% endfor %}
                     </td>
-                    <td>{{ group.num_enrolled }}</td>
+                    <td>
+                        {{ group.num_enrolled }}
+                        {% for role, number in group.num_enrolled_by_role.items %}
+                            +
+                            <abbr title = "Liczba zapisanych osób dla grupy {{role}}.">
+                                {{ number }}
+                            </abbr>
+                        {% endfor %}
+                    </td>
                     <td>{{ group.num_enqueued }}</td>
                     {% if course.is_enrollment_on %}
                         <td>

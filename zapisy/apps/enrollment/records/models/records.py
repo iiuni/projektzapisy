@@ -43,7 +43,7 @@ from collections import defaultdict
 import copy
 from datetime import datetime
 from enum import Enum
-from typing import DefaultDict, Dict, Iterable, List, Optional, Set
+from typing import DefaultDict, Dict, Iterable, List, Optional, Set, Tuple
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -330,6 +330,39 @@ class Record(models.Model):
             ret[gsr.role.name] = gsr.limit - counter
         ret['-'] = group.limit - len(all_enrolled_students)
         return ret
+
+    @classmethod
+    def taken_spots_by_role(cls, group: Group) -> Tuple[int, Dict[str, int]]:
+        """Counts the number of taken spots indexed by user role.
+
+          The purpose of this is to establish how many students are enrolled according to which
+        GuaranteedSpots rule. Note, that this function will only work
+        deterministically and sanely, if the roles defined in GuaranteedSpots
+        rules are distinct for this groups.
+
+        The first item in the returned tuple is the number of students not matched to any GuaranteedSpots rule.
+        The second item is a dictionary with the key of role name and the number of enrolled students.
+        """
+
+        ret: Dict[str, int] = {}
+        guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
+        all_enrolled_records = cls.objects.filter(
+            group=group, status=RecordStatus.ENROLLED).select_related(
+                'student', 'student__user').prefetch_related('student__user__groups')
+        all_enrolled_students = set(r.student.user for r in all_enrolled_records)
+
+        enrolled_by_role_counter = 0
+        total_enrolled_counter = len(all_enrolled_students)
+        for gsr in guaranteed_spots_rules:
+            role = gsr.role
+            counter = 0
+            for user in all_enrolled_students.copy():
+                if role in user.groups.all():
+                    all_enrolled_students.remove(user)
+                    counter += 1
+                    enrolled_by_role_counter += 1
+            ret[gsr.role.name] = counter
+        return total_enrolled_counter - enrolled_by_role_counter, ret
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
