@@ -17,6 +17,9 @@ class NotificationPreferencesStudent(models.Model):
         "Zmiana prowadzącego grupy, do której czekasz w kolejce", default=True)
     news_has_been_added = models.BooleanField(
         "Nowa wiadomość w Aktualnościach", default=True)
+    
+    event_has_been_accepted = models.BooleanField("Akceptacja Twojego wydarzenia", default=True)
+    event_has_been_rejected = models.BooleanField("Odrzucenie Twojego wydarzenia", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
@@ -33,6 +36,9 @@ class NotificationPreferencesTeacher(models.Model):
         "Nowa wiadomość w Aktualnościach", default=True)
     thesis_voting_has_been_activated = models.BooleanField(
         "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
+    
+    event_has_been_accepted = models.BooleanField("Akceptacja Twojego wydarzenia", default=True)
+    event_has_been_rejected = models.BooleanField("Odrzucenie Twojego wydarzenia", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
