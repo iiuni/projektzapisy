@@ -5,6 +5,7 @@ from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Min
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -76,9 +77,14 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student = request.user.student
 
     groups = course.groups.select_related(
-        'teacher',
-        'teacher__user',
-    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
+        'teacher', 'teacher__user',
+    ).prefetch_related(
+        'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
+    ).annotate(
+        earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
+    ).order_by(
+        'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
+        )
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
@@ -226,7 +232,8 @@ def course_list_view(request, course_slug: str, class_type: int = None):
             'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
             'class_type': class_type,
     }
-    return render(request, 'courses/course_parts/course_list.html', data)
+    data.update(prepare_courses_list_data(course.semester))
+    return render(request, 'courses/course_list.html', data)
 
 
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:

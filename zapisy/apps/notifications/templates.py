@@ -13,6 +13,7 @@ class NotificationType(str, Enum):
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
     EVENT_HAS_BEEN_ACCEPTED = 'event_has_been_accepted'
     EVENT_HAS_BEEN_REJECTED = 'event_has_been_rejected'
+    THESIS_HAS_BEEN_ACCEPTED = 'thesis_has_been_accepted'
 
 
 mapping = {
@@ -42,6 +43,8 @@ mapping = {
     'Twoje wydarzenie zostało zaakceptowane:\n{title}',
     NotificationType.EVENT_HAS_BEEN_REJECTED:
     'Twoje wydarzenie zostało odrzucone:\n{title}',
+    NotificationType.THESIS_HAS_BEEN_ACCEPTED:
+    'Praca dyplomowa "{title}" została zaakceptowana przez komisję.',
 }
 
 mapping_title = {
@@ -67,4 +70,6 @@ mapping_title = {
     '{title}',
     NotificationType.EVENT_HAS_BEEN_REJECTED:
     '{title}',
+    NotificationType.THESIS_HAS_BEEN_ACCEPTED:
+    'Praca dyplomowa "{title}" została zaakceptowana.',
 }
