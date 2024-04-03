@@ -16,7 +16,7 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  mounted() {
+  async mounted() {
     // When mounted, load the list of courses from embedded JSON and apply initial filters
     // fetched from the query string.
     const courseData = JSON.parse(
@@ -27,14 +27,18 @@ export default Vue.extend({
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
+    await this.$nextTick();
+    updateCoursesLinks();
 
-    this.$store.subscribe((mutation, _) => {
+    this.$store.subscribe(async (mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
+          await this.$nextTick();
+          updateCoursesLinks();
           break;
       }
     });
@@ -54,12 +58,24 @@ function updateSemesterLinks() {
     }
   }
 }
+function updateCoursesLinks() {
+  const queryString = window.location.search;
+  const coursesLinks = document.getElementsByClassName("course-link");
+  for (let i = 0; i < coursesLinks.length; i++) {
+    const link: Element = coursesLinks[i];
+    const hrefValue = link.getAttribute("href");
+    if (hrefValue !== null) {
+      const coursesPath = hrefValue.split("?")[0];
+      link.setAttribute("href", coursesPath + queryString);
+    }
+  }
+}
 </script>
 
 <template>
   <ul class="nav d-block">
     <li v-for="c in visibleCourses" v-bind:key="c.id">
-      <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">{{
+      <a :href="c.url" class="d-block px-4 py-1 text-decoration-none course-link">{{
         c.name
       }}</a>
     </li>
