@@ -75,9 +75,11 @@ function updateCoursesLinks() {
 <template>
   <ul class="nav d-block">
     <li v-for="c in visibleCourses" v-bind:key="c.id">
-      <a :href="c.url" class="d-block px-4 py-1 text-decoration-none course-link">{{
-        c.name
-      }}</a>
+      <a
+        :href="c.url"
+        class="d-block px-4 py-1 text-decoration-none course-link"
+        >{{ c.name }}</a
+      >
     </li>
   </ul>
 </template>
