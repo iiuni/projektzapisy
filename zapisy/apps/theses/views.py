@@ -59,7 +59,7 @@ def list_all(request):
 @login_required
 def view_thesis(request, id):
     """Show subpage for one thesis."""
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     board_member = is_theses_board_member(request.user)
     is_student_assigned = thesis.students.filter(user=request.user).exists()
 
@@ -70,8 +70,6 @@ def view_thesis(request, id):
         is_student_assigned
     )
 
-    if not thesis.has_been_accepted and not user_privileged_for_thesis:
-        raise PermissionDenied
     can_edit_thesis = thesis.is_mine(request.user)
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
     can_vote = thesis.is_voting_active and board_member
