@@ -77,24 +77,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/compat-data@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@babel/compat-data@npm:7.24.1"
-  checksum: 9a74190486dd6b7d103039b528083ad8af8b5f2b0858e980e84dab9fbf8125e7837f8a0e61f7719baf21baa0b25fcbfca0e3b09d1e8fbfdde07a9a99093af593
+"@babel/compat-data@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/compat-data@npm:7.24.4"
+  checksum: 342daa9c7412fc6eb2298f472743ab0a9ba0713b89c2d0d97a6bcd2e6bfb5245eeb43906a7321a2fedeff7ad4cd6a1ba2a66c1e05da264afcbc8b913c4614302
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.24.3":
-  version: 7.24.3
-  resolution: "@babel/core@npm:7.24.3"
+"@babel/core@npm:7.24.4":
+  version: 7.24.4
+  resolution: "@babel/core@npm:7.24.4"
   dependencies:
     "@ampproject/remapping": ^2.2.0
     "@babel/code-frame": ^7.24.2
-    "@babel/generator": ^7.24.1
+    "@babel/generator": ^7.24.4
     "@babel/helper-compilation-targets": ^7.23.6
     "@babel/helper-module-transforms": ^7.23.3
-    "@babel/helpers": ^7.24.1
-    "@babel/parser": ^7.24.1
+    "@babel/helpers": ^7.24.4
+    "@babel/parser": ^7.24.4
     "@babel/template": ^7.24.0
     "@babel/traverse": ^7.24.1
     "@babel/types": ^7.24.0
@@ -103,7 +103,7 @@ __metadata:
     gensync: ^1.0.0-beta.2
     json5: ^2.2.3
     semver: ^6.3.1
-  checksum: 1ff8717c64ffb3e74aa34ee5fc141700cbe2aa96375884fb3d92358a3c319163aa2e0013e73fefda545a6a49e51dcc741b642b7cfc856532ae322d646021071e
+  checksum: cf966acd343ff9fc07580ae9ae95c0d1117b7143a22305f8f3419024f7c334f53f9b7e69b54f49a7cc4063061e75ce540bd3dee44a636ab93bf51e54753e02d6
   languageName: node
   linkType: hard
 
@@ -116,6 +116,18 @@ __metadata:
     "@jridgewell/trace-mapping": ^0.3.25
     jsesc: ^2.5.1
   checksum: 4662c599cbec9ba161c905ce8720a9222c2dccbf1f7b239d6a3e2e047f8cd8c8fa9e7c708421eb2687a1ad2711f2f8715adb37d78258462ab63ece53d295a7e0
+  languageName: node
+  linkType: hard
+
+"@babel/generator@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/generator@npm:7.24.4"
+  dependencies:
+    "@babel/types": ^7.24.0
+    "@jridgewell/gen-mapping": ^0.3.5
+    "@jridgewell/trace-mapping": ^0.3.25
+    jsesc: ^2.5.1
+  checksum: 0a7bb6b87c6d18bdac4067938411ba27270f1d02e08552dcd00067e9dcaf943a336ec22c926f329e3f1e0dc750884952eba7f5f8faa1a161df94933affe808ba
   languageName: node
   linkType: hard
 
@@ -190,6 +202,25 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0
   checksum: afdcbd08f39ec6b3e26a80079963a221fc991ee195469ad103ddebc28df98c7b49e75e273644a85e57656c0e96960ee5cdd7ea9dbce7cd2d1d444c538aececfe
+  languageName: node
+  linkType: hard
+
+"@babel/helper-create-class-features-plugin@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/helper-create-class-features-plugin@npm:7.24.4"
+  dependencies:
+    "@babel/helper-annotate-as-pure": ^7.22.5
+    "@babel/helper-environment-visitor": ^7.22.20
+    "@babel/helper-function-name": ^7.23.0
+    "@babel/helper-member-expression-to-functions": ^7.23.0
+    "@babel/helper-optimise-call-expression": ^7.22.5
+    "@babel/helper-replace-supers": ^7.24.1
+    "@babel/helper-skip-transparent-expression-wrappers": ^7.22.5
+    "@babel/helper-split-export-declaration": ^7.22.6
+    semver: ^6.3.1
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 339bf2920686d5ffe54312823afb3596ed98c86d0bb3d1e9990cef95b75dc6d4d78cca9ed995fcc70e1fa62dcd82481af84a96c25e321bcc5a5414293fa27a58
   languageName: node
   linkType: hard
 
@@ -502,14 +533,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helpers@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@babel/helpers@npm:7.24.1"
+"@babel/helpers@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/helpers@npm:7.24.4"
   dependencies:
     "@babel/template": ^7.24.0
     "@babel/traverse": ^7.24.1
     "@babel/types": ^7.24.0
-  checksum: 7b729ed1c6ecd2c185363eb7eb3a0e66e93737ef3855497a93e57a26a5d5f6a022f492c931ff8a974b6ac2b98e834b2b4c6906e2c1ffee020a0ff461e2f419e9
+  checksum: 6acd791c10c2542899c5ee5a7067dfb92ca15c1272a15f012b0e2cf0abe070e81c26950fb6f3ee1e9cc1be3e969426d890d58a4254857056dfad89edadd77e76
   languageName: node
   linkType: hard
 
@@ -611,6 +642,27 @@ __metadata:
   bin:
     parser: ./bin/babel-parser.js
   checksum: 431e6bf219c7ef58f0e4422a8b44584175148031a5fef65e9e0ff459fa8305bb3f94d4b219a89aaae821cf7bdd936b54e8f4efa212e0e80056f88525cae64e71
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/parser@npm:7.24.4"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 5fbe1c5e0611de9d01150c437483e1612b822947dad66e1b4833386351b3fb7ceebe0287e78f38901be9017486b411bcd89ae32f55603690a9a9265f6dac4769
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-bugfix-firefox-class-in-computed-class-key@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/plugin-bugfix-firefox-class-in-computed-class-key@npm:7.24.4"
+  dependencies:
+    "@babel/helper-environment-visitor": ^7.22.20
+    "@babel/helper-plugin-utils": ^7.24.0
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: ddab53a12338ded6981216aadc8570cd613692f4863c6b5df748160de139cc3cf016725061f2a711ca1c2764d5a6e0122d7de6a810ca124ef2a7330bb20e2ffa
   languageName: node
   linkType: hard
 
@@ -907,14 +959,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-block-scoping@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@babel/plugin-transform-block-scoping@npm:7.24.1"
+"@babel/plugin-transform-block-scoping@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/plugin-transform-block-scoping@npm:7.24.4"
   dependencies:
     "@babel/helper-plugin-utils": ^7.24.0
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 61e4c7d96846c5e78bcdd05191c017b84ed36f441af4199214d905e048babd78c096cef9101255f8513882879ae716a43908aac118c72e5548054952844dcc68
+  checksum: 5a0f825d0644c6cdb8905aa248391409a5859f81335b71463005e0c7bcfc6617c2756cc4db8db9766dea547b8ed191c364a911a94492654f2a47f038c46f10ac
   languageName: node
   linkType: hard
 
@@ -930,16 +982,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-class-static-block@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@babel/plugin-transform-class-static-block@npm:7.24.1"
+"@babel/plugin-transform-class-static-block@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/plugin-transform-class-static-block@npm:7.24.4"
   dependencies:
-    "@babel/helper-create-class-features-plugin": ^7.24.1
+    "@babel/helper-create-class-features-plugin": ^7.24.4
     "@babel/helper-plugin-utils": ^7.24.0
     "@babel/plugin-syntax-class-static-block": ^7.14.5
   peerDependencies:
     "@babel/core": ^7.12.0
-  checksum: 0a0cb9df4c4874e632b0670c5728350aa6758aca78c6688eeea280cc3b8b09fb09cf1c4e5ea814fbaab3cd0d6f980a137608f7c35ff2d2870df05c9c63be4bf6
+  checksum: d1ae4ed5cfcb75882a62764427dfd3c7d5392e31429614383a88794a160e4908f1919cc872fb195a923e06d8e209fd457a850775a53b66ab1a873d2172d80b20
   languageName: node
   linkType: hard
 
@@ -1437,14 +1489,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.24.3":
-  version: 7.24.3
-  resolution: "@babel/preset-env@npm:7.24.3"
+"@babel/preset-env@npm:7.24.4":
+  version: 7.24.4
+  resolution: "@babel/preset-env@npm:7.24.4"
   dependencies:
-    "@babel/compat-data": ^7.24.1
+    "@babel/compat-data": ^7.24.4
     "@babel/helper-compilation-targets": ^7.23.6
     "@babel/helper-plugin-utils": ^7.24.0
     "@babel/helper-validator-option": ^7.23.5
+    "@babel/plugin-bugfix-firefox-class-in-computed-class-key": ^7.24.4
     "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression": ^7.24.1
     "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining": ^7.24.1
     "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly": ^7.24.1
@@ -1471,9 +1524,9 @@ __metadata:
     "@babel/plugin-transform-async-generator-functions": ^7.24.3
     "@babel/plugin-transform-async-to-generator": ^7.24.1
     "@babel/plugin-transform-block-scoped-functions": ^7.24.1
-    "@babel/plugin-transform-block-scoping": ^7.24.1
+    "@babel/plugin-transform-block-scoping": ^7.24.4
     "@babel/plugin-transform-class-properties": ^7.24.1
-    "@babel/plugin-transform-class-static-block": ^7.24.1
+    "@babel/plugin-transform-class-static-block": ^7.24.4
     "@babel/plugin-transform-classes": ^7.24.1
     "@babel/plugin-transform-computed-properties": ^7.24.1
     "@babel/plugin-transform-destructuring": ^7.24.1
@@ -1523,7 +1576,7 @@ __metadata:
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: a1070d8a45107dae93eff5c34f40d7f64a72840515f87bd17f4c355245f972735801c2be9d2ea67b1b4875b32fb3286da56004bfc66c7d73e2868955c194828e
+  checksum: 6bf34839229d6880417218a69f8ff0e4c7a6abbb71c9e6ccf19887c8439be5cb6335e98a6da38c48bd389d8b55d272a9b9db50e7954fcc7de949fbcb3cfb5d52
   languageName: node
   linkType: hard
 
@@ -5288,8 +5341,8 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ii-zapisy@workspace:."
   dependencies:
-    "@babel/core": 7.24.3
-    "@babel/preset-env": 7.24.3
+    "@babel/core": 7.24.4
+    "@babel/preset-env": 7.24.4
     "@bokeh/bokehjs": 2.4.3
     "@fortawesome/fontawesome-free": 5.15.4
     "@fortawesome/fontawesome-svg-core": 1.3.0
