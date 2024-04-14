@@ -30,13 +30,15 @@ export default defineComponent({
       required: true,
     },
     selectedSemester: {
-      type: Object as PropType<{id: String}>,
+      type: Object as PropType<{ id: String }>,
       required: true,
-    }
+    },
   },
   methods: {
     orderEntriesAlph: function (polls: Poll[]) {
-      return [...polls].sort((a : Poll, b : Poll) => a.name.localeCompare(b.name));
+      return [...polls].sort((a: Poll, b: Poll) =>
+        a.name.localeCompare(b.name)
+      );
     },
   },
 
@@ -44,14 +46,19 @@ export default defineComponent({
     const allPolls = props.polls;
     const showOnlyMyCourses = ref(false);
 
-    const myPolls : ComputedRef<Record<string, Record<string,Poll[]>>>  = computed(() => {
-      return Object.fromEntries(Object.entries(allPolls).filter(([course_name, course_polls]) => {
-        if (course_name === 'Ankiety ogólne') return true;
-        return Object.entries(course_polls).some(([group_key, group_polls]) => {
-          return group_polls.some((poll) => poll.is_own);
-        });
-      }));
-    })
+    const myPolls: ComputedRef<Record<string, Record<string, Poll[]>>> =
+      computed(() => {
+        return Object.fromEntries(
+          Object.entries(allPolls).filter(([course_name, course_polls]) => {
+            if (course_name === "Ankiety ogólne") return true;
+            return Object.entries(course_polls).some(
+              ([group_key, group_polls]) => {
+                return group_polls.some((poll) => poll.is_own);
+              }
+            );
+          })
+        );
+      });
 
     return {
       allPolls,
@@ -79,26 +86,49 @@ export default defineComponent({
       </label>
     </div>
     <div class="accordion" id="course-sections">
-      <div v-for="(course_polls, course_name, index) in (showOnlyMyCourses ? myPolls : allPolls)" :key="course_name"
-        class="accordion-item">
-        <button class="accordion-button collapsed" style="cursor: pointer" :id="'course-section-' + index + '-heading'"
-          data-bs-toggle="collapse" :data-bs-target="'#course-section-' + index" aria-expanded="false"
-          :aria-controls="'course-section-' + index">
+      <div
+        v-for="(course_polls, course_name, index) in showOnlyMyCourses
+          ? myPolls
+          : allPolls"
+        :key="course_name"
+        class="accordion-item"
+      >
+        <button
+          class="accordion-button collapsed"
+          style="cursor: pointer"
+          :id="'course-section-' + index + '-heading'"
+          data-bs-toggle="collapse"
+          :data-bs-target="'#course-section-' + index"
+          aria-expanded="false"
+          :aria-controls="'course-section-' + index"
+        >
           <div class="d-flex w-100 justify-content-between me-1">
             <span>{{ course_name }}</span>
             <span class="text-end text-nowrap align-self-center">{{
-              submissionsCount[course_name] || 'Brak'
-              }}</span>
+              submissionsCount[course_name] || "Brak"
+            }}</span>
           </div>
         </button>
-        <div class="border-top collapse list-group list-group-flush"
-          :class="{ show: currentPoll && currentPoll.type === course_name }" :id="'course-section-' + index"
-          :aria-labelledby="'course-section-' + index + '-heading'">
-          <template v-for="(group_polls, group_key) in  course_polls">
-            <a v-for="(poll, poll_key) in orderEntriesAlph(group_polls)" :key="group_key + '-' + poll_key"
-              :href="'/grade/poll/results/semester/' + selectedSemester.id + '/poll/' + poll.id + '/'"
+        <div
+          class="border-top collapse list-group list-group-flush"
+          :class="{ show: currentPoll && currentPoll.type === course_name }"
+          :id="'course-section-' + index"
+          :aria-labelledby="'course-section-' + index + '-heading'"
+        >
+          <template v-for="(group_polls, group_key) in course_polls">
+            <a
+              v-for="(poll, poll_key) in orderEntriesAlph(group_polls)"
+              :key="group_key + '-' + poll_key"
+              :href="
+                '/grade/poll/results/semester/' +
+                selectedSemester.id +
+                '/poll/' +
+                poll.id +
+                '/'
+              "
               class="list-group-item list-group-item-action"
-              :class="{ active: currentPoll && poll.id === currentPoll.id }">
+              :class="{ active: currentPoll && poll.id === currentPoll.id }"
+            >
               <div class="d-flex w-100 justify-content-between">
                 <span class="inline" v-if="group_polls.length > 1">
                   {{ poll.name }} ({{ poll.hours }})
@@ -109,7 +139,7 @@ export default defineComponent({
 
                 <span class="text-end text-nowrap">{{
                   poll.number_of_submissions
-                  }}</span>
+                }}</span>
               </div>
             </a>
           </template>
