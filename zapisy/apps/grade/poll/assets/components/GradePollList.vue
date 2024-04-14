@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import type { ComputedRef, PropType } from "vue";
+import type {  PropType } from "vue";
 
 interface Poll {
   id: string;
@@ -43,15 +43,15 @@ export default defineComponent({
   },
 
   setup(props) {
-    const allPolls = props.polls;
+    const allPolls : Record<string, Record<string, Poll[]>> = props.polls;
     const showOnlyMyCourses = ref(false);
 
     const myPolls = computed(() => {
       return Object.fromEntries(
-        Object.entries(allPolls).filter(([course_name, course_polls]) => {
+        Object.entries(allPolls).filter(([course_name, course_polls] : [string, Record<string, Poll[]>]) => {
           if (course_name === "Ankiety ogólne") return true;
-          return Object.entries(course_polls).some(
-            ([group_key, group_polls]) => {
+          Object.entries(course_polls).some(
+            ([_, group_polls] : [string,Poll[]]) => {
               return group_polls.some((poll) => poll.is_own);
             }
           );
