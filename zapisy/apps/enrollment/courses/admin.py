@@ -49,6 +49,11 @@ class SemesterAdmin(admin.ModelAdmin):
                 'records_closing'
             ]
         }),
+        ('Czas trwania oceny zajęć', {
+            'fields': [
+                'semester_grade_beginning', 'semester_grade_ending'
+            ]
+        }),
     ]
     list_editable = ('visible',)
 

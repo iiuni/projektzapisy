@@ -29,7 +29,7 @@ class SubmissionEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.jsonfields = kwargs.pop("jsonfields", None)
         super().__init__(*args, **kwargs)
-        self.is_grade_active = self.instance.poll.get_semester.is_grade_active
+        self.is_grade_active = self.instance.poll.get_semester.is_grade_active_f()
         for index, field in enumerate(self.jsonfields):
             form_field = self.__determine_field_by_type(
                 field=field, active=self.is_grade_active

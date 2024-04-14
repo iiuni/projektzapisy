@@ -39,6 +39,12 @@ class Semester(models.Model):
     semester_ending = models.DateField(null=False, verbose_name='Data zakończenia semestru')
 
     is_grade_active = models.BooleanField(verbose_name='Ocena aktywna', default=False)
+
+    semester_grade_beginning = models.DateField(
+        null=True, blank=True, verbose_name='Data rozpoczęcia oceny zajęć')
+    semester_grade_ending = models.DateField(
+        null=True, blank=True, verbose_name='Data zakończenia oceny zajęć')
+
     records_ects_limit_abolition = models.DateTimeField(
         null=True, verbose_name='Czas zniesienia limitu 35 ECTS')
 
@@ -120,6 +126,12 @@ class Semester(models.Model):
         if self.semester_beginning is None or self.semester_ending is None:
             return False
         return self.semester_beginning <= datetime.now().date() <= self.semester_ending
+
+    def is_grade_active_f(self):
+        if self.semester_grade_beginning is None or self.semester_grade_ending is None:
+            return False
+        return self.semester_grade_beginning <= datetime.now().date() <= self.semester_grade_ending \
+                and self.is_grade_active
 
     def get_all_days_of_week(self, day_of_week, start_date=None):
         """Get all dates when the specifies day of week schedule is valid.
@@ -239,6 +251,14 @@ class Semester(models.Model):
             MultipleObjectsReturned: Wrong semesters' dates
         """
         return Semester.get_semester(datetime.today())
+
+    @staticmethod
+    def get_last_grade_semester() -> Optional['Semester']:
+        try:
+            return Semester.objects.filter(
+                semester_grade_beginning__lte=datetime.now()).latest('semester_grade_beginning')
+        except Semester.DoesNotExist:
+            return None
 
     def serialize_for_json(self):
         return {
