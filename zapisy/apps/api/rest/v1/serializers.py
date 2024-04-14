@@ -12,6 +12,7 @@ from apps.offer.desiderata.models import Desiderata, DesiderataOther
 from apps.offer.vote.models import SingleVote, SystemState
 from apps.schedule.models.specialreservation import SpecialReservation
 from apps.users.models import Employee, Program, Student
+from apps.grade.poll.models import Poll
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -24,6 +25,13 @@ class SemesterSerializer(serializers.ModelSerializer):
 
     def get_display_name(self, obj):
         return obj.get_name()
+
+
+class PollSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poll
+        fields = ('id', 'name', 'type', 'hours')
+        # fields = '__all__'
 
 
 class CourseSerializer(serializers.ModelSerializer):

@@ -9,9 +9,10 @@ from django.shortcuts import redirect, render, reverse
 from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
+from apps.api.rest.v1.serializers import SemesterSerializer
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
-from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status)
+from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status, group_polls)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
 
 
@@ -242,28 +243,18 @@ class PollResults(TemplateView):
             submissions = []
 
         semesters = Semester.objects.all()
-        from apps.grade.poll.utils import group_polls
-        polls_extra = group_polls(polls=available_polls)
-        for cat, polls in polls_extra.items():
-            for (a, b) in polls.items():
-                arr = []
-                for x in b:
-                    dic = x.to_dict()
-                    dic['number_of_submissions'] = x.number_of_submissions
-                    dic['is_own'] = request.user.employee in [x.owner, x.teacher, x.gcowner]
-                    arr.append(dic)
-                polls_extra[cat][a] = arr
-        # logger.info(polls_extra)
-
-        from apps.api.rest.v1.serializers import SemesterSerializer
 
         if request.user.is_superuser or request.user.employee:
+            polls = {course_name: {group_name: [poll.to_dict_extended(employee=request.user.employee)
+                                                for poll in poll_list]
+                                   for group_name, poll_list in group_polls.items()}
+                     for course_name, group_polls in group_polls(polls=available_polls).items()}
             return render(
                 request,
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': polls_extra,
+                    'polls': polls,
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,

@@ -151,6 +151,18 @@ class Poll(models.Model):
 
         return result
 
+    def to_dict_extended(self, employee: Employee) -> dict:
+        """Serializes the Poll with additional fields of "is_own" and "number_of_submissions".
+
+        "number_of_submissions" is annotated by queryset
+        """
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
+                  'hours': self.hours,
+                  'number_of_submissions': self.number_of_submissions,
+                  'is_own': employee in [self.owner, self.teacher, self.gcowner]}
+
+        return result
+
     def is_student_entitled_to_poll(self, student: Student) -> bool:
         """Checks whether the student is allowed to participate in this Poll.
 
