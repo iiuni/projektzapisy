@@ -1,10 +1,9 @@
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import type { PropType } from "vue";
+import { computed, defineComponent, ref } from "vue";
+import type { ComputedRef, PropType } from "vue";
 
 interface Poll {
   id: string;
-  href: string;
   hours: string;
   type: string;
   name: string;
@@ -15,7 +14,7 @@ interface Poll {
 export default defineComponent({
   props: {
     polls: {
-      type: Object as PropType<Record<string, Poll[]>>,
+      type: Object as PropType<Record<string, Record<string, Poll[]>>>,
       required: true,
     },
     submissionsCount: {
@@ -30,46 +29,34 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    selectedSemester: {
+      type: Object as PropType<{id: String}>,
+      required: true,
+    }
   },
   methods: {
-    orderEntriesAlph: function (entries: any[]) {
-      return entries.sort((a, b) => a.name.localeCompare(b.name));
+    orderEntriesAlph: function (polls: Poll[]) {
+      return [...polls].sort((a : Poll, b : Poll) => a.name.localeCompare(b.name));
     },
   },
+
   setup(props) {
-    const fullList = ref(props.polls);
-    const currentList = ref(fullList.value);
+    const allPolls = props.polls;
     const showOnlyMyCourses = ref(false);
 
-    const updateCurrentList = () => {
-      if (showOnlyMyCourses.value) {
-        let filteredCourses: Record<string, Poll[]> = {};
-
-        Object.keys(fullList.value).forEach((key) => {
-          let category = fullList.value[key];
-          if (key == "Ankiety ogólne") {
-            filteredCourses[key] = category;
-          } else {
-            let filteredCategory = category.filter(
-              (poll: Poll) => poll.is_own === true
-            );
-
-            if (filteredCategory.length > 0) {
-              filteredCourses[key] = filteredCategory;
-            }
-          }
+    const myPolls : ComputedRef<Record<string, Record<string,Poll[]>>>  = computed(() => {
+      return Object.fromEntries(Object.entries(allPolls).filter(([course_name, course_polls]) => {
+        if (course_name === 'Ankiety ogólne') return true;
+        return Object.entries(course_polls).some(([group_key, group_polls]) => {
+          return group_polls.some((poll) => poll.is_own);
         });
-        currentList.value = filteredCourses;
-      } else {
-        currentList.value = fullList.value;
-      }
-    };
+      }));
+    })
 
     return {
-      fullList,
-      currentList,
+      allPolls,
+      myPolls,
       showOnlyMyCourses,
-      updateCurrentList,
     };
   },
 });
@@ -86,69 +73,49 @@ export default defineComponent({
         <input
           type="checkbox"
           v-model="showOnlyMyCourses"
-          @change="updateCurrentList"
           style="margin-right: 10px"
         />
         Pokaż tylko ankiety dotyczące moich grup i przedmiotów
       </label>
     </div>
     <div class="accordion" id="course-sections">
-      <div
-        v-for="(entries, group_name, index) in currentList"
-        :key="group_name"
-        class="accordion-item"
-      >
-        <button
-          class="accordion-button collapsed"
-          style="cursor: pointer"
-          :id="'course-section-' + index + '-heading'"
-          data-bs-toggle="collapse"
-          :data-bs-target="'#course-section-' + index"
-          aria-expanded="false"
-          :aria-controls="'course-section-' + index"
-        >
+      <div v-for="(course_polls, course_name, index) in (showOnlyMyCourses ? myPolls : allPolls)" :key="course_name"
+        class="accordion-item">
+        <button class="accordion-button collapsed" style="cursor: pointer" :id="'course-section-' + index + '-heading'"
+          data-bs-toggle="collapse" :data-bs-target="'#course-section-' + index" aria-expanded="false"
+          :aria-controls="'course-section-' + index">
           <div class="d-flex w-100 justify-content-between me-1">
-            <span>{{ group_name }}</span>
+            <span>{{ course_name }}</span>
             <span class="text-end text-nowrap align-self-center">{{
-              submissionsCount[group_name] || 0
-            }}</span>
+              submissionsCount[course_name] || 'Brak'
+              }}</span>
           </div>
         </button>
-        <div
-          class="border-top collapse list-group list-group-flush"
-          :class="{ show: currentPoll && currentPoll.type === group_name }"
-          :id="'course-section-' + index"
-          :aria-labelledby="'course-section-' + index + '-heading'"
-        >
-          <a
-            v-for="entry in orderEntriesAlph(entries)"
-            :key="entry.id"
-            :href="entry.href"
-            class="list-group-item list-group-item-action"
-            :class="{ active: currentPoll && entry.id === currentPoll.id }"
-          >
-            <div class="d-flex w-100 justify-content-between">
-              <span
-                class="inline"
-                v-if="entries.filter((x) => x.name == entry.name).length > 1"
-              >
-                {{ entry.name }} {{ entry.hours }}
-              </span>
-              <span class="inline" v-else>
-                {{ entry.name }}
-              </span>
+        <div class="border-top collapse list-group list-group-flush"
+          :class="{ show: currentPoll && currentPoll.type === course_name }" :id="'course-section-' + index"
+          :aria-labelledby="'course-section-' + index + '-heading'">
+          <template v-for="(group_polls, group_key) in  course_polls">
+            <a v-for="(poll, poll_key) in orderEntriesAlph(group_polls)" :key="group_key + '-' + poll_key"
+              :href="'/grade/poll/results/semester/' + selectedSemester.id + '/poll/' + poll.id + '/'"
+              class="list-group-item list-group-item-action"
+              :class="{ active: currentPoll && poll.id === currentPoll.id }">
+              <div class="d-flex w-100 justify-content-between">
+                <span class="inline" v-if="group_polls.length > 1">
+                  {{ poll.name }} ({{ poll.hours }})
+                </span>
+                <span class="inline" v-else>
+                  {{ poll.name }}
+                </span>
 
-              <span class="text-end text-nowrap">{{
-                entry.number_of_submissions
-              }}</span>
-            </div>
-          </a>
+                <span class="text-end text-nowrap">{{
+                  poll.number_of_submissions
+                  }}</span>
+              </div>
+            </a>
+          </template>
         </div>
       </div>
-      <div
-        v-if="Object.keys(currentList).length === 0"
-        class="alert alert-info"
-      >
+      <div v-if="Object.keys(allPolls).length === 0" class="alert alert-info">
         Brak przesłanych ankiet w wybranym semestrze.
       </div>
     </div>

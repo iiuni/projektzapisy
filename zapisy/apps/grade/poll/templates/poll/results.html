@@ -72,6 +72,7 @@
     </select>
     <div class="accordion" id="course-sections"></div>
     {{ polls|json_script:"data-polls" }}
+    {{ selected_semester|json_script:"data-selected-semester" }}
     {{ submissions_count|json_script:"data-submissions-count" }}
     {{ current_poll|json_script:"data-current-poll" }}
     {{ is_superuser|json_script:"data-is-superuser" }}

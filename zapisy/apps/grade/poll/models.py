@@ -146,7 +146,8 @@ class Poll(models.Model):
 
         :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
+                  'hours': self.hours}
 
         return result
 
