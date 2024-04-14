@@ -46,19 +46,18 @@ export default defineComponent({
     const allPolls = props.polls;
     const showOnlyMyCourses = ref(false);
 
-    const myPolls: ComputedRef<Record<string, Record<string, Poll[]>>> =
-      computed(() => {
-        return Object.fromEntries(
-          Object.entries(allPolls).filter(([course_name, course_polls]) => {
-            if (course_name === "Ankiety ogólne") return true;
-            return Object.entries(course_polls).some(
-              ([group_key, group_polls]) => {
-                return group_polls.some((poll) => poll.is_own);
-              }
-            );
-          })
-        );
-      });
+    const myPolls = computed(() => {
+      return Object.fromEntries(
+        Object.entries(allPolls).filter(([course_name, course_polls]) => {
+          if (course_name === "Ankiety ogólne") return true;
+          return Object.entries(course_polls).some(
+            ([group_key, group_polls]) => {
+              return group_polls.some((poll) => poll.is_own);
+            }
+          );
+        })
+      );
+    });
 
     return {
       allPolls,
