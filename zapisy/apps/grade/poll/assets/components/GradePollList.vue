@@ -105,7 +105,7 @@ export default defineComponent({
           <div class="d-flex w-100 justify-content-between me-1">
             <span>{{ course_name }}</span>
             <span class="text-end text-nowrap align-self-center">{{
-              submissionsCount[course_name] || "Brak"
+              submissionsCount[course_name] || 0
             }}</span>
           </div>
         </button>
@@ -115,10 +115,10 @@ export default defineComponent({
           :id="'course-section-' + index"
           :aria-labelledby="'course-section-' + index + '-heading'"
         >
-          <template v-for="(group_polls, group_key) in course_polls">
+          <template v-for="group_polls in course_polls">
             <a
-              v-for="(poll, poll_key) in orderEntriesAlph(group_polls)"
-              :key="group_key + '-' + poll_key"
+              v-for="poll in orderEntriesAlph(group_polls)"
+              :key="poll.id"
               :href="
                 '/grade/poll/results/semester/' +
                 selectedSemester.id +
