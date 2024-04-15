@@ -46,20 +46,22 @@ export default defineComponent({
     const allPolls: Record<string, Record<string, Poll[]>> = props.polls;
     const showOnlyMyCourses = ref(false);
 
+    // console.log("allPolls");
+    // console.log(allPolls);
+
     const myPolls = computed(() => {
       return Object.fromEntries(
-        Object.entries(allPolls).filter(
-          ([course_name, course_polls]: [string, Record<string, Poll[]>]) => {
-            if (course_name === "Ankiety ogólne") return true;
-            Object.entries(course_polls).some(
-              ([_, group_polls]: [string, Poll[]]) => {
-                return group_polls.some((poll) => poll.is_own);
-              }
-            );
-          }
-        )
+        Object.entries(allPolls).filter(([course_name, course_polls]) => {
+          if (course_name === "Ankiety ogólne") return true;
+          return Object.entries(course_polls).some(([_, group_polls]) => {
+            return group_polls.some((poll) => poll.is_own);
+          });
+        })
       );
     });
+
+    // console.log("my polls");
+    // console.log(myPolls);
 
     return {
       allPolls,
