@@ -35,7 +35,8 @@ class SemesterAdmin(admin.ModelAdmin):
             'fields': ['year', 'type', 'visible']
         }),
         ('Ocena', {
-            'fields': ['is_grade_active', 'first_grade_semester', 'second_grade_semester']
+            'fields': ['is_grade_active', 'first_grade_semester',
+                       'second_grade_semester', 'semester_grade_beginning', 'semester_grade_ending']
         }),
         ('Czas trwania semestru', {
             'fields': ['semester_beginning', 'semester_ending']
@@ -47,11 +48,6 @@ class SemesterAdmin(admin.ModelAdmin):
             'fields': [
                 'records_opening', 'records_ects_limit_abolition', 'records_ending',
                 'records_closing'
-            ]
-        }),
-        ('Czas trwania oceny zajęć', {
-            'fields': [
-                'semester_grade_beginning', 'semester_grade_ending'
             ]
         }),
     ]
