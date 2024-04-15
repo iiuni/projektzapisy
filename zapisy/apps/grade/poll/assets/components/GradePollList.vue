@@ -40,19 +40,19 @@ function orderEntriesAlph(polls: Poll[]) {
 
 const showOnlyMyCourses = ref(false);
 const allPolls: Record<string, Record<string, Poll[]>> = props.polls;
-
-const myPolls: ComputedRef<Record<string, Record<string, Poll[]>>> = computed(
-  () => {
-    return Object.fromEntries(
-      Object.entries(allPolls).filter(([course_name, course_polls]) => {
-        if (course_name === "Ankiety ogólne") return true;
-        return Object.entries(course_polls).some(([_, group_polls]) => {
-          return group_polls.some((poll) => poll.is_own);
-        });
-      })
-    );
-  }
+const myPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
+  Object.entries(allPolls).filter(([course_name, course_polls]) => {
+    if (course_name === "Ankiety ogólne") return true;
+    return Object.entries(course_polls).some(([_, group_polls]) => {
+      return group_polls.some((poll) => poll.is_own);
+    });
+  })
 );
+
+const selectedPolls: ComputedRef<Record<string, Record<string, Poll[]>>> =
+  computed(() => {
+    return showOnlyMyCourses.value ? myPolls : allPolls;
+  });
 </script>
 
 <template>
@@ -73,9 +73,7 @@ const myPolls: ComputedRef<Record<string, Record<string, Poll[]>>> = computed(
     </div>
     <div class="accordion" id="course-sections">
       <div
-        v-for="(course_polls, course_name, index) in showOnlyMyCourses
-          ? myPolls
-          : allPolls"
+        v-for="(course_polls, course_name, index) in selectedPolls"
         :key="course_name"
         class="accordion-item"
       >
