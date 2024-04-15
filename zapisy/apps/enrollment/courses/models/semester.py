@@ -131,7 +131,7 @@ class Semester(models.Model):
         if self.semester_grade_beginning is None or self.semester_grade_ending is None:
             return False
         return self.semester_grade_beginning <= datetime.now().date() <= self.semester_grade_ending \
-                and self.is_grade_active
+            and self.is_grade_active
 
     def get_all_days_of_week(self, day_of_week, start_date=None):
         """Get all dates when the specifies day of week schedule is valid.
