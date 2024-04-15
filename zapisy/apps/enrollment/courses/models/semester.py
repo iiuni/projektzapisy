@@ -87,6 +87,30 @@ class Semester(models.Model):
                 code='invalid'
             )
 
+        if not self.semester_beginning or not self.semester_ending or (
+                self.semester_ending < self.semester_beginning):
+            raise ValidationError(
+                message={
+                    'semester_beginning': ['Początek semestru musi być przed jego końcem'],
+                    'semester_ending': ['Początek semestru musi być przed jego końcem'],
+                },
+                code='invalid'
+            )
+
+        overlaping_semesters = (Semester.objects.all()
+                                .exclude(pk=self.pk)
+                                .exclude(semester_ending__lt=self.semester_beginning)
+                                .exclude(semester_beginning__gt=self.semester_ending))
+
+        if overlaping_semesters.exists():
+            raise ValidationError(
+                message={
+                    'semester_beginning': ['Początek lub koniec semestru nachodzi na już istniejący semestr!'],
+                    'semester_ending': ['Początek lub koniec semestru nachodzi na już istniejący semestr!'],
+                },
+                code='invalid'
+            )
+
     def can_remove_record(self, time: Optional[datetime] = None) -> bool:
         """Checks if the given timestamp is before semester's unenrolling deadline."""
         if time is None:
