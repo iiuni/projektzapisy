@@ -1,6 +1,6 @@
-<script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import type { PropType } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import type { ComputedRef, PropType } from "vue";
 
 interface Poll {
   id: string;
@@ -11,65 +11,48 @@ interface Poll {
   is_own: boolean;
 }
 
-export default defineComponent({
-  props: {
-    polls: {
-      type: Object as PropType<Record<string, Record<string, Poll[]>>>,
-      required: true,
-    },
-    submissionsCount: {
-      type: Object as PropType<Record<string, number>>,
-      required: true,
-    },
-    currentPoll: {
-      type: Object as PropType<Poll | null>,
-      required: true,
-    },
-    isSuperuser: {
-      type: Boolean,
-      required: true,
-    },
-    selectedSemester: {
-      type: Object as PropType<{ id: String }>,
-      required: true,
-    },
+const props = defineProps({
+  polls: {
+    type: Object as PropType<Record<string, Record<string, Poll[]>>>,
+    required: true,
   },
-  methods: {
-    orderEntriesAlph: function (polls: Poll[]) {
-      return [...polls].sort((a: Poll, b: Poll) =>
-        a.name.localeCompare(b.name)
-      );
-    },
+  submissionsCount: {
+    type: Object as PropType<Record<string, number>>,
+    required: true,
   },
-
-  setup(props) {
-    const allPolls: Record<string, Record<string, Poll[]>> = props.polls;
-    const showOnlyMyCourses = ref(false);
-
-    // console.log("allPolls");
-    // console.log(allPolls);
-
-    const myPolls = computed(() => {
-      return Object.fromEntries(
-        Object.entries(allPolls).filter(([course_name, course_polls]) => {
-          if (course_name === "Ankiety ogólne") return true;
-          return Object.entries(course_polls).some(([_, group_polls]) => {
-            return group_polls.some((poll) => poll.is_own);
-          });
-        })
-      );
-    });
-
-    // console.log("my polls");
-    // console.log(myPolls);
-
-    return {
-      allPolls,
-      myPolls,
-      showOnlyMyCourses,
-    };
+  currentPoll: {
+    type: Object as PropType<Poll | null>,
+    required: true,
+  },
+  isSuperuser: {
+    type: Boolean,
+    required: true,
+  },
+  selectedSemester: {
+    type: Object as PropType<{ id: String }>,
+    required: true,
   },
 });
+
+function orderEntriesAlph(polls: Poll[]) {
+  return [...polls].sort((a: Poll, b: Poll) => a.name.localeCompare(b.name));
+}
+
+const showOnlyMyCourses = ref(false);
+const allPolls: Record<string, Record<string, Poll[]>> = props.polls;
+
+const myPolls: ComputedRef<Record<string, Record<string, Poll[]>>> = computed(
+  () => {
+    return Object.fromEntries(
+      Object.entries(allPolls).filter(([course_name, course_polls]) => {
+        if (course_name === "Ankiety ogólne") return true;
+        return Object.entries(course_polls).some(([_, group_polls]) => {
+          return group_polls.some((poll) => poll.is_own);
+        });
+      })
+    );
+  }
+);
 </script>
 
 <template>
