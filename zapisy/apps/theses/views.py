@@ -61,13 +61,11 @@ def view_thesis(request, id):
     """Show subpage for one thesis."""
     thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     board_member = is_theses_board_member(request.user)
-    is_student_assigned = thesis.students.filter(user=request.user).exists()
 
     user_privileged_for_thesis = (
         thesis.is_among_advisors(request.user) or
         request.user.is_staff or
-        board_member or
-        is_student_assigned
+        board_member
     )
 
     can_edit_thesis = thesis.is_mine(request.user)
@@ -153,7 +151,7 @@ def view_thesis(request, id):
 @login_required
 def gen_form(request, id, studentid):
     """Display form to print for specific student assigned to a thesis."""
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     try:
         first_student = thesis.students.get(id=studentid)
     except Student.DoesNotExist:
@@ -185,7 +183,7 @@ def gen_form(request, id, studentid):
 @employee_required
 def edit_thesis(request, id):
     """Show form for edit selected thesis."""
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     if not thesis.is_mine(request.user):
         raise PermissionDenied
     if request.method == "POST":
@@ -237,7 +235,7 @@ def edit_remark(request, id):
     """Edit remark for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     if thesis.has_been_accepted:
         raise PermissionDenied
     if request.method == "POST":
@@ -254,7 +252,7 @@ def vote_for_thesis(request, id):
     """Vote for selected thesis."""
     if not is_theses_board_member(request.user):
         raise PermissionDenied
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     if thesis.has_been_accepted:
         raise PermissionDenied
     if request.method == "POST":
@@ -271,7 +269,7 @@ def rejecter_decision(request, id):
     """Change status of selected thesis."""
     if not is_master_rejecter(request.user):
         raise PermissionDenied
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     if thesis.has_been_accepted:
         raise PermissionDenied
     if request.method == "POST":
@@ -287,7 +285,7 @@ def rejecter_decision(request, id):
 @employee_required
 def delete_thesis(request, id):
     """Delete selected thesis."""
-    thesis = get_object_or_404(Thesis, id=id)
+    thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     if not thesis.is_mine(request.user):
         raise PermissionDenied
     thesis.delete()
