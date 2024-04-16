@@ -18,7 +18,7 @@ class NotificationPreferencesStudent(models.Model):
     news_has_been_added = models.BooleanField(
         "Nowa wiadomość w Aktualnościach", default=True)
 
-    event_decision= models.BooleanField("Decyzja odnośnie Twojego wydarzenia", default=True)
+    event_decision = models.BooleanField("Decyzja odnośnie Twojego wydarzenia", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
@@ -42,7 +42,7 @@ class NotificationPreferencesTeacher(models.Model):
     thesis_voting_has_been_activated = models.BooleanField(
         "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
 
-    event_decision= models.BooleanField("Decyzja odnośnie Twojego wydarzenia", default=True)
+    event_decision = models.BooleanField("Decyzja odnośnie Twojego wydarzenia", default=True)
 
     @property
     def news_has_been_added_high_priority(self):
