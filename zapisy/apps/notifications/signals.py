@@ -181,16 +181,18 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 def notify_event_creator_about_decision(sender: None, **kwargs) -> None:
     event = kwargs['event']
     target = reverse('events:show', args=[event.id])
+    status = ""
     if event.status == event.STATUS_ACCEPTED:
-        notification_type = NotificationType.EVENT_HAS_BEEN_ACCEPTED
+        status = "zaakceptowane"
     else:
-        notification_type = NotificationType.EVENT_HAS_BEEN_REJECTED
+        status = "odrzucone"
 
     notify_user(
         event.author,
         Notification(
-            get_id(), get_time(), notification_type, {
+            get_id(), get_time(), NotificationType.EVENT_DECISION, {
                 'title': event.title,
+                'status': status,
             }, target))
 
 
