@@ -5405,7 +5405,7 @@ fsevents@~2.1.2:
     webpack-bundle-analyzer: 3.9.0
     webpack-bundle-tracker: 0.4.3
     webpack-cli: 3.3.12
-    zod: 3.23.0
+    zod: 3.23.3
   languageName: unknown
   linkType: soft
 
@@ -9491,9 +9491,9 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"zod@npm:3.23.0":
-  version: 3.23.0
-  resolution: "zod@npm:3.23.0"
-  checksum: 521b29829bc7ff873ab81948eb29caa2aa2237be330b01821bef8a9e74c2963af2299da74e2f3574796b38d312c0b23b3800badfe965ff9e042e7b2c34096276
+"zod@npm:3.23.3":
+  version: 3.23.3
+  resolution: "zod@npm:3.23.3"
+  checksum: 8d6338066b1cdb0d3b959bbeae68628f734548c33e031a89c7495b0c63075c110bb8cf35129dfcca9ed11d1e009c37baab711b820052493d764aaf958019704f
   languageName: node
   linkType: hard
