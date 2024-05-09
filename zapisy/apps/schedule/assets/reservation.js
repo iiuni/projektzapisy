@@ -31,9 +31,15 @@ const listOfEmpty = [];
 function setFormDisplay() {
   if ($("#form-type").val() === "2") {
     $("#form-course").addClass("d-none");
+    $("#form-thesis").addClass("d-none");
     $(".form-event").removeClass("d-none");
+  } else if ($("#form-type").val() === "5") {
+    $("#form-course").addClass("d-none");
+    $("#form-thesis").removeClass("d-none");
+    $(".form-event").addClass("d-none");
   } else {
     $("#form-course").removeClass("d-none");
+    $("#form-thesis").addClass("d-none");
     $(".form-event").addClass("d-none");
   }
 }

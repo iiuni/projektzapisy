@@ -14,6 +14,8 @@
             {{ event.title }}
         {% elif event.type == '3' %}
             {{ event.group }}
+        {% elif event.type == '5' %}
+            {{ event.get_type_display }}: {{ event.thesis.title }}
         {% else %}
             {{ event.course }} - {{ event.get_type_display }}
         {% endif %}

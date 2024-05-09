@@ -9,7 +9,9 @@ from django.http import Http404
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.theses.models import Thesis
 
+MAX_EVENT_TITLE_LEN = 255
 
 class Event(models.Model):
     TYPE_EXAM = '0'
@@ -17,6 +19,7 @@ class Event(models.Model):
     TYPE_GENERIC = '2'
     TYPE_CLASS = '3'
     TYPE_OTHER = '4'
+    TYPE_DEFENCE = '5'
 
     STATUS_PENDING = '0'
     STATUS_ACCEPTED = '1'
@@ -28,6 +31,7 @@ class Event(models.Model):
 
     TYPES = [(TYPE_EXAM, 'Egzamin'),
              (TYPE_TEST, 'Kolokwium'),
+             (TYPE_DEFENCE, 'Obrona pracy dyplomowej'),
              (TYPE_GENERIC, 'Wydarzenie'),
              (TYPE_CLASS, 'Zajęcia'),
              (TYPE_OTHER, 'Inne')]
@@ -36,14 +40,16 @@ class Event(models.Model):
 
     TYPES_FOR_TEACHER = [(TYPE_EXAM, 'Egzamin'),
                          (TYPE_TEST, 'Kolokwium'),
+                         (TYPE_DEFENCE, 'Obrona pracy dyplomowej'),
                          (TYPE_GENERIC, 'Wydarzenie')]
 
-    title = models.CharField(max_length=255, verbose_name='Tytuł', null=True, blank=True)
+    title = models.CharField(max_length=MAX_EVENT_TITLE_LEN, verbose_name='Tytuł', null=True, blank=True)
     description = models.TextField(verbose_name='Opis', blank=True)
     type = models.CharField(choices=TYPES, max_length=1, verbose_name='Typ')
     visible = models.BooleanField(verbose_name='Wydarzenie jest publiczne', default=False)
     status = models.CharField(choices=STATUSES, max_length=1, verbose_name='Stan', default='0')
     course = models.ForeignKey(CourseInstance, null=True, blank=True, on_delete=models.CASCADE)
+    thesis = models.ForeignKey(Thesis, null=True, blank=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
     reservation = models.ForeignKey(
         'schedule.SpecialReservation',
@@ -88,8 +94,15 @@ class Event(models.Model):
 
             # all exams and tests should be public
 
-            if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST]:
+            if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST, Event.TYPE_DEFENCE]:
                 self.visible = True
+
+            # only the advisor and supporting advisor should be able to schedule a thesis defence
+
+            if self.type == Event.TYPE_DEFENCE and self.author.employee in \
+                    (self.thesis.advisor, self.thesis.supporting_advisor) or \
+                    self.author.has_perm('schedule.manage_events'):
+                self.status = self.STATUS_ACCEPTED
 
             # students can only add generic events that have to be accepted first
 
