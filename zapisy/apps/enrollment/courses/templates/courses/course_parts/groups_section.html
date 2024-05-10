@@ -16,7 +16,7 @@
             <tr>
                 <th>Prowadzący</th>
                 <th scope="col">Termin zajęć</th>
-                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" scope="col">Limit</th>
+                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" scope="col" tabindex="0">Limit</th>
                 <th title="Liczba aktualnie zapisanych osób" scope="col">Zapisani</th>
                 <th title="Liczba osób oczekujących na zapis" scope="col">Kolejka</th>
                 {% if course.is_enrollment_on %}
@@ -59,7 +59,10 @@
                         {{ group.limit }}
                         {% for gs in group.guaranteed_spots.all %}
                             + 
-                            <abbr title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                            <abbr
+                            data-bs-toggle="tooltip"
+                            title="Miejsca gwarantowane dla grupy {{gs.role.name}}."
+                            >
                                 {{ gs.limit }}
                             </abbr>
                         {% endfor %}
