@@ -200,10 +200,3 @@ export interface FilterDataJSON {
   allOwners: PersonDict;
   allTypes: KVDict;
 }
-
-export interface MultiselectFilterDataItem<T> {
-  label: string;
-  value: T;
-}
-
-export type MultiselectFilterData<T> = Array<MultiselectFilterDataItem<T>>;

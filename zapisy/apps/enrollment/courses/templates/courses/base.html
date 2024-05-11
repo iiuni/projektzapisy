@@ -1,11 +1,6 @@
 {% extends "enrollment/base.html" %}
 {% load render_bundle from webpack_loader %}
 
-{% block top-content %}
-    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
-    <div id="course-filter"></div>
-{% endblock top-content %}
-
 {% block sidebar %}
     <div class="dropdown">
         <div class="btn-group btn-block mb-3 w-100">

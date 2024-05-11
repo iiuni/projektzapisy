@@ -1,0 +1,7 @@
+{% extends "courses/base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block top-content %}
+    <script id="courses-data" type="application/json">{{ courses_json|safe }}</script>
+{% endblock top-content %}
+
