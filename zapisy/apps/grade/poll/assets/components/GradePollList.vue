@@ -34,20 +34,22 @@ const props = defineProps({
   },
 });
 
+const myCoursesForSuperUser = new Set<string>();
+if (props.isSuperuser) {
+  Object.entries(props.polls).map(([course_name, course_polls]) => {
+    Object.entries(course_polls).map(([group_name, group_polls]) => {
+      group_polls.map((poll) => {
+        if (poll.is_own) {
+          myCoursesForSuperUser.add(course_name);
+        }
+      });
+    });
+  });
+}
+
 function orderEntriesAlph(polls: Poll[]) {
   return polls.sort((pollA, pollB) => pollA.name.localeCompare(pollB.name));
 }
-
-const myCourses = new Set<string>();
-Object.entries(props.polls).map(([course_name, course_polls]) => {
-  Object.entries(course_polls).map(([group_name, group_polls]) => {
-    group_polls.map((poll) => {
-      if (poll.is_own) {
-        myCourses.add(course_name);
-      }
-    });
-  });
-});
 
 const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
   Object.entries(props.polls).map(([course_name, course_polls]) => {
@@ -84,7 +86,9 @@ const showOnlyMyCourses = ref(false);
     <div class="accordion" id="course-sections">
       <template v-for="(course_polls, course_name, index) in allPolls">
         <div
-          v-show="showOnlyMyCourses ? myCourses.has(course_name) : true"
+          v-show="
+            showOnlyMyCourses ? myCoursesForSuperUser.has(course_name) : true
+          "
           class="accordion-item"
         >
           <button
@@ -124,10 +128,10 @@ const showOnlyMyCourses = ref(false);
                 :class="{ active: currentPoll && poll.id === currentPoll.id }"
               >
                 <div class="d-flex w-100 justify-content-between">
-                  <span class="inline" v-if="group_polls.length > 1">
+                  <span v-if="group_polls.length >= 2" class="inline">
                     {{ poll.name }} ({{ poll.hours }})
                   </span>
-                  <span class="inline" v-else>
+                  <span v-else class="inline">
                     {{ poll.name }}
                   </span>
 
