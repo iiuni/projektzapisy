@@ -35,21 +35,19 @@ const props = defineProps({
 });
 
 function orderEntriesAlph(polls: Poll[]) {
-  return polls.sort((a: Poll, b: Poll) => a.name.localeCompare(b.name));
+  return polls.sort((pollA, pollB) => pollA.name.localeCompare(pollB.name));
 }
 
-const set_of_my_courses = new Set<string>();
+const myCourses = new Set<string>();
 Object.entries(props.polls).map(([course_name, course_polls]) => {
   Object.entries(course_polls).map(([group_name, group_polls]) => {
     group_polls.map((poll) => {
       if (poll.is_own) {
-        set_of_my_courses.add(course_name);
+        myCourses.add(course_name);
       }
     });
   });
 });
-
-const showOnlyMyCourses = ref(false);
 
 const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
   Object.entries(props.polls).map(([course_name, course_polls]) => {
@@ -63,6 +61,8 @@ const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
     ];
   })
 );
+
+const showOnlyMyCourses = ref(false);
 </script>
 
 <template>
@@ -84,7 +84,7 @@ const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
     <div class="accordion" id="course-sections">
       <template v-for="(course_polls, course_name, index) in allPolls">
         <div
-          v-show="showOnlyMyCourses ? set_of_my_courses.has(course_name) : true"
+          v-show="showOnlyMyCourses ? myCourses.has(course_name) : true"
           class="accordion-item"
         >
           <button
