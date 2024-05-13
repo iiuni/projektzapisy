@@ -83,13 +83,19 @@ const showOnlyMyCourses = ref(false);
         Pokaż tylko ankiety dotyczące moich grup i przedmiotów
       </label>
     </div>
-    <div class="accordion" id="course-sections">
+    <transition-group
+      name="list"
+      tag="div"
+      class="accordion"
+      id="course-sections"
+    >
       <template v-for="(course_polls, course_name, index) in allPolls">
         <div
           v-show="
             showOnlyMyCourses ? myCoursesForSuperUser.has(course_name) : true
           "
           class="accordion-item"
+          :key="course_name"
         >
           <button
             class="accordion-button collapsed"
@@ -134,7 +140,6 @@ const showOnlyMyCourses = ref(false);
                   <span v-else class="inline">
                     {{ poll.name }}
                   </span>
-
                   <span class="text-end text-nowrap">{{
                     poll.number_of_submissions
                   }}</span>
@@ -144,9 +149,21 @@ const showOnlyMyCourses = ref(false);
           </div>
         </div>
       </template>
-      <div v-if="Object.keys(allPolls).length === 0" class="alert alert-info">
-        Brak przesłanych ankiet w wybranym semestrze.
-      </div>
+    </transition-group>
+    <div v-if="Object.keys(allPolls).length === 0" class="alert alert-info">
+      Brak przesłanych ankiet w wybranym semestrze.
     </div>
   </div>
 </template>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease-in;
+}
+.list-leave-to,
+.list-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>
