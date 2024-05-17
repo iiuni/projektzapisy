@@ -6,7 +6,7 @@ will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from typing import Dict, Iterable, List, Set
 
 from django.db import models, transaction
@@ -63,7 +63,7 @@ class T0Times(models.Model):
         """
         students = Student.get_active_students()
 
-        distinct_ects: Set[int] = set([student.ects for student in students])
+        distinct_ects: Set[int] = set(student.ects for student in students)
 
         ects_position: Dict[int, int] = \
             {ects: position for position, ects in enumerate(sorted(distinct_ects))}
@@ -109,7 +109,7 @@ class T0Times(models.Model):
             # ranking list. Students with the same amount of ECTS have
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
-            ects_bonus = semester.get_records_spacing() * ranking[student.ects]
+            ects_bonus = semester.get_records_spacing() * ranking.get(student.ects, 0)
 
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
@@ -122,6 +122,14 @@ class T0Times(models.Model):
             record.time -= timedelta(days=1) * student_generated_tickets
             # We may add some bonus by hand.
             record.time -= timedelta(minutes=1) * student.records_opening_bonus_minutes
+
+            # If the opening time falls during the nighttime pause we
+            # subtract additional 12 hours from T0. This way T0's are
+            # separated by records_spacing minutes per ranking position,
+            # but never fall in the nighttime.
+            if time(hour=0) < record.time.time() <= time(hour=12):
+                record.time -= timedelta(hours=12)
+
             # Finally, everyone gets 2 hours. This way, nighttime pause is
             # shifted from 00:00-12:00 to 22:00-10:00.
             record.time -= timedelta(hours=2)

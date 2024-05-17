@@ -28,9 +28,9 @@ class Semester(models.Model):
     records_spacing = models.IntegerField(
         null=True,
         blank=True,
-        default=settings.ECTS_BONUS,
-        verbose_name='Przerwa między grupami studentów',
-        help_text='Co ile minut powinny otwierać się zapisy dla kolejnej grupy studentów (według rankingu ECTS)')
+        default=2,
+        verbose_name='Przerwa między zapisami kolejnych studentów',
+        help_text='Co ile minut powinny otwierać się zapisy dla kolejnych studentów z różną liczbą ECTS.')
     records_closing = models.DateTimeField(
         null=True, blank=True, verbose_name='Czas zamkniecia zapisów')
     records_ending = models.DateTimeField(
