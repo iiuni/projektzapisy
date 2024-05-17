@@ -43,6 +43,7 @@
     {% endif %}
 
     <form method="POST" id="confirm-submit" class="post-form">
+        <input type="hidden" id="id_selected_students" name="selected_students" value="">
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
@@ -51,4 +52,69 @@
         {% render_bundle 'theses-theses-change' %} 
     {% endif %}
 </div>
+
+<script>
+    $(document).ready(function() {
+        let timer;
+        let previousInput;
+        let selectedStudentIds = [];
+
+        function debounce(func, delay) {
+            let timer;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    func.apply(context, args);
+                }, delay);
+            };
+        }
+
+        function handleInput() {
+            const inputValue = $("#id_user_input").val().trim();
+
+            if (inputValue === previousInput || inputValue === '') {
+                return;
+            }
+            previousInput = inputValue;
+
+            $.ajax({
+                url: '{% url "theses:get_data" %}',
+                type: 'POST',
+                data: {
+                    'input_value': inputValue,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    $('#id_students').html(data.filtered_students);
+                    updateSelectedStudents();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Something went wrong :(");
+                }
+            });
+        }
+    
+        function updateSelectedStudents() {
+            $('#id_students option:selected').each(function() {
+                const student_id = $(this).val();
+                const index = selectedStudentIds.indexOf(student_id);
+                if (index == -1) {
+                    selectedStudentIds.push(student_id);
+                } else {
+                    selectedStudentIds.splice(index, 1);
+                }
+            });
+            $('#id_selected_students').val(selectedStudentIds.join(','));
+            console.log('Selected Student IDs:', selectedStudentIds);
+            console.log('Hidden input value:', $('#id_selected_students').val());
+        }
+
+        const debouncedInputHandler = debounce(handleInput, 200);
+        $("#id_user_input").on("input", debouncedInputHandler);
+        $('#id_students').on('change', updateSelectedStudents);
+    });
+</script>
+
 {% endblock %}
