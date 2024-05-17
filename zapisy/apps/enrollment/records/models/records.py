@@ -344,6 +344,7 @@ class Record(models.Model):
         int: The number of students not matched to any GuaranteedSpots rule.
         dict: A dictionary with role names as keys and the number of enrolled students as values.
         """
+
         guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
         all_enrolled_records = cls.objects.filter(
             group=group, status=RecordStatus.ENROLLED).select_related(
@@ -353,22 +354,19 @@ class Record(models.Model):
         }
 
         enrolled_by_role_counter = Counter()
+        base_student_count = 0
+        roles = {gsr.role for gsr in guaranteed_spots_rules}
 
-        for gsr in guaranteed_spots_rules:
-            role = gsr.role
-            enrolled_students_by_role = {
-                student for student in enrolled_students
-                if role in student.groups.all()
-            }
-            enrolled_by_role_counter[gsr.role.name] = len(enrolled_students_by_role)
-            enrolled_students -= enrolled_students_by_role
+        for student in enrolled_students:
+            student_roles = set(student.groups.all()).intersection(roles)
 
-        # roles = {gsr.role for gsr in guaranteed_spots_rules}
-        # for student in all_enrolled_students:
-        #    if len(student.groups.all().intersection(roles)) != 0:
-        #        enrolled_by_role_counter[0] += 1 # ???
+            if not student_roles:
+                base_student_count += 1
+                continue
 
-        base_student_count = len(enrolled_students)
+            for role in student_roles:
+                enrolled_by_role_counter[role.name] += 1
+
         return base_student_count, dict(enrolled_by_role_counter)
 
     @classmethod
