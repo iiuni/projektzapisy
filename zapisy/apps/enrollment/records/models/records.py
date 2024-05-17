@@ -39,7 +39,7 @@ Record Lifetime:
 """
 
 import logging
-from collections import defaultdict
+from collections import defaultdict, Counter
 import copy
 from datetime import datetime
 from enum import Enum
@@ -344,25 +344,32 @@ class Record(models.Model):
         int: The number of students not matched to any GuaranteedSpots rule.
         dict: A dictionary with role names as keys and the number of enrolled students as values.
         """
-        ret: Dict[str, int] = {}
         guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
         all_enrolled_records = cls.objects.filter(
             group=group, status=RecordStatus.ENROLLED).select_related(
                 'student', 'student__user').prefetch_related('student__user__groups')
-        all_enrolled_students = set(r.student.user for r in all_enrolled_records)
+        enrolled_students = {
+            record.student.user for record in all_enrolled_records
+        }
 
-        enrolled_by_role_counter = 0
-        total_enrolled_counter = len(all_enrolled_students)
+        enrolled_by_role_counter = Counter()
+
         for gsr in guaranteed_spots_rules:
-            role = gsr.role
-            counter = 0
-            for user in all_enrolled_students.copy():
-                if role in user.groups.all():
-                    all_enrolled_students.remove(user)
-                    counter += 1
-                    enrolled_by_role_counter += 1
-            ret[gsr.role.name] = counter
-        return total_enrolled_counter - enrolled_by_role_counter, ret
+            role = gsr.rolegit
+            enrolled_students_by_role = {
+                student for student in enrolled_students
+                if role in student.groups.all()
+            }
+            enrolled_by_role_counter[gsr.role.name] = len(enrolled_students_by_role)
+            enrolled_students -= enrolled_students_by_role
+
+        # roles = {gsr.role for gsr in guaranteed_spots_rules}
+        # for student in all_enrolled_students:
+        #    if len(student.groups.all().intersection(roles)) != 0:
+        #        enrolled_by_role_counter[0] += 1 # ???
+
+        base_student_count = len(enrolled_students)
+        return base_student_count, dict(enrolled_by_role_counter)
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:

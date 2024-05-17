@@ -96,6 +96,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student, course.groups.all())
 
     for group in groups:
+        limits_for_roles = [gs.limit for gs in GuaranteedSpots.objects.filter(group=group)]
+        group.total_limit = group.limit + sum(limits_for_roles)
+        group.total_enrolled = groups_stats.get(group.pk).get('num_enrolled')
         group.num_enrolled = Record.taken_spots_by_role(group)[0]
         group.num_enrolled_by_role = Record.taken_spots_by_role(group)[1]
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
@@ -257,10 +260,17 @@ def group_view(request, group_id):
     )
     group: Group = enrolled_data[group_id].get("group")
 
+    limits_for_roles = [gs.limit for gs in GuaranteedSpots.objects.filter(group=group)]
+    group.total_limit = group.limit + sum(limits_for_roles)
+    group.num_enrolled_by_role = Record.taken_spots_by_role(group)[1]
+    group.num_enrolled = Record.taken_spots_by_role(group)[0]
+
+    enrolled = Record.taken_spots_by_role(group)[1]
     data = {
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
         'guaranteed_spots': enrolled_data.get('guaranteed_spots_rules'),
+        'spots_by_role': [(gs, enrolled[gs.role.name]) for gs in group.guaranteed_spots.all()],
         'group': group,
         'can_user_see_all_students_here': enrolled_data[group_id].get("can_user_see_all_students_here"),
         'mailto_group': mailto(request.user, students_in_group, bcc=False),
