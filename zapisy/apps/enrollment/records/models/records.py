@@ -344,7 +344,6 @@ class Record(models.Model):
         int: The number of students not matched to any GuaranteedSpots rule.
         dict: A dictionary with role names as keys and the number of enrolled students as values.
         """
-
         guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
         all_enrolled_records = cls.objects.filter(
             group=group, status=RecordStatus.ENROLLED).select_related(

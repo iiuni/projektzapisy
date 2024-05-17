@@ -59,25 +59,26 @@
         <p>
             Liczba zapisanych osób: {{students_in_group|length}} / {{group.total_limit}}
             {% if group.num_enrolled_by_role %}
-                (
-                    {{ group.num_enrolled }}
+                , w tym:
+                {{ group.num_enrolled }}
                     /
-                    {{group.limit}}
+                    {{group.limit}} niegwarantowanych
                     {% for gs, taken_spots in spots_by_role %}
                         {% if taken_spots != 0 %}
-                            +
-                            <abbr title = "Liczba zapisanych osób dla grupy {{gs.role.name}}.">
+                            ,
+                            <span title = "Liczba zapisanych osób dla grupy {{gs.role.name}}.">
                                 {{ taken_spots }}
-                            </abbr>
+                            </span>
                              /
-                             <abbr title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                             <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
                                 {{ gs.limit }}
-                            </abbr>
+                                 <span class="badge bg-dark"> {{ gs.role.name }} </span>
+                             </span>
                         {% endif %}
                     {% endfor %}
-                )
             {% endif %}
         </p>
+
 
         {% if students_in_group %}
             {% include "courses/course_parts/students_list.html" with students=students_in_group %}
