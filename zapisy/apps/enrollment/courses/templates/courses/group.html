@@ -56,16 +56,14 @@
 
     <div class="table-responsive-sm">
         <h3>Lista osób zapisanych na przedmiot:</h3>
+
         <p>
-            Liczba zapisanych osób: {{students_in_group|length}} / {{group.total_limit}}
-            {% if group.num_enrolled_by_role %}
-                , w tym:
+            Liczba zapisanych osób:
+            {{students_in_group|length}} / {{group.total_limit}}{% if group.num_enrolled_by_role %}, w tym:
                 {{ group.num_enrolled }}
                     /
-                    {{group.limit}} niegwarantowanych
-                    {% for gs, taken_spots in spots_by_role %}
-                        {% if taken_spots != 0 %}
-                            ,
+                    {{group.limit}}
+                    niegwarantowanych{% for gs, taken_spots in spots_by_role %}{% if taken_spots != 0 %},
                             <span title = "Liczba zapisanych osób dla grupy {{gs.role.name}}.">
                                 {{ taken_spots }}
                             </span>

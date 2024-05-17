@@ -62,23 +62,17 @@
                             {% for gs in group.guaranteed_spots.all %}
                                 +
                                 <abbr title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
-                                    {{ gs.limit }}
-                                </abbr>
-                            {% endfor %})
+                                    {{ gs.limit }}</abbr>{% endfor %})
                         {% endif %}
                     </td>
                     <td>
                         {{ group.total_enrolled }}
                         {% if group.num_enrolled_by_role %}
                             ({{ group.num_enrolled }}
-                            {% for role, number in group.num_enrolled_by_role.items %}
-                                {% if number != 0 %}
-                                    +
-                                    <abbr title = "Liczba zapisanych osób dla grupy {{role}}.">
-                                        {{ number }}
-                                    </abbr>
-                                {% endif %}
-                            {% endfor %})
+                            {% for role, number in group.num_enrolled_by_role.items %}{% if number != 0 %}
+                                +
+                                <abbr title = "Liczba zapisanych osób dla grupy {{role}}.">
+                                    {{ number }}</abbr>{% endif %}{% endfor %})
                         {% endif %}
                     </td>
                     <td>{{ group.num_enqueued }}</td>
