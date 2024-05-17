@@ -355,7 +355,7 @@ class Record(models.Model):
         enrolled_by_role_counter = Counter()
 
         for gsr in guaranteed_spots_rules:
-            role = gsr.rolegit
+            role = gsr.role
             enrolled_students_by_role = {
                 student for student in enrolled_students
                 if role in student.groups.all()
