@@ -102,6 +102,7 @@ export default class ThesesList extends Vue {
         <td
           class="align-middle"
           :class="{ 'text-muted': thesis.is_available }"
+          data-bs-toggle="tooltip"
           :title="reservedUntilAltText(thesis)"
         >
           {{ thesis.students }}
