@@ -100,7 +100,7 @@ export default Vue.extend({
           />
           <hr />
           <LabelsFilter
-          	data-bs-toggle="tooltip"
+            data-bs-toggle="tooltip"
             title="Tagi"
             filterKey="tags-filter"
             property="tags"
@@ -121,7 +121,7 @@ export default Vue.extend({
           />
           <hr />
           <LabelsFilter
-          	data-bs-toggle="tooltip"
+            data-bs-toggle="tooltip"
             title="Efekty kształcenia"
             filterKey="effects-filter"
             property="effects"
