@@ -109,7 +109,7 @@ class T0Times(models.Model):
             # ranking list. Students with the same amount of ECTS have
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
-            ects_bonus = semester.get_records_spacing() * ranking.get(student.ects, 0)
+            ects_bonus = semester.records_spacing * ranking.get(student.ects, 0)
 
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
