@@ -5,10 +5,11 @@ courses they have a time advantage coming from their votes. Additionally, some g
 will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
-import rollbar
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Set
+
+import rollbar
 
 from django.db import models, transaction
 
