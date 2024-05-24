@@ -178,10 +178,9 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
 
 
 @receiver(event_decision, sender=None)
-def notify_event_creator_about_decision(sender: None, **kwargs) -> None:
+def notify_event_author_about_decision(sender: None, **kwargs) -> None:
     event = kwargs['event']
     target = reverse('events:show', args=[event.id])
-    status = ""
     if event.status == event.STATUS_ACCEPTED:
         status = "zaakceptowane"
     else:
