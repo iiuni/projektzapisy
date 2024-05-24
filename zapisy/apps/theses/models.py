@@ -126,6 +126,12 @@ class Thesis(models.Model):
     def is_among_advisors(self, user):
         return self.is_mine(user) or self.is_supporting_advisor_assigned(user)
 
+    def is_user_privileged_for_thesis(self, user):
+        return self.is_among_advisors(user) or user.is_staff or is_theses_board_member(user)
+
+    def is_user_allowed_to_generate_declarations(self, user):
+        return self.is_student_assigned(user) or self.user_privileged_for_thesis(user) or self.has_been_accepted
+
     @property
     def has_no_students_assigned(self):
         return self.students is not None and not self.students.exists()
