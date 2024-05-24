@@ -81,3 +81,14 @@ class PopulateT0Test(TestCase):
         maximum = max([x[1] - x[0] for x in zip(t0_openings[:-1], t0_openings[1:])])
 
         assert maximum == groups_spacing
+
+    def test_records_not_fall_in_the_nighttime(self):
+        """Checks whether the mechanism to prevent recordings from starting at night."""
+        bolek_pozny_t0_opening = self.semester.records_opening - timedelta(hours=13)
+        lolek_pozny_t0_opening = self.semester.records_opening - timedelta(hours=24, minutes=1)
+
+        moved_bolek_pozny = T0Times.prevent_nighttime_records(self.semester, bolek_pozny_t0_opening)
+        moved_lolek_pozny = T0Times.prevent_nighttime_records(self.semester, lolek_pozny_t0_opening)
+
+        assert moved_bolek_pozny == bolek_pozny_t0_opening - timedelta(hours=12)
+        assert moved_lolek_pozny == lolek_pozny_t0_opening - timedelta(hours=24)

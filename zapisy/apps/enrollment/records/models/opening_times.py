@@ -6,7 +6,7 @@ will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
 from collections import defaultdict
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Set
 
 from django.db import models, transaction
@@ -53,6 +53,18 @@ class T0Times(models.Model):
         if time < t0_record.time:
             return False
         return True
+
+    @staticmethod
+    def prevent_nighttime_records(semester: Semester, record_time: datetime) -> datetime:
+        """Prevention of night-time records.
+
+        Moves the opening time of records to daytime without rearranging
+        the order of ranked records.
+        """
+        how_many_12_hours_peroids_from_start = \
+            int((semester.records_opening - record_time) / timedelta(hours=12))
+
+        return record_time - (timedelta(hours=12) * how_many_12_hours_peroids_from_start)
 
     @classmethod
     def get_ects_ranking(cls) -> Dict[int, int]:
@@ -127,8 +139,7 @@ class T0Times(models.Model):
             # subtract additional 12 hours from T0. This way T0's are
             # separated by records_spacing minutes per ranking position,
             # but never fall in the nighttime.
-            if time(hour=0) < record.time.time() <= time(hour=12):
-                record.time -= timedelta(hours=12)
+            record.time = T0Times.prevent_nighttime_records(semester, record.time)
 
             # Finally, everyone gets 2 hours. This way, nighttime pause is
             # shifted from 00:00-12:00 to 22:00-10:00.
