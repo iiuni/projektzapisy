@@ -5,6 +5,7 @@ courses they have a time advantage coming from their votes. Additionally, some g
 will have their own opening time. Some groups will also provide a time advantage
 for a selected group of students (ex. ISIM students).
 """
+import rollbar
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Set
@@ -121,7 +122,11 @@ class T0Times(models.Model):
             # ranking list. Students with the same amount of ECTS have
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
-            ects_bonus = semester.records_spacing * ranking[student.ects]
+            try:
+                ects_bonus = semester.records_spacing * ranking[student.ects]
+            except KeyError:
+                rollbar.report_message('Opening records time should not be computed for inactive student!', 'warning')
+                ects_bonus = 0
 
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
