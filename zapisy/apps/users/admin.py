@@ -55,6 +55,12 @@ class StudentAdmin(admin.ModelAdmin):
                     level=messages.ERROR)
             return
 
+        if not all(student.is_active for student in queryset):
+            self.message_user(
+                    request, "Nie można obliczać czasów otwarcia dla nieaktywnych studentów.",
+                    level=messages.ERROR)
+            return
+
         T0Times.populate_t0(semester, queryset)
         GroupOpeningTimes.populate_opening_times(semester, students=queryset)
         self.message_user(

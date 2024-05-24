@@ -199,10 +199,6 @@ class Semester(models.Model):
         """Returns spacing between students group as `timedelta` object."""
         return timedelta(minutes=self._records_spacing)
 
-    @records_spacing.setter
-    def records_spacing(self, minutes: int) -> None:
-        self._records_spacing = minutes
-
     @staticmethod
     def get_semester(date) -> Optional['Semester']:
         """Get semester for a specified date. More versatile than get_current_semester.
