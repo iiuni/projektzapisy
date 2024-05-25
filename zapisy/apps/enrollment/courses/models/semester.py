@@ -97,12 +97,12 @@ class Semester(models.Model):
                 code='invalid'
             )
 
-        overlaping_semesters = (Semester.objects.all()
+        overlapping_semesters = (Semester.objects.all()
                                 .exclude(pk=self.pk)
                                 .exclude(semester_ending__lt=self.semester_beginning)
                                 .exclude(semester_beginning__gt=self.semester_ending))
 
-        if overlaping_semesters.exists():
+        if overlapping_semesters.exists():
             raise ValidationError(
                 message={
                     'semester_beginning': ['Początek lub koniec semestru nachodzi na już istniejący semestr!'],
