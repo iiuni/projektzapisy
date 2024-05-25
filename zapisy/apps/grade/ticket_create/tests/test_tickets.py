@@ -20,7 +20,7 @@ class TicketsTest(test.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.student: users.Student = users.StudentFactory()
-        cls.semester: courses.Semester = courses.SemesterFactory(is_grade_active=True)
+        cls.semester: courses.Semester = courses.SemesterFactory()
         course_exam = courses.CourseInstanceFactory(semester=cls.semester)
         course_no_exam = courses.CourseInstanceFactory(semester=cls.semester, has_exam=False)
         cls.groups: List[courses.Group] = [

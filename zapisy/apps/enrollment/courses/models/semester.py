@@ -38,8 +38,6 @@ class Semester(models.Model):
     semester_beginning = models.DateField(null=False, verbose_name='Data rozpoczęcia semestru')
     semester_ending = models.DateField(null=False, verbose_name='Data zakończenia semestru')
 
-    is_grade_active = models.BooleanField(verbose_name='Ocena aktywna', default=False)
-
     semester_grade_beginning = models.DateField(
         null=True, blank=True, verbose_name='Data rozpoczęcia oceny zajęć')
     semester_grade_ending = models.DateField(
@@ -98,9 +96,9 @@ class Semester(models.Model):
             )
 
         overlapping_semesters = (Semester.objects.all()
-                                .exclude(pk=self.pk)
-                                .exclude(semester_ending__lt=self.semester_beginning)
-                                .exclude(semester_beginning__gt=self.semester_ending))
+                                 .exclude(pk=self.pk)
+                                 .exclude(semester_ending__lt=self.semester_beginning)
+                                 .exclude(semester_beginning__gt=self.semester_ending))
 
         if overlapping_semesters.exists():
             raise ValidationError(
@@ -151,11 +149,11 @@ class Semester(models.Model):
             return False
         return self.semester_beginning <= datetime.now().date() <= self.semester_ending
 
-    def is_grade_active_f(self):
+    @property
+    def is_grade_active(self):
         if self.semester_grade_beginning is None or self.semester_grade_ending is None:
             return False
-        return self.semester_grade_beginning <= datetime.now().date() <= self.semester_grade_ending \
-            and self.is_grade_active
+        return self.semester_grade_beginning <= datetime.now().date() <= self.semester_grade_ending
 
     def get_all_days_of_week(self, day_of_week, start_date=None):
         """Get all dates when the specifies day of week schedule is valid.

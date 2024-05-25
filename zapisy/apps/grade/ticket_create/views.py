@@ -52,7 +52,7 @@ def get_poll_data(request):
 def tickets_generate(request):
     """Renders tickets_generate page and lists Polls student is entitled to."""
     semester = Semester.get_last_grade_semester()
-    is_grade_active = semester.is_grade_active_f()
+    is_grade_active = semester.is_grade_active
     if not is_grade_active:
         messages.error(
             request,

@@ -38,17 +38,9 @@ class APITest(test.TestCase):
 
         time_in_semester = self.semester.semester_grade_beginning
         time_after_semester = self.semester.semester_ending + timedelta(days=1)
+
         with freeze_time(time_after_semester):
             # When semester is gone, no Polls should be available.
-            self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
-        with freeze_time(time_in_semester):
-            # When grade is closed, no Polls should be available.
-            self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
-
-        self.semester.is_grade_active = True
-        self.semester.save()
-        with freeze_time(time_after_semester):
-            # This still should be empty.
             self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
         with freeze_time(time_in_semester):
             # Three Polls should be available to the student.
