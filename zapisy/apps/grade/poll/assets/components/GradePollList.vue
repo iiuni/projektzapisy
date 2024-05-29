@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref } from "vue";
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 import type { PropType } from "vue";
 
 interface Poll {
@@ -11,60 +11,71 @@ interface Poll {
   is_own: boolean;
 }
 
-const props = defineProps({
-  polls: {
-    type: Object as PropType<Record<string, Record<string, Poll[]>>>,
-    required: true,
+export default defineComponent({
+  props: {
+    polls: {
+      type: Object as PropType<Record<string, Record<string, Poll[]>>>,
+      required: true,
+    },
+    submissionsCount: {
+      type: Object as PropType<Record<string, number>>,
+      required: true,
+    },
+    currentPoll: {
+      type: Object as PropType<Poll | null>,
+      required: true,
+    },
+    isSuperuser: {
+      type: Boolean,
+      required: true,
+    },
+    selectedSemester: {
+      type: Object as PropType<{ id: String }>,
+      required: true,
+    },
   },
-  submissionsCount: {
-    type: Object as PropType<Record<string, number>>,
-    required: true,
-  },
-  currentPoll: {
-    type: Object as PropType<Poll | null>,
-    required: true,
-  },
-  isSuperuser: {
-    type: Boolean,
-    required: true,
-  },
-  selectedSemester: {
-    type: Object as PropType<{ id: String }>,
-    required: true,
+  setup(props: any) {
+    const polls: Record<string, Record<string, Poll[]>> = props.polls;
+
+    const myCoursesForSuperUser = new Set<string>();
+    if (props.isSuperuser) {
+      Object.entries(polls).map(([course_name, course_polls]) => {
+        Object.entries(course_polls).map(([group_name, group_polls]) => {
+          group_polls.map((poll) => {
+            if (poll.is_own) {
+              myCoursesForSuperUser.add(course_name);
+            }
+          });
+        });
+      });
+    }
+
+    function orderEntriesAlph(polls: Poll[]) {
+      return polls.sort((pollA, pollB) => pollA.name.localeCompare(pollB.name));
+    }
+
+    const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
+      Object.entries(polls).map(([course_name, course_polls]) => {
+        return [
+          course_name,
+          Object.fromEntries(
+            Object.entries(course_polls).map(([group_name, group_polls]) => {
+              return [group_name, orderEntriesAlph(group_polls)];
+            })
+          ),
+        ];
+      })
+    );
+
+    const showOnlyMyCourses = ref(false);
+
+    return {
+      allPolls,
+      showOnlyMyCourses,
+      myCoursesForSuperUser,
+    };
   },
 });
-
-const myCoursesForSuperUser = new Set<string>();
-if (props.isSuperuser) {
-  Object.entries(props.polls).map(([course_name, course_polls]) => {
-    Object.entries(course_polls).map(([group_name, group_polls]) => {
-      group_polls.map((poll) => {
-        if (poll.is_own) {
-          myCoursesForSuperUser.add(course_name);
-        }
-      });
-    });
-  });
-}
-
-function orderEntriesAlph(polls: Poll[]) {
-  return polls.sort((pollA, pollB) => pollA.name.localeCompare(pollB.name));
-}
-
-const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
-  Object.entries(props.polls).map(([course_name, course_polls]) => {
-    return [
-      course_name,
-      Object.fromEntries(
-        Object.entries(course_polls).map(([group_name, group_polls]) => {
-          return [group_name, orderEntriesAlph(group_polls)];
-        })
-      ),
-    ];
-  })
-);
-
-const showOnlyMyCourses = ref(false);
 </script>
 
 <template>
@@ -120,31 +131,33 @@ const showOnlyMyCourses = ref(false);
             :aria-labelledby="'course-section-' + index + '-heading'"
           >
             <template v-for="group_polls in course_polls">
-              <a
-                v-for="poll in group_polls"
-                :key="poll.id"
-                :href="
-                  '/grade/poll/results/semester/' +
-                  selectedSemester.id +
-                  '/poll/' +
-                  poll.id +
-                  '/'
-                "
-                class="list-group-item list-group-item-action"
-                :class="{ active: currentPoll && poll.id === currentPoll.id }"
-              >
-                <div class="d-flex w-100 justify-content-between">
-                  <span v-if="group_polls.length >= 2" class="inline">
-                    {{ poll.name }} ({{ poll.hours }})
-                  </span>
-                  <span v-else class="inline">
-                    {{ poll.name }}
-                  </span>
-                  <span class="text-end text-nowrap">{{
-                    poll.number_of_submissions
-                  }}</span>
-                </div>
-              </a>
+              <template v-for="poll in group_polls">
+                <a
+                  v-if="showOnlyMyCourses ? poll.is_own : true"
+                  :key="poll.id"
+                  :href="
+                    '/grade/poll/results/semester/' +
+                    selectedSemester.id +
+                    '/poll/' +
+                    poll.id +
+                    '/'
+                  "
+                  class="list-group-item list-group-item-action"
+                  :class="{ active: currentPoll && poll.id === currentPoll.id }"
+                >
+                  <div class="d-flex w-100 justify-content-between">
+                    <span v-if="group_polls.length >= 2" class="inline">
+                      {{ poll.name }} ({{ poll.hours }})
+                    </span>
+                    <span v-else class="inline">
+                      {{ poll.name }}
+                    </span>
+                    <span class="text-end text-nowrap">{{
+                      poll.number_of_submissions
+                    }}</span>
+                  </div>
+                </a>
+              </template>
             </template>
           </div>
         </div>
@@ -155,15 +168,3 @@ const showOnlyMyCourses = ref(false);
     </div>
   </div>
 </template>
-
-<style scoped>
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease-in;
-}
-.list-leave-to,
-.list-enter {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-</style>

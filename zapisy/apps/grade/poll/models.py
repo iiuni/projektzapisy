@@ -159,7 +159,7 @@ class Poll(models.Model):
         result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
                   'hours': self.hours,
                   'number_of_submissions': self.number_of_submissions,
-                  'is_own': employee in [self.owner, self.teacher, self.gcowner]}
+                  'is_own': employee in [self.owner, self.teacher, self.gcowner] or self.category == "Ankiety ogólne"}
 
         return result
 
