@@ -55,7 +55,6 @@
 
 <script>
     $(document).ready(function() {
-        let timer;
         let previousInput;
         let selectedStudentIds = [];
 
@@ -81,30 +80,36 @@
 
             $.ajax({
                 url: '{% url "theses:get_data" %}',
-                type: 'POST',
+                type: 'GET',
                 data: {
                     'input_value': inputValue,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (data) {
-                    $('#id_students').html(data.filtered_students);
-                    updateSelectedStudents();
+                    $('#id_all_students').html(data.filtered_students);
                 },
                 error: function(xhr, status, error) {
                     console.error("Something went wrong :(");
                 }
             });
         }
-    
+
         function updateSelectedStudents() {
-            $('#id_students option:selected').each(function() {
+            const all_students = $('#id_all_students');
+            const picked_students = $('#id_students');
+
+            picked_students.find('option:selected').each(function() {
+                all_students.append($(this).clone().prop('selected', false));
                 const student_id = $(this).val();
                 const index = selectedStudentIds.indexOf(student_id);
-                if (index == -1) {
-                    selectedStudentIds.push(student_id);
-                } else {
-                    selectedStudentIds.splice(index, 1);
-                }
+                selectedStudentIds.splice(index, 1);
+                $(this).remove();
+            });
+
+            all_students.find('option:selected').each(function() {
+                picked_students.append($(this).clone().prop('selected', false));
+                selectedStudentIds.push($(this).val());
+                $(this).remove();
             });
             $('#id_selected_students').val(selectedStudentIds.join(','));
             console.log('Selected Student IDs:', selectedStudentIds);
@@ -113,7 +118,7 @@
 
         const debouncedInputHandler = debounce(handleInput, 200);
         $("#id_user_input").on("input", debouncedInputHandler);
-        $('#id_students').on('change', updateSelectedStudents);
+        $('#id_all_students, #id_students').on('change', updateSelectedStudents);
     });
 </script>
 

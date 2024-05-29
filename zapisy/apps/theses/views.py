@@ -217,15 +217,14 @@ from django.http import JsonResponse
 from django.db.models import Q
 
 def get_data(request):
-    if request.method == 'POST' and request.is_ajax():
-        input_value = request.POST.get('input_value', '')
-        
+    if request.method == 'GET':
+        input_value = request.GET.get('input_value', '')
+
         filtered = Student.objects.filter(
             Q(matricula__icontains=input_value) |
             Q(user__first_name__icontains=input_value) |
             Q(user__last_name__icontains=input_value)
         )
-        
         students_html = ""
         for student in filtered:
             students_html += f"<option value='{student.pk}'>{student.user.get_full_name()} ({student.matricula})</option>"

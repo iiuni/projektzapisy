@@ -31,7 +31,6 @@ class VoteFormAdmin(forms.ModelForm):
 class ThesisFormBase(forms.ModelForm):
     class Meta:
         model = Thesis
-        #fields = ['title', 'advisor', 'kind', 'reserved_until', 'description', 'max_number_of_students', 'selected_students', 'status']
         fields = '__all__'
 
     title = forms.CharField(label="Tytuł pracy", max_length=MAX_THESIS_TITLE_LEN)
@@ -43,10 +42,15 @@ class ThesisFormBase(forms.ModelForm):
                                                 label="Promotor wspierający",
                                                 required=False)
     kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int)
+    all_students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.none(),
+        required=False,
+        label="Studenci",
+        widget=forms.SelectMultiple(attrs={'size': '10'}))
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.none(),
         required=False,
-        label="Przypisani studenci",
+        label="Wybrani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
     reserved_until = forms.DateField(help_text="Jeżeli przypiszesz do pracy studentów, "
                                      "uzupełnij również datę rezerwacji.",
@@ -59,7 +63,7 @@ class ThesisFormBase(forms.ModelForm):
         label="Maks. liczba studentów", coerce=int,
         choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
     )
-    user_input = forms.CharField(label="Filtruj studentów", max_length=30, required=False,
+    user_input = forms.CharField(label="Znajdź studenta", max_length=30, required=False,
                                  widget=forms.TextInput(attrs={'placeholder': 'Imie, nazwisko, numer indeksu'}))
     selected_students = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -77,6 +81,13 @@ class ThesisFormBase(forms.ModelForm):
 
         self.fields['status'].required = False
 
+        if 'selected_students' in self.data:
+            selected_student_ids = [int(sid) for sid in self.data.get('selected_students').split(',') if sid.isdigit()]
+            self.update_students_queryset(Student.objects.filter(id__in=selected_student_ids))
+            self.data = self.data.copy()
+            self.data.setlist('students', selected_student_ids)
+            
+
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.layout = Layout(
@@ -90,14 +101,20 @@ class ThesisFormBase(forms.ModelForm):
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='row'),
             'user_input',
-            'students',
+            Row(
+                Column('all_students', css_class='form-group col-md-6'),
+                Column('students', css_class='form-group col-md-6'),
+                css_class='row'),
             'description',
         )
         self.helper.add_input(
             Submit('submit', 'Zapisz', css_class='btn-primary'))
     
+    def update_students_queryset(self, queryset):
+        self.fields['students'].queryset = queryset
+    
     def clean_students(self):
-        selected_student_ids = self.cleaned_data['selected_students']
+        selected_student_ids = self.cleaned_data.get('selected_students', '')
         if selected_student_ids:
             student_ids = [int(sid) for sid in selected_student_ids.split(',') if sid.isdigit()]
             students = Student.objects.filter(id__in=student_ids)
@@ -105,17 +122,16 @@ class ThesisFormBase(forms.ModelForm):
         return []
 
     def clean(self):
+        self.cleaned_data['students'] = self.clean_students()
         super().clean()
-
-        students = self.clean_students()
-        self.cleaned_data['students'] = students
+        students = self.cleaned_data['students']
         max_number_of_students = int(self.cleaned_data['max_number_of_students'])
-
-        if len(students) > max_number_of_students:
+        if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \
+                and len(students) > max_number_of_students:
             raise forms.ValidationError('Przekroczono limit przypisanych studentów.')
-        if students and self.cleaned_data['reserved_until'] is None:
+        if 'students' in self.data and self.cleaned_data['reserved_until'] is None:
             raise forms.ValidationError("Do pracy przypisano studenta. Uzupełnij datę rezerwacji")
-        if not students and self.cleaned_data['reserved_until'] is not None:
+        if 'students' not in self.data and self.cleaned_data['reserved_until'] is not None:
             raise forms.ValidationError("Nie przypisano studentów do pracy. Usuń datę rezerwacji")
 
 
