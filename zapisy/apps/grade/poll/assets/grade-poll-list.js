@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
           isSuperuser: JSON.parse(
             document.getElementById("data-is-superuser").innerHTML
           ),
-          selectedSemester: JSON.parse(
+          selectedSemesterId: JSON.parse(
             document.getElementById("data-selected-semester").innerHTML
           ),
         },

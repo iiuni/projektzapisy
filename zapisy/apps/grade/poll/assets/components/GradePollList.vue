@@ -29,8 +29,8 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
-    selectedSemester: {
-      type: Object as PropType<{ id: String }>,
+    selectedSemesterId: {
+      type: String,
       required: true,
     },
   },
@@ -137,7 +137,7 @@ export default defineComponent({
                   :key="poll.id"
                   :href="
                     '/grade/poll/results/semester/' +
-                    selectedSemester.id +
+                    selectedSemesterId +
                     '/poll/' +
                     poll.id +
                     '/'
