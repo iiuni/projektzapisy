@@ -9,7 +9,6 @@ from django.shortcuts import redirect, render, reverse
 from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester
-from apps.api.rest.v1.serializers import SemesterSerializer
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status, group_polls)
