@@ -38,12 +38,14 @@ export default defineComponent({
     const polls: Record<string, Record<string, Poll[]>> = props.polls;
 
     const myCoursesForSuperUser = new Set<string>();
+    var lastOwnPoll = "";
     if (props.isSuperuser) {
       Object.entries(polls).map(([course_name, course_polls]) => {
         Object.entries(course_polls).map(([group_name, group_polls]) => {
           group_polls.map((poll) => {
             if (poll.is_own) {
               myCoursesForSuperUser.add(course_name);
+              lastOwnPoll = course_name;
             }
           });
         });
@@ -73,6 +75,7 @@ export default defineComponent({
       allPolls,
       showOnlyMyCourses,
       myCoursesForSuperUser,
+      lastOwnPoll,
     };
   },
 });
@@ -106,6 +109,9 @@ export default defineComponent({
             showOnlyMyCourses ? myCoursesForSuperUser.has(course_name) : true
           "
           class="accordion-item"
+          :class="{
+            lastOwnPoll: showOnlyMyCourses && course_name === lastOwnPoll,
+          }"
           :key="course_name"
         >
           <button
@@ -168,3 +174,11 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<style scoped>
+.lastOwnPoll {
+  border-bottom-right-radius: var(--bs-accordion-inner-border-radius);
+  border-bottom-left-radius: var(--bs-accordion-inner-border-radius);
+  overflow: hidden;
+}
+</style>
