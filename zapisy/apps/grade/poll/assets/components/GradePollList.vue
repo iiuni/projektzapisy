@@ -30,7 +30,7 @@ export default defineComponent({
       required: true,
     },
     selectedSemesterId: {
-      type: String,
+      type: Number,
       required: true,
     },
   },
@@ -132,7 +132,9 @@ export default defineComponent({
           </button>
           <div
             class="border-top collapse list-group list-group-flush"
-            :class="{ show: currentPoll && currentPoll.type === course_name }"
+            :class="{
+              show: currentPoll && currentPoll.type === course_name,
+            }"
             :id="'course-section-' + index"
             :aria-labelledby="'course-section-' + index + '-heading'"
           >

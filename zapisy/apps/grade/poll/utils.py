@@ -87,8 +87,6 @@ def group_polls(polls: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
                                                            key_extractor)}
 
     polls = [p for p in polls if p is not None]
-    # for poll in polls:
-    #     poll.submissions = poll.number_of_submissions
     grouped_polls = {category: group_polls_by_key(polls, lambda p: p.subcategory)
                      for category, polls in group_polls_by_key(polls, lambda p: p.category).items()}
 

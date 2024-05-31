@@ -141,26 +141,18 @@ class Poll(models.Model):
         """Determines the hours of the polled course."""
         return self.group.get_terms_as_short_string() if self.group else ""
 
-    def to_dict(self) -> dict:
+    def to_dict(self,  employee: Employee = None) -> dict:
         """Serializes the Poll to the format accepted by TicketCreate.
 
-        :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
+        :returns: a dictionary consisting of 'id', 'name' 'type', 'hours' keys.
+        If employee is provided, the dictionary will also contain 'is_own' key and
+        'number_of_submissions' that is annotated by queryset
         """
         result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
                   'hours': self.hours}
-
-        return result
-
-    def to_dict_extended(self, employee: Employee) -> dict:
-        """Serializes the Poll with additional fields of "is_own" and "number_of_submissions".
-
-        "number_of_submissions" is annotated by queryset
-        """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
-                  'hours': self.hours,
-                  'number_of_submissions': self.number_of_submissions,
-                  'is_own': employee in [self.owner, self.teacher, self.gcowner] or self.category == "Ankiety ogólne"}
-
+        if employee:
+            result['is_own'] = employee in [self.owner, self.teacher, self.gcowner] or self.type == PollType.GENERAL
+            result['number_of_submissions'] = self.number_of_submissions
         return result
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:

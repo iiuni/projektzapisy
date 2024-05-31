@@ -244,7 +244,7 @@ class PollResults(TemplateView):
         semesters = Semester.objects.all()
 
         if request.user.is_superuser or request.user.employee:
-            polls = {course_name: {group_name: [poll.to_dict_extended(employee=request.user.employee)
+            polls = {course_name: {group_name: [poll.to_dict(employee=request.user.employee)
                                                 for poll in poll_list]
                                    for group_name, poll_list in group_polls.items()}
                      for course_name, group_polls in group_polls(polls=available_polls).items()}
@@ -258,9 +258,8 @@ class PollResults(TemplateView):
                     'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
-                    'current_poll_id': poll_id,
                     'current_poll': current_poll.to_dict() if current_poll is not None else {},
-                    'selected_semester': semester_id,
+                    'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
