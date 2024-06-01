@@ -27,16 +27,8 @@ class PollType(models.IntegerChoices):
 
 class PollManager(models.Manager):
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related(
-                'group',
-                'group__teacher__user',
-                'course',
-                'course__owner__user',
-                'semester',
-            )
+        return super().get_queryset().select_related(
+            'group', 'group__teacher__user', 'course', 'course__owner__user', 'semester'
         )
 
 
@@ -56,7 +48,6 @@ class Poll(models.Model):
     :param semester: if present, the created poll will be of
         `PollType.GENERAL` type
     """
-
     objects = PollManager()
 
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
@@ -148,8 +139,7 @@ class Poll(models.Model):
         If employee is provided, the dictionary will also contain 'is_own' key and
         'number_of_submissions' that is annotated by queryset
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category,
-                  'hours': self.hours}
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
         if employee:
             result['is_own'] = employee in [self.owner, self.teacher, self.gcowner] or self.type == PollType.GENERAL
             result['number_of_submissions'] = self.number_of_submissions
@@ -220,9 +210,7 @@ class Poll(models.Model):
         return polls
 
     @staticmethod
-    def get_all_polls_for_semester(
-        user, semester: Semester = None
-    ) -> List["Poll"]:
+    def get_all_polls_for_semester(user, semester: Semester = None) -> List['Poll']:
         """Returns all polls that user may see the submissions for.
 
         The polls will be annotated with submission counts.
@@ -406,8 +394,8 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "zgłoszenie"
-        verbose_name_plural = "zgłoszenia"
+        verbose_name = 'zgłoszenie'
+        verbose_name_plural = 'zgłoszenia'
 
     def __str__(self):
         return str(self.poll)
