@@ -223,8 +223,7 @@ class PollResults(TemplateView):
             return redirect('grade-main')
 
         available_polls = Poll.get_all_polls_for_semester(
-            user=request.user,
-            semester=selected_semester
+            user=request.user, semester=selected_semester
         )
 
         current_poll = Poll.objects.filter(id=poll_id).first()

@@ -381,7 +381,6 @@ class Submission(models.Model):
     inside the `answers` JSON field with all the necessary information
     used for recreating the form.
     """
-
     objects = SubmissionManager()
 
     schema = models.ForeignKey(Schema, on_delete=models.SET_NULL, null=True)

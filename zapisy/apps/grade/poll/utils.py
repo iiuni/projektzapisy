@@ -106,7 +106,6 @@ class PollSummarizedResultsEntry:
     Contains a question, answers and possible choices (if defined).
     Allows for easy plotting the provided data.
     """
-
     def __init__(self, question, field_type, choices=None):
         self.question = question
         self._answers = []
@@ -185,7 +184,6 @@ class PollSummarizedResults:
     A single section is also a self-contained entry, defined by
     the `PollSummarizedResultsEntry` class.
     """
-
     def __init__(self, display_answers_count=True, display_plots=True):
         self._entries = []
         self._questions = []
