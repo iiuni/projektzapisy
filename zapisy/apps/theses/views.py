@@ -10,7 +10,7 @@ from django.forms.models import model_to_dict
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
 from apps.theses.models import Thesis
-from apps.theses.users import get_theses_board, is_master_rejecter, is_theses_board_member
+from apps.theses.users import get_thesis_board, is_master_rejecter, is_theses_board_member
 from apps.users.decorators import employee_required
 from apps.users.models import Student
 
@@ -69,7 +69,8 @@ def view_thesis(request, id):
         raise PermissionDenied
     can_edit_thesis = thesis.is_mine(request.user)
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
-    can_vote = thesis.is_voting_active and board_member
+    is_advisor = thesis.is_among_advisors(request.user)
+    can_vote = thesis.is_voting_active and board_member and not is_advisor
     show_master_rejecter = is_master_rejecter(request.user) and (
         thesis.is_voting_active or thesis.is_returned)
     can_download_declarations = thesis.is_student_assigned(
@@ -77,7 +78,7 @@ def view_thesis(request, id):
 
     students = thesis.students.all()
 
-    all_voters = get_theses_board()
+    all_voters = get_thesis_board(thesis)
     votes = []
     voters = []
     for vote in thesis.thesis_votes.all():
