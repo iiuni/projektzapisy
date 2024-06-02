@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin, VoteFormAdmin
+from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin
 from apps.theses.models import Remark, ThesesSystemSettings, Thesis, Vote
 
 
@@ -21,8 +21,8 @@ class RemarkAdmin(admin.ModelAdmin):
 
 
 class VoteAdmin(admin.ModelAdmin):
-    autocomplete_fields = []
-    form = VoteFormAdmin
+    def has_add_permission(self, request):
+        return False
 
 
 class ThesesSystemSettingsAdmin(admin.ModelAdmin):
