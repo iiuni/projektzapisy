@@ -13,6 +13,7 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
+// This component is used in point-counter file
 export default Vue.extend({
   components: {
     TextFilter,
@@ -76,6 +77,8 @@ export default Vue.extend({
       this.collapsed = false;
     }
 
+    // this fragment is responsible for 
+    // handling changes in the state
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
