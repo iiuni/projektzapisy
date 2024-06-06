@@ -77,7 +77,7 @@ export default Vue.extend({
       this.collapsed = false;
     }
 
-    // this fragment is responsible for 
+    // this fragment is responsible for
     // handling changes in the state
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
