@@ -8,6 +8,7 @@ interface ProposalInfo extends CourseInfo {
   status: "IN_OFFER" | "IN_VOTE" | "WITHDRAWN";
 }
 
+// This component is used on the offer page
 export default Vue.extend({
   data() {
     return {

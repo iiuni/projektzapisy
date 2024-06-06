@@ -13,6 +13,8 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
+// This component is used to filter courses on
+// the offer page
 export default Vue.extend({
   components: {
     TextFilter,

@@ -13,6 +13,8 @@ import { CourseInfo } from "../store/courses";
 
 export type CourseObject = { id: number; name: string; url: string };
 
+// This component is used to filter courses on
+// the creating prototype page
 @Component({
   computed: {
     ...mapGetters("courses", {

@@ -10,6 +10,8 @@ import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
 
+// This component is used to filter courses on
+// the course list main page and creating prototype page
 export default Vue.extend({
   components: {
     TextFilter,
@@ -61,6 +63,8 @@ export default Vue.extend({
       this.collapsed = false;
     }
   },
+  // this fragment is responsible for the action
+  // of clear filters button 
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
   },
