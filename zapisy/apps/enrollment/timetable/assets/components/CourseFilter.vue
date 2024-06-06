@@ -64,7 +64,7 @@ export default Vue.extend({
     }
   },
   // this fragment is responsible for the action
-  // of clear filters button 
+  // of clear filters button
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
   },
