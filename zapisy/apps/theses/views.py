@@ -62,13 +62,13 @@ def view_thesis(request, id):
     thesis = get_object_or_404(Thesis.objects.visible(request.user), id=id)
     board_member = is_theses_board_member(request.user)
 
-    user_privileged_for_thesis = thesis.is_user_privileged_for_thesis(request.user)
+    user_privileged_for_thesis = thesis.is_user_privileged(request.user)
     can_edit_thesis = thesis.is_mine(request.user)
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
     can_vote = thesis.is_voting_active and board_member
     show_master_rejecter = is_master_rejecter(request.user) and (
         thesis.is_voting_active or thesis.is_returned)
-    can_download_declarations = thesis.is_user_allowed_to_generate_declarations(request.user)
+    can_download_declarations = thesis.can_user_generate_declarations(request.user)
 
     students = thesis.students.all()
 
@@ -151,7 +151,7 @@ def gen_form(request, id, studentid):
     except Student.DoesNotExist:
         raise Http404("No Student matches the given query.")
 
-    user_allowed_to_generate = thesis.is_user_allowed_to_generate_declarations(request.user)
+    user_allowed_to_generate = thesis.can_user_generate_declarations(request.user)
     if not user_allowed_to_generate:
         raise PermissionDenied
 
