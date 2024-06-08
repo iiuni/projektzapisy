@@ -151,8 +151,7 @@ def gen_form(request, id, studentid):
     except Student.DoesNotExist:
         raise Http404("No Student matches the given query.")
 
-    user_allowed_to_generate = thesis.can_user_generate_declarations(request.user)
-    if not user_allowed_to_generate:
+    if not thesis.can_user_generate_declarations(request.user):
         raise PermissionDenied
 
     students = []
