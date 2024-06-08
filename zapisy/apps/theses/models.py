@@ -126,7 +126,7 @@ class Thesis(models.Model):
     def is_among_advisors(self, user):
         return self.is_mine(user) or self.is_supporting_advisor_assigned(user)
 
-    def is_user_privileged_for_thesis(self, user):
+    def is_user_privileged(self, user):
         return self.is_among_advisors(user) or user.is_staff or is_theses_board_member(user)
 
     def is_user_allowed_to_generate_declarations(self, user):
