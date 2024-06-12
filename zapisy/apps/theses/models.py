@@ -129,8 +129,8 @@ class Thesis(models.Model):
     def is_user_privileged(self, user):
         return self.is_among_advisors(user) or user.is_staff or is_theses_board_member(user)
 
-    def can_user_generate_declarations(self, user):
-        return self.user_privileged_for_thesis(user) or (self.has_been_accepted and self.is_student_assigned(user))
+    def can_user_download_declarations(self, user):
+        return self.is_user_privileged(user) or (self.has_been_accepted and self.is_student_assigned(user))
 
     @property
     def has_no_students_assigned(self):

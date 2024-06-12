@@ -68,7 +68,7 @@ def view_thesis(request, id):
     can_vote = thesis.is_voting_active and board_member
     show_master_rejecter = is_master_rejecter(request.user) and (
         thesis.is_voting_active or thesis.is_returned)
-    can_download_declarations = thesis.can_user_generate_declarations(request.user)
+    can_download_declarations = thesis.can_user_download_declarations(request.user)
 
     students = thesis.students.all()
 
@@ -151,7 +151,7 @@ def gen_form(request, id, studentid):
     except Student.DoesNotExist:
         raise Http404("No Student matches the given query.")
 
-    if not thesis.can_user_generate_declarations(request.user):
+    if not thesis.can_user_download_declarations(request.user):
         raise PermissionDenied
 
     students = []
