@@ -34,6 +34,7 @@ def prepare_courses_list_data(semester: Optional[Semester]):
     courses = []
     for course in qs.prefetch_related('effects', 'tags'):
         course_dict = course.__json__()
+        course_dict["courseTypeName"] = course.course_type.short_name
         course_dict.update({
             'url': reverse('course-page', args=(course.slug,)),
         })

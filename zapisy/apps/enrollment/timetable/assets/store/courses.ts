@@ -20,6 +20,8 @@ export interface CourseInfo {
   owner: number;
   recommendedForFirstYear: boolean;
 
+  courseType?: number;
+  courseTypeName?: string;
   groups?: Array<number>;
 }
 
