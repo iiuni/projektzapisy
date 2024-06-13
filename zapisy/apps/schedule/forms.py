@@ -113,7 +113,7 @@ class EventForm(forms.ModelForm):
         else:
             return cleaned_data
 
-    title = forms.CharField(label="Nazwa", required=False)
+    title = forms.CharField(label="Nazwa<span class='asteriskField'>*</span>", required=False)
     description = forms.CharField(
         label="Opis",
         required=False,
@@ -131,7 +131,7 @@ class EventForm(forms.ModelForm):
         help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
-                                    label="Przedmiot",
+                                    label="Przedmiot<span class='asteriskField'>*</span>",
                                     required=False)
 
     def __init__(self, user, *args, **kwargs):
