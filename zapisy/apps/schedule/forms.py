@@ -105,7 +105,7 @@ class EventForm(forms.ModelForm):
         exclude = ('status', 'author', 'created', 'edited', 'group', 'interested')
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super().clean()
         if cleaned_data['type'] == Event.TYPE_GENERIC and cleaned_data['title'] == '':
             raise forms.ValidationError("Tytuł wydarzenia nie może być pusty")
         elif cleaned_data['type'] != Event.TYPE_GENERIC and cleaned_data['course'] is None:
