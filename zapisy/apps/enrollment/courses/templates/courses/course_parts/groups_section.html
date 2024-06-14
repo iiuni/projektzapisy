@@ -21,7 +21,9 @@
                 <th title="Liczba osób oczekujących na zapis" scope="col">Kolejka</th>
                 {% if course.is_enrollment_on %}
                     <th scope="col"></th>
-                    <th scope="col">Priorytet</th>
+                    {% if course.can_enqueue_any %}
+                        <th scope="col">Priorytet</th>
+                    {% endif %}
                 {% endif %}
                 {% if user.is_authenticated %}
                     {# Link to the group page #}
@@ -101,8 +103,20 @@
                                     <i class="fa fa-car-side"></i>
                                 </button>
                                 </div>
+                            {% else %}
+                            <div class="d-inline-block"
+                                 data-toggle="popover" data-trigger="hover" tabindex="0"
+                            data-content="Nie możesz zapisać się do grupy, 
+                                            w większości przypadków błęd jest spowodowany przekroczeniem dopuszczalnej liczby ECTS.">
+                                <button 
+                                    class="btn btn-secondary btn-sm" 
+                                    style="pointer-events: none;" disabled>
+                                    Zapisz
+                                </button>
+                                </div>
                             {% endif %}
                         </td>
+                        {% if course.can_enqueue_any %}
                         <td class="priority ">
                             {% if group.can_enqueue and group.is_enqueued %}
                             <form action="{% url 'records-set-priority' %}" method="post">{% csrf_token %}
@@ -118,6 +132,7 @@
                             </form>
                             {% endif %}
                         </td>
+                        {% endif %}
                     {% endif %}
                     {% if user.student or user.employee or user.is_staff %}
                         <td>

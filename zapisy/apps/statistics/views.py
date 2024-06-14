@@ -10,7 +10,7 @@ from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.templatetags.course_types import decode_class_type_plural
 from apps.enrollment.records.models import RecordStatus
-from apps.enrollment.records.models.records import Record
+from apps.enrollment.records import engine
 from apps.users.models import Student
 
 
@@ -35,7 +35,7 @@ def groups(request):
     enrolled_agg = models.Count(
         'record', filter=models.Q(record__status=RecordStatus.ENROLLED), distinct=True)
     queued_agg = models.Count(
-        'record', filter=models.Q(record__status=RecordStatus.QUEUED), distinct=True)
+        'record', filter=models.Q(record__status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED]), distinct=True)
     pinned_agg = models.Count('pin', distinct=True)
 
     groups = Group.objects.filter(course__semester=semester).select_related(
@@ -43,7 +43,7 @@ def groups(request):
         'course__name', 'teacher__user__first_name', 'teacher__user__last_name', 'limit',
         'type').prefetch_related('guaranteed_spots', 'guaranteed_spots__role').annotate(
         enrolled=enrolled_agg).annotate(queued=queued_agg).annotate(pinned=pinned_agg)
-    waiting_students = Record.list_waiting_students(
+    waiting_students = engine.list_waiting_students(
         CourseInstance.objects.filter(semester=semester))
 
     courses = defaultdict(list)

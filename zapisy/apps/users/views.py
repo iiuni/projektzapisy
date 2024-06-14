@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
+from apps.enrollment.records import engine
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
@@ -64,7 +65,7 @@ def students_view(request, user_id: int = None):
         groups = [r.group for r in records]
 
         # Highlight groups shared with the viewer in green.
-        viewer_groups = Record.common_groups(request.user, groups)
+        viewer_groups = engine.common_groups(request.user, groups)
         for g in groups:
             g.is_enrolled = g.pk in viewer_groups
 
@@ -108,7 +109,7 @@ def employees_view(request, user_id: int = None):
         groups = list(groups)
 
         # Highlight groups shared with the viewer in green.
-        viewer_groups = Record.common_groups(request.user, groups)
+        viewer_groups = engine.common_groups(request.user, groups)
         for g in groups:
             g.is_enrolled = g.pk in viewer_groups
 
@@ -196,7 +197,7 @@ def my_profile(request):
         grade_info = StudentGraded.objects.filter(
             student=student).select_related('semester').order_by('-semester__records_opening')
         semesters_participated_in_grade = [x.semester for x in grade_info]
-        current_semester_ects = Record.student_points_in_semester(student, semester)
+        current_semester_ects = engine.student_points_in_semester(student, semester)
         data.update({
             't0_time': t0_time,
             'groups_times': groups_times,
