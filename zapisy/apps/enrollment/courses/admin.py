@@ -59,7 +59,14 @@ class SemesterAdmin(admin.ModelAdmin):
         if queryset.count() != 1:
             self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.ERROR)
             return
+
         semester = queryset.get()
+        if semester.records_opening is None:
+            self.message_user(
+                    request, "Należy ustawić czas otwarcia zapisów dla wybranego semestru.",
+                    level=messages.ERROR)
+            return
+
         T0Times.populate_t0(semester)
         GroupOpeningTimes.populate_opening_times(semester)
         self.message_user(request,
