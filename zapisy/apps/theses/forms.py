@@ -10,6 +10,9 @@ from apps.users.models import Employee, Student
 from apps.theses.validators import MAX_MAX_ASSIGNED_STUDENTS
 
 
+SIGNIFICANT_FIELDS = ['title', 'supporting_advisor', 'kind', 'max_number_of_students', 'description']
+
+
 class ThesisFormAdmin(forms.ModelForm):
     class Meta:
         model = Thesis
@@ -127,11 +130,11 @@ class EditThesisForm(ThesisFormBase):
         instance.modified = timezone.now()
 
         status = self.status
+        instance.significant_field_changed = False
 
-        if len(set(self.changed_data).intersection([
-                'title', 'supporting_advisor', 'kind',
-                'max_number_of_students', 'description'])) > 0:
+        if len(set(self.changed_data).intersection(SIGNIFICANT_FIELDS)) > 0:
             instance.status = ThesisStatus.BEING_EVALUATED.value
+            instance.significant_field_changed = True
         elif status == ThesisStatus.ACCEPTED.value and 'students' in self.data:
             instance.status = ThesisStatus.IN_PROGRESS.value
         elif status == ThesisStatus.IN_PROGRESS.value and 'students' not in self.data:
