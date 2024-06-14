@@ -10,13 +10,7 @@
 
 {% block content %}
     <h2>
-        {% if event.type == '2' %}
-            {{ event.title }}
-        {% elif event.type == '3' %}
-            {{ event.group }}
-        {% else %}
-            {{ event.course }} - {{ event.get_type_display }}
-        {% endif %}
+        {{ event.title }}
     </h2>
     <table class="table border">
         <tbody>

@@ -64,6 +64,11 @@ def new_reservation(request, event_id=None):
             if formset.is_valid():
                 event.save()
                 formset.save()
+                if event.type == Event.TYPE_DEFENCE:
+                    event.interested.set(event.thesis.students.all().values_list('user', flat=True))
+                    event.interested.add(event.thesis.advisor.user)
+                    if event.thesis.supporting_advisor:
+                        event.interested.add(event.thesis.supporting_advisor.user)
 
                 return redirect(event)
     else:
@@ -429,7 +434,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # 
                           begin=term.start,
                           end=term.end,
                           room=term.room,
-                          title=term.event.title or str(term.event.course) or "",
+                          title=str(term.event.course) or term.thesis.title or term.event.title or "",
                           type=term.event.group.get_type_display()
                           if term.event.group else term.event.get_type_display(),
                           author=term.event.author.get_full_name()))

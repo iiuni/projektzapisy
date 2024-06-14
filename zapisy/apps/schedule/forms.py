@@ -13,6 +13,8 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.schedule.models.event import Event
 from apps.schedule.models.message import EventMessage, EventModerationMessage
 from apps.schedule.models.term import Term
+from apps.theses.enums import ThesisStatus
+from apps.theses.models import Thesis
 
 
 class TermForm(forms.ModelForm):
@@ -104,6 +106,15 @@ class EventForm(forms.ModelForm):
         model = Event
         exclude = ('status', 'author', 'created', 'edited', 'group', 'interested')
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data['type'] != Event.TYPE_DEFENCE:
+            cleaned_data['thesis'] = None
+        if cleaned_data['type'] not in (Event.TYPE_EXAM, Event.TYPE_TEST):
+            cleaned_data['course'] = None
+        if cleaned_data['type'] != Event.TYPE_GENERIC:
+            cleaned_data['title'] = None
+
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
@@ -121,6 +132,9 @@ class EventForm(forms.ModelForm):
     )
     course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
                                     label="Przedmiot",
+                                    required=False)
+    thesis = forms.ModelChoiceField(queryset=Thesis.objects.none(),
+                                    label="Praca dyplomowa",
                                     required=False)
 
     def __init__(self, user, *args, **kwargs):
@@ -150,9 +164,19 @@ class EventForm(forms.ModelForm):
 
             self.fields['course'].queryset = queryset
 
+            if not user.has_perm('schedule.manage_events'):
+                thesis_queryset = Thesis.objects.filter(
+                    advisor=user.employee,
+                    status=ThesisStatus.IN_PROGRESS)
+            else:
+                thesis_queryset = Thesis.objects.filter(status=ThesisStatus.IN_PROGRESS)
+
+            self.fields['thesis'].queryset = thesis_queryset.order_by('title')
+
         self.helper.layout = Layout(
             'type',
             Div('course', css_id="form-course"),
+            Div('thesis', css_id="form-thesis", css_class="d-none"),
             Div(CustomVisibleCheckbox('visible'), css_class="d-none form-event"),
             Div('title', css_class='d-none form-event'),
             'description',
