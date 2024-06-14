@@ -15,7 +15,8 @@ def get_theses_board(exclude_advisors_for_thesis = None):
         return board
     if exclude_advisors_for_thesis.supporting_advisor is None:
         return board.exclude(id__in=[exclude_advisors_for_thesis.advisor.id])
-    return board.exclude(id__in=[exclude_advisors_for_thesis.advisor.id, exclude_advisors_for_thesis.supporting_advisor.id])
+    return board.exclude(id__in=[exclude_advisors_for_thesis.advisor.id, 
+                                 exclude_advisors_for_thesis.supporting_advisor.id])
 
 
 def get_num_board_members() -> int:
