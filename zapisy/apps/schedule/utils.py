@@ -44,7 +44,6 @@ class EventAdapter(FullCalendarAdapter):
             return "Sala zajęta"
 
         return super(EventAdapter, self).get_title(item)
-        return item.event.get_display_title
 
     def get_url(self, item):
         if not item.event.visible and not self.request.user.has_perm('schedule.manage_events'):
@@ -57,6 +56,5 @@ class ScheduleAdapter(EventAdapter):
     def get_url(self, item):
         if not item.event.visible and not self.request.user.has_perm('schedule.manage_events'):
             return None
-
 
         return super(EventAdapter, self).get_url(item)

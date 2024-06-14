@@ -13,6 +13,7 @@ from apps.theses.models import Thesis
 
 MAX_EVENT_TITLE_LEN = 255
 
+
 class Event(models.Model):
     TYPE_EXAM = '0'
     TYPE_TEST = '1'
@@ -92,10 +93,20 @@ class Event(models.Model):
                     self.author.has_perm('schedule.manage_events')):
                 self.status = self.STATUS_ACCEPTED
 
-            # all exams, tests and defenses should be public, we also need to create titles for them
+            # all exams, tests & defenses should be public, we also need to create titles for them
 
             if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST, Event.TYPE_DEFENCE]:
                 self.visible = True
+                if self.title:
+                    pass
+                elif self.type in (Event.TYPE_EXAM, Event.TYPE_TEST):
+                    self.title = (self.get_type_display() + ": " + self.course.name)[:MAX_EVENT_TITLE_LEN]
+                elif self.type == Event.TYPE_DEFENCE:
+                    self.title = (self.get_type_display() + ": " + self.thesis.title)[:MAX_EVENT_TITLE_LEN]
+                elif self.type == Event.TYPE_CLASS:
+                    self.title = self.group.course.get_short_name()
+                else:
+                    self.title = "Wydarzenie bez tytułu"
 
             # only the advisor and supporting advisor should be able to schedule a thesis defence
 
@@ -270,18 +281,6 @@ class Event(models.Model):
             return emails
 
         return self.interested.values_list('email', flat=True)
-
-    @property
-    def get_display_title(self):
-        if self.title:
-            return self.title
-        if self.type in (Event.TYPE_EXAM, Event.TYPE_TEST):
-            return self.get_type_display() + ": " + self.course.name
-        if self.type == Event.TYPE_DEFENCE:
-            return self.get_type_display() + ": " + self.thesis.title
-        if self.type == Event.TYPE_CLASS:
-            return self.group.course.get_short_name()
-        return "Wydarzenie bez tytułu"
 
     def __str__(self):
         return '%s %s' % (self.title, self.description)
