@@ -21,12 +21,15 @@ class MyProfileSemesterInfoTestCase(TestCase):
         Semester.objects.all().delete()
         cls.semester = Semester(
             visible=True,
+            year=str(datetime.now().year) + "/" + str(datetime.now().year+1)[-2:],
             type=Semester.TYPE_WINTER,
             records_opening=datetime.now() - timedelta(days=15),
             records_closing=datetime.now() + timedelta(days=15),
             records_ects_limit_abolition=datetime.now() + timedelta(days=5),
             semester_beginning=datetime.now() + timedelta(days=20),
-            semester_ending=datetime.now() + timedelta(days=100)
+            semester_ending=datetime.now() + timedelta(days=100),
+            lectures_beginning=datetime.now() + timedelta(days=20),
+            lectures_ending=datetime.now() + timedelta(days=100)
         )
         cls.semester.full_clean()
         cls.semester.save()
