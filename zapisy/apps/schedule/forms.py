@@ -106,6 +106,15 @@ class EventForm(forms.ModelForm):
         model = Event
         exclude = ('status', 'author', 'created', 'edited', 'group', 'interested')
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data['type'] != Event.TYPE_DEFENCE:
+            cleaned_data['thesis'] = None
+        if cleaned_data['type'] not in (Event.TYPE_EXAM, Event.TYPE_TEST):
+            cleaned_data['course'] = None
+        if cleaned_data['type'] != Event.TYPE_GENERIC:
+            cleaned_data['title'] = None
+
     title = forms.CharField(label="Nazwa", required=False)
     description = forms.CharField(
         label="Opis",
@@ -158,9 +167,9 @@ class EventForm(forms.ModelForm):
             if not user.has_perm('schedule.manage_events'):
                 thesis_queryset = Thesis.objects.filter(
                     advisor=user.employee,
-                    status=ThesisStatus.ACCEPTED)
+                    status=ThesisStatus.IN_PROGRESS)
             else:
-                thesis_queryset = Thesis.objects.all()
+                thesis_queryset = Thesis.objects.filter(status=ThesisStatus.IN_PROGRESS)
 
             self.fields['thesis'].queryset = thesis_queryset.order_by('title')
 

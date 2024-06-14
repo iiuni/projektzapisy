@@ -92,7 +92,7 @@ class Event(models.Model):
                     self.author.has_perm('schedule.manage_events')):
                 self.status = self.STATUS_ACCEPTED
 
-            # all exams and tests should be public
+            # all exams, tests and defenses should be public, we also need to create titles for them
 
             if self.type in [Event.TYPE_EXAM, Event.TYPE_TEST, Event.TYPE_DEFENCE]:
                 self.visible = True
@@ -270,6 +270,18 @@ class Event(models.Model):
             return emails
 
         return self.interested.values_list('email', flat=True)
+
+    @property
+    def get_display_title(self):
+        if self.title:
+            return self.title
+        if self.type in (Event.TYPE_EXAM, Event.TYPE_TEST):
+            return self.get_type_display() + ": " + self.course.name
+        if self.type == Event.TYPE_DEFENCE:
+            return self.get_type_display() + ": " + self.thesis.title
+        if self.type == Event.TYPE_CLASS:
+            return self.group.course.get_short_name()
+        return "Wydarzenie bez tytułu"
 
     def __str__(self):
         return '%s %s' % (self.title, self.description)

@@ -434,7 +434,7 @@ def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # 
                           begin=term.start,
                           end=term.end,
                           room=term.room,
-                          title=term.event.title or (term.event.course and str(term.event.course)) or \
+                          title=term.event.title or str(term.event.course) or \
                                   term.event.thesis.title or "",
                           type=term.event.group.get_type_display()
                           if term.event.group else term.event.get_type_display(),

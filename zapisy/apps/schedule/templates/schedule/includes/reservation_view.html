@@ -4,13 +4,7 @@
             <th class="text-light bg-info">Tytuł</th>
             <td colspan="3">
                 <a href="{% url 'events:show' event.id %}">
-                    {% if event.thesis %}
-                        {{ event.thesis }}
-                    {% elif event.course %}
-                        {{ event.course.name }}
-                    {% else %}
-                        {{ event.title }}
-                    {% endif %}
+                    {{ event.get_display_title }}
                 </a>
             </td>
         </tr>
