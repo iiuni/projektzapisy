@@ -6,7 +6,7 @@ from apps.users.models import Employee, is_employee, is_user_in_group
 THESIS_BOARD_GROUP_NAME = "Komisja prac dyplomowych"
 
 
-def get_theses_board(exclude_advisors_for_thesis = None):
+def get_theses_board(exclude_advisors_for_thesis=None):
     """Returns all members of the board for specific thesis."""
     board = Employee.objects.select_related(
         'user'
