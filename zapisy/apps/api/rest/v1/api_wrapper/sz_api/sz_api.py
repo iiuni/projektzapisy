@@ -231,9 +231,14 @@ class ZapisyApi:
             self.redirect_map[Student.redirect_key], student.to_dict())
         return resp.json()['id']
 
-    def create_completed_course(self, student, course, program) -> int:
+    def create_completed_course(self, student, name, short_name, points, has_exam,
+                                description, language, semester__id, course_type__short_name, usos_kod, program) -> int:
         """Adds new student - completed course record and returns its id."""
-        completed_course = CompletedCourse(None, student, course, program)
+        completed_course = CompletedCourse(
+            None, student,
+            CourseInstance(None, name, short_name, points, has_exam, description,
+                           language, semester__id, course_type__short_name, usos_kod),
+            program)
         resp = self._handle_post_request(
             self.redirect_map[CompletedCourse.redirect_key], completed_course.to_dict()
         )
