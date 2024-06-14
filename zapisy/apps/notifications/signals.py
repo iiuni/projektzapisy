@@ -17,7 +17,7 @@ from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
 from apps.theses.models import Thesis, Vote
-from apps.theses.users import get_board
+from apps.theses.users import get_theses_board
 from apps.users.models import Employee, Student
 
 
@@ -164,7 +164,7 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
 def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     thesis = kwargs['instance']
 
-    all_voters = get_board()
+    all_voters = get_theses_board()
     accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
     users = [voter.user for voter in all_voters if voter not in accepting_voters]
     target = reverse('theses:selected_thesis', args=[thesis.id])
