@@ -34,12 +34,10 @@ export default Vue.extend({
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.courses.forEach((c, i) => {
-            this.$set(this.visibleCourses, i, {
-              courseInfo: c,
-              visible: this.tester(c),
-            });
-          });
+          this.visibleCourses = this.courses.map((c) => ({
+            courseInfo: c,
+            visible: this.tester(c),
+          }));
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
