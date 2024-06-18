@@ -8,7 +8,7 @@ export default Vue.extend({
   data() {
     return {
       courses: [] as CourseInfo[],
-      visibleCourses: [] as CourseInfo[],
+      visibleCourses: [] as { courseInfo: CourseInfo; visible: boolean }[],
     };
   },
   computed: {
@@ -23,22 +23,26 @@ export default Vue.extend({
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+    this.visibleCourses = courseData.map((c) => ({
+      courseInfo: c,
+      visible: this.tester(c),
+    }));
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
-    await this.$nextTick();
-    updateCoursesLinks();
 
     this.$store.subscribe(async (mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.visibleCourses = this.courses.filter(this.tester);
+          this.courses.forEach((c, i) => {
+            this.$set(this.visibleCourses, i, {
+              courseInfo: c,
+              visible: this.tester(c),
+            });
+          });
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
-          await this.$nextTick();
-          updateCoursesLinks();
           break;
       }
     });
@@ -58,27 +62,16 @@ function updateSemesterLinks() {
     }
   }
 }
-function updateCoursesLinks() {
-  const queryString = window.location.search;
-  const coursesLinks = document.getElementsByClassName("course-link");
-  for (let i = 0; i < coursesLinks.length; i++) {
-    const link: Element = coursesLinks[i];
-    const hrefValue = link.getAttribute("href");
-    if (hrefValue !== null) {
-      const coursesPath = hrefValue.split("?")[0];
-      link.setAttribute("href", coursesPath + queryString);
-    }
-  }
-}
 </script>
 
 <template>
   <ul class="nav d-block">
     <li v-for="c in visibleCourses" v-bind:key="c.id">
       <a
-        :href="c.url"
+        :href="c.courseInfo.url"
         class="d-block px-4 py-1 text-decoration-none course-link"
-        >{{ c.name }}</a
+        v-if="c.visible"
+        >{{ c.courseInfo.name }}</a
       >
     </li>
   </ul>
