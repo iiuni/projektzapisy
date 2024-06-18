@@ -16,7 +16,7 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  async mounted() {
+  mounted() {
     // When mounted, load the list of courses from embedded JSON and apply initial filters
     // fetched from the query string.
     const courseData = JSON.parse(
@@ -31,7 +31,7 @@ export default Vue.extend({
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
 
-    this.$store.subscribe(async (mutation, _) => {
+    this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.courses.forEach((c, i) => {
