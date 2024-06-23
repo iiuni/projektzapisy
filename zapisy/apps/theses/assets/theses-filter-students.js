@@ -1,6 +1,10 @@
 $(document).ready(function() {
     let previousInput;
-    let selectedStudentIds = [];
+    let selectedStudentIds = $('#id_students option').map(function() {
+        return $(this).val();
+    }).get();
+    $('#id_selected_students').val(selectedStudentIds.join(','));
+    $('#id_students').find('option:selected').prop('selected', false);
 
     function debounce(func, delay) {
         let timer;

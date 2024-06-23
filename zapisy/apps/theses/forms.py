@@ -152,6 +152,10 @@ class EditThesisForm(ThesisFormBase):
 
         self.status = self.instance.status
 
+        if self.instance and self.instance.pk:
+            student_ids = self.instance.students.values_list('pk', flat=True)
+            self.fields['students'].queryset = Student.objects.filter(pk__in=student_ids)
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.modified = timezone.now()
