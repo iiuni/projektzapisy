@@ -54,72 +54,9 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        let previousInput;
-        let selectedStudentIds = [];
-
-        function debounce(func, delay) {
-            let timer;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(timer);
-                timer = setTimeout(function() {
-                    func.apply(context, args);
-                }, delay);
-            };
-        }
-
-        function handleInput() {
-            const inputValue = $("#id_user_input").val().trim();
-
-            if (inputValue === previousInput || inputValue === '') {
-                return;
-            }
-            previousInput = inputValue;
-
-            $.ajax({
-                url: '{% url "theses:get_data" %}',
-                type: 'GET',
-                data: {
-                    'input_value': inputValue,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function (data) {
-                    $('#id_all_students').html(data.filtered_students);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Something went wrong :(");
-                }
-            });
-        }
-
-        function updateSelectedStudents() {
-            const all_students = $('#id_all_students');
-            const picked_students = $('#id_students');
-
-            picked_students.find('option:selected').each(function() {
-                all_students.append($(this).clone().prop('selected', false));
-                const student_id = $(this).val();
-                const index = selectedStudentIds.indexOf(student_id);
-                selectedStudentIds.splice(index, 1);
-                $(this).remove();
-            });
-
-            all_students.find('option:selected').each(function() {
-                picked_students.append($(this).clone().prop('selected', false));
-                selectedStudentIds.push($(this).val());
-                $(this).remove();
-            });
-            $('#id_selected_students').val(selectedStudentIds.join(','));
-            console.log('Selected Student IDs:', selectedStudentIds);
-            console.log('Hidden input value:', $('#id_selected_students').val());
-        }
-
-        const debouncedInputHandler = debounce(handleInput, 200);
-        $("#id_user_input").on("input", debouncedInputHandler);
-        $('#id_all_students, #id_students').on('change', updateSelectedStudents);
-    });
+    const ajaxUrl = '{% url "theses:get_data" %}';
+    const csrfToken = '{{ csrf_token }}';
 </script>
+{% render_bundle 'theses-theses-filter-students' %}
 
 {% endblock %}
