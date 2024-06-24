@@ -224,9 +224,11 @@ def get_data(request):
             Q(user__last_name__icontains=input_value)
         )
         students = [
-            {'id': student.pk,
-            'name': student.user.get_full_name(),
-            'matricula': student.matricula}
+            {
+                'id': student.pk,
+                'name': student.user.get_full_name(),
+                'matricula': student.matricula
+            }
             for student in filtered
         ]
         return JsonResponse({'filtered_students': students})

@@ -63,8 +63,12 @@ class ThesisFormBase(forms.ModelForm):
         label="Maks. liczba studentów", coerce=int,
         choices=tuple((i, i) for i in range(1, MAX_MAX_ASSIGNED_STUDENTS + 1))
     )
-    user_input = forms.CharField(label="Znajdź studenta", max_length=30, required=False,
-                                 widget=forms.TextInput(attrs={'placeholder': 'Filtruj po imieniu, nazwisku, numerze indeksu'}))
+    user_input = forms.CharField(
+        label="Znajdź studenta",
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Filtruj po imieniu, nazwisku, numerze indeksu'})
+    )
     selected_students = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, user, *args, **kwargs):
@@ -108,10 +112,10 @@ class ThesisFormBase(forms.ModelForm):
         )
         self.helper.add_input(
             Submit('submit', 'Zapisz', css_class='btn-primary'))
-    
+
     def update_students_queryset(self, queryset):
         self.fields['students'].queryset = queryset
-    
+
     def clean_students(self):
         selected_student_ids = self.cleaned_data.get('selected_students', '')
         if selected_student_ids:
