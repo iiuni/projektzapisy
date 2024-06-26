@@ -51,6 +51,6 @@ jobs:
           cd zapisy
           yarn prettier --check .
       - name: Lint Python
-        if: ${{ steps.py-deps.outcome == 'success' }}
+        if: ${{ steps.py-deps.conclusion == 'success' }}
         run: |
           python -m flake8 --statistics .
