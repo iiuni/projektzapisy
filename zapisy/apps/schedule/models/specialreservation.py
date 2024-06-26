@@ -7,7 +7,9 @@ from apps.common import days_of_week
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.courses.models.term import Term as CourseTerm
-from apps.schedule.models.event import Event
+
+from .term import Term
+from .event import Event
 
 
 class SpecialReservationQuerySet(models.query.QuerySet):
@@ -89,7 +91,7 @@ class SpecialReservation(models.Model):
 
         if day is not None:
             if isinstance(day, date):
-                day_of_week = CourseTerm.get_day_of_week(day)
+                day_of_week = days_of_week.get_day_of_week(day)
             else:
                 day_of_week = day
             query = query.on_day_of_week(day_of_week)
@@ -110,7 +112,6 @@ class SpecialReservation(models.Model):
                                                          start_time=self.start_time,
                                                          end_time=self.end_time)
 
-        from .term import Term
         candidate_days = self.semester.get_all_days_of_week(
             self.dayOfWeek, start_date=max(
                 datetime.now().date(), self.semester.lectures_beginning))
@@ -171,8 +172,6 @@ class SpecialReservation(models.Model):
         verbose_name_plural = 'rezerwacje stałe'
 
     def create_event(self, author_id):
-        from .term import Term
-        from .event import Event
 
         Event.objects.filter(reservation=self).delete()
 

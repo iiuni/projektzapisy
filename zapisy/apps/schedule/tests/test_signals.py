@@ -3,7 +3,7 @@ from datetime import date, time
 from django import test
 
 from apps.common import days_of_week
-from apps.enrollment.courses.models.semester import ChangedDay, Freeday
+from apps.enrollment.courses.models.specialdays import ChangedDay, Freeday
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.enrollment.courses.tests.factories import (ClassroomFactory, CourseInstanceFactory,
                                                      GroupFactory, SemesterFactory)
