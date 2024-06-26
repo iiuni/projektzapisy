@@ -45,9 +45,11 @@ jobs:
           cd zapisy
           yarn eslint --ext .vue .
       - name: Format Node assets
+        if: ${{ steps['Install Node Dependencies'].outcome == 'success' }}
         run: |
           cd zapisy
           yarn prettier --check .
       - name: Lint Python
+        if: ${{ steps['Install Python Dependencies'].outcome == 'success' }}
         run: |
           python -m flake8 --statistics .
