@@ -41,6 +41,7 @@ jobs:
         run: |
           cd zapisy
           yarnpkg install --immutable
+          false
       - name: Lint Node assets
         run: |
           cd zapisy
