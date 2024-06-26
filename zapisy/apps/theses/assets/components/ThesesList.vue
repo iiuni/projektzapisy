@@ -60,15 +60,6 @@ export default class ThesesList extends Vue {
 }
 </script>
 
-<style scoped>
-.selection-none {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-</style>
-
 <template>
   <table class="table table-hover selection-none table-responsive-md">
     <thead id="table-header">
@@ -116,3 +107,11 @@ export default class ThesesList extends Vue {
   </table>
 </template>
 
+<style scoped>
+.selection-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+</style>
