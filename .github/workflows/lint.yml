@@ -37,20 +37,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r zapisy/requirements.test.txt
       - name: Install Node Dependencies
-        id: deps
         run: |
           cd zapisy
           yarnpkg install --immutable
       - name: Lint Node assets
+        id: lint
         run: |
           cd zapisy
           yarn eslint --ext .vue .
       - name: Format Node assets
-        if: ${{ steps.deps.outcome == 'success' }}
         run: |
           cd zapisy
           yarn prettier --check .
       - name: Lint Python
-        if: ${{ steps.deps.outcome == 'success' }}
+        if: ${{ always() }}
         run: |
           python -m flake8 --statistics .
