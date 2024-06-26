@@ -52,7 +52,9 @@ jobs:
           yarn prettier --check .
       - name: Debug Install Python Dependencies outcome
         if: always()
-        run: echo ${{ steps.py-deps.outcome }} ${{ steps.py-deps.conclusion }}
+        run: |
+          echo ${{ steps.py-deps.outcome }} ${{ steps.py-deps.conclusion }}
+          echo ${{ steps.py-deps.outcome == 'success' }}
       - name: Lint Python
         if: ${{ steps.py-deps.conclusion == 'success' }}
         run: |
