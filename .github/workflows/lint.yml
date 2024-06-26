@@ -56,6 +56,6 @@ jobs:
           echo ${{ steps.py-deps.outcome }} ${{ steps.py-deps.conclusion }}
           echo ${{ steps.py-deps.outcome == 'success' }}
       - name: Lint Python
-        if: ${{ steps.py-deps.conclusion == 'success' }}
+        if: ${{ always() && steps.py-deps.conclusion == 'success' }}
         run: |
           python -m flake8 --statistics .
