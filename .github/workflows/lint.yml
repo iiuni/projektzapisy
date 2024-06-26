@@ -33,29 +33,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install Python Dependencies
-        id: py-deps
         run: |
           python -m pip install --upgrade pip
           pip install -r zapisy/requirements.test.txt
       - name: Install Node Dependencies
+        id: deps
         run: |
           cd zapisy
           yarnpkg install --immutable
       - name: Lint Node assets
-        id: lint
         run: |
           cd zapisy
           yarn eslint --ext .vue .
       - name: Format Node assets
+        if: ${{ always() && steps.deps.outcome == 'success' }}
         run: |
           cd zapisy
           yarn prettier --check .
-      - name: Debug Install Python Dependencies outcome
-        if: always()
-        run: |
-          echo ${{ steps.py-deps.outcome }} ${{ steps.py-deps.conclusion }}
-          echo ${{ steps.py-deps.outcome == 'success' }}
       - name: Lint Python
-        if: ${{ always() && steps.py-deps.conclusion == 'success' }}
+        if: ${{ always() && steps.deps.outcome == 'success' }}
         run: |
           python -m flake8 --statistics .
