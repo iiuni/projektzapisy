@@ -111,7 +111,8 @@ a.bg-secondary:focus {
 
 abbr {
  text-decoration: underline;
- text-decoration-style: dotted; 
+ text-decoration-style: dotted;
+ cursor: help;
 }
 
 @media print {
