@@ -34,7 +34,7 @@
         </thead>
         <tbody>
             {% for group in class_groups %}
-                <tr {% if group.is_enrolled %} class="table-active" data-bs-toggle="tooltip" data-bs-placement="right" title="Jesteś zapisany/a do tej grupy" {% endif %}>
+                <tr {% if group.is_enrolled %} class="table-active" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-fallback-placements=["right","bottom","left","top"] title="Jesteś zapisany/a do tej grupy" {% endif %}>
                     <td >
                         {% if group.teacher %}
                             <a href="{% url 'employee-profile' group.teacher.user.id %}" class="person">
