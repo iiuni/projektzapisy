@@ -109,6 +109,11 @@ a.bg-secondary:focus {
   box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
 }
 
+abbr {
+ text-decoration: underline;
+ text-decoration-style: dotted; 
+}
+
 @media print {
   // Some browsers do not handle printing layouts with flexbox. This should be
   // fixed in Bootstrap.
