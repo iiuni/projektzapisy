@@ -39,7 +39,7 @@ mapping = {
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.EVENT_DECISION:
-    'Twoje wydarzenie "{title}" zostało {status}',
+    'Twoje wydarzenie "{title}" zostało {status}.',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
     'Praca dyplomowa "{title}" została zaakceptowana przez komisję.',
 }

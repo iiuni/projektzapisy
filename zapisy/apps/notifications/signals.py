@@ -183,8 +183,13 @@ def notify_event_author_about_decision(sender: None, **kwargs) -> None:
     target = reverse('events:show', args=[event.id])
     if event.status == event.STATUS_ACCEPTED:
         status = "zaakceptowane"
-    else:
+    elif event.statut == event.STATUS_REJECTED:
         status = "odrzucone"
+    else:
+        # This branch will be most likely never executed by normal use in current state
+        # but makes the function slightly more forward-compatible
+        # even if the wording is somewhat stiff
+        status = "cofnięte do ponownego rozpatrzenia"
 
     notify_user(
         event.author,
