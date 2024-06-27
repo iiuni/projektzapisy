@@ -210,6 +210,6 @@ export default Vue.extend({
 
 .filters-card {
   transform: scale(1);
-  z-index: 2;
+  z-index: 3;
 }
 </style>
