@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='semester',
-            name='_records_spacing',
+            name='records_interval',
             field=models.IntegerField(blank=True, default=2, help_text='Co ile minut powinny otwierać się zapisy dla kolejnych studentów z różną liczbą ECTS.', null=True, verbose_name='Przerwa między zapisami kolejnych studentów'),
         ),
     ]

@@ -63,10 +63,10 @@ class T0Times(models.Model):
         Moves the opening time of records to daytime without rearranging
         the order of ranked records.
         """
-        how_many_12_hours_peroids_from_start = \
+        how_many_half_day_peroids_from_start = \
             int((semester.records_opening - record_time) / timedelta(hours=12))
 
-        return record_time - (timedelta(hours=12) * how_many_12_hours_peroids_from_start)
+        return record_time - (timedelta(hours=12) * how_many_half_day_peroids_from_start)
 
     @classmethod
     def get_ects_ranking(cls) -> Dict[int, int]:
@@ -124,7 +124,7 @@ class T0Times(models.Model):
             # the same position in the ranking. Each subsequent position
             # in the ranking gives an additional 2 minutes (by default) of bonus.
             try:
-                ects_bonus = semester.records_spacing * ranking[student.ects]
+                ects_bonus = semester.records_interval_as_timedelta * ranking[student.ects]
             except KeyError:
                 rollbar.report_message('Opening records time should not be computed for inactive student!', 'warning')
                 ects_bonus = 0
@@ -143,7 +143,7 @@ class T0Times(models.Model):
 
             # If the opening time falls during the nighttime pause we
             # subtract additional 12 hours from T0. This way T0's are
-            # separated by records_spacing minutes per ranking position,
+            # separated by records_interval minutes per ranking position,
             # but never fall in the nighttime.
             record.time = T0Times.prevent_nighttime_records(semester, record.time)
 

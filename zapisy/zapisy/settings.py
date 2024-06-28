@@ -281,6 +281,8 @@ LOGIN_REDIRECT_URL = '/users/'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
+# Settings for enrollment.
+
 # Limits concerning the amount of ECTS points a student can sign up to in a
 # semester. For the first part of enrollment cycle, the INITIAL_LIMIT holds.
 # Then, after abolition time, students can enroll into some additional courses.
