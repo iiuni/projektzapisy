@@ -43,7 +43,7 @@ from collections import defaultdict, Counter
 import copy
 from datetime import datetime
 from enum import Enum
-from typing import DefaultDict, Dict, Iterable, List, Optional, Set, Tuple
+from typing import DefaultDict, Dict, Iterable, List, Optional, Set
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -332,7 +332,7 @@ class Record(models.Model):
         return ret
 
     @classmethod
-    def taken_spots_by_role(cls, group: Group) -> Tuple[int, Dict[str, int]]:
+    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[Group, Dict[str, int]]:
         """Counts the number of taken spots indexed by user role.
 
         The purpose of this method is to determine how many students are enrolled
@@ -344,29 +344,36 @@ class Record(models.Model):
         int: The number of students not matched to any GuaranteedSpots rule.
         dict: A dictionary with role names as keys and the number of enrolled students as values.
         """
-        guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
         all_enrolled_records = cls.objects.filter(
-            group=group, status=RecordStatus.ENROLLED).select_related(
-                'student', 'student__user').prefetch_related('student__user__groups')
-        enrolled_students = {
-            record.student.user for record in all_enrolled_records
-        }
+            group__in=groups, status=RecordStatus.ENROLLED
+        ).select_related(
+            'student', 'student__user'
+        ).prefetch_related(
+            'student__user__groups'
+        )
 
-        enrolled_by_role_counter = Counter()
-        base_student_count = 0
-        roles = {gsr.role for gsr in guaranteed_spots_rules}
+        all_guaranteed_spots_rules = GuaranteedSpots.objects.filter(group__in=groups)
+        group_to_roles = defaultdict(set)
+        for gsr in all_guaranteed_spots_rules:
+            group_to_roles[gsr.group.id].add(gsr.role)
 
-        for student in enrolled_students:
-            student_roles = set(student.groups.all()).intersection(roles)
+        group_to_students = defaultdict(set)
+        for record in all_enrolled_records:
+            group_to_students[record.group.id].add(record.student.user)
 
-            if not student_roles:
-                base_student_count += 1
-                continue
+        enrolled = defaultdict(lambda: defaultdict(int))
 
-            for role in student_roles:
-                enrolled_by_role_counter[role.name] += 1
+        for group_id, students in group_to_students.items():
+            for student in students:
+                student_roles = set(student.groups.all()).intersection(group_to_roles[group_id])
+                if not student_roles:
+                    enrolled[group_id][""] += 1
+                    continue
 
-        return base_student_count, dict(enrolled_by_role_counter)
+                for role in student_roles:
+                    enrolled[group_id][role.name] += 1
+
+        return {group_id: dict(roles) for group_id, roles in enrolled.items()}
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
