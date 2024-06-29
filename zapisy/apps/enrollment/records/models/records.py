@@ -39,7 +39,7 @@ Record Lifetime:
 """
 
 import logging
-from collections import defaultdict, Counter
+from collections import defaultdict
 import copy
 from datetime import datetime
 from enum import Enum
@@ -342,8 +342,11 @@ class Record(models.Model):
 
         Method returns a dictionary containing:
         int: Group index
-        dict:  A dictionary with role names as keys and the number of enrolled students as values.
-               Number of students not matched to any GuaranteedSpots rule is under "" - empty role key.
+        dict: A dictionary where:
+           - The keys are role names.
+           - The values are the number of enrolled students for each role.
+           - Students not matched to any GuaranteedSpots rule
+             are counted under the empty string key ("").
         """
         all_enrolled_records = cls.objects.filter(
             group__in=groups, status=RecordStatus.ENROLLED
