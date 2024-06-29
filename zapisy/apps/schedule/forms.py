@@ -98,15 +98,18 @@ EditTermFormSet = inlineformset_factory(Event,
 class CustomVisibleCheckbox(Field):
     template = 'forms/custom_visible_checkbox.html'
 
+
 # CharField that is rendered as required, but isn't actually required
 class VisuallyRequiredCharField(forms.CharField):
     def validate(self, value):
         pass
 
+
 # ModelChoiceField that is rendered as required, but isn't actually required
 class VisuallyRequiredModelChoiceField(forms.ModelChoiceField):
     def validate(self, value):
         pass
+
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -140,7 +143,7 @@ class EventForm(forms.ModelForm):
         help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
     course = VisuallyRequiredModelChoiceField(queryset=CourseInstance.objects.none(),
-                                    label="Przedmiot")
+                                              label="Przedmiot")
 
     def __init__(self, user, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
