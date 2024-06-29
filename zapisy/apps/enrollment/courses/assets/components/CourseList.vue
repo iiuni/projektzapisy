@@ -8,7 +8,7 @@ export default Vue.extend({
   data() {
     return {
       courses: [] as { courseInfo: CourseInfo; visible: boolean }[],
-      queryString: "" as string
+      queryString: "" as string,
     };
   },
   computed: {
@@ -17,7 +17,6 @@ export default Vue.extend({
     }),
   },
   mounted() {
-    
     // When mounted, load the list of courses from embedded JSON and apply initial filters
     // fetched from the query string.
     const courseData = JSON.parse(
