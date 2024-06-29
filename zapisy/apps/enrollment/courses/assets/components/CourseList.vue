@@ -7,8 +7,8 @@ import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 export default Vue.extend({
   data() {
     return {
-      courses: [] as CourseInfo[],
-      visibleCourses: [] as { courseInfo: CourseInfo; visible: boolean }[],
+      courses: [] as { courseInfo: CourseInfo; visible: boolean }[],
+      queryString: "" as string
     };
   },
   computed: {
@@ -17,16 +17,17 @@ export default Vue.extend({
     }),
   },
   mounted() {
+    
     // When mounted, load the list of courses from embedded JSON and apply initial filters
     // fetched from the query string.
     const courseData = JSON.parse(
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
-    this.courses = courseData;
-    this.visibleCourses = courseData.map((c) => ({
+    this.courses = courseData.map((c) => ({
       courseInfo: c,
       visible: this.tester(c),
     }));
+    this.queryString = window.location.search;
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
@@ -34,13 +35,15 @@ export default Vue.extend({
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
-          this.visibleCourses = this.courses.map((c) => ({
-            courseInfo: c,
-            visible: this.tester(c),
-          }));
           // Update the query string of links in the semester dropdown
           // to reflect the new state of filters.
           updateSemesterLinks();
+
+          this.courses = this.courses.map((c) => ({
+            ...c,
+            visible: this.tester(c.courseInfo),
+          }));
+          this.queryString = window.location.search;
           break;
       }
     });
@@ -64,9 +67,9 @@ function updateSemesterLinks() {
 
 <template>
   <ul class="nav d-block">
-    <li v-for="c in visibleCourses" v-bind:key="c.id">
+    <li v-for="c in courses" v-bind:key="c.id">
       <a
-        :href="c.courseInfo.url"
+        :href="c.courseInfo.url + queryString"
         class="d-block px-4 py-1 text-decoration-none course-link"
         v-if="c.visible"
         >{{ c.courseInfo.name }}</a
