@@ -9,8 +9,6 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Set
 
-import rollbar
-
 from django.db import models, transaction
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -118,6 +116,11 @@ class T0Times(models.Model):
         ranking = cls.get_ects_ranking()
 
         student: Student
+
+        # Flag to check that inactive students are not incorrectly
+        # included in the set for populating t0 times.
+        inactive_students = False
+
         for student in students:
             # The ECTS bonus is now based on the position in the ECTS
             # ranking list. Students with the same amount of ECTS have
@@ -126,8 +129,8 @@ class T0Times(models.Model):
             try:
                 ects_bonus = semester.records_interval_as_timedelta * ranking[student.ects]
             except KeyError:
-                rollbar.report_message('Opening records time should not be computed for inactive student!', 'warning')
-                ects_bonus = 0
+                inactive_students = True
+                continue
 
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
@@ -153,6 +156,9 @@ class T0Times(models.Model):
             created.append(record)
 
         cls.objects.bulk_create(created)
+
+        if inactive_students:
+            raise KeyError('Opening records time should not be computed for inactive student!')
 
 
 class GroupOpeningTimes(models.Model):

@@ -60,11 +60,18 @@ class SemesterAdmin(admin.ModelAdmin):
             self.message_user(request, "Trzeba wybrać pojedynczy semestr!", level=messages.ERROR)
             return
         semester = queryset.get()
-        T0Times.populate_t0(semester)
-        GroupOpeningTimes.populate_opening_times(semester)
-        self.message_user(request,
-                          f"Obliczono czasy otwarcia zapisów dla semestru {semester}.",
-                          level=messages.SUCCESS)
+        try:
+            T0Times.populate_t0(semester)
+            GroupOpeningTimes.populate_opening_times(semester)
+        except KeyError:
+            self.message_user(request,
+                              f"""Obliczono czasy otwarcia zapisów dla niektórych studentów z semestru {semester}.
+                              W zbiorze nieprawidłowo znaleźli się nieaktywni studenci!""",
+                              level=messages.WARNING)
+        else:
+            self.message_user(request,
+                              f"Obliczono czasy otwarcia zapisów dla semestru {semester}.",
+                              level=messages.SUCCESS)
 
     refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
