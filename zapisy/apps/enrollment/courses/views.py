@@ -95,7 +95,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     student_can_dequeue = Record.can_dequeue_groups(
         student, course.groups.all())
     enrolled = Record.taken_spots_by_role(groups)
-    #guaranteed_spots = GuaranteedSpots.objects.filter(group=group)
+
     for group in groups:
         limits_for_roles = [gs.limit for gs in GuaranteedSpots.objects.filter(group=group)]
         group.total_limit = group.limit + sum(limits_for_roles)

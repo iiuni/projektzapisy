@@ -332,17 +332,18 @@ class Record(models.Model):
         return ret
 
     @classmethod
-    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[Group, Dict[str, int]]:
-        """Counts the number of taken spots indexed by user role.
+    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
+        """Counts the number of taken spots indexed by user role for each group.
 
         The purpose of this method is to determine how many students are enrolled
-        according to each GuaranteedSpots rule.
+        according to each GuaranteedSpots rule in every group.
         Note that this function assumes the roles defined in GuaranteedSpots rules
         are distinct for these groups.
 
-        Method returns a tuple containing:
-        int: The number of students not matched to any GuaranteedSpots rule.
-        dict: A dictionary with role names as keys and the number of enrolled students as values.
+        Method returns a dictionary containing:
+        int: Group index
+        dict:  A dictionary with role names as keys and the number of enrolled students as values.
+               Number of students not matched to any GuaranteedSpots rule is under "" - empty role key.
         """
         all_enrolled_records = cls.objects.filter(
             group__in=groups, status=RecordStatus.ENROLLED
