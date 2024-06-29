@@ -1,6 +1,7 @@
 import csv
 import json
 import locale
+from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.decorators import login_required
@@ -96,9 +97,13 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student, course.groups.all())
     enrolled = Record.taken_spots_by_role(groups)
 
+    all_guaranteed_spots = GuaranteedSpots.objects.filter(group__in=groups)
+    group_roles_limits = defaultdict(int)
+    for gs in all_guaranteed_spots:
+        group_roles_limits[gs.group.id] += gs.limit
+
     for group in groups:
-        limits_for_roles = [gs.limit for gs in GuaranteedSpots.objects.filter(group=group)]
-        group.total_limit = group.limit + sum(limits_for_roles)
+        group.total_limit = group.limit + group_roles_limits[group.pk]
         group.total_enrolled = groups_stats.get(group.pk).get('num_enrolled')
         group.num_enrolled = enrolled[group.pk].pop("")
         group.num_enrolled_by_role = enrolled[group.pk]
