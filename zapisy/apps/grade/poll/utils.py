@@ -19,7 +19,6 @@ def check_grade_status() -> bool:
 
 class SubmissionStats:
     """Holds statistics for poll submissions."""
-
     def __init__(self, submissions: List[Submission]):
         self.submitted = 0
         self.submitted_by_category = defaultdict(int)
