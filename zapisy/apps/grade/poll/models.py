@@ -132,7 +132,7 @@ class Poll(models.Model):
         """Determines the hours of the polled course."""
         return self.group.get_terms_as_short_string() if self.group else ""
 
-    def to_dict(self,  employee: Employee = None, is_annotated = False) -> dict:
+    def to_dict(self,  employee: Employee = None, is_annotated: bool = False) -> dict:
         """Serializes the Poll to a dictionary used by:
          1. TicketCreate - only 'name', 'type', 'id' keys are used.
             Existance of additional keys like 'hours' is not a problem for TicketCreate.
