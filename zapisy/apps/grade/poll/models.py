@@ -132,18 +132,19 @@ class Poll(models.Model):
         """Determines the hours of the polled course."""
         return self.group.get_terms_as_short_string() if self.group else ""
 
-    def to_dict(self,  employee: Employee = None) -> dict:
+    def to_dict(self,  employee: Employee = None, is_annotated = False) -> dict:
         """Serializes the Poll to a dictionary used by:
-         1. TicketCreate - only 'name', 'type', 'id' keys are used. 
+         1. TicketCreate - only 'name', 'type', 'id' keys are used.
             Existance of additional keys like 'hours' is not a problem for TicketCreate.
          2. grade/poll/view to JSONify the Poll objects.
-            Additionally if employee is provided 'is_own' key is added.
-            'number_of_submissions' has to be annotated beforehand by the queryset
-            in get_all_polls_for_semester method.
+            - If employee is provided 'is_own' key is added.
+            - 'number_of_submissions' has to be annotated beforehand by the queryset
+                e.g. in get_all_polls_for_semester method.
         """
         result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
         if employee:
             result['is_own'] = employee in [self.owner, self.teacher, self.gcowner] or self.type == PollType.GENERAL
+        if is_annotated:
             result['number_of_submissions'] = self.number_of_submissions
         return result
 

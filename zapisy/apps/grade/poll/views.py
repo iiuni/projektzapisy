@@ -243,7 +243,7 @@ class PollResults(TemplateView):
         semesters = Semester.objects.all()
 
         if request.user.is_superuser or request.user.employee:
-            polls = {course_name: {group_name: [poll.to_dict(employee=request.user.employee)
+            polls = {course_name: {group_name: [poll.to_dict(employee=request.user.employee, is_annotated=True)
                                                 for poll in poll_list]
                                    for group_name, poll_list in group_polls.items()}
                      for course_name, group_polls in group_polls(polls=available_polls).items()}
