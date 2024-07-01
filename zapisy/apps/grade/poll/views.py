@@ -225,7 +225,6 @@ class PollResults(TemplateView):
         available_polls = Poll.get_all_polls_for_semester(
             user=request.user, semester=selected_semester
         )
-
         current_poll = Poll.objects.filter(id=poll_id).first()
         if poll_id is not None:
             submissions = Submission.objects.filter(poll=poll_id,
