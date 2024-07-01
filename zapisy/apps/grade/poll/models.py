@@ -243,10 +243,8 @@ class Poll(models.Model):
             polls_for_courses = Poll.objects.filter(
                 course__semester=current_semester,
                 course__owner=user.employee,
-            ) | Poll.objects.filter(
-                group__course__semester=current_semester,
-                group__course__owner=user.employee
-            )
+            ) | Poll.objects.filter(group__course__semester=current_semester,
+                                    group__course__owner=user.employee)
             polls_for_groups = Poll.objects.filter(
                 group__course__semester=current_semester,
                 group__teacher=user.employee,
