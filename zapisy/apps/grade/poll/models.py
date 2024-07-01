@@ -229,7 +229,6 @@ class Poll(models.Model):
 
         if not is_superuser and not is_employee:
             return Poll.objects.none()
-
         poll_for_semester = Poll.objects.filter(semester=current_semester)
 
         if is_superuser:
@@ -251,6 +250,7 @@ class Poll(models.Model):
             )
 
         qs = poll_for_semester | polls_for_courses | polls_for_groups
+
         sub_count_ann = models.Count('submission', filter=models.Q(submission__submitted=True))
         return list(qs.annotate(number_of_submissions=sub_count_ann))
 
