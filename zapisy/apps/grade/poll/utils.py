@@ -94,7 +94,6 @@ def group_polls(polls: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
     return grouped_polls
 
 
-
 class PollSummarizedResultsEntry:
     """A single entry in a summary view for a Poll.
 
