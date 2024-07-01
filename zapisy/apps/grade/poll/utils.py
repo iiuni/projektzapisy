@@ -82,22 +82,17 @@ def group_polls(polls: List[Poll]) -> Dict[str, Dict[str, List[Poll]]]:
     the categories of general polls are at the beginning, and secondly, the
     categories are sorted alphabetically.
     """
+    # Sort polls - first general polls. Then by category, type and subcategory.
+    polls = sorted(polls, key=lambda p: (p.type != PollType.GENERAL, p.category, p.type, p.subcategory))
+
     def group_polls_by_key(polls: List[Poll], key_extractor: Callable[[Poll], str]) -> Dict[str, List[Poll]]:
-        return {key: list(group) for key, group in groupby(sorted(polls, key=key_extractor),
-                                                           key_extractor)}
+        return {key: list(group) for key, group in groupby(polls, key_extractor)}
 
-    polls = [p for p in polls if p is not None]
-    grouped_polls = {category: group_polls_by_key(polls, lambda p: p.subcategory)
-                     for category, polls in group_polls_by_key(polls, lambda p: p.category).items()}
+    grouped_polls = {category: group_polls_by_key(polls_in_category, lambda p: p.subcategory)
+                     for category, polls_in_category in group_polls_by_key(polls, lambda p: p.category).items()}
 
-    # for sorting purpose, the polls are mapped to tuples in the form of (is_not_general, category)
-    # those tuples are sorted lexicographically: the goal is to put the categories of the general
-    # polls at the beginning, and that assured sort categeries alphabetically
-    ordered_categories = [category for _, category in sorted([(p.type != PollType.GENERAL, p.category) for p in polls])]
+    return grouped_polls
 
-    # dict maintains the insertion order, so upon iteration the items will be
-    # sorted according to the order of the categories in `ordered_categories`
-    return {category: grouped_polls[category] for category in ordered_categories}
 
 
 class PollSummarizedResultsEntry:

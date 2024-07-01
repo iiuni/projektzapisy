@@ -52,17 +52,13 @@ export default defineComponent({
       });
     }
 
-    function orderEntriesAlph(polls: Poll[]) {
-      return polls.sort((pollA, pollB) => pollA.name.localeCompare(pollB.name));
-    }
-
     const allPolls: Record<string, Record<string, Poll[]>> = Object.fromEntries(
       Object.entries(polls).map(([course_name, course_polls]) => {
         return [
           course_name,
           Object.fromEntries(
             Object.entries(course_polls).map(([group_name, group_polls]) => {
-              return [group_name, orderEntriesAlph(group_polls)];
+              return [group_name, group_polls];
             })
           ),
         ];
