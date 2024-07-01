@@ -133,11 +133,13 @@ class Poll(models.Model):
         return self.group.get_terms_as_short_string() if self.group else ""
 
     def to_dict(self,  employee: Employee = None) -> dict:
-        """Serializes the Poll to the format accepted by TicketCreate.
-
-        :returns: a dictionary consisting of 'id', 'name' 'type', 'hours' keys.
-        If employee is provided, the dictionary will also contain 'is_own' key and
-        'number_of_submissions' that is annotated by queryset
+        """Serializes the Poll to a dictionary used by:
+         1. TicketCreate - only 'name', 'type', 'id' keys are used. 
+            Existance of additional keys like 'hours' is not a problem for TicketCreate.
+         2. grade/poll/view to JSONify the Poll objects.
+            Additionally if employee is provided 'is_own' key is added.
+            'number_of_submissions' has to be annotated beforehand by the queryset
+            in get_all_polls_for_semester method.
         """
         result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
         if employee:
