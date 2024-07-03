@@ -164,7 +164,7 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
 def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     thesis = kwargs['instance']
 
-    all_voters = get_theses_board()
+    all_voters = get_theses_board(thesis)
     accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
     users = [voter.user for voter in all_voters if voter not in accepting_voters]
     target = reverse('theses:selected_thesis', args=[thesis.id])
