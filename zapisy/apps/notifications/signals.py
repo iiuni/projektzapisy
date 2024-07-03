@@ -183,7 +183,7 @@ def notify_event_author_about_decision(sender: None, **kwargs) -> None:
     target = reverse('events:show', args=[event.id])
     if event.status == event.STATUS_ACCEPTED:
         status = "zaakceptowane"
-    elif event.statut == event.STATUS_REJECTED:
+    elif event.status == event.STATUS_REJECTED:
         status = "odrzucone"
     else:
         # This branch will be most likely never executed by normal use in current state
