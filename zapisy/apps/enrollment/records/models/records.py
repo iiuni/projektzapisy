@@ -355,15 +355,15 @@ class Record(models.Model):
         ).prefetch_related(
             'student__user__groups'
         )
+        group_to_students = defaultdict(set)
+        for record in all_enrolled_records:
+            group_to_students[record.group.id].add(record.student.user)
 
         all_guaranteed_spots_rules = GuaranteedSpots.objects.filter(group__in=groups)
         group_to_roles = defaultdict(set)
         for gsr in all_guaranteed_spots_rules:
             group_to_roles[gsr.group.id].add(gsr.role)
 
-        group_to_students = defaultdict(set)
-        for record in all_enrolled_records:
-            group_to_students[record.group.id].add(record.student.user)
         enrolled = {}
         for group in groups:
             enrolled[group.id] = Counter()
