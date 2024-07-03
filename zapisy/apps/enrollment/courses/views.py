@@ -105,7 +105,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     for group in groups:
         group.total_limit = group.limit + group_roles_limits[group.pk]
         group.total_enrolled = groups_stats.get(group.pk).get('num_enrolled')
-        group.num_enrolled = enrolled[group.pk].pop("")
+        group.num_enrolled = enrolled[group.pk].pop("", 0)
         group.num_enrolled_by_role = enrolled[group.pk]
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
         group.can_enqueue = student_can_enqueue.get(group.pk)
@@ -270,7 +270,7 @@ def group_view(request, group_id):
     group.total_limit = group.limit + sum(limits_for_roles)
 
     enrolled = Record.taken_spots_by_role([group])
-    group.num_enrolled = enrolled[group.pk].pop("")
+    group.num_enrolled = enrolled[group.pk].pop("", 0)
     group.num_enrolled_by_role = enrolled[group.pk]
 
     data = {

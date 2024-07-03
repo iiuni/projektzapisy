@@ -39,7 +39,7 @@ Record Lifetime:
 """
 
 import logging
-from collections import defaultdict
+from collections import defaultdict, Counter
 import copy
 from datetime import datetime
 from enum import Enum
@@ -332,7 +332,7 @@ class Record(models.Model):
         return ret
 
     @classmethod
-    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
+    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[Group, int]]:
         """Counts the number of taken spots indexed by user role for each group.
 
         The purpose of this method is to determine how many students are enrolled
@@ -364,18 +364,16 @@ class Record(models.Model):
         group_to_students = defaultdict(set)
         for record in all_enrolled_records:
             group_to_students[record.group.id].add(record.student.user)
-
-        enrolled = defaultdict(lambda: defaultdict(int))
-
-        for group_id, students in group_to_students.items():
+        enrolled = {}
+        for group in groups:
+            enrolled[group.id] = Counter()
+            enrolled[group.id][""] = 0
+            students = group_to_students[group.id]
             for student in students:
-                student_roles = set(student.groups.all()).intersection(group_to_roles[group_id])
+                student_roles = {r.name for r in set(student.groups.all()) & group_to_roles[group.id]}
                 if not student_roles:
-                    enrolled[group_id][""] += 1
-                    continue
-
-                for role in student_roles:
-                    enrolled[group_id][role.name] += 1
+                    student_roles = {""}
+                enrolled[group.id] += Counter(student_roles)
 
         return {group_id: dict(roles) for group_id, roles in enrolled.items()}
 
