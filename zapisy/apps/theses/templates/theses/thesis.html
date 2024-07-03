@@ -154,6 +154,11 @@
         </div>
         </br>
         {% endif %}
+        {% if is_advisor %}
+        <div class="d-inline-block mt-2 mb-2 w-100">
+            Promotor nie może głosować na swoją własną pracę dyplomową.
+        </div>
+        {% endif %}
         {% for vote in votes %}
             {% if vote.owner == request.user.employee %}
                 <div

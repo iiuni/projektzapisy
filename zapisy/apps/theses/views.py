@@ -126,6 +126,7 @@ def view_thesis(request, id):
             'show_master_rejecter': show_master_rejecter,
             'can_see_remarks': user_privileged_for_thesis,
             'save_and_verify': save_and_verify,
+            'is_advisor': is_advisor,
             'can_vote': can_vote,
             'can_edit_thesis': can_edit_thesis,
             'can_download_declarations': can_download_declarations,
