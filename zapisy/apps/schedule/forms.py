@@ -99,14 +99,28 @@ class CustomVisibleCheckbox(Field):
     template = 'forms/custom_visible_checkbox.html'
 
 
-# CharField that is rendered as required, but isn't actually required
-class VisuallyRequiredCharField(forms.CharField):
+# PretendRequired classes are designed to bypass the execution of the Field.validate method which
+# raises an exception if a required field is empty. This ensures that the field appears as
+# required to the user, but the default validation checks are omitted. We perform our own
+# validation inside the Event.clean method, which requires fields not to be empty only if certain
+# conditions are met.
+# For details on the CharField.validate and ModelChoiceField.validate methods, refer to:
+# https://github.com/django/django/blob/6726d750979a7c29e0dd866b4ea367eef7c8a420/django/forms/fields.py#L134
+# https://github.com/django/django/blob/6726d750979a7c29e0dd866b4ea367eef7c8a420/django/forms/models.py#L977
+class PretendRequiredCharField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['required'] = True
+        super().__init__(*args, **kwargs)
+
     def validate(self, value):
         pass
 
 
-# ModelChoiceField that is rendered as required, but isn't actually required
-class VisuallyRequiredModelChoiceField(forms.ModelChoiceField):
+class PretendRequiredModelChoiceField(forms.ModelChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs['required'] = True
+        super().__init__(*args, **kwargs)
+
     def validate(self, value):
         pass
 
@@ -125,7 +139,7 @@ class EventForm(forms.ModelForm):
         else:
             return cleaned_data
 
-    title = VisuallyRequiredCharField(label="Nazwa")
+    title = PretendRequiredCharField(label="Nazwa")
     description = forms.CharField(
         label="Opis",
         required=False,
@@ -142,8 +156,8 @@ class EventForm(forms.ModelForm):
         initial=True,
         help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
-    course = VisuallyRequiredModelChoiceField(queryset=CourseInstance.objects.none(),
-                                              label="Przedmiot")
+    course = PretendRequiredModelChoiceField(queryset=CourseInstance.objects.none(),
+                                             label="Przedmiot")
 
     def __init__(self, user, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
