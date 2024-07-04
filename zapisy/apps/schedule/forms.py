@@ -109,7 +109,8 @@ class CustomVisibleCheckbox(Field):
 # https://github.com/django/django/blob/6726d750979a7c29e0dd866b4ea367eef7c8a420/django/forms/models.py#L977
 class PretendRequiredCharField(forms.CharField):
     def __init__(self, *args, **kwargs):
-        kwargs['required'] = True
+        if not kwargs.get('required', True):
+            raise ValueError("The 'required' argument cannot be set to False")
         super().__init__(*args, **kwargs)
 
     def validate(self, value):
@@ -118,7 +119,8 @@ class PretendRequiredCharField(forms.CharField):
 
 class PretendRequiredModelChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
-        kwargs['required'] = True
+        if not kwargs.get('required', True):
+            raise ValueError("The 'required' argument cannot be set to False")
         super().__init__(*args, **kwargs)
 
     def validate(self, value):
