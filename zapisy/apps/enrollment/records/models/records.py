@@ -332,7 +332,7 @@ class Record(models.Model):
         return ret
 
     @classmethod
-    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[Group, int]]:
+    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
         """Counts the number of taken spots indexed by user role for each group.
 
         The purpose of this method is to determine how many students are enrolled
@@ -368,6 +368,9 @@ class Record(models.Model):
         for group in groups:
             enrolled[group.id] = Counter()
             enrolled[group.id][""] = 0
+            for role in group_to_roles[group.id]:
+                enrolled[group.id][role.name] = 0
+
             students = group_to_students[group.id]
             for student in students:
                 student_roles = {r.name for r in set(student.groups.all()) & group_to_roles[group.id]}
