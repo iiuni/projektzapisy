@@ -67,7 +67,7 @@
                     </td>
                     <td>
                         {{ group.total_enrolled }}
-                        {% if group.num_enrolled_by_role %}
+                        {% if group.role_enrolled != 0 %}
                             ({{ group.num_enrolled }}
                             {% for role, number in group.num_enrolled_by_role.items %}{% if number != 0 %}
                                 +

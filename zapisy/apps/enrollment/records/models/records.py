@@ -341,8 +341,8 @@ class Record(models.Model):
         are distinct for these groups.
 
         Method returns a dictionary containing:
-        int: Group index
-        dict: A dictionary where:
+        key: Group index
+        value: A dictionary where:
            - The keys are role names.
            - The values are the number of enrolled students for each role.
            - Students not matched to any GuaranteedSpots rule
@@ -356,8 +356,8 @@ class Record(models.Model):
             'student__user__groups'
         )
         group_to_students = defaultdict(set)
-        for record in all_enrolled_records:
-            group_to_students[record.group.id].add(record.student.user)
+        #for record in all_enrolled_records:
+        #    group_to_students[record.group.id].add(record.student.user)
 
         all_guaranteed_spots_rules = GuaranteedSpots.objects.filter(group__in=groups)
         group_to_roles = defaultdict(set)
@@ -376,7 +376,7 @@ class Record(models.Model):
                 student_roles = {r.name for r in set(student.groups.all()) & group_to_roles[group.id]}
                 if not student_roles:
                     student_roles = {""}
-                enrolled[group.id] += Counter(student_roles)
+                enrolled[group.id].update(student_roles)
 
         return {group_id: dict(roles) for group_id, roles in enrolled.items()}
 

@@ -104,8 +104,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     for group in groups:
         group.total_limit = group.limit + group_roles_limits[group.pk]
-        group.total_enrolled = groups_stats.get(group.pk).get('num_enrolled')
+        group.total_enrolled = 0 #groups_stats.get(group.pk).get('num_enrolled')
         group.num_enrolled = enrolled[group.pk].pop("")
+        group.role_enrolled = group.total_enrolled - group.num_enrolled
         group.num_enrolled_by_role = enrolled[group.pk]
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
         group.can_enqueue = student_can_enqueue.get(group.pk)
