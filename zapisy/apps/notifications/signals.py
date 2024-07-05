@@ -12,7 +12,7 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
 from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
-                                               thesis_voting_activated, thesis_accepted)
+                                               thesis_voting_activated, event_decision, thesis_accepted)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
 from apps.theses.enums import ThesisVote
@@ -175,6 +175,29 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
                      NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))
+
+
+@receiver(event_decision, sender=None)
+def notify_event_author_about_decision(sender: None, **kwargs) -> None:
+    event = kwargs['event']
+    target = reverse('events:show', args=[event.id])
+    if event.status == event.STATUS_ACCEPTED:
+        status = "zaakceptowane"
+    elif event.status == event.STATUS_REJECTED:
+        status = "odrzucone"
+    else:
+        # This branch will be most likely never executed by normal use in current state
+        # but makes the function slightly more forward-compatible
+        # even if the wording is somewhat stiff
+        status = "cofnięte do ponownego rozpatrzenia"
+
+    notify_user(
+        event.author,
+        Notification(
+            get_id(), get_time(), NotificationType.EVENT_DECISION, {
+                'title': event.title,
+                'status': status,
+            }, target))
 
 
 @receiver(thesis_accepted, sender=Vote)
