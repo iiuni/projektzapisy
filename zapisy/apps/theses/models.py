@@ -111,7 +111,7 @@ class Thesis(models.Model):
         if not old or (old.status != ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED):
             thesis_voting_activated.send(sender=self.__class__, instance=self, additional_notifiee=None)
         if (old and old.status == ThesisStatus.BEING_EVALUATED and self.status == ThesisStatus.BEING_EVALUATED and
-            old.supporting_advisor is not None and is_theses_board_member(old.supporting_advisor.user)):
+                old.supporting_advisor is not None and is_theses_board_member(old.supporting_advisor.user)):
             thesis_voting_activated.send(sender=self.__class__, instance=self,
                                          additional_notifiee=old.supporting_advisor.user)
 
