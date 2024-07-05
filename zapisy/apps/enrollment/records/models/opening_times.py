@@ -96,7 +96,9 @@ class T0Times(models.Model):
         participation in courses' grading. The additional administrative bonus
         is also taken into account.
 
-        The function will throw a DatabaseError if something goes wrong.
+        The function will throw a KeyError if a student's ECTS number is not included
+        in the ranking (may be triggered if inactive students are passed as an argument),
+        or a DatabaseError if something else goes wrong.
         """
         if not students:
             students = Student.get_active_students()
@@ -116,11 +118,6 @@ class T0Times(models.Model):
         ranking = cls.get_ects_ranking()
 
         student: Student
-
-        # Flag to check that inactive students are not incorrectly
-        # included in the set for populating t0 times.
-        inactive_students = False
-
         for student in students:
             # The ECTS bonus is now based on the position in the ECTS
             # ranking list. Students with the same amount of ECTS have
@@ -129,8 +126,8 @@ class T0Times(models.Model):
             try:
                 ects_bonus = semester.records_interval_as_timedelta * ranking[student.ects]
             except KeyError:
-                inactive_students = True
-                continue
+                # May be caused by an inactive student reaching this point.
+                raise KeyError('The ECTS number one of the students is not included in the ranking!')
 
             record = cls(student=student, semester=semester)
             record.time = semester.records_opening
@@ -156,9 +153,6 @@ class T0Times(models.Model):
             created.append(record)
 
         cls.objects.bulk_create(created)
-
-        if inactive_students:
-            raise KeyError('Opening records time should not be computed for inactive student!')
 
 
 class GroupOpeningTimes(models.Model):

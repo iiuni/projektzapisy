@@ -61,18 +61,13 @@ class StudentAdmin(admin.ModelAdmin):
                     level=messages.ERROR)
             return
 
-        try:
-            T0Times.populate_t0(semester, queryset)
-            GroupOpeningTimes.populate_opening_times(semester, students=queryset)
-        except KeyError:
-            self.message_user(request,
-                              """Obliczono czasy otwarcia zapisów dla niektórych wybrnaych studentów.
-                              W zbiorze nieprawidłowo znaleźli się nieaktywni studenci!""",
-                              level=messages.WARNING)
-        else:
-            self.message_user(request,
-                              "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
-                              level=messages.SUCCESS)
+        # Calling this function with inactive students in the queryset
+        # may raise a KeyError exception.
+        T0Times.populate_t0(semester, queryset)
+        GroupOpeningTimes.populate_opening_times(semester, students=queryset)
+        self.message_user(request,
+                          "Obliczono czasy otwarcia zapisów dla wybranych studentów.",
+                          level=messages.SUCCESS)
 
     refresh_opening_times.short_description = "Oblicz czasy otwarcia zapisów"
 
