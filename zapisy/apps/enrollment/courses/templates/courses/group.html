@@ -58,8 +58,8 @@
         <h3>Lista osób zapisanych na przedmiot:</h3>
         <p>
             Liczba zapisanych osób:
-            {{students_in_group|length}}/{{group.total_limit}}{% if group.role_enrolled %}, w tym:
-                {% if group.num_enrolled %}
+            {{students_in_group|length}}/{{group.total_limit}}{% if spots_by_role %}, w tym:
+                {% if group.num_enrolled != 0 %}
                 {{ group.num_enrolled }}/{{group.limit}}
                     niegwarantowanych{% endif %}{% for gs, taken_spots in spots_by_role %}{% if taken_spots != 0 %},
                             <span title = "Liczba zapisanych osób dla grupy {{gs.role.name}}.">{{ taken_spots }}</span>/<span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">{{ gs.limit }}

@@ -278,7 +278,11 @@ def group_view(request, group_id):
         'students_in_group': students_in_group,
         'students_in_queue': students_in_queue,
         'guaranteed_spots': enrolled_data.get('guaranteed_spots_rules'),
-        'spots_by_role': [(gs, enrolled[group.pk][gs.role.name]) for gs in group.guaranteed_spots.all()],
+        'spots_by_role': [
+            (gs, enrolled[group.pk][gs.role.name])
+            for gs in group.guaranteed_spots.all()
+            if enrolled[group.pk][gs.role.name] != 0
+        ],
         'group': group,
         'can_user_see_all_students_here': enrolled_data[group_id].get("can_user_see_all_students_here"),
         'mailto_group': mailto(request.user, students_in_group, bcc=False),
