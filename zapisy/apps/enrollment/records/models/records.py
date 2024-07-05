@@ -356,8 +356,8 @@ class Record(models.Model):
             'student__user__groups'
         )
         group_to_students = defaultdict(set)
-        #for record in all_enrolled_records:
-        #    group_to_students[record.group.id].add(record.student.user)
+        for record in all_enrolled_records:
+            group_to_students[record.group.id].add(record.student.user)
 
         all_guaranteed_spots_rules = GuaranteedSpots.objects.filter(group__in=groups)
         group_to_roles = defaultdict(set)
