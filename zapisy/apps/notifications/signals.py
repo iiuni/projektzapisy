@@ -172,7 +172,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     else:
         users = [new_supporting_advisor]
     target = reverse('theses:selected_thesis', args=[thesis.id])
-    
+
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
