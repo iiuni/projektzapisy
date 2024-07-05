@@ -165,7 +165,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     thesis = kwargs['instance']
     new_supporting_advisor = kwargs['additional_notifiee']
 
-    if new_supporting_advisor == None:
+    if new_supporting_advisor is None:
         all_voters = get_theses_board(thesis)
         accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
         users = [voter.user for voter in all_voters if voter not in accepting_voters]
@@ -176,7 +176,7 @@ def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
-                    NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
+                     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))
 
