@@ -84,11 +84,14 @@ class PopulateT0Test(TestCase):
 
     def test_records_not_fall_in_the_nighttime(self):
         """Checks whether the mechanism to prevent recordings from starting at night."""
-        bolek_pozny_t0_opening = self.semester.records_opening - timedelta(hours=13)
-        lolek_pozny_t0_opening = self.semester.records_opening - timedelta(hours=24, minutes=1)
+        bolek_pozny_headstart = timedelta(hours=13)
+        lolek_pozny_headstart = timedelta(hours=24, minutes=1)
 
-        moved_bolek_pozny = T0Times.prevent_nighttime_records(self.semester, bolek_pozny_t0_opening)
-        moved_lolek_pozny = T0Times.prevent_nighttime_records(self.semester, lolek_pozny_t0_opening)
+        bolek_pozny_t0_opening = self.semester.records_opening - bolek_pozny_headstart
+        lolek_pozny_t0_opening = self.semester.records_opening - lolek_pozny_headstart
+
+        moved_bolek_pozny = bolek_pozny_t0_opening - T0Times.prevent_nighttime_t0(bolek_pozny_headstart)
+        moved_lolek_pozny = lolek_pozny_t0_opening - T0Times.prevent_nighttime_t0(lolek_pozny_headstart)
 
         assert moved_bolek_pozny == bolek_pozny_t0_opening - timedelta(hours=12)
         assert moved_lolek_pozny == lolek_pozny_t0_opening - timedelta(hours=24)
