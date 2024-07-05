@@ -55,16 +55,15 @@ class T0Times(models.Model):
         return True
 
     @staticmethod
-    def prevent_nighttime_records(semester: Semester, record_time: datetime) -> datetime:
+    def prevent_nighttime_t0(headstart: timedelta) -> timedelta:
         """Prevention of night-time records.
 
         Moves the opening time of records to daytime without rearranging
         the order of ranked records.
         """
-        how_many_half_day_peroids_from_start = \
-            int((semester.records_opening - record_time) / timedelta(hours=12))
+        how_many_half_day_periods_from_start = int(headstart / timedelta(hours=12))
 
-        return record_time - (timedelta(hours=12) * how_many_half_day_peroids_from_start)
+        return timedelta(hours=12) * how_many_half_day_periods_from_start
 
     @classmethod
     def get_ects_ranking(cls) -> Dict[int, int]:
@@ -145,7 +144,7 @@ class T0Times(models.Model):
             # subtract additional 12 hours from T0. This way T0's are
             # separated by records_interval minutes per ranking position,
             # but never fall in the nighttime.
-            record.time = T0Times.prevent_nighttime_records(semester, record.time)
+            record.time -= T0Times.prevent_nighttime_t0(semester.records_opening - record.time)
 
             # Finally, everyone gets 2 hours. This way, nighttime pause is
             # shifted from 00:00-12:00 to 22:00-10:00.
