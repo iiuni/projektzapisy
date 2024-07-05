@@ -163,16 +163,20 @@ def notify_that_news_was_added(sender: News, **kwargs) -> None:
 @receiver(thesis_voting_activated, sender=Thesis)
 def notify_board_members_about_voting(sender: Thesis, **kwargs) -> None:
     thesis = kwargs['instance']
+    new_supporting_advisor = kwargs['additional_notifiee']
 
-    all_voters = get_theses_board(thesis)
-    accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
-    users = [voter.user for voter in all_voters if voter not in accepting_voters]
+    if new_supporting_advisor == None:
+        all_voters = get_theses_board(thesis)
+        accepting_voters = [v.owner for v in thesis.thesis_votes.all() if v.vote == ThesisVote.ACCEPTED]
+        users = [voter.user for voter in all_voters if voter not in accepting_voters]
+    else:
+        users = [new_supporting_advisor]
     target = reverse('theses:selected_thesis', args=[thesis.id])
-
+    
     notify_selected_users(
         users,
         Notification(get_id(), get_time(),
-                     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
+                    NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED, {
             'title': thesis.title
         }, target))
 
