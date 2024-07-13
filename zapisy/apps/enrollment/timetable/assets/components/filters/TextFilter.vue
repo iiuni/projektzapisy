@@ -1,10 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { property } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
-
 import { CourseInfo } from "../../store/courses";
 import { Filter } from "../../store/filters";
+import { ref, watch } from "vue";
 
 class TextFilter implements Filter {
   constructor(public pattern: string = "", public propertyName: string) {}
@@ -18,55 +16,51 @@ class TextFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a course.
-export default Vue.extend({
-  props: {
-    // Property of a course on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    placeholder: String,
-  },
-  data: () => {
-    return {
-      pattern: "",
-    };
-  },
-  created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-    if (searchParams.has(this.property)) {
-      // TypeScript doesn't infer that property is present, manual cast required.
-      this.pattern = searchParams.get(this.property) as string;
-    }
+const props = defineProps<{
+  property: string;
+  filterKey: string;
+  placeholder: string;
+}>();
 
-    this.$store.subscribe((mutation, _) => {
-      switch (mutation.type) {
-        case "filters/clearFilters":
-          this.pattern = "";
-          break;
-      }
-    });
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-  },
-  watch: {
-    pattern: function (newPattern: string, _) {
-      const url = new URL(window.location.href);
-      if (newPattern.length == 0) {
-        url.searchParams.delete(this.property);
-      } else {
-        url.searchParams.set(this.property, newPattern);
-      }
-      window.history.replaceState(null, "", url.toString());
+const pattern = ref("");
 
-      this.registerFilter({
-        k: this.filterKey,
-        f: new TextFilter(newPattern, this.property),
-      });
-    },
-  },
+const searchParams = new URL(window.location.href).searchParams;
+
+if (searchParams.has(props.property)) {
+  // TypeScript doesn't infer that property is present, manual cast required.
+  pattern.value = searchParams.get(props.property) as string;
+}
+
+store.subscribe((mutation) => {
+  switch (mutation.type) {
+    case "filters/clearFilters":
+      pattern.value = "";
+      break;
+  }
+});
+
+watch(pattern, (newPattern: string) => {
+  const url = new URL(window.location.href);
+  if (newPattern.length == 0) {
+    url.searchParams.delete(props.property);
+  } else {
+    url.searchParams.set(props.property, newPattern);
+  }
+  window.history.replaceState(null, "", url.toString());
+
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new TextFilter(newPattern, props.property),
+  });
 });
 </script>
 
