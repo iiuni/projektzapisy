@@ -35,7 +35,7 @@ const props = defineProps<{
 
 const on = ref(false);
 
-watch(on, (newOn: boolean) => {
+watch(on, (newOn) => {
   store.commit("filters/registerFilter", {
     k: props.filterKey,
     f: new BooleanFilter(newOn, props.property),

@@ -1,9 +1,7 @@
-<script lang="ts">
+<script setup lang="ts">
 import { property } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
-
 import { Filter } from "../../store/filters";
+import { ref, watch } from "vue";
 
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
@@ -18,57 +16,55 @@ class BooleanFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a course.
-export default Vue.extend({
-  props: {
-    // Property of a course on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    label: String,
-  },
-  data: () => {
-    return {
-      on: false,
-    };
-  },
-  created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-    if (searchParams.has(this.property)) {
-      if (searchParams.get(this.property) === "true") {
-        this.on = true;
-      }
+const props = defineProps<{
+  property: string;
+  filterKey: string;
+  label: string;
+}>();
+
+const on = ref(false);
+
+const searchParams = new URL(window.location.href).searchParams;
+if (searchParams.has(props.property)) {
+  if (searchParams.get(props.property) === "true") {
+    on.value = true;
+  }
+}
+
+store.subscribe((mutation) => {
+  switch (mutation.type) {
+    case "filters/clearFilters":
+      on.value = false;
+      break;
+  }
+});
+
+watch(
+  on,
+  (newOn) => {
+    const url = new URL(window.location.href);
+    if (newOn) {
+      url.searchParams.set(props.property, newOn.toString());
+    } else {
+      url.searchParams.delete(props.property);
     }
-
-    this.$store.subscribe((mutation, _) => {
-      switch (mutation.type) {
-        case "filters/clearFilters":
-          this.on = false;
-          break;
-      }
+    window.history.replaceState(null, "", url.toString());
+    store.commit("filters/registerFilter", {
+      k: props.filterKey,
+      f: new BooleanFilter(on.value, props.property),
     });
   },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-  },
-  watch: {
-    on: function (newOn: boolean) {
-      const url = new URL(window.location.href);
-      if (newOn) {
-        url.searchParams.set(this.property, newOn.toString());
-      } else {
-        url.searchParams.delete(this.property);
-      }
-      window.history.replaceState(null, "", url.toString());
-
-      this.registerFilter({
-        k: this.filterKey,
-        f: new BooleanFilter(newOn, this.property),
-      });
-    },
-  },
-});
+  { immediate: true }
+);
 </script>
 
 <template>
