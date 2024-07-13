@@ -1,36 +1,24 @@
-<script lang="ts">
-import Vue from "vue";
-
+<script lang="ts" setup>
 import TextFilter from "./filters/TextFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 
-export default Vue.extend({
-  components: {
-    TextFilter,
-    SelectFilter,
-    CheckFilter,
-  },
-  data: function () {
-    return {
-      allKinds: [
-        ["mgr", "Magisterska"],
-        ["inż", "Inżynierska"],
-        ["lic", "Licencjacka"],
-        ["isim", "ISIM"],
-        ["lic+inż", "Licencjat+inżynierska"],
-        ["lic+inż+isim", "Licencjat+inżynierska+ISIM"],
-      ],
-      allStatuses: [
-        ["weryfikowana przez komisję", "Weryfikowana przez komisję"],
-        ["zwrócona do poprawek", "Zwrócona do poprawek"],
-        ["zaakceptowana", "Zaakceptowana"],
-        ["w realizacji", "W realizacji"],
-        ["obroniona", "Obroniona"],
-      ],
-    };
-  },
-});
+const allKinds = [
+  ["mgr", "Magisterska"],
+  ["inż", "Inżynierska"],
+  ["lic", "Licencjacka"],
+  ["isim", "ISIM"],
+  ["lic+inż", "Licencjat+inżynierska"],
+  ["lic+inż+isim", "Licencjat+inżynierska+ISIM"],
+];
+
+const allStatuses = [
+  ["weryfikowana przez komisję", "Weryfikowana przez komisję"],
+  ["zwrócona do poprawek", "Zwrócona do poprawek"],
+  ["zaakceptowana", "Zaakceptowana"],
+  ["w realizacji", "W realizacji"],
+  ["obroniona", "Obroniona"],
+];
 </script>
 
 <template>
