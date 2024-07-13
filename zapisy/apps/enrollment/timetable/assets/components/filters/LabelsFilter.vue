@@ -1,10 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { property, intersection, isEmpty, keys, fromPairs } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
-
 import { Filter } from "../../store/filters";
 import { KVDict } from "../../models";
+import { computed, ref } from "vue";
 
 class IntersectionFilter implements Filter {
   constructor(public ids: number[] = [], public propertyName: string) {}
@@ -20,83 +18,77 @@ class IntersectionFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a course.
-export default Vue.extend({
-  props: {
-    // Property of a course on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    allLabels: Object as () => KVDict,
-    title: String,
-    // CSS class to apply to the badge when it's on.
-    onClass: String,
-  },
-  computed: {
-    allLabelIds: function () {
-      return keys(this.allLabels).map((id) => parseInt(id, 10));
-    },
-  },
-  data: () => {
-    return {
-      selected: {} as { [k: number]: boolean },
-    };
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-    toggle(id: number) {
-      this.selected[id] = !this.selected[id];
-      this._afterSelectionChanged();
-    },
-    _afterSelectionChanged() {
-      const selectedIds = this.allLabelIds.filter((id) => this.selected[id]);
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-      const url = new URL(window.location.href);
-      if (selectedIds.length > 0) {
-        url.searchParams.set(this.property, selectedIds.join(","));
-      } else {
-        url.searchParams.delete(this.property);
-      }
-      window.history.replaceState(null, "", url.toString());
+const props = defineProps<{
+  property: string;
+  filterKey: string;
+  allLabels: KVDict;
+  title: string;
+  onClass: string;
+}>();
 
-      this.registerFilter({
-        k: this.filterKey,
-        f: new IntersectionFilter(selectedIds, this.property),
-      });
-    },
-  },
-  // When the component is created we set all the labels as unselected
-  // and then set those specified in the query string as selected.
-  created: function () {
-    this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
+const allLabelIds = computed(() => {
+  return keys(props.allLabels).map((id) => parseInt(id, 10));
+});
+const selected = ref<{ [k: number]: boolean }>({});
 
-    const searchParams = new URL(window.location.href).searchParams;
-    if (searchParams.has(this.property)) {
-      const selectedIds = searchParams
-        .get(this.property)!
-        .split(",")
-        .map((id) => parseInt(id, 10))
-        .filter((id) => !isNaN(id));
+const toggle = (id: number) => {
+  selected.value[id] = !selected.value[id];
+  afterSelectionChanged();
+};
 
-      selectedIds.forEach((id) => (this.selected[id] = true));
+const afterSelectionChanged = () => {
+  const selectedIds = allLabelIds.value.filter((id) => selected.value[id]);
 
-      this.registerFilter({
-        k: this.filterKey,
-        f: new IntersectionFilter(selectedIds, this.property),
-      });
-    }
+  const url = new URL(window.location.href);
+  if (selectedIds.length > 0) {
+    url.searchParams.set(props.property, selectedIds.join(","));
+  } else {
+    url.searchParams.delete(props.property);
+  }
+  window.history.replaceState(null, "", url.toString());
 
-    this.$store.subscribe((mutation, _) => {
-      switch (mutation.type) {
-        case "filters/clearFilters":
-          this.allLabelIds.forEach((id) => {
-            this.selected[id] = false;
-          });
-          this._afterSelectionChanged();
-          break;
-      }
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new IntersectionFilter(selectedIds, props.property),
+  });
+};
+
+// When the component is created we set all the labels as unselected
+// and then set those specified in the query string as selected.
+selected.value = fromPairs(allLabelIds.value.map((k) => [k, false]));
+
+const searchParams = new URL(window.location.href).searchParams;
+if (searchParams.has(props.property)) {
+  const selectedIds = searchParams
+    .get(props.property)!
+    .split(",")
+    .map((id) => parseInt(id, 10))
+    .filter((id) => !isNaN(id));
+
+  selectedIds.forEach((id) => (selected.value[id] = true));
+
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new IntersectionFilter(selectedIds, props.property),
+  });
+}
+
+store.subscribe((mutation) => {
+  if (mutation.type === "filters/clearFilters") {
+    allLabelIds.value.forEach((id) => {
+      selected.value[id] = false;
     });
-  },
+    afterSelectionChanged();
+  }
 });
 </script>
 
