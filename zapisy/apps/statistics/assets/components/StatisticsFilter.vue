@@ -1,58 +1,43 @@
-<script lang="ts">
-import Vue from "vue";
-
+<script setup lang="ts">
+import { ref, watch } from "vue";
 import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue";
 import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
-import { mapMutations } from "vuex";
 
-export default Vue.extend({
-  components: {
-    TextFilter,
-    CheckFilter,
-  },
-  data: function () {
-    return {
-      sortingModes: [
-        ["course_name_asc", "wg nazwy przedmiotu, rosnąco"],
-        ["course_name_desc", "wg nazwy przedmiotu, malejąco"],
-        ["waiting_students_asc", "wg liczby oczekujących, rosnąco"],
-        ["waiting_students_desc", "wg liczby oczekujących, malejąco"],
-      ],
-      selected: "course_name_asc",
-    };
-  },
-  watch: {
-    selected: function (newSelected: string) {
-      this.sort(newSelected);
-    },
-  },
-  methods: {
-    ...mapMutations("sorting", ["changeSorting"]),
-    sort: function (newSelected: string) {
-      if (newSelected === "waiting_students_desc") {
-        this.changeSorting({
-          k: "max_of_waiting_students",
-          f: false,
-        });
-      } else if (newSelected === "waiting_students_asc") {
-        this.changeSorting({
-          k: "max_of_waiting_students",
-          f: true,
-        });
-      } else if (newSelected === "course_name_asc") {
-        this.changeSorting({
-          k: "course_name",
-          f: true,
-        });
-      } else if (newSelected === "course_name_desc") {
-        this.changeSorting({
-          k: "course_name",
-          f: false,
-        });
-      }
-    },
-  },
-});
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+
+const sortingModes = [
+  ["course_name_asc", "wg nazwy przedmiotu, rosnąco"],
+  ["course_name_desc", "wg nazwy przedmiotu, malejąco"],
+  ["waiting_students_asc", "wg liczby oczekujących, rosnąco"],
+  ["waiting_students_desc", "wg liczby oczekujących, malejąco"],
+];
+const selected = ref("course_name_asc");
+const changeSorting = (newSelected: string) => {
+  if (newSelected === "waiting_students_desc") {
+    store.commit("sorting/changeSorting", {
+      k: "max_of_waiting_students",
+      f: false,
+    });
+  } else if (newSelected === "waiting_students_asc") {
+    store.commit("sorting/changeSorting", {
+      k: "max_of_waiting_students",
+      f: true,
+    });
+  } else if (newSelected === "course_name_asc") {
+    store.commit("sorting/changeSorting", { k: "course_name", f: true });
+  } else if (newSelected === "course_name_desc") {
+    store.commit("sorting/changeSorting", { k: "course_name", f: false });
+  }
+};
+
+watch(selected, changeSorting);
 </script>
 
 <template>
