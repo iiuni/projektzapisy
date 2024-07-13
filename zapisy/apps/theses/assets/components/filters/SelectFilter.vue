@@ -1,8 +1,5 @@
-<script lang="ts">
+<script setup lang="ts">
 import { property } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
-
 import { Filter } from "../../store/filters";
 
 class ExactFilter implements Filter {
@@ -11,45 +8,39 @@ class ExactFilter implements Filter {
     public propertyName: string
   ) {}
 
-  visible(c: Object): boolean {
+  visible(c: object): boolean {
     if (this.option === undefined) {
       return true;
     }
-    let propGetter = property(this.propertyName) as (c: Object) => number;
+    const propGetter = property(this.propertyName) as (c: object) => number;
     return propGetter(c) == this.option;
   }
 }
 
-// TextFilter applies the string filtering on a property of a thesis.
-export default Vue.extend({
-  props: {
-    // Property of a thesis on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    default: String as () => number | string | undefined,
-    options: Array as () => [number | string, string][],
-    placeholder: String,
-  },
-  data: () => {
-    return {
-      selected: undefined as number | string | undefined,
-    };
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-  },
-  mounted: function () {
-    this.selected = this.default;
-  },
-  watch: {
-    selected: function (newSelected: number | string | undefined) {
-      this.registerFilter({
-        k: this.filterKey,
-        f: new ExactFilter(newSelected, this.property),
-      });
-    },
-  },
+const props = defineProps<{
+  property: string;
+  filterKey: string;
+  default?: number | string;
+  options: [number | string, string][];
+  placeholder: string;
+}>();
+
+import { getCurrentInstance, ref, watch } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+
+const selected = ref<number | string | undefined>(props.default);
+
+watch(selected, (newSelected: number | string | undefined) => {
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new ExactFilter(newSelected, props.property),
+  });
 });
 </script>
 

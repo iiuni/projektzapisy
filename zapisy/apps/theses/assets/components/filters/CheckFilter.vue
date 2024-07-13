@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { property } from "lodash";
 
 import { getCurrentInstance, ref, watch } from "vue";
