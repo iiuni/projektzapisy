@@ -16,7 +16,7 @@ export interface GroupInfo {
 export interface CourseInfo {
   id: number;
   course_name: string;
-  groups: GroupInfo;
+  groups: GroupInfo[];
   waiting_students: [{ name: string; number: string }];
   max_of_waiting_students: number;
 }
