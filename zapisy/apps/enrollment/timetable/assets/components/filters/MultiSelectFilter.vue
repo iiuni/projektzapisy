@@ -1,11 +1,19 @@
-<script lang="ts">
+<script setup lang="ts">
 import { isEmpty, property } from "lodash";
-import { defineComponent } from "vue";
-import { mapMutations } from "vuex";
 import Multiselect from "vue-multiselect";
-
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
+import { ref, onMounted, onUnmounted, computed, PropType } from "vue";
+
+import { getCurrentInstance } from "vue";
+import { watch } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
 class ExactFilter implements Filter {
   constructor(
@@ -27,145 +35,139 @@ const isDefinedOption = (option: undefined | Option): option is Option =>
   "value" in option &&
   (typeof option.value === "string" || typeof option.value === "number");
 
-type Props = {
-  property: string;
-  filterKey: string;
-  options: Options;
-  placeholder: string;
-  showLabels?: boolean;
-  trackBy?: string;
-  propAsLabel?: string;
-};
+// type Props = {
+//   property: string;
+//   filterKey: string;
+//   options: Options;
+//   placeholder: string;
+//   showLabels?: boolean;
+//   trackBy?: string;
+//   propAsLabel?: string;
+// };
+// const props = defineProps<Props>();
+// to mozna upiekszyc w vue3 dzieki withDefaults
+
+const props = defineProps({
+  property: {
+    type: String,
+    required: true,
+  },
+  filterKey: {
+    type: String,
+    required: true,
+  },
+  options: {
+    type: Array as PropType<Options>,
+    required: true,
+  },
+  placeholder: {
+    type: String,
+    required: true,
+  },
+  showLabels: {
+    type: Boolean,
+    default: false,
+  },
+  trackBy: {
+    type: String,
+    default: "value",
+  },
+  propAsLabel: {
+    type: String,
+    default: "label",
+  },
+});
 
 type Options = Option[];
 type Option = MultiselectFilterDataItem<string | number>;
 
-type Data = {
-  selected: Options;
-};
+const selected = ref<Options>([]);
+const searchParams = new URL(window.location.href).searchParams;
+if (searchParams.has(props.property)) {
+  const property = searchParams.get(props.property);
+  if (property && property.length) {
+    const ids = searchParams.get(props.property)!.split(",");
 
-type Computed = {
-  selectionDescription: () => string;
-};
-
-type Methods = {
-  registerFilter: Function;
-  clearFilter: () => void;
-  clearAll: () => void;
-  updateDropdownWidth: () => void;
-};
-
-export default defineComponent<Props, any, Data, Computed, Methods>({
-  components: { Multiselect },
-  props: {
-    property: String,
-    filterKey: String,
-    options: Array as () => Options,
-    placeholder: String,
-    showLabels: {
-      type: Boolean,
-      default: false,
-    },
-    trackBy: {
-      type: String,
-      default: "value",
-    },
-    propAsLabel: {
-      type: String,
-      default: "label",
-    },
-  },
-  data() {
-    return {
-      selected: [] as Options,
-    };
-  },
-  created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
-    if (searchParams.has(this.property)) {
-      const property = searchParams.get(this.property);
-      if (property && property.length) {
-        const ids = searchParams.get(this.property)!.split(",");
-
-        this.selected = ids
-          .map((id) =>
-            this.options.find((option: Option) => String(option.value) == id)
-          )
-          .filter((el) => isDefinedOption(el)) as Options;
-      }
+    selected.value = ids
+      .map((id) =>
+        props.options.find((option: Option) => String(option.value) == id)
+      )
+      .filter((el) => isDefinedOption(el)) as Options;
+  }
+  store.subscribe((mutation: { type: string }) => {
+    switch (mutation.type) {
+      case "filters/clearFilters":
+        selected.value = [];
+        break;
     }
+  });
+}
 
-    this.$store.subscribe((mutation: { type: string }) => {
-      switch (mutation.type) {
-        case "filters/clearFilters":
-          this.selected = [];
-          break;
-      }
+onMounted(() => {
+  updateDropdownWidth();
+  window.addEventListener("resize", updateDropdownWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateDropdownWidth);
+});
+
+function clearAll() {
+  selected.value = [];
+}
+
+function updateDropdownWidth() {
+  const multiselectInputs =
+    document.querySelectorAll<HTMLElement>(".multiselect");
+
+  Array.from(multiselectInputs).forEach((multiselectInput) => {
+    const dropdown = multiselectInput.querySelectorAll<HTMLElement>(
+      ".multiselect__content-wrapper"
+    )[0];
+
+    if (dropdown) {
+      dropdown.style.width = `${multiselectInput.offsetWidth}px`;
+    }
+  });
+}
+
+const selectionDescription = computed(() => {
+  if (selected.value.length === 0) {
+    return props.placeholder;
+  }
+  return props.options
+    .filter((opt) => selected.value.includes(opt))
+    .map(({ label }: { label: string }) => label)
+    .join(", ");
+});
+
+watch(
+  selected,
+  (newSelected) => {
+    console.log(selected);
+    console.log(newSelected);
+    const selectedIds = newSelected.map(
+      (selectedFilter: Option) => selectedFilter.value
+    );
+    console.log(selectedIds);
+
+    const url = new URL(window.location.href);
+    if (isEmpty(selectedIds)) {
+      url.searchParams.delete(props.property);
+    } else {
+      url.searchParams.set(props.property, selectedIds.join(","));
+    }
+    window.history.replaceState(null, "", url.toString());
+
+    store.commit("filters/registerFilter", {
+      k: props.filterKey,
+      f: new ExactFilter(selectedIds, props.property),
     });
   },
-  mounted() {
-    this.updateDropdownWidth();
-
-    window.addEventListener("resize", this.updateDropdownWidth);
-  },
-  unmounted() {
-    window.removeEventListener("resize", this.updateDropdownWidth);
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-    clearFilter() {
-      this.selected = [];
-    },
-    clearAll() {
-      this.selected = [];
-    },
-    updateDropdownWidth() {
-      const multiselectInputs =
-        document.querySelectorAll<HTMLElement>(".multiselect");
-
-      Array.from(multiselectInputs).forEach((multiselectInput) => {
-        const dropdown = multiselectInput.querySelectorAll<HTMLElement>(
-          ".multiselect__content-wrapper"
-        )[0];
-
-        if (dropdown) {
-          dropdown.style.width = `${multiselectInput.offsetWidth}px`;
-        }
-      });
-    },
-  },
-  computed: {
-    selectionDescription(): string {
-      if (this.selected.length === 0) {
-        return this.placeholder;
-      }
-      return this.options
-        .filter((opt) => this.selected.includes(opt))
-        .map(({ label }: { label: string }) => label)
-        .join(", ");
-    },
-  },
-  watch: {
-    selected: function () {
-      const selectedIds = this.selected.map(
-        (selectedFilter: Option) => selectedFilter.value
-      );
-
-      const url = new URL(window.location.href);
-      if (isEmpty(selectedIds)) {
-        url.searchParams.delete(this.property);
-      } else {
-        url.searchParams.set(this.property, selectedIds.join(","));
-      }
-      window.history.replaceState(null, "", url.toString());
-
-      this.registerFilter({
-        k: this.filterKey,
-        f: new ExactFilter(selectedIds, this.property),
-      });
-    },
-  },
-});
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <template>
@@ -180,25 +182,25 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       :label="propAsLabel"
       :placeholder="selectionDescription"
     >
-      <template slot="option" slot-scope="props">
+      <template #option="slotProp">
         <div class="option-row">
           <div class="custom-control custom-checkbox">
             <input
               type="checkbox"
               class="custom-control-input"
-              :checked="selected.includes(props.option)"
+              :checked="selected.includes(slotProp.option)"
             />
             <label class="custom-control-label" :for="filterKey"></label>
           </div>
-          {{ props.option.label }}
+          {{ slotProp.option.label }}
         </div>
       </template>
-      <template slot="selection" slot-scope="{ values, isOpen }">
+      <template #selection="{ values, isOpen }">
         <span class="multiselect__single" v-if="values.length" v-show="!isOpen">
           {{ selectionDescription }}
         </span>
       </template>
-      <template slot="clear">
+      <template #clear>
         <div
           v-show="selected.length"
           class="multiselect__clear"
