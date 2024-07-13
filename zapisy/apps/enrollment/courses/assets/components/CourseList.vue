@@ -1,44 +1,42 @@
-<script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
-
+<script setup lang="ts">
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
+import { onMounted } from "vue";
 
-export default Vue.extend({
-  data() {
-    return {
-      courses: [] as CourseInfo[],
-      visibleCourses: [] as CourseInfo[],
-    };
-  },
-  computed: {
-    ...mapGetters("filters", {
-      tester: "visible",
-    }),
-  },
-  mounted() {
-    // When mounted, load the list of courses from embedded JSON and apply initial filters
-    // fetched from the query string.
-    const courseData = JSON.parse(
-      document.getElementById("courses-data")!.innerHTML
-    ) as CourseInfo[];
-    this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+import { computed, getCurrentInstance, ref } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-    // Append the initial query string to links in the semester dropdown.
-    updateSemesterLinks();
+const courses = ref<CourseInfo[]>([]);
+const visibleCourses = ref<CourseInfo[]>([]);
+const tester = computed(() => store.getters["filters/visible"]);
 
-    this.$store.subscribe((mutation, _) => {
-      switch (mutation.type) {
-        case "filters/registerFilter":
-          this.visibleCourses = this.courses.filter(this.tester);
-          // Update the query string of links in the semester dropdown
-          // to reflect the new state of filters.
-          updateSemesterLinks();
-          break;
-      }
-    });
-  },
+onMounted(() => {
+  // When mounted, load the list of courses from embedded JSON and apply initial filters
+  // fetched from the query string.
+  const courseData = JSON.parse(
+    document.getElementById("courses-data")!.innerHTML
+  ) as CourseInfo[];
+  courses.value = courseData;
+  visibleCourses.value = courseData.filter(tester.value);
+
+  // Append the initial query string to links in the semester dropdown.
+  updateSemesterLinks();
+
+  store.subscribe((mutation) => {
+    switch (mutation.type) {
+      case "filters/registerFilter":
+        visibleCourses.value = courses.value.filter(tester.value);
+        // Update the query string of links in the semester dropdown
+        // to reflect the new state of filters.
+        updateSemesterLinks();
+        break;
+    }
+  });
 });
 
 // Replaces the query string of links in the semester dropdown with the current query string.
