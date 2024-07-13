@@ -1,92 +1,67 @@
-<script lang="ts">
-// Term component is responsible for displaying a singe course term on the
-// timetable.
-//
-// The term is positioned vertically on the CSS grid according to the starting
-// and ending hours. When clicked, a large popup will be presented with all the
-// group information.
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Group, Term, TimeTuple, nameDay } from "../models";
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { Term, TimeTuple, nameDay } from "../models";
 
-// This is a way to make TypeScript recognise the props and their types.
-const TermProps = Vue.extend({
-  props: {
-    term: Term,
-  },
+const props = defineProps<{
+  term: Term;
+}>();
+
+const term = props.term;
+
+const popupVisible = ref(false);
+
+const group = computed(() => term.group);
+
+const title = computed(() => {
+  switch (boxClass.value) {
+    case "enrolled":
+      return "Jesteś zapisany do tej grupy.";
+    case "enqueued":
+      return "Jesteś w kolejce do tej grupy";
+    case "pinned":
+      return "Ta grupa jest przypięta do twojego planu";
+    default:
+      return "";
+  }
 });
 
-@Component
-export default class TermComponent extends TermProps {
-  get group(): Group {
-    return this.term.group;
-  }
+const weekday = nameDay(term.weekday);
 
-  get title(): string {
-    switch (this.boxClass) {
-      case "enrolled":
-        return "Jesteś zapisany do tej grupy.";
-      case "enqueued":
-        return "Jesteś w kolejce do tej grupy";
-      case "pinned":
-        return "Ta grupa jest przypięta do twojego planu";
-      default:
-        return "";
-    }
-  }
+const boxClass = computed(() => {
+  if (term.group.isEnrolled) return "enrolled";
+  if (term.group.isEnqueued) return "enqueued";
+  if (term.group.isPinned) return "pinned";
+  return "";
+});
 
-  popupVisible: boolean = false;
-  // Pops out course information. The event is there because mouseout does not
-  // work on touch devices like phones.
-  showPopup() {
-    this.popupVisible = true;
-    window.addEventListener("touchend", this.hidePopup);
-  }
+const courseShortName = computed(() => {
+  return term.group.course.shortName || term.group.course.name;
+});
 
-  hidePopup() {
-    this.popupVisible = false;
-    window.removeEventListener("touchend", this.hidePopup);
-  }
+const boxStyle = computed(() => {
+  const startRow = timeTupleToRow(term.startTime);
+  const endRow = timeTupleToRow(term.endTime);
+  return {
+    gridRow: `${startRow} / ${endRow}`,
+  };
+});
 
-  weekday = nameDay(this.term.weekday);
+const showPopup = () => {
+  popupVisible.value = true;
+  window.addEventListener("touchend", hidePopup);
+};
 
-  // The rows spanned by the box. They represent starting and ending time of the
-  // group term.
-  get boxStyle() {
-    const startRow: number = this.timeTupleToRow(this.term.startTime);
-    const endRow: number = this.timeTupleToRow(this.term.endTime);
-    return {
-      gridRow: `${startRow} / ${endRow}`,
-    };
-  }
+const hidePopup = () => {
+  popupVisible.value = false;
+  window.removeEventListener("touchend", hidePopup);
+};
 
-  // boxClass determines the color of the box based on the group's status.
-  get boxClass(): string {
-    if (this.term.group.isEnrolled) return "enrolled";
-    if (this.term.group.isEnqueued) return "enqueued";
-    if (this.term.group.isPinned) return "pinned";
-    return "";
-  }
-
-  // Returns a short name of the course if available. Otherwise sticks with a
-  // regular name.
-  get courseShortName(): string {
-    if (this.term.group.course.shortName) {
-      return this.term.group.course.shortName;
-    }
-    return this.term.group.course.name;
-  }
-
-  // Transforms a TimeTouple into css grid row number. It assumes that there is
-  // a css grid row representing every 15 minutes starting with 8:00AM.
-  timeTupleToRow([h, m]: TimeTuple): number {
-    const hourRow = (h - 8) * 4 + 1;
-    const minuteRow = Math.floor(m / 15);
-    return hourRow + minuteRow;
-  }
-}
+const timeTupleToRow = ([h, m]: TimeTuple): number => {
+  const hourRow = (h - 8) * 4 + 1;
+  const minuteRow = Math.floor(m / 15);
+  return hourRow + minuteRow;
+};
 </script>
-
 <template>
   <div class="term-box" :style="boxStyle" :class="boxClass" ref="root">
     <div class="term-info" :title="title" @click="showPopup()">

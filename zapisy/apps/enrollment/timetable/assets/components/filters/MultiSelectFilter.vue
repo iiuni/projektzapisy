@@ -144,12 +144,9 @@ const selectionDescription = computed(() => {
 watch(
   selected,
   (newSelected) => {
-    console.log(selected);
-    console.log(newSelected);
     const selectedIds = newSelected.map(
       (selectedFilter: Option) => selectedFilter.value
     );
-    console.log(selectedIds);
 
     const url = new URL(window.location.href);
     if (isEmpty(selectedIds)) {

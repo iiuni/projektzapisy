@@ -21,7 +21,7 @@ const TermControlsProps = Vue.extend({
     FontAwesomeIcon,
   },
 })
-export default class TermControlsComponent extends TermControlsProps {
+export default class TermControls extends TermControlsProps {
   controlsVisible: boolean = false;
 
   get group(): Group {

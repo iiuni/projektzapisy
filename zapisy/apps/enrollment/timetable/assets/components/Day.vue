@@ -27,7 +27,7 @@ const DayProps = Vue.extend({
     Term: TermComponent,
   },
 })
-export default class DayComponent extends DayProps {
+export default class Day extends DayProps {
   // Monday will always have hour labels shown on the left side.
   isMonday: boolean = this.d === DayOfWeek.Monday;
 

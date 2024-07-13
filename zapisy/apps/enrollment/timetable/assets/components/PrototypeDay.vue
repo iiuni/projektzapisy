@@ -4,13 +4,13 @@
 // TermControlsComponent.
 import Component from "vue-class-component";
 
-import DayComponent from "./Day.vue";
-import TermControlsComponent from "./TermControls.vue";
+import Day from "./Day.vue";
+import TermControls from "./TermControls.vue";
 
 @Component({
   components: {
-    Term: TermControlsComponent,
+    Term: TermControls,
   },
 })
-export default class PrototypeDayComponent extends DayComponent {}
+export default class PrototypeDay extends Day {}
 </script>
