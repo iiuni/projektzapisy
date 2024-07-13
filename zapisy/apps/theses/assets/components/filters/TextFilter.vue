@@ -1,8 +1,6 @@
-<script lang="ts">
+<script setup lang="ts">
+import { ref, watch } from "vue";
 import { property } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
-
 import { ThesisInfo } from "../../store/theses";
 import { Filter } from "../../store/filters";
 
@@ -23,31 +21,27 @@ class TextFilter implements Filter {
   }
 }
 
-// TextFilter applies the string filtering on a property of a thesis.
-export default Vue.extend({
-  props: {
-    // Properties of a thesis on which we are filtering.
-    properties: Array,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    placeholder: String,
-  },
-  data: () => {
-    return {
-      pattern: "",
-    };
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-  },
-  watch: {
-    pattern: function (newPattern: string, _) {
-      this.registerFilter({
-        k: this.filterKey,
-        f: new TextFilter(newPattern, this.properties as string[]),
-      });
-    },
-  },
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+
+const props = defineProps<{
+  properties: string[];
+  filterKey: string;
+  placeholder: string;
+}>();
+const pattern = ref("");
+
+watch(pattern, (newPattern) => {
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new TextFilter(newPattern, props.properties),
+  });
 });
 </script>
 
