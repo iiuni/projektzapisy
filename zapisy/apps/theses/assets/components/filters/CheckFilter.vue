@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { property } from "lodash";
+import { ref, watch } from "vue";
 
-import { getCurrentInstance, ref, watch } from "vue";
+import { getCurrentInstance } from "vue";
 // TODO: use store from vuex4
 const useStore = () => {
   const vm = getCurrentInstance();

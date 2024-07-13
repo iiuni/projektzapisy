@@ -1,48 +1,38 @@
-<script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
+<script setup lang="ts">
+import { onMounted, computed, ref } from "vue";
 import { CourseInfo } from "../store/courses";
-import Component from "vue-class-component";
 
-@Component({
-  computed: {
-    ...mapGetters("courses", {
-      courses: "courses",
-    }),
-    ...mapGetters("filters", {
-      tester: "visible",
-    }),
-    ...mapGetters("sorting", {
-      compare: "compare",
-    }),
-  },
-})
-export default class StatisticsList extends Vue {
-  coursesList: CourseInfo[] = [];
+import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+store.dispatch("courses/initFromJSONTag");
 
-  courses!: CourseInfo[];
-  tester!: (_: CourseInfo) => boolean;
-  compare!: (a: CourseInfo, b: CourseInfo) => number;
+const courses = computed(
+  () => store.getters["courses/courses"] as CourseInfo[]
+);
+const tester = computed(() => store.getters["filters/visible"]);
+const compare = computed(() => store.getters["sorting/compare"]);
 
-  created() {
-    this.$store.dispatch("courses/initFromJSONTag");
-  }
-  mounted() {
-    this.coursesList = this.courses;
-    this.coursesList.sort(this.compare);
+const coursesList = ref<CourseInfo[]>([]);
 
-    this.$store.subscribe((mutation, state) => {
-      switch (mutation.type) {
-        case "filters/registerFilter":
-          this.coursesList.sort(this.compare);
-          break;
-        case "sorting/changeSorting":
-          this.coursesList.sort(this.compare);
-          break;
-      }
-    });
-  }
-}
+onMounted(() => {
+  coursesList.value = courses.value as CourseInfo[];
+  coursesList.value.sort(compare.value);
+
+  store.subscribe((mutation: { type: any }) => {
+    switch (mutation.type) {
+      case "filters/registerFilter":
+      case "sorting/changeSorting":
+        coursesList.value.sort(compare.value);
+        break;
+    }
+  });
+});
 </script>
 
 <template>

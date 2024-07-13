@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import TextFilter from "./filters/TextFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
