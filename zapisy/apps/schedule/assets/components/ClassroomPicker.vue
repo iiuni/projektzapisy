@@ -94,7 +94,7 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
       self.classrooms = [];
       for (let key in response.data) {
         let item = response.data[key];
-        let termsLayer = [];
+        let termsLayer: { width: string; occupied: boolean }[] = [];
 
         item.occupied.push({
           begin: "22:00",

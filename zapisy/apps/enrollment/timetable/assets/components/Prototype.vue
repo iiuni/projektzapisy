@@ -8,13 +8,13 @@
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import Component from "vue-class-component";
-// @ts-expect-error: No definitions for this module.
 import { mixin as VueTimers } from "vue-timers";
 
 import CourseList from "./CourseList.vue";
 import PrototypeTimetable from "./PrototypeTimetable.vue";
 
-// @ts-expect-error: timers is not part of Vue Component type.
+// @ts-ignore
+// @ts-expect-error: timers is not part of Vue Component type.s
 @Component({
   components: {
     CourseList,
