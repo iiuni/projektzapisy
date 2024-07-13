@@ -1,70 +1,71 @@
-<script lang="ts">
+<script setup lang="ts">
 import { cloneDeep, toPairs } from "lodash";
-import Vue from "vue";
-
-import { mapMutations } from "vuex";
-
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
+import { onMounted, ref } from "vue";
 
-export default Vue.extend({
-  components: {
-    TextFilter,
-    LabelsFilter,
-    CheckFilter,
-    MultiSelectFilter,
-  },
-  data: function () {
-    return {
-      allEffects: {},
-      allTags: {},
-      allOwners: [] as MultiselectFilterData<number>,
-      allTypes: [] as MultiselectFilterData<number>,
-      // The filters are going to be collapsed by default.
-      collapsed: true,
-    };
-  },
-  created: function () {
-    const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML
-    ) as FilterDataJSON;
-    this.allEffects = cloneDeep(filtersData.allEffects);
-    this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
-        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
-        return lastNamesComparison === 0
-          ? firstname.localeCompare(firstname2, "pl")
-          : lastNamesComparison;
-      })
-      .map(([id, [firstname, lastname]]) => {
-        return { value: Number(id), label: `${firstname} ${lastname}` };
-      });
-    this.allTypes = Object.keys(filtersData.allTypes).map(
-      (typeKey: string) => ({
-        value: Number(typeKey),
-        label: filtersData.allTypes[Number(typeKey)],
-      })
-    );
-  },
-  mounted: function () {
-    // Extract filterable properties names from the template.
-    const filterableProperties = Object.values(this.$refs)
-      .filter((ref: any) => ref.filterKey)
-      .map((filter: any) => filter.property);
-    // Expand the filters if there are any initially specified in the search params.
-    const searchParams = new URL(window.location.href).searchParams;
-    if (filterableProperties.some((p: string) => searchParams.has(p))) {
-      this.collapsed = false;
-    }
-  },
-  methods: {
-    ...mapMutations("filters", ["clearFilters"]),
-  },
+// TODO: use store from vuex4
+import { getCurrentInstance } from "vue";
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+
+const allEffects = ref({});
+const allTags = ref({});
+const allOwners = ref<MultiselectFilterData<number>>([]);
+const allTypes = ref<MultiselectFilterData<number>>([]);
+const collapsed = ref<boolean>(true);
+
+const filtersData = JSON.parse(
+  document.getElementById("filters-data")!.innerHTML
+) as FilterDataJSON;
+allEffects.value = cloneDeep(filtersData.allEffects);
+allTags.value = cloneDeep(filtersData.allTags);
+
+allOwners.value = toPairs(filtersData.allOwners)
+  .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+    const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+    return lastNamesComparison === 0
+      ? firstname.localeCompare(firstname2, "pl")
+      : lastNamesComparison;
+  })
+  .map(([id, [firstname, lastname]]) => ({
+    value: Number(id),
+    label: `${firstname} ${lastname}`,
+  }));
+allTypes.value = Object.keys(filtersData.allTypes).map((typeKey: string) => ({
+  value: Number(typeKey),
+  label: filtersData.allTypes[Number(typeKey)],
+}));
+
+onMounted(() => {
+  // TODO
+  // const filterableProperties = Object.values(this.$refs)
+  //     .filter((ref: any) => ref.filterKey)
+  //     .map((filter: any) => filter.property);
+  const filterableProperties = [
+    "name-filter",
+    "tags-filter",
+    "type-filter",
+    "effects-filter",
+    "owner-filter",
+    "freshmen-filter",
+  ];
+  const searchParams = new URL(window.location.href).searchParams;
+  if (filterableProperties.some((p: string) => searchParams.has(p))) {
+    collapsed.value = false;
+  }
 });
+
+const clearFilters = () => {
+  store.commit("filters/clearFilters");
+};
 </script>
 
 <template>

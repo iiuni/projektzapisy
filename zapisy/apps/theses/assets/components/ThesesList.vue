@@ -4,10 +4,11 @@ import SorterField from "./sorters/SorterField.vue";
 import { ThesisInfo } from "../store/theses";
 
 import { getCurrentInstance } from "vue";
+// TODO: use store from vuex4
 const useStore = () => {
   const vm = getCurrentInstance();
   if (!vm) throw new Error("must be called in setup");
-  return vm.proxy.$store;
+  return vm.proxy!.$store;
 };
 const store = useStore();
 
