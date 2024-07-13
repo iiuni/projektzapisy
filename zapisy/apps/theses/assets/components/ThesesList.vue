@@ -1,65 +1,45 @@
-<script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
-import { ThesisInfo } from "../store/theses";
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
 import SorterField from "./sorters/SorterField.vue";
-import Component from "vue-class-component";
+import { ThesisInfo } from "../store/theses";
 
-@Component({
-  components: {
-    SorterField,
-  },
-  computed: {
-    ...mapGetters("theses", {
-      theses: "theses",
-    }),
-    ...mapGetters("filters", {
-      tester: "visible",
-    }),
-    ...mapGetters("sorting", {
-      compare: "compare",
-    }),
-  },
-})
-export default class ThesesList extends Vue {
-  // The list should be initialised to contain all the theses and then apply
-  // filters and sorting whenever they update.
-  visibleTheses: ThesisInfo[] = [];
+import { getCurrentInstance } from "vue";
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy.$store;
+};
+const store = useStore();
 
-  theses!: ThesisInfo[];
-  tester!: (_: ThesisInfo) => boolean;
-  compare!: (a: ThesisInfo, b: ThesisInfo) => number;
+const theses = computed(() => store.getters["theses/theses"]);
+const tester = computed(() => store.getters["filters/visible"]);
+const compare = computed(() => store.getters["sorting/compare"]);
 
-  created() {
-    this.$store.dispatch("theses/initFromJSONTag");
-  }
+const visibleTheses = ref<ThesisInfo[]>([]);
 
-  mounted() {
-    this.visibleTheses = this.theses.sort(this.compare);
+store.dispatch("theses/initFromJSONTag");
 
-    this.$store.subscribe((mutation, state) => {
-      switch (mutation.type) {
-        case "filters/registerFilter":
-          this.visibleTheses = this.theses.filter(this.tester);
-          this.visibleTheses.sort(this.compare);
-          break;
-        case "sorting/changeSorting":
-          this.visibleTheses = this.theses.filter(this.tester);
-          this.visibleTheses.sort(this.compare);
-          break;
-      }
-    });
-  }
+onMounted(() => {
+  visibleTheses.value = theses.value.sort(compare.value);
 
-  reservedUntilAltText(thesis: ThesisInfo): string | undefined {
-    if (!thesis.reserved_until) {
-      return undefined;
+  store.subscribe((mutation: { type: string }) => {
+    switch (mutation.type) {
+      case "filters/registerFilter":
+      case "sorting/changeSorting":
+        visibleTheses.value = theses.value.filter(tester.value);
+        visibleTheses.value.sort(compare.value);
+        break;
     }
-    return `Zarezerwowana do ${thesis.reserved_until}`;
-  }
-}
-</script>
+  });
+});
 
+const reservedUntilAltText = (thesis: ThesisInfo): string | undefined => {
+  if (!thesis.reserved_until) {
+    return undefined;
+  }
+  return `Zarezerwowana do ${thesis.reserved_until}`;
+};
+</script>
 <style scoped>
 .selection-none {
   -webkit-user-select: none;
