@@ -1,47 +1,44 @@
-<script lang="ts">
+<script lang="ts" setup>
 import { property } from "lodash";
-import Vue from "vue";
-import { mapMutations } from "vuex";
 
-import { Filter } from "../../store/filters";
+import { getCurrentInstance, ref, watch } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
+
+interface Filter {
+  visible(c: object): boolean;
+}
 
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
 
-  visible(c: Object): boolean {
+  visible(c: object): boolean {
     if (!this.on) {
       return true;
     }
-    let propGetter = property(this.propertyName) as (c: Object) => boolean;
+    const propGetter = property(this.propertyName) as (c: object) => boolean;
     return propGetter(c);
   }
 }
 
-// TextFilter applies the string filtering on a property of a course.
-export default Vue.extend({
-  props: {
-    // Property of a course on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    label: String,
-  },
-  data: () => {
-    return {
-      on: false,
-    };
-  },
-  methods: {
-    ...mapMutations("filters", ["registerFilter"]),
-  },
-  watch: {
-    on: function (newOn: boolean) {
-      this.registerFilter({
-        k: this.filterKey,
-        f: new BooleanFilter(newOn, this.property),
-      });
-    },
-  },
+const props = defineProps<{
+  property: string;
+  filterKey: string;
+  label: string;
+}>();
+
+const on = ref(false);
+
+watch(on, (newOn: boolean) => {
+  store.commit("filters/registerFilter", {
+    k: props.filterKey,
+    f: new BooleanFilter(newOn, props.property),
+  });
 });
 </script>
 
