@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 // SimpleTimemtable component is a base component for displaying timetable. It
 // is responsible to extracting terms from the groups, distributing them among
 // days and presenting the Day components for five weekdays.
@@ -6,42 +6,31 @@
 // As for presentation, the days will be shown compactly (side-by-side) on
 // computer screens, and one below another on small screens.
 import { flatten, groupBy, range } from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
-
 import Day from "./Day.vue";
 import { Group, nameDay } from "../models";
+import { computed } from "vue";
 
-const SimpleTimetableProps = Vue.extend({
-  props: {
-    groups: {
-      type: Array as () => Array<Group>,
-      default: [],
-    },
+const props = defineProps({
+  groups: {
+    type: Array as () => Array<Group>,
+    default: [],
   },
 });
 
-@Component({
-  components: {
-    Day: Day,
-  },
-})
-export default class SimpleTimetable extends SimpleTimetableProps {
-  // Populates timetable data to the day components. The terms are extracted
-  // from provided groups and distributed by their respective weekday.
-  get daysData() {
-    const groupTerms = this.groups.map((g) => g.terms);
-    const allTerms = flatten(groupTerms);
-    const terms_by_day = groupBy(allTerms, "weekday");
+// Populates timetable data to the day components. The terms are extracted
+// from provided groups and distributed by their respective weekday.
+const daysData = computed(() => {
+  const groupTerms = props.groups.map((g) => g.terms);
+  const allTerms = flatten(groupTerms);
+  const terms_by_day = groupBy(allTerms, "weekday");
 
-    return range(1, 6).map((d) => ({
-      key: `day-${d}`,
-      d: d,
-      dayName: nameDay(d),
-      terms: terms_by_day[d],
-    }));
-  }
-}
+  return range(1, 6).map((d) => ({
+    key: `day-${d}`,
+    d: d,
+    dayName: nameDay(d),
+    terms: terms_by_day[d],
+  }));
+});
 </script>
 
 <template>

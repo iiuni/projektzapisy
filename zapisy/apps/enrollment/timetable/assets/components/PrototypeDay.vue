@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import Day from "./Day.vue";
 import TermControls from "./TermControls.vue";
 </script>

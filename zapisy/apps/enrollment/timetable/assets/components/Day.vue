@@ -1,9 +1,10 @@
-<script lang="ts" setup>
-import { computed, defineProps } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import { range } from "lodash";
 import { DayOfWeek, nameDay } from "../models";
 import TermComponent from "./Term.vue";
 
+// TODO fix typings in this file (style, key)
 const props = defineProps({
   d: {
     type: Number,

@@ -1,15 +1,12 @@
-<script lang="ts">
-// PrototypeTimetable is the same as SimpleTimetable with a difference, that it
-// displays the day using PrototypeDay component rather than Day component.
-import Component from "vue-class-component";
-
+<script setup lang="ts">
 import SimpleTimetable from "./SimpleTimetable.vue";
 import PrototypeDay from "./PrototypeDay.vue";
-
-@Component({
-  components: {
-    Day: PrototypeDay,
-  },
-})
-export default class PrototypeTimetable extends SimpleTimetable {}
 </script>
+
+<template>
+  <SimpleTimetable v-bind="$attrs">
+    <template #day="{ d, terms }">
+      <PrototypeDay :d="d" :terms="terms" />
+    </template>
+  </SimpleTimetable>
+</template>
