@@ -3,10 +3,9 @@
 // TermComponent by adding control buttons that allow to enqueue/dequeue to
 // the group and to pin it.
 import { computed, ref, onMounted, onUnmounted } from "vue";
-// import TermComponent from "./Term.vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { Term } from "../models";
 import TermComponent from "./Term.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 // TODO: use store from vuex4
 import { getCurrentInstance } from "vue";
@@ -79,6 +78,10 @@ const hideControls = (event: Event) => {
     (document.getElementById("term-root") as HTMLElement).contains(
       event.target as Node
     )
+    // TODO - im not sure if this is correct
+    // ((this.$refs.term as Vue).$refs.root as Element).contains(
+    //     event.target as Node
+    //   )
   ) {
     return;
   }

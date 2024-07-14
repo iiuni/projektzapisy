@@ -6,11 +6,9 @@ const props = defineProps<{
   term: Term;
 }>();
 
-const term = props.term;
-
 const popupVisible = ref(false);
 
-const group = computed(() => term.group);
+const group = computed(() => props.term.group);
 
 const title = computed(() => {
   switch (boxClass.value) {
@@ -25,22 +23,22 @@ const title = computed(() => {
   }
 });
 
-const weekday = nameDay(term.weekday);
+const weekday = nameDay(props.term.weekday);
 
 const boxClass = computed(() => {
-  if (term.group.isEnrolled) return "enrolled";
-  if (term.group.isEnqueued) return "enqueued";
-  if (term.group.isPinned) return "pinned";
+  if (props.term.group.isEnrolled) return "enrolled";
+  if (props.term.group.isEnqueued) return "enqueued";
+  if (props.term.group.isPinned) return "pinned";
   return "";
 });
 
 const courseShortName = computed(() => {
-  return term.group.course.shortName || term.group.course.name;
+  return props.term.group.course.shortName || props.term.group.course.name;
 });
 
 const boxStyle = computed(() => {
-  const startRow = timeTupleToRow(term.startTime);
-  const endRow = timeTupleToRow(term.endTime);
+  const startRow = timeTupleToRow(props.term.startTime);
+  const endRow = timeTupleToRow(props.term.endTime);
   return {
     gridRow: `${startRow} / ${endRow}`,
   };
