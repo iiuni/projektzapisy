@@ -11,14 +11,14 @@ import Component from "vue-class-component";
 import { mixin as VueTimers } from "vue-timers";
 
 import CourseList from "./CourseList.vue";
-import SimpleTimetable from "./SimpleTimetable.vue";
+import PrototypeTimetable from "./PrototypeTimetable.vue";
 
 // @ts-ignore
 // @ts-expect-error: timers is not part of Vue Component type.s
 @Component({
   components: {
     CourseList,
-    SimpleTimetable,
+    PrototypeTimetable,
   },
   computed: {
     ...mapGetters("courses", {
@@ -52,6 +52,6 @@ export default class Prototype extends Vue {
 
 <template>
   <div class="col">
-    <SimpleTimetable :groups="groupsGetter" />
+    <PrototypeTimetable :groups="groupsGetter" />
   </div>
 </template>
