@@ -1,16 +1,12 @@
-<script lang="ts">
-// PrototypeDay subclasses the base Day component (`Day.vue`). The only
-// difference being, it displays terms with controls using
-// TermControlsComponent.
-import Component from "vue-class-component";
-
+<script lang="ts" setup>
 import Day from "./Day.vue";
 import TermControls from "./TermControls.vue";
-
-@Component({
-  components: {
-    Term: TermControls,
-  },
-})
-export default class PrototypeDay extends Day {}
 </script>
+
+<template>
+  <Day v-bind="$attrs" v-on="$listeners">
+    <template #default="{ term }">
+      <TermControls :term="term" />
+    </template>
+  </Day>
+</template>

@@ -1,67 +1,49 @@
-<script lang="ts">
-// The base Day component. It is responsible for displaying a single weekday on
-// the timetable.
-//
-// The most important task is to display terms (which represent a single meeting
-// of a course group). The day component does also display a grid of hour rules
-// (every half hour), hour labels on the left, and the day label at the top.
-//
-// The fitting of terms in the day component is solved with CSS grid. While not
-// a perfect solution, it requires no algorithm, that would be difficult to
-// maintain in our codebase.
+<script lang="ts" setup>
+import { computed, defineProps } from "vue";
 import { range } from "lodash";
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Term, DayOfWeek, nameDay } from "../models";
+import { DayOfWeek, nameDay } from "../models";
 import TermComponent from "./Term.vue";
 
-const DayProps = Vue.extend({
-  props: {
-    d: Number as () => DayOfWeek,
-    terms: Array as () => Array<Term>,
+const props = defineProps({
+  d: {
+    type: Number,
+    required: true,
+  },
+  terms: {
+    type: Array,
+    default: () => [],
   },
 });
 
-@Component({
-  components: {
-    Term: TermComponent,
-  },
-})
-export default class Day extends DayProps {
-  // Monday will always have hour labels shown on the left side.
-  isMonday: boolean = this.d === DayOfWeek.Monday;
+// Monday will always have hour labels shown on the left side.
+const isMonday = props.d === DayOfWeek.Monday;
+const dayName = nameDay(props.d);
+// In which column to put the day wrapper
+const dayStyle = computed(() => ({ gridColumn: props.d }));
+// For every full hour we have a label with it on the left side of the
+// timetable.
 
-  dayName: string = nameDay(this.d);
+const hourLabels = computed(() => {
+  return [...Array(16).keys()].map((k) => ({
+    key: "hour-label-" + k,
+    hour: k + 8 + ":00",
+    style: {
+      gridRow: k * 4 + 2 + "/" + (k * 4 + 2),
+    },
+  }));
+});
 
-  // In which column to put the day wrapper
-  dayStyle = {
-    gridColumn: this.d,
-  };
-
-  // For every full hour we have a label with it on the left side of the
-  // timetable.
-  get hourLabels() {
-    return [...Array(16).keys()].map((k) => ({
-      key: "hour-label-" + k,
-      hour: k + 8 + ":00",
-      style: {
-        gridRow: k * 4 + 2 + "/" + (k * 4 + 2),
-      },
-    }));
-  }
-
-  // Horizontal rules with alternating solid/dotted style will be drawn
-  // every half hour.
-  get halfHourRules() {
-    return range(0, 61, 2).map((k) => ({
-      key: `hour-rule-${k}`,
-      style: {
-        gridRow: `${k + 3} / ${k + 3}`,
-        borderTopStyle: k % 4 === 0 ? "solid" : "dotted",
-      },
-    }));
-  }
-}
+// Horizontal rules with alternating solid/dotted style will be drawn
+// every half hour.
+const halfHourRules = computed(() => {
+  return range(0, 61, 2).map((k) => ({
+    key: `hour-rule-${k}`,
+    style: {
+      gridRow: `${k + 3} / ${k + 3}`,
+      borderTopStyle: k % 4 === 0 ? "solid" : "dotted",
+    },
+  }));
+});
 </script>
 
 <template>
@@ -83,7 +65,7 @@ export default class Day extends DayProps {
 
     <div class="day-wrapper">
       <template v-for="t of terms">
-        <Term :key="t.id" :term="t" />
+        <TermComponent :key="t.id" :term="t" />
       </template>
     </div>
   </div>
