@@ -1,102 +1,102 @@
-<script lang="ts">
+<script setup lang="ts">
 // This component presents a single group term in a week. It extends upon
 // TermComponent by adding control buttons that allow to enqueue/dequeue to
 // the group and to pin it.
-import Component from "vue-class-component";
-import Vue from "vue";
-import TermComponent from "./Term.vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
+// import TermComponent from "./Term.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { Term } from "../models";
+import TermComponent from "./Term.vue";
 
-import { Term, Group } from "../models";
+// TODO: use store from vuex4
+import { getCurrentInstance } from "vue";
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-const TermControlsProps = Vue.extend({
-  props: {
-    term: Term,
-  },
+const props = defineProps<{ term: Term }>();
+const controlsVisible = ref(false);
+const group = computed(() => props.term.group);
+
+// Determines if a new enrollment record can be created into the group.
+const canEnqueue = computed(() => {
+  if (props.term.group.isEnrolled) return false;
+  if (props.term.group.isEnqueued) return false;
+  return props.term.group.canEnqueue;
 });
 
-@Component({
-  components: {
-    Term: TermComponent,
-    FontAwesomeIcon,
-  },
-})
-export default class TermControls extends TermControlsProps {
-  controlsVisible: boolean = false;
+// Determines if an enrollment record exists and can be removed.
+const canDequeue = computed(() => {
+  if (!props.term.group.canDequeue) return false;
+  if (props.term.group.isEnrolled) return true;
+  if (props.term.group.isEnqueued) return true;
+  return false;
+});
 
-  get group(): Group {
-    return this.term.group;
+const pin = () => {
+  store.dispatch("groups/pin", props.term.group);
+};
+
+const unpin = () => {
+  store.dispatch("groups/unpin", props.term.group);
+};
+
+const enqueue = () => {
+  const confirmMessage = [
+    "Czy na pewno chcesz stanąć w kolejce do tej grupy?\n\n",
+    "Gdy tylko w grupie będzie wolne miejsce (być może natychmiast), ",
+    "zostanie dokonana próba wciągnięcia do niej studentów z kolejki. Jeśli ",
+    "w momencie wciągania do grupy student nie spełnia warunków zapisu ",
+    "(np. przekracza limit ECTS), jego rekord zostaje usunięty.",
+  ].join("");
+
+  if (confirm(confirmMessage)) {
+    store.dispatch("groups/enqueue", props.term.group);
   }
+};
 
-  // Determines if a new enrollment record can be created into the group.
-  get canEnqueue(): boolean {
-    if (this.term.group.isEnrolled) return false;
-    if (this.term.group.isEnqueued) return false;
-    return this.term.group.canEnqueue;
+const dequeue = () => {
+  const confirmMessage = "Czy na pewno chcesz opuścić tę grupę/kolejkę?";
+  if (confirm(confirmMessage)) {
+    store.dispatch("groups/dequeue", props.term.group);
   }
+};
 
-  // Determines if an enrollment record exists and can be removed.
-  get canDequeue(): boolean {
-    if (!this.term.group.canDequeue) return false;
-    if (this.term.group.isEnrolled) return true;
-    if (this.term.group.isEnqueued) return true;
-    return false;
+const showControls = () => {
+  controlsVisible.value = true;
+  window.addEventListener("touchend", hideControls);
+};
+
+// Hides controls popup whenever there is a "mouseout" event on the Term
+// component or any touch event outside of it.
+const hideControls = (event: Event) => {
+  // Do not hide controls on touch events inside of the Term.
+  if (
+    event.type === "touchend" &&
+    (document.getElementById("term-root") as HTMLElement).contains(
+      event.target as Node
+    )
+  ) {
+    return;
   }
+  controlsVisible.value = false;
+  window.removeEventListener("touchend", hideControls);
+};
 
-  pin() {
-    this.$store.dispatch("groups/pin", this.term.group);
-  }
+onMounted(() => {
+  window.addEventListener("touchend", hideControls);
+});
 
-  unpin() {
-    this.$store.dispatch("groups/unpin", this.term.group);
-  }
-
-  enqueue() {
-    const confirmMessage = [
-      "Czy na pewno chcesz stanąć w kolejce do tej grupy?\n\n",
-      "Gdy tylko w grupie będzie wolne miejsce (być może natychmiast), ",
-      "zostanie dokonana próba wciągnięcia do niej studentów z kolejki. Jeśli ",
-      "w momencie wciągania do grupy student nie spełnia warunków zapisu ",
-      "(np. przekracza limit ECTS), jego rekord zostaje usunięty.",
-    ].join("");
-
-    if (confirm(confirmMessage)) {
-      this.$store.dispatch("groups/enqueue", this.term.group);
-    }
-  }
-
-  dequeue() {
-    const confirmMessage = "Czy na pewno chcesz opuścić tę grupę/kolejkę?";
-    if (confirm(confirmMessage)) {
-      this.$store.dispatch("groups/dequeue", this.term.group);
-    }
-  }
-
-  showControls() {
-    this.controlsVisible = true;
-    window.addEventListener("touchend", this.hideControls);
-  }
-
-  // Hides controls popup whenever there is a "mouseout" event on the Term
-  // component or any touch event outside of it.
-  hideControls(event: Event) {
-    // Do not hide controls on touch events inside of the Term.
-    if (
-      event.type === "touchend" &&
-      ((this.$refs.term as Vue).$refs.root as Element).contains(
-        event.target as Node
-      )
-    ) {
-      return;
-    }
-    this.controlsVisible = false;
-    window.removeEventListener("touchend", this.hideControls);
-  }
-}
+onUnmounted(() => {
+  window.removeEventListener("touchend", hideControls);
+});
 </script>
 
 <template>
-  <Term
+  <TermComponent
     :term="term"
     @mouseover.native="showControls"
     @mouseout.native="hideControls"
@@ -150,7 +150,7 @@ export default class TermControls extends TermControlsProps {
         </span>
       </div>
     </transition>
-  </Term>
+  </TermComponent>
 </template>
 
 <style lang="scss" scoped>
