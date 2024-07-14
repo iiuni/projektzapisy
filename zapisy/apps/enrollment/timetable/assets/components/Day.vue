@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { range } from "lodash";
-import { DayOfWeek, nameDay } from "../models";
-import TermComponent from "./Term.vue";
+import { DayOfWeek, nameDay, Term } from "../models";
+// import TermComponent from "./Term.vue";
+import TermControls from "./TermControls.vue";
 
 // TODO fix typings in this file (style, key)
 const props = defineProps({
@@ -11,7 +12,7 @@ const props = defineProps({
     required: true,
   },
   terms: {
-    type: Array,
+    type: Array as () => Array<Term>,
     default: () => [],
   },
 });
@@ -66,7 +67,7 @@ const halfHourRules = computed(() => {
 
     <div class="day-wrapper">
       <template v-for="t of terms">
-        <TermComponent :key="t.id" :term="t" />
+        <TermControls :key="t.id" :term="t" />
       </template>
     </div>
   </div>
