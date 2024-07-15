@@ -1,3 +1,64 @@
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { EventBus } from "./event-bus";
+import { sortBy, some, every, map, get, filter } from "lodash";
+import { onBeforeMount } from "vue";
+import { onMounted } from "vue";
+
+// TODO add types for user
+
+const filter_phrase = ref("");
+const filter_button = ref("");
+const users = ref([]);
+const userLinkUrl = ref("");
+
+onBeforeMount(() => {
+  let rawUsers = JSON.parse(
+    document.getElementById("user-list-json-script")!.textContent!
+  );
+  users.value = Object.values(rawUsers);
+  users.value = sortBy(users.value, ["last_name", "first_name"]);
+  userLinkUrl.value = document
+    .getElementById("user-link")!
+    .getAttribute("data")!;
+});
+
+onMounted(() => {
+  EventBus.$on("user-char-filter", (value) => {
+    filter_button.value = value;
+  });
+  EventBus.$on("user-input-filter", (value) => {
+    filter_phrase.value = value;
+  });
+});
+
+const matchedUsers = computed(() => {
+  return filter(users.value, (user) => matchChar(user) && matchInput(user));
+});
+
+const matchInput = (user) => {
+  // Remove trailing/leading whitespaces from input
+  let phrase = filter_phrase.value.toLowerCase().trim();
+  const regex = /\s+/;
+  let words = phrase.split(regex);
+
+  const props = ["first_name", "last_name", "email", "album"];
+  const values = map(props, (p) => get(user, p, "").toLowerCase());
+  const anyPropMatches = (word) => some(values, (v) => v.includes(word));
+  return every(words, anyPropMatches);
+};
+
+const matchChar = (user) => {
+  let last_name = user.last_name.toLowerCase();
+  let button = filter_button.value.toLowerCase();
+
+  if (button != "wszyscy") {
+    return last_name.startsWith(button);
+  }
+  return true;
+};
+</script>
+
 <template>
   <ul>
     <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
@@ -7,67 +68,3 @@
     </li>
   </ul>
 </template>
-<script>
-import { EventBus } from "./event-bus";
-import { sortBy, some, every, map, get, filter } from "lodash";
-
-export default {
-  name: "UserList",
-  data: function () {
-    return {
-      filter_phrase: "",
-      filter_button: "",
-      users: [],
-      userLinkUrl: "",
-    };
-  },
-  beforeMount: function () {
-    let rawUsers = JSON.parse(
-      document.getElementById("user-list-json-script").textContent
-    );
-    this.users = Object.values(rawUsers);
-    this.users = sortBy(this.users, ["last_name", "first_name"]);
-    this.userLinkUrl = document
-      .getElementById("user-link")
-      .getAttribute("data");
-  },
-  mounted: function () {
-    EventBus.$on("user-char-filter", (value) => {
-      this.filter_button = value;
-    });
-    EventBus.$on("user-input-filter", (value) => {
-      this.filter_phrase = value;
-    });
-  },
-  computed: {
-    matchedUsers: function () {
-      return filter(
-        this.users,
-        (user) => this.matchChar(user) && this.matchInput(user)
-      );
-    },
-  },
-  methods: {
-    matchInput: function (user) {
-      // Remove trailing/leading whitespaces from input
-      let phrase = this.filter_phrase.toLowerCase().trim();
-      const regex = /\s+/;
-      let words = phrase.split(regex);
-
-      const props = ["first_name", "last_name", "email", "album"];
-      const values = map(props, (p) => get(user, p, "").toLowerCase());
-      const anyPropMatches = (word) => some(values, (v) => v.includes(word));
-      return every(words, anyPropMatches);
-    },
-    matchChar: function (user) {
-      let last_name = user.last_name.toLowerCase();
-      let button = this.filter_button.toLowerCase();
-
-      if (button != "wszyscy") {
-        return last_name.startsWith(button);
-      }
-      return true;
-    },
-  },
-};
-</script>
