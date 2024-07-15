@@ -35,10 +35,6 @@ store.dispatch("courses/initFromJSONTag");
 
 <template>
   <div class="col">
-    <<<<<<< HEAD
-    <PrototypeTimetable :groups="groupsGetter" />
-    =======
     <SimpleTimetable :groups="groupsGetter" :isPrototype="true" />
-    >>>>>>> WorkAroundToPrototypeTimetable
   </div>
 </template>
