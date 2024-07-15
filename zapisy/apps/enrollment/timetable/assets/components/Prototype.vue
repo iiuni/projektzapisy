@@ -6,6 +6,8 @@
 // The other one is the timetable itself. The set of currently displayed groups
 // is maintained by the Vuex store (`../store/index.ts`).
 // import { mixin as VueTimers } from "vue-timers";
+
+// TODO Rename it to PrototypeTimetable
 import SimpleTimetable from "./SimpleTimetable.vue";
 import { computed } from "vue";
 import { getCurrentInstance } from "vue";

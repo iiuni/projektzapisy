@@ -1,42 +1,40 @@
-<script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
-
+<script setup lang="ts">
+import { onMounted } from "vue";
 import { CourseInfo } from "../../../../enrollment/timetable/assets/store/courses";
 
 interface ProposalInfo extends CourseInfo {
   status: "IN_OFFER" | "IN_VOTE" | "WITHDRAWN";
 }
+import { computed, getCurrentInstance, ref } from "vue";
+// TODO: use store from vuex4
+const useStore = () => {
+  const vm = getCurrentInstance();
+  if (!vm) throw new Error("must be called in setup");
+  return vm.proxy!.$store;
+};
+const store = useStore();
 
-export default Vue.extend({
-  data() {
-    return {
-      courses: [] as ProposalInfo[],
-      visibleCourses: [] as ProposalInfo[],
-    };
-  },
-  computed: {
-    ...mapGetters("filters", {
-      tester: "visible",
-    }),
-  },
-  mounted() {
-    // When mounted, load the list of courses from embedded JSON and apply initial filters
-    // fetched from the query string.
-    const courseData = JSON.parse(
-      document.getElementById("courses-data")!.innerHTML
-    ) as ProposalInfo[];
-    this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+const courses = ref<ProposalInfo[]>([]);
+const visibleCourses = ref<ProposalInfo[]>([]);
 
-    this.$store.subscribe((mutation, _) => {
-      switch (mutation.type) {
-        case "filters/registerFilter":
-          this.visibleCourses = this.courses.filter(this.tester);
-          break;
-      }
-    });
-  },
+const tester = computed(() => {
+  return store.getters["filters/visible"];
+});
+
+onMounted(() => {
+  const courseData = JSON.parse(
+    document.getElementById("courses-data")!.innerHTML
+  ) as ProposalInfo[];
+  courses.value = courseData;
+  visibleCourses.value = courseData.filter(tester.value);
+
+  store.subscribe((mutation, _) => {
+    switch (mutation.type) {
+      case "filters/registerFilter":
+        visibleCourses.value = courses.value.filter(tester.value);
+        break;
+    }
+  });
 });
 </script>
 
