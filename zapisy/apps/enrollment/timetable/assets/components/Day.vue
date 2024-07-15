@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { range } from "lodash";
 import { DayOfWeek, nameDay, Term } from "../models";
-// import TermComponent from "./Term.vue";
+import TermComponent from "./Term.vue";
 import TermControls from "./TermControls.vue";
 
 // TODO fix typings in this file (style, key)
@@ -14,6 +14,10 @@ const props = defineProps({
   terms: {
     type: Array as () => Array<Term>,
     default: () => [],
+  },
+  isPrototype: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -67,7 +71,8 @@ const halfHourRules = computed(() => {
 
     <div class="day-wrapper">
       <template v-for="t of terms">
-        <TermControls :key="t.id" :term="t" />
+        <TermControls :key="t.id" :term="t" v-if="isPrototype" />
+        <TermComponent :key="t.id" :term="t" v-else />
       </template>
     </div>
   </div>

@@ -15,6 +15,10 @@ const props = defineProps({
     type: Array as () => Array<Group>,
     default: [],
   },
+  isPrototype: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Populates timetable data to the day components. The terms are extracted
@@ -35,7 +39,13 @@ const daysData = computed(() => {
 
 <template>
   <div class="week">
-    <Day v-for="dd of daysData" :key="dd.key" :d="dd.d" :terms="dd.terms" />
+    <Day
+      v-for="dd of daysData"
+      :key="dd.key"
+      :d="dd.d"
+      :terms="dd.terms"
+      :is-prototype="isPrototype"
+    />
   </div>
 </template>
 
