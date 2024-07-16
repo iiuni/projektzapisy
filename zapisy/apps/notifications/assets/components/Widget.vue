@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { faBell as fasBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faBell as farBell } from "@fortawesome/free-regular-svg-icons/faBell";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -9,8 +9,9 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
 import { z } from "zod";
-import Vue from "vue";
-import Component from "vue-class-component";
+import { ref, computed } from "vue";
+
+// TODO czy klikniecie w powiadomienie nie powinno je odznaczac?
 
 // Defines a notification scheme to validate and parse Notifications from JSON.
 const notificationScheme = z
@@ -38,66 +39,55 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.locale("pl");
 
-@Component({
-  components: {
-    FontAwesomeIcon,
-  },
-  filters: {
-    Moment: function (str: string) {
-      return dayjs.tz(str, "Europe/Warsaw").fromNow();
-    },
-  },
-})
-export default class NotificationsComponent extends Vue {
-  n_list: Notification[] = [];
+const Moment = (str: string) => {
+  return dayjs.tz(str, "Europe/Warsaw").fromNow();
+};
 
-  get n_counter(): number {
-    return this.n_list.length;
-  }
+const n_list = ref<Notification[]>([]);
+const n_counter = computed(() => n_list.value.length);
 
-  farBell = farBell;
-  fasBell = fasBell;
-
-  getNotifications() {
-    return axios
-      .get("/notifications/get")
-      .then((r) => notificationSchemeArray.parse(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  deleteAll(): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete/all")
-      .then((r) => notificationSchemeArray.parse(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  deleteOne(i: number): Promise<void> {
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFToken";
-
-    return axios
-      .post("/notifications/delete", {
-        uuid: i,
-      })
-      .then((r) => notificationSchemeArray.parse(r.data))
-      .then((t) => {
-        this.n_list = t;
-      });
-  }
-
-  async created() {
-    this.getNotifications();
-    setInterval(this.getNotifications, 30000);
-  }
+function getNotifications() {
+  return axios
+    .get("/notifications/get")
+    .then((r) => notificationSchemeArray.parse(r.data))
+    .then((t) => {
+      n_list.value = t;
+    });
 }
+
+function deleteAll(): Promise<void> {
+  axios.defaults.xsrfCookieName = "csrftoken";
+  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+
+  return axios
+    .post("/notifications/delete/all")
+    .then((r) => notificationSchemeArray.parse(r.data))
+    .then((t) => {
+      n_list.value = t;
+    });
+}
+
+function deleteOne(i: number): Promise<void> {
+  axios.defaults.xsrfCookieName = "csrftoken";
+  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+
+  return axios
+    .post("/notifications/delete", {
+      uuid: i,
+    })
+    .then((r) => notificationSchemeArray.parse(r.data))
+    .then((t) => {
+      n_list.value = t;
+    });
+}
+
+const created = async () => {
+  await getNotifications();
+  setInterval(getNotifications, 30000);
+};
+// TODO czy na pewno tak to powino created wygladac
+// + trzeba przetestowac
+created();
 </script>
 
 <template>
@@ -126,9 +116,9 @@ export default class NotificationsComponent extends Vue {
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
               <strong class="me-auto"></strong>
-              <small class="text-muted mx-2">{{
-                elem.issuedOn | Moment
-              }}</small>
+              <small class="text-muted mx-2">
+                {{ Moment(elem.issuedOn) }}</small
+              >
               <button
                 type="button"
                 class="btn-close"
