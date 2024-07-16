@@ -1,136 +1,122 @@
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script setup lang="ts">
 import $ from "jquery";
 import { min, max } from "lodash";
 import axios from "axios";
 import { TermDisplay, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
+import { ref, onMounted } from "vue";
 
-const ClassroomPickerDefinition = Vue.extend({
-  components: {
-    ClassroomField,
-  },
-  data: () => {
-    return {
-      showOccupied: false,
-    };
-  },
+const showOccupied = ref(false);
+
+const classrooms = ref<Classroom[]>([]);
+const unoccupiedClassrooms = ref<Classroom[]>([]);
+const reservationLayer = ref<TermDisplay[]>([]);
+
+// Attaches handlers to change of active term form.
+onMounted(() => {
+  // let self = this;
+  // Sets handlers to change of time and date for currently
+  // active term.
+  let f = (event: Event) => {
+    onChangedTime();
+    onChangedDate();
+
+    $(".active-term").find(".form-time").on("change", onChangedTime);
+
+    $(".active-term").find(".form-day").on("change", onChangedDate);
+  };
+
+  // Vanilla JS give us know when change active term
+  document.addEventListener("refresh-classroom-picker", f);
 });
 
-@Component
-export default class ClassroomPicker extends ClassroomPickerDefinition {
-  classrooms: Classroom[] = [];
-  unoccupiedClassrooms: Classroom[] = [];
-  reservationLayer: TermDisplay[] = [];
+function getUnoccupied() {
+  let begin = $(".active-term").find(".form-start").val() as string;
+  let end = $(".active-term").find(".form-end").val() as string;
+  unoccupiedClassrooms.value = classrooms.value.filter((item) => {
+    return isFree(item.rawOccupied, begin, end);
+  });
+}
 
-  // Attaches handlers to change of active term form.
-  mounted() {
-    let self = this;
+function onChangedTime() {
+  let start = $(".active-term").find(".form-start").val() as string;
+  let end = $(".active-term").find(".form-end").val() as string;
 
-    // Sets handlers to change of time and date for currently
-    // active term.
-    let f = (event: Event) => {
-      self.onChangedTime();
-      self.onChangedDate();
-
-      $(".active-term").find(".form-time").on("change", self.onChangedTime);
-
-      $(".active-term").find(".form-day").on("change", self.onChangedDate);
-    };
-
-    // Vanilla JS give us know when change active term
-    document.addEventListener("refresh-classroom-picker", f);
+  if (start > end || end < "08:00" || start > "22:00") {
+    reservationLayer.value = [];
+    return;
   }
 
-  getUnoccupied() {
-    let begin = $(".active-term").find(".form-start").val() as string;
-    let end = $(".active-term").find(".form-end").val() as string;
-    this.unoccupiedClassrooms = this.classrooms.filter((item) => {
-      return isFree(item.rawOccupied, begin, end);
-    });
+  start = max(["08:00", start]) as string;
+  end = min(["22:00", end]) as string;
+
+  getUnoccupied();
+
+  reservationLayer.value = [];
+  reservationLayer.value.push({
+    width: calculateLength("08:00", start),
+    occupied: false,
+  });
+  reservationLayer.value.push({
+    width: calculateLength(start, end),
+    occupied: true,
+  });
+  reservationLayer.value.push({
+    width: calculateLength(end, "22:00"),
+    occupied: false,
+  });
+}
+
+function onChangedDate() {
+  // var self = this;
+  var date = $(".active-term").find(".form-day").val();
+
+  if (date === "") {
+    classrooms.value = [];
+    unoccupiedClassrooms.value = [];
+    return;
   }
 
-  onChangedTime() {
-    let start = $(".active-term").find(".form-start").val() as string;
-    let end = $(".active-term").find(".form-end").val() as string;
+  axios.get("/classrooms/get_terms/" + date + "/").then((response) => {
+    classrooms.value = [];
+    for (let key in response.data) {
+      let item = response.data[key];
+      let termsLayer: { width: string; occupied: boolean }[] = [];
 
-    if (start > end || end < "08:00" || start > "22:00") {
-      this.reservationLayer = [];
-      return;
-    }
+      item.occupied.push({
+        begin: "22:00",
+      });
+      let lastFree = "08:00";
 
-    start = max(["08:00", start]) as string;
-    end = min(["22:00", end]) as string;
-
-    this.getUnoccupied();
-
-    this.reservationLayer = [];
-    this.reservationLayer.push({
-      width: calculateLength("08:00", start),
-      occupied: false,
-    });
-    this.reservationLayer.push({
-      width: calculateLength(start, end),
-      occupied: true,
-    });
-    this.reservationLayer.push({
-      width: calculateLength(end, "22:00"),
-      occupied: false,
-    });
-  }
-
-  onChangedDate() {
-    var self = this;
-    var date = $(".active-term").find(".form-day").val();
-
-    if (date === "") {
-      self.classrooms = [];
-      self.unoccupiedClassrooms = [];
-      return;
-    }
-
-    axios.get("/classrooms/get_terms/" + date + "/").then((response) => {
-      self.classrooms = [];
-      for (let key in response.data) {
-        let item = response.data[key];
-        let termsLayer: { width: string; occupied: boolean }[] = [];
-
-        item.occupied.push({
-          begin: "22:00",
+      for (const occ of item.occupied) {
+        const emptyWidth = calculateLength(lastFree, occ.begin);
+        termsLayer.push({
+          width: emptyWidth,
+          occupied: false,
         });
-        let lastFree = "08:00";
-
-        for (const occ of item.occupied) {
-          const emptyWidth = calculateLength(lastFree, occ.begin);
-          termsLayer.push({
-            width: emptyWidth,
-            occupied: false,
-          });
-          if (!occ.end) {
-            // We reached the last, dummy event.
-            break;
-          }
-          let width = calculateLength(occ.begin, occ.end);
-          termsLayer.push({
-            width: width,
-            occupied: true,
-          });
-          lastFree = occ.end;
+        if (!occ.end) {
+          // We reached the last, dummy event.
+          break;
         }
-
-        self.classrooms.push({
-          label: item.number,
-          type: item.type,
-          id: item.id,
-          capacity: item.capacity,
-          termsLayer: termsLayer,
-          rawOccupied: item.occupied,
+        let width = calculateLength(occ.begin, occ.end);
+        termsLayer.push({
+          width: width,
+          occupied: true,
         });
+        lastFree = occ.end;
       }
-      self.getUnoccupied();
-    });
-  }
+
+      classrooms.value.push({
+        label: item.number,
+        type: item.type,
+        id: item.id,
+        capacity: item.capacity,
+        termsLayer: termsLayer,
+        rawOccupied: item.occupied,
+      });
+    }
+    getUnoccupied();
+  });
 }
 </script>
 
@@ -151,12 +137,12 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
       </div>
     </div>
     <ClassroomField
-      v-for="item in showOccupied ? this.classrooms : this.unoccupiedClassrooms"
-      :key="item.id"
-      :label="item.label"
-      :capacity="item.capacity"
-      :id="item.id"
-      :type="item.type"
+      v-for="item in showOccupied ? classrooms : unoccupiedClassrooms"
+      :key="item.id.toString()"
+      :label="item.label.toString()"
+      :capacity="Number(item.capacity)"
+      :id="Number(item.id)"
+      :type="item.type.toString()"
       :termsLayer="item.termsLayer"
       :reservationLayer="reservationLayer"
     />

@@ -1,46 +1,42 @@
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script setup lang="ts">
 import $ from "jquery";
 import { TermDisplay } from "../terms";
 
-const ClassroomFieldProps = Vue.extend({
-  props: {
-    label: String,
-    type: String,
-    capacity: Number,
-    id: Number,
-    termsLayer: {
-      type: Array as () => Array<TermDisplay>,
-      default() {
-        return [];
-      },
+const props = defineProps({
+  label: String,
+  type: String,
+  capacity: Number,
+  id: Number,
+  termsLayer: {
+    type: Array as () => Array<TermDisplay>,
+    default() {
+      return [];
     },
-    reservationLayer: {
-      type: Array as () => Array<TermDisplay>,
-      default() {
-        return [];
-      },
+  },
+  reservationLayer: {
+    type: Array as () => Array<TermDisplay>,
+    default() {
+      return [];
     },
   },
 });
 
-@Component
-export default class ClassroomField extends ClassroomFieldProps {
-  // When changing location using widget we have to change values of room and place
-  // fields of currently edited term. We do it using JQuery.
-  onClick() {
-    $(".active-term").find(".form-room").val(this.id);
-    $(".active-term")
-      .find(".form-place")
-      .val("Sala " + this.label);
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: $("#term-forms").offset()!.top,
-      },
-      500
-    );
-  }
+// When changing location using widget we have to change values of room and place
+// fields of currently edited term. We do it using JQuery.
+function onClick() {
+  // TODO czy tak sie castuje najlpeiej nr na str?
+  $(".active-term")
+    .find(".form-room")
+    .val("" + props.id);
+  $(".active-term")
+    .find(".form-place")
+    .val("Sala " + props.label);
+  $([document.documentElement, document.body]).animate(
+    {
+      scrollTop: $("#term-forms").offset()!.top,
+    },
+    500
+  );
 }
 </script>
 
