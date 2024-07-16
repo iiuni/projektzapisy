@@ -1,32 +1,36 @@
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script setup lang="ts">
+import { ref } from "vue";
 import generateTicketsMain from "./ticketsgenerate";
 
-@Component
-export default class TicketsGenerator extends Vue {
-  ticketGenerationFinished: boolean = false;
-  tickets: string = "";
-  loading: boolean = false;
-  exception: boolean = false;
-  errors: string[] = new Array();
-  async generateTicketsOnClick() {
-    this.loading = true;
-    try {
-      this.tickets = await generateTicketsMain();
-    } catch (e) {
-      this.errors = [e.response.data];
-      this.exception = true;
-    }
-    this.loading = false;
-    this.ticketGenerationFinished = true;
+// ticketGenerationFinished: boolean = false;
+// tickets: string = "";
+// loading: boolean = false;
+// exception: boolean = false;
+// errors: string[] = new Array();\
+const ticketGenerationFinished = ref(false);
+const tickets = ref("");
+const loading = ref(false);
+const exception = ref(false);
+const errors = ref<string[]>([]);
+
+const generateTicketsOnClick = async () => {
+  loading.value = true;
+  try {
+    tickets.value = await generateTicketsMain();
+  } catch (e) {
+    errors.value = [e.response.data];
+    exception.value = true;
   }
-  copyTickets() {
-    let ticketsTextArea = this.$refs["tickets-textarea"] as HTMLInputElement;
-    ticketsTextArea.select();
-    document.execCommand("copy");
-  }
-}
+  loading.value = false;
+  ticketGenerationFinished.value = true;
+};
+const copyTickets = () => {
+  // TODO: fix this
+  // let ticketsTextArea = this.$refs["tickets-textarea"] as HTMLInputElement;
+  let ticketsTextArea = document.getElementById("tickets") as HTMLInputElement;
+  ticketsTextArea.select();
+  document.execCommand("copy");
+};
 </script>
 
 <template>
@@ -64,6 +68,7 @@ export default class TicketsGenerator extends Vue {
             style="width: 1000px; height: 400px"
           ></textarea>
         </div>
+        <!-- TODO fix errors types -->
         <div class="alert alert-danger" v-for="msg in errors" :key="msg.id">
           Błąd: {{ msg }}
         </div>
