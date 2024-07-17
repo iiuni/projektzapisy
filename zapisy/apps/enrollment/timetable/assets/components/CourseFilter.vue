@@ -6,14 +6,7 @@ import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
 import { onMounted, ref } from "vue";
-
-// TODO: use store from vuex4
-import { getCurrentInstance } from "vue";
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { useStore } from "vuex";
 const store = useStore();
 
 const allEffects = ref({});

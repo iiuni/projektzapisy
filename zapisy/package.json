@@ -11,7 +11,7 @@
     "pnp": true
   },
   "dependencies": {
-    "@bokeh/bokehjs": "2.4.3",
+    "@bokeh/bokehjs": "3.5.0",
     "@fullcalendar/bootstrap5": "5.11.5",
     "@fullcalendar/core": "5.11.5",
     "@fullcalendar/daygrid": "5.11.5",
@@ -32,10 +32,10 @@
     "markdown-it": "12.3.2",
     "popper.js": "1.16.1",
     "tablesorter": "2.31.3",
-    "vue": "2.7.16",
-    "vue-multiselect": "2.1.9",
+    "vue": "^3.4.31",
+    "vue-multiselect": "3.0.0",
     "vue-timers": "2.0.4",
-    "vuex": "3.6.2"
+    "vuex": "4.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",
@@ -45,7 +45,7 @@
     "@fortawesome/free-brands-svg-icons": "5.15.4",
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
-    "@fortawesome/vue-fontawesome": "2.0.10",
+    "@fortawesome/vue-fontawesome": "3.0.8",
     "@types/bootstrap": "5.2.10",
     "@types/jquery": "3.5.30",
     "@types/js-cookie": "2.2.7",
@@ -53,6 +53,7 @@
     "@types/katex": "0.11.1",
     "@types/lodash": "4.14.192",
     "@types/markdown-it": "10.0.3",
+    "@vue/compiler-sfc": "3.2.0",
     "autoprefixer": "9.8.8",
     "babel-loader": "8.3.0",
     "clean-webpack-plugin": "3.0.0",
@@ -70,13 +71,11 @@
     "terser-webpack-plugin": "4.2.3",
     "ts-loader": "8.4.0",
     "typescript": "4.0.2",
-    "vue-class-component": "7.2.6",
-    "vue-loader": "15.11.1",
-    "vue-template-compiler": "2.7.16",
+    "vue-loader": "17.4.2",
     "webpack": "4.47.0",
     "webpack-bundle-analyzer": "3.9.0",
     "webpack-bundle-tracker": "0.4.3",
-    "webpack-cli": "3.3.12",
+    "webpack-cli": "3.3.0",
     "zod": "3.23.8"
   }
 }

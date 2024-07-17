@@ -2,22 +2,25 @@
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 import { onMounted } from "vue";
 
-import { computed, getCurrentInstance, ref } from "vue";
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 // TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+// const useStore = () => {
+//   const vm = getCurrentInstance();
+//   if (!vm) throw new Error("must be called in setup");
+//   return vm.proxy!.$store;
+// };
 const store = useStore();
 
 const courses = ref<CourseInfo[]>([]);
 const visibleCourses = ref<CourseInfo[]>([]);
 const tester = computed(() => store.getters["filters/visible"]);
 
+visibleCourses.value = courses.value.filter(tester.value);
+
 onMounted(() => {
   // When mounted, load the list of courses from embedded JSON and apply initial filters
-  // fetched from the query string.
+  // fetched from the query string.Property "visibleCourses" was accessed during render but
   const courseData = JSON.parse(
     document.getElementById("courses-data")!.innerHTML
   ) as CourseInfo[];

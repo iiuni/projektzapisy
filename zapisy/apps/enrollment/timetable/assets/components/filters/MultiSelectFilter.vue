@@ -4,15 +4,14 @@ import Multiselect from "vue-multiselect";
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
 import { ref, onMounted, onUnmounted, computed, PropType } from "vue";
-
-import { getCurrentInstance } from "vue";
 import { watch } from "vue";
+import { useStore } from "vuex";
 // TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+// const useStore = () => {
+//   const vm = getCurrentInstance();
+//   if (!vm) throw new Error("must be called in setup");
+//   return vm.proxy!.$store;
+// };
 const store = useStore();
 
 class ExactFilter implements Filter {
@@ -211,7 +210,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-@import "~vue-multiselect/dist/vue-multiselect.min.css";
+// TODO @import "~vue-multiselect/dist/vue-multiselect.min.css";
 </style>
 
 <style lang="scss">
