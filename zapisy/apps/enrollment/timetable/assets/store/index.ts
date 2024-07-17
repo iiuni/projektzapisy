@@ -5,11 +5,11 @@
 // collections of downloaded groups that are not currently presented.
 // import Vue from "vue";
 // import Vuex from "vuex";
-import {createStore} from 'vuex';
+import { createStore } from "vuex";
 
-import courses from './courses';
-import filters from './filters';
-import groups from './groups';
+import courses from "./courses";
+import filters from "./filters";
+import groups from "./groups";
 
 // Vue.use(Vuex);
 
