@@ -6,7 +6,7 @@ const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { VueLoaderPlugin } = require('vue-loader')
+const { VueLoaderPlugin } = require("vue-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
@@ -24,7 +24,7 @@ const ASSET_DEFS = require(path.resolve("webpack_resources/asset-defs.js"));
 const RULES = [
   {
     test: /\.vue$/,
-    loader: 'vue-loader'
+    loader: "vue-loader",
   },
 
   // Typescript is only stripped-down to JS, not type-checked.
@@ -128,8 +128,8 @@ const WEBPACK_CONFIG = {
       ".ico",
     ],
     alias: {
-      'vue': '@vue/runtime-dom',
-      'vuex': "vuex/dist/vuex.esm-bundler.js",
+      vue: "@vue/runtime-dom",
+      vuex: "vuex/dist/vuex.esm-bundler.js",
       moment$: "dayjs",
       lodash$: "lodash-es",
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
