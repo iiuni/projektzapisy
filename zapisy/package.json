@@ -23,7 +23,7 @@
     "bootstrap": "5.3.3",
     "bootstrap-print-css": "1.0.1",
     "checkboxes.js": "1.2.2",
-    "dayjs": "1.11.11",
+    "dayjs": "1.11.12",
     "jquery": "3.7.1",
     "js-cookie": "2.2.1",
     "js-sha256": "0.9.0",
