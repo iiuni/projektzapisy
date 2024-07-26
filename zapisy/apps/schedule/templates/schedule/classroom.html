@@ -34,6 +34,8 @@
 
     <script>
         window.eventsURL = "{% url 'events:classroom_ajax' room.slug %}";
+        window.freedays = "{% url 'events:freedays' %}";
+        window.changeddays = "{% url 'events:changeddays' %}";
     </script>
     {% render_bundle 'schedule-fullcalendar' %}
 {% endblock %}
