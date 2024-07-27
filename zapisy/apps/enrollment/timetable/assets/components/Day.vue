@@ -65,8 +65,8 @@ const halfHourRules = computed(() => {
       <span>{{ h.hour }}</span>
     </div>
 
-    <template v-for="r of halfHourRules">
-      <div class="gridline-row" :key="r.key" :style="r.style"></div>
+    <template v-for="r of halfHourRules" :key="r.key">
+      <div class="gridline-row" :style="r.style"></div>
     </template>
 
     <div class="day-wrapper">
