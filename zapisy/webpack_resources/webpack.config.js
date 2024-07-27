@@ -94,7 +94,10 @@ const PLUGINS = [
     ? new ForkTsCheckerWebpackPlugin({
         typescript: {
           extensions: {
-            vue: true,
+            vue: {
+              enabled: true,
+              compiler: '@vue/compiler-sfc'
+            }            
           },
         },
       })
