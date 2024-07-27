@@ -5229,6 +5229,7 @@ fsevents@~2.1.2:
     sass-loader: 10.5.2
     tablesorter: 2.31.3
     terser-webpack-plugin: 4.2.3
+    tiny-emitter: ^2.1.0
     ts-loader: 8.4.0
     typescript: 4.0.2
     vue: 3.2
@@ -8605,6 +8606,13 @@ resolve@^1.14.2:
   version: 1.0.23
   resolution: "timezone@npm:1.0.23"
   checksum: c88ca7f2c2e02ef8bc456ee49c1241809bc6c8056c712b1a68ed5f8bed29c89537093271db2daabe7140165261a5029d908a858f40afa494766d5d6fd7f2d377
+  languageName: node
+  linkType: hard
+
+"tiny-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "tiny-emitter@npm:2.1.0"
+  checksum: 0055509c72e5fe35d6ab66fa6339342e0f29129e77ed2086e475fdf80be43a8651f2517be76513b46a042c8356396f4da5a35e2e23457252176808d5a892036a
   languageName: node
   linkType: hard
 
