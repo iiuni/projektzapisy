@@ -1,26 +1,16 @@
-// import Vue from "vue";
-// import ThesesList from "./components/ThesesList.vue";
-// import ThesisFilter from "./components/ThesisFilter.vue";
-// import store from "./store";
+import { createApp } from "vue";
+import ThesesList from "./components/ThesesList.vue";
+import ThesisFilter from "./components/ThesisFilter.vue";
+import { store } from "./store";
 
-// new Vue({
-//   el: "#theses-filter",
-//   components: {
-//     ThesisFilter,
-//   },
-//   render: function (h) {
-//     return h(ThesisFilter);
-//   },
-//   store,
-// });
+if (document.getElementById("theses-filter") !== null) {
+  const thesesFilterApp = createApp(ThesisFilter);
+  thesesFilterApp.use(store);
+  thesesFilterApp.mount("#theses-filter");
+}
 
-// new Vue({
-//   el: "#theses-list",
-//   components: {
-//     ThesesList,
-//   },
-//   render: function (h) {
-//     return h(ThesesList);
-//   },
-//   store,
-// });
+if (document.getElementById("theses-list") !== null) {
+  const thesesListApp = createApp(ThesesList);
+  thesesListApp.use(store);
+  thesesListApp.mount("#theses-list");
+}

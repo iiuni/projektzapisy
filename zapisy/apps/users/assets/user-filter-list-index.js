@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-import { createStore } from "vuex";
 
 import UserFilter from "./components/UserFilter.vue";
 import UserList from "./components/UserList.vue";

@@ -2,14 +2,8 @@
 import { computed, onMounted, ref } from "vue";
 import SorterField from "./sorters/SorterField.vue";
 import { ThesisInfo } from "../store/theses";
+import { useStore } from "vuex";
 
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
 const store = useStore();
 
 const theses = computed(() => store.getters["theses/theses"]);
