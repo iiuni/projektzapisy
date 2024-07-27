@@ -3,7 +3,6 @@
 // groups data at hand and will download new data if necessary.
 import axios from "axios";
 import { find, isEmpty, isNil, keys, values, xor } from "lodash";
-// import Vue from "vue";
 import { ActionContext } from "vuex";
 
 import { Group, GroupJSON } from "../models";

@@ -1,17 +1,23 @@
-// import Vue from "vue";
-// import Vuex from "vuex";
+import { createApp } from "vue";
+import { createStore } from "vuex";
+import CourseList from "./components/CourseList.vue";
+import CourseFilter from "./components/CourseFilter.vue";
+import filters from "@/enrollment/timetable/assets/store/filters";
 
-// import CourseList from "./components/CourseList.vue";
-// import CourseFilter from "./components/CourseFilter.vue";
-// import filters from "@/enrollment/timetable/assets/store/filters";
+const store = createStore({
+  modules: {
+    filters,
+  },
+});
 
-// Vue.use(Vuex);
+if (document.getElementById("course-filter") !== null) {
+  const courseListApp = createApp(CourseFilter);
+  courseListApp.use(store);
+  courseListApp.mount("#course-filter");
+}
 
-// const store = new Vuex.Store({
-//   modules: {
-//     filters,
-//   },
-// });
-
-// new Vue({ el: "#course-filter", render: (h) => h(CourseFilter), store });
-// new Vue({ el: "#course-list", render: (h) => h(CourseList), store });
+if (document.getElementById("course-list") !== null) {
+  const courseListApp = createApp(CourseList);
+  courseListApp.use(store);
+  courseListApp.mount("#course-list");
+}
