@@ -131,8 +131,8 @@ const WEBPACK_CONFIG = {
       ".ico",
     ],
     alias: {
-      // vue: "vue/dist/vue.runtime.esm.js",
-      // vuex: "vuex/dist/vuex.esm-bundler.js",
+      vuex$: "vuex/dist/vuex.esm-bundler.js",
+      vue$: "vue/dist/vue.esm-bundler.js",
       moment$: "dayjs",
       lodash$: "lodash-es",
       "@": path.resolve(ASSET_DEF_SEARCH_DIR),
