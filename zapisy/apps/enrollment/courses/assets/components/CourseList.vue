@@ -4,12 +4,7 @@ import { onMounted } from "vue";
 
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-// TODO: use store from vuex4
-// const useStore = () => {
-//   const vm = getCurrentInstance();
-//   if (!vm) throw new Error("must be called in setup");
-//   return vm.proxy!.$store;
-// };
+
 const store = useStore();
 
 const courses = ref<CourseInfo[]>([]);

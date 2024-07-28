@@ -6,14 +6,8 @@ import { computed, ref, onMounted, onUnmounted } from "vue";
 import { Term } from "../models";
 import TermComponent from "./Term.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { useStore } from "vuex";
 
-// TODO: use store from vuex4
-import { getCurrentInstance } from "vue";
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
 const store = useStore();
 
 const props = defineProps<{ term: Term }>();

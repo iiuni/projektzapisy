@@ -6,11 +6,18 @@ import { onBeforeMount } from "vue";
 import { onMounted } from "vue";
 
 // TODO Refactor emitter
-// TODO add types for user
+// TODO Upewnic sie ze to dobry interface
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  album: string;
+}
 
 const filter_phrase = ref("");
 const filter_button = ref("");
-const users = ref([]);
+const users = ref<User[]>([]);
 const userLinkUrl = ref("");
 
 onBeforeMount(() => {
@@ -37,7 +44,7 @@ const matchedUsers = computed(() => {
   return filter(users.value, (user) => matchChar(user) && matchInput(user));
 });
 
-const matchInput = (user) => {
+const matchInput = (user: User) => {
   // Remove trailing/leading whitespaces from input
   let phrase = filter_phrase.value.toLowerCase().trim();
   const regex = /\s+/;
@@ -49,7 +56,7 @@ const matchInput = (user) => {
   return every(words, anyPropMatches);
 };
 
-const matchChar = (user) => {
+const matchChar = (user: User) => {
   let last_name = user.last_name.toLowerCase();
   let button = filter_button.value.toLowerCase();
 

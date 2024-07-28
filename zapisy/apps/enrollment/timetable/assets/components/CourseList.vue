@@ -10,13 +10,9 @@ import { onMounted, ref } from "vue";
 import { CourseInfo } from "../store/courses";
 export type CourseObject = { id: number; name: string; url: string };
 
-import { computed, getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { computed } from "vue";
+import { useStore } from "vuex";
+
 const store = useStore();
 
 const courses: ComputedRef<CourseInfo[]> = computed(

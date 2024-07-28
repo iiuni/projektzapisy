@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { property } from "lodash";
 import { Filter } from "../../store/filters";
+import { ref, watch } from "vue";
+import { useStore } from "vuex";
+const store = useStore();
 
 class ExactFilter implements Filter {
   constructor(
@@ -24,15 +27,6 @@ const props = defineProps<{
   options: [number | string, string][];
   placeholder: string;
 }>();
-
-import { getCurrentInstance, ref, watch } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const selected = ref<number | string | undefined>(props.default);
 

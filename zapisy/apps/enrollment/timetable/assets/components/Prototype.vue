@@ -10,12 +10,8 @@
 // TODO Rename it to PrototypeTimetable
 import SimpleTimetable from "./SimpleTimetable.vue";
 import { computed } from "vue";
-import { getCurrentInstance } from "vue";
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { useStore } from "vuex";
+
 const store = useStore();
 // change isPrototype propagation to Provide / Inject
 const groupsGetter = computed(() => store.getters["groups/visibleGroups"]);

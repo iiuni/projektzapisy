@@ -1,14 +1,8 @@
 <script setup lang="ts">
 import { property } from "lodash";
 import { ref, watch } from "vue";
+import { useStore } from "vuex";
 
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
 const store = useStore();
 
 interface Filter {

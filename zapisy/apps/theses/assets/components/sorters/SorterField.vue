@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { ref } from "vue";
+import { useStore } from "vuex";
+const store = useStore();
 
 // TODO unify defineProps
 const props = defineProps({
   property: String,
   label: String,
 });
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const order = ref(0);
 onMounted(() => {

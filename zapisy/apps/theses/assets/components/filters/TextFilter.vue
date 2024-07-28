@@ -3,6 +3,8 @@ import { ref, watch } from "vue";
 import { property } from "lodash";
 import { ThesisInfo } from "../../store/theses";
 import { Filter } from "../../store/filters";
+import { useStore } from "vuex";
+const store = useStore();
 
 class TextFilter implements Filter {
   propGetters: ((c: ThesisInfo) => string)[];
@@ -20,15 +22,6 @@ class TextFilter implements Filter {
     return patternWordMatches.every((b) => b);
   }
 }
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const props = defineProps<{
   properties: string[];

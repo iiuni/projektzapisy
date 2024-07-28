@@ -3,6 +3,9 @@ import { property } from "lodash";
 import { Filter } from "../../store/filters";
 import { ref, watch } from "vue";
 
+import { useStore } from "vuex";
+const store = useStore();
+
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
 
@@ -15,15 +18,6 @@ class BooleanFilter implements Filter {
     return propValue;
   }
 }
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const props = defineProps<{
   property: string;

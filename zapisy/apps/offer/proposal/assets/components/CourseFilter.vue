@@ -10,13 +10,8 @@ import {
 } from "@/enrollment/timetable/assets/models";
 
 import { ref } from "vue";
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { useStore } from "vuex";
+
 const store = useStore();
 
 const allEffects = ref({});

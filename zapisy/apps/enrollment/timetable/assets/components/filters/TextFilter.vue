@@ -3,6 +3,8 @@ import { property } from "lodash";
 import { CourseInfo } from "../../store/courses";
 import { Filter } from "../../store/filters";
 import { ref, watch } from "vue";
+import { useStore } from "vuex";
+const store = useStore();
 
 class TextFilter implements Filter {
   constructor(public pattern: string = "", public propertyName: string) {}
@@ -15,15 +17,6 @@ class TextFilter implements Filter {
       .includes(this.pattern.toLocaleLowerCase());
   }
 }
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const props = defineProps<{
   property: string;

@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from "vue";
 import { CourseInfo } from "../store/courses";
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { useStore } from "vuex";
 const store = useStore();
+
 store.dispatch("courses/initFromJSONTag");
 
 const courses = computed(

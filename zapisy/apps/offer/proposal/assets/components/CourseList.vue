@@ -5,13 +5,9 @@ import { CourseInfo } from "../../../../enrollment/timetable/assets/store/course
 interface ProposalInfo extends CourseInfo {
   status: "IN_OFFER" | "IN_VOTE" | "WITHDRAWN";
 }
-import { computed, getCurrentInstance, ref } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
+
 const store = useStore();
 
 const courses = ref<ProposalInfo[]>([]);

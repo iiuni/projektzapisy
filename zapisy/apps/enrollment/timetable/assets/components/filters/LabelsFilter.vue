@@ -4,6 +4,9 @@ import { Filter } from "../../store/filters";
 import { KVDict } from "../../models";
 import { computed, ref } from "vue";
 
+import { useStore } from "vuex";
+const store = useStore();
+
 class IntersectionFilter implements Filter {
   constructor(public ids: number[] = [], public propertyName: string) {}
 
@@ -17,15 +20,6 @@ class IntersectionFilter implements Filter {
     return !isEmpty(common);
   }
 }
-
-import { getCurrentInstance } from "vue";
-// TODO: use store from vuex4
-const useStore = () => {
-  const vm = getCurrentInstance();
-  if (!vm) throw new Error("must be called in setup");
-  return vm.proxy!.$store;
-};
-const store = useStore();
 
 const props = defineProps<{
   property: string;
