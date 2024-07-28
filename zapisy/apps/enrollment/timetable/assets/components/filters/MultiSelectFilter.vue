@@ -203,7 +203,7 @@ watch(
   </div>
 </template>
 
-<style src="vue-multiselect/dist/vue-multiselect.css"/>
+<style src="vue-multiselect/dist/vue-multiselect.css" />
 
 <style lang="scss">
 .multiselect__clear {
