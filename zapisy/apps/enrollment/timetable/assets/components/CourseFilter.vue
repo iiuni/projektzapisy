@@ -38,10 +38,6 @@ allTypes.value = Object.keys(filtersData.allTypes).map((typeKey: string) => ({
 }));
 
 onMounted(() => {
-  // TODO
-  // const filterableProperties = Object.values(this.$refs)
-  //     .filter((ref: any) => ref.filterKey)
-  //     .map((filter: any) => filter.property);
   const filterableProperties = [
     "name-filter",
     "tags-filter",

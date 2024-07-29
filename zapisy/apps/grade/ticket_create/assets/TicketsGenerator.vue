@@ -2,11 +2,6 @@
 import { ref } from "vue";
 import generateTicketsMain from "./ticketsgenerate";
 
-// ticketGenerationFinished: boolean = false;
-// tickets: string = "";
-// loading: boolean = false;
-// exception: boolean = false;
-// errors: string[] = new Array();\
 const ticketGenerationFinished = ref(false);
 const tickets = ref("");
 const loading = ref(false);
@@ -25,10 +20,9 @@ const generateTicketsOnClick = async () => {
   ticketGenerationFinished.value = true;
 };
 const copyTickets = () => {
-  // TODO: fix this
-  // let ticketsTextArea = this.$refs["tickets-textarea"] as HTMLInputElement;
   let ticketsTextArea = document.getElementById("tickets") as HTMLInputElement;
   ticketsTextArea.select();
+  // TODO execCommand is deprecated - replace with Clipboard API?
   document.execCommand("copy");
 };
 </script>
