@@ -19,15 +19,41 @@ const props = defineProps<{
 }>();
 
 const input = ref(props.value);
-const faMarkdown = ref<faMarkdown>();
 
 const compiledMarkdown = computed(() => {
-  md.render(input.value);
+  return md.render(input.value);
 });
 const update = debounce((e: any) => {
   input.value = e.target.value;
 }, 300);
 </script>
+
+<template>
+  <div
+    class="md-editor-wrapper form-control"
+    :class="{ 'is-invalid': is_invalid }"
+  >
+    <textarea
+      class="form-control text-monospace bg-light"
+      rows="10"
+      :value="input"
+      :name="name"
+      :placeholder="placeholder"
+      @input="update"
+    ></textarea>
+    <div class="preview">
+      <span v-html="compiledMarkdown"></span>
+      <a
+        class="doc-link"
+        href="https://guides.github.com/features/mastering-markdown/#examples"
+        target="_blank"
+      >
+        <font-awesome-icon :icon="faMarkdown" />
+      </a>
+    </div>
+    <slot></slot>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .md-editor-wrapper {
@@ -66,30 +92,3 @@ const update = debounce((e: any) => {
   }
 }
 </style>
-
-<template>
-  <div
-    class="md-editor-wrapper form-control"
-    :class="{ 'is-invalid': is_invalid }"
-  >
-    <textarea
-      class="form-control text-monospace bg-light"
-      rows="10"
-      :value="input"
-      :name="name"
-      :placeholder="placeholder"
-      @input="update"
-    ></textarea>
-    <div class="preview">
-      <span v-html="compiledMarkdown"></span>
-      <a
-        class="doc-link"
-        href="https://guides.github.com/features/mastering-markdown/#examples"
-        target="_blank"
-      >
-        <font-awesome-icon :icon="faMarkdown" />
-      </a>
-    </div>
-    <slot></slot>
-  </div>
-</template>
