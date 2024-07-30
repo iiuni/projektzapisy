@@ -13,7 +13,7 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
-// change isPrototype propagation to Provide / Inject
+// TODO change isPrototype propagation to Provide / Inject
 const groupsGetter = computed(() => store.getters["groups/visibleGroups"]);
 // TODO fix the timer
 // mixins: [VueTimers],

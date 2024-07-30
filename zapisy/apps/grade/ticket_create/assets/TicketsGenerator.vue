@@ -6,13 +6,14 @@ const ticketGenerationFinished = ref(false);
 const tickets = ref("");
 const loading = ref(false);
 const exception = ref(false);
-const errors = ref<string[]>([]);
+// TODO type errors correctly (not with any)
+const errors = ref<any[]>([]);
 
 const generateTicketsOnClick = async () => {
   loading.value = true;
   try {
     tickets.value = await generateTicketsMain();
-  } catch (e) {
+  } catch (e: any) {
     errors.value = [e.response.data];
     exception.value = true;
   }
@@ -62,7 +63,6 @@ const copyTickets = () => {
             style="width: 1000px; height: 400px"
           ></textarea>
         </div>
-        <!-- TODO fix errors types -->
         <div class="alert alert-danger" v-for="msg in errors" :key="msg.id">
           Błąd: {{ msg }}
         </div>

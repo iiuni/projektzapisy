@@ -56,11 +56,6 @@ const tester = computed(() => {
 });
 
 onMounted(() => {
-  // TODO
-  // Extract filterable properties names from the template.
-  // const filterableProperties = Object.values(this.$refs)
-  //   .filter((ref: any) => ref.filterKey)
-  //   .map((filter: any) => filter.property);
   const filterableProperties = [
     "name-filter",
     "tags-filter",

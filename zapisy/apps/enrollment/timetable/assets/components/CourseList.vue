@@ -28,7 +28,6 @@ const visibleCourses = ref<CourseInfo[]>([]);
 
 onMounted(() => {
   visibleCourses.value = courses.value.filter(tester.value);
-  // TODO do we subscribe in onMounted or setup?
   store.subscribe((mutation, state) => {
     switch (mutation.type) {
       case "filters/registerFilter":
