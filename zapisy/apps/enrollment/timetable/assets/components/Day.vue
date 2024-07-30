@@ -4,6 +4,10 @@ import { range } from "lodash";
 import { DayOfWeek, nameDay, Term } from "../models";
 import TermComponent from "./Term.vue";
 import TermControls from "./TermControls.vue";
+import { inject } from "vue";
+
+// isPrototype is injected from Prototype.vue
+const isPrototype = inject("isPrototype", false);
 
 const props = defineProps({
   d: {
@@ -13,10 +17,6 @@ const props = defineProps({
   terms: {
     type: Array as () => Term[],
     default: () => [],
-  },
-  isPrototype: {
-    type: Boolean,
-    default: false,
   },
 });
 

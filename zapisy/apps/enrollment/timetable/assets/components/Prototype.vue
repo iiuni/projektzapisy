@@ -9,11 +9,13 @@
 
 // TODO Rename it to PrototypeTimetable
 import SimpleTimetable from "./SimpleTimetable.vue";
-import { computed } from "vue";
+import { computed, provide } from "vue";
 import { useStore } from "vuex";
 
+// Will be injected in Day.vue
+provide("isPrototype", true);
+
 const store = useStore();
-// TODO change isPrototype propagation to Provide / Inject
 const groupsGetter = computed(() => store.getters["groups/visibleGroups"]);
 // TODO fix the timer
 // mixins: [VueTimers],
@@ -33,6 +35,6 @@ store.dispatch("courses/initFromJSONTag");
 
 <template>
   <div class="col">
-    <SimpleTimetable :groups="groupsGetter" :isPrototype="true" />
+    <SimpleTimetable :groups="groupsGetter" />
   </div>
 </template>

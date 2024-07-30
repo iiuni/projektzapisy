@@ -5,10 +5,10 @@ import { useStore } from "vuex";
 const store = useStore();
 
 // TODO unify defineProps
-const props = defineProps({
-  property: String,
-  label: String,
-});
+const props = defineProps<{
+  property: string;
+  label: string;
+}>();
 
 const order = ref(0);
 onMounted(() => {

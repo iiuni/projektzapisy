@@ -2,6 +2,7 @@
 import $ from "jquery";
 import { TermDisplay } from "../terms";
 
+// TODO types are tuplicated from interface Classroom
 const props = defineProps({
   label: String,
   type: String,
