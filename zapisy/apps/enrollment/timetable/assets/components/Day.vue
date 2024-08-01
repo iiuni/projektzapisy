@@ -6,7 +6,6 @@ import TermComponent from "./Term.vue";
 import TermControls from "./TermControls.vue";
 import { inject } from "vue";
 
-
 // isPrototype is injected from Prototype.vue
 const isPrototype = inject("isPrototype", false);
 
