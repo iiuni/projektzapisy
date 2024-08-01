@@ -5,7 +5,6 @@ import { sortBy, some, every, map, get, filter } from "lodash";
 import { onBeforeMount } from "vue";
 import { onMounted } from "vue";
 
-// TODO Refactor emitter
 interface User {
   id: number;
   first_name: string;

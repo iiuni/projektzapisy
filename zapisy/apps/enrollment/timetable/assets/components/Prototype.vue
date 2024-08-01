@@ -7,7 +7,6 @@
 // is maintained by the Vuex store (`../store/index.ts`).
 // import { mixin as VueTimers } from "vue-timers";
 
-// TODO Rename it to PrototypeTimetable
 import SimpleTimetable from "./SimpleTimetable.vue";
 import { computed, provide } from "vue";
 import { useStore } from "vuex";
