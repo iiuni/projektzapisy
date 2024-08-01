@@ -1,8 +1,7 @@
 "use strict";
 const path = require("path");
-
+const Webpack = require("webpack");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
-
 const BundleTracker = require("webpack-bundle-tracker");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -105,6 +104,10 @@ const PLUGINS = [
   new BundleTracker({
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",
+  }),
+  new Webpack.DefinePlugin({
+    __VUE_OPTIONS_API__: true,
+    __VUE_PROD_DEVTOOLS__: false,
   }),
 ].filter(Boolean);
 
