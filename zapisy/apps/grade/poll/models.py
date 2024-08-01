@@ -8,7 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
-from apps.users.models import Student
+from apps.users.models import Employee, Student
 
 
 class PollType(models.IntegerChoices):
@@ -68,6 +68,21 @@ class Poll(models.Model):
         return PollType.GENERAL
 
     @property
+    def teacher(self) -> Employee:
+        if self.group:
+            return self.group.teacher
+
+    @property
+    def owner(self) -> Employee:
+        if self.course:
+            return self.course.owner
+
+    @property
+    def gcowner(self) -> Employee:
+        if self.group and self.group.course:
+            return self.group.course.owner
+
+    @property
     def get_semester(self):
         """Determines the semester of the poll."""
         if self.semester:
@@ -112,13 +127,27 @@ class Poll(models.Model):
         """
         return self.__str__()
 
-    def serialize_for_signing_protocol(self) -> dict:
-        """Serializes the Poll to the format accepted by TicketCreate.
+    @property
+    def hours(self) -> str:
+        """Determines the hours of the polled course."""
+        return self.group.get_terms_as_short_string() if self.group else ""
 
-        :returns: a dictionary consisting of 'id', 'name' and 'type' keys.
+    def to_dict(self,  employee: Employee = None, is_annotated: bool = False) -> dict:
+        """Serializes the Poll to a dictionary.
+
+        Is used to:
+        1. TicketCreate - only 'name', 'type', 'id' keys are used.
+        Existance of additional keys like 'hours' is not a problem for TicketCreate.
+        2. JSONify the Poll objects.
+        - If employee is provided 'is_own' key is added.
+        - 'number_of_submissions' has to be annotated beforehand by the queryset
+            e.g. in get_all_polls_for_semester method.
         """
-        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category}
-
+        result = {'id': self.pk, 'name': self.subcategory, 'type': self.category, 'hours': self.hours}
+        if employee:
+            result['is_own'] = employee in [self.owner, self.teacher, self.gcowner] or self.type == PollType.GENERAL
+        if is_annotated:
+            result['number_of_submissions'] = self.number_of_submissions
         return result
 
     def is_student_entitled_to_poll(self, student: Student) -> bool:
@@ -366,7 +395,7 @@ class Submission(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'złoszenie'
+        verbose_name = 'zgłoszenie'
         verbose_name_plural = 'zgłoszenia'
 
     def __str__(self):
