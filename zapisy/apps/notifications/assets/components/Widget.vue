@@ -81,13 +81,8 @@ function deleteOne(i: number): Promise<void> {
     });
 }
 
-const created = async () => {
-  await getNotifications();
-  setInterval(getNotifications, 30000);
-};
-// TODO czy na pewno tak to powino created wygladac
-// + trzeba przetestowac
-created();
+getNotifications();
+setInterval(getNotifications, 30000);
 </script>
 
 <template>
