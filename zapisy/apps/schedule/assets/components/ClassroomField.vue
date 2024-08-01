@@ -10,10 +10,7 @@ const props = defineProps<{
 // When changing location using widget we have to change values of room and place
 // fields of currently edited term. We do it using JQuery.
 function onClick() {
-  // TODO czy tak sie castuje najlpeiej nr na str?
-  $(".active-term")
-    .find(".form-room")
-    .val("" + props.room.id);
+  $(".active-term").find(".form-room").val(props.room.id.toString());
   $(".active-term")
     .find(".form-place")
     .val("Sala " + props.room.label);

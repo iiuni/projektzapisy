@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import emitter from "tiny-emitter/instance";
+import eventBus from "./event-bus";
 
 const input_value = ref("");
 const selectedChar = ref("Wszyscy");
@@ -11,11 +11,11 @@ const chars = ["A", "B", "C", "Ć", "D", "E", "F", "G", "H", "I", "J", "K", "L",
 
 const emitInputFilter = (event) => {
   input_value.value = event.target.value;
-  emitter.emit("user-input-filter", event.target.value);
+  eventBus.emit("user-input-filter", event.target.value);
 };
 const emitCharFilter = (char) => {
   selectedChar.value = char;
-  emitter.emit("user-char-filter", char);
+  eventBus.emit("user-char-filter", char);
 };
 </script>
 

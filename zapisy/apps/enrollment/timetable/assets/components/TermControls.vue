@@ -67,18 +67,15 @@ const showControls = () => {
 // component or any touch event outside of it.
 const hideControls = (event: Event) => {
   // Do not hide controls on touch events inside of the Term.
-  if (
-    event.type === "touchend" &&
-    (document.getElementById("term-root") as HTMLElement).contains(
-      event.target as Node
-    )
-    // TODO - im not sure if this is correct
-    // ((this.$refs.term as Vue).$refs.root as Element).contains(
-    //     event.target as Node
-    //   )
-  ) {
-    return;
-  }
+  // TODO2
+  // if (
+  // event.type === "touchend" &&
+  // ((this.$refs.term as Vue).$refs.root as Element).contains(
+  //     event.target as Node
+  //   )
+  // ) {
+  //   return;
+  // }
   controlsVisible.value = false;
   window.removeEventListener("touchend", hideControls);
 };

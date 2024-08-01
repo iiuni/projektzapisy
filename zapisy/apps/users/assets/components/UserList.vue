@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import emitter from "tiny-emitter/instance";
+import eventBus from "./event-bus";
 import { sortBy, some, every, map, get, filter } from "lodash";
 import { onBeforeMount } from "vue";
 import { onMounted } from "vue";
@@ -31,10 +31,10 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-  emitter.on("user-char-filter", (value) => {
+  eventBus.on("user-char-filter", (value) => {
     filter_button.value = value;
   });
-  emitter.on("user-input-filter", (value) => {
+  eventBus.on("user-input-filter", (value) => {
     filter_phrase.value = value;
   });
 });

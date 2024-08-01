@@ -17,7 +17,7 @@ provide("isPrototype", true);
 
 const store = useStore();
 const groupsGetter = computed(() => store.getters["groups/visibleGroups"]);
-// TODO fix the timer
+// TODO2 whats up with this timer?
 // mixins: [VueTimers],
 //   timers: {
 //     update: {
