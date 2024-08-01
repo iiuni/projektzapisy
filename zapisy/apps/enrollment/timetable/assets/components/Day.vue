@@ -6,20 +6,14 @@ import TermComponent from "./Term.vue";
 import TermControls from "./TermControls.vue";
 import { inject } from "vue";
 
+
 // isPrototype is injected from Prototype.vue
 const isPrototype = inject("isPrototype", false);
 
-const props = defineProps({
-  d: {
-    type: Number,
-    required: true,
-  },
-  terms: {
-    type: Array as () => Term[],
-    default: () => [],
-  },
-});
-
+const props = defineProps<{
+  d: DayOfWeek;
+  terms?: Array<Term>;
+}>();
 // Monday will always have hour labels shown on the left side.
 const isMonday = props.d === DayOfWeek.Monday;
 const dayName = nameDay(props.d);
@@ -69,7 +63,7 @@ const halfHourRules = computed(() => {
     </template>
 
     <div class="day-wrapper">
-      <template v-for="term of terms">
+      <template v-for="term of props.terms">
         <TermControls
           :key="'R' + term.group.id"
           :term="term"

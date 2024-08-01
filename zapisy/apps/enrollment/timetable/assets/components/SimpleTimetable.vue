@@ -10,13 +10,9 @@ import Day from "./Day.vue";
 import { Group, nameDay } from "../models";
 import { computed } from "vue";
 
-const props = defineProps({
-  groups: {
-    type: Array as () => Array<Group>,
-    default: [],
-  },
-});
-
+const props = defineProps<{
+  groups: Array<Group>;
+}>();
 // Populates timetable data to the day components. The terms are extracted
 // from provided groups and distributed by their respective weekday.
 const daysData = computed(() => {

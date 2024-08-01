@@ -6,7 +6,6 @@ import { onBeforeMount } from "vue";
 import { onMounted } from "vue";
 
 // TODO Refactor emitter
-// TODO Upewnic sie ze to dobry interface
 interface User {
   id: number;
   first_name: string;

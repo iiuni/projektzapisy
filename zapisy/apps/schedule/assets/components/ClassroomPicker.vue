@@ -14,7 +14,6 @@ const reservationLayer = ref<TermDisplay[]>([]);
 
 // Attaches handlers to change of active term form.
 onMounted(() => {
-  // let self = this;
   // Sets handlers to change of time and date for currently
   // active term.
   let f = (event: Event) => {
@@ -68,7 +67,6 @@ function onChangedTime() {
 }
 
 function onChangedDate() {
-  // var self = this;
   var date = $(".active-term").find(".form-day").val();
 
   if (date === "") {
@@ -138,12 +136,7 @@ function onChangedDate() {
     </div>
     <ClassroomField
       v-for="item in showOccupied ? classrooms : unoccupiedClassrooms"
-      :key="item.id.toString()"
-      :label="item.label.toString()"
-      :capacity="Number(item.capacity)"
-      :id="Number(item.id)"
-      :type="item.type.toString()"
-      :termsLayer="item.termsLayer"
+      :room="item"
       :reservationLayer="reservationLayer"
     />
   </div>

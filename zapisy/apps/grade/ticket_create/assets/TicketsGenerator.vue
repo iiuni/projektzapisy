@@ -6,7 +6,7 @@ const ticketGenerationFinished = ref(false);
 const tickets = ref("");
 const loading = ref(false);
 const exception = ref(false);
-// TODO type errors correctly (not with any)
+// TODO2 type errors correctly (not with any)
 const errors = ref<any[]>([]);
 
 const generateTicketsOnClick = async () => {
@@ -23,7 +23,7 @@ const generateTicketsOnClick = async () => {
 const copyTickets = () => {
   let ticketsTextArea = document.getElementById("tickets") as HTMLInputElement;
   ticketsTextArea.select();
-  // TODO execCommand is deprecated - replace with Clipboard API?
+  // TODO2 execCommand is deprecated - replace with Clipboard API?
   document.execCommand("copy");
 };
 </script>

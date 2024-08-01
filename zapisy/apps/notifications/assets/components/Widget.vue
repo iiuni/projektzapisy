@@ -11,7 +11,7 @@ import "dayjs/locale/pl";
 import { z } from "zod";
 import { ref, computed } from "vue";
 
-// TODO czy klikniecie w powiadomienie nie powinno je odznaczac?
+// TODO2 czy klikniecie w powiadomienie nie powinno je odznaczac?
 
 // Defines a notification scheme to validate and parse Notifications from JSON.
 const notificationScheme = z

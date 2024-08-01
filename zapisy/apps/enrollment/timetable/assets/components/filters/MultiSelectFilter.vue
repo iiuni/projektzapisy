@@ -3,7 +3,7 @@ import { isEmpty, property } from "lodash";
 import Multiselect from "vue-multiselect";
 import { Filter } from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
-import { ref, onMounted, onUnmounted, computed, PropType } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { watch } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
@@ -23,56 +23,27 @@ class ExactFilter implements Filter {
   }
 }
 
+type Option = MultiselectFilterDataItem<string | number>;
+type Options = Option[];
+
 const isDefinedOption = (option: undefined | Option): option is Option =>
   option !== undefined &&
   "value" in option &&
   (typeof option.value === "string" || typeof option.value === "number");
 
-// type Props = {
-//   property: string;
-//   filterKey: string;
-//   options: Options;
-//   placeholder: string;
-//   showLabels?: boolean;
-//   trackBy?: string;
-//   propAsLabel?: string;
-// };
-// const props = defineProps<Props>();
-// to mozna upiekszyc w vue3 dzieki withDefaults
-
-const props = defineProps({
-  property: {
-    type: String,
-    required: true,
-  },
-  filterKey: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: Array as PropType<Options>,
-    required: true,
-  },
-  placeholder: {
-    type: String,
-    required: true,
-  },
-  showLabels: {
-    type: Boolean,
-    default: false,
-  },
-  trackBy: {
-    type: String,
-    default: "value",
-  },
-  propAsLabel: {
-    type: String,
-    default: "label",
-  },
+type Props = {
+  property: string;
+  filterKey: string;
+  options: Options;
+  placeholder: string;
+  showLabels?: boolean;
+  trackBy?: string;
+  propAsLabel?: string;
+};
+const props = withDefaults(defineProps<Props>(), {
+  trackBy: "value",
+  propAsLabel: "label",
 });
-
-type Options = Option[];
-type Option = MultiselectFilterDataItem<string | number>;
 
 const selected = ref<Options>([]);
 const searchParams = new URL(window.location.href).searchParams;

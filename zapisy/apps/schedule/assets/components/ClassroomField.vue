@@ -1,26 +1,11 @@
 <script setup lang="ts">
 import $ from "jquery";
-import { TermDisplay } from "../terms";
+import { Classroom, TermDisplay } from "../terms";
 
-// TODO types are tuplicated from interface Classroom
-const props = defineProps({
-  label: String,
-  type: String,
-  capacity: Number,
-  id: Number,
-  termsLayer: {
-    type: Array as () => Array<TermDisplay>,
-    default() {
-      return [];
-    },
-  },
-  reservationLayer: {
-    type: Array as () => Array<TermDisplay>,
-    default() {
-      return [];
-    },
-  },
-});
+const props = defineProps<{
+  room: Classroom;
+  reservationLayer?: Array<TermDisplay>;
+}>();
 
 // When changing location using widget we have to change values of room and place
 // fields of currently edited term. We do it using JQuery.
@@ -28,10 +13,10 @@ function onClick() {
   // TODO czy tak sie castuje najlpeiej nr na str?
   $(".active-term")
     .find(".form-room")
-    .val("" + props.id);
+    .val("" + props.room.id);
   $(".active-term")
     .find(".form-place")
-    .val("Sala " + props.label);
+    .val("Sala " + props.room.label);
   $([document.documentElement, document.body]).animate(
     {
       scrollTop: $("#term-forms").offset()!.top,
@@ -43,7 +28,7 @@ function onClick() {
 
 <template>
   <div class="p-3 text-center">
-    <p class="font-weight-bold">Sala numer {{ label }}</p>
+    <p class="font-weight-bold">Sala numer {{ props.room.label }}</p>
     <div class="container p-0 m-0">
       <div class="row">
         <div class="col-sm-2 p-1">
@@ -59,7 +44,7 @@ function onClick() {
                   <div class="progress bg-light" style="height: 35px">
                     <div
                       role="progressbar"
-                      v-for="(item, key) in termsLayer"
+                      v-for="(item, key) in props.room.termsLayer"
                       :key="key"
                       :class="
                         'progress-bar ' +
@@ -114,7 +99,9 @@ function onClick() {
             </div>
           </div>
         </div>
-        <div class="col-sm-2 p-1">{{ type }}, pojemność: {{ capacity }}</div>
+        <div class="col-sm-2 p-1">
+          {{ props.room.type }}, pojemność: {{ props.room.capacity }}
+        </div>
       </div>
     </div>
   </div>
