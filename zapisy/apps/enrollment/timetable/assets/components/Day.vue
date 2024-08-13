@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, CSSProperties } from "vue";
+import { inject, computed, CSSProperties } from "vue";
 import { range } from "lodash";
 import { DayOfWeek, nameDay, Term } from "../models";
 import TermComponent from "./Term.vue";
 import TermControls from "./TermControls.vue";
-import { inject } from "vue";
 
-// isPrototype is injected from Prototype.vue
+// isPrototype is potentially injected from Prototype.vue
 const isPrototype = inject("isPrototype", false);
 
 const props = defineProps<{
@@ -20,7 +19,6 @@ const dayName = nameDay(props.d);
 const dayStyle = computed(() => ({ gridColumn: props.d }));
 // For every full hour we have a label with it on the left side of the
 // timetable.
-
 const hourLabels = computed(() => {
   return [...Array(16).keys()].map((k) => ({
     key: "hour-label-" + k,
@@ -30,7 +28,6 @@ const hourLabels = computed(() => {
     },
   }));
 });
-
 // Horizontal rules with alternating solid/dotted style will be drawn
 // every half hour.
 const halfHourRules = computed(() => {

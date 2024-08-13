@@ -6,9 +6,9 @@
 // As for presentation, the days will be shown compactly (side-by-side) on
 // computer screens, and one below another on small screens.
 import { flatten, groupBy, range } from "lodash";
+import { computed } from "vue";
 import Day from "./Day.vue";
 import { Group, nameDay } from "../models";
-import { computed } from "vue";
 
 const props = defineProps<{
   groups: Array<Group>;

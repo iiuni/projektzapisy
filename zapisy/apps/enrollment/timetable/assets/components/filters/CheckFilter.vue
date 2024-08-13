@@ -2,7 +2,6 @@
 import { property } from "lodash";
 import { Filter } from "../../store/filters";
 import { ref, watch } from "vue";
-
 import { useStore } from "vuex";
 const store = useStore();
 

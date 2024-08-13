@@ -7,9 +7,7 @@ const props = defineProps<{
 }>();
 
 const popupVisible = ref(false);
-
 const group = computed(() => props.term.group);
-
 const title = computed(() => {
   switch (boxClass.value) {
     case "enrolled":

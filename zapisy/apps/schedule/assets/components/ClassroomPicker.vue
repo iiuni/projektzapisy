@@ -7,7 +7,6 @@ import ClassroomField from "./ClassroomField.vue";
 import { ref, onMounted } from "vue";
 
 const showOccupied = ref(false);
-
 const classrooms = ref<Classroom[]>([]);
 const unoccupiedClassrooms = ref<Classroom[]>([]);
 const reservationLayer = ref<TermDisplay[]>([]);

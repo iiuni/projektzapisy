@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
-import { onMounted } from "vue";
-
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();

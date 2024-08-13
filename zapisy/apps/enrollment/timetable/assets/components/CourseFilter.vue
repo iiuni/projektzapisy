@@ -7,20 +7,19 @@ import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
 import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
-const store = useStore();
 
+const store = useStore();
 const allEffects = ref({});
 const allTags = ref({});
 const allOwners = ref<MultiselectFilterData<number>>([]);
 const allTypes = ref<MultiselectFilterData<number>>([]);
-const collapsed = ref<boolean>(true);
+const collapsed = ref(true);
 
 const filtersData = JSON.parse(
   document.getElementById("filters-data")!.innerHTML
 ) as FilterDataJSON;
 allEffects.value = cloneDeep(filtersData.allEffects);
 allTags.value = cloneDeep(filtersData.allTags);
-
 allOwners.value = toPairs(filtersData.allOwners)
   .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
     const lastNamesComparison = lastname.localeCompare(lastname2, "pl");

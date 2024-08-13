@@ -5,16 +5,13 @@
 // The selection is not persistent. In order to keep a group on prototype the
 // student will need to _pin_ it. The state is not maintained by the component.
 // This job is handled by the Vuex store (`../store/courses.ts`).
-import { ComputedRef } from "vue";
-import { onMounted, ref } from "vue";
+import { ComputedRef, onMounted, ref } from "vue";
 import { CourseInfo } from "../store/courses";
-export type CourseObject = { id: number; name: string; url: string };
-
 import { computed } from "vue";
 import { useStore } from "vuex";
+export type CourseObject = { id: number; name: string; url: string };
 
 const store = useStore();
-
 const courses: ComputedRef<CourseInfo[]> = computed(
   () => store.getters["courses/courses"]
 );

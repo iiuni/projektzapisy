@@ -8,9 +8,9 @@ import TermComponent from "./Term.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useStore } from "vuex";
 
+const props = defineProps<{ term: Term }>();
 const store = useStore();
 
-const props = defineProps<{ term: Term }>();
 const controlsVisible = ref(false);
 const group = computed(() => props.term.group);
 

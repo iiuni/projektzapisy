@@ -6,10 +6,9 @@
 // The other one is the timetable itself. The set of currently displayed groups
 // is maintained by the Vuex store (`../store/index.ts`).
 // import { mixin as VueTimers } from "vue-timers";
-
-import SimpleTimetable from "./SimpleTimetable.vue";
 import { computed, provide } from "vue";
 import { useStore } from "vuex";
+import SimpleTimetable from "./SimpleTimetable.vue";
 
 // Will be injected in Day.vue
 provide("isPrototype", true);
