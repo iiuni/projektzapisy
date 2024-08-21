@@ -5466,7 +5466,7 @@ fsevents@~2.1.2:
     prettier: 2.8.8
     sass: 1.26.10
     sass-loader: 10.5.2
-    tablesorter: 2.31.3
+    tablesorter: 2.32.0
     terser-webpack-plugin: 4.2.3
     ts-loader: 8.4.0
     typescript: 4.0.2
@@ -8606,12 +8606,12 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"tablesorter@npm:2.31.3":
-  version: 2.31.3
-  resolution: "tablesorter@npm:2.31.3"
+"tablesorter@npm:2.32.0":
+  version: 2.32.0
+  resolution: "tablesorter@npm:2.32.0"
   dependencies:
     jquery: ">=1.2.6"
-  checksum: 1c0304f2976973bb8f0edffb1c46e8118dcc4fae966f55c8d7b9407a32b30b92ac8e8a984d4ec6de8af1be05799adf1f904c0bb865acd861cdf575046ee3e0e6
+  checksum: c5d3d6aa00f398df6355ecf8938177d8ef2c40cea007a664c5509f4c2ff96ff2e18e3d83d2fbaa8c9941b2a9f5e6a5ede38a9fb72ac928edbfcd6b52badbcd15
   languageName: node
   linkType: hard
 
