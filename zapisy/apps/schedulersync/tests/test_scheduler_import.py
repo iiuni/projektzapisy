@@ -5,8 +5,9 @@ from django.test import TestCase
 from apps.common import days_of_week
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
-from apps.enrollment.courses.models.term import Term
+from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.enrollment.courses.tests import factories as courses_factories
+from apps.schedule.models.term import Term
 from apps.schedulersync.management.commands.import_schedule import Command, SZTerm, Slack
 from apps.users.tests import factories as users_factories
 
@@ -80,7 +81,7 @@ class SchedulerImportTestCase(TestCase):
             # Two lecture group terms should be merged.
             self.assertEqual(self.c1.groups.count(), 3)
             self.assertEqual(self.c1.groups.get(type=GroupType.LECTURE).term.count(), 2)
-            self.assertEqual(Term.objects.count(), 4)
+            self.assertEqual(CourseTerm.objects.count(), 4)
             # All these groups should be taught by Bolek.
             self.assertEqual(Group.objects.filter(teacher=self.bolek).count(), 3)
 
@@ -103,10 +104,48 @@ class SchedulerImportTestCase(TestCase):
             ims.update_terms(terms, False)
             # Nothing should change for the first course.
             self.assertEqual(self.c1.groups.count(), 3)
-            t = Term.objects.filter(group__course=self.c1, group__type=GroupType.EXERCISES).first()
+            t = CourseTerm.objects.filter(group__course=self.c1, group__type=GroupType.EXERCISES).first()
             self.assertCountEqual(t.classrooms.all(), [self.r1])
             # A new group should be created for the second course.
             self.assertEqual(self.c2.groups.count(), 1)
+            self.assertEqual(CourseTerm.objects.count(), 5)
+            self.assertEqual(CourseTerm.objects.filter(group__course=self.c2).count(), 1)
+            self.assertEqual(
+                Term.objects.filter(event__group__course=self.c2).count(),
+                len(self.s1.get_all_days_of_week(terms[4].dayOfWeek))
+            )
+
+        with self.subTest(msg="Modify term #1"):
+            """The new term is modified: its start_time, end_time and classroom are changed."""
+            self.r2 = courses_factories.ClassroomFactory()
+            terms[4].start_time = time(hour=13)
+            terms[4].end_time = time(hour=15)
+            terms[4].classrooms = [self.r2]
+            ims = Command()
+            ims.semester = self.s1
+            ims.update_terms(terms, False)
+            self.assertEqual(self.c2.groups.count(), 1)
+            self.assertEqual(CourseTerm.objects.count(), 5)
+            self.assertEqual(CourseTerm.objects.filter(group__course=self.c2).count(), 1)
+            self.assertEqual(
+                Term.objects.filter(event__group__course=self.c2).count(),
+                len(self.s1.get_all_days_of_week(terms[4].dayOfWeek))
+            )
+
+        with self.subTest(msg="Modify term #2"):
+            """The new term is modified: its dayOfWeek and classroom are changed."""
+            terms[4].dayOfWeek = days_of_week.FRIDAY
+            terms[4].classrooms = [self.r1]
+            ims = Command()
+            ims.semester = self.s1
+            ims.update_terms(terms, False)
+            self.assertEqual(self.c2.groups.count(), 1)
+            self.assertEqual(CourseTerm.objects.count(), 5)
+            self.assertEqual(CourseTerm.objects.filter(group__course=self.c2).count(), 1)
+            self.assertEqual(
+                Term.objects.filter(event__group__course=self.c2).count(),
+                len(self.s1.get_all_days_of_week(terms[4].dayOfWeek))
+            )
 
         with self.subTest(msg="None mappings"):
             """Terms with course=None should be ignored."""
@@ -131,7 +170,7 @@ class SchedulerImportTestCase(TestCase):
             self.assertEqual(self.c1.groups.count(), 3)
             self.assertEqual(self.c2.groups.count(), 1)
             self.assertEqual(Group.objects.count(), 4)
-            self.assertEqual(Term.objects.count(), 5)
+            self.assertEqual(CourseTerm.objects.count(), 5)
 
         with self.subTest(msg="Do not delete flag"):
             """Removing terms with and without dont_delete_terms flag."""
@@ -143,10 +182,10 @@ class SchedulerImportTestCase(TestCase):
             # No terms will be deleted.
             self.assertEqual(CourseInstance.objects.count(), 2)
             self.assertEqual(Group.objects.count(), 4)
-            self.assertEqual(Term.objects.count(), 5)
+            self.assertEqual(CourseTerm.objects.count(), 5)
 
             ims.update_terms(terms, False)
             # This should delete entire c2 and only leave 3 groups of c1.
             self.assertEqual(CourseInstance.objects.count(), 1)
             self.assertEqual(Group.objects.count(), 3)
-            self.assertEqual(Term.objects.count(), 4)
+            self.assertEqual(CourseTerm.objects.count(), 4)
