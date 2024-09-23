@@ -2940,18 +2940,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-loader@npm:8.3.0":
-  version: 8.3.0
-  resolution: "babel-loader@npm:8.3.0"
+"babel-loader@npm:8.4.1":
+  version: 8.4.1
+  resolution: "babel-loader@npm:8.4.1"
   dependencies:
     find-cache-dir: ^3.3.1
-    loader-utils: ^2.0.0
+    loader-utils: ^2.0.4
     make-dir: ^3.1.0
     schema-utils: ^2.6.5
   peerDependencies:
     "@babel/core": ^7.0.0
     webpack: ">=2"
-  checksum: 0362c514a86b7fffa4e145614253df0936dcc97476e3d6bb4dc1d694fdf0307c0c8404ea2a4cd392fd89a2302ba278fdabc81199b60b6d287d230ed3cf660ba2
+  checksum: 43fbdec219fc9ac0d266f1ffea65bc1e2e9d99a32d392d31609bc8ef726c0b7f38379e65042b9d58885b2582571324bd685a2802cf1b68d0bef6495c554db192
   languageName: node
   linkType: hard
 
@@ -5557,7 +5557,7 @@ fsevents@~2.1.2:
     ContentTools: 1.6.16
     autoprefixer: 9.8.8
     axios: 0.21.4
-    babel-loader: 8.3.0
+    babel-loader: 8.4.1
     big-integer: 1.6.52
     bootstrap: 5.3.3
     bootstrap-print-css: 1.0.1
@@ -6235,6 +6235,17 @@ fsevents@~2.1.2:
     emojis-list: ^3.0.0
     json5: ^2.1.2
   checksum: a1c2e48781e1501e126a32c39bc1fb1a7e2f02bd99e5aeb8853ddaf3c121fffefcc4579367f97ca6890b58369e571af1c9ec82e4e20db238d560ab359ff25c33
+  languageName: node
+  linkType: hard
+
+"loader-utils@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "loader-utils@npm:2.0.4"
+  dependencies:
+    big.js: ^5.2.2
+    emojis-list: ^3.0.0
+    json5: ^2.1.2
+  checksum: 3580906e021e94ed3b13b8179d557bd953494cc690015fa0b8bb99dfe8abfbe44e984c01cd0df68156c4b541a5b711019490124f83daaa5b8584f8e205b2a2c3
   languageName: node
   linkType: hard
 
