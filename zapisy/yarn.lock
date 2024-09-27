@@ -5589,7 +5589,7 @@ fsevents@~2.1.2:
     postcss: 7.0.39
     postcss-loader: 4.3.0
     prettier: 2.8.8
-    sass: 1.79.2
+    sass: 1.79.3
     sass-loader: 10.5.2
     tablesorter: 2.32.0
     terser-webpack-plugin: 4.2.3
@@ -8189,16 +8189,16 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"sass@npm:1.79.2":
-  version: 1.79.2
-  resolution: "sass@npm:1.79.2"
+"sass@npm:1.79.3":
+  version: 1.79.3
+  resolution: "sass@npm:1.79.3"
   dependencies:
     chokidar: ^4.0.0
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: c2abdb77bc5df5fbaf49407e9993b90a5f4f3becb121b58ad093b63335fd91b3a745a4e988cc69b4cf62d75c4446081efa5666cdfb8347d0412a48cf9c206023
+  checksum: fd3541544a6518a2368677f222253aaa1ed35e5ddc130076f91779c98b381ae82e3cff1e2ab89a3538e5f531096d8debaafc6a6117bbe886445ab91090d314ca
   languageName: node
   linkType: hard
 
