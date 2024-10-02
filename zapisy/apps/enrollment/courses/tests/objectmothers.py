@@ -20,7 +20,6 @@ class SemesterObjectMother():
             semester_beginning=datetime(2015, 10, 1),
             semester_ending=datetime(2016, 2, 21),
             records_ects_limit_abolition=datetime(2015, 10, 1),
-            is_grade_active=False
         )
         semester.full_clean()
         return semester
@@ -39,7 +38,6 @@ class SemesterObjectMother():
             semester_beginning=datetime(2016, 2, 22),
             semester_ending=datetime(2016, 9, 10),
             records_ects_limit_abolition=datetime(2016, 3, 1),
-            is_grade_active=False
         )
         semester.full_clean()
         return semester

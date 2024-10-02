@@ -1,6 +1,7 @@
 import importlib
 import json
 from typing import List
+from datetime import timedelta
 
 from django import test
 from freezegun import freeze_time
@@ -19,7 +20,7 @@ class TicketsTest(test.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.student: users.Student = users.StudentFactory()
-        cls.semester: courses.Semester = courses.SemesterFactory(is_grade_active=True)
+        cls.semester: courses.Semester = courses.SemesterFactory()
         course_exam = courses.CourseInstanceFactory(semester=cls.semester)
         course_no_exam = courses.CourseInstanceFactory(semester=cls.semester, has_exam=False)
         cls.groups: List[courses.Group] = [
@@ -29,8 +30,8 @@ class TicketsTest(test.TestCase):
 
     def test_polls_list(self):
         c = test.Client()
-        time_in_semester = self.semester.semester_beginning + (self.semester.semester_ending -
-                                                               self.semester.semester_beginning) / 2
+        time_in_semester = self.semester.semester_grade_beginning
+
         with freeze_time(time_in_semester):
             c.force_login(self.student.user)
             polls = Poll.get_all_polls_for_student(self.student)
@@ -41,8 +42,8 @@ class TicketsTest(test.TestCase):
 
     def test_signing_works(self):
         c = test.Client()
-        time_in_semester = self.semester.semester_beginning + (self.semester.semester_ending -
-                                                               self.semester.semester_beginning) / 2
+        time_in_semester = self.semester.semester_grade_beginning + timedelta(days=10)
+
         with freeze_time(time_in_semester):
             c.force_login(self.student.user)
             poll_data_r = c.get('/grade/ticket/get-poll-data')
@@ -87,8 +88,7 @@ class TicketsTest(test.TestCase):
 
     def test_cant_double_sign(self):
         c = test.Client()
-        time_in_semester = self.semester.semester_beginning + (self.semester.semester_ending -
-                                                               self.semester.semester_beginning) / 2
+        time_in_semester = self.semester.semester_grade_ending - timedelta(days=5)
         with freeze_time(time_in_semester):
             c.force_login(self.student.user)
             poll_data_r = c.get('/grade/ticket/get-poll-data')
@@ -97,6 +97,9 @@ class TicketsTest(test.TestCase):
             poll_data = {d['poll_info']['id']: grade_client.PollData(d) for d in poll_data_r.json()}
             blinded_tickets = grade_client.TicketCreate.get_blinded_tickets_for_signing(
                 None, poll_data)
+
+            self.assertNotEqual(len(blinded_tickets['signing_requests']), 0)
+
             # Copy one ticket to make polls match but one appear twice in the list.
             blinded_tickets['signing_requests'].append(blinded_tickets['signing_requests'][0])
             r = c.post('/grade/ticket/sign-tickets',
