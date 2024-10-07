@@ -174,7 +174,7 @@ export default class TermControlsComponent extends TermControlsProps {
   border: 1px solid #666666;
   border-radius: 4px 0;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  z-index: 30;
+  z-index: 3;
 
   display: flex;
   flex-direction: column;
