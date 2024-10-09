@@ -1,9 +1,11 @@
 import csv
 import json
+import locale
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Min
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -15,6 +17,8 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
+
+locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
 
 
 class GroupData(TypedDict):
@@ -73,9 +77,14 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
         student = request.user.student
 
     groups = course.groups.select_related(
-        'teacher',
-        'teacher__user',
-    ).prefetch_related('term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
+        'teacher', 'teacher__user',
+    ).prefetch_related(
+        'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
+    ).annotate(
+        earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
+    ).order_by(
+        'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
+        )
 
     # Collect the general groups statistics.
     groups_stats = Record.groups_stats(groups)
@@ -141,8 +150,7 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Di
             .select_related(
                 'student', 'student__user', 'student__program', 'student__consent'
             )
-            .prefetch_related('student__user__groups')
-            .order_by('student__user__last_name', 'student__user__first_name')
+            .prefetch_related('student__user__groups').order_by('created')
         )
 
         guaranteed_spots_rules = GuaranteedSpots.objects.filter(group=group)
@@ -167,24 +175,27 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Di
 def get_students_from_data(
     groups_data_enrolled: Dict[int, GroupData],
     groups_data_queued: Dict[int, GroupData],
+    preserve_queue_ordering: bool = False,
 ):
     def sort_student_by_name(students: List[Student]) -> List[Student]:
-        return sorted(students, key=lambda e: (e.user.last_name, e.user.first_name))
+        return sorted(students, key=lambda e: (locale.strxfrm(e.user.last_name),
+                                               locale.strxfrm(e.user.first_name)))
 
     students_in_course = set()
-    students_in_queue = set()
+    students_in_queue = []
 
     for group_data in groups_data_enrolled.values():
         students_in_course.update(group_data["students"])
     for group_data in groups_data_queued.values():
-        students_in_queue.update([
+        students_in_queue.extend([
             student
             for student in group_data["students"]
             if student not in students_in_course
         ])
 
     students_in_course = sort_student_by_name(students_in_course)
-    students_in_queue = sort_student_by_name(students_in_queue)
+    if not preserve_queue_ordering:
+        students_in_queue = sort_student_by_name(set(students_in_queue))
 
     return students_in_course, students_in_queue
 
@@ -221,7 +232,8 @@ def course_list_view(request, course_slug: str, class_type: int = None):
             'mailto_queue_bcc': mailto(request.user, students_in_queue, bcc=True),
             'class_type': class_type,
     }
-    return render(request, 'courses/course_parts/course_list.html', data)
+    data.update(prepare_courses_list_data(course.semester))
+    return render(request, 'courses/course_list.html', data)
 
 
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
@@ -239,7 +251,9 @@ def group_view(request, group_id):
     """
     enrolled_data = get_group_data([group_id], request.user, status=RecordStatus.ENROLLED)
     queued_data = get_group_data([group_id], request.user, status=RecordStatus.QUEUED)
-    students_in_group, students_in_queue = get_students_from_data(enrolled_data, queued_data)
+    students_in_group, students_in_queue = get_students_from_data(
+        enrolled_data, queued_data, preserve_queue_ordering=True
+    )
     group: Group = enrolled_data[group_id].get("group")
 
     data = {
@@ -262,21 +276,25 @@ def recorded_students_csv(
     status: RecordStatus,
     user: User,
     course_name: Optional[str] = None,
-    exclude_students: Optional[Iterable] = None
+    exclude_students: Optional[Iterable] = None,
+    *, preserve_ordering: bool = False,
 ) -> HttpResponse:
     """Builds the HttpResponse with list of student enrolled/enqueued in a list of groups."""
-    exclude_students = exclude_students or ()
-    students = {}
+    exclude_students = set(exclude_students or [])
+    students = []
     group_data = get_group_data(group_ids, user, status)
     for group in group_data.values():
         for student in group.get("students", []):
             if student not in exclude_students:
-                students[student.matricula] = {
+                exclude_students.add(student)
+                students.append((student.matricula, {
                     "first_name": student.user.first_name,
                     "last_name": student.user.last_name,
                     "email": student.user.email,
-                }
-    students = sorted(students.items(), key=lambda e: (e[1].get("last_name"), e[1].get("first_name")))
+                }))
+    if not preserve_ordering:
+        students.sort(key=lambda e: (locale.strxfrm(e[1].get("last_name")),
+                                     locale.strxfrm(e[1].get("first_name"))))
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="{}-{}-{}.csv"'.format(
@@ -304,7 +322,7 @@ def group_queue_csv(request, group_id):
     """Prints out the group queue in csv format."""
     if not Group.objects.filter(id=group_id).exists():
         raise Http404
-    return recorded_students_csv([group_id], RecordStatus.QUEUED, request.user)
+    return recorded_students_csv([group_id], RecordStatus.QUEUED, request.user, preserve_ordering=True)
 
 
 def get_all_group_ids_for_course_slug(slug, class_type: int = None):

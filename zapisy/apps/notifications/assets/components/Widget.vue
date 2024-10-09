@@ -8,28 +8,30 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/pl";
-import { parse, ParseFn, fromMap, aString, anArrayContaining } from "spicery";
+import { z } from "zod";
 import Vue from "vue";
 import Component from "vue-class-component";
 
-class Notification {
-  constructor(
-    public id: string,
-    public description: string,
-    public issuedOn: string,
-    public target: string
-  ) {}
-}
+// Defines a notification scheme to validate and parse Notifications from JSON.
+const notificationScheme = z
+  .object({
+    id: z.string(),
+    description: z.string(),
+    issued_on: z.string(),
+    target: z.string(),
+  })
+  .transform((parsedObject) => {
+    return {
+      id: parsedObject.id,
+      description: parsedObject.description,
+      issuedOn: parsedObject.issued_on,
+      target: parsedObject.target,
+    };
+  });
 
-// Defines a parser that validates and parses Notifications from JSON.
-const notifications: ParseFn<Notification> = (x: any) =>
-  new Notification(
-    fromMap(x, "id", aString),
-    fromMap(x, "description", aString),
-    fromMap(x, "issued_on", aString),
-    fromMap(x, "target", aString)
-  );
-const notificationsArray = anArrayContaining(notifications);
+const notificationSchemeArray = z.array(notificationScheme);
+
+type Notification = z.infer<typeof notificationScheme>;
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -59,7 +61,7 @@ export default class NotificationsComponent extends Vue {
   getNotifications() {
     return axios
       .get("/notifications/get")
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -71,7 +73,7 @@ export default class NotificationsComponent extends Vue {
 
     return axios
       .post("/notifications/delete/all")
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -85,7 +87,7 @@ export default class NotificationsComponent extends Vue {
       .post("/notifications/delete", {
         uuid: i,
       })
-      .then((r) => parse(notificationsArray)(r.data))
+      .then((r) => notificationSchemeArray.parse(r.data))
       .then((t) => {
         this.n_list = t;
       });
@@ -102,11 +104,12 @@ export default class NotificationsComponent extends Vue {
   <div>
     <li id="notification-dropdown" class="nav-item dropdown">
       <a
-        class="nav-link dropdown-toggle specialdropdown ml-1"
+        class="nav-link dropdown-toggle specialdropdown ms-1"
         href="#"
         id="navbarDropdown"
         role="button"
-        data-toggle="dropdown"
+        data-bs-toggle="dropdown"
+        data-bs-auto-close="outside"
         aria-haspopup="true"
         aria-expanded="false"
       >
@@ -118,17 +121,19 @@ export default class NotificationsComponent extends Vue {
           <font-awesome-icon :icon="farBell" size="lg" />
         </div>
       </a>
-      <div class="dropdown-menu dropdown-menu-right">
+      <div class="dropdown-menu dropdown-menu-end">
         <form class="p-1 place-for-notifications">
           <div v-for="elem in n_list" :key="elem.id" class="toast mb-1 show">
             <div class="toast-header">
-              <strong class="mr-auto"></strong>
+              <strong class="me-auto"></strong>
               <small class="text-muted mx-2">{{
                 elem.issuedOn | Moment
               }}</small>
-              <button type="button" class="close" @click="deleteOne(elem.id)">
-                &times;
-              </button>
+              <button
+                type="button"
+                class="btn-close"
+                @click="deleteOne(elem.id)"
+              ></button>
             </div>
             <a :href="elem.target" class="toast-link">
               <div class="toast-body text-body">{{ elem.description }}</div>
@@ -167,7 +172,7 @@ export default class NotificationsComponent extends Vue {
 a.toast-link:hover {
   text-decoration: none;
   .toast-body {
-    background-color: var(--light);
+    background-color: var(--bs-light);
   }
 }
 
@@ -181,7 +186,7 @@ a.toast-link:hover {
 }
 
 .counter-badge {
-  background-color: var(--pink);
+  background-color: var(--bs-pink);
   border-radius: 2px;
   color: white;
   font-weight: bold;

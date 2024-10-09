@@ -38,7 +38,7 @@ export default class TicketsGenerator extends Vue {
       @click="generateTicketsOnClick"
       :disabled="loading"
     >
-      <span v-if="loading" class="spinner-border spinner-border-sm mr-1"></span
+      <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span
       >Pobierz klucze
     </button>
     <div v-if="ticketGenerationFinished">

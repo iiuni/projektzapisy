@@ -48,7 +48,8 @@ class ThesesQuerySet(models.QuerySet):
         return self.filter(
             (~Q(status=ThesisStatus.BEING_EVALUATED) & ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) |
             Q(advisor__user=user) |
-            Q(supporting_advisor__user=user))
+            Q(supporting_advisor__user=user) |
+            Q(students__user=user))
 
 
 class Thesis(models.Model):
@@ -125,6 +126,12 @@ class Thesis(models.Model):
     def is_among_advisors(self, user):
         return self.is_mine(user) or self.is_supporting_advisor_assigned(user)
 
+    def is_user_privileged(self, user):
+        return self.is_among_advisors(user) or user.is_staff or is_theses_board_member(user)
+
+    def can_user_download_declarations(self, user):
+        return self.is_user_privileged(user) or (self.has_been_accepted and self.is_student_assigned(user))
+
     @property
     def has_no_students_assigned(self):
         return self.students is not None and not self.students.exists()
@@ -132,6 +139,11 @@ class Thesis(models.Model):
     @property
     def is_reserved(self):
         return self.reserved_until and date.today() <= self.reserved_until
+
+    @property
+    def is_available(self):
+        is_defended = self.status == ThesisStatus.DEFENDED
+        return not (self.is_reserved or is_defended)
 
     @property
     def has_been_accepted(self):

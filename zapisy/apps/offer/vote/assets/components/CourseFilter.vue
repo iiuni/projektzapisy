@@ -1,32 +1,33 @@
 <script lang="ts">
-import { cloneDeep, sortBy, toPairs } from "lodash";
+import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
 import { mapGetters } from "vuex";
 
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
-import SelectFilter from "@/enrollment/timetable/assets/components/filters/SelectFilter.vue";
+import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
-import { FilterDataJSON } from "@/enrollment/timetable/assets/models";
+import {
+  FilterDataJSON,
+  MultiselectFilterData,
+} from "@/enrollment/timetable/assets/models";
 
 export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    SelectFilter,
     CheckFilter,
+    MultiSelectFilter,
   },
   props: { refreshFun: Function },
   data: function () {
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as [number, string][],
-      allSemesters: [] as [string, string][],
-      allStatuses: [] as [string, string][],
-      allTypes: {},
-
+      allOwners: [] as MultiselectFilterData<number>,
+      allSemesters: [] as MultiselectFilterData<string>,
+      allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
     };
@@ -37,21 +38,26 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
-      return b;
-    }).map(([k, [a, b]]) => {
-      return [Number(k), `${a} ${b}`] as [number, string];
-    });
-    this.allTypes = toPairs(filtersData.allTypes);
+    this.allOwners = toPairs(filtersData.allOwners)
+      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+        return lastNamesComparison === 0
+          ? firstname.localeCompare(firstname2, "pl")
+          : lastNamesComparison;
+      })
+      .map(([id, [firstname, lastname]]) => {
+        return { value: Number(id), label: `${firstname} ${lastname}` };
+      });
+    this.allTypes = Object.keys(filtersData.allTypes).map(
+      (typeKey: string) => ({
+        value: Number(typeKey),
+        label: filtersData.allTypes[Number(typeKey)],
+      })
+    );
     this.allSemesters = [
-      ["z", "zimowy"],
-      ["l", "letni"],
-      ["u", "nieokreślony"],
-    ];
-    this.allStatuses = [
-      ["IN_OFFER", "w ofercie"],
-      ["IN_VOTE", "poddany pod głosowanie"],
-      ["WITHDRAWN", "wycofany z oferty"],
+      { value: "z", label: "zimowy" },
+      { value: "l", label: "letni" },
+      { value: "u", label: "nieokreślony" },
     ];
   },
   computed: {
@@ -59,7 +65,7 @@ export default Vue.extend({
       tester: "visible",
     }),
   },
-  mounted() {
+  mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
@@ -82,65 +88,68 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="card bg-light">
+  <div class="card bg-light filters-card">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
-      <div class="row">
+      <div class="row position-relative">
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
-            ref="name-filter"
             property="name"
             placeholder="Nazwa przedmiotu"
+            ref="name-filter"
           />
           <hr />
           <LabelsFilter
             title="Tagi"
             filterKey="tags-filter"
-            ref="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
+            ref="tags-filter"
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiSelectFilter
             filterKey="type-filter"
-            ref="type-filter"
             property="courseType"
             :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
+            ref="type-filter"
           />
           <hr />
           <LabelsFilter
             title="Efekty kształcenia"
             filterKey="effects-filter"
-            ref="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
+            ref="effects-filter"
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiSelectFilter
             filterKey="owner-filter"
-            ref="owner-filter"
             property="owner"
             :options="allOwners"
-            placeholder="Opiekun przedmiotu"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
+            ref="owner-filter"
           />
-          <SelectFilter
+          <MultiSelectFilter
             filterKey="semester-filter"
-            ref="semester-filter"
             property="semester"
             :options="allSemesters"
+            title="Semestr"
             placeholder="Semestr"
+            ref="semester-filter"
           />
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            ref="freshmen-filter"
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            ref="freshmen-filter"
           />
         </div>
       </div>
@@ -176,7 +185,7 @@ export default Vue.extend({
   }
 }
 
-// Follows the Bootstrap 4 media query breakpoint.
+// Follows the Bootstrap 5 media query breakpoint.
 @media (max-width: 767px) {
   .col-md + .col-md {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -186,5 +195,10 @@ export default Vue.extend({
 
 .card-footer {
   height: 28px;
+}
+
+.filters-card {
+  transform: scale(1);
+  z-index: 2;
 }
 </style>

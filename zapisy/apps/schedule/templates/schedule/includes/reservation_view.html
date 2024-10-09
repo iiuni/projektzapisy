@@ -1,4 +1,4 @@
-<table class="table border">
+<table class="table border text-break">
     <tbody>
         <tr>
             <th class="text-light bg-info">Tytuł</th>
@@ -22,7 +22,7 @@
             <tr>
                 <th class="text-light bg-info">Zgłasza</th>
                 <td width="*">
-                        <a href="">{{ event.author.get_full_name }}</a>
+                        {{ event.author.get_full_name }}
                 </td>
                 <th width="12%" class="text-light bg-info">Data</th>
                 <td width="20%">{{ event.created }}</td>

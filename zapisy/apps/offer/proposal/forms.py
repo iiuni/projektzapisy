@@ -2,7 +2,7 @@
 
 Generally the EditProposalForm is dealing with semantics and data, while
 ProposalFormHelper deals with presentation of the form (and has some logic
-specific to Bootstrap 4).
+specific to Bootstrap 5).
 """
 import inspect
 from typing import Optional
@@ -371,7 +371,7 @@ class EditProposalForm(forms.ModelForm):
 
 
 class CustomCheckbox(layout.Field):
-    """Renders Bootstrap 4 custom checkboxes.
+    """Renders Bootstrap 5 custom checkboxes.
 
     Inspired by
     https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html.
@@ -382,19 +382,19 @@ class CustomCheckbox(layout.Field):
 class CollapsableFieldset(layout.Fieldset):
     """Renders fieldset with a _collapse_ button.
 
-    It uses Bootstrap 4 collapse class. It is vital to provide css_id for it, if
+    It uses Bootstrap 5 collapse class. It is vital to provide css_id for it, if
     many such fieldsets are going to be used on the same page.
     """
     template = 'proposal/fields/collapsable-fieldset.html'
 
 
 class FormRow(layout.Div):
-    """Represents Booststrap 4 form layout row."""
-    css_class = 'form-row'
+    """Represents Bootstrap 5 form layout row."""
+    css_class = 'row'
 
 
 class Column(layout.Column):
-    """Represents Bootstrap 4 layout column."""
+    """Represents Bootstrap 5 layout column."""
     css_class = 'col-12 col-sm'
 
 

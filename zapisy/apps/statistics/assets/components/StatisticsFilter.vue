@@ -68,7 +68,7 @@ export default Vue.extend({
         </div>
         <div class="col-lg-4">
           <div class="input-group mb-2">
-            <select class="custom-select" v-model="selected">
+            <select class="form-select" v-model="selected">
               <option v-for="[k, o] of sortingModes" :value="k">
                 {{ o }}
               </option>

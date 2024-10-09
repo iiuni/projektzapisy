@@ -16,3 +16,9 @@ teacher_changed = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
 thesis_voting_activated = django.dispatch.Signal()
+# Signal senders must provide an argument:
+#   event: apps.schedule.models.event
+event_decision = django.dispatch.Signal()
+# Signal senders must provide an argument:
+#   instance: apps.theses.models.Thesis
+thesis_accepted = django.dispatch.Signal()

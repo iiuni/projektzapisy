@@ -63,7 +63,7 @@
 
   </div>
   <div class="col-lg-4 col-12">
-    <select class="form-control mb-3"
+    <select class="form-select mb-3"
       onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
       {% for semester in semesters %}
       <option value="{% url 'grade-poll-results' semester_id=semester.id %}"
@@ -73,16 +73,16 @@
     <div class="accordion" id="course-sections">
       {% for group_name, entries in polls.items %}
       {% with index=iterator|next %}
-      <div class="card">
-        <div class="card-header" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-toggle="collapse"
-          data-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
-          <div class="d-flex w-100 justify-content-between">
+      <div class="accordion-item">
+        <button class="accordion-button collapsed" style="cursor: pointer;" id="course-section-{{ index }}-heading" data-bs-toggle="collapse"
+          data-bs-target="#course-section-{{ index }}" aria-expanded="false" aria-controls="course-section-{{ index }}">
+          <div class="d-flex w-100 justify-content-between me-1">
             <span>{{ group_name }}</span>
-            <span class="text-right text-nowrap">
+            <span class="text-end text-nowrap align-self-center">
               {{ submissions_count|lookup:group_name|default_if_none:0 }}
             </span>
           </div>
-        </div>
+        </button>
         <div
           class="border-top collapse {% if current_poll and current_poll.category == group_name %}show{% endif %} list-group list-group-flush"
           id="course-section-{{ index }}" aria-labelledby="course-section-{{ index }}-heading">
@@ -92,7 +92,7 @@
             class="list-group-item list-group-item-action active">
             <div class="d-flex w-100 justify-content-between">
               <span>{{ entry.subcategory }}</span>
-              <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
+              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
           </a>
           {% else %}
@@ -100,7 +100,7 @@
             class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
               <span>{{ entry.subcategory }}</span>
-              <span class="text-right text-nowrap">{{ entry.number_of_submissions }}</span>
+              <span class="text-end text-nowrap">{{ entry.number_of_submissions }}</span>
             </div>
           </a>
           {% endif %}

@@ -64,18 +64,18 @@ export default Vue.extend({
 <style lang="scss" scoped>
 // Defines clear colour-codes for the proposal list statuses.
 //
-// Refers to palette of Bootstrap 4.
+// Refers to palette of Bootstrap 5.
 
 .in_vote a {
-  color: var(--green);
+  color: var(--bs-green);
 }
 
 .in_offer a {
-  color: var(--blue);
+  color: var(--bs-blue);
 }
 
 .withdrawn a {
-  color: var(--gray);
+  color: var(--bs-gray);
 }
 
 #proposal-legend {
@@ -91,15 +91,15 @@ export default Vue.extend({
       margin-left: -17px;
     }
     &.in_vote:before {
-      color: var(--green);
+      color: var(--bs-green);
     }
 
     &.in_offer:before {
-      color: var(--blue);
+      color: var(--bs-blue);
     }
 
     &.withdrawn:before {
-      color: var(--gray);
+      color: var(--bs-gray);
     }
   }
 }

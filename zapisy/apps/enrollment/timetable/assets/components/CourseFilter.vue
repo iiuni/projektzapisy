@@ -1,28 +1,28 @@
 <script lang="ts">
-import { cloneDeep, sortBy, toPairs } from "lodash";
+import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
+
+import { mapMutations } from "vuex";
 
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
-import SelectFilter from "./filters/SelectFilter.vue";
+import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
-import { FilterDataJSON } from "./../models";
-import { mapMutations } from "vuex";
+import { FilterDataJSON, MultiselectFilterData } from "./../models";
 
 export default Vue.extend({
   components: {
     TextFilter,
     LabelsFilter,
-    SelectFilter,
     CheckFilter,
+    MultiSelectFilter,
   },
   data: function () {
     return {
       allEffects: {},
       allTags: {},
-      allOwners: [] as [number, string][],
-      allTypes: {},
-
+      allOwners: [] as MultiselectFilterData<number>,
+      allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
     };
@@ -33,19 +33,28 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.allOwners = sortBy(toPairs(filtersData.allOwners), ([k, [a, b]]) => {
-      return b;
-    }).map(([k, [a, b]]) => {
-      return [Number(k), `${a} ${b}`] as [number, string];
-    });
-    this.allTypes = toPairs(filtersData.allTypes);
+    this.allOwners = toPairs(filtersData.allOwners)
+      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+        return lastNamesComparison === 0
+          ? firstname.localeCompare(firstname2, "pl")
+          : lastNamesComparison;
+      })
+      .map(([id, [firstname, lastname]]) => {
+        return { value: Number(id), label: `${firstname} ${lastname}` };
+      });
+    this.allTypes = Object.keys(filtersData.allTypes).map(
+      (typeKey: string) => ({
+        value: Number(typeKey),
+        label: filtersData.allTypes[Number(typeKey)],
+      })
+    );
   },
   mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
-
     // Expand the filters if there are any initially specified in the search params.
     const searchParams = new URL(window.location.href).searchParams;
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
@@ -59,9 +68,9 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div class="card bg-light">
+  <div class="card bg-light filters-card">
     <div class="card-body" v-bind:class="{ collapsed: collapsed }">
-      <div class="row">
+      <div class="row position-relative">
         <div class="col-md">
           <TextFilter
             filterKey="name-filter"
@@ -75,16 +84,17 @@ export default Vue.extend({
             filterKey="tags-filter"
             property="tags"
             :allLabels="allTags"
-            onClass="badge-success"
+            onClass="bg-success"
             ref="tags-filter"
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiSelectFilter
             filterKey="type-filter"
             property="courseType"
             :options="allTypes"
-            placeholder="Rodzaj przedmiotu"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
             ref="type-filter"
           />
           <hr />
@@ -93,16 +103,17 @@ export default Vue.extend({
             filterKey="effects-filter"
             property="effects"
             :allLabels="allEffects"
-            onClass="badge-info"
+            onClass="bg-info"
             ref="effects-filter"
           />
         </div>
         <div class="col-md">
-          <SelectFilter
+          <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
-            placeholder="Opiekun przedmiotu"
+            title="Opiekun przedmiotu"
+            placeholder="Wszyscy opiekunowie"
             ref="owner-filter"
           />
           <hr />
@@ -154,7 +165,7 @@ export default Vue.extend({
   }
 }
 
-// Follows the Bootstrap 4 media query breakpoint.
+// Follows the Bootstrap 5 media query breakpoint.
 @media (max-width: 767px) {
   .col-md + .col-md {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -164,5 +175,10 @@ export default Vue.extend({
 
 .card-footer {
   height: 28px;
+}
+
+.filters-card {
+  transform: scale(1);
+  z-index: 2;
 }
 </style>

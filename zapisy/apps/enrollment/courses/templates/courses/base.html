@@ -1,15 +1,20 @@
 {% extends "enrollment/base.html" %}
 {% load render_bundle from webpack_loader %}
 
+{% block top-content %}
+    <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
+    <div id="course-filter"></div>
+{% endblock top-content %}
+
 {% block sidebar-header %}
     <div class="dropdown">
-        <div class="btn-group btn-block mb-3">
+        <div class="btn-group btn-block mb-3 w-100">
             <button class="btn btn-light" disabled>
                 <strong>Semestr {{ semester }}</strong>
             </button>
             <button class="btn btn-light dropdown-toggle dropdown-toggle-split"
-                    href="#" role="button" id="semester-dropdown"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    href="#" role="button" id="semester-dropdown" 
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only"></span>
             </button>
 

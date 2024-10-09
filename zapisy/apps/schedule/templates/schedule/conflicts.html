@@ -21,17 +21,13 @@
 {% block all-content %}
 <h2>{{ title }}</h2>
 
-<form class="form-inline" action="{% url 'events:conflicts' %}" method="GET">
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
+<form class="form-inline col col-md-8 col-lg-6" action="{% url 'events:conflicts' %}" method="GET">
+    <div class="container p-0">
+        <div class="input-group mb-3">
             <label class="input-group-text">{{ form.beg_date.label }}</label>
-        </div>
-        {{ form.beg_date }}
-        <div class="input-group-prepend input-group-append">
+            {{ form.beg_date }}
             <label class="input-group-text">{{ form.end_date.label }}</label>
-        </div>
-        {{ form.end_date }}
-        <div class="input-group-append">
+            {{ form.end_date }}
             <input type="submit" value="Szukaj" class="btn btn-success">
         </div>
     </div>

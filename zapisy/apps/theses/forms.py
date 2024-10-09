@@ -79,12 +79,12 @@ class ThesisFormBase(forms.ModelForm):
             'title',
             Row(Column('advisor', css_class='form-group col-md-6 mb-0'),
                 Column('supporting_advisor', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'),
+                css_class='row'),
             Row(
                 Column('kind', css_class='form-group col-md-3'),
                 Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
-                css_class='form-row'),
+                css_class='row'),
             'students',
             'description',
         )

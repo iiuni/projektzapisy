@@ -64,7 +64,7 @@
             <th scope="row">Tagi</th>
             <td>
                 {% for tag in course.tags.all %}
-                    <span class="badge badge-success mr-2">{{ tag }}</span>
+                    <span class="badge bg-success me-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -74,7 +74,7 @@
             <th>Grupy efektów kształcenia</th>
             <td>
                 {% for effect in course.effects.all %}
-                    <span class="badge badge-info mr-2">{{ effect }}</span>
+                    <span class="badge bg-info me-2">{{ effect }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -88,12 +88,12 @@
 </div>
 
 {% if request.user.is_authenticated %}	
-    <a class="d-print-none" data-toggle="collapse"  href="#syllabus"	
+    <a class="d-print-none" data-bs-toggle="collapse"  href="#syllabus"	
     role="button" aria-expanded="false" aria-controls="syllabus">	
         Sylabus	
     </a>	
     <div class="collapse mt-3 d-print-block" id="syllabus">
-        <a class="btn btn-sm btn-light float-right my-2 d-print-none" href="#" id="print">
+        <a class="btn btn-sm btn-light float-end my-2 d-print-none" href="#" id="print">
             <i class="fa fa-print"></i>
             Drukuj
         </a>

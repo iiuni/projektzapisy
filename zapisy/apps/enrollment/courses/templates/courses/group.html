@@ -12,16 +12,12 @@
     </li>
 
     <li class="breadcrumb-item">
-        <a href="{% url 'course-list' %}">Zapisy</a>
-    </li>
-
-    <li class="breadcrumb-item">
 	    <a href="{% url 'course-list' %}">Przedmioty</a>
     </li>
 
     <li class="breadcrumb-item">
 	    <a href="{% url 'course-page' group.course.slug %}">
-            {{group.course.name}}
+            {{group.course.name}} ({{ group.course.semester.get_short_name }})
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
@@ -34,7 +30,10 @@
 {% block content %}
     <header class="d-flex justify-content-between align-items-center">
         <div>
-            <h1>{{ group.course }}</h1>
+            <h1 class="d-inline-block">
+                {{ group.course.name }}
+                <small class="text-muted">{{ group.course.semester.get_short_name }}</small>
+            </h1>
             <h4>{{group.get_type_display}}:
                     {% if group.teacher %}
                         <a href="{% url 'employee-profile' group.teacher.user_id %}"
@@ -63,13 +62,13 @@
                 + 
                 <span title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
                     {{ gs.limit }}
-                    <span class="badge badge-dark">{{ gs.role.name }}</span>
+                    <span class="badge bg-dark">{{ gs.role.name }}</span>
                 </span>
             {% endfor %}
         </p>
 
         {% if students_in_group %}
-            {% include "courses/students_list.html" with students=students_in_group %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_group %}
             
             {% if request.user.is_staff or request.user.employee %}
             <div class="d-print-none">
@@ -93,7 +92,7 @@
             <h3>Lista osób oczekujących na zapis:</h3>
             <p>Liczba osób oczekujących na zapis: {{students_in_queue|length}}</p>
 
-            {% include "courses/students_list.html" with students=students_in_queue %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_queue %}
             
             {% if request.user.is_staff or request.user.employee %}
                 <h5>Wyślij wiadomość do kolejki</h5>

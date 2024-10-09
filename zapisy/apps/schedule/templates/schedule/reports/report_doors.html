@@ -6,7 +6,7 @@
 
 {% block all-content %}
     <div class='mb-5 d-print-none'>
-        <a class="btn btn-light float-right" id="print-report">
+        <a class="btn btn-light float-end" id="print-report">
             <i class="fa fa-print"></i>
             Drukuj
         </a>
@@ -22,6 +22,12 @@
             margin: 0.5cm 2cm 2cm 2cm;
         }
         @media print {
+            .display-5 {
+                font-weight: 500;
+            }
+            .display-6 {
+                font-weight: 460;
+            }
             footer { page-break-after: always; }
             .ct-app { display: none; }
         }
@@ -29,8 +35,8 @@
             width: 280px;
             filter: invert(1);
         }
-        .display-1 {
-            font-size: 4rem
+        .display-5 {
+            font-size: 4rem;
         }
         .room-terms b, .room-terms strong {
             display: inline-block;
@@ -41,11 +47,11 @@
     {% for room, terms in events %}
         <div class="report-page pt-5">
             <header class="d-flex justify-content-between align-items-center">
-                <h1 class="display-1">{{ room }}</h1>
+                <h1 class="display-5">{{ room }}</h1>
                 {% if semester %}
-                <h3 class="display-3">Semestr {{ semester.get_type_display }} &mdash; {{ semester.year }}</h3>
+                <h3 class="display-6">Semestr {{ semester.get_type_display }} &mdash; {{ semester.year }}</h3>
                 {% elif beg_date and end_date %}
-                <h3 class="display-3">{{ beg_date|date:"j E Y" }} &mdash; {{ end_date|date:"j E Y" }}</h3>
+                <h3 class="display-6">{{ beg_date|date:"j E Y" }} &mdash; {{ end_date|date:"j E Y" }}</h3>
                 {% endif %}
                 <img src="{% static 'common/images/logo-uwr.svg' %}" class="logo" alt="uwrlogo">
             </header>

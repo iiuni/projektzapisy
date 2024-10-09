@@ -12,6 +12,10 @@ class SingleVoteForm(forms.ModelForm):
         fields = ('value',)
         labels = {'value': ""}
 
+    def __init__(self, *args, **kwargs):
+        super(SingleVoteForm, self).__init__(*args, **kwargs)
+        self.fields['value'].widget.attrs['class'] = 'form-select'
+
     def save(self, commit=True):
         super().save(commit=False)
         # This simple trick should radically save on number of queries.
@@ -19,14 +23,15 @@ class SingleVoteForm(forms.ModelForm):
             self.instance.save()
 
 
-class SingleCorrectionFrom(forms.ModelForm):
+class SingleCorrectionForm(forms.ModelForm):
     class Meta:
         model = SingleVote
         fields = ('correction', )
         labels = {'correction': ""}
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(SingleCorrectionForm, self).__init__(*args, **kwargs)
+        self.fields['correction'].widget.attrs['class'] = 'form-select'
         if self.instance:
             value = self.instance.value
             self.fields['correction'].choices = filter(lambda v: v[0] >= value,
@@ -94,7 +99,7 @@ def prepare_vote_formset(state: SystemState, student: Student, post=None):
     elif state.correction_active_semester() is not None:
         semester: Semester = state.correction_active_semester()
         limit = SingleVote.points_for_semester(student, state, semester.type)
-        FormClass = SingleCorrectionFrom
+        FormClass = SingleCorrectionForm
         queryset = queryset.in_semester(semester=semester)
     else:
         raise AssertionError("Voting or Correction must be active.")

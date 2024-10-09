@@ -24,7 +24,7 @@
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   content: "\f031";
-  color: var(--red);
+  color: var(--bs-red);
 }
 
 .ct-tool--red.ct-tool--disabled {
@@ -35,7 +35,7 @@
 
 // We introduce an artificial HTML tag for red text.
 red {
-  color: var(--red);
+  color: var(--bs-red);
 }
 
 // This is a _font_ icon painted green.
@@ -48,7 +48,7 @@ red {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   content: "\f031";
-  color: var(--green);
+  color: var(--bs-green);
 }
 
 .ct-tool--green.ct-tool--disabled {
@@ -59,7 +59,7 @@ red {
 
 // HTML tag for green text.
 green {
-  color: var(--green);
+  color: var(--bs-green);
 }
 
 // The _edit_ button should be very visible, so we colour it pink to contrast
@@ -71,9 +71,9 @@ green {
     top: 200px !important;
   }
   .ct-ignition__button--edit {
-    background: var(--pink);
+    background: var(--bs-pink);
     &:hover {
-      background: var(--pink);
+      background: var(--bs-pink);
     }
   }
 }

@@ -38,114 +38,116 @@
 <body{% if debug %} class="debug"{% endif %}>
     <div class="container-fluid p-0 d-print-none">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="container m-0 mw-100">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li {% block enrollment_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'course-list' %}" class="nav-link">System Zapisów</a>
-                    </li>
-                    <li {% block grade_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
-                    </li>
-                    <li {% block offer_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
-                    </li>
-                    <li {% block events_active %}{% endblock %} class="nav-item">
-                        <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        <li {% block theses_active %}{% endblock %} class="nav-item">
-                            <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto">
+                        <li {% block enrollment_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'course-list' %}" class="nav-link">System Zapisów</a>
                         </li>
-                    {% endif %}
-                </ul>
-            {% if user.is_authenticated %}
-                <div class="navbar-nav ml-auto">
-                    <span class="navbar-text">
-                        <strong>
-                            {{ user.get_full_name }}
-                        </strong>
-                    </span>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <div id="notificationswidget"></div>
-                            {% render_bundle 'notifications-notifications-widget' %}
+                        <li {% block grade_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'grade-main' %}" class="nav-link">Ocena Zajęć</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
+                        <li {% block offer_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'offer-main' %}" class="nav-link">Oferta</a>
                         </li>
-                        {% if user.is_staff %}
-                            <li class="nav-item">
-                                <a href="/fereol_admin/" class="nav-link">Admin</a>
+                        <li {% block events_active %}{% endblock %} class="nav-item">
+                            <a href="{% url 'events:classrooms' %}" class="nav-link">Sale</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <li {% block theses_active %}{% endblock %} class="nav-item">
+                                <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
                             </li>
                         {% endif %}
-                        <li class="nav-item">
-                                <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
+                    </ul>
+                {% if user.is_authenticated %}
+                    <div class="navbar-nav ms-auto">
+                        <span class="navbar-text">
+                            <strong>
+                                {{ user.get_full_name }}
+                            </strong>
+                        </span>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <div id="notificationswidget"></div>
+                                {% render_bundle 'notifications-notifications-widget' %}
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'my-profile' %}" class="nav-link">Moje konto</a>
+                            </li>
+                            {% if user.is_staff %}
+                                <li class="nav-item">
+                                    <a href="/fereol_admin/" class="nav-link">Admin</a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                    <a href="{% url 'news-all' %}" class="nav-link">Aktualności</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'cas_ng_logout' %}" class="nav-link">Wyloguj</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown" id="login-dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bs-auto-close="outside" >
+                                <b>Zaloguj się</b><span class="caret"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end m-2">
+                                <div class="m-3">
+                                    <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
+                                        <img src="{% static 'common/images/logo-uwr.svg' %}"
+                                            alt="Uniwersytet Wrocławski">
+                                        <div class="clearfix"></div>
+                                        Zaloguj się przez USOS
+                                    </a>
+                                </div>
+                                <form class="m-3">
+                                    <a class="btn btn-primary" data-bs-toggle="collapse"
+                                            href="#login-without-usos" role="button"
+                                            aria-expanded="false" aria-controls="login-without-usos">
+                                        lub użyj konta Systemu Zapisów
+                                    </a>
+                                </form>
+                                <div class="collapse" id="login-without-usos">
+                                    <form action="{% url 'login' %}" method="POST" class="px-4 py-3">
+                                            {% csrf_token %}
+                                            {% if request.path == '/' %}
+                                                <input type="hidden" name="next"
+                                                        value="{% url 'my-timetable' %}"/>
+                                            {% else %}
+                                                <input type="hidden" name="next" value="{{ request.path }}"/>
+                                            {% endif %}
+                                            <div class="form-group">
+                                                <label>Login</label>
+                                                <input type="text" class="form-control"
+                                                        name="username"
+                                                        placeholder="Użytkownik"
+                                                        oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
+                                                        required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Hasło</label>
+                                                <input type="password" class="form-control"
+                                                        name="password" placeholder="Hasło"
+                                                        oninvalid="this.setCustomValidity('Hasło jest wymagane')"
+                                                        required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Zaloguj</button>
+                                            <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a>
+                                        </form>
+                                </div>
+                            </div>
                         </li>
                     </ul>
+                {% endif %}
                 </div>
-            {% else %}
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown" id="login-dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <b>Zaloguj się</b><span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right m-2">
-                            <div class="m-3">
-                                <a href="{% url 'cas_ng_login' %}" class="btn btn-primary">
-                                    <img src="{% static 'common/images/logo-uwr.svg' %}"
-                                         alt="Uniwersytet Wrocławski">
-                                    <div class="clearfix"></div>
-                                    Zaloguj się przez USOS
-                                </a>
-                            </div>
-                            <form class="m-3">
-                                <a class="btn btn-primary" data-toggle="collapse"
-                                        href="#login-without-usos" role="button"
-                                        aria-expanded="false" aria-controls="login-without-usos">
-                                    lub użyj konta Systemu Zapisów
-                                </a>
-                            </form>
-                            <div class="collapse" id="login-without-usos">
-                                <form action="{% url 'login' %}" method="POST" class="px-4 py-3">
-                                        {% csrf_token %}
-                                        {% if request.path == '/' %}
-                                            <input type="hidden" name="next"
-                                                    value="{% url 'my-timetable' %}"/>
-                                        {% else %}
-                                            <input type="hidden" name="next" value="{{ request.path }}"/>
-                                        {% endif %}
-                                        <div class="form-group">
-                                            <label>Login</label>
-                                            <input type="text" class="form-control"
-                                                    name="username"
-                                                    placeholder="Użytkownik"
-                                                    oninvalid="this.setCustomValidity('Nazwa użytkownika jest wymagana')"
-                                                    required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Hasło</label>
-                                            <input type="password" class="form-control"
-                                                    name="password" placeholder="Hasło"
-                                                    oninvalid="this.setCustomValidity('Hasło jest wymagane')"
-                                                    required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Zaloguj</button>
-                                        <a class="btn btn-primary" href="{% url 'password_reset' %}">Resetuj hasło</a>
-                                    </form>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            {% endif %}
             </div>
         </nav>
         <div class="top">
@@ -173,7 +175,7 @@
     {% endif %}
     <div class="container sidebar-right" id="main-content-container">
         <nav aria-label="breadcrumb" role="navigation">
-            <ol class="breadcrumb d-print-none">
+            <ol class="breadcrumb d-print-none px-3 py-2">
                 {% block bread %}
                 {% endblock %}
             </ol>
@@ -213,7 +215,7 @@
     {% block rendered_bundles %}
     {% endblock %}
     <footer class="d-print-none">
-        <div class="container-fluid">
+        <div class="container-fluid bg-light">
             <div class="container">
                 <p>
                     &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>

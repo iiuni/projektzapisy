@@ -11,6 +11,8 @@ class NotificationType(str, Enum):
     NEWS_HAS_BEEN_ADDED = 'news_has_been_added'
     NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY = 'news_has_been_added_high_priority'
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
+    EVENT_DECISION = 'event_decision'
+    THESIS_HAS_BEEN_ACCEPTED = 'thesis_has_been_accepted'
 
 
 mapping = {
@@ -34,8 +36,12 @@ mapping = {
     "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
     NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
     "Dodano nową wiadomość w aktualnościach:\n# {title}\n\n{contents}",
+    NotificationType.EVENT_DECISION:
+    'Twoje wydarzenie "{title}" zostało {status}.',
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    NotificationType.THESIS_HAS_BEEN_ACCEPTED:
+    'Praca dyplomowa "{title}" została zaakceptowana przez komisję.',
 }
 
 mapping_title = {
@@ -55,6 +61,10 @@ mapping_title = {
     "{title}",
     NotificationType.NEWS_HAS_BEEN_ADDED_HIGH_PRIORITY:
     "{title}",
+    NotificationType.EVENT_DECISION:
+    'Podjęto decyzję w sprawie zgłoszonego przez Ciebie wydarzenia "{title}"',
     NotificationType.THESIS_VOTING_HAS_BEEN_ACTIVATED:
-    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
+    'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania',
+    NotificationType.THESIS_HAS_BEEN_ACCEPTED:
+    'Praca dyplomowa "{title}" została zaakceptowana',
 }

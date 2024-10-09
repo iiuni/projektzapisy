@@ -107,7 +107,7 @@ export default Vue.extend({
       href="#"
       v-for="l in allLabelIds"
       class="badge"
-      v-bind:class="[selected[l] ? onClass : 'badge-secondary']"
+      v-bind:class="[selected[l] ? onClass : 'bg-secondary']"
       @click.prevent="toggle(l)"
     >
       {{ allLabels[l] }}

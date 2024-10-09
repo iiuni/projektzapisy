@@ -2,13 +2,13 @@
 import collections
 import csv
 import json
-from typing import List
+from typing import List, Optional
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import Http404, HttpResponse, render
+from django.shortcuts import Http404, HttpResponse, get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -84,9 +84,8 @@ def list_courses_in_semester(semester: Semester):
     return courses
 
 
-def student_timetable_data(student: Student):
+def student_timetable_data(student: Student, semester: Optional[Semester]):
     """Collects the timetable data for a student."""
-    semester = Semester.get_current_semester()
     # This costs an additional join, but works if there is no current semester.
     records = Record.objects.filter(
         student=student,
@@ -107,9 +106,8 @@ def student_timetable_data(student: Student):
     return data
 
 
-def employee_timetable_data(employee: Employee):
+def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     """Collects the timetable data for an employee."""
-    semester = Semester.get_current_semester()
     groups = Group.objects.filter(teacher=employee, course__semester=semester).select_related(
         'teacher', 'teacher__user', 'course').prefetch_related(
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
@@ -121,15 +119,23 @@ def employee_timetable_data(employee: Employee):
 
 
 @login_required
-def my_timetable(request):
+def my_timetable(request, semester_id: Optional[int] = None):
     """Shows the student/employee his own timetable page."""
     # Counter will add elements key-wise. Numbers will be added, lists will be
     # extended.
+    semester: Optional[Semester]
+    if semester_id is None:
+        semester = Semester.get_current_semester()
+    else:
+        semester = get_object_or_404(Semester, pk=semester_id)
+    all_semesters = Semester.objects.filter(visible=True)
     data = collections.Counter()
     if request.user.student:
-        data.update(student_timetable_data(request.user.student))
+        data.update(student_timetable_data(request.user.student, semester))
     if request.user.employee:
-        data.update(employee_timetable_data(request.user.employee))
+        data.update(employee_timetable_data(request.user.employee, semester))
+    data['semester'] = semester
+    data['all_semesters'] = all_semesters
 
     return render(request, 'timetable/timetable.html', data)
 

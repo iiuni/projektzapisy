@@ -62,16 +62,16 @@ class TermForm(forms.ModelForm):
 
         self.helper.layout = Layout(
             Div(Row(
-                Column('day', css_class='col-2 mb-0'),
-                Column('start', css_class='form-group col-2 mb-0'),
-                Column('end', css_class='form-group col-2 mb-0'),
-                Column('place', css_class='form-group col-3 mb-0'),
+                Column('day', css_class='col-3 col-lg-2 mb-0 px-1'),
+                Column('start', css_class='form-group col-2 mb-0 px-1'),
+                Column('end', css_class='form-group col-2 mb-0 px-1'),
+                Column('place', css_class='form-group col-2 col-lg-3 mb-0 px-1'),
                 Column(HTML(
                     '<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> '
                     '<button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
                 ),
                     css_class='col-3 mb-0'),
-                css_class='form-row p-2'),
+                css_class='row p-2'),
                 'room',
                 'id',
                 Div('DELETE', css_class='d-none'),
@@ -210,7 +210,7 @@ class DoorChartForm(forms.Form):
     """Form for generating door event charts."""
     today = date.today().isoformat()
     rooms = forms.MultipleChoiceField()
-    week = forms.CharField(max_length=10, widget=forms.Select())
+    week = forms.CharField(max_length=10, widget=forms.Select(attrs={'class': 'form-select'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

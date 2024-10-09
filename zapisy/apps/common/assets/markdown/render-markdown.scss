@@ -2,10 +2,12 @@
 // because H1 used in the markdown description should not be larger than h2
 // before it.
 
-// We are importing Boostrap variables to relate our font sizes to those from
-// Boostrap.
+// We are importing Bootstrap variables to relate our font sizes to those from
+// Bootstrap.
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/images";
 
 .markdown-rendered {
   // H1 in the description must be visibly smaller than H3 outside.
@@ -17,5 +19,10 @@
   }
   h3 {
     font-size: $h5-font-size * 0.75;
+  }
+
+  // Make images responsive
+  img {
+    @extend .img-fluid;
   }
 }

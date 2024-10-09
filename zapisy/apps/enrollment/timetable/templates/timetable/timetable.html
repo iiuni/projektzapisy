@@ -19,39 +19,69 @@
 
 
 {% block all-content %}
-    <p class="text-right">
-        <a class="btn btn-sm btn-light" href="{% url 'calendar-export' %}">
-            <i class="fa fa-calendar-alt"></i> Eksportuj plan zajęć</a>
-    </p>
+    <div class="row my-4">
+        <div class="col-lg-9 col-12 order-last order-lg-first">
+            {% if semester.is_current_semester %}
+                <p class="text-end">
+                    <a class="btn btn-sm btn-light" href="{% url 'calendar-export' %}">
+                        <i class="fa fa-calendar-alt"></i> Eksportuj plan zajęć
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+        <nav class="col-lg-3 col-12 d-print-none order-first order-lg-last mb-3">
+            <div class="dropdown">
+                <div class="btn-group btn-block mb-3 w-100">
+                    <button class="btn btn-light" disabled>
+                        <strong>Semestr {{ semester }}</strong>
+                    </button>
+                    <button class="btn btn-light dropdown-toggle dropdown-toggle-split"
+                            href="#" role="button" id="semester-dropdown" 
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only"></span>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="semester-dropdown">
+                        {% for semester in all_semesters %}
+                            <a class="dropdown-item semester-link"
+                                    href={% url 'my-timetable-semester' semester.pk %}>
+                                {{ semester }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
     <div class="row m-0" id="timetable">
     </div>
     {{ groups_dicts|json_script:"timetable-data" }}
     {% render_bundle 'timetable-timetable-component' %}
     
     {% if user.student %}
-    <h3>{% trans "Zajęcia, na które jesteś zapisany" %}</h3>
+    <h3>Twoje przedmioty</h3>
     <div class="table-responsive">
-	<table id="enr-schedule-listByCourse" class="table table-striped">
-		<thead>
-			<tr>
+    <table id="enr-schedule-listByCourse" class="table table-striped">
+        <thead>
+            <tr>
                 {# Translators: Tytuł kolumny w tabelce #}
-				<th scope="col">{% trans "Przedmiot" %}</th>
-				{% if user.student %}
+                <th scope="col">{% trans "Przedmiot" %}</th>
+                {% if user.student %}
                     {# Translators: Tytuł kolumny w tabelce #}
                     <th class="ects" scope="col">{% trans "ECTS" %}</th>
                 {% else %}
                     {# Translators: Tytuł kolumny w tabelce #}
                     <th class="ects" scope="col">{% trans "Godziny" %}</th>
                 {% endif %}
-			</tr>
-		</thead>
-		<tfoot>
-			<tr>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
                 <td><strong>Suma punktów ECTS:</strong></td>
                 <td class="ects">{{ sum_points }}</td>
-			</tr>
-		</tfoot>
-		<tbody>
+            </tr>
+        </tfoot>
+        <tbody>
             {% regroup groups|dictsort:"course_id" by course as courses %}
             {% for course in courses %}
             <tr class="courseHeader">
@@ -90,7 +120,7 @@
                 </td>
             </tr>
             {% endfor %}
-		</tbody>
+        </tbody>
     </table>
     </div>  
     {% endif %}

@@ -14,16 +14,12 @@
     </li>
 
     <li class="breadcrumb-item">
-        <a href="{% url 'course-list' %}">Zapisy</a>
-    </li>
-
-    <li class="breadcrumb-item">
 	    <a href="{% url 'course-list' %}">Przedmioty</a>
     </li>
 
     <li class="breadcrumb-item">
 	    <a href="{% url 'course-page' course.slug %}">
-            {{course.name}}
+            {{course.name}} ({{ course.semester.get_short_name }})
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
@@ -36,9 +32,12 @@
 {% block content %}
     <header class="d-flex justify-content-between align-items-center">
         <div>
-            <h1>{{ course }}</h1>
+            <h1 class="d-inline-block">
+                {{ course.name }}
+                <small class="text-muted">{{ course.semester.get_short_name }}</small>
+            </h1>
             {% if class_type %}
-                <h3 class="d-inline-block">{{ class_type|decode_class_type_plural }}</h3>
+                <h4>{{ class_type|decode_class_type_plural }}</h4>
             {% endif %}
         </div>
     </header>
@@ -53,7 +52,7 @@
         </p>
 
         {% if students_in_course %}
-            {% include "courses/students_list.html" with students=students_in_course %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_course %}
             
             {% if request.user.is_staff or request.user.employee %}
             <div class="d-print-none">
@@ -77,7 +76,7 @@
             <h3>Lista osób oczekujących na zapis:</h3>
             <p>Liczba osób oczekujących na zapis: {{students_in_queue|length}}</p>
 
-            {% include "courses/students_list.html" with students=students_in_queue %}
+            {% include "courses/course_parts/students_list.html" with students=students_in_queue %}
             
             {% if request.user.is_staff or request.user.employee %}
                 <h5>Wyślij wiadomość do kolejki</h5>

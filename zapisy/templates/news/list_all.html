@@ -16,16 +16,14 @@
 
 {% block all-content %}
 
-<h1 class="display-1 p-2">Aktualności</h1>
+<h1 class="display-5 p-2">Aktualności</h1>
 
 <div class="row">
-    <div class="col-auto mr-auto">
+    <div class="col-auto me-auto">
         <form class="input-group">
             <input class="form-control form-control-lg form-control-borderless" type="search" name="q"
                     value="{{ query|default_if_none:''|lower }}" placeholder="Szukaj w tytułach i treści..." />
-            <div class="input-group-append">
-                <button class="btn btn-success" type="submit">Wyszukaj</button>
-            </div>
+            <button class="btn btn-success" type="submit">Wyszukaj</button>
         </form>
         {% if query %}
             <p class="mx-auto font-weight-bolder m-2">
@@ -48,7 +46,7 @@
         {% if items %}
             {% for news in items %}
             <div class="od-news-item" id="od-news-{{news.id}}">
-                <h3 class="display-3">{{ news.title }}</h3>
+                <h3 class="display-6">{{ news.title }}</h3>
                 <div>
                     <span class="od-news-date">{{ news.date|date:"l, d.m.Y · G:i" }}</span>
                     <span class="od-news-author">{{ news.author.get_full_name }}</span>

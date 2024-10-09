@@ -3,10 +3,15 @@ from datetime import datetime
 from typing import List
 
 import redis
+
 from django.contrib.auth.models import User
 
+from apps.common.redis import flush_by_pattern
 from apps.notifications.datatypes import Notification
 from apps.notifications.serialization import JsonNotificationSerializer, NotificationSerializer
+
+KEY_PREFIX = 'notifications:'
+KEY_PATTERN = KEY_PREFIX + '*'
 
 
 class NotificationsRepository(ABC):
@@ -96,7 +101,7 @@ class RedisNotificationsRepository(NotificationsRepository):
         self.redis_client.delete(self._generate_sent_key_for_user(user))
 
     def flush(self) -> None:
-        self.redis_client.flushdb()
+        flush_by_pattern(self.redis_client, KEY_PATTERN)
 
     def remove_all_older_than(self, user: User, until: datetime) -> int:
         self.removed_count = 0
@@ -139,10 +144,10 @@ class RedisNotificationsRepository(NotificationsRepository):
         return self.removed_count
 
     def _generate_unsent_key_for_user(self, user: User) -> str:
-        return f'notifications:unsent#{user.id}'
+        return f'{KEY_PREFIX}unsent#{user.id}'
 
     def _generate_sent_key_for_user(self, user: User) -> str:
-        return f'notifications:sent#{user.id}'
+        return f'{KEY_PREFIX}sent#{user.id}'
 
 
 def get_notifications_repository() -> NotificationsRepository:
