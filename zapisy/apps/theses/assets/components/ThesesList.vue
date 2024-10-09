@@ -60,17 +60,8 @@ export default class ThesesList extends Vue {
 }
 </script>
 
-<style scoped>
-.selection-none {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-</style>
-
 <template>
-  <table class="table table-hover selection-none table-responsive-md">
+  <table class="table table-hover table-responsive-md">
     <thead id="table-header">
       <tr class="text-center">
         <th>
