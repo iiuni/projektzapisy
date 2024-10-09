@@ -30,7 +30,7 @@
     {% endif %}
 {% endblock %}
 
-{% block sidebar %}
+{% block sidebar-inner %}
     <h3>Przedmioty w ofercie</h3>
     {%  if request.user.employee %}
         <a href="{% url 'proposal-form' %}" class="btn btn-success btn-block mb-3">Dodaj nową propozycję przedmiotu</a>

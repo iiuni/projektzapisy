@@ -6,18 +6,18 @@
     <div id="course-filter"></div>
 {% endblock top-content %}
 
-{% block sidebar %}
+{% block sidebar-header %}
     <div class="dropdown">
         <div class="btn-group btn-block mb-3 w-100">
             <button class="btn btn-light" disabled>
-                <strong>Semestr {{ semester }}</strong>    
+                <strong>Semestr {{ semester }}</strong>
             </button>
             <button class="btn btn-light dropdown-toggle dropdown-toggle-split"
-                    href="#" role="button" id="semester-dropdown" 
+                    href="#" role="button" id="semester-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only"></span>
             </button>
-            
+
             <div class="dropdown-menu" aria-labelledby="semester-dropdown">
                 {% for semester in all_semesters %}
                 <a class="dropdown-item semester-link" href={% url 'courses-semester' semester.pk %}>{{ semester }}</a>
@@ -25,7 +25,9 @@
             </div>
         </div>
     </div>
-    
+{% endblock %}
+
+{% block sidebar-inner %}
     <script id="courses-data" type="application/json">{{ courses_json|safe }}</script>
 	<div id="course-list"></div>
 {% endblock %}

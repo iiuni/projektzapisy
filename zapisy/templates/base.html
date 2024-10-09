@@ -201,8 +201,10 @@
                 <nav class="col-lg-3 col-12
                         d-print-none order-first
                         order-lg-last mb-3" id="sidebar">
+                    {% block sidebar-header %}
+                    {% endblock %}
                     <div class="folded" id="sidebar-inner">
-                        {% block sidebar %}
+                        {% block sidebar-inner %}
                         {% endblock %}
                     </div>
                     <a class="text-dark" href="#" id="fold-toggler">zwiń / rozwiń</a>
