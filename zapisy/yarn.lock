@@ -48,9 +48,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.25.7":
-  version: 7.25.7
-  resolution: "@babel/core@npm:7.25.7"
+"@babel/compat-data@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/compat-data@npm:7.25.8"
+  checksum: 3938cd40cda9242dba804477d33cb4cecf0d31d77b17432f532f7dbfc427c4a75784749eaed6b865b3dfe351c8a01aa46c189e76eec9a4522d8c567b1f5b6ead
+  languageName: node
+  linkType: hard
+
+"@babel/core@npm:7.25.8":
+  version: 7.25.8
+  resolution: "@babel/core@npm:7.25.8"
   dependencies:
     "@ampproject/remapping": ^2.2.0
     "@babel/code-frame": ^7.25.7
@@ -58,16 +65,16 @@ __metadata:
     "@babel/helper-compilation-targets": ^7.25.7
     "@babel/helper-module-transforms": ^7.25.7
     "@babel/helpers": ^7.25.7
-    "@babel/parser": ^7.25.7
+    "@babel/parser": ^7.25.8
     "@babel/template": ^7.25.7
     "@babel/traverse": ^7.25.7
-    "@babel/types": ^7.25.7
+    "@babel/types": ^7.25.8
     convert-source-map: ^2.0.0
     debug: ^4.1.0
     gensync: ^1.0.0-beta.2
     json5: ^2.2.3
     semver: ^6.3.1
-  checksum: f758e1755332d6f316620b221b5421050792d1474ddac8751f2f740c896872e312ab1bea1f1a44a93940de5154619431eb5dcd80934ec51baf82874e928bc427
+  checksum: 0957551fae42b2615dcf9449a79726c1afcd2eb44390cec0b7ca0db75dfc3a59c9e9b70a911f4c162b3b5d0547e16ac510334104a6a9612753e2cda000c24071
   languageName: node
   linkType: hard
 
@@ -254,17 +261,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-plugin-utils@npm:^7.0.0, @babel/helper-plugin-utils@npm:^7.10.4, @babel/helper-plugin-utils@npm:^7.8.0, @babel/helper-plugin-utils@npm:^7.8.3":
+"@babel/helper-plugin-utils@npm:^7.0.0, @babel/helper-plugin-utils@npm:^7.8.0":
   version: 7.10.4
   resolution: "@babel/helper-plugin-utils@npm:7.10.4"
   checksum: 9f617e619a3557cb5fae8885e91cd94ba4ee16fb345e0360de0d7dc037efb10cc604939ecc1038ccdb71aa37e7e78f20133d7bbbebecb8f6dcdb557650366d92
-  languageName: node
-  linkType: hard
-
-"@babel/helper-plugin-utils@npm:^7.12.13, @babel/helper-plugin-utils@npm:^7.14.5":
-  version: 7.14.5
-  resolution: "@babel/helper-plugin-utils@npm:7.14.5"
-  checksum: 76404ef3aadc25879f7b4c5945bafcca935d4af0cf451a95ff9f131f29ac3dc589e2ed19904ce746c7cf6c2a8a7ea33fa4eaf881b9b272d31f2be91984f505d6
   languageName: node
   linkType: hard
 
@@ -441,6 +441,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/parser@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/parser@npm:7.25.8"
+  dependencies:
+    "@babel/types": ^7.25.8
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 5057ce20940f17b8fedf6c021c7b99dbfe7dce0441c7137edaaa14b93199eede64e196f22d26a2aad1c56b8dbea59473066a6cf57b2e769d3a44da50c6297b79
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-bugfix-firefox-class-in-computed-class-key@npm:^7.25.7":
   version: 7.25.7
   resolution: "@babel/plugin-bugfix-firefox-class-in-computed-class-key@npm:7.25.7"
@@ -509,61 +520,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-async-generators@npm:^7.8.4":
-  version: 7.8.4
-  resolution: "@babel/plugin-syntax-async-generators@npm:7.8.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 39685944ffe342981afb1fe3af824305e94ee249b1841c78c1112f93d256d3d405902ac146ab3bad8c243710f081621f9fbf53c62474800d398293c99521c8ef
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-class-properties@npm:^7.12.13":
-  version: 7.12.13
-  resolution: "@babel/plugin-syntax-class-properties@npm:7.12.13"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.12.13
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 3023dec8acd42e0b691d9cdf21bc6931fe3e3d53c2231bdfe3eca3afeab168723f7315991550a163748bc49dbcd3c95632b77ec56f5e1d89bc5029cfeb7f0f7b
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-class-static-block@npm:^7.14.5":
-  version: 7.14.5
-  resolution: "@babel/plugin-syntax-class-static-block@npm:7.14.5"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.14.5
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 43bef611dd3912e3adcea1bcb587eaba1b8c8f24dfb134f191488e3521453d4f0a36408e6a3e27b512bee6e1b569c889db31a270d5576e9c34a80326bbc6bd7d
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-dynamic-import@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-dynamic-import@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 134a6f37feac0e6d55f8188232e11798ccf699b02d50a4daf9c040f52a22ee32923a6a979443ecc865f4014937ffe67ac11b81aa5668b6792238c647314f41c9
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-export-namespace-from@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-export-namespace-from@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.3
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 832e007319bc5040818012d51eb91c3ad4c38a1ea696e9a9805df4d601d8c4f061032cb61494946e7bdaa5db0422a6bb6f39577cd0e5c8323b6bb2c364406dcb
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-syntax-import-assertions@npm:^7.25.7":
   version: 7.25.7
   resolution: "@babel/plugin-syntax-import-assertions@npm:7.25.7"
@@ -586,83 +542,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-import-meta@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-syntax-import-meta@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 685ee8f0b5b675952e02e1cabcde4d92638918a66ed515b2663e2e0b2246210a0768325423d5642f8687653a449357826675ccfcb712676be260a0ae13313828
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-json-strings@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-json-strings@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 1a7dabf0a4b264cb235966c4256aad131567eba20e41de731fa9127d371454a2f702e27fd7bedac65efb0df847e5cece7bcb5507a931604d1c2ecb7390adaa1f
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-logical-assignment-operators@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-syntax-logical-assignment-operators@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 5b82f717707d278e58d12649932bf3327923361f051cd4517a5b63d7ebfe39cb6cdfb37aa199b5a441db305301a3c8de01c946d25d1f4c4ecb94322a23ac9e73
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-nullish-coalescing-operator@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-nullish-coalescing-operator@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 4ba03753759a2d9783b792c060147a20f474f76c42edf77cbf89c6669f9f22ffb3cbba4facdd8ce651129db6089a81feca1f7e42da75244eabedecba37bd20be
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-numeric-separator@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/plugin-syntax-numeric-separator@npm:7.10.4"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.10.4
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 47ae8782939ccc41f94b1d46b8b7a63363b003b8b7544bddae8dd454a8d51b38bbd4f9c26e91ecfb5fc16dc5f2228700e3030def63c5d07046073ec8fabc4665
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-object-rest-spread@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-object-rest-spread@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: db5dfb39faceddba8b80c586e331e17c3a1f79941f80eaa070b91fb920582bffe8bba46f6bebbdaf7c1f9b0bbe2a68493c28e1c9fb0ced864da739c0cd52ce43
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-optional-catch-binding@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/plugin-syntax-optional-catch-binding@npm:7.8.3"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.8.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: f03d07526674ecdb3388e1d648ec250250968e13c037a7110e37d3eab0b82b07d6605332772afdf19f1831dfd3bdbbf0288a7d9097097d30b9548388ea693a07
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-syntax-optional-chaining@npm:^7.8.3":
   version: 7.8.3
   resolution: "@babel/plugin-syntax-optional-chaining@npm:7.8.3"
@@ -671,28 +550,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 2a50685d023bc609b01a3fd7ed3af03bc36c575da8d02199ed51cb24e8e068f26a128a20486cd502abe9e1d4c02e0264b8a58f1a5143e1291ca3508a948ada97
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-private-property-in-object@npm:^7.14.5":
-  version: 7.14.5
-  resolution: "@babel/plugin-syntax-private-property-in-object@npm:7.14.5"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.14.5
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 1f987725a8e705c255bd3f47d4154445ccc8706c021e4abd0e3ac28bd2ea15f2dd9f44a4db04ca476909c86a366c737a9fcd808a38cfd84ee670c817ef05207f
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-syntax-top-level-await@npm:^7.14.5":
-  version: 7.14.5
-  resolution: "@babel/plugin-syntax-top-level-await@npm:7.14.5"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.14.5
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 642baff7c2150f146aa2ae94f8fa93f8aa81f5d82731241c60054037938cbde8031898194a216ec567af9b35bc4f394be3cd87d76aea39c8e32d68927ea67601
   languageName: node
   linkType: hard
 
@@ -719,17 +576,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-async-generator-functions@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-async-generator-functions@npm:7.25.7"
+"@babel/plugin-transform-async-generator-functions@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-async-generator-functions@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
     "@babel/helper-remap-async-to-generator": ^7.25.7
-    "@babel/plugin-syntax-async-generators": ^7.8.4
     "@babel/traverse": ^7.25.7
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: be63f5756ee1254122fc51611e22b3947197ada173bd67c1b9e477781041d1701aac933e8093910d07ffeff937fc13d913f3c97b57a1c98f0add20a6cdebf075
+  checksum: 5a13f94d9f20397ffeb33bf68e3faa6b2c0b75ff7eebb023533e603f7ca00939862f30dd94c6bcea281eb529b9070c40851fef113a78422ef1fe7ee20ea942d5
   languageName: node
   linkType: hard
 
@@ -780,16 +636,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-class-static-block@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-class-static-block@npm:7.25.7"
+"@babel/plugin-transform-class-static-block@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-class-static-block@npm:7.25.8"
   dependencies:
     "@babel/helper-create-class-features-plugin": ^7.25.7
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-class-static-block": ^7.14.5
   peerDependencies:
     "@babel/core": ^7.12.0
-  checksum: 6280815cf95880ca563645add26deb4837b8b56d207ec1e1b1c175a908563d0d960ed27217ba9b847fbb20cc1f2655d4f7fabaee278c36637d807b3481189bf2
+  checksum: eee67dbdf2950de83c83e8e286d984ab01072c813e91d98bd9e3b60a7a8b9036644e4d12270271ba55b014e2fa44ee5c23700391dc9edb8cc956c4a2bce5bdf5
   languageName: node
   linkType: hard
 
@@ -867,15 +722,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-dynamic-import@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-dynamic-import@npm:7.25.7"
+"@babel/plugin-transform-dynamic-import@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-dynamic-import@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-dynamic-import": ^7.8.3
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 6703eca7597f4da197326623cd510eb82293def3352237a680b7c3e4b0e7438c4e8595e5ee75a6324004e8ac77fd0f7cc6f72f6ebae63d6d1c5000bbec6c95f0
+  checksum: f941965513a0b13d72b5173905f3151ecbe672cd69ef394f31e167edc1ebbbf82bbc825e26c07244f216e553cd151b4c92ec1eff0d66a72b47ed1cc7c77e6efe
   languageName: node
   linkType: hard
 
@@ -891,15 +745,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-export-namespace-from@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-export-namespace-from@npm:7.25.7"
+"@babel/plugin-transform-export-namespace-from@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-export-namespace-from@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-export-namespace-from": ^7.8.3
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 77c210ba98880ee31c45cc420273b387edb6b5e7fc44b91ab41eb008e27bedcc37edef479eaf35bdd3c7262adfe9c27d398ba6f3a2eabd873f9899798fc003cb
+  checksum: c5ed164793aa04f6966f4ec2aa342c54420cf7d09cbb2f7c83f623defb2cfe2f1427c30291ef0f8666f050574f36be40cdf575454a7964acade79909afd9cd5f
   languageName: node
   linkType: hard
 
@@ -928,15 +781,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-json-strings@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-json-strings@npm:7.25.7"
+"@babel/plugin-transform-json-strings@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-json-strings@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-json-strings": ^7.8.3
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 426c03dd371eb238c20e0056eb8605442d1481e08675a9b30658385fa8d18ea9446cfef7d96412b4775c667248ecada70f0e80ce4e72b49f0f9434e0ffcf86e9
+  checksum: b9fb35ff7b3087f671a029956a6b718d4cd66de919e4789c8b5b8773bbb2ec0b20269ab8d0e26a44b78462c5773468a4896eb9f8b8462a398da6bd44e7fba8d6
   languageName: node
   linkType: hard
 
@@ -951,15 +803,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-logical-assignment-operators@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-logical-assignment-operators@npm:7.25.7"
+"@babel/plugin-transform-logical-assignment-operators@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-logical-assignment-operators@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-logical-assignment-operators": ^7.10.4
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 1bff6f70a94f9efe47e0946f241cbf1db98b214906f4ce49084db6deeeb98d89012cc489793535c747fd0a2f50621f2ea961a0c1093ed3ced2d044d2ab0e6525
+  checksum: aa0b73d6aa4cbab53f5a571ec71c6c4673df6700f4254ce83fe67dd5ba82ab84d5da28ef41e7d041d04ae671068a7077a7309e63a4de395bdeb136c8afb89bf1
   languageName: node
   linkType: hard
 
@@ -1048,41 +899,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-nullish-coalescing-operator@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-nullish-coalescing-operator@npm:7.25.7"
+"@babel/plugin-transform-nullish-coalescing-operator@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-nullish-coalescing-operator@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-nullish-coalescing-operator": ^7.8.3
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 3b4f2d98dce6be43c4063031a7fd4602681b00a71427d9b780ca5af3ac39acc6bf12b30c42bdc839898a7f4d7159b7a4babfdf60365ac2bddf1e99e2b0dfca1c
+  checksum: 364b84ceec3a8bf4bb1698474fd4aff41e735427027805970a037135b24ef46ae198eb74b8b59891d13c87e0ef3991640272dfca934cd65c335ee40c2b35005c
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-numeric-separator@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-numeric-separator@npm:7.25.7"
+"@babel/plugin-transform-numeric-separator@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-numeric-separator@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-numeric-separator": ^7.10.4
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 837553c08db62614c8fda2b05783bfb048b05118095d0db6a5eb331c31d507b35cd01d32623da00d834763e479f338f799e40dea75cd2f7bca8229c564640c64
+  checksum: 5c97befb7d03eaee7a0c7d274b50c0f848e7478c7ce3b6cbf1960b4e721b86254ef696bcce6814bcabfe23d89fd492301ff6eda06fed2df0024153cbc0ef1392
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-object-rest-spread@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-object-rest-spread@npm:7.25.7"
+"@babel/plugin-transform-object-rest-spread@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-object-rest-spread@npm:7.25.8"
   dependencies:
     "@babel/helper-compilation-targets": ^7.25.7
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-object-rest-spread": ^7.8.3
     "@babel/plugin-transform-parameters": ^7.25.7
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 0c21094aa15a8ee55ad15755e02392233a6ae8b0208e41a102df3fc4ddf3451f4e1e67b528d28714434952bd0eb552a2affdc1e25cefc64d58524ba5093b60b8
+  checksum: f2b18df38a1bbbd268c46420d0e14fd4fec3d1e56440d8424a1f006101283bdb6a0ae4e9eb08714ca3ad97f10ea362a86e3c307d55a571eb3fbbb687bd62186f
   languageName: node
   linkType: hard
 
@@ -1098,15 +946,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-optional-catch-binding@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-optional-catch-binding@npm:7.25.7"
+"@babel/plugin-transform-optional-catch-binding@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-optional-catch-binding@npm:7.25.8"
   dependencies:
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-optional-catch-binding": ^7.8.3
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 026a05b01bea80b011bf3f732cac02c703c93247c32e62cb6727ad08ad3c5660cdbb80948147fa2ad3ec0762d45a04ba9ce6f827ff7b0c274ee2577690c5e91c
+  checksum: 1443c1b1b538cf81284ec5082696f92ae827639be58344812ef3a5b4b528791b6abd84b34750637aca1a76de0419e680963157bd22df2590fb7e25764bee2a81
   languageName: node
   linkType: hard
 
@@ -1120,6 +967,18 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 25b08c3e6bde6f1df6c6ec61adef5515f5dd2c0e438eea9e848681b74e22e7f4fe67045c73ed984597d987f90ab581fd01f59d9fb73d97b248f0f1ddb861123d
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-optional-chaining@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-optional-chaining@npm:7.25.8"
+  dependencies:
+    "@babel/helper-plugin-utils": ^7.25.7
+    "@babel/helper-skip-transparent-expression-wrappers": ^7.25.7
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 26f44a6fee234e3dc55d8d24f604e30d79a428d6049e225ade91739311c0034f968e424d58f446f891b69bef5566d68d1f6373c18e78b15f3015579e60afb812
   languageName: node
   linkType: hard
 
@@ -1146,17 +1005,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-private-property-in-object@npm:^7.25.7":
-  version: 7.25.7
-  resolution: "@babel/plugin-transform-private-property-in-object@npm:7.25.7"
+"@babel/plugin-transform-private-property-in-object@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-private-property-in-object@npm:7.25.8"
   dependencies:
     "@babel/helper-annotate-as-pure": ^7.25.7
     "@babel/helper-create-class-features-plugin": ^7.25.7
     "@babel/helper-plugin-utils": ^7.25.7
-    "@babel/plugin-syntax-private-property-in-object": ^7.14.5
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 65af613b7598a76952805987ed8ecd2a651c8432ee2abe4e96299efab6b302183111bcae41c54805efdf3b85edf23b240075ca10681aa4c4aadf85ce652c8a97
+  checksum: fa87de184620450d6281463d53db9b9fb6374e0bad35f9a06187740f2012c82702d969fa54262623ed290d7dccf32cc40005238ba754fc9dc9de0168217d8c3a
   languageName: node
   linkType: hard
 
@@ -1297,11 +1155,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.25.7":
-  version: 7.25.7
-  resolution: "@babel/preset-env@npm:7.25.7"
+"@babel/preset-env@npm:7.25.8":
+  version: 7.25.8
+  resolution: "@babel/preset-env@npm:7.25.8"
   dependencies:
-    "@babel/compat-data": ^7.25.7
+    "@babel/compat-data": ^7.25.8
     "@babel/helper-compilation-targets": ^7.25.7
     "@babel/helper-plugin-utils": ^7.25.7
     "@babel/helper-validator-option": ^7.25.7
@@ -1311,45 +1169,30 @@ __metadata:
     "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining": ^7.25.7
     "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly": ^7.25.7
     "@babel/plugin-proposal-private-property-in-object": 7.21.0-placeholder-for-preset-env.2
-    "@babel/plugin-syntax-async-generators": ^7.8.4
-    "@babel/plugin-syntax-class-properties": ^7.12.13
-    "@babel/plugin-syntax-class-static-block": ^7.14.5
-    "@babel/plugin-syntax-dynamic-import": ^7.8.3
-    "@babel/plugin-syntax-export-namespace-from": ^7.8.3
     "@babel/plugin-syntax-import-assertions": ^7.25.7
     "@babel/plugin-syntax-import-attributes": ^7.25.7
-    "@babel/plugin-syntax-import-meta": ^7.10.4
-    "@babel/plugin-syntax-json-strings": ^7.8.3
-    "@babel/plugin-syntax-logical-assignment-operators": ^7.10.4
-    "@babel/plugin-syntax-nullish-coalescing-operator": ^7.8.3
-    "@babel/plugin-syntax-numeric-separator": ^7.10.4
-    "@babel/plugin-syntax-object-rest-spread": ^7.8.3
-    "@babel/plugin-syntax-optional-catch-binding": ^7.8.3
-    "@babel/plugin-syntax-optional-chaining": ^7.8.3
-    "@babel/plugin-syntax-private-property-in-object": ^7.14.5
-    "@babel/plugin-syntax-top-level-await": ^7.14.5
     "@babel/plugin-syntax-unicode-sets-regex": ^7.18.6
     "@babel/plugin-transform-arrow-functions": ^7.25.7
-    "@babel/plugin-transform-async-generator-functions": ^7.25.7
+    "@babel/plugin-transform-async-generator-functions": ^7.25.8
     "@babel/plugin-transform-async-to-generator": ^7.25.7
     "@babel/plugin-transform-block-scoped-functions": ^7.25.7
     "@babel/plugin-transform-block-scoping": ^7.25.7
     "@babel/plugin-transform-class-properties": ^7.25.7
-    "@babel/plugin-transform-class-static-block": ^7.25.7
+    "@babel/plugin-transform-class-static-block": ^7.25.8
     "@babel/plugin-transform-classes": ^7.25.7
     "@babel/plugin-transform-computed-properties": ^7.25.7
     "@babel/plugin-transform-destructuring": ^7.25.7
     "@babel/plugin-transform-dotall-regex": ^7.25.7
     "@babel/plugin-transform-duplicate-keys": ^7.25.7
     "@babel/plugin-transform-duplicate-named-capturing-groups-regex": ^7.25.7
-    "@babel/plugin-transform-dynamic-import": ^7.25.7
+    "@babel/plugin-transform-dynamic-import": ^7.25.8
     "@babel/plugin-transform-exponentiation-operator": ^7.25.7
-    "@babel/plugin-transform-export-namespace-from": ^7.25.7
+    "@babel/plugin-transform-export-namespace-from": ^7.25.8
     "@babel/plugin-transform-for-of": ^7.25.7
     "@babel/plugin-transform-function-name": ^7.25.7
-    "@babel/plugin-transform-json-strings": ^7.25.7
+    "@babel/plugin-transform-json-strings": ^7.25.8
     "@babel/plugin-transform-literals": ^7.25.7
-    "@babel/plugin-transform-logical-assignment-operators": ^7.25.7
+    "@babel/plugin-transform-logical-assignment-operators": ^7.25.8
     "@babel/plugin-transform-member-expression-literals": ^7.25.7
     "@babel/plugin-transform-modules-amd": ^7.25.7
     "@babel/plugin-transform-modules-commonjs": ^7.25.7
@@ -1357,15 +1200,15 @@ __metadata:
     "@babel/plugin-transform-modules-umd": ^7.25.7
     "@babel/plugin-transform-named-capturing-groups-regex": ^7.25.7
     "@babel/plugin-transform-new-target": ^7.25.7
-    "@babel/plugin-transform-nullish-coalescing-operator": ^7.25.7
-    "@babel/plugin-transform-numeric-separator": ^7.25.7
-    "@babel/plugin-transform-object-rest-spread": ^7.25.7
+    "@babel/plugin-transform-nullish-coalescing-operator": ^7.25.8
+    "@babel/plugin-transform-numeric-separator": ^7.25.8
+    "@babel/plugin-transform-object-rest-spread": ^7.25.8
     "@babel/plugin-transform-object-super": ^7.25.7
-    "@babel/plugin-transform-optional-catch-binding": ^7.25.7
-    "@babel/plugin-transform-optional-chaining": ^7.25.7
+    "@babel/plugin-transform-optional-catch-binding": ^7.25.8
+    "@babel/plugin-transform-optional-chaining": ^7.25.8
     "@babel/plugin-transform-parameters": ^7.25.7
     "@babel/plugin-transform-private-methods": ^7.25.7
-    "@babel/plugin-transform-private-property-in-object": ^7.25.7
+    "@babel/plugin-transform-private-property-in-object": ^7.25.8
     "@babel/plugin-transform-property-literals": ^7.25.7
     "@babel/plugin-transform-regenerator": ^7.25.7
     "@babel/plugin-transform-reserved-words": ^7.25.7
@@ -1386,7 +1229,7 @@ __metadata:
     semver: ^6.3.1
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 0875c336e9012ac1756d4481e7553b25ab7a733f3a9c93c1a95395f1d5978c484d2aaf8202739fdd3879c40584ef073ef208f49652269fcb6eab59795173b053
+  checksum: 0e0c5b2fb563fd387d50fb0271b40859ba43f167d87d39836ef36621dd06bac6c6e3f3d54b7f83e0c46481887b508c5014a15027a2cc99e1f72fafb284c0f891
   languageName: node
   linkType: hard
 
@@ -1456,6 +1299,17 @@ __metadata:
     "@babel/helper-validator-identifier": ^7.25.7
     to-fast-properties: ^2.0.0
   checksum: 8785efb47d42f241ad8ade739572752a1a7393ba102589ca65bd613e2acd69a9d7e9c8a7294cc20e1385b12bebd0ab3cf8d092fc642fce5532bb4c1e13dc2487
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/types@npm:7.25.8"
+  dependencies:
+    "@babel/helper-string-parser": ^7.25.7
+    "@babel/helper-validator-identifier": ^7.25.7
+    to-fast-properties: ^2.0.0
+  checksum: 7a5886c5436da7717e2f9d09090e397ada5f4892b94f9104599f68262a14160039b8407bf1567086fc2be1932e4a5a217a572acf70f6ae8ed3bbc18bcc18dc02
   languageName: node
   linkType: hard
 
@@ -5073,8 +4927,8 @@ fsevents@~2.1.2:
   version: 0.0.0-use.local
   resolution: "ii-zapisy@workspace:."
   dependencies:
-    "@babel/core": 7.25.7
-    "@babel/preset-env": 7.25.7
+    "@babel/core": 7.25.8
+    "@babel/preset-env": 7.25.8
     "@bokeh/bokehjs": 2.4.3
     "@fortawesome/fontawesome-free": 5.15.4
     "@fortawesome/fontawesome-svg-core": 1.3.0
