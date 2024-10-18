@@ -1590,6 +1590,140 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@parcel/watcher-android-arm64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-android-arm64@npm:2.4.1"
+  checksum: 6229133c1e5e4c1ebb56eb9eb478e4f4f01fefb0a46a00a124c0c4de0e746a397ed71a0df4bb1632f87c459d1114a50dedd3e5aacbcccb3b1ae32b5217b4e251
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-darwin-arm64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-darwin-arm64@npm:2.4.1"
+  checksum: 6d46bb423482e51f29fb5a513fa382fa35d64f529ebb6b19b7e91052de66628d6a8cbc3b76cd101d0b59457fb3622146ff5facc3fbc074d9fed47c30872eb98d
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-darwin-x64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-darwin-x64@npm:2.4.1"
+  checksum: c735f659ad76ab44681c7f9a1729913d8c72918279ef91d2be29eab4e30a7a9347a1e6b2228d75d8cbb664ef24f734eb486fb4a9063c5e72fd2919d03af8fc0f
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-freebsd-x64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-freebsd-x64@npm:2.4.1"
+  checksum: 8fa17c3e50e0679f2fee99f8cd74fb5e01ce050e271d9a84d286260ae387e483cf791c15d9451d30d4eb4695b72fbac742eca3f9cc95a289eba4ab7b95bd4929
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm-glibc@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-linux-arm-glibc@npm:2.4.1"
+  checksum: 031f8807f269a0a0344c670f3b9bdc862cdcfb739e83d2797963fa6a52452eb538d20613cbbc57858e3a3e2e8c53013e07f214a9b13d5d20f6ae1ff0d36f700f
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm64-glibc@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-linux-arm64-glibc@npm:2.4.1"
+  checksum: d7bbf02947e3ad96b92941cd7ca1ea30bc9ddbd7d31a73cd827e477cd7ce6b4198e0f0ca88824d111561a2ca7218561298df39cfdc9aba69ac4a27f481457154
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-arm64-musl@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-linux-arm64-musl@npm:2.4.1"
+  checksum: adb4ef1b26bd27e353c75ca2faa64626e20ac0c0eea4f33af3a81b335bb76aad1b9496900d632e6e7beff94662228645a3fac41265e1add1058c7a0011b2fc11
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-x64-glibc@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-linux-x64-glibc@npm:2.4.1"
+  checksum: b7eb2b3099d3df4f4727b27cd68a2862d25e32fd20f7042a6d0438ceb6d8118798233292483407f778829174675dce95e31e713d269cdb041e291a1f03d8ec5a
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-linux-x64-musl@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-linux-x64-musl@npm:2.4.1"
+  checksum: 69cca06599909477b6f4c7f90bffabf95eb55d0959e581399617b33b44d267098955fb73ba8b8cb98480cf3eb76d30591fd24b02777ca82195847b711a73a1d1
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-arm64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-win32-arm64@npm:2.4.1"
+  checksum: 8544e9f575e7e8c1cb0ac04f196175b46b83e5855f629844aaeb69f459e8f5c36bc532da71da75b0a1d85e7eeea3ceae45da0bce1496905d7ffe6f393dfc9203
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-ia32@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-win32-ia32@npm:2.4.1"
+  checksum: ed4cb3d86f7b5f9449704c9a027e13d3e5e953d00aadefaa946122610bd526884b35dc2fa70eb270bf10a9641b5b373fd551e89f68b47bc10a9b8bedf7ecc65d
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher-win32-x64@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher-win32-x64@npm:2.4.1"
+  checksum: 96fdc9e42301bdcf07865c334b19b18b99ea0d13f9a51826f27f0e3a3dbf760665bde5edbd7fe17ce64d295e651cd245c2b4fcea832710891443ef013780b0bb
+  languageName: node
+  linkType: hard
+
+"@parcel/watcher@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "@parcel/watcher@npm:2.4.1"
+  dependencies:
+    "@parcel/watcher-android-arm64": 2.4.1
+    "@parcel/watcher-darwin-arm64": 2.4.1
+    "@parcel/watcher-darwin-x64": 2.4.1
+    "@parcel/watcher-freebsd-x64": 2.4.1
+    "@parcel/watcher-linux-arm-glibc": 2.4.1
+    "@parcel/watcher-linux-arm64-glibc": 2.4.1
+    "@parcel/watcher-linux-arm64-musl": 2.4.1
+    "@parcel/watcher-linux-x64-glibc": 2.4.1
+    "@parcel/watcher-linux-x64-musl": 2.4.1
+    "@parcel/watcher-win32-arm64": 2.4.1
+    "@parcel/watcher-win32-ia32": 2.4.1
+    "@parcel/watcher-win32-x64": 2.4.1
+    detect-libc: ^1.0.3
+    is-glob: ^4.0.3
+    micromatch: ^4.0.5
+    node-addon-api: ^7.0.0
+    node-gyp: latest
+  dependenciesMeta:
+    "@parcel/watcher-android-arm64":
+      optional: true
+    "@parcel/watcher-darwin-arm64":
+      optional: true
+    "@parcel/watcher-darwin-x64":
+      optional: true
+    "@parcel/watcher-freebsd-x64":
+      optional: true
+    "@parcel/watcher-linux-arm-glibc":
+      optional: true
+    "@parcel/watcher-linux-arm64-glibc":
+      optional: true
+    "@parcel/watcher-linux-arm64-musl":
+      optional: true
+    "@parcel/watcher-linux-x64-glibc":
+      optional: true
+    "@parcel/watcher-linux-x64-musl":
+      optional: true
+    "@parcel/watcher-win32-arm64":
+      optional: true
+    "@parcel/watcher-win32-ia32":
+      optional: true
+    "@parcel/watcher-win32-x64":
+      optional: true
+  checksum: 37ec57d0a334f3a93f4380e22e61afd1a21025dd591e4d9d020bd7196cc439b3e5d18bb6d1a05c28a36ce4a39b2d31709050b2518542c571ac9c55339bcbd394
+  languageName: node
+  linkType: hard
+
 "@popperjs/core@npm:2.11.8, @popperjs/core@npm:^2.9.2":
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
@@ -2629,6 +2763,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"braces@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "braces@npm:3.0.3"
+  dependencies:
+    fill-range: ^7.1.1
+  checksum: cdd64b716b3545a82d4598d095c9cabca6b1b9154142d2e89b2c3ad79f7a272037c5ef156d0532dee040302e29cc20ec1b2e02cd4a1d1347bb80f98d8ff1318d
+  languageName: node
+  linkType: hard
+
 "brorand@npm:^1.0.1":
   version: 1.1.0
   resolution: "brorand@npm:1.1.0"
@@ -3012,6 +3155,15 @@ __metadata:
     fsevents:
       optional: true
   checksum: 0758dcc7c6c7ace5924cf3c68088210932d391ab41026376b0adb8e07013ac87232e029f13468dfc9ca4dd59adae62a2b7eaedebb6c4e4f0ba92cbf3ac9e3721
+  languageName: node
+  linkType: hard
+
+"chokidar@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "chokidar@npm:4.0.1"
+  dependencies:
+    readdirp: ^4.0.1
+  checksum: f9b2bfd4cdb403ebbdff252093745f7a4ca8e5da04e33dfb50432f610242ff8a849f3590c0c1a43a006f5088abdf4b6901f8f57c719e7c53a0bee3643d645717
   languageName: node
   linkType: hard
 
@@ -3644,6 +3796,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-libc@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "detect-libc@npm:1.0.3"
+  bin:
+    detect-libc: ./bin/detect-libc.js
+  checksum: 6cec442139459ec2e8517076974b0eba42079885938683eca013c2e0b5db02ef048870725ce68e7ac8e4cf17e482f67d7322f45bbc5f203b7332817bc7833b39
+  languageName: node
+  linkType: hard
+
 "diffie-hellman@npm:^5.0.0":
   version: 5.0.3
   resolution: "diffie-hellman@npm:5.0.3"
@@ -4224,6 +4385,15 @@ __metadata:
   dependencies:
     to-regex-range: ^5.0.1
   checksum: efca43d59b487ad4bc0b2b1cb9e51617c75a7b0159db51fa190c75c3d634ea5fad1ff4750d7c14346add4cd065e3c46e8f99af333edf2b4ec2a424f87e491a85
+  languageName: node
+  linkType: hard
+
+"fill-range@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "fill-range@npm:7.1.1"
+  dependencies:
+    to-regex-range: ^5.0.1
+  checksum: 101efdfbbf3112d17683ae4c94119e8cd6e8bdba596b5a61e9c298351f876ede7355e372b50c61d3f89f6211f4018767f30acec4c26672415904aa0cc2f4677f
   languageName: node
   linkType: hard
 
@@ -4974,7 +5144,7 @@ fsevents@~2.1.2:
     postcss: 7.0.39
     postcss-loader: 4.3.0
     prettier: 2.8.8
-    sass: 1.26.10
+    sass: 1.79.5
     sass-loader: 10.5.2
     tablesorter: 2.32.0
     terser-webpack-plugin: 4.2.3
@@ -4994,6 +5164,13 @@ fsevents@~2.1.2:
     zod: 3.23.8
   languageName: unknown
   linkType: soft
+
+"immutable@npm:^4.0.0":
+  version: 4.3.7
+  resolution: "immutable@npm:4.3.7"
+  checksum: 4bbd2c341db4ba0770a643e255bdc66501f4ed91adf63a0bfbda8daa0bcf2ed75f29bb2047dd4a53b6e8773194f81cbc09c6fbdafb11ed805538d22ed3775531
+  languageName: node
+  linkType: hard
 
 "import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1":
   version: 3.2.1
@@ -5250,6 +5427,15 @@ fsevents@~2.1.2:
   dependencies:
     is-extglob: ^2.1.1
   checksum: 98cd4f715f0fb81da34aa6c8be4a5ef02d8cfac3ebc885153012abc2a0410df5a572f9d0393134fcba9192c7a845da96142c5f74a3c02787efe178ed798615e6
+  languageName: node
+  linkType: hard
+
+"is-glob@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "is-glob@npm:4.0.3"
+  dependencies:
+    is-extglob: ^2.1.1
+  checksum: 8f6b4c42b78ece93a17dc6c83cd7e6f104319d6381ab24c8ba5643fcc14bec97dbdf6f8a5739d6333572557cb54e58a41c1edc89ffdb61d0277ec88ca9c3d6e3
   languageName: node
   linkType: hard
 
@@ -5923,6 +6109,16 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"micromatch@npm:^4.0.5":
+  version: 4.0.8
+  resolution: "micromatch@npm:4.0.8"
+  dependencies:
+    braces: ^3.0.3
+    picomatch: ^2.3.1
+  checksum: fcd1ab59af72f86df455b60799f41424794f9afa8503f0e1dc51793780c4b373195c6f36b76c796f6b2405deaaaa7e68240138334648518d4f89ec87d4afdfaa
+  languageName: node
+  linkType: hard
+
 "miller-rabin@npm:^4.0.0":
   version: 4.0.1
   resolution: "miller-rabin@npm:4.0.1"
@@ -6202,6 +6398,15 @@ fsevents@~2.1.2:
   version: 1.0.5
   resolution: "nice-try@npm:1.0.5"
   checksum: 330f190bf68146a560008b661e1ddbb2eac667c16990b6bf791516d89cceb707ec67901ad647d2b32674bfa816b916489cead5c2fb6e96864c659573ab5aa3bb
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^7.0.0":
+  version: 7.1.1
+  resolution: "node-addon-api@npm:7.1.1"
+  dependencies:
+    node-gyp: latest
+  checksum: ac1ca6c19ea23a48b07812c106d3536bc2c4aeaedcc2b9f1d3315427f66c66def8a63c403b392d3df3e0e415cca89ee75eee0e2334d7e15be1f6baaa37264bec
   languageName: node
   linkType: hard
 
@@ -6733,6 +6938,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"picomatch@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "picomatch@npm:2.3.1"
+  checksum: 5e3bbbf6a7356e1f029754112803187564a81768718393782d73b8be2c7b2055316ed200e7ca989fae7a794348afbc17da93fa760930bcbfa4ab2c8abb781587
+  languageName: node
+  linkType: hard
+
 "pify@npm:^2.0.0":
   version: 2.3.0
   resolution: "pify@npm:2.3.0"
@@ -7193,6 +7405,13 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"readdirp@npm:^4.0.1":
+  version: 4.0.2
+  resolution: "readdirp@npm:4.0.2"
+  checksum: 11333d7d0ff8d03ccd58de82a76eb7541beaa4bee12cd9118d561f89f6dc0415f0f957b9aae11c319838ab266a141f6bb20b87ab9762da821a5cb7ab3efbfcac
+  languageName: node
+  linkType: hard
+
 "readdirp@npm:~3.4.0":
   version: 3.4.0
   resolution: "readdirp@npm:3.4.0"
@@ -7560,7 +7779,21 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
-"sass@npm:1.26.10, sass@npm:^1.25.1-test.1":
+"sass@npm:1.79.5":
+  version: 1.79.5
+  resolution: "sass@npm:1.79.5"
+  dependencies:
+    "@parcel/watcher": ^2.4.1
+    chokidar: ^4.0.0
+    immutable: ^4.0.0
+    source-map-js: ">=0.6.2 <2.0.0"
+  bin:
+    sass: sass.js
+  checksum: bd8ad4466c5a27d6253cdc0539cbabccb673f84c2e586f4207396ddc73c4bb3a45f8702b8f22269306dad75d35d27304b932406d3bb50d8034055ceb7e3a489d
+  languageName: node
+  linkType: hard
+
+"sass@npm:^1.25.1-test.1":
   version: 1.26.10
   resolution: "sass@npm:1.26.10"
   dependencies:
@@ -7830,6 +8063,13 @@ resolve@^1.14.2:
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"
   checksum: d8d45f29987d00d995ccda308dcc78b710031a9958fdb5d26674d32220c952eb7a8562062638d91896628ae4eef30e1cd112a6a547563dfda0b013024c2a9bf7
+  languageName: node
+  linkType: hard
+
+"source-map-js@npm:>=0.6.2 <2.0.0":
+  version: 1.2.1
+  resolution: "source-map-js@npm:1.2.1"
+  checksum: 728d8bd521c93d7a165fb7dfe20ae1038a4d780579498d21cdd353bcc59f2c27f2d4e390fa1825ee3977beed68868e395df79c14ca8a72a9c6fffdfb46a87eb6
   languageName: node
   linkType: hard
 
