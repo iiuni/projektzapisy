@@ -28,7 +28,7 @@
     {
       "description": "Automerge some minor updates",
       "matchUpdateTypes": ["minor", "patch"],
-      "excludePackagePatterns": ["^Django$"],
+      "excludePackagePatterns": ["^Django$", "^sass$"],
       "matchCurrentVersion": "!/^0\\./",
       "automerge": true
     },
