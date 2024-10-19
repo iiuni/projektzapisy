@@ -32,7 +32,7 @@
     "markdown-it": "12.3.2",
     "popper.js": "1.16.1",
     "tablesorter": "2.32.0",
-    "vue": "2.7.16",
+    "vue": "3.5.12",
     "vue-multiselect": "2.1.9",
     "vue-timers": "2.0.4",
     "vuex": "3.6.2"
