@@ -3162,10 +3162,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^6.0.0":
-  version: 6.2.1
-  resolution: "commander@npm:6.2.1"
-  checksum: 47856aae6f194404122e359d8463e5e1a18f7cbab26722ce69f1379be8514bd49a160ef81a983d3d2091e3240022643354101d1276c797dcdd0b5bfc3c3f04a3
+"commander@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "commander@npm:8.3.0"
+  checksum: 0b818d97ca9c8ad461ff05f873082af0c1895e49984a2abf1090e4a85c3537c3c0f9921e38314a9de7e71941f00f710c204d3560e3a7bc0b1023eef92d6bbfc0
   languageName: node
   linkType: hard
 
@@ -4965,7 +4965,7 @@ fsevents@~2.1.2:
     jquery: 3.7.1
     js-cookie: 2.2.1
     js-sha256: 0.9.0
-    katex: 0.13.18
+    katex: 0.16.10
     lodash-es: 4.17.21
     markdown-it: 12.3.2
     mini-css-extract-plugin: 0.12.0
@@ -5537,14 +5537,14 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"katex@npm:0.13.18":
-  version: 0.13.18
-  resolution: "katex@npm:0.13.18"
+"katex@npm:0.16.10":
+  version: 0.16.10
+  resolution: "katex@npm:0.16.10"
   dependencies:
-    commander: ^6.0.0
+    commander: ^8.3.0
   bin:
     katex: cli.js
-  checksum: a750c8c106487ff5fca4e18e22ac97b4fbf48c33a15c010293e392795b642c731c476cae98bfc92bfad4d4bcb052b00a3abc05a09d3e14d642e84d69428a588f
+  checksum: 93d2530cc42d5fc586dc6fadb392a8e4e271fb24aa35175d73f483c4cfad3702b4d8f7c6d2f1ad9f2bb8a9caa0a1f956541aa3c2e2857fa82754eff8d6cd7e2b
   languageName: node
   linkType: hard
 
