@@ -219,10 +219,14 @@ export default class TermComponent extends TermProps {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 1s;
+  // changed from 1s to 0.3s to solve issue 1656
+  transition: opacity 0.3s;
 }
-.fade-enter,
+
 .fade-leave-to {
+  // it is also possible to set the hide animation time to be different from
+  // appear animation time below
+  // transition: opacity 0.2s;
   opacity: 0;
 }
 
