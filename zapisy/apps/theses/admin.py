@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin, VoteFormAdmin
-from apps.theses.models import Remark, ThesesSystemSettings, Thesis, Vote
+from apps.theses.forms import RemarkFormAdmin, ThesisFormAdmin
+from apps.theses.models import Remark, ThesesSystemSettings, Thesis
 
 
 class ThesisAdmin(admin.ModelAdmin):
@@ -20,11 +20,6 @@ class RemarkAdmin(admin.ModelAdmin):
     form = RemarkFormAdmin
 
 
-class VoteAdmin(admin.ModelAdmin):
-    autocomplete_fields = []
-    form = VoteFormAdmin
-
-
 class ThesesSystemSettingsAdmin(admin.ModelAdmin):
     """Theses system settings admin.
 
@@ -41,5 +36,4 @@ class ThesesSystemSettingsAdmin(admin.ModelAdmin):
 
 admin.site.register(Thesis, ThesisAdmin)
 admin.site.register(Remark, RemarkAdmin)
-admin.site.register(Vote, VoteAdmin)
 admin.site.register(ThesesSystemSettings, ThesesSystemSettingsAdmin)
