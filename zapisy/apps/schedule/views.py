@@ -2,7 +2,7 @@ import datetime
 import operator
 import json
 from itertools import groupby
-from typing import List, NamedTuple, Optional
+from typing import List, Literal, NamedTuple, Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -365,7 +365,7 @@ def events_report(request):
 
 @login_required
 @permission_required('schedule.manage_events')
-def display_report(request, form, report_type: 'Literal["table", "doors"]'):  # noqa: F821
+def display_report(request, form, report_type: Literal['table', 'doors']):
     class ListEvent(NamedTuple):
         date: Optional[datetime.datetime]
         weekday: int  # Monday is 1, Sunday is 7 like in
