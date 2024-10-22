@@ -365,7 +365,7 @@ def events_report(request):
 
 @login_required
 @permission_required('schedule.manage_events')
-def display_report(request, form, report_type: 'Literal["table", "doors"]'):
+def display_report(request, form, report_type: Literal['table', 'doors']):
     class ListEvent(NamedTuple):
         date: Optional[datetime.datetime]
         weekday: int  # Monday is 1, Sunday is 7 like in
