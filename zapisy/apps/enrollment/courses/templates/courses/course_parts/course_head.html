@@ -17,10 +17,22 @@
 
 <table class="table table-bordered table-md-responsive" id="table-info">
     <style>
-        #table-info ul{
+        #table-info ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
+        }
+
+        #hours ul {
+            display: flex;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+            
+        #hours ul li + li::before {
+            content: '+';
+            margin: 0 .5em;
         }
     </style>
     <colgroup>
@@ -41,17 +53,6 @@
         <tr>
             <th scope="row">Liczba godzin</th>
             <td id="hours">
-                <style>
-                    #hours ul li {
-                        display: inline-block;
-                    }
-            
-                    #hours ul li + li::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
-                {% spaceless %}
                 <ul>
                     {% if course.hours_lecture %}<li>{{ course.hours_lecture }} (wyk.)</li>{% endif %}
                     {% if course.hours_exercise %}<li>{{ course.hours_exercise }} (ćw.)</li>{% endif %}
@@ -60,7 +61,6 @@
                     {% if course.hours_seminar %}<li>{{ course.hours_seminar }} (sem.)</li>{% endif %}
                     {% if course.hours_recap %}<li>{{ course.hours_recap }} (rep.)</li>{% endif %}
                 </ul>
-                {% endspaceless %}
             </td>
         </tr>
         <tr>
