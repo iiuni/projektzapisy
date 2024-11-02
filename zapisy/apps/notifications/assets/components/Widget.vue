@@ -31,7 +31,12 @@ const notificationScheme = z
 
 const notificationSchemeArray = z.array(notificationScheme);
 
-type Notification = z.infer<typeof notificationScheme>;
+type Notification = {
+  id: string;
+  description: string;
+  issuedOn: string;
+  target: string;
+};
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -132,7 +137,7 @@ export default class NotificationsComponent extends Vue {
               <button
                 type="button"
                 class="btn-close"
-                @click="deleteOne(elem.id)"
+                @click="deleteOne(parseInt(elem.id))"
               ></button>
             </div>
             <a :href="elem.target" class="toast-link">
