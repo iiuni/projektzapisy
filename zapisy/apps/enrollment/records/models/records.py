@@ -39,7 +39,7 @@ Record Lifetime:
 """
 
 import logging
-from collections import defaultdict
+from collections import defaultdict, Counter
 import copy
 from datetime import datetime
 from enum import Enum
@@ -330,6 +330,55 @@ class Record(models.Model):
             ret[gsr.role.name] = gsr.limit - counter
         ret['-'] = group.limit - len(all_enrolled_students)
         return ret
+
+    @classmethod
+    def taken_spots_by_role(cls, groups: List[Group]) -> Dict[int, Dict[str, int]]:
+        """Counts the number of taken spots indexed by user role for each group.
+
+        The purpose of this method is to determine how many students are enrolled
+        according to each GuaranteedSpots rule in every group.
+        Note that this function assumes the roles defined in GuaranteedSpots rules
+        are distinct for these groups.
+
+        Method returns a dictionary containing:
+        key: Group index
+        value: A dictionary where:
+           - The keys are role names.
+           - The values are the number of enrolled students for each role.
+           - Students not matched to any GuaranteedSpots rule
+             are counted under the empty string key ("").
+        """
+        all_enrolled_records = cls.objects.filter(
+            group__in=groups, status=RecordStatus.ENROLLED
+        ).select_related(
+            'student', 'student__user'
+        ).prefetch_related(
+            'student__user__groups'
+        )
+        group_to_students = defaultdict(set)
+        for record in all_enrolled_records:
+            group_to_students[record.group.id].add(record.student.user)
+
+        all_guaranteed_spots_rules = GuaranteedSpots.objects.filter(group__in=groups)
+        group_to_roles = defaultdict(set)
+        for gsr in all_guaranteed_spots_rules:
+            group_to_roles[gsr.group.id].add(gsr.role)
+
+        enrolled = {}
+        for group in groups:
+            enrolled[group.id] = Counter()
+            enrolled[group.id][""] = 0
+            for role in group_to_roles[group.id]:
+                enrolled[group.id][role.name] = 0
+
+            students = group_to_students[group.id]
+            for student in students:
+                student_roles = {r.name for r in set(student.groups.all()) & group_to_roles[group.id]}
+                if not student_roles:
+                    student_roles = {""}
+                enrolled[group.id].update(student_roles)
+
+        return {group_id: dict(roles) for group_id, roles in enrolled.items()}
 
     @classmethod
     def common_groups(cls, user: User, groups: List[Group]) -> Set[int]:
