@@ -1,4 +1,4 @@
-Django==3.1.14
+Django==4.2.16
 django-bootstrap-pagination==1.7.1
 django-cas-ng==4.3.0
 django-crispy-forms==1.14.0
