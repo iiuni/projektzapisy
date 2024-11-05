@@ -246,7 +246,13 @@ div.loginbox {
 
 colgroup col.table-info-type {
   background-color: #f9f9f9;
+  width: 1%;
 }
+
+#table-info th {
+  white-space: nowrap;
+}
+
 
 // Required field marker in forms.
 .asteriskField {
