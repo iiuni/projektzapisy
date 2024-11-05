@@ -22,10 +22,10 @@ def change_desiderata(request):
         if hours_formset.is_valid() and comments_form.is_valid():
             hours_formset.save(desiderata, employee)
             comments_form.save()
-            
+
             desiderata = Desiderata.get_desiderata(employee)
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
-            
+
             messages.success(request, 'Zmiany zapisano pomyślnie')
         else:
             messages.error(request, 'Nie udało się zapisać zmian. Proszę poprawić błędy w formularzu.')
