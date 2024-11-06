@@ -203,6 +203,8 @@ def get_students_from_data(
 @login_required
 def course_list_view(request, course_slug: str, class_type: int = None):
     course, _, groups_ids = get_all_group_ids_for_course_slug(course_slug, class_type=class_type)
+    if course is None:
+        raise Http404("Kurs o podanym identyfikatorze nie istnieje.") 
     groups_data_enrolled = get_group_data(groups_ids, request.user, status=RecordStatus.ENROLLED)
     groups_data_queued = get_group_data(groups_ids, request.user, status=RecordStatus.QUEUED)
 
@@ -336,7 +338,7 @@ def get_all_group_ids_for_course_slug(slug, class_type: int = None):
             .get()
         )
     except CourseInstance.DoesNotExist:
-        return None, None
+        return None, None, []
 
     name = course.short_name if course.short_name else course.name
     return (course, name, [group.id for group in course.groups.all() if class_type is None or group.type == class_type])
