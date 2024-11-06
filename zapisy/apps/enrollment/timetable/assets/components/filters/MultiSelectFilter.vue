@@ -133,6 +133,10 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         }
       });
     },
+    addToSelection(option: Option) {
+      console.log("adding", option);
+      this.selected = [...this.selected, option];
+    },
   },
   computed: {
     selectionDescription(): string {
@@ -163,6 +167,8 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         k: this.filterKey,
         f: new ExactFilter(selectedIds, this.property),
       });
+
+      this.$emit("select", selectedIds);
     },
   },
 });

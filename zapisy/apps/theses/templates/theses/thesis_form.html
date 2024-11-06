@@ -45,6 +45,8 @@
     <form method="POST" id="confirm-submit" class="post-form">
         {% csrf_token %}
         {% crispy thesis_form %}
+        <div id="student-filter"></div>
+        {% render_bundle 'theses-student-filter' %} 
     </form>
     {% if confirm_changes %}
         {{ old_instance|json_script:"old_instance" }}
