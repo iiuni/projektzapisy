@@ -204,13 +204,13 @@ def get_students_from_data(
 def course_list_view(request, course_slug: str, class_type: int = None):
     course, _, groups_ids = get_all_group_ids_for_course_slug(course_slug, class_type=class_type)
     if course is None:
-        raise Http404("Kurs o podanym identyfikatorze nie istnieje.") 
+        raise Http404("Kurs o podanym identyfikatorze nie istnieje.")
     groups_data_enrolled = get_group_data(groups_ids, request.user, status=RecordStatus.ENROLLED)
     groups_data_queued = get_group_data(groups_ids, request.user, status=RecordStatus.QUEUED)
 
     students_in_course, students_in_queue = get_students_from_data(
         groups_data_enrolled, groups_data_queued
-    )
+    ) 
     can_user_see_all_students_here = any(
         [
             group["can_user_see_all_students_here"]
