@@ -210,7 +210,7 @@ def course_list_view(request, course_slug: str, class_type: int = None):
 
     students_in_course, students_in_queue = get_students_from_data(
         groups_data_enrolled, groups_data_queued
-    ) 
+    )
     can_user_see_all_students_here = any(
         [
             group["can_user_see_all_students_here"]
