@@ -35,6 +35,7 @@ class ClassroomAdmin(admin.ModelAdmin):
     def get_view_on_site_url(self, obj):
         return obj.get_absolute_url()
 
+
 class SemesterAdmin(admin.ModelAdmin):
 
     list_display = ('get_name', 'visible')
@@ -106,6 +107,7 @@ class EffectsListFilter(SimpleListFilter):
 class TermInline(admin.TabularInline):
     model = Term
     extra = 0
+
 
 class GuaranteedSpotsInline(admin.StackedInline):
     model = GuaranteedSpots
