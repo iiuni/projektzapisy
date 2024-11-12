@@ -31,12 +31,7 @@ const notificationScheme = z
 
 const notificationSchemeArray = z.array(notificationScheme);
 
-type Notification = {
-  id: string;
-  description: string;
-  issuedOn: string;
-  target: string;
-};
+type Notification = z.infer<typeof notificationScheme>;
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
