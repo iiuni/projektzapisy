@@ -28,7 +28,7 @@ xhtml2pdf==0.2.11
 # PyYAML is used for fixtures.
 pyyaml==6.0.1
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==2.4.3
+bokeh==3.6.1
 
 gspread==3.7.0
 typing-extensions==3.10.0.2
