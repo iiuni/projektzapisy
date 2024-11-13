@@ -133,10 +133,6 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         }
       });
     },
-    addToSelection(option: Option) {
-      console.log("adding", option);
-      this.selected = [...this.selected, option];
-    },
   },
   computed: {
     selectionDescription(): string {

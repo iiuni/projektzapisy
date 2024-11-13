@@ -15,8 +15,6 @@ const store = new Vuex.Store({
 const djangoField = document.getElementById("id_students");
 const multiselectPlaceholder = document.getElementById("student-filter");
 djangoField.before(multiselectPlaceholder);
-// element.style.display = "none";
-// const data = djangoField.children;//.map(({ value, text }) => { value, text })
-// console.log(data);
+djangoField.style.display = "none";
 
 new Vue({ el: "#student-filter", render: (h) => h(StudentFilter), store });
