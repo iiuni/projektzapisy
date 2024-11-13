@@ -44,7 +44,8 @@ export default Vue.extend({
       )
     );
 
-    const filter = this.$refs["student-filter"] as Vue & MultiSelectFilterWithSelected;
+    const filter = this.$refs["student-filter"] as Vue &
+      MultiSelectFilterWithSelected;
     if (filter) {
       filter.selected = multiselectOptions;
     }
