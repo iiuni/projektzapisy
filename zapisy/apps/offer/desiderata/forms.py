@@ -15,11 +15,9 @@ REVERSE_DAY = {
 
 
 class DesiderataOtherForm(forms.ModelForm):
-    comment = forms.CharField(max_length=1000, widget=forms.Textarea)
-
     class Meta:
         model = DesiderataOther
-        fields = ('comment',)
+        fields = ('comment', )
 
 
 class DesiderataForm(forms.Form):
