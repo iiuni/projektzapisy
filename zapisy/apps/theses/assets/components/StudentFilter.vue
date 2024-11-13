@@ -15,34 +15,21 @@ export default Vue.extend({
       students: [] as MultiselectFilterData<number>,
     };
   },
-  // created: function () {
-    // const students = [
-    //   { value: 1, label: "Jan Kowalski (1234567)" },
-    //   { value: 2, label: "Anna Nowak (2345678)" },
-    //   { value: 3, label: "Piotr Wiśniewski (3456789)" },
-    // ];
-    // this.students = cloneDeep(students);
-  // },
   mounted: function () {
     const djangoField = document.getElementById("id_students");
     if (djangoField === null) {
       return;
     }
 
-    const options = djangoField.querySelectorAll("option");
-    this.students = Array.from(options).map((option) => ({
+    const djangoOptions = djangoField.querySelectorAll("option");
+    this.students = Array.from(djangoOptions).map((option) => ({
       value: Number(option.value),
       label: option.text,
     } as MultiselectFilterDataItem<number>));
 
-    const selectedOptions = Array.from(options).filter((option) => option.selected);
-    const multiselectOptions = selectedOptions.map((option) => ({
-      value: Number(option.value),
-      label: option.text,
-    }));
-    console.log(multiselectOptions);
-    multiselectOptions.forEach((option) => this.$refs["student-filter"].addToSelection(option));
-    console.log(this.$refs["student-filter"]);
+    const selectedOptions = Array.from(djangoOptions).filter((option) => option.selected);
+    const multiselectOptions = this.students.filter((dataItem) => selectedOptions.some((selectedOption) => Number(selectedOption.value) === dataItem.value));
+    multiselectOptions.forEach((option) => this.$refs["student-filter"].selected.push(option));
   },
   methods: {
     updateDjangoField: function(selectedIds: number[]) {
@@ -50,8 +37,6 @@ export default Vue.extend({
       if (djangoField === null) {
         return;
       }
-
-      console.log(this.$refs["student-filter"]);
       
       const options = djangoField.querySelectorAll("option");
       options.forEach((option) => {
