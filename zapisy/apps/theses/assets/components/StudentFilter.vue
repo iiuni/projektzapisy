@@ -7,6 +7,10 @@ import {
   MultiselectFilterDataItem,
 } from "@/enrollment/timetable/assets/models";
 
+type MultiSelectFilterWithSelected = {
+  selected: MultiselectFilterDataItem<number>[];
+};
+
 export default Vue.extend({
   components: {
     MultiSelectFilter,
@@ -39,9 +43,11 @@ export default Vue.extend({
         (selectedOption) => Number(selectedOption.value) === dataItem.value
       )
     );
-    multiselectOptions.forEach((option) =>
-      this.$refs["student-filter"].selected.push(option)
-    );
+
+    const filter = this.$refs["student-filter"] as Vue & MultiSelectFilterWithSelected;
+    if (filter) {
+      filter.selected = multiselectOptions;
+    }
   },
   methods: {
     updateDjangoField: function (selectedIds: number[]) {
