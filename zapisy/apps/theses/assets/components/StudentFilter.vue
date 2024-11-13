@@ -3,7 +3,8 @@ import Vue from "vue";
 
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import {
-  MultiselectFilterData, MultiselectFilterDataItem,
+  MultiselectFilterData,
+  MultiselectFilterDataItem,
 } from "@/enrollment/timetable/assets/models";
 
 export default Vue.extend({
@@ -22,27 +23,38 @@ export default Vue.extend({
     }
 
     const djangoOptions = djangoField.querySelectorAll("option");
-    this.students = Array.from(djangoOptions).map((option) => ({
-      value: Number(option.value),
-      label: option.text,
-    } as MultiselectFilterDataItem<number>));
+    this.students = Array.from(djangoOptions).map(
+      (option) =>
+        ({
+          value: Number(option.value),
+          label: option.text,
+        } as MultiselectFilterDataItem<number>)
+    );
 
-    const selectedOptions = Array.from(djangoOptions).filter((option) => option.selected);
-    const multiselectOptions = this.students.filter((dataItem) => selectedOptions.some((selectedOption) => Number(selectedOption.value) === dataItem.value));
-    multiselectOptions.forEach((option) => this.$refs["student-filter"].selected.push(option));
+    const selectedOptions = Array.from(djangoOptions).filter(
+      (option) => option.selected
+    );
+    const multiselectOptions = this.students.filter((dataItem) =>
+      selectedOptions.some(
+        (selectedOption) => Number(selectedOption.value) === dataItem.value
+      )
+    );
+    multiselectOptions.forEach((option) =>
+      this.$refs["student-filter"].selected.push(option)
+    );
   },
   methods: {
-    updateDjangoField: function(selectedIds: number[]) {
+    updateDjangoField: function (selectedIds: number[]) {
       const djangoField = document.getElementById("id_students");
       if (djangoField === null) {
         return;
       }
-      
+
       const options = djangoField.querySelectorAll("option");
       options.forEach((option) => {
         option.selected = selectedIds.includes(Number(option.value));
       });
-    }
+    },
   },
 });
 </script>
