@@ -27,6 +27,7 @@
                     {# Link to the group page #}
                     <th></th>
                 {% endif %}
+                <th scope="col">Add to sched</th>
             </tr>
         </thead>
         <tbody>
@@ -118,12 +119,22 @@
                             </form>
                             {% endif %}
                         </td>
-                    {% endif %}
-                    {% if user.student or user.employee or user.is_staff %}
+                        {% endif %}
+                        {% if user.student or user.employee or user.is_staff %}
                         <td>
                             <a href="{% url 'group-view' group.pk %}">lista</a>
                         </td>
                     {% endif %}
+                    <td class="schedule">
+                        <form action="" method="post" class="addToSchedule">    
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-sm addToScheduleButton"
+                                onclick="return confirm('Czy na pewno chcesz dodać tą grupę do prototypu planu zajęć?');">
+                                    Dodaj do prototypu
+                                </button>
+                            </div>
+                        </form>    
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
