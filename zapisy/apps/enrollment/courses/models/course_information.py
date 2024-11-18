@@ -122,6 +122,7 @@ class CourseInformation(models.Model):
             'owner': self.owner_id,
             'effects': [effect.pk for effect in self.effects.all()],
             'tags': [tag.pk for tag in self.tags.all()],
+            'points': self.points,
         }
 
     def get_short_name(self):
