@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
+import { debounce } from "lodash";
 
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
 import {
@@ -20,47 +21,113 @@ export default Vue.extend({
       students: [] as MultiselectFilterData<number>,
     };
   },
-  mounted: function () {
-    const djangoField = document.getElementById("id_students");
+  mounted: async function () {
+    const djangoField = document.getElementById(
+      "id_students"
+    ) as HTMLSelectElement | null;
     if (djangoField === null) {
       return;
     }
 
-    const djangoOptions = djangoField.querySelectorAll("option");
-    this.students = Array.from(djangoOptions).map(
-      (option) =>
-        ({
-          value: Number(option.value),
-          label: option.text,
-        } as MultiselectFilterDataItem<number>)
-    );
+    const options = djangoField.options;
+    if (options.length === 0) {
+      return;
+    }
+    const assigned_students: MultiselectFilterData<number> = Array.from(
+      options
+    ).map((element) => ({
+      value: Number(element.value),
+      label: element.text,
+    }));
 
-    const selectedOptions = Array.from(djangoOptions).filter(
-      (option) => option.selected
-    );
-    const multiselectOptions = this.students.filter((dataItem) =>
-      selectedOptions.some(
-        (selectedOption) => Number(selectedOption.value) === dataItem.value
-      )
-    );
+    this.students = assigned_students;
 
     const filter = this.$refs["student-filter"] as Vue &
       MultiSelectFilterWithSelected;
     if (filter) {
-      filter.selected = multiselectOptions;
+      filter.selected = this.students;
     }
   },
   methods: {
+    onSelect: function (selectedIds: number[]) {
+      this.updateDjangoField(selectedIds);
+    },
+    clearData: function () {
+      const filter = this.$refs["student-filter"] as Vue &
+        MultiSelectFilterWithSelected;
+      if (filter) {
+        this.students = Array.from(filter.selected);
+      }
+    },
     updateDjangoField: function (selectedIds: number[]) {
-      const djangoField = document.getElementById("id_students");
+      console.log("Selected ids:", selectedIds);
+      const djangoField = document.getElementById(
+        "id_students"
+      ) as HTMLSelectElement | null;
       if (djangoField === null) {
+        console.log("No field");
         return;
       }
 
-      const options = djangoField.querySelectorAll("option");
-      options.forEach((option) => {
-        option.selected = selectedIds.includes(Number(option.value));
+      const optionArray = Array.from(djangoField.options);
+      const newId = selectedIds.find((id) =>
+        optionArray.every((option) => option.value !== String(id))
+      );
+      const removedIndex = optionArray.findIndex(
+        (option) => !selectedIds.includes(Number(option.value))
+      );
+
+      if (newId !== undefined) {
+        const newOption = document.createElement("option");
+        newOption.value = newId.toString();
+        newOption.text = this.students.find((s) => s.value === newId)!.label;
+        newOption.selected = true;
+        djangoField.options.add(newOption);
+      }
+
+      if (removedIndex !== -1) {
+        djangoField.options.remove(removedIndex);
+      }
+    },
+    fetchStudents: async function (
+      params: Record<string, string>
+    ): Promise<{ students: MultiselectFilterData<number> }> {
+      const ajaxUrlInput = document.querySelector(
+        "input#ajax-url"
+      ) as HTMLInputElement | null;
+
+      if (ajaxUrlInput === null) {
+        throw new Error("#ajax-url not found.");
+      }
+
+      const ajaxUrl = ajaxUrlInput.value;
+      const URLParams = new URLSearchParams(params).toString();
+      const response = await fetch(`${ajaxUrl}?${URLParams}`);
+      return response.json();
+    },
+    onSearchChange: debounce(function (
+      this: { updateStudents: (search: string) => void },
+      search: string
+    ) {
+      return this.updateStudents(search);
+    },
+    300),
+    updateStudents: async function (search: string) {
+      this.clearData();
+
+      if (search.length === 0) {
+        return;
+      }
+
+      const { students: fetchedStudents } = await this.fetchStudents({
+        q: search,
       });
+
+      const notSelectedStudents = fetchedStudents.filter((fetchedStudent) =>
+        this.students.every((s) => s.value !== fetchedStudent.value)
+      );
+
+      this.students.push(...notSelectedStudents);
     },
   },
 });
@@ -75,7 +142,8 @@ export default Vue.extend({
       title="Przypisani studenci"
       placeholder="Szukaj po imieniu, nazwisku, numerze indeksu..."
       ref="student-filter"
-      @select="updateDjangoField"
+      @select="onSelect"
+      @search-change="onSearchChange"
     />
   </div>
 </template>
