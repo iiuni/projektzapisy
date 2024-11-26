@@ -46,6 +46,7 @@
         {% csrf_token %}
         {% crispy thesis_form %}
         <div id="student-filter"></div>
+        <input type="hidden" id="ajax-url" value='{% url "theses:students" %}' />
         {% render_bundle 'theses-student-filter' %} 
     </form>
     {% if confirm_changes %}

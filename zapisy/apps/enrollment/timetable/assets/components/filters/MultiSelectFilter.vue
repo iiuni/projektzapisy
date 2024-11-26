@@ -53,6 +53,7 @@ type Methods = {
   clearFilter: () => void;
   clearAll: () => void;
   updateDropdownWidth: () => void;
+  onSearchChange: () => void;
 };
 
 export default defineComponent<Props, any, Data, Computed, Methods>({
@@ -133,6 +134,9 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         }
       });
     },
+    onSearchChange() {
+      this.$emit("search-change", ...arguments);
+    },
   },
   computed: {
     selectionDescription(): string {
@@ -181,6 +185,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       :track-by="trackBy"
       :label="propAsLabel"
       :placeholder="selectionDescription"
+      @search-change="onSearchChange"
     >
       <template slot="option" slot-scope="props">
         <div class="option-row">
