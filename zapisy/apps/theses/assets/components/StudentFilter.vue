@@ -60,12 +60,10 @@ export default Vue.extend({
       }
     },
     updateDjangoField: function (selectedIds: number[]) {
-      console.log("Selected ids:", selectedIds);
       const djangoField = document.getElementById(
         "id_students"
       ) as HTMLSelectElement | null;
       if (djangoField === null) {
-        console.log("No field");
         return;
       }
 
