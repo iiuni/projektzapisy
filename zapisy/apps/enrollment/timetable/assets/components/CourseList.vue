@@ -26,13 +26,13 @@ export default Vue.extend({
       tester: "visible",
     }),
     selection: {
-		  get(): number[] {
-			  return this.selectionState;
-		  },
-		  set(value: number[]) {
-			  this.$store.dispatch("courses/updateSelection", value);
-		  },
-	  },
+      get(): number[] {
+        return this.selectionState;
+      },
+      set(value: number[]) {
+        this.$store.dispatch("courses/updateSelection", value);
+      },
+    },
   },
   mounted() {
     this.visibleCourses = this.courses.filter(this.tester);
