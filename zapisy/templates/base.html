@@ -63,6 +63,24 @@
                                 <a href="{% url 'theses:main' %}" class="nav-link">Prace dyplomowe</a>
                             </li>
                         {% endif %}
+                        <button id="theme-toggler" class="btn btn-secondary">Switch Theme</button>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    const button = document.getElementById("theme-toggler");
+                                    const isDarkMode = localStorage.getItem("theme") === "dark";
+                            
+                                    if (isDarkMode) {
+                                        document.body.classList.add("dark-mode");
+                                        button.textContent = "Switch to Light Mode";
+                                    }
+                            
+                                    button.addEventListener("click", () => {
+                                        const isDark = document.body.classList.toggle("dark-mode");
+                                        localStorage.setItem("theme", isDark ? "dark" : "light");
+                                        button.textContent = isDark ? "Switch to Light Mode" : "Switch to Dark Mode";
+                                    });
+                                });
+                            </script>
                     </ul>
                 {% if user.is_authenticated %}
                     <div class="navbar-nav ms-auto">
