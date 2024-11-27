@@ -27,11 +27,9 @@ export default Vue.extend({
     }),
     selection: {
 		  get(): number[] {
-        console.log("getter");
 			  return this.selectionState;
 		  },
 		  set(value: number[]) {
-        console.log("setter");
 			  this.$store.dispatch("courses/updateSelection", value);
 		  },
 	  },
