@@ -11,7 +11,7 @@ from ..models.course_information import CourseInformation
 from ..models.course_instance import CourseInstance
 from ..models.course_type import Type
 from ..models.group import Group, GroupType
-from ..models.semester import ChangedDay, Semester
+from ..models.semester import ChangedDay, Freeday, Semester
 from ..models.term import Term
 from .semester_year_provider import SemesterYearProvider
 
@@ -97,6 +97,11 @@ class ChangedDayForFridayFactory(DjangoModelFactory):
         model = ChangedDay
 
     weekday = days_of_week.FRIDAY
+
+
+class FreedayFactory(DjangoModelFactory):
+    class Meta:
+        model = Freeday
 
 
 class ClassroomFactory(DjangoModelFactory):
