@@ -25,6 +25,16 @@ export default Vue.extend({
     ...mapGetters("filters", {
       tester: "visible",
     }),
+    selection: {
+		  get(): number[] {
+        console.log("getter");
+			  return this.selectionState;
+		  },
+		  set(value: number[]) {
+        console.log("setter");
+			  this.$store.dispatch("courses/updateSelection", value);
+		  },
+	  },
   },
   mounted() {
     this.visibleCourses = this.courses.filter(this.tester);
@@ -36,14 +46,6 @@ export default Vue.extend({
           break;
       }
     });
-  },
-  methods: {
-    get selection(): number[] {
-      return this.selectionState;
-    },
-    set selection(value: number[]) {
-      this.$store.dispatch("courses/updateSelection", value);
-    },
   },
 });
 </script>
