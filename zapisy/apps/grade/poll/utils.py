@@ -159,7 +159,7 @@ class PollSummarizedResultsEntry:
             plot = bokeh.plotting.figure(
                 y_range=self._choices,
                 sizing_mode='scale_width',
-                plot_height=250,
+                height=250,
                 toolbar_location=None,
                 tools='',
             )

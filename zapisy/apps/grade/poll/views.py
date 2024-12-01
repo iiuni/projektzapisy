@@ -5,7 +5,8 @@ from operator import attrgetter
 from typing import List
 
 from django.contrib import messages
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.generic import TemplateView, UpdateView, View
 
 from apps.enrollment.courses.models.semester import Semester

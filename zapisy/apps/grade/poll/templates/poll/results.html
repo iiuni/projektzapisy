@@ -2,6 +2,10 @@
 {% load cache %}
 {% load render_bundle get_files from webpack_loader %}
 {% load filters %}
+{% block head_extra %}
+  <script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.6.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.6.1.min.css">
+{% endblock head_extra %}
 
 {% block main-subtitle %}Wyniki oceny{% endblock %}
 {% block nav-grade-results %}active{% endblock %}
@@ -13,7 +17,7 @@
 
 {% block all-content %}
 
-{% render_bundle 'poll-bokeh-plotting' %}
+{% comment %} {% render_bundle 'poll-bokeh-plotting' %} {% endcomment %}
 
 <div class="row">
   <div class="col-lg-8 col-12">
