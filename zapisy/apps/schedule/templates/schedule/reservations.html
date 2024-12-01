@@ -1,5 +1,5 @@
 {% extends "schedule/base.html" %}
-{% load bootstrap_pagination %}
+{% comment %} {% load bootstrap_pagination %} {% endcomment %}
 {% load crispy_forms_tags %}
 
 {% block schedule_manage %} class="active"{% endblock %}
@@ -32,7 +32,7 @@
     {% endfor %}
 
     <div class="d-flex justify-content-center">
-        {% bootstrap_paginate qs range=10 show_first_last="true" %}
+        {% comment %} {% bootstrap_paginate qs range=10 show_first_last="true" %} {% endcomment %}
     </div>
 {% endblock %}
 
