@@ -50,6 +50,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' # BigAutoField jest zalecane od django 3.2. Jeżeli nie jest podane django autoamtycznie używa AutoField
+
 # django-rq is a task queue. It can be used to run asynchronous tasks. The tasks
 # should be implemented so, that setting RUN_ASYNC to False would run them
 # eagerly.
@@ -237,7 +239,7 @@ INSTALLED_APPS = (
     'apps.effects',
     'django_extensions',
     'django_filters',
-    'bootstrap_pagination',
+    'django_bootstrap5',
     'crispy_forms',
     'apps.notifications',
     'django_cas_ng',
@@ -272,7 +274,10 @@ CAS_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 # This chceck has to be disabled as long as we are using an incorrect Nginx
 # configuration which rewrites HTTPS to HTTP.
-CAS_CHECK_NEXT = lambda _: True  # noqa: E731
+
+
+def CAS_CHECK_NEXT(_): return True  # noqa: E731
+
 
 LOGIN_REDIRECT_URL = '/users/'
 
@@ -351,7 +356,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        # 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache', # Niedostępne w dajngo 4.2
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 300,
     }
