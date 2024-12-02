@@ -21,12 +21,11 @@ def is_user_in_group(user: User, group_name: str) -> bool:
 
 
 class Employee(models.Model):
-    user = models.OneToOneField(
-        User,
-        verbose_name="Użytkownik",
-        related_name='employee_ptr',
-        related_query_name='employee',
-        on_delete=models.CASCADE)
+    user = models.OneToOneField(User,
+                                verbose_name="Użytkownik",
+                                related_name='employee_ptr',
+                                related_query_name='employee',
+                                on_delete=models.CASCADE)
     consultations = models.TextField(verbose_name="konsultacje",
                                      null=True,
                                      blank=True,
@@ -41,6 +40,7 @@ class Employee(models.Model):
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
+
     get_full_name.short_description = 'Użytkownik'
 
     @staticmethod
@@ -53,9 +53,7 @@ class Employee(models.Model):
         verbose_name_plural = 'Pracownicy'
         app_label = 'users'
         ordering = ['user__last_name', 'user__first_name']
-        permissions = (
-            ("mailto_all_students", "Może wysyłać maile do wszystkich studentów"),
-        )
+        permissions = (("mailto_all_students", "Może wysyłać maile do wszystkich studentów"), )
 
     def get_full_name_with_academic_title(self) -> str:
         """Prepends the employee's academic title (if specified) to the name."""
@@ -64,33 +62,32 @@ class Employee(models.Model):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(
-        User,
-        verbose_name="Użytkownik",
-        related_name='student_ptr',
-        related_query_name='student',
-        on_delete=models.CASCADE)
-    matricula = models.CharField(
-        max_length=20,
-        default="",
-        unique=True,
-        verbose_name="Numer indeksu")
+    user = models.OneToOneField(User,
+                                verbose_name="Użytkownik",
+                                related_name='student_ptr',
+                                related_query_name='student',
+                                on_delete=models.CASCADE)
+    matricula = models.CharField(max_length=20,
+                                 default="",
+                                 unique=True,
+                                 verbose_name="Numer indeksu")
     ects = models.PositiveIntegerField(verbose_name="punkty ECTS", default=0)
     records_opening_bonus_minutes = models.PositiveIntegerField(
         default=0, verbose_name="Przyspieszenie otwarcia zapisów (minuty)")
-    program = models.ForeignKey(
-        'Program',
-        verbose_name='Program Studiów',
-        null=True,
-        default=None,
-        on_delete=models.CASCADE)
+    program = models.ForeignKey('Program',
+                                verbose_name='Program Studiów',
+                                null=True,
+                                default=None,
+                                on_delete=models.CASCADE)
     semestr = models.PositiveIntegerField(default=0, verbose_name="Semestr")
     is_active = models.BooleanField("aktywny",
                                     default=True,
                                     help_text="Student może być aktywny lub skreślony.")
 
-    usos_id = models.PositiveIntegerField(
-        null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
+    usos_id = models.PositiveIntegerField(null=True,
+                                          blank=True,
+                                          unique=True,
+                                          verbose_name='Kod studenta w systemie USOS')
 
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.matricula})"
@@ -103,7 +100,11 @@ class Student(models.Model):
 
     def get_full_name(self) -> str:
         return self.user.get_full_name()
+
     get_full_name.short_description = 'Użytkownik'
+
+    def is_enrolled_in_native_program(self) -> bool:
+        return self.program and self.program.is_native
 
     @classmethod
     def get_active_students(cls) -> QuerySet:
@@ -118,6 +119,11 @@ class Student(models.Model):
 
 class Program(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Program")
+    is_native = models.BooleanField(
+        verbose_name="Program rodzimy",
+        default=False,
+        help_text="Określa czy program studiów jest z instytutu informatyki czy spoza np. matematyka"
+    )
 
     class Meta:
         verbose_name: str = 'Program studiów'
