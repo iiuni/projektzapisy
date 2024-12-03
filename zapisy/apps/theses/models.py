@@ -50,6 +50,7 @@ class ThesesQuerySet(models.QuerySet):
         return self.filter((~Q(status=ThesisStatus.BEING_EVALUATED) &
                             ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) | Q(id__in=user_theses))
 
+
 class Thesis(models.Model):
     """Represents a thesis in the theses system.
 
