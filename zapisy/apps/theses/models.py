@@ -45,13 +45,10 @@ class ThesesQuerySet(models.QuerySet):
     def visible(self, user):
         if user.is_staff or is_theses_board_member(user):
             return self
-        student_theses = self.filter(students__user=user)
-        return self.filter(
-            (~Q(status=ThesisStatus.BEING_EVALUATED) & ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) |
-            Q(advisor__user=user) |
-            Q(supporting_advisor__user=user) |
-            Q(id__in=student_theses))
 
+        user_theses = self.filter(Q(students__user=user) | Q(advisor__user=user) | Q(supporting_advisor__user=user))
+        return self.filter((~Q(status=ThesisStatus.BEING_EVALUATED) &
+                            ~Q(status=ThesisStatus.RETURNED_FOR_CORRECTIONS)) | Q(id__in=user_theses))
 
 class Thesis(models.Model):
     """Represents a thesis in the theses system.
