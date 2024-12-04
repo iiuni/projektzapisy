@@ -88,7 +88,7 @@ export default Vue.extend({
       }
     },
     fetchStudents: async function (
-      params: Record<string, string>
+      substring: string
     ): Promise<{ students: MultiselectFilterData<number> }> {
       const ajaxUrlInput = document.querySelector(
         "input#ajax-url"
@@ -99,8 +99,8 @@ export default Vue.extend({
       }
 
       const ajaxUrl = ajaxUrlInput.value;
-      const URLParams = new URLSearchParams(params).toString();
-      const response = await fetch(`${ajaxUrl}?${URLParams}`);
+      const urlSafeSubstring = encodeURIComponent(substring);
+      const response = await fetch(`${ajaxUrl}/${urlSafeSubstring}`);
       return response.json();
     },
     onSearchChange: debounce(function (
@@ -117,9 +117,7 @@ export default Vue.extend({
         return;
       }
 
-      const { students: fetchedStudents } = await this.fetchStudents({
-        q: search,
-      });
+      const { students: fetchedStudents } = await this.fetchStudents(search);
 
       const notSelectedStudents = fetchedStudents.filter((fetchedStudent) =>
         this.students.every((s) => s.value !== fetchedStudent.value)
