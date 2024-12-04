@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.forms.models import model_to_dict
 from django.db.models import Q
 
@@ -284,25 +284,14 @@ def delete_thesis(request, id):
     return redirect('theses:main')
 
 
+@require_GET
 @employee_required
-def students(request):
-    if request.method != 'GET':
-        return HttpResponseNotAllowed(['GET'])
-
-    if 'q' not in request.GET and 'ids' not in request.GET:
-        return HttpResponseBadRequest()
-
-    if 'q' in request.GET:
-        query = request.GET['q']
-        conditions = (
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(matricula__icontains=query)
-        )
-    else:
-        ids = request.GET['ids'].split(',')
-        conditions = Q(id__in=ids)
-
+def students(request, substring):
+    conditions = (
+        Q(user__first_name__icontains=substring) |
+        Q(user__last_name__icontains=substring) |
+        Q(matricula__icontains=substring)
+    )
     matching_students = Student.objects.filter(conditions)
     return JsonResponse({'students': [
         {
