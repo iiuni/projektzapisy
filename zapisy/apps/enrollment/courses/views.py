@@ -14,6 +14,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
+from apps.enrollment.timetable.models import Pin
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
@@ -95,11 +96,16 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     student_can_dequeue = Record.can_dequeue_groups(
         student, course.groups.all())
 
+    semester = Semester.get_upcoming_semester()
+    pinned = Pin.student_pins_in_semester(student, semester)
+    pinned = list(pinned)
+
     for group in groups:
         group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
         group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
         group.can_enqueue = student_can_enqueue.get(group.pk)
         group.can_dequeue = student_can_dequeue.get(group.pk)
+        group.is_pinned = group in pinned
 
     teachers = {g.teacher for g in groups}
 
