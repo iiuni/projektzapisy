@@ -124,6 +124,29 @@
                         <td>
                             <a href="{% url 'group-view' group.pk %}">lista</a>
                         </td>
+                        <td class="schedule">
+                            {% if group.is_pinned %}
+                            <form action="{% url 'unpin' %}" method="post" class="removeFromSchedule">{% csrf_token %}
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.pk }}"/>
+                                    <button type="submit" class="btn btn-danger btn-sm removeFromScheduleButton"
+                                    onclick="return confirm('Czy na pewno chcesz usunąć tą grupę z prototypu planu zajęć?');">
+                                        Usuń z prototypu
+                                    </button>
+                                </div>
+                            </form>
+                            {% else %}
+                            <form action="{% url 'pin' %}" method="post" class="addToSchedule">{% csrf_token %}
+                                <div>
+                                    <input type="hidden" name="group_id" value="{{ group.pk }}"/>
+                                    <button type="submit" class="btn btn-primary btn-sm addToScheduleButton"
+                                    onclick="return confirm('Czy na pewno chcesz dodać tą grupę do prototypu planu zajęć?');">
+                                        Dodaj do prototypu
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </td>
                     {% endif %}
                     <td class="schedule">
                         <form action="" method="post" class="addToSchedule">    
