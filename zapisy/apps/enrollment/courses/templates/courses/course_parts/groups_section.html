@@ -27,7 +27,7 @@
                     {# Link to the group page #}
                     <th></th>
                 {% endif %}
-                <th scope="col">Add to sched</th>
+                <th title="Dodaj/usuń grupę do/z prototypu planu zajęć" scope="col">Add to sched</th>
             </tr>
         </thead>
         <tbody>
@@ -148,16 +148,6 @@
                             {% endif %}
                         </td>
                     {% endif %}
-                    <td class="schedule">
-                        <form action="" method="post" class="addToSchedule">    
-                            <div>
-                                <button type="submit" class="btn btn-primary btn-sm addToScheduleButton"
-                                onclick="return confirm('Czy na pewno chcesz dodać tą grupę do prototypu planu zajęć?');">
-                                    Dodaj do prototypu
-                                </button>
-                            </div>
-                        </form>    
-                    </td>
                 </tr>
             {% endfor %}
             </tbody>
