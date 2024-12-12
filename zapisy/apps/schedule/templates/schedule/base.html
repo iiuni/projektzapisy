@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block events_active %} class="active"{% endblock %}
 
 {% block main-subtitle %}Rezerwacja Sal{% endblock %}
@@ -38,6 +37,4 @@
             <a class="nav-link" href="{% url 'events:events_report' %}">Raporty</a>
         </li>
     {% endif %}
-
-    {# end system_menu #}
 {% endblock %}
