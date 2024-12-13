@@ -102,7 +102,7 @@ const PLUGINS = [
     : false,
   new BundleTracker({
     path: path.resolve(STATS_DIR),
-    filename: "webpack-stats.json",
+    filename: "webpack_resources/webpack-stats.json",
   }),
 ].filter(Boolean);
 

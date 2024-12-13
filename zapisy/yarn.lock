@@ -2626,6 +2626,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ansi-regex@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "ansi-regex@npm:5.0.1"
+  checksum: c944e1229f022a2071f7477ea425964328c577d2c752083fe564ea0513b6d733c9ec65102f6d4d2b54cba0cb2dc969648b60d567abeff13dc95ecc0b9b97737d
+  languageName: node
+  linkType: hard
+
 "ansi-styles@npm:^3.2.0, ansi-styles@npm:^3.2.1":
   version: 3.2.1
   resolution: "ansi-styles@npm:3.2.1"
@@ -3969,13 +3976,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-extend@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "deep-extend@npm:0.6.0"
-  checksum: 856d7f52db152c19fc5a70439ea938461cfb9338a632496fe370050dc73d3291cd76fc6713f604a5c126612dee9cac0f6da1d4b88ba4b0caa4f7214345879b89
-  languageName: node
-  linkType: hard
-
 "deepmerge@npm:^4.2.2":
   version: 4.2.2
   resolution: "deepmerge@npm:4.2.2"
@@ -5288,7 +5288,7 @@ fsevents@~2.1.2:
     vuex: 3.6.2
     webpack: 4.47.0
     webpack-bundle-analyzer: 3.9.0
-    webpack-bundle-tracker: 0.4.3
+    webpack-bundle-tracker: 1.4.0
     webpack-cli: 3.3.12
   languageName: unknown
   linkType: soft
@@ -5966,10 +5966,38 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
+"lodash.assign@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.assign@npm:4.2.0"
+  checksum: ef1a67138d5276b7df6552e3f83b83f2e0fd801d59bc217bb0cb07c3dc82398654733c6a37d6feb531cda331a741ab9007d1fa7c6d96a5872962b601ea99da06
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: b6042bd8c09ff1961c9127d32266316bc21f946ece5e3464a663ec61fadb98e7d56ec0ef7e23b47d393695310c19cf24e651c1756be6da91ac02c72be7f79465
+  languageName: node
+  linkType: hard
+
+"lodash.defaults@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "lodash.defaults@npm:4.2.0"
+  checksum: fde72e71f7b7ece10c24e43dd601574168467d50bc76687302d40de341d5cb8e35b100105d938458747d2ad5f20d8bb736e62523ef39d1a8b40f7307c50f10ac
+  languageName: node
+  linkType: hard
+
+"lodash.foreach@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.foreach@npm:4.5.0"
+  checksum: aa177589a923db147831937b2b74746276247a4c0870c8dfe14bcebb009e9a89b33287589ba0af90a6fa2355b0759cea03ab6d0a25219a25d0d96222de4a831f
+  languageName: node
+  linkType: hard
+
+"lodash.get@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "lodash.get@npm:4.4.2"
+  checksum: 447e575e3caa5131ef44e5a0c135b1614f3c937d86b3be0568f9da7b0fd015010af3b6b4e41edf6e2698c9ce2dcc061ca71b31f274f799c991dceb018be16e4f
   languageName: node
   linkType: hard
 
@@ -8368,6 +8396,15 @@ resolve@^1.14.2:
   languageName: node
   linkType: hard
 
+"strip-ansi@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "strip-ansi@npm:6.0.1"
+  dependencies:
+    ansi-regex: ^5.0.1
+  checksum: 9d3061240b03abe5beaf403893464fdc924f43664debe822d5e9146b56c1398b88003f8afdb97eb0cea955c568f6bbfa4923d2b2a08a3a079fd09ee3b5402efb
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -9086,14 +9123,16 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"webpack-bundle-tracker@npm:0.4.3":
-  version: 0.4.3
-  resolution: "webpack-bundle-tracker@npm:0.4.3"
+"webpack-bundle-tracker@npm:1.4.0":
+  version: 1.4.0
+  resolution: "webpack-bundle-tracker@npm:1.4.0"
   dependencies:
-    deep-extend: ^0.6.0
-    mkdirp: ^0.5.1
-    strip-ansi: ^5.2.0
-  checksum: 560ff02a87aa852c9b5b52c8132ab8e5d854c2b9f1f153dea734e140a5c634fee58367df58ea36ef86847bbb1f49f72f3440b414e2fcfc28cdd57ab72e695cd8
+    lodash.assign: ^4.2.0
+    lodash.defaults: ^4.2.0
+    lodash.foreach: ^4.5.0
+    lodash.get: ^4.4.2
+    strip-ansi: ^6.0.0
+  checksum: 793e13cc8b1be8574cf0c7185be02b7defc852c9f0a82de9febb7e5766c45068904d18cfda7c236cc77a99c2b0627ecfeec61b91b3127f4437e52e126504724e
   languageName: node
   linkType: hard
 

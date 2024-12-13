@@ -2,7 +2,9 @@ Django==4.2
 # django-bootstrap-pagination
 django-bootstrap5==24.1
 django-cas-ng==4.3.0
-django-crispy-forms==1.14.0 # Dostępna Wersja 2.3
+# django-crispy-forms==1.14.0 # Dostępna Wersja 2.3
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.10
 django-environ==0.9.0
 django-extensions==3.2.3 # Cannot be lower???
 django-filter==2.4.0 # Dostępna Wersja 24.3
@@ -11,7 +13,8 @@ redis==3.5.3 # Dostępna Wersja 5.2.0
 rq==1.16.2 # Dostępna Wersja 2.0.0
 django-rq==2.8.1
 django-test-without-migrations==0.6 ## Ostatni update 7 lat temu, po co zmieniać, jeżeli działa???
-django-webpack-loader==0.7.0 # Dostępna Wersja 3.1.1 ale trzeba ją skonfigurować
+# django-webpack-loader==0.7.0 # Dostępna Wersja 3.1.1 ale trzeba ją skonfigurować
+django-webpack-loader==1.4.0 # Dostępna Wersja 3.1.1 ale trzeba ją skonfigurować
 djangorestframework==3.15.1
 django-pagedown==2.2.1 # Ostatni update ponad 3??? lata temu?
 
@@ -25,7 +28,7 @@ gunicorn==20.1.0
 python-dateutil==2.9.0.post0
 # python-memcached
 pymemcache==4.0.0 # Dokumentacja django wspomina o tej bibliotece
-more-itertools==8.14.0 # Czy jest potrzebna w kodzie, ponieważ wygląda na to, że nie jest nigdzie wykorzystywana (chyba, że nie wprost) 
+more-itertools==8.14.0
 xhtml2pdf==0.2.11
 # PyYAML is used for fixtures.
 pyyaml==6.0.2

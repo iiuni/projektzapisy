@@ -50,7 +50,7 @@ DATABASES = {
     }
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' # BigAutoField jest zalecane od django 3.2. Jeżeli nie jest podane django autoamtycznie używa AutoField
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # django-rq is a task queue. It can be used to run asynchronous tasks. The tasks
 # should be implemented so, that setting RUN_ASYNC to False would run them
@@ -241,6 +241,7 @@ INSTALLED_APPS = (
     'django_filters',
     'django_bootstrap5',
     'crispy_forms',
+    "crispy_bootstrap5",
     'apps.notifications',
     'django_cas_ng',
     'django_rq',
@@ -365,10 +366,14 @@ CACHES = {
 
 NEWS_PER_PAGE = 15
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
 )
