@@ -254,8 +254,8 @@ colgroup col.table-info-offer {
 }
 
 @include media-breakpoint-down(lg) {
-  #table-offer th {
-    white-space: normal;
+  .table-offer th {
+    white-space: wrap;
   }
 }
 
