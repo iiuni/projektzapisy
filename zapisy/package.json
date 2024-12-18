@@ -77,6 +77,6 @@
     "webpack-bundle-analyzer": "3.9.0",
     "webpack-bundle-tracker": "0.4.3",
     "webpack-cli": "3.3.12",
-    "zod": "3.24.0"
+    "zod": "3.24.1"
   }
 }
