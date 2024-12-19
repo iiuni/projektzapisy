@@ -1,13 +1,14 @@
 from apps.users.models import Student
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models.records import Record, RecordStatus
-
+from datetime import datetime
 
 def enroll(group, student):
     Record.object.create(
         group=group,
         student=student,
-        status=RecordStatus.ENROLLED)
+        status=RecordStatus.ENROLLED,
+        modified_to_enrolled=datetime.now())
 
 
 def run():

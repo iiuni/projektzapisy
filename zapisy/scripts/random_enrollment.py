@@ -1,6 +1,7 @@
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.enrollment.courses.models.group import Group
 from apps.users.models import Student
+from datetime import datetime
 import random
 
 group_ids = [15694, 15696, 15697]
@@ -18,4 +19,5 @@ def run():
         Record.objects.create(
             group_id=group_id,
             student=student,
-            status=RecordStatus.ENROLLED)
+            status=RecordStatus.ENROLLED,
+            modified_to_enrolled=datetime.now())

@@ -91,7 +91,9 @@ class Record(models.Model):
         default=5,
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+
+    modified_to_enrolled = models.DateTimeField(null=True, blank=True)
+    modified_to_removed = models.DateTimeField(null=True, blank=True)
 
     @staticmethod
     def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
@@ -401,8 +403,9 @@ class Record(models.Model):
                 student=student, group=group).exclude(status=RecordStatus.REMOVED).get()
         except cls.DoesNotExist:
             return False
-        record.status = RecordStatus.REMOVED
-        record.save()
+
+        record.change_status_to_removed()
+
         LOGGER.info('User %s removed from group %s', student, group)
         GROUP_CHANGE_SIGNAL.send(None, group_id=record.group_id)
         return True
@@ -529,15 +532,40 @@ class Record(models.Model):
         # We change the status from queued to enrolled for those, who should be enrolled.
         cls.objects.filter(group=group_id,
                            status=RecordStatus.QUEUED,
-                           student_id__in=enrolled_other).update(status=RecordStatus.ENROLLED)
+                           student_id__in=enrolled_other).update(
+                               status=RecordStatus.ENROLLED,
+                               modified_to_enrolled=datetime.now())
         # We change the status from enrolled to queued for those who should be queued.
         cls.objects.filter(
             group=group_id,
             status=RecordStatus.ENROLLED,
-            student_id__in=(queued_other - enrolled_other)).update(status=RecordStatus.QUEUED)
+            student_id__in=(queued_other - enrolled_other)).update(
+                status=RecordStatus.QUEUED,
+                modified_to_enrolled=None,
+                modified_to_removed=None)
         # Drop records of people not in the group.
         cls.objects.filter(group_id=group_id).exclude(status=RecordStatus.REMOVED).exclude(
-            student_id__in=(enrolled_other | queued_other)).update(status=RecordStatus.REMOVED)
+            student_id__in=(enrolled_other | queued_other)).update(
+                status=RecordStatus.REMOVED,
+                modified_to_removed=datetime.now())
+
+    def change_status_to_enrolled(self):
+        """Changes record status (and linked data) to enrolled.
+
+        Does not return any value.
+        """
+        self.status = RecordStatus.ENROLLED
+        self.modified_to_enrolled = datetime.now()
+        self.save()
+
+    def change_status_to_removed(self):
+        """Changes record status (and linked data) to removed.
+
+        Does not return any value.
+        """
+        self.status = RecordStatus.REMOVED
+        self.modified_to_removed = datetime.now()
+        self.save()
 
     def enroll_or_remove(self, group: Group) -> List[int]:
         """Tries to change a single QUEUED record status to ENROLLED.
@@ -564,8 +592,7 @@ class Record(models.Model):
             # Check if he can be enrolled at all.
             can_enroll = self.can_enroll(self.student, group)
             if not can_enroll:
-                self.status = RecordStatus.REMOVED
-                self.save()
+                self.change_status_to_removed()
 
                 # Send notifications
                 student_not_pulled.send_robust(
@@ -588,9 +615,12 @@ class Record(models.Model):
             other_groups_query_list = list(
                 other_groups_query.filter(status=RecordStatus.ENROLLED).values_list(
                     'group_id', flat=True))
-            other_groups_query.update(status=RecordStatus.REMOVED)
-            self.status = RecordStatus.ENROLLED
-            self.save()
+            other_groups_query.update(
+                status=RecordStatus.REMOVED,
+                modified_to_removed=datetime.now()
+            )
+            self.change_status_to_enrolled()
+
             # Send notification to user
             student_pulled.send_robust(
                 sender=self.__class__, instance=self.group, user=self.student.user)

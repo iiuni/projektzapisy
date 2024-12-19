@@ -318,6 +318,35 @@ def group_enrolled_csv(request, group_id):
 
 
 @employee_required
+def group_enrolled_changes_csv(request, group_id):
+    """Prints out the group members changes in csv format."""
+    group: Optional[Group] = Group.objects.filter(id=group_id).first()
+    if not group:
+        raise Http404
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="group-{group_id}.csv"'
+
+    record_status_descriptions = {
+        RecordStatus.ENROLLED: "Zmiana: ZAPISANY",
+        RecordStatus.REMOVED: "Zmiana: WYPISANY"
+    }
+
+    writer = csv.writer(response)
+    for record_status, record_list in group.request_modified_records_data().items():
+        for record in record_list:
+            writer.writerow([
+                record_status_descriptions[record_status],
+                record.student.user.first_name,
+                record.student.user.last_name,
+                record.student.user.email,
+                record.student.matricula
+            ])
+
+    return response
+
+
+@employee_required
 def group_queue_csv(request, group_id):
     """Prints out the group queue in csv format."""
     if not Group.objects.filter(id=group_id).exists():
