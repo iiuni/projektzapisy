@@ -98,10 +98,17 @@ class ThesisFormBase(forms.ModelForm):
 
     def clean(self):
         super().clean()
+        # Handle the mess caused by django not recognizing the selected students
+        # (line 47: `queryset=Student.objects.none(),`)
         if 'students' in self.data:
             if 'students' in self.errors:
+                # No error, trust me bro
                 self.errors.pop('students')
+            # Handle the mess caused by a different data structure
+            # appearing in tests for some reason
+            # QueryDict in normal use; Python dict in tests; wtf
             ids_or_students = self.data.getlist('students') if 'getlist' in dir(self.data) else self.data['students']
+            # Help django find out the students actually exist
             if len(ids_or_students) != 0 and isinstance(ids_or_students[0], str):
                 self.cleaned_data['students'] = Student.objects.filter(Q(id__in=ids_or_students))
             else:

@@ -293,6 +293,7 @@ def students(request, substring):
         Q(matricula__icontains=substring)
     )
     matching_students = Student.objects.filter(conditions)
+    # Return matching students in a MultiSelectFilter-friendly format
     return JsonResponse({'students': [
         {
             'value': s.id,
