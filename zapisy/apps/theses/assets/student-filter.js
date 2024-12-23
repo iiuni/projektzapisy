@@ -34,6 +34,7 @@ studentSearchResultList.style.borderRadius =
 studentSearchResultList.style.width = "100%";
 studentSearchResultList.style.maxHeight = "15rem";
 studentSearchResultList.style.overflow = "auto";
+studentSearchResultList.style.zIndex = 1;
 // A snippet to include a sibling selector without a .css file
 // Hides the result list if it's empty (the border is still visible otherwise)
 const style = document.createElement("style");
