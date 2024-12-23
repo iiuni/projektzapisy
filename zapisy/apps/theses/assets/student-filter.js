@@ -8,11 +8,15 @@ const studentSearchInput = document.createElement("input");
 studentSearchInput.type = "search";
 studentSearchInput.autocomplete = "off";
 studentSearchInput.className = "form-control";
-studentSearchInput.placeholder = "Szukaj po imieniu, nazwisku, numerze indeksu\u2026";
+studentSearchInput.placeholder =
+  "Szukaj po imieniu, nazwisku, numerze indeksu\u2026";
 studentSearchInput.id = "student-search-input";
-studentSearchInput.addEventListener("input", debounce(function (ev) {
-  updateSearchResults(this.value);
-}, 300));
+studentSearchInput.addEventListener(
+  "input",
+  debounce(function (ev) {
+    updateSearchResults(this.value);
+  }, 300)
+);
 
 const studentSearchInputLabel = document.createElement("label");
 studentSearchInputLabel.textContent = "Wyszukiwarka studentów";
@@ -22,20 +26,20 @@ const studentSearchResultList = document.createElement("div");
 studentSearchResultList.className = "list-group list-group-flush";
 studentSearchResultList.style.position = "absolute";
 studentSearchResultList.style.top = "calc(100% + 0.5rem)";
-studentSearchResultList.style.border = "1px solid var(--bs-list-group-border-color)";
-studentSearchResultList.style.borderRadius = "var(--bs-list-group-border-radius)";
+studentSearchResultList.style.border =
+  "1px solid var(--bs-list-group-border-color)";
+studentSearchResultList.style.borderRadius =
+  "var(--bs-list-group-border-radius)";
 studentSearchResultList.style.width = "100%";
 studentSearchResultList.style.maxHeight = "15rem";
 studentSearchResultList.style.overflow = "auto";
-const style = document.createElement('style');
-style.innerHTML =
-`
+const style = document.createElement("style");
+style.innerHTML = `
 #student-search-input + div:not(:has(> *)) {
   display: none;
 }
 `;
 document.body.append(style);
-
 
 const studentSearchContainer = document.createElement("div");
 studentSearchContainer.style.position = "relative";
@@ -50,15 +54,17 @@ async function updateSearchResults(search) {
     clearSearchResults();
     return;
   }
-  
+
   const { students: fetchedStudents } = await fetchStudents(search);
-  
+
   const notAssignedStudents = fetchedStudents.filter((fetchedStudent) =>
     assignedStudents.every((s) => s.value !== fetchedStudent.value)
   );
 
   searchResults.splice(0, searchResults.length, ...notAssignedStudents);
-  studentSearchResultList.replaceChildren(...searchResults.map(createStudentSearchResultListItem));
+  studentSearchResultList.replaceChildren(
+    ...searchResults.map(createStudentSearchResultListItem)
+  );
 }
 
 function updateAssignedStudentsList() {
@@ -68,7 +74,9 @@ function updateAssignedStudentsList() {
   }
 
   assignedStudentsList.innerHTML = "";
-  assignedStudentsList.append(...assignedStudents.map(createAssignedStudentListItem));
+  assignedStudentsList.append(
+    ...assignedStudents.map(createAssignedStudentListItem)
+  );
 }
 
 function updateDjangoField() {
@@ -88,7 +96,7 @@ function assignStudent(student) {
   if (assignedStudents.includes(student)) {
     return;
   }
-  
+
   assignedStudents.push(student);
   updateAssignedStudentsList();
   updateDjangoField();
@@ -99,8 +107,11 @@ function unassignStudent(student) {
   if (!assignedStudents.includes(student)) {
     return;
   }
-    
-  assignedStudents.splice(assignedStudents.findIndex((s) => s.value === student.value), 1);
+
+  assignedStudents.splice(
+    assignedStudents.findIndex((s) => s.value === student.value),
+    1
+  );
   updateAssignedStudentsList();
   updateDjangoField();
   updateSearchResults(studentSearchInput.value);
@@ -117,7 +128,7 @@ async function fetchStudents(substring) {
   const urlSafeSubstring = encodeURIComponent(substring);
   const response = await fetch(`${ajaxUrl}/${urlSafeSubstring}`);
   return response.json();
-};
+}
 
 const searchResults = [];
 
@@ -129,7 +140,8 @@ function clearSearchResults() {
 function createStudentSearchResultListItem(student) {
   const listItem = document.createElement("div");
   listItem.textContent = student.label;
-  listItem.className = "list-group-item d-flex align-items-center justify-content-between";
+  listItem.className =
+    "list-group-item d-flex align-items-center justify-content-between";
 
   const assignStudentButton = document.createElement("button");
   assignStudentButton.textContent = "Przypisz";
@@ -139,15 +151,16 @@ function createStudentSearchResultListItem(student) {
     assignStudent(student);
   });
   listItem.append(assignStudentButton);
-  
+
   return listItem;
 }
 
 function createAssignedStudentListItem(student) {
   const listItem = document.createElement("div");
   listItem.textContent = student.label;
-  listItem.className = "list-group-item d-flex align-items-center justify-content-between";
-  
+  listItem.className =
+    "list-group-item d-flex align-items-center justify-content-between";
+
   const unassignStudentButton = document.createElement("button");
   unassignStudentButton.textContent = "Usuń";
   unassignStudentButton.className = "btn btn-danger";
