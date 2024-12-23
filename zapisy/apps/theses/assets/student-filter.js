@@ -1,7 +1,10 @@
 import { debounce } from "lodash";
 
+// Django's <select>
 const djangoField = document.getElementById("id_students");
+// Its layout column
 const djangoFieldColumn = djangoField.parentElement.parentElement.parentElement;
+// New layout column to place next to the django one
 const searchFieldColumn = document.createElement("div");
 searchFieldColumn.className = djangoFieldColumn.className;
 const studentSearchInput = document.createElement("input");
@@ -13,9 +16,7 @@ studentSearchInput.placeholder =
 studentSearchInput.id = "student-search-input";
 studentSearchInput.addEventListener(
   "input",
-  debounce(function (ev) {
-    updateSearchResults(this.value);
-  }, 300)
+  debounce(updateSearchResults, 300)
 );
 
 const studentSearchInputLabel = document.createElement("label");
@@ -33,6 +34,8 @@ studentSearchResultList.style.borderRadius =
 studentSearchResultList.style.width = "100%";
 studentSearchResultList.style.maxHeight = "15rem";
 studentSearchResultList.style.overflow = "auto";
+// A snippet to include a sibling selector without a .css file
+// Hides the result list if it's empty (the border is still visible otherwise)
 const style = document.createElement("style");
 style.innerHTML = `
 #student-search-input + div:not(:has(> *)) {
@@ -49,9 +52,14 @@ searchFieldColumn.append(studentSearchInputLabel);
 searchFieldColumn.append(studentSearchContainer);
 djangoFieldColumn.before(searchFieldColumn);
 
-async function updateSearchResults(search) {
+/**
+ * Fetch students matching the query, or clear the result list for an empty query
+ * and update the list on the left, based on the internal list
+ */
+async function updateSearchResults() {
+  const search = studentSearchInput.value;
   if (search.length === 0) {
-    clearSearchResults();
+    clearSearchResultList();
     return;
   }
 
@@ -61,12 +69,15 @@ async function updateSearchResults(search) {
     assignedStudents.every((s) => s.value !== fetchedStudent.value)
   );
 
-  searchResults.splice(0, searchResults.length, ...notAssignedStudents);
+  // Replace the content with new one
   studentSearchResultList.replaceChildren(
-    ...searchResults.map(createStudentSearchResultListItem)
+    ...notAssignedStudents.map(createStudentSearchResultListItem)
   );
 }
 
+/**
+ * Update the list on the right, based on the internal list
+ */
 function updateAssignedStudentsList() {
   if (assignedStudents.length === 0) {
     assignedStudentsList.innerHTML = "Brak przypisanych studentów.";
@@ -79,11 +90,17 @@ function updateAssignedStudentsList() {
   );
 }
 
+/**
+ * Update the hidden django <select>, based on the internal list
+ */
 function updateDjangoField() {
   djangoField.innerHTML = "";
   djangoField.append(...assignedStudents.map(createSelectOption));
 }
 
+/**
+ * Create an item for the hidden django <select>
+ */
 function createSelectOption(student) {
   const option = document.createElement("option");
   option.value = student.value.toString();
@@ -100,7 +117,7 @@ function assignStudent(student) {
   assignedStudents.push(student);
   updateAssignedStudentsList();
   updateDjangoField();
-  updateSearchResults(studentSearchInput.value);
+  updateSearchResults();
 }
 
 function unassignStudent(student) {
@@ -114,7 +131,7 @@ function unassignStudent(student) {
   );
   updateAssignedStudentsList();
   updateDjangoField();
-  updateSearchResults(studentSearchInput.value);
+  updateSearchResults();
 }
 
 async function fetchStudents(substring) {
@@ -130,13 +147,13 @@ async function fetchStudents(substring) {
   return response.json();
 }
 
-const searchResults = [];
-
-function clearSearchResults() {
-  searchResults.splice(0);
+function clearSearchResultList() {
   studentSearchResultList.textContent = "";
 }
 
+/**
+ * Create an item for the list on the left
+ */
 function createStudentSearchResultListItem(student) {
   const listItem = document.createElement("div");
   listItem.textContent = student.label;
@@ -155,6 +172,9 @@ function createStudentSearchResultListItem(student) {
   return listItem;
 }
 
+/**
+ * Create an item for the list on the right
+ */
 function createAssignedStudentListItem(student) {
   const listItem = document.createElement("div");
   listItem.textContent = student.label;
@@ -173,6 +193,7 @@ function createAssignedStudentListItem(student) {
   return listItem;
 }
 
+// Handle students that are already assigned (when editing a thesis)
 const assignedStudents = Array.from(djangoField.options).map((option) => ({
   value: Number(option.value),
   label: option.text,
@@ -183,4 +204,5 @@ assignedStudentsList.className = "list-group";
 djangoField.before(assignedStudentsList);
 updateAssignedStudentsList();
 
+// Hide the django <select>
 djangoField.style.display = "none";
