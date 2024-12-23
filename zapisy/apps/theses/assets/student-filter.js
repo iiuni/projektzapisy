@@ -12,9 +12,13 @@ const store = new Vuex.Store({
   },
 });
 
+// Get the server field
 const djangoField = document.getElementById("id_students");
+
+// Replace it with the placeholder for the custom MultiSelectFilter
 const multiselectPlaceholder = document.getElementById("student-filter");
 djangoField.before(multiselectPlaceholder);
 djangoField.style.display = "none";
 
+// Create the custom MultiSelectFilter
 new Vue({ el: "#student-filter", render: (h) => h(StudentFilter), store });

@@ -21,7 +21,10 @@ export default Vue.extend({
       students: [] as MultiselectFilterData<number>,
     };
   },
-  mounted: async function () {
+  /**
+   * Load assigned students, if there are any
+   */
+  mounted: function () {
     const djangoField = document.getElementById(
       "id_students"
     ) as HTMLSelectElement | null;
@@ -31,8 +34,10 @@ export default Vue.extend({
 
     const options = djangoField.options;
     if (options.length === 0) {
+      // No one assigned
       return;
     }
+    // Map each student from <select> data to MultiSelectFilter data
     const assigned_students: MultiselectFilterData<number> = Array.from(
       options
     ).map((element) => ({
@@ -40,8 +45,10 @@ export default Vue.extend({
       label: element.text,
     }));
 
+    // Store the assigned students to display them after MultiSelectFilter gains focus
     this.students = assigned_students;
 
+    // Mark the students as selected in MultiSelectFilter
     const filter = this.$refs["student-filter"] as Vue &
       MultiSelectFilterWithSelected;
     if (filter) {
@@ -50,12 +57,15 @@ export default Vue.extend({
   },
   methods: {
     onSelect: function (selectedIds: number[]) {
+      // Update the server <select>
       this.updateDjangoField(selectedIds);
     },
     clearData: function () {
       const filter = this.$refs["student-filter"] as Vue &
         MultiSelectFilterWithSelected;
+
       if (filter) {
+        // Leave only assigned students in the dropdown list
         this.students = Array.from(filter.selected);
       }
     },
@@ -68,13 +78,16 @@ export default Vue.extend({
       }
 
       const optionArray = Array.from(djangoField.options);
+      // Find the newly-selected item
       const newId = selectedIds.find((id) =>
         optionArray.every((option) => option.value !== String(id))
       );
+      // Find the unselected item
       const removedIndex = optionArray.findIndex(
         (option) => !selectedIds.includes(Number(option.value))
       );
 
+      // If a new item was selected, add it to the server <select>
       if (newId !== undefined) {
         const newOption = document.createElement("option");
         newOption.value = newId.toString();
@@ -83,6 +96,7 @@ export default Vue.extend({
         djangoField.options.add(newOption);
       }
 
+      // If an item was unselected, remove it from the server <select>
       if (removedIndex !== -1) {
         djangoField.options.remove(removedIndex);
       }
@@ -98,8 +112,10 @@ export default Vue.extend({
         throw new Error("#ajax-url not found.");
       }
 
+      // Get the endpoint URI
       const ajaxUrl = ajaxUrlInput.value;
       const urlSafeSubstring = encodeURIComponent(substring);
+      // Fetch students matching the query
       const response = await fetch(`${ajaxUrl}/${urlSafeSubstring}`);
       return response.json();
     },
@@ -107,18 +123,22 @@ export default Vue.extend({
       this: { updateStudents: (search: string) => void },
       search: string
     ) {
+      // Update the dropdown list after changing the search input
       return this.updateStudents(search);
     },
     300),
     updateStudents: async function (search: string) {
+      // Remove unselected students from the dropdown
       this.clearData();
 
       if (search.length === 0) {
         return;
       }
 
+      // Fetch students matching the query
       const { students: fetchedStudents } = await this.fetchStudents(search);
 
+      // Add only the students which are not selected to avoid duplication
       const notSelectedStudents = fetchedStudents.filter((fetchedStudent) =>
         this.students.every((s) => s.value !== fetchedStudent.value)
       );
