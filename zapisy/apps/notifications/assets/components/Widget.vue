@@ -79,7 +79,7 @@ export default class NotificationsComponent extends Vue {
       });
   }
 
-  deleteOne(i: number): Promise<void> {
+  deleteOne(i: string): Promise<void> {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
@@ -132,7 +132,7 @@ export default class NotificationsComponent extends Vue {
               <button
                 type="button"
                 class="btn-close"
-                @click="deleteOne(parseInt(elem.id))"
+                @click="deleteOne(elem.id)"
               ></button>
             </div>
             <a :href="elem.target" class="toast-link">
