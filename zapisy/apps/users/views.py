@@ -55,7 +55,6 @@ def students_view(request, user_id: int = None, semester_id: Optional[int] = Non
             messages.warning(request, "Student ukrył swój profil")
             return redirect('students-list')
 
-
         semester: Optional[Semester]
         if semester_id is None:
             semester = Semester.get_upcoming_semester()
