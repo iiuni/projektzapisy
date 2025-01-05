@@ -72,7 +72,7 @@ def pin(request):
     Pin.objects.get_or_create(student_id=student.pk, group_id=group_id)
     group = Group.objects.select_related('course').get(pk=group_id)
     group.is_pinned = True
-    return HttpResponse(status=204)
+    return redirect('course-page', slug=group.course.slug)
 
 
 @student_required
@@ -87,8 +87,7 @@ def unpin(request):
     Pin.objects.filter(student_id=student.pk, group_id=group_id).delete()
     group = Group.objects.select_related('course').get(pk=group_id)
     group.is_pinned = False
-    return HttpResponse(status=204)
-
+    return redirect('course-page', slug=group.course.slug)
 
 
 @student_required
