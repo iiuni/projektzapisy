@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import Http404, HttpResponse
 
 from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.records import Record
