@@ -9,8 +9,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import { CourseInfo } from "../store/courses";
 
-// This component is used to filter courses on
-// the creating prototype page
+// This component is used in the timetable-prototype-component webpack
 export default Vue.extend({
   data() {
     return {

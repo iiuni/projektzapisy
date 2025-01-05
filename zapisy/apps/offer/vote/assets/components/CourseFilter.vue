@@ -13,7 +13,7 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
-// This component is used in point-counter file
+// This component is used in the vote-point-counter webpack
 export default Vue.extend({
   components: {
     TextFilter,
