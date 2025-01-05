@@ -11,7 +11,7 @@ from .models import Proposal, ProposalStatus
 @admin.register(Proposal)
 class ProposalAdmin(admin.ModelAdmin):
     list_filter = ('status', 'semester', 'course_type', ('owner', admin.RelatedOnlyFieldListFilter),
-                   'modified', 'tags', 'effects', ('courseinstance__semester',
+                   'modified', 'tags', ('courseinstance__semester',
                                                    admin.RelatedOnlyFieldListFilter))
     list_display = ('name', 'owner', 'course_type', 'semester', 'status', 'modified',
                     'last_semester')

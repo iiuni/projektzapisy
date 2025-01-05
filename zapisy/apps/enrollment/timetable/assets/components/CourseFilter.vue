@@ -19,7 +19,6 @@ export default Vue.extend({
   },
   data: function () {
     return {
-      allEffects: {},
       allTags: {},
       allOwners: [] as MultiselectFilterData<number>,
       allTypes: [] as MultiselectFilterData<number>,
@@ -31,7 +30,6 @@ export default Vue.extend({
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
-    this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
       .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
@@ -89,25 +87,16 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <MultiSelectFilter
-            filterKey="type-filter"
-            property="courseType"
-            :options="allTypes"
-            title="Rodzaj przedmiotu"
-            placeholder="Wszystkie rodzaje"
-            ref="type-filter"
-          />
-          <hr />
-          <LabelsFilter
-            title="Efekty kształcenia"
-            filterKey="effects-filter"
-            property="effects"
-            :allLabels="allEffects"
-            onClass="bg-info"
-            ref="effects-filter"
-          />
-        </div>
-        <div class="col-md">
+          <div class="col-md">
+            <MultiSelectFilter
+              filterKey="type-filter"
+              property="courseType"
+              :options="allTypes"
+              title="Rodzaj przedmiotu"
+              placeholder="Wszystkie rodzaje"
+              ref="type-filter"
+            />
+          </div>
           <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"

@@ -57,7 +57,6 @@ class CourseInstance(CourseInformation):
         instance = cls(**proposal_dict)
         instance.save()
         instance.tags.set(proposal.tags.all())
-        instance.effects.set(proposal.effects.all())
         return instance
 
     @classmethod

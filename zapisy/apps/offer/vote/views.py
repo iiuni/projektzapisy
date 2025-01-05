@@ -49,7 +49,7 @@ def vote(request):
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
     qs = Proposal.objects.filter(status__in=filter_statuses).order_by('name')
     proposal_list = []
-    for p in qs.prefetch_related('effects', 'tags'):
+    for p in qs.prefetch_related('tags'):
         proposal_dict = p.__json__()
         proposal_dict.update({
             'status': ProposalStatus(p.status)._name_,

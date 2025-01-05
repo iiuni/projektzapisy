@@ -13,7 +13,6 @@ from django.template.defaultfilters import slugify
 from apps.users.models import Employee
 
 from .course_type import Type as CourseType
-from .effects import Effects
 from .tag import Tag
 
 
@@ -73,7 +72,6 @@ class CourseInformation(models.Model):
     discipline = models.CharField("dyscyplina", max_length=100, default="Informatyka")
 
     tags = models.ManyToManyField(Tag, verbose_name="tagi", blank=True)
-    effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia", blank=True)
 
     created = models.DateTimeField("Data utworzenia", auto_now_add=True)
     modified = models.DateTimeField("Data modyfikacji", auto_now=True)
@@ -120,7 +118,6 @@ class CourseInformation(models.Model):
             'courseType': self.course_type_id,
             'recommendedForFirstYear': self.recommended_for_first_year,
             'owner': self.owner_id,
-            'effects': [effect.pk for effect in self.effects.all()],
             'tags': [tag.pk for tag in self.tags.all()],
         }
 
@@ -130,13 +127,11 @@ class CourseInformation(models.Model):
     @staticmethod
     def prepare_filter_data(qs: models.QuerySet) -> Dict:
         """Prepares the data for course filter based on a given queryset."""
-        all_effects = Effects.objects.all().values_list('id', 'group_name', named=True)
         all_tags = Tag.objects.all().values_list('id', 'full_name', named=True)
         all_owners = qs.values_list(
             'owner', 'owner__user__first_name', 'owner__user__last_name', named=True).distinct()
         all_types = qs.values_list('course_type', 'course_type__name', named=True).distinct()
         return {
-            'allEffects': {e.id: e.group_name for e in all_effects},
             'allTags': {t.id: t.full_name for t in all_tags},
             'allOwners': {
                 o.owner: [o.owner__user__first_name, o.owner__user__last_name] for o in all_owners

@@ -12,7 +12,6 @@ class AdminTestCase(TestCase):
         "/fereol_admin/courses/freeday/",
         "/fereol_admin/courses/changedday/",
         "/fereol_admin/courses/group/",
-        "/fereol_admin/courses/effects/",
         "/fereol_admin/courses/courseinstance/",
         "/fereol_admin/courses/type/",
         "/fereol_admin/courses/classroom/",

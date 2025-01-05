@@ -174,10 +174,6 @@ def my_profile(request):
 
     if semester and request.user.student:
         student: Student = request.user.student
-        done_effects = CompletedCourses.get_completed_effects(student)
-        data.update({
-            'effects': done_effects,
-        })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
             'group', 'group__course', 'group__teacher',

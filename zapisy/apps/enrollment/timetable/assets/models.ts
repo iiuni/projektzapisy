@@ -195,7 +195,6 @@ export interface PersonDict {
 }
 
 export interface FilterDataJSON {
-  allEffects: KVDict;
   allTags: KVDict;
   allOwners: PersonDict;
   allTypes: KVDict;
