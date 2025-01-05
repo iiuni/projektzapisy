@@ -23,11 +23,11 @@
                     <th scope="col"></th>
                     <th scope="col">Priorytet</th>
                 {% endif %}
+                <th title="Dodaj/usuń grupę do/z prototypu planu zajęć" scope="col">Prototyp planu</th>
                 {% if user.is_authenticated %}
                     {# Link to the group page #}
                     <th></th>
                 {% endif %}
-                <th title="Dodaj/usuń grupę do/z prototypu planu zajęć" scope="col">Add to sched</th>
             </tr>
         </thead>
         <tbody>
@@ -120,17 +120,13 @@
                             {% endif %}
                         </td>
                         {% endif %}
-                        {% if user.student or user.employee or user.is_staff %}
-                        <td>
-                            <a href="{% url 'group-view' group.pk %}">lista</a>
-                        </td>
                         <td class="schedule">
                             {% if group.is_pinned %}
                             <form action="{% url 'unpin' %}" method="post" class="removeFromSchedule">{% csrf_token %}
                                 <div>
                                     <input type="hidden" name="group_id" value="{{ group.pk }}"/>
                                     <button type="submit" class="btn btn-danger btn-sm removeFromScheduleButton"
-                                    onclick="return confirm('Czy na pewno chcesz usunąć tą grupę z prototypu planu zajęć?');">
+                                    onclick="return confirm('Czy na pewno chcesz usunąć tę grupę z prototypu planu zajęć?');">
                                         Usuń z prototypu
                                     </button>
                                 </div>
@@ -140,12 +136,16 @@
                                 <div>
                                     <input type="hidden" name="group_id" value="{{ group.pk }}"/>
                                     <button type="submit" class="btn btn-primary btn-sm addToScheduleButton"
-                                    onclick="return confirm('Czy na pewno chcesz dodać tą grupę do prototypu planu zajęć?');">
+                                    onclick="return confirm('Czy na pewno chcesz dodać tę grupę do prototypu planu zajęć?');">
                                         Dodaj do prototypu
                                     </button>
                                 </div>
                             </form>
                             {% endif %}
+                        </td>
+                        {% if user.student or user.employee or user.is_staff %}
+                        <td>
+                            <a href="{% url 'group-view' group.pk %}">lista</a>
                         </td>
                     {% endif %}
                 </tr>
