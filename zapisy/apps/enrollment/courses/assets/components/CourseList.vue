@@ -4,8 +4,7 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
-// This component is used to display courses on
-// the course list main page
+// This component is used in the courses-course-list webpack
 export default Vue.extend({
   data() {
     return {
