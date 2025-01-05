@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.contrib.admin import SimpleListFilter
 
 from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course_instance import CourseInstance

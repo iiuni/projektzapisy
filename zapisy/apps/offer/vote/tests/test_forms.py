@@ -151,7 +151,7 @@ class VoteFormsetTest(test.TestCase):
 
         # Number of queries should not change when we add one more proposal.
         ProposalFactory(status=ProposalStatus.IN_VOTE)
-        with self.assertNumQueries(18):
+        with self.assertNumQueries(16):
             response = c.get(reverse('vote'))
         self.assertContains(response, '<select', count=7)
 

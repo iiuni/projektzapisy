@@ -1,5 +1,3 @@
-from typing import Set
-
 from django.db import models
 
 from apps.enrollment.courses.models.course_instance import CourseInstance

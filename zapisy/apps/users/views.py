@@ -9,7 +9,6 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
-from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
