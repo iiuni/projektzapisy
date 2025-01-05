@@ -3,7 +3,7 @@ import { property } from "lodash";
 import Vue from "vue";
 import { mapMutations } from "vuex";
 
-import { Filter } from "../../store/filters";
+import { Filter, LAST_FILTER_KEY, getSearchParams } from "../../store/filters";
 
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
@@ -33,7 +33,7 @@ export default Vue.extend({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
 
     if (searchParams.has(this.property)) {
       if (searchParams.get(this.property) === "true") {
@@ -54,13 +54,14 @@ export default Vue.extend({
   },
   watch: {
     on: function (newOn: boolean) {
-      const url = new URL(window.location.href);
-      if (newOn) {
-        url.searchParams.set(this.property, newOn.toString());
+      const searchParams = getSearchParams();
+      if (!newOn) {
+        searchParams.delete(this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
       } else {
-        url.searchParams.delete(this.property);
+        searchParams.set(this.property, newOn.toString());
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,

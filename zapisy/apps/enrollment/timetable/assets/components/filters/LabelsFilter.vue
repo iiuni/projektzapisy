@@ -3,7 +3,7 @@ import { property, intersection, isEmpty, keys, fromPairs } from "lodash";
 import Vue from "vue";
 import { mapMutations } from "vuex";
 
-import { Filter } from "../../store/filters";
+import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 import { KVDict } from "../../models";
 
 class IntersectionFilter implements Filter {
@@ -51,13 +51,14 @@ export default Vue.extend({
     _afterSelectionChanged() {
       const selectedIds = this.allLabelIds.filter((id) => this.selected[id]);
 
-      const url = new URL(window.location.href);
-      if (selectedIds.length > 0) {
-        url.searchParams.set(this.property, selectedIds.join(","));
+      const searchParams = getSearchParams();
+      if (selectedIds.length == 0) {
+        searchParams.delete(this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
       } else {
-        url.searchParams.delete(this.property);
+        searchParams.set(this.property, selectedIds.join(","));
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,
@@ -70,7 +71,7 @@ export default Vue.extend({
   created: function () {
     this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
 
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
     if (searchParams.has(this.property)) {
       const selectedIds = searchParams
         .get(this.property)!

@@ -36,6 +36,20 @@ const mutations = {
 
 const actions = {};
 
+// When loading site tries to get last used filters from session.
+// If there is no given key in session uses default filters.
+// During first page load filters should be loaded
+// from database to session if user is logged. (TODO: doesnt work until migration is done)
+// After user logs in session preferences will be overriden by
+// database preferences only if session preferences are empty (default filters).
+export const LAST_FILTER_KEY = "last_searched_params";
+export function getSearchParams() {
+  const sessionSearchParams = sessionStorage.getItem(LAST_FILTER_KEY);
+  return sessionSearchParams
+    ? new URLSearchParams(sessionSearchParams)
+    : new URL(window.location.href).searchParams;
+}
+
 export default {
   namespaced: true,
   state,

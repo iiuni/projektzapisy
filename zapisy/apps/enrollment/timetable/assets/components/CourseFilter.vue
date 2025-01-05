@@ -9,6 +9,7 @@ import LabelsFilter from "./filters/LabelsFilter.vue";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
+import { getSearchParams } from "../store/filters";
 
 export default Vue.extend({
   components: {
@@ -56,7 +57,7 @@ export default Vue.extend({
       .filter((ref: any) => ref.filterKey)
       .map((filter: any) => filter.property);
     // Expand the filters if there are any initially specified in the search params.
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
       this.collapsed = false;
     }

@@ -4,7 +4,11 @@ import { defineComponent } from "vue";
 import { mapMutations } from "vuex";
 import Multiselect from "vue-multiselect";
 
-import { Filter } from "@/enrollment/timetable/assets/store/filters";
+import {
+  Filter,
+  getSearchParams,
+  LAST_FILTER_KEY,
+} from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
 
 class ExactFilter implements Filter {
@@ -81,7 +85,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
     if (searchParams.has(this.property)) {
       const property = searchParams.get(this.property);
       if (property && property.length) {
@@ -151,13 +155,14 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         (selectedFilter: Option) => selectedFilter.value
       );
 
-      const url = new URL(window.location.href);
+      const searchParams = getSearchParams();
       if (isEmpty(selectedIds)) {
-        url.searchParams.delete(this.property);
+        searchParams.delete(this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
       } else {
-        url.searchParams.set(this.property, selectedIds.join(","));
+        searchParams.set(this.property, selectedIds.join(","));
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,

@@ -4,7 +4,7 @@ import Vue from "vue";
 import { mapMutations } from "vuex";
 
 import { CourseInfo } from "../../store/courses";
-import { Filter } from "../../store/filters";
+import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 
 class TextFilter implements Filter {
   constructor(public pattern: string = "", public propertyName: string) {}
@@ -33,7 +33,7 @@ export default Vue.extend({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
 
     if (searchParams.has(this.property)) {
       // TypeScript doesn't infer that property is present, manual cast required.
@@ -53,13 +53,14 @@ export default Vue.extend({
   },
   watch: {
     pattern: function (newPattern: string, _) {
-      const url = new URL(window.location.href);
+      const searchParams = getSearchParams();
       if (newPattern.length == 0) {
-        url.searchParams.delete(this.property);
+        searchParams.delete(this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
       } else {
-        url.searchParams.set(this.property, newPattern);
+        searchParams.set(this.property, newPattern);
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,
