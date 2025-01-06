@@ -1,19 +1,44 @@
 {% load filters %}
 
-<div class="d-flex justify-content-between align-items-center">
-    <h1 class="d-inline-block">
+<style>
+    #main-content header {
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    #main-content header h1 {
+        margin-bottom: 0;
+    }
+    #hours span + span::before {
+        content: '+';
+        margin: 0 .5em;
+    }
+    .more-options {
+        padding: 0.5rem 0 0.5rem 0;
+        float: right;
+    }
+    .course-header {
+        width: 100%;
+        float: left;
+    }
+</style>
+
+<header>
+    <h1 class="course-header">
         {{ course.name }}
         <small class="text-muted">{{ course.semester.get_short_name }}</small>
-    </h1>
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'course-student-list' course.slug %}">Lista</a>
-        {% if user.is_staff or course.owner == request.user.employee %}
-            {% if course.semester.is_current_semester %}
-                <a class="btn btn-sm btn-outline-info float-end align-bottom" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+        <span class="btn-group more-options" role="group">
+            {% if user.is_authenticated %}
+                <a class="btn btn-sm btn-outline-info" href="{% url 'course-student-list' course.slug %}">Lista studentów</a>
             {% endif %}
-        {% endif %}
-    </div>
-</div>
+            <a class="btn btn-sm btn-outline-info" href="{% url 'offer-page' course.offer.slug %}">Zobacz w ofercie</a>
+            {% if course.semester.is_current_semester %}
+                {% if user.is_staff or course.owner == request.user.employee %}
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'proposal-edit' course.offer.slug %}">Edytuj</a>
+                {% endif %}
+            {% endif %}
+        </span>
+    </h1>
+</header>
 
 <table class="table table-bordered table-md-responsive" id="table-info">
     <colgroup>
@@ -34,12 +59,6 @@
         <tr>
             <th scope="row">Liczba godzin</th>
             <td id="hours">
-                <style>
-                    #hours span + span::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
                 {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
                 {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
                 {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
