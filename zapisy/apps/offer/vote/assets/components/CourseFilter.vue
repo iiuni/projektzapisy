@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the vote-point-counter asset.
+//
 // This particular CourseFilter component behaves a little different
 // from other CourseFilter components, because the list of items
 // it is supposed to be filtering is not a Vue component. The list
@@ -22,7 +24,6 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
-// This component is used in the vote-point-counter webpack
 export default Vue.extend({
   components: {
     TextFilter,

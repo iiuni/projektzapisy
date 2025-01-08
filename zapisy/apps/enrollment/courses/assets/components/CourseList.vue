@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the courses-course-list asset.
+//
 // This particular CourseList component extends the functionality of other
 // CourseList components by allowing the chosen filters to persist through
 // changing semesters in the dropdown menu.
@@ -10,7 +12,6 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
-// This component is used in the courses-course-list webpack
 export default Vue.extend({
   data() {
     return {
