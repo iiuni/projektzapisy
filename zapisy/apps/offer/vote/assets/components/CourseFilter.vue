@@ -1,4 +1,13 @@
 <script lang="ts">
+// This particular CourseFilter component behaves a little different
+// from other CourseFilter components, because the list of items
+// it is supposed to be filtering is not a Vue component. The list
+// therefore does not apply filters to itself via subscribing to changes
+// in the Vuex store (`@/enrollment/timetable/assets/store/filters.ts`),
+// but the filtering function is called directly.
+//
+// The function called to update the filters is the refreshFun function,
+// which is defined in `../point-counter.ts`.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -61,6 +70,7 @@ export default Vue.extend({
       { value: "u", label: "nieokreślony" },
     ];
   },
+  // The filter state is provided by its respective getter in the Vuex store.
   computed: {
     ...mapGetters("filters", {
       tester: "visible",
@@ -77,8 +87,8 @@ export default Vue.extend({
       this.collapsed = false;
     }
 
-    // this fragment is responsible for
-    // handling changes in the state
+    // This fragment looks for changes in the Vuex store and calls the refreshFun
+    // function in order to update the filters.
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
