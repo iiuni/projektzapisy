@@ -1,4 +1,5 @@
 <script lang="ts">
+// This component is used in the proposal-course-list asset.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -13,7 +14,6 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
-// This component is used in the proposal-course-list webpack
 export default Vue.extend({
   components: {
     TextFilter,

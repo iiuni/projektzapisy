@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the timetable-prototype-component asset.
+//
 // This particular CourseList component extends the functionality of other
 // CourseList components by allowing the student to select courses
 // presented on the prototype timetable.
@@ -10,7 +12,6 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import { CourseInfo } from "../store/courses";
 
-// This component is used in the timetable-prototype-component webpack
 export default Vue.extend({
   data() {
     return {

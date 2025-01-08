@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the proposal-course-list asset.
+//
 // This particular CourseList component extends the functionality of other
 // CourseList components by allowing for distinction between the courses
 // in offer, in vote and withdrawn.
@@ -14,7 +16,6 @@ interface ProposalInfo extends CourseInfo {
   status: "IN_OFFER" | "IN_VOTE" | "WITHDRAWN";
 }
 
-// This component is used in the proposal-course-list webpack
 export default Vue.extend({
   data() {
     return {
