@@ -7,7 +7,9 @@
   --primary-color: #007bff; /* Jasny tryb - kolor główny #007bff*/
   --secondary-color: #6c757d;
   --background-color: #ffffff;
-  --breadcrumb-bg: var(--main-background-color); //background "folderu na linki" (był w variables)
+  --breadcrumb-bg: var(
+    --main-background-color
+  ); //background "folderu na linki" (był w variables)
   --text-color: #000000;
   --tab-background-color: #0077b7;
   --tab-text-color: #0077b7;
@@ -38,7 +40,6 @@ body.dark-mode {
   --footer-text-color: #ffffff;
 }
 
-
 @page {
   size: auto;
 }
@@ -51,17 +52,19 @@ html {
   -ms-text-size-adjust: 100%;
 }
 
-footer {//chcę ustawić kolor stopki
+footer {
+  //chcę ustawić kolor stopki
   margin-top: auto;
   padding-top: 5rem;
-  .container-fluid { // trzeba znaleźć klasę stopki
+  .container-fluid {
+    // trzeba znaleźć klasę stopki
     background-color: #00401e;
     padding: 1rem 0;
     p {
       margin: 0.5rem 0;
     }
   }
-  
+
   color: var(--footer-text-color); // kolor tekstu w stopce
 }
 
@@ -89,7 +92,7 @@ footer {//chcę ustawić kolor stopki
 }
 
 .btn-link {
-  color: #1bb300;//var(--primary-color); // literki na pracownikach na filtrowaniu
+  color: #1bb300; //var(--primary-color); // literki na pracownikach na filtrowaniu
   text-decoration: none;
 }
 
@@ -180,7 +183,9 @@ body.debug {
   .top {
     background-color: var(--banner-color); //tutaj trzeba zedytować
   }
-  background-color: var(--main-background-color); /* Do rozpatrzenia inne kolory */
+  background-color: var(
+    --main-background-color
+  ); /* Do rozpatrzenia inne kolory */
   color: var(--text-color);
 }
 
@@ -192,7 +197,7 @@ div.top .topbar .inline-inputs label {
 #login-dropdown {
   .dropdown-menu {
     padding: 12px;
-    background: var(--dropdown-background-color);//rgba($light, 0.75);
+    background: var(--dropdown-background-color); //rgba($light, 0.75);
 
     .btn {
       padding: 10px 5px;
@@ -253,7 +258,9 @@ div.top .topbar .inline-inputs label {
 }
 
 div.loginbox {
-  background-color: var(--loginbox-background-color); // okienko logowania dla niedostępnych dla każdego stron
+  background-color: var(
+    --loginbox-background-color
+  ); // okienko logowania dla niedostępnych dla każdego stron
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -271,13 +278,15 @@ div.loginbox {
     li {
       flex: 0 0 auto;
       margin: 0 2px;
-      a { // nieaktywna zakładka
+      a {
+        // nieaktywna zakładka
         background-color: var(--tab-background-color); //kolor tła zakładek
         color: #ffffff; // kolor tekstu na zakładkach
         margin-right: 1px;
       }
 
-      &.active a { // aktywna zakładka
+      &.active a {
+        // aktywna zakładka
         background-color: var(--main-background-color);
         color: var(--tab-text-color);
         margin-right: 1px;
@@ -329,5 +338,5 @@ colgroup col.table-info-type {
 }
 
 .background-gray {
-  background-color: #ff1e00//$gray-200;// tutaj trzeba zedytować
+  background-color: #ff1e00//$gray-200; // tutaj trzeba zedytować
 }
