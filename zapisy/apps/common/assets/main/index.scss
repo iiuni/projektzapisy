@@ -2,6 +2,93 @@
 @import "~bootstrap/scss/bootstrap";
 @import "~bootstrap-print-css/css/bootstrap-print";
 
+:root {
+  --banner-color: #d95900; //kolor górnego paska (pomarańczowy w developmencie)
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #ffffff;
+  --main-background-color: #ffffff; /* Jasny tryb - kolor główny #ffffff*/
+  --breadcrumb-bg: var(
+    --main-background-color
+  ); //background "folderu na linki" (był w variables)
+  --footer-background-color: #f8f9fa;
+  --text-color: #000000;
+  --tab-background-color: #0077b7;
+  --tab-text-color: #0077b7;
+  --tag-highliht-color: #ffffff;
+  --loginbox-background-color: #f5f5f5;
+  --dropdown-background-color: #848484bf;
+  --news--background-color: #f9f9f9;
+  --news--date-color: #000000;
+  --footer-text-color: #000000;
+  --bs-secondary-color: #212529bf;
+  --export-timetable-btn: var(--btn-light);
+  --top-background-color: #00709e;
+  --vote-background-color: #eeeeee;
+  --a-bg-secondary-color: #545b62;
+  --a-bg-info-color: #117a8b;
+  --a-bg-success-color: #00401e;
+  --btn-outline-info: #af0505;
+  --btn-link-focus: #0056b3;
+  --colgroup-table-info-type-bg: #ab0202;
+  --table-infobox-th-bg: #f9f9f9;
+}
+
+body.dark-mode {
+  --banner-color: #893809;
+  --primary-color: #0d6efd;
+  --secondary-color: #938a82;
+  --background-color: #000000;
+  --main-background-color: #1e1e1e; /* Ciemny tryb - kolor główny */
+  --breadcrumb-bg: var(--main-background-color); //background "folderu na linki"
+  --footer-background-color: #2c2b2b;
+  --text-color: #ffffff;
+  --tab-background-color: #005f92;
+  --tab-text-color: #41ace5;
+  --tag-highliht-color: #ffffff;
+  --loginbox-background-color: #504d4d;
+  --dropdown-background-color: #848484bf;
+  --news--background-color: #4d4747;
+  --news--date-color: #ffffff;
+  --footer-text-color: #ffffff;
+  --bs-secondary-color: #acbdcdbf; //ustawia kolor aktywnego linku i ukośników w "folderze na linki"
+  --export-timetable-btn: var(--btn-light);
+  --top-background-color: #00709e;
+  --vote-background-color: #5b5b5b;
+  --a-bg-secondary-color: #545b62;
+  --a-bg-info-color: #117a8b;
+  --a-bg-success-color: #00401e;
+  --btn-outline-info: #af0505;
+  --btn-link-focus: #0056b3;
+  --colgroup-table-info-type-bg: #ab0202;
+  --table-infobox-th-bg: #f9f9f9;
+}
+
+#theme-toggler {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: none;
+  color: var(--text-color);
+  background-color: var(--dropdown-background-color);
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+#theme-toggler i {
+  font-size: 20px;
+}
+
+/* Ukrycie tekstu na mniejszych ekranach */
+@media (max-width: 600px) {
+  .button-text {
+    display: none;
+  }
+}
+
 @page {
   size: auto;
 }
@@ -18,11 +105,13 @@ footer {
   margin-top: auto;
   padding-top: 5rem;
   .container-fluid {
+    background-color: var(--footer-background-color);
     padding: 1rem 0;
     p {
       margin: 0.5rem 0;
     }
   }
+  color: var(--footer-text-color);
 }
 
 .form-group {
@@ -49,19 +138,19 @@ footer {
 }
 
 .btn-link {
-  color: #007bff;
+  color: var(--primary-color); // literki na pracownikach na filtrowaniu
   text-decoration: none;
 }
 
 .btn-link:hover,
 .btn-link:focus {
-  color: #0056b3;
+  color: var(--btn-link-focus);
   text-decoration: underline;
 }
 
 .btn-outline-info:hover,
 .btn-outline-info:active {
-  color: white !important;
+  color: var(--btn-outline-info) !important;
 }
 
 a {
@@ -78,22 +167,22 @@ a.badge {
 }
 
 a.badge:hover {
-  color: #fff;
+  color: var(--tag-highliht-color); // podświetlenie tagów (przedmioty)
 }
 
 a.bg-secondary:hover,
 a.bg-secondary:focus {
-  background-color: #545b62 !important;
+  background-color: var(--a-bg-secondary-color) !important;
 }
 
 a.bg-info:hover,
 a.bg-info:focus {
-  background-color: #117a8b !important;
+  background-color: var(--a-bg-info-color) !important;
 }
 
 a.bg-success:hover,
 a.bg-success:focus {
-  background-color: #00401e !important;
+  background-color: var(--a-bg-success-color) !important;
 }
 
 a.bg-info:focus {
@@ -132,25 +221,27 @@ div.header {
 }
 
 .top {
-  background-color: #00709e;
+  background-color: var(--top-background-color);
 }
 
 // Developement runs will flash orange top bar.
 body.debug {
   .top {
-    background-color: rgb(217, 89, 0);
+    background-color: var(--banner-color);
   }
+  background-color: var(--main-background-color);
+  color: var(--text-color);
 }
 
-div.top .topbar .inline-inputs label {
-  float: none;
-  color: #ffffff;
-}
+// div.top .topbar .inline-inputs label {// This part may be obsolete I didin't find any problems when I removed it
+//   float: none;
+//   color: #ffffff; // kolor tekstu w górnym pasku
+// }
 
 #login-dropdown {
   .dropdown-menu {
     padding: 12px;
-    background: rgba($light, 0.75);
+    background: var(--dropdown-background-color);
 
     .btn {
       padding: 10px 5px;
@@ -211,7 +302,9 @@ div.top .topbar .inline-inputs label {
 }
 
 div.loginbox {
-  background-color: #f5f5f5;
+  background-color: var(
+    --loginbox-background-color
+  ); // okienko logowania dla niedostępnych dla każdego stron
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -230,32 +323,26 @@ div.loginbox {
       flex: 0 0 auto;
       margin: 0 2px;
       a {
-        background-color: #005f92;
+        // nieaktywna zakładka
+        background-color: var(--tab-background-color);
         color: #ffffff;
         margin-right: 1px;
       }
 
       &.active a {
-        background-color: #ffffff;
-        color: #005f92;
+        // aktywna zakładka
+        background-color: var(--main-background-color);
+        color: var(--tab-text-color);
         margin-right: 1px;
       }
     }
   }
 }
-
 .table-infobox th {
-  background-color: #f9f9f9;
+  background-color: var(--table-infobox-th-bg);
 }
-
-@include media-breakpoint-up(lg) {
-  .table-infobox th {
-    white-space: nowrap;
-  }
-
-  colgroup col.header-column {
-    width: 1%;
-  }
+colgroup col.table-info-type {
+  background-color: var(--colgroup-table-info-type-bg);
 }
 
 // Required field marker in forms.
@@ -268,10 +355,10 @@ div.loginbox {
 .od-news-item {
   margin: 2rem 0;
   padding: 4rem;
-  background: var(--bs-light);
+  background: var(--news--background-color);
 
   .od-news-date {
-    color: var(--bs-dark);
+    color: var(--news--date-color);
     font-style: italic;
     display: block;
     @media (min-width: 992px) {
@@ -297,5 +384,9 @@ div.loginbox {
 }
 
 .background-gray {
-  background-color: $gray-200;
+  background-color: var(--vote-background-color);
+}
+
+.navbar-brand {
+  color: var(--text-color);
 }
