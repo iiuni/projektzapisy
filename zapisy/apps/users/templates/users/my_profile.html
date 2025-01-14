@@ -63,7 +63,12 @@
         </table>
 
         <a class="btn btn-light" href="{% url 'password_change' %}" role="button">Zmień hasło</a>
-        {% if user.employee or is_external_contractor %}
+        <!--
+        A phd student is defined as a user who is both a student and an employee.
+        The "external_contractors" group represents people who are not regular employees or students.
+        Note: There are other user groups in the system that are not yet considered in the condition below.
+        -->
+        {% if user.employee or is_external_contractor or not user.student %}
             <a class="btn btn-light" href="{% url 'email-change' %}" role="button">Zmień adres email</a>
         {% endif %}
         {% if user.employee %}
