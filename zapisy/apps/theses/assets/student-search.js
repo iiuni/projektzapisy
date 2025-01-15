@@ -24,23 +24,31 @@ studentSearchInputLabel.textContent = "Wyszukiwarka studentów";
 studentSearchInputLabel.htmlFor = "student-search-input";
 
 const studentSearchResultList = document.createElement("div");
+studentSearchResultList.id = "student-search-result-list";
 studentSearchResultList.className = "list-group list-group-flush";
-studentSearchResultList.style.position = "absolute";
-studentSearchResultList.style.top = "calc(100% + 0.5rem)";
-studentSearchResultList.style.border =
-  "1px solid var(--bs-list-group-border-color)";
-studentSearchResultList.style.borderRadius =
-  "var(--bs-list-group-border-radius)";
-studentSearchResultList.style.width = "100%";
-studentSearchResultList.style.maxHeight = "15rem";
-studentSearchResultList.style.overflow = "auto";
-studentSearchResultList.style.zIndex = 1;
-// A snippet to include a sibling selector without a .css file
-// Hides the result list if it's empty (the border is still visible otherwise)
+// A snippet mainly to include a sibling selector and pseudoclasses without a dedicated .css file or <style> tag
+// Initially hides the result list
+// Shows it only if it has children and the input has focus OR if the result list has focus
 const style = document.createElement("style");
 style.innerHTML = `
-#student-search-input + div:not(:has(> *)) {
+#student-search-result-list {
   display: none;
+  position: absolute;
+  width: 100%;
+  max-height: 15rem;
+  overflow: auto;
+  z-index: 1;
+  top: 100%;
+  background-color: white;
+  border: 1px solid var(--bs-list-group-border-color);
+  border-radius: var(--bs-list-group-border-radius);
+  filter: drop-shadow(0 0 2px #0002);
+}
+  
+#student-search-input:focus + #student-search-result-list:has(> *),
+#student-search-result-list:focus-within,
+#student-search-result-list:hover {
+  display: block;
 }
 `;
 document.body.append(style);
@@ -82,10 +90,12 @@ async function updateSearchResults() {
 function updateAssignedStudentsList() {
   if (assignedStudents.length === 0) {
     assignedStudentsList.innerHTML = "Brak przypisanych studentów.";
+    assignedStudentsList.classList.add("text-muted", "form-text");
     return;
   }
-
+  
   assignedStudentsList.innerHTML = "";
+  assignedStudentsList.classList.remove("text-muted", "form-text");
   assignedStudentsList.append(
     ...assignedStudents.map(createAssignedStudentListItem)
   );
