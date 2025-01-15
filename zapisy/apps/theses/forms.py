@@ -90,7 +90,9 @@ class ThesisFormBase(forms.ModelForm):
                 Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='row'),
-            'students',
+            Row(
+                Column('students', css_class='form-group col-md-6'),
+                css_class='row'),
             'description',
         )
         self.helper.add_input(
