@@ -16,7 +16,8 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
-from apps.users.models import Student, is_external_contractor
+from apps.users.models import Student
+from zapisy.apps.enrollment.courses.permissions import can_user_view_students_list_for_group
 
 locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
 
@@ -236,13 +237,6 @@ def course_list_view(request, course_slug: str, class_type: int = None):
     }
     data.update(prepare_courses_list_data(course.semester))
     return render(request, 'courses/course_list.html', data)
-
-
-def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
-    """Is user authorized to see students' names in the given group?"""
-    is_user_proper_employee = (user.employee and not is_external_contractor(user))
-    is_user_group_teacher = group.teacher is not None and user == group.teacher.user
-    return is_user_proper_employee or is_user_group_teacher
 
 
 @login_required
