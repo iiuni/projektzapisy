@@ -257,7 +257,7 @@ AUTHENTICATION_BACKENDS = (
 TIME_FORMAT = "H:i"
 DATETIME_FORMAT = "j N Y, H:i"
 
-CAS_SERVER_URL = 'https://login.uni.wroc.pl/cas/'
+CAS_SERVER_URL = 'https://login.usos.uwr.edu.pl/cas/'
 CAS_CREATE_USER = False
 CAS_LOGIN_MSG = 'Sukces! Zalogowano przez USOS (login: %s).'
 CAS_LOGOUT_COMPLETELY = False
