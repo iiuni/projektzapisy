@@ -4954,7 +4954,7 @@ fsevents@~2.1.2:
     fork-ts-checker-webpack-plugin: 5.2.1
     jquery: 3.7.1
     js-cookie: 2.2.1
-    js-sha256: 0.9.0
+    js-sha256: 0.11.0
     katex: 0.16.21
     lodash-es: 4.17.21
     markdown-it: 12.3.2
@@ -5397,10 +5397,10 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"js-sha256@npm:0.9.0":
-  version: 0.9.0
-  resolution: "js-sha256@npm:0.9.0"
-  checksum: 0bef2c83a7bceb2c54ea580fac3c69b5b5c422f590a0c514f6a9440a1c809359514d0ad5f0be52b95e0dd929c348b9f8153b9c1d5b0fa9bcf56b800791e304fb
+"js-sha256@npm:0.11.0":
+  version: 0.11.0
+  resolution: "js-sha256@npm:0.11.0"
+  checksum: d2013e46832e4c020ffba49d0e65e0443a78bf46681d8e99e7625017600c142e8266a61607f1b7b793bb8139ce58fdab0ed3aed1946700743d900424a49c1b51
   languageName: node
   linkType: hard
 
