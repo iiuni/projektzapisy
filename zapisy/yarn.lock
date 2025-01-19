@@ -1674,10 +1674,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/katex@npm:0.11.1":
-  version: 0.11.1
-  resolution: "@types/katex@npm:0.11.1"
-  checksum: 00c3a02fe3049b06d218aaf9092ba6ac05dcb30c047899fb80a7b58b24eae40c962bc10c46863c203525aef28cfeebb636c7306e668a092077c78415cedb923a
+"@types/katex@npm:0.16.7":
+  version: 0.16.7
+  resolution: "@types/katex@npm:0.16.7"
+  checksum: 8326285ea9c641a4ba29185d6709015d00cb3d201f8ffe7f70322173011bca6a77c219c47b0ace388eb643ead8accc07a0ef4257afcb719b102dab9a6fbb1ce1
   languageName: node
   linkType: hard
 
@@ -4935,7 +4935,7 @@ fsevents@~2.1.2:
     "@types/jquery": 3.5.32
     "@types/js-cookie": 2.2.7
     "@types/js-yaml": 3.12.10
-    "@types/katex": 0.11.1
+    "@types/katex": 0.16.7
     "@types/lodash": 4.14.192
     "@types/markdown-it": 10.0.3
     ContentTools: 1.6.16
