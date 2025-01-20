@@ -98,7 +98,7 @@ function updateAssignedStudentsList() {
     assignedStudentsList.classList.add("text-muted", "form-text");
     return;
   }
-  
+
   assignedStudentsList.innerHTML = "";
   assignedStudentsList.classList.remove("text-muted", "form-text");
   assignedStudentsList.append(
