@@ -28,7 +28,7 @@ studentSearchResultList.id = "student-search-result-list";
 studentSearchResultList.className = "list-group list-group-flush";
 // A snippet mainly to include a sibling selector and pseudoclasses without a dedicated .css file or <style> tag
 // Initially hides the result list
-// Shows it only if it has children and the input has focus OR if the result list has focus
+// Shows it only if it has children and the input has focus OR if the result list has focus or hover
 const style = document.createElement("style");
 style.innerHTML = `
 #student-search-result-list {
@@ -67,7 +67,7 @@ djangoFieldColumn.before(searchFieldColumn);
  */
 async function updateSearchResults() {
   const search = studentSearchInput.value;
-  if (search.length === 0) {
+  if (search.length < 2) {
     clearSearchResultList();
     return;
   }
@@ -77,6 +77,11 @@ async function updateSearchResults() {
   const notAssignedStudents = fetchedStudents.filter((fetchedStudent) =>
     assignedStudents.every((s) => s.value !== fetchedStudent.value)
   );
+
+  if (search !== studentSearchInput.value) {
+    // Outdated fetch
+    return;
+  }
 
   // Replace the content with new one
   studentSearchResultList.replaceChildren(
