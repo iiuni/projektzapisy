@@ -287,6 +287,9 @@ def delete_thesis(request, id):
 @require_GET
 @employee_required
 def students(request, substring):
+    if not substring:
+        substring = ''
+
     conditions = (
         Q(user__first_name__icontains=substring) |
         Q(user__last_name__icontains=substring) |
