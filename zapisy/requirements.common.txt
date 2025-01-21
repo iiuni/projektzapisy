@@ -1,33 +1,30 @@
 Django==4.2
-# django-bootstrap-pagination
 django-bootstrap5==24.1
 django-cas-ng==4.3.0
-# django-crispy-forms==1.14.0 # Dostępna Wersja 2.3
 django-crispy-forms==2.3
 crispy-bootstrap5==2024.10
 django-environ==0.9.0
-django-extensions==3.2.3 # Cannot be lower???
+django-extensions==3.2.3
 django-filter==2.4.0 # Dostępna Wersja 24.3
 django-mailer==1.2.6 # Dostępna Wersja 2.3.2
 redis==3.5.3 # Dostępna Wersja 5.2.0
 rq==1.16.2 # Dostępna Wersja 2.0.0
 django-rq==2.8.1
-django-test-without-migrations==0.6 ## Ostatni update 7 lat temu, po co zmieniać, jeżeli działa???
-# django-webpack-loader==0.7.0 # Dostępna Wersja 3.1.1 ale trzeba ją skonfigurować
-django-webpack-loader==1.4.0 # Dostępna Wersja 3.1.1 ale trzeba ją skonfigurować
+django-test-without-migrations==0.6 # Ostatni update > 8 lat telmu
+django-webpack-loader==1.4.0 # Dostępna Wersja 3.1.1 ale nie jest kompatybilna z naszą wersją JS
 djangorestframework==3.15.1
-django-pagedown==2.2.1 # Ostatni update ponad 3??? lata temu?
+django-pagedown==2.2.1 ## Ostatni update 4 > lata temu
 
 ipdb==0.13.13 # Ostatni update ponad rok temu
 prompt-toolkit==3.0.48
 ipython==7.34.0     # Dostępna Wersja 8.30.0
 pycryptodome==3.21.0
 rollbar==0.16.3      # Dostępna Wersja 1.1.0
-newrelic==5.24.0.153 # Dostępna Wersja -> 10.3.1
+newrelic==5.24.0.153 # Dostępna Wersja 10.3.1
 gunicorn==20.1.0
 python-dateutil==2.9.0.post0
 # python-memcached
-pymemcache==4.0.0 # Dokumentacja django wspomina o tej bibliotece
+pymemcache==4.0.0 # python-memcached -> pymemcache django docs (python-memcached seems to be unmaintained)
 more-itertools==8.14.0
 xhtml2pdf==0.2.11
 # PyYAML is used for fixtures.
@@ -35,8 +32,8 @@ pyyaml==6.0.2
 # Bokeh - library used for plotting in views displaying Poll results
 bokeh==3.6.1
 
-gspread==3.7.0 # Fajnie byłoby zmienić na coś nowszego ale nie są kompatybilne # gspread==6.1.4
-typing-extensions==3.10.0.2 # Czy jest potrzebna w kodzie, ponieważ wygląda na to, że nie jest nigdzie wykorzystywana (chyba, że nie wprost)
+gspread==3.7.0 # Dostępna wersja 6.1.4
+typing-extensions==3.10.0.2
 oauth2client==4.1.3
 # We use html2text for one-off migration from HTML to markdown.
 html2text==2024.2.26
