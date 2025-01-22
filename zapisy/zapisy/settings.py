@@ -151,7 +151,8 @@ LANGUAGES = (
     ('en', 'English'),
 )
 
-SITE_ID = 1
+DEBUG_SITE_ID = 2
+SITE_ID = 1 if not DEBUG else DEBUG_SITE_ID
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.

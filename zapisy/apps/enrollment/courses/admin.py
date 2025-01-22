@@ -20,20 +20,10 @@ class GroupInline(admin.TabularInline):
     raw_id_fields = ("teacher",)
     show_change_link = True
 
-    # Issue 1739 Fix: https://github.com/iiuni/projektzapisy/issues/1739
-    # This is fix for "Zmien instancja przedmiotu" site from "Courses/Instancje przedmiotow" tab
-    def get_view_on_site_url(self, obj):
-        return obj.get_absolute_url()
-
 
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('number', 'capacity', 'building')
     list_filter = ('building', 'capacity')
-
-    # Issue 1739 Fix: https://github.com/iiuni/projektzapisy/issues/1739
-    # This is fix for "Zmien sala" site from "Courses/Sale" tab
-    def get_view_on_site_url(self, obj):
-        return obj.get_absolute_url()
 
 
 class SemesterAdmin(admin.ModelAdmin):
@@ -163,11 +153,6 @@ class GroupAdmin(admin.ModelAdmin):
     ]
 
     raw_id_fields = ('course', 'teacher')
-
-    # Issue 1739 Fix: https://github.com/iiuni/projektzapisy/issues/1739
-    # This is fix for "Zmien grupa" site from "Courses/Grupy" tab
-    def get_view_on_site_url(self, obj):
-        return obj.get_absolute_url()
 
     def changelist_view(self, request, extra_context=None):
 
