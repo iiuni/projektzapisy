@@ -84,7 +84,7 @@ def students_view(request, user_id: int = None, semester_id: Optional[int] = Non
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request, user_id: int = None):
+def employees_view(request, user_id: int = None, semester_id: Optional[int] = None):
     """View for employees list and employee profile if user id in URL is provided."""
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
@@ -108,7 +108,12 @@ def employees_view(request, user_id: int = None):
         except Employee.DoesNotExist:
             raise Http404
 
-        semester = Semester.get_upcoming_semester()
+        semester: Optional[Semester]
+        if semester_id is None:
+            semester = Semester.get_upcoming_semester()
+        else:
+            semester = get_object_or_404(Semester, pk=semester_id)
+
         groups = Group.objects.filter(
             course__semester_id=semester.pk, teacher=employee).select_related(
             'teacher', 'teacher__user', 'course').prefetch_related('term', 'term__classrooms')
@@ -124,6 +129,8 @@ def employees_view(request, user_id: int = None):
         data.update({
             'employee': employee,
             'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+            'semester': semester,
+            'all_semesters': Semester.objects.filter(visible=True)
         })
     return render(request, 'users/users_view.html', data)
 
