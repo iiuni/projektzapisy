@@ -16,7 +16,7 @@ django-pagedown==2.2.1
 
 ipdb==0.13.13
 prompt-toolkit==3.0.50
-ipython==7.34.0
+ipython==8.10.0
 pycryptodome==3.21.0
 rollbar==0.16.3
 newrelic==5.24.0.153
