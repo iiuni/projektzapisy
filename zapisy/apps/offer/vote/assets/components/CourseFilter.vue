@@ -100,6 +100,7 @@ export default Vue.extend({
           />
           <hr />
           <LabelsFilter
+            data-bs-toggle="tooltip"
             title="Tagi"
             filterKey="tags-filter"
             property="tags"
@@ -113,12 +114,14 @@ export default Vue.extend({
             filterKey="type-filter"
             property="courseType"
             :options="allTypes"
+            data-bs-toggle="tooltip"
             title="Rodzaj przedmiotu"
             placeholder="Wszystkie rodzaje"
             ref="type-filter"
           />
           <hr />
           <LabelsFilter
+            data-bs-toggle="tooltip"
             title="Efekty kształcenia"
             filterKey="effects-filter"
             property="effects"
@@ -132,6 +135,7 @@ export default Vue.extend({
             filterKey="owner-filter"
             property="owner"
             :options="allOwners"
+            data-bs-toggle="tooltip"
             title="Opiekun przedmiotu"
             placeholder="Wszyscy opiekunowie"
             ref="owner-filter"
@@ -140,6 +144,7 @@ export default Vue.extend({
             filterKey="semester-filter"
             property="semester"
             :options="allSemesters"
+            data-bs-toggle="tooltip"
             title="Semestr"
             placeholder="Semestr"
             ref="semester-filter"

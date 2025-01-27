@@ -62,9 +62,12 @@
 
                         <th scope="row">
                             {{ form.instance.proposal.name }}
-                            <a href="{% url 'offer-page' form.instance.proposal.slug  %}"
-                                    class="mx-2 font-weight-light" target="new"
-                                    title="Otwórz w nowym oknie">
+                            <a
+                                href="{% url 'offer-page' form.instance.proposal.slug  %}"
+                                class="mx-2 font-weight-light"
+                                target="new"
+                                data-bs-toggle="tooltip"
+                                title="Otwórz w nowym oknie">
                                 <i class="fa fa-sm fa-external-link-alt"></i>
                             </a>
                             {% if form.instance.proposal.course_type.free_in_vote %}
