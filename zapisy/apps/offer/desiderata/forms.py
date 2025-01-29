@@ -15,11 +15,19 @@ REVERSE_DAY = {
 
 
 class DesiderataOtherForm(forms.ModelForm):
+    comment = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 5, 'maxlength': 1000}))
+
     class Meta:
         model = DesiderataOther
         fields = ('comment', )
 
-
+    def clean_comment(self):
+        data = self.cleaned_data.get('comment', '')
+        data = data.replace('\r', '')
+        if len(data) > 1000:
+            raise forms.ValidationError("Przekroczono limit 1000 znaków.")
+        return data
+    
 class DesiderataForm(forms.Form):
     day = forms.CharField(widget=forms.HiddenInput)
     hour = forms.IntegerField(widget=forms.HiddenInput)

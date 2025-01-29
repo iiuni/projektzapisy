@@ -19,13 +19,16 @@ def change_desiderata(request):
     if request.method == 'POST':
         hours_formset = DesiderataFormSet(request.POST)
         comments_form = DesiderataOtherForm(request.POST, instance=other)
-        if hours_formset.is_valid():
+        if hours_formset.is_valid() and comments_form.is_valid():
             hours_formset.save(desiderata, employee)
+            comments_form.save()
+
             desiderata = Desiderata.get_desiderata(employee)
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
-        if comments_form.is_valid():
-            comments_form.save()
-        messages.success(request, 'Zmiany zapisano pomyślnie')
+
+            messages.success(request, 'Zmiany zapisano pomyślnie')
+        else:
+            messages.error(request, 'Formularz zawiera błędy' + comments_form.errors.as_text())
     else:
         comments_form = DesiderataOtherForm(instance=other)
     hours_formset = DesiderataFormSet(initial=desiderata_formset_initial)
