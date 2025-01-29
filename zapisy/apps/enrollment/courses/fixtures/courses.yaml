@@ -8,6 +8,8 @@
     records_closing: 2090-12-21 23:59:59
     semester_beginning: 2018-10-3
     semester_ending: 2090-12-31
+    lectures_beginning: 2018-10-5
+    lectures_ending: 2090-12-15
 
 - model: courses.type
   pk: 1
