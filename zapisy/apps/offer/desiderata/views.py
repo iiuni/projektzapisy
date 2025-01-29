@@ -28,7 +28,7 @@ def change_desiderata(request):
 
             messages.success(request, 'Zmiany zapisano pomyślnie')
         else:
-            messages.error(request, 'Nie udało się zapisać zmian. Proszę poprawić błędy w formularzu.')
+            messages.error(request, 'Formularz zawiera błędy' + comments_form.errors.as_text())
     else:
         comments_form = DesiderataOtherForm(instance=other)
     hours_formset = DesiderataFormSet(initial=desiderata_formset_initial)
