@@ -40,28 +40,7 @@
 	</table>
 
 	<h3 class="subheader">Plan zajęć:</h3>
-	<nav class="col-lg-3 col-12 d-print-none order-first order-lg-last mb-3">
-		<div class="dropdown">
-			<div class="btn-group btn-block mb-3 w-100">
-				<button class="btn btn-light" disabled>
-					<strong>Semestr {{ semester }}</strong>
-				</button>
-				<button class="btn btn-light dropdown-toggle dropdown-toggle-split"
-						href="#" role="button" id="semester-dropdown" 
-						data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<span class="sr-only"></span>
-				</button>
-				<div class="dropdown-menu" aria-labelledby="semester-dropdown">
-					{% for semester in all_semesters %}
-						<a class="dropdown-item semester-link"
-								href={% url 'student-profile-semester' student.user_id semester.pk %}>
-							{{ semester }}
-						</a>
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-	</nav>
+	{% include "semester_dropdown.html" with url_pattern_name="student-profile-semester" user_id=student.user_id %}
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}

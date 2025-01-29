@@ -29,28 +29,7 @@
                 </p>
             {% endif %}
         </div>
-        <nav class="col-lg-3 col-12 d-print-none order-first order-lg-last mb-3">
-            <div class="dropdown">
-                <div class="btn-group btn-block mb-3 w-100">
-                    <button class="btn btn-light" disabled>
-                        <strong>Semestr {{ semester }}</strong>
-                    </button>
-                    <button class="btn btn-light dropdown-toggle dropdown-toggle-split"
-                            href="#" role="button" id="semester-dropdown" 
-                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only"></span>
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="semester-dropdown">
-                        {% for semester in all_semesters %}
-                            <a class="dropdown-item semester-link"
-                                    href={% url 'my-timetable-semester' semester.pk %}>
-                                {{ semester }}
-                            </a>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </nav>
+        {% include "semester_dropdown.html" with url_pattern_name="my-timetable-semester" %}
     </div>
 
     <div class="row m-0" id="timetable">
