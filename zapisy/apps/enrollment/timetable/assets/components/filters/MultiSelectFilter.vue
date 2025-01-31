@@ -163,7 +163,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       if (isEmpty(selectedIds)) {
         searchParams.delete(this.appID + "_" + this.property);
         sessionStorage.removeItem(LAST_FILTER_KEY);
-        if (searchParams.size != 0) {
+        if (searchParams.toString().length != 0) {
           sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
         }
       } else {

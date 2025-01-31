@@ -63,7 +63,7 @@ export default Vue.extend({
       if (!newOn) {
         searchParams.delete(this.appID + "_" + this.property);
         sessionStorage.removeItem(LAST_FILTER_KEY);
-        if (searchParams.size != 0) {
+        if (searchParams.toString().length != 0) {
           sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
         }
       } else {
