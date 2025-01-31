@@ -78,6 +78,8 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       type: String,
       default: "label",
     },
+    // Which CourseFilter component is it used on
+    appID: String,
   },
   data() {
     return {
@@ -86,10 +88,12 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   },
   created: function () {
     const searchParams = getSearchParams();
-    if (searchParams.has(this.property)) {
-      const property = searchParams.get(this.property);
+    if (searchParams.has(this.appID + "_" + this.property)) {
+      const property = searchParams.get(this.appID + "_" + this.property);
       if (property && property.length) {
-        const ids = searchParams.get(this.property)!.split(",");
+        const ids = searchParams
+          .get(this.appID + "_" + this.property)!
+          .split(",");
 
         this.selected = ids
           .map((id) =>
@@ -157,10 +161,16 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 
       const searchParams = getSearchParams();
       if (isEmpty(selectedIds)) {
-        searchParams.delete(this.property);
+        searchParams.delete(this.appID + "_" + this.property);
         sessionStorage.removeItem(LAST_FILTER_KEY);
+        if (searchParams.size != 0) {
+          sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+        }
       } else {
-        searchParams.set(this.property, selectedIds.join(","));
+        searchParams.set(
+          this.appID + "_" + this.property,
+          selectedIds.join(",")
+        );
         sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
 

@@ -7,7 +7,10 @@ import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 import { KVDict } from "../../models";
 
 class IntersectionFilter implements Filter {
-  constructor(public ids: number[] = [], public propertyName: string) {}
+  constructor(
+    public ids: number[] = [],
+    public propertyName: string
+  ) {}
 
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {
@@ -31,6 +34,8 @@ export default Vue.extend({
     title: String,
     // CSS class to apply to the badge when it's on.
     onClass: String,
+    // Which CourseFilter component is it used on
+    appID: String,
   },
   computed: {
     allLabelIds: function () {
@@ -53,16 +58,25 @@ export default Vue.extend({
 
       const searchParams = getSearchParams();
       if (selectedIds.length == 0) {
-        searchParams.delete(this.property);
+        searchParams.delete(this.appID + "_" + this.property);
         sessionStorage.removeItem(LAST_FILTER_KEY);
+        if (searchParams.size != 0) {
+          sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+        }
       } else {
-        searchParams.set(this.property, selectedIds.join(","));
+        searchParams.set(
+          this.appID + "_" + this.property,
+          selectedIds.join(",")
+        );
         sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
 
       this.registerFilter({
         k: this.filterKey,
-        f: new IntersectionFilter(selectedIds, this.property),
+        f: new IntersectionFilter(
+          selectedIds,
+          this.appID + "_" + this.property
+        ),
       });
     },
   },
@@ -72,9 +86,9 @@ export default Vue.extend({
     this.selected = fromPairs(this.allLabelIds.map((k) => [k, false]));
 
     const searchParams = getSearchParams();
-    if (searchParams.has(this.property)) {
+    if (searchParams.has(this.appID + "_" + this.property)) {
       const selectedIds = searchParams
-        .get(this.property)!
+        .get(this.appID + "_" + this.property)!
         .split(",")
         .map((id) => parseInt(id, 10))
         .filter((id) => !isNaN(id));

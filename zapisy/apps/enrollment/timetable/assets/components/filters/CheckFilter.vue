@@ -6,7 +6,10 @@ import { mapMutations } from "vuex";
 import { Filter, LAST_FILTER_KEY, getSearchParams } from "../../store/filters";
 
 class BooleanFilter implements Filter {
-  constructor(public on: boolean, public propertyName: string) {}
+  constructor(
+    public on: boolean,
+    public propertyName: string
+  ) {}
 
   visible(c: Object): boolean {
     if (!this.on) {
@@ -26,6 +29,8 @@ export default Vue.extend({
     // Every filter needs a unique identifier.
     filterKey: String,
     label: String,
+    // Which CourseFilter component is it used on
+    appID: String,
   },
   data: () => {
     return {
@@ -35,8 +40,8 @@ export default Vue.extend({
   created: function () {
     const searchParams = getSearchParams();
 
-    if (searchParams.has(this.property)) {
-      if (searchParams.get(this.property) === "true") {
+    if (searchParams.has(this.appID + "_" + this.property)) {
+      if (searchParams.get(this.appID + "_" + this.property) === "true") {
         this.on = true;
       }
     }
@@ -56,10 +61,13 @@ export default Vue.extend({
     on: function (newOn: boolean) {
       const searchParams = getSearchParams();
       if (!newOn) {
-        searchParams.delete(this.property);
+        searchParams.delete(this.appID + "_" + this.property);
         sessionStorage.removeItem(LAST_FILTER_KEY);
+        if (searchParams.size != 0) {
+          sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+        }
       } else {
-        searchParams.set(this.property, newOn.toString());
+        searchParams.set(this.appID + "_" + this.property, newOn.toString());
         sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
 
