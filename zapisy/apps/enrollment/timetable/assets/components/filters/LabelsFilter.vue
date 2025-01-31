@@ -9,7 +9,7 @@ import { KVDict } from "../../models";
 class IntersectionFilter implements Filter {
   constructor(
     public ids: number[] = [],
-    public propertyName: string
+    public propertyName: string,
   ) {}
 
   visible(c: Object): boolean {
@@ -34,7 +34,7 @@ export default Vue.extend({
     title: String,
     // CSS class to apply to the badge when it's on.
     onClass: String,
-    // Which CourseFilter component is it used on
+    // Which CourseFilter component is it used on.
     appID: String,
   },
   computed: {
@@ -66,7 +66,7 @@ export default Vue.extend({
       } else {
         searchParams.set(
           this.appID + "_" + this.property,
-          selectedIds.join(",")
+          selectedIds.join(","),
         );
         sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
@@ -75,7 +75,7 @@ export default Vue.extend({
         k: this.filterKey,
         f: new IntersectionFilter(
           selectedIds,
-          this.appID + "_" + this.property
+          this.appID + "_" + this.property,
         ),
       });
     },

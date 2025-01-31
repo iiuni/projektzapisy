@@ -14,7 +14,7 @@ import { MultiselectFilterDataItem } from "../../models";
 class ExactFilter implements Filter {
   constructor(
     public ids: Array<string | number>,
-    public propertyName: string
+    public propertyName: string,
   ) {}
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {
@@ -78,7 +78,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       type: String,
       default: "label",
     },
-    // Which CourseFilter component is it used on
+    // Which CourseFilter component is it used on.
     appID: String,
   },
   data() {
@@ -97,7 +97,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 
         this.selected = ids
           .map((id) =>
-            this.options.find((option: Option) => String(option.value) == id)
+            this.options.find((option: Option) => String(option.value) == id),
           )
           .filter((el) => isDefinedOption(el)) as Options;
       }
@@ -133,7 +133,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
 
       Array.from(multiselectInputs).forEach((multiselectInput) => {
         const dropdown = multiselectInput.querySelectorAll<HTMLElement>(
-          ".multiselect__content-wrapper"
+          ".multiselect__content-wrapper",
         )[0];
 
         if (dropdown) {
@@ -156,7 +156,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
   watch: {
     selected: function () {
       const selectedIds = this.selected.map(
-        (selectedFilter: Option) => selectedFilter.value
+        (selectedFilter: Option) => selectedFilter.value,
       );
 
       const searchParams = getSearchParams();
@@ -169,7 +169,7 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       } else {
         searchParams.set(
           this.appID + "_" + this.property,
-          selectedIds.join(",")
+          selectedIds.join(","),
         );
         sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
