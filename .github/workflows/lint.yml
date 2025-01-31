@@ -43,7 +43,7 @@ jobs:
       - name: Lint Node assets
         run: |
           cd zapisy
-          yarn lint
+          yarnpkg lint
       - name: Lint Python
         run: |
           python -m flake8 --statistics .

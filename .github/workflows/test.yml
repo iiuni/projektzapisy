@@ -72,7 +72,7 @@ jobs:
       - name: Build Node assets
         run: |
           cd zapisy
-          yarn dev:tc
+          yarnpkg dev:tc
       - name: Run Tests
         run: |
           mv env/.env_ci env/.env
