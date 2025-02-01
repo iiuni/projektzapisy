@@ -1,6 +1,7 @@
 import locale
 from typing import Dict, Optional, Tuple
 
+# from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Min
 from django.http import Http404
@@ -13,10 +14,41 @@ from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
 from apps.users.decorators import employee_required
 from apps.users.models import Student
-from zapisy.apps.enrollment.courses import utils
+from apps.enrollment.courses import utils
 
 locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
 
+# class CourseListView(ListView):
+#     model = CourseInstance
+#     template_name = "courses/courses.html"
+#     context_object_name = "courses"
+
+#     def get_queryset(self):
+#         semester_id = self.kwargs.get("semester_id")
+#         if semester_id:
+#             return CourseInstance.objects.filter(semester_id=semester_id)
+#         semester = Semester.get_upcoming_semester()
+#         return CourseInstance.objects.filter(semester=semester)
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         semester = Semester.get_upcoming_semester()
+#         context.update(utils.prepare_courses_list_data(semester))
+#         return context
+
+
+# class CourseDetailView(DetailView):
+#     model = CourseInstance
+#     template_name = "courses/courses.html"
+#     context_object_name = "course"
+#     slug_field = "slug"
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         course = self.get_object()
+#         course_data = course_view_data(self.request, course.slug)[1]
+#         context.update(course_data)
+#         return context
 
 def courses_list(request, semester_id: Optional[int] = None):
     """A basic courses view with courses listed on the right and no course selected."""

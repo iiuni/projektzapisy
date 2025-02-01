@@ -12,7 +12,7 @@ from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.users.models import Student
-from zapisy.apps.enrollment.courses.permissions import can_user_view_students_list_for_group
+from apps.enrollment.courses.permissions import can_user_view_students_list_for_group
 
 
 class GroupData(TypedDict):

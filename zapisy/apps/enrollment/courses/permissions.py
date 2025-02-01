@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 
-from zapisy.apps.enrollment.courses.models.group import Group
-from zapisy.apps.users.models import is_external_contractor
+from apps.enrollment.courses.models.group import Group
+from apps.users.models import is_external_contractor
 
 
 def can_user_view_students_list_for_group(user: User, group: Group) -> bool:
