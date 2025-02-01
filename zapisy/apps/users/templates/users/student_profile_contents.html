@@ -40,6 +40,7 @@
 	</table>
 
 	<h3 class="subheader">Plan zajęć:</h3>
+	{% include "semester_dropdown.html" with url_pattern_name="student-profile-semester" user_id=student.user_id %}
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}
