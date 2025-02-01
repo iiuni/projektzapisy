@@ -151,7 +151,8 @@ LANGUAGES = (
     ('en', 'English'),
 )
 
-SITE_ID = 1
+DEFAULT_SITE_ID = 1
+SITE_ID = env.int('SITE_ID', default=DEFAULT_SITE_ID)
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
