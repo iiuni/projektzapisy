@@ -1,7 +1,7 @@
 import csv
 import json
 import locale
-from typing import Dict, Iterable, List, Optional, TypedDict
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TypedDict
 
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
@@ -22,7 +22,7 @@ class GroupData(TypedDict):
     can_user_see_all_students_here: bool
 
 
-def prepare_courses_list_data(semester: Optional[Semester]):
+def prepare_courses_list_data(semester: Optional[Semester]) -> Dict[str, Any]:
     """Returns a dict used by course list and filter in various views."""
     qs = CourseInstance.objects.filter(semester=semester).order_by('name')
     courses = []
@@ -46,7 +46,7 @@ def get_students_from_data(
     groups_data_enrolled: Dict[int, GroupData],
     groups_data_queued: Dict[int, GroupData],
     preserve_queue_ordering: bool = False,
-):
+)-> Tuple[List[Student], List[Student]]:
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (locale.strxfrm(e.user.last_name),
                                                locale.strxfrm(e.user.first_name)))
@@ -70,7 +70,7 @@ def get_students_from_data(
     return students_in_course, students_in_queue
 
 
-def get_all_group_ids_for_course_slug(slug, class_type: int = None):
+def get_all_group_ids_for_course_slug(slug, class_type: int = None) -> Tuple[Optional[CourseInstance], Optional[str], List[int]]:
     """Return a tuple course short_name and a list of groups ids."""
     course: CourseInstance
     try:
