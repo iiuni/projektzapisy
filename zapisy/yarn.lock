@@ -4955,7 +4955,7 @@ fsevents@~2.1.2:
     jquery: 3.7.1
     js-cookie: 2.2.1
     js-sha256: 0.9.0
-    katex: 0.16.10
+    katex: 0.16.21
     lodash-es: 4.17.21
     markdown-it: 12.3.2
     mini-css-extract-plugin: 0.12.0
@@ -4981,7 +4981,7 @@ fsevents@~2.1.2:
     webpack-bundle-analyzer: 3.9.0
     webpack-bundle-tracker: 0.4.3
     webpack-cli: 3.3.12
-    zod: 3.23.8
+    zod: 3.24.1
   languageName: unknown
   linkType: soft
 
@@ -5527,14 +5527,14 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"katex@npm:0.16.10":
-  version: 0.16.10
-  resolution: "katex@npm:0.16.10"
+"katex@npm:0.16.21":
+  version: 0.16.21
+  resolution: "katex@npm:0.16.21"
   dependencies:
     commander: ^8.3.0
   bin:
     katex: cli.js
-  checksum: 93d2530cc42d5fc586dc6fadb392a8e4e271fb24aa35175d73f483c4cfad3702b4d8f7c6d2f1ad9f2bb8a9caa0a1f956541aa3c2e2857fa82754eff8d6cd7e2b
+  checksum: e362285b2deeaac4b691883f120a4359109400f8aecf56a9123cb368af23accda05d6268a90501f24ee4b9131af8529d69798326c28206016158c6ccd859286e
   languageName: node
   linkType: hard
 
@@ -9092,9 +9092,9 @@ typescript@4.0.2:
   languageName: node
   linkType: hard
 
-"zod@npm:3.23.8":
-  version: 3.23.8
-  resolution: "zod@npm:3.23.8"
-  checksum: cd1a2c03c06879204f1d77b7ecd65a1b8242cac06168a5b4bf2f305d42730ca6bac7427676813aa6cef28ecdadcfcbf6266e9e7adb47767e8e559687c94937fc
+"zod@npm:3.24.1":
+  version: 3.24.1
+  resolution: "zod@npm:3.24.1"
+  checksum: eccdfdd62f304154768e586c6e3655a4b11225bc52aa6ab9f92ed9ffead26e0961bd95a3ee5423ab1eb5fa1b2df2aa79bdf0ac2c01374fa3d8db6ce484c37180
   languageName: node
   linkType: hard

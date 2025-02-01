@@ -27,7 +27,7 @@
     "jquery": "3.7.1",
     "js-cookie": "2.2.1",
     "js-sha256": "0.9.0",
-    "katex": "0.16.10",
+    "katex": "0.16.21",
     "lodash-es": "4.17.21",
     "markdown-it": "12.3.2",
     "popper.js": "1.16.1",
@@ -77,6 +77,6 @@
     "webpack-bundle-analyzer": "3.9.0",
     "webpack-bundle-tracker": "0.4.3",
     "webpack-cli": "3.3.12",
-    "zod": "3.23.8"
+    "zod": "3.24.1"
   }
 }
