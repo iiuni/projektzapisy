@@ -6,6 +6,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, TypedDict
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.urls import reverse
+from django.db.models import Min
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
@@ -46,7 +47,7 @@ def get_students_from_data(
     groups_data_enrolled: Dict[int, GroupData],
     groups_data_queued: Dict[int, GroupData],
     preserve_queue_ordering: bool = False,
-)-> Tuple[List[Student], List[Student]]:
+) -> Tuple[List[Student], List[Student]]:
     def sort_student_by_name(students: List[Student]) -> List[Student]:
         return sorted(students, key=lambda e: (locale.strxfrm(e.user.last_name),
                                                locale.strxfrm(e.user.first_name)))
@@ -70,7 +71,9 @@ def get_students_from_data(
     return students_in_course, students_in_queue
 
 
-def get_all_group_ids_for_course_slug(slug, class_type: int = None) -> Tuple[Optional[CourseInstance], Optional[str], List[int]]:
+def get_all_group_ids_for_course_slug(
+    slug, class_type: int = None
+) -> Tuple[Optional[CourseInstance], Optional[str], List[int]]:
     """Return a tuple course short_name and a list of groups ids."""
     course: CourseInstance
     try:
@@ -169,3 +172,61 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Di
         }
 
     return data
+
+
+def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[Dict]]:
+    """Retrieves course and relevant data for the request.
+
+    If course does not exist it returns two None objects.
+    """
+    course: CourseInstance
+    try:
+        course = CourseInstance.objects.filter(slug=slug).select_related(
+            'semester', 'course_type').prefetch_related('tags', 'effects').get()
+    except CourseInstance.DoesNotExist:
+        return None, None
+
+    student: Optional[Student] = None
+    if request.user.is_authenticated and request.user.student:
+        student = request.user.student
+
+    groups = course.groups.select_related(
+        'teacher', 'teacher__user',
+    ).prefetch_related(
+        'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role'
+    ).annotate(
+        earliest_dayOfWeek=Min('term__dayOfWeek'), earliest_start_time=Min('term__start_time')
+    ).order_by(
+        'earliest_dayOfWeek', 'earliest_start_time', 'teacher__user__last_name', 'teacher__user__first_name'
+        )
+
+    # Collect the general groups statistics.
+    groups_stats = Record.groups_stats(groups)
+    # Collect groups information related to the student.
+    groups = Record.is_recorded_in_groups(student, groups)
+    student_can_enqueue = Record.can_enqueue_groups(
+        student, course.groups.all())
+    student_can_dequeue = Record.can_dequeue_groups(
+        student, course.groups.all())
+
+    for group in groups:
+        group.num_enrolled = groups_stats.get(group.pk).get('num_enrolled')
+        group.num_enqueued = groups_stats.get(group.pk).get('num_enqueued')
+        group.can_enqueue = student_can_enqueue.get(group.pk)
+        group.can_dequeue = student_can_dequeue.get(group.pk)
+
+    teachers = {g.teacher for g in groups}
+
+    course.is_enrollment_on = any(g.can_enqueue for g in groups)
+
+    waiting_students = {}
+    if request.user.employee:
+        waiting_students = Record.list_waiting_students([course])[course.id]
+
+    data = {
+        'course': course,
+        'teachers': teachers,
+        'groups': groups,
+        'waiting_students': waiting_students,
+    }
+    return course, data
