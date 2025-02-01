@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the courses-course-list
+// and timetable-prototype-component assets.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -61,6 +63,8 @@ export default Vue.extend({
       this.collapsed = false;
     }
   },
+  // this fragment is responsible for the action
+  // of clear filters button
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
   },

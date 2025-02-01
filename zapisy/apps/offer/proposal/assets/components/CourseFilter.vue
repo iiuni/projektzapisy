@@ -1,4 +1,5 @@
 <script lang="ts">
+// This component is used in the proposal-course-list asset.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 

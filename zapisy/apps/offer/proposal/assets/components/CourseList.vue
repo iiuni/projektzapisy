@@ -1,4 +1,12 @@
 <script lang="ts">
+// This component is used in the proposal-course-list asset.
+//
+// This particular CourseList component extends the functionality of other
+// CourseList components by allowing for distinction between the courses
+// in offer, in vote and withdrawn.
+//
+// It achieves this by extending the CourseInfo interface into the ProposalInfo
+// interface with an appropriate property.
 import Vue from "vue";
 import { mapGetters } from "vuex";
 

@@ -1,20 +1,26 @@
 <script lang="ts">
-// The CourseList component allows the student to select courses presented on
-// prototype.
+// This component is used in the timetable-prototype-component asset.
+//
+// This particular CourseList component extends the functionality of other
+// CourseList components by allowing the student to select courses
+// presented on the prototype timetable.
 //
 // The selection is not persistent. In order to keep a group on prototype the
 // student will need to _pin_ it. The state is not maintained by the component.
 // This job is handled by the Vuex store (`../store/courses.ts`).
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import Component from "vue-class-component";
-
 import { CourseInfo } from "../store/courses";
 
-export type CourseObject = { id: number; name: string; url: string };
-
-@Component({
+export default Vue.extend({
+  data() {
+    return {
+      visibleCourses: [] as CourseInfo[],
+    };
+  },
   computed: {
+    // The selection state and courses list are provided by their
+    // respective getters in the Vuex store.
     ...mapGetters("courses", {
       selectionState: "selection",
       courses: "courses",
@@ -22,37 +28,31 @@ export type CourseObject = { id: number; name: string; url: string };
     ...mapGetters("filters", {
       tester: "visible",
     }),
+    // selection is a local property that binds the selection values from input
+    // and calls update in the Vuex store.
+    selection: {
+      get(): number[] {
+        return this.selectionState;
+      },
+      set(value: number[]) {
+        this.$store.dispatch("courses/updateSelection", value);
+      },
+    },
   },
-})
-export default class CourseList extends Vue {
-  // The computed property selectionState comes from store.
-  selectionState!: number[];
-  // The same goes for courses and tester.
-  courses!: CourseInfo[];
-  tester!: (_: CourseInfo) => boolean;
-
-  get selection(): number[] {
-    return this.selectionState;
-  }
-  set selection(value: number[]) {
-    this.$store.dispatch("courses/updateSelection", value);
-  }
-
-  // The list should be initialised to contain courses filtered with initial filters
-  // fetched from the query string and then apply filters whenever they update.
-  visibleCourses: CourseInfo[] = [];
   mounted() {
+    // When mounted, apply initial filters fetched from the query string
+    // on the loaded list of courses.
     this.visibleCourses = this.courses.filter(this.tester);
 
-    this.$store.subscribe((mutation, state) => {
+    this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {
         case "filters/registerFilter":
           this.visibleCourses = this.courses.filter(this.tester);
           break;
       }
     });
-  }
-}
+  },
+});
 </script>
 
 <template>
