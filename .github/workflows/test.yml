@@ -36,11 +36,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       memcached:
-        image: memcached:latest
+        image: memcached:1.6.14
         ports:
           - 11211:11211
         options: >-
-          --health-cmd "echo 'stats' | nc 127.0.0.1 11211"
+          --health-cmd "memcached -h"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
