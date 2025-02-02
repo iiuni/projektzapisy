@@ -32,6 +32,19 @@
         - python3-pip
       become: yes
 
+    - name: Install Memcached
+      apt:
+        name: memcached
+        state: present
+      become: yes
+
+    - name: Ensure Memcached is running
+      service:
+        name: memcached
+        state: started
+        enabled: yes
+      become: yes
+
     - name: Install redis
       apt:
         name: redis-server
