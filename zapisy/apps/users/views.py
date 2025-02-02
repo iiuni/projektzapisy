@@ -16,7 +16,7 @@ from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
 from .forms import EmailChangeForm, EmployeeDataForm
-from .models import Employee, PersonalDataConsent, Student
+from .models import Employee, PersonalDataConsent, Student, is_external_contractor
 
 logger = logging.getLogger()
 
@@ -159,9 +159,11 @@ def my_profile(request):
     consultations).
     """
     semester = Semester.get_upcoming_semester()
+    is_ext_contractor = is_external_contractor(request.user)
 
     data = {
         'semester': semester,
+        'is_external_contractor': is_ext_contractor,
     }
 
     if request.user.employee:
