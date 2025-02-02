@@ -64,6 +64,21 @@ export default Vue.extend({
       { value: "IN_VOTE", label: "poddany pod głosowanie" },
       { value: "WITHDRAWN", label: "wycofany z oferty" },
     ];
+
+    // Property "manual" signifies that from this point on
+    // changes in filters are supposed to persist through page refreshes.
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("manual")) {
+      // Delete previous parameters
+      const keys = url.searchParams.keys();
+      for (const key of keys) {
+        url.searchParams.delete(key);
+      }
+      // Set the default parameters
+      url.searchParams.set("status", "IN_OFFER,IN_VOTE");
+      url.searchParams.append("manual", "1");
+    }
+    window.history.replaceState(null, "", url.toString());
   },
   mounted: function () {
     // Extract filterable properties names from the template.
