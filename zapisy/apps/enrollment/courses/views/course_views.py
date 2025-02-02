@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import RecordStatus
 from apps.enrollment.utils import mailto
-from apps.enrollment.courses import utils
+from apps.enrollment.courses.views import utils
 
 
 class CoursesListView(View):

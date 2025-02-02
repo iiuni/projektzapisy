@@ -2,7 +2,7 @@ from django.http import Http404
 
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.records.models import RecordStatus
-from apps.enrollment.courses import utils
+from apps.enrollment.courses.views import utils
 from apps.users.decorators import employee_required
 
 
