@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+
 from apps.enrollment.records.models import RecordStatus
 from apps.enrollment.utils import mailto
 from apps.enrollment.courses import utils

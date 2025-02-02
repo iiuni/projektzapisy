@@ -7,6 +7,7 @@ The records app will only be responsible for basic actions and will be kept
 minimal.
 """
 from django.urls import path
+
 from apps.enrollment.courses.views import (
     CoursesListView, CourseDetailView, CourseStudentListView,
     group_view,

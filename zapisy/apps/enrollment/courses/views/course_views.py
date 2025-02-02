@@ -1,4 +1,5 @@
 from typing import Optional
+
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
@@ -26,6 +27,7 @@ class CoursesListView(View):
 class CourseDetailView(View):
     """
     Displays the course detail view.
+
     It uses the shared logic in `course_view_data` from the utils module.
     """
 
@@ -39,9 +41,7 @@ class CourseDetailView(View):
 
 @method_decorator(login_required, name='dispatch')
 class CourseStudentListView(View):
-    """
-    Displays the student list for a course.
-    """
+    """Displays the student list for a course."""
 
     def get(self, request, course_slug: str, class_type: Optional[int] = None):
         course, _, groups_ids = utils.get_all_group_ids_for_course_slug(course_slug, class_type=class_type)
