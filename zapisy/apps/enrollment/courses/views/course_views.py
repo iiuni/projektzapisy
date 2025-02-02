@@ -25,8 +25,7 @@ class CoursesListView(View):
 
 
 class CourseDetailView(View):
-    """
-    Displays the course detail view.
+    """Displays the course detail view.
 
     It uses the shared logic in `course_view_data` from the utils module.
     """
