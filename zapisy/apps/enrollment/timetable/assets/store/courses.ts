@@ -15,7 +15,6 @@ export interface CourseInfo {
   id: number;
   name: string;
   url: string;
-  effects: Array<number>;
   tags: Array<number>;
   owner: number;
   recommendedForFirstYear: boolean;

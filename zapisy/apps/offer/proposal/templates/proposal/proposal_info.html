@@ -69,16 +69,6 @@
             </td>
         </tr>
         {% endif %}
-        {% if course.effects.all %}
-        <tr>
-            <th>Grupy efektów kształcenia</th>
-            <td>
-                {% for effect in course.effects.all %}
-                    <span class="badge bg-info me-2">{{ effect }}</span>
-                {% endfor %}
-            </td>
-        </tr>
-        {% endif %}
     </tbody>
 </table>
 

@@ -73,7 +73,7 @@ def list_courses_in_semester(semester: Semester):
 
     This list will be used in prototype.
     """
-    qs = CourseInstance.objects.filter(semester=semester).prefetch_related('effects', 'tags')
+    qs = CourseInstance.objects.filter(semester=semester).prefetch_related('tags')
     courses = []
     for course in qs:
         course_dict = course.__json__()
