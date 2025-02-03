@@ -12,7 +12,10 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
-import { getSearchParams } from "@/enrollment/timetable/assets/store/filters";
+import {
+  getSearchParams,
+  LAST_FILTER_KEY,
+} from "@/enrollment/timetable/assets/store/filters";
 
 export default Vue.extend({
   components: {
@@ -35,7 +38,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML
+      document.getElementById("filters-data")!.innerHTML,
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -53,7 +56,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      })
+      }),
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
@@ -65,6 +68,23 @@ export default Vue.extend({
       { value: "IN_VOTE", label: "poddany pod głosowanie" },
       { value: "WITHDRAWN", label: "wycofany z oferty" },
     ];
+
+    // Checking for any saved filtering parameters.
+    const searchParams = getSearchParams();
+    // Property "manual" signifies that from this point on
+    // changes in filters are supposed to persist through page refreshes.
+    if (searchParams.size === 0 || !searchParams.has("proposal_manual")) {
+      // Delete old parameters.
+      const keys = searchParams.keys();
+      for (const key of keys) {
+        searchParams.delete(key);
+      }
+      // Set the default parameters.
+      searchParams.set("proposal_status", "IN_OFFER,IN_VOTE");
+      searchParams.append("proposal_manual", "1");
+      sessionStorage.removeItem(LAST_FILTER_KEY);
+      sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+    }
   },
   mounted: function () {
     // Extract filterable properties names from the template.
