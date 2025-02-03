@@ -38,7 +38,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML,
+      document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -56,7 +56,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      }),
+      })
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
@@ -73,7 +73,10 @@ export default Vue.extend({
     const searchParams = getSearchParams();
     // Property "manual" signifies that from this point on
     // changes in filters are supposed to persist through page refreshes.
-    if (searchParams.size === 0 || !searchParams.has("proposal_manual")) {
+    if (
+      searchParams.toString().length === 0 ||
+      !searchParams.has("proposal_manual")
+    ) {
       // Delete old parameters.
       const keys = searchParams.keys();
       for (const key of keys) {
