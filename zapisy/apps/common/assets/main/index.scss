@@ -170,7 +170,7 @@ div.top .topbar .inline-inputs label {
 }
 
 #sidebar {
-  @media (max-width: 992px) {
+  @include media-breakpoint-down(lg) {
     #sidebar-inner {
       /* :after will position itself against nearest positioned parent, so we
        * need to ensure that it will be this sidebar */
@@ -203,7 +203,7 @@ div.top .topbar .inline-inputs label {
       text-align: center;
     }
   }
-  @media (min-width: 992px) {
+  @include media-breakpoint-up(lg) {
     #fold-toggler {
       display: none;
     }
@@ -244,8 +244,19 @@ div.loginbox {
   }
 }
 
-colgroup col.table-info-type {
+colgroup col.table-info-offer {
+  width: 1%;
+}
+
+.table-offer th {
+  white-space: nowrap;
   background-color: #f9f9f9;
+}
+
+@include media-breakpoint-down(lg) {
+  .table-offer th {
+    white-space: wrap;
+  }
 }
 
 // Required field marker in forms.
@@ -264,7 +275,7 @@ colgroup col.table-info-type {
     color: var(--bs-dark);
     font-style: italic;
     display: block;
-    @media (min-width: 992px) {
+    @include media-breakpoint-up(lg) {
       float: right;
     }
   }
