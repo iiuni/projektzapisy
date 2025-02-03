@@ -24,6 +24,15 @@
 
         gtag('js', new Date());
         gtag('config', 'UA-109984921-1');
+
+        // when user closes website we save his preferences
+        // from sessionStorage to database if he was logged
+        window.addEventListener("beforeunload", function(event) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "close/", false);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({}));
+        });
     </script>
 
     {% render_bundle "common-main" %}

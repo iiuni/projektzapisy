@@ -4,10 +4,13 @@ import Vue from "vue";
 import { mapMutations } from "vuex";
 
 import { CourseInfo } from "../../store/courses";
-import { Filter } from "../../store/filters";
+import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 
 class TextFilter implements Filter {
-  constructor(public pattern: string = "", public propertyName: string) {}
+  constructor(
+    public pattern: string = "",
+    public propertyName: string,
+  ) {}
 
   visible(c: CourseInfo): boolean {
     let propGetter = property(this.propertyName) as (c: CourseInfo) => string;
@@ -26,6 +29,8 @@ export default Vue.extend({
     // Every filter needs a unique identifier.
     filterKey: String,
     placeholder: String,
+    // Which CourseFilter component is it used on.
+    appID: String,
   },
   data: () => {
     return {
@@ -33,11 +38,13 @@ export default Vue.extend({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
 
-    if (searchParams.has(this.property)) {
+    if (searchParams.has(this.appID + "_" + this.property)) {
       // TypeScript doesn't infer that property is present, manual cast required.
-      this.pattern = searchParams.get(this.property) as string;
+      this.pattern = searchParams.get(
+        this.appID + "_" + this.property,
+      ) as string;
     }
 
     this.$store.subscribe((mutation, _) => {
@@ -53,13 +60,17 @@ export default Vue.extend({
   },
   watch: {
     pattern: function (newPattern: string, _) {
-      const url = new URL(window.location.href);
+      const searchParams = getSearchParams();
       if (newPattern.length == 0) {
-        url.searchParams.delete(this.property);
+        searchParams.delete(this.appID + "_" + this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
+        if (searchParams.toString().length != 0) {
+          sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+        }
       } else {
-        url.searchParams.set(this.property, newPattern);
+        searchParams.set(this.appID + "_" + this.property, newPattern);
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,

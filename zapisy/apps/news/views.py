@@ -3,9 +3,11 @@ import urllib.parse
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+from zapisy.middleware.user_preferences import save_user_preferences_to_database
 from .models import News
 
 
@@ -49,3 +51,10 @@ def main_page(request):
     all_news_except_hidden = News.objects.published().select_related('author')
     recent_news = all_news_except_hidden[:2] if all_news_except_hidden else None
     return render(request, 'common/index.html', {'recent_news': recent_news})
+
+
+# when user closes website we save his preferences
+# from sessionStorage to database if he was logged
+def close_page(request):
+    save_user_preferences_to_database(request)
+    return HttpResponse("")

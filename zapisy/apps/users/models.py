@@ -36,6 +36,13 @@ class Employee(models.Model):
     title = models.CharField(max_length=20, verbose_name="tytuł naukowy", null=True, blank=True)
     usos_id = models.PositiveIntegerField(verbose_name="ID w USOSie", null=True, blank=True)
 
+    # TODO: uncomment before migration
+    # last used search filters
+    # last_searched_params = models.CharField(max_length=200,
+    #                                         verbose_name="parametry wyszukiwania",
+    #                                         blank=True,
+    #                                         default="")
+
     def __str__(self):
         return self.user.get_full_name()
 
@@ -91,6 +98,13 @@ class Student(models.Model):
 
     usos_id = models.PositiveIntegerField(
         null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
+
+    # TODO: uncomment before migration
+    # last used search filters
+    # last_searched_params = models.CharField(max_length=200,
+    #                                         verbose_name="parametry wyszukiwania",
+    #                                         blank=True,
+    #                                         default="")
 
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.matricula})"
