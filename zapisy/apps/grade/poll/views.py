@@ -11,8 +11,7 @@ from django.views.generic import TemplateView, UpdateView, View
 from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
-from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
-                                   group)
+from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status, group_polls)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
 
 
@@ -243,23 +242,27 @@ class PollResults(TemplateView):
         semesters = Semester.objects.all()
 
         if request.user.is_superuser or request.user.employee:
+            polls = {course_name: {group_name: [poll.to_dict(employee=request.user.employee, is_annotated=True)
+                                                for poll in poll_list]
+                                   for group_name, poll_list in group_polls.items()}
+                     for course_name, group_polls in group_polls(polls=available_polls).items()}
             return render(
                 request,
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
+                    'polls': polls,
                     'results': self.__get_processed_results(submissions),
                     'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
-                    'current_poll_id': poll_id,
-                    'current_poll': current_poll,
+                    'current_poll': current_poll.to_dict() if current_poll is not None else {},
                     'selected_semester': selected_semester,
                     'submissions_count': self.__get_counter_for_categories(
                         available_polls
                     ),
                     'iterator': itertools.count(),
+                    'is_superuser': request.user.is_superuser
                 },
             )
 
