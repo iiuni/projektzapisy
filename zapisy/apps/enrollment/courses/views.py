@@ -331,8 +331,6 @@ def get_all_group_ids_for_course_slug(slug, class_type: int = None):
     try:
         course = (
             CourseInstance.objects.filter(slug=slug)
-            .select_related('semester', 'course_type')
-            .prefetch_related('tags')
             .get()
         )
     except CourseInstance.DoesNotExist:

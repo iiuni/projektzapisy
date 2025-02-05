@@ -150,21 +150,6 @@ class GroupAdmin(admin.ModelAdmin):
                                  'course__semester').prefetch_related('term', 'record_set')
 
 
-@admin.register(CourseInstance)
-class CourseInstanceAdmin(admin.ModelAdmin):
-    list_filter = ('semester', 'course_type', ('owner', admin.RelatedOnlyFieldListFilter),
-                   'tags')
-    list_display = ('name', 'owner', 'course_type', 'semester',)
-    search_fields = ('name', 'name_en')
-    ordering = ('semester', 'owner', 'offer')
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related('owner', 'semester', 'offer')
-
-    inlines = [GroupInline, ]
-
-
 class TypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'group', 'meta_type')
     list_filter = ('group', 'meta_type')
