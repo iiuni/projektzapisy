@@ -87,16 +87,14 @@ export default Vue.extend({
           />
         </div>
         <div class="col-md">
-          <div class="col-md">
-            <MultiSelectFilter
-              filterKey="type-filter"
-              property="courseType"
-              :options="allTypes"
-              title="Rodzaj przedmiotu"
-              placeholder="Wszystkie rodzaje"
-              ref="type-filter"
-            />
-          </div>
+          <MultiSelectFilter
+            filterKey="type-filter"
+            property="courseType"
+            :options="allTypes"
+            title="Rodzaj przedmiotu"
+            placeholder="Wszystkie rodzaje"
+            ref="type-filter"
+          />
           <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"
