@@ -1,7 +1,6 @@
 from django.contrib import admin, messages
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
