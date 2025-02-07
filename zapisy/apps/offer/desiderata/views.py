@@ -28,12 +28,12 @@ def change_desiderata(request):
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
             messages.success(request, 'Zmiany zapisano pomyślnie')
         else:
-            error_messages = []
+            errors = []
             if not hours_valid:
-                error_messages.append(hours_formset.errors.as_text())
+                errors.append(hours_formset.errors.as_text())
             if not comments_valid:
-                error_messages.append(comments_form.errors.as_text())
-            messages.error(request, 'Formularz zawiera błędy: ' + ' '.join(error_messages))
+                errors.append(comments_form.errors.as_text)
+            messages.error(request, 'Formularz zawiera błędy: ' + ' '.join(error_messages))       
 
     hours_formset = DesiderataFormSet(initial=desiderata_formset_initial)
     data = {
