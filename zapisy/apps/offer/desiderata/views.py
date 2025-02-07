@@ -27,7 +27,6 @@ def change_desiderata(request):
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
 
             messages.success(request, 'Zmiany zapisano pomyślnie')
-        
         else:
             error_messages = []
             if not hours_formset.is_valid():
