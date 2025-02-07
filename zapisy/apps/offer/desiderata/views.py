@@ -24,12 +24,11 @@ def change_desiderata(request):
         if hours_valid() and comments_valid:
             hours_formset.save(desiderata, employee)
             comments_form.save()
-
             desiderata = Desiderata.get_desiderata(employee)
             desiderata_formset_initial = Desiderata.get_desiderata_to_formset(desiderata)
-
             messages.success(request, 'Zmiany zapisano pomyślnie')
         else:
+
             error_messages = []
             if not hours_valid:
                 error_messages.append(hours_formset.errors.as_text())
