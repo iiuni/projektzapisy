@@ -19,7 +19,9 @@ def change_desiderata(request):
     if request.method == 'POST':
         hours_formset = DesiderataFormSet(request.POST)
         comments_form = DesiderataOtherForm(request.POST, instance=other)
-        if hours_formset.is_valid() and comments_form.is_valid():
+        hours_valid = hours_formset.is_valid()
+        comments_valid = comments_form.is_valid()
+        if hours_valid() and comments_valid:
             hours_formset.save(desiderata, employee)
             comments_form.save()
 
@@ -29,9 +31,9 @@ def change_desiderata(request):
             messages.success(request, 'Zmiany zapisano pomyślnie')
         else:
             error_messages = []
-            if not hours_formset.is_valid():
+            if not hours_valid:
                 error_messages.append(hours_formset.errors.as_text())
-            if not comments_form.is_valid():
+            if not comments_valid:
                 error_messages.append(comments_form.errors.as_text())
             messages.error(request, 'Formularz zawiera błędy: ' + ' '.join(error_messages))
 
