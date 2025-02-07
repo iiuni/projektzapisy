@@ -27,6 +27,8 @@ class DesiderataOtherForm(forms.ModelForm):
         if len(data) > 1000:
             raise forms.ValidationError("Przekroczono limit 1000 znaków.")
         return data
+    
+
 class DesiderataForm(forms.Form):
 
     day = forms.CharField(widget=forms.HiddenInput)
