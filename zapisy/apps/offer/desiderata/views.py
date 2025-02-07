@@ -30,7 +30,13 @@ def change_desiderata(request):
         else:
             messages.error(request, 'Formularz zawiera błędy' + comments_form.errors.as_text())
     else:
-        comments_form = DesiderataOtherForm(instance=other)
+        error_messages = []
+        if not hours_formset.is_valid():
+            error_messages.append(hours_formset.errors.as_text())
+        if not comments_form.is_valid():
+            error_messages.append(comments_form.errors.as_text())
+        messages.error(request, 'Formularz zawiera błędy: ' + ' '.join(error_messages))
+        
     hours_formset = DesiderataFormSet(initial=desiderata_formset_initial)
     data = {
         'hours_formset': hours_formset,
