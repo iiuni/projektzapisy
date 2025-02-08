@@ -10,9 +10,9 @@
 {% block all-content %}
     <div class="mb-5">
         <h2>Moje dane</h2>
-        <table class="table table-condensed tableInfo table-offer">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
+                <col class="header-column"></col>
                 <col></col>
             </colgroup>
             <tr>
@@ -74,9 +74,9 @@
     {% if user.student %}
     <div class="mb-5">
         <h2>Moje studia</h2>
-        <table class="table table-condensed tableInfo table-offer">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
+                <col class="header-column"></col>
                 <col></col>
             </colgroup>
             <tr>
@@ -104,9 +104,9 @@
 
     <div class="mb-5">
         <h2>Terminy</h2>
-        <table class="table table-condensed tableInfo table-offer">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
+                <col class="header-column"></col>
                 <col></col>
             </colgroup>
             {% with dateFormatStr="l j E G:i" %}
@@ -172,9 +172,9 @@
     {% if semesters_participated_in_grade %}
         <div class="mb-5">
             <h2>Udział w Ocenie zajęć</h2>
-            <table class="table table-condensed tableInfo table-offer">
+            <table class="table table-condensed table-infobox">
                 <colgroup>
-                    <col class="table-info-type"></col>
+                    <col class="header-column"></col>
                     <col></col>
                 </colgroup>
                 {% for semester in semesters_participated_in_grade %}

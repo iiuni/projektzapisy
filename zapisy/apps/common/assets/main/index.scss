@@ -244,19 +244,17 @@ div.loginbox {
   }
 }
 
-.tableInfo tr th {
+.table-infobox tr th {
   background-color: #f9f9f9;
 }
 
-.table-offer th {
-  width: 1%;
-  white-space: nowrap;
-}
+@include media-breakpoint-up(lg) {
+  .table-infobox th {
+    white-space: nowrap;
+  }
 
-@include media-breakpoint-down(lg) {
-  .table-offer th {
-    width: auto;
-    white-space: wrap;
+  colgroup col.header-column {
+    width: 1%;
   }
 }
 
