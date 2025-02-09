@@ -8,7 +8,7 @@
 		</colgroup>
 		{% if user.is_authenticated %}
 			<tr>
-				<th>adres email</th>
+				<th>Adres e-mail</th>
 				<td>
 					{% if employee.user.email %}
 						<a href="mailto:{{employee.user.email}}">
@@ -21,7 +21,7 @@
 			</tr>
 		{% endif %}
 			<tr>
-				<th>strona domowa</th>
+				<th>Strona domowa</th>
 				<td>
 					{% if employee.homepage %}
 						<a href="{{employee.homepage}}">{{employee.homepage}}</a>
@@ -31,7 +31,7 @@
 				</td>
 			</tr>
 			<tr>
-				<th>pokój</th>
+				<th>Pokój</th>
 				<td>
 						{{employee.room|default_if_none:"brak danych"}}
 				</td>

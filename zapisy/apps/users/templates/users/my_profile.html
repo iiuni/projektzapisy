@@ -15,11 +15,11 @@
                 <col class="header-column"></col>
             </colgroup>
             <tr>
-                <th>login</th>
+                <th>Login</th>
                 <td>{{ request.user.username }}</td>
             </tr>
             <tr>
-                <th>email</th>
+                <th>Adres e-mail</th>
                 <td>{{ request.user.email }}</td>
             </tr>
             {% if user.student %}
@@ -41,19 +41,19 @@
             {% endif %}
             {% if user.employee %}
                 <tr>
-                    <th>pokój</th>
+                    <th>Pokój</th>
                     <td>{{ request.user.employee.room }}</td>
                 </tr>
                 <tr>
-                    <th>strona domowa</th>
+                    <th>Strona domowa</th>
                     <td><a href="{{ homepage }}">{{ request.user.employee.homepage|default:"" }}</a></td>
                 </tr>
                 <tr>
-                    <th>tytuł naukowy</th>
+                    <th>Tytuł naukowy</th>
                     <td>{{ request.user.employee.title }}</td>
                 </tr>
                 <tr>
-                    <th>konsultacje</th>
+                    <th>Konsultacje</th>
                     <td>
                         {{ user.employee.consultations }}
                     </td>
