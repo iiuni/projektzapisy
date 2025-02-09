@@ -4,7 +4,7 @@ from apps.enrollment.courses.models.classroom import Classroom
 from apps.enrollment.courses.models.course_type import Type
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
-from apps.enrollment.courses.models.tag import Tag
+from apps.enrollment.courses.models.tags import SpecialistTag, ThematicTag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 
@@ -155,7 +155,8 @@ class TypeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Group, GroupAdmin)
-admin.site.register(Tag)
+admin.site.register(ThematicTag)
+admin.site.register(SpecialistTag)
 admin.site.register(Classroom, ClassroomAdmin)
 admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Freeday, FreedayAdmin)

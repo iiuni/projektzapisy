@@ -39,7 +39,8 @@ class SingleCourseData(NamedTuple):
     name: str
     proposal_id: int
     course_type: str
-    tags: str
+    thematic_tags: str
+    specialist_tags: str
     ects: str
     semester: str
 

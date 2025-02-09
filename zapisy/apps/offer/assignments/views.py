@@ -199,7 +199,7 @@ def create_assignments_sheet(request):
         p.id: p for p in Proposal.objects
         .filter(id__in=proposal_ids)
         .select_related('owner', 'owner__user', 'course_type')
-        .prefetch_related('tags')
+        .prefetch_related('thematic_tags', 'specialist_tags')
     }
 
     # update Assignments sheet
@@ -243,7 +243,8 @@ def create_assignments_sheet(request):
                 proposal_id=pid,
                 name=proposal.get_course_name(semester),
                 course_type=proposal.course_type.name,
-                tags=', '.join(map(lambda x: x[0], proposal.tags.values_list('short_name'))),
+                thematic_tags=', '.join(map(lambda x: x[0], proposal.thematic_tags.values_list('short_name'))),
+                specialist_tags=', '.join(map(lambda x: x[0], proposal.specialist_tags.values_list('short_name'))),
                 ects=proposal.points,
                 semester=semester
             )

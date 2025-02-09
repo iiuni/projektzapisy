@@ -19,7 +19,8 @@ export default Vue.extend({
   },
   data: function () {
     return {
-      allTags: {},
+      allThematicTags: {},
+      allSpecialistTags: {},
       allOwners: [] as MultiselectFilterData<number>,
       allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
@@ -30,7 +31,8 @@ export default Vue.extend({
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
-    this.allTags = cloneDeep(filtersData.allTags);
+    this.allThematicTags = cloneDeep(filtersData.allThematicTags || {});
+    this.allSpecialistTags = cloneDeep(filtersData.allSpecialistTags || {});
     this.allOwners = toPairs(filtersData.allOwners)
       .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
         const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
@@ -78,12 +80,20 @@ export default Vue.extend({
           />
           <hr />
           <LabelsFilter
-            title="Tagi"
-            filterKey="tags-filter"
-            property="tags"
-            :allLabels="allTags"
+            title="Tagi tematyczne (I st.)"
+            filterKey="thematic-tags-filter"
+            property="thematic_tags"
+            :allLabels="allThematicTags"
             onClass="bg-success"
-            ref="tags-filter"
+            ref="thematic-tags-filter"
+          />
+          <LabelsFilter
+            title="Tagi specjalistyczne (II st.)"
+            filterKey="specialist-tags-filter"
+            property="specialist_tags"
+            :allLabels="allSpecialistTags"
+            onClass="bg-info"
+            ref="specialist-tags-filter"
           />
         </div>
         <div class="col-md">

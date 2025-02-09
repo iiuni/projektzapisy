@@ -285,7 +285,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[Single
 
 def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[SingleCourseData]):
     data = [[
-        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi', 'ECTS', 'Semestr',
+        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi tematyczne (I st.)', 'Tagi specjalistyczne (II st.)', 'ECTS', 'Semestr',
         'Planowana liczba grup', 'Uruchomiona liczba grup'
     ]]
 
@@ -294,17 +294,18 @@ def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[Single
             group.proposal_id,  # A. proposal_id
             group.name,  # B. course name
             group.course_type,  # C. course type
-            group.tags,  # D. tags
-            group.ects,  # E. ECTS
-            group.semester,  # F. semester
-            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # G. planned groups
-            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # H. active groups
+            group.thematic_tags,  # D. thematic tags
+            group.specialist_tags,  # E. specialist tags
+            group.ects,  # F. ECTS
+            group.semester,  # G. semester
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i})',  # H. planned groups
+            f'=COUNTIFS(Przydziały!A2:A; A{i}; Przydziały!I2:I; F{i}; Przydziały!K2:K; True)',  # I. active groups
         ]
         data.append(row)
 
     worksheet = find_or_insert_worksheet(sheet, "Przedmioty")
     worksheet.clear()
-    worksheet.update('A:H', data, raw=False)
+    worksheet.update('A:I', data, raw=False)
     worksheet.freeze(rows=1)
 
 
@@ -323,7 +324,8 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
                     proposal_id=int(row['Proposal ID']),
                     name=row['Przedmiot'],
                     course_type=row['Rodzaj'],
-                    tags=row['Tagi'],
+                    thematic_tags=row['Tagi tematyczne (I st.)'],
+                    specialist_tags=row['Tagi specjalistyczne (II st.)'],
                     ects=row['ECTS'],
                     semester=row['Semestr']
                 )

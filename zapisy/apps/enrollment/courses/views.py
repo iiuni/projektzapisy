@@ -32,7 +32,7 @@ def prepare_courses_list_data(semester: Optional[Semester]):
     """Returns a dict used by course list and filter in various views."""
     qs = CourseInstance.objects.filter(semester=semester).order_by('name')
     courses = []
-    for course in qs.prefetch_related('tags'):
+    for course in qs.prefetch_related('thematic_tags', 'specialist_tags'):
         course_dict = course.__json__()
         course_dict.update({
             'url': reverse('course-page', args=(course.slug,)),
@@ -68,7 +68,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     course: CourseInstance
     try:
         course = CourseInstance.objects.filter(slug=slug).select_related(
-            'semester', 'course_type').prefetch_related('tags').get()
+            'semester', 'course_type').prefetch_related('thematic_tags', 'specialist_tags').get()
     except CourseInstance.DoesNotExist:
         return None, None
 

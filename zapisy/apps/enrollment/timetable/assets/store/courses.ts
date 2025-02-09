@@ -15,7 +15,8 @@ export interface CourseInfo {
   id: number;
   name: string;
   url: string;
-  tags: Array<number>;
+  thematicTags: Array<number>;
+  specialistTags: Array<number>;
   owner: number;
   recommendedForFirstYear: boolean;
 
