@@ -2,13 +2,12 @@
 
 <div id="student-profile">
 	<h3 class="subheader">{{student.get_full_name}}</h3>
-	<table class="table table-condensed">
+	<table class="table table-condensed table-infobox">
 			<colgroup>
-				<col class="table-info-type"></col>
-				<col></col>
+				<col class="header-column"></col>
 			</colgroup>
 		<tr>
-			<th>Adres email</th>
+			<th>Adres e-mail</th>
 			<td>
 				{% if student.user.email %}
 					<a href="mailto:{{student.user.email}}">
