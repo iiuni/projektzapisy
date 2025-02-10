@@ -17,7 +17,13 @@
 
 <table class="table table-bordered table-md-responsive table-infobox">
     <style>
+        #hours ul, .badges ul {
+            padding: 0;
+            margin: 0;
+        }
+
         #hours ul li {
+            list-style-type: none;
             float: left;
         }
             
@@ -75,7 +81,7 @@
         {% if course.tags.all %}
         <tr>
             <th scope="row">Tagi</th>
-            <td>
+            <td class="badges">
                 <ul>
                     {% for tag in course.tags.all %}    
                         <li class="badge bg-success me-2">{{ tag }}</li>
@@ -87,7 +93,7 @@
         {% if course.effects.all %}
         <tr>
             <th>Grupy efektów kształcenia</th>
-            <td>
+            <td class="badges">
                 <ul>
                     {% for effect in course.effects.all %}
                         <li class="badge bg-info me-2">{{ effect }}</li>
