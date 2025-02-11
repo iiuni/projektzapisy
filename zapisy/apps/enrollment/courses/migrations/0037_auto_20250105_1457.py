@@ -2,6 +2,20 @@
 
 from django.db import migrations, models
 
+def add_specialist_tags(apps, schema_editor):
+    SpecialistTag = apps.get_model('courses', 'SpecialistTag')
+
+    tags = [
+        ("AZ", "Algorytmika i złożoność obliczeniowa"),
+        ("SY", "Systemy sieciowe i komputerowe"),
+        ("PD", "Przetwarzanie danych"),
+        ("NG", "Metody numeryczne i grafika komputerowa"),
+        ("JP", "Języki programowania i logika"),
+    ]
+
+    for short_name, full_name in tags:
+        SpecialistTag.objects.get_or_create(short_name=short_name, defaults={"full_name": full_name})
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -51,4 +65,5 @@ class Migration(migrations.Migration):
             name='thematic_tags',
             field=models.ManyToManyField(blank=True, to='courses.ThematicTag', verbose_name='Tagi tematyczne (I st.)'),
         ),
+        migrations.RunPython(add_specialist_tags),
     ]

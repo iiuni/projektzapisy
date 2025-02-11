@@ -23,8 +23,8 @@ export default Vue.extend({
   props: { refreshFun: Function },
   data: function () {
     return {
-      allTags: {},
-      allTags: {},
+      allThematicTags: {},
+      allSpecialistTags: {},
       allOwners: [] as MultiselectFilterData<number>,
       allSemesters: [] as MultiselectFilterData<string>,
       allTypes: [] as MultiselectFilterData<number>,
