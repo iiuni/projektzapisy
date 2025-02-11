@@ -285,7 +285,8 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[Single
 
 def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[SingleCourseData]):
     data = [[
-        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi tematyczne (I st.)', 'Tagi specjalistyczne (II st.)', 'ECTS', 'Semestr',
+        'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi tematyczne (I st.)',
+        'Tagi specjalistyczne (II st.)', 'ECTS', 'Semestr',
         'Planowana liczba grup', 'Uruchomiona liczba grup'
     ]]
 
