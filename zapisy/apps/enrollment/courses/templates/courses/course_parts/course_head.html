@@ -15,9 +15,25 @@
     </div>
 </div>
 
-<table class="table table-bordered table-md-responsive" id="table-info">
+<table class="table table-bordered table-md-responsive table-infobox">
+    <style>
+        #hours ul, .badges ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        #hours ul li {
+            list-style-type: none;
+            float: left;
+        }
+            
+        #hours ul li + li::before {
+            content: '+';
+            margin: 0 .5em;
+        }
+    </style>
     <colgroup>
-        <col class="table-info-type"></col>
+        <col class="header-column"></col>
     </colgroup>
     <tbody>
         <tr>
@@ -34,18 +50,14 @@
         <tr>
             <th scope="row">Liczba godzin</th>
             <td id="hours">
-                <style>
-                    #hours span + span::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
-                {% if course.hours_lecture %}<span>{{ course.hours_lecture }} (wyk.)</span>{% endif %}
-                {% if course.hours_exercise %}<span>{{ course.hours_exercise }} (ćw.)</span>{% endif %}
-                {% if course.hours_lab %}<span>{{ course.hours_lab }} (prac.)</span>{% endif %}
-                {% if course.hours_exercise_lab %}<span>{{ course.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
-                {% if course.hours_seminar %}<span>{{ course.hours_seminar }} (sem.)</span>{% endif %}
-                {% if course.hours_recap %}<span>{{ course.hours_recap }} (rep.)</span>{% endif %}
+                <ul>
+                    {% if course.hours_lecture %}<li>{{ course.hours_lecture }} (wyk.)</li>{% endif %}
+                    {% if course.hours_exercise %}<li>{{ course.hours_exercise }} (ćw.)</li>{% endif %}
+                    {% if course.hours_lab %}<li>{{ course.hours_lab }} (prac.)</li>{% endif %}
+                    {% if course.hours_exercise_lab %}<li>{{ course.hours_exercise_lab }} (ćw-prac.)</li>{% endif %}
+                    {% if course.hours_seminar %}<li>{{ course.hours_seminar }} (sem.)</li>{% endif %}
+                    {% if course.hours_recap %}<li>{{ course.hours_recap }} (rep.)</li>{% endif %}
+                </ul>
             </td>
         </tr>
         <tr>
@@ -69,10 +81,12 @@
         {% if course.thematic_tags.all %}
         <tr>
             <th scope="row">Tagi tematyczne</th>
-            <td>
-                {% for tag in course.thematic_tags.all %}
-                    <span class="badge bg-success me-2">{{ tag }}</span>
-                {% endfor %}
+            <td class="badges">
+                <ul>
+                    {% for tag in course.thematic_tags.all %}
+                        <li class="badge bg-success me-2">{{ tag }}</li>
+                    {% endfor %}
+                </ul>
             </td>
         </tr>
         {% endif %}
@@ -80,10 +94,12 @@
         {% if course.specialist_tags.all %}
         <tr>
             <th scope="row">Tagi specjalistyczne</th>
-            <td>
-                {% for tag in course.specialist_tags.all %}
-                    <span class="badge bg-info me-2">{{ tag }}</span>
-                {% endfor %}
+            <td class="badges">
+                <ul>
+                    {% for tag in course.specialist_tags.all %}
+                        <li class="badge bg-info me-2">{{ tag }}</li>
+                    {% endfor %}
+                </ul>
             </td>
         </tr>
         {% endif %}

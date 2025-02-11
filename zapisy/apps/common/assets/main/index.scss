@@ -244,8 +244,18 @@ div.loginbox {
   }
 }
 
-colgroup col.table-info-type {
+.table-infobox th {
   background-color: #f9f9f9;
+}
+
+@include media-breakpoint-up(lg) {
+  .table-infobox th {
+    white-space: nowrap;
+  }
+
+  colgroup col.header-column {
+    width: 1%;
+  }
 }
 
 // Required field marker in forms.
