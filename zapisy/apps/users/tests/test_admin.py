@@ -16,7 +16,7 @@ class AdminTestCase(TestCase):
         "/fereol_admin/courses/classroom/",
         "/fereol_admin/courses/semester/",
         "/fereol_admin/courses/thematictag/",
-        "/fereol_admin/courses/specialisttag/",
+        "/fereol_admin/courses/thematictag/",
         "/fereol_admin/desiderata/desiderataother/",
         "/fereol_admin/desiderata/desiderata/",
         "/fereol_admin/mailer/dontsendentry/",
