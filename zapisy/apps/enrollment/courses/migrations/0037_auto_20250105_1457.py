@@ -14,7 +14,10 @@ def add_specialist_tags(apps, schema_editor):
     ]
 
     for short_name, full_name in tags:
-        SpecialistTag.objects.get_or_create(short_name=short_name, defaults={"full_name": full_name})
+        SpecialistTag.objects.get_or_create(
+            short_name=short_name,
+            defaults={"full_name": full_name, "description": ""}
+        )
 
 class Migration(migrations.Migration):
 
@@ -31,7 +34,7 @@ class Migration(migrations.Migration):
             name='Effects',
         ),
         migrations.CreateModel(
-            name='ThematicTag',
+            name='SpecialistTag',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('short_name', models.CharField(max_length=50, verbose_name='nazwa skrócona')),
@@ -39,31 +42,27 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(verbose_name='opis')),
             ],
             options={
-                'verbose_name': 'Tag tematyczny (I st.)',
-                'verbose_name_plural': 'Tagi tematyczne (I st.)',
+                'verbose_name': 'Tag specjalistyczny (I st.)',
+                'verbose_name_plural': 'Tagi specjalistyczne (I st.)',
             },
         ),
         migrations.RenameModel(
             old_name='Tag',
-            new_name='SpecialistTag',
+            new_name='ThematicTag',
         ),
         migrations.AlterModelOptions(
-            name='specialisttag',
+            name='thematictag',
             options={'verbose_name': 'Tag specjalistyczny (II st.)', 'verbose_name_plural': 'Tagi specjalistyczne (II st.)'},
-        ),
-        migrations.RemoveField(
-            model_name='courseinformation',
-            name='tags',
         ),
         migrations.AddField(
             model_name='courseinformation',
             name='specialist_tags',
             field=models.ManyToManyField(blank=True, to='courses.SpecialistTag', verbose_name='Tagi specjalistyczne (II st.)'),
         ),
-        migrations.AddField(
+        migrations.RenameField(
             model_name='courseinformation',
-            name='thematic_tags',
-            field=models.ManyToManyField(blank=True, to='courses.ThematicTag', verbose_name='Tagi tematyczne (I st.)'),
+            old_name='tags',
+            new_name='thematic_tags',
         ),
         migrations.RunPython(add_specialist_tags),
     ]
