@@ -34,7 +34,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML
+      document.getElementById("filters-data")!.innerHTML,
     ) as FilterDataJSON;
     this.allThematicTags = cloneDeep(filtersData.allThematicTags);
     this.allSpecialistTags = cloneDeep(filtersData.allSpecialistTags);
@@ -52,7 +52,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      })
+      }),
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
@@ -90,7 +90,7 @@ export default Vue.extend({
           <TextFilter
             filterKey="name-filter"
             property="name"
-            placeholder="Nazwa przedmiotu"                                                                                             "
+            placeholder="Nazwa przedmiotu"
             ref="name-filter"
           />
           <hr />
