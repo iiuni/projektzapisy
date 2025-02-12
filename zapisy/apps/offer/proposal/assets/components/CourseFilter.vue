@@ -90,7 +90,7 @@ export default Vue.extend({
           <TextFilter
             filterKey="name-filter"
             property="name"
-            placeholder="Nazwa przedmiotu test"                                                                                             "
+            placeholder="Nazwa przedmiotu"                                                                                             "
             ref="name-filter"
           />
           <hr />
