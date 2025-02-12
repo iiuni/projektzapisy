@@ -1,9 +1,11 @@
 import json
 import logging
 
+from django_cas_ng import views as cas_views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import Http404, redirect, render, reverse
 from django.views.decorators.http import require_POST
 
@@ -15,10 +17,28 @@ from apps.grade.ticket_create.models.student_graded import StudentGraded
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
+from zapisy.middleware.user_preferences \
+    import load_user_preferences_from_database, save_user_preferences_to_database
 from .forms import EmailChangeForm, EmployeeDataForm
 from .models import Employee, PersonalDataConsent, Student
 
+
 logger = logging.getLogger()
+
+
+# Overriding login view to get user preferences from database after login
+class CustomLoginView(cas_views.LoginView):
+    def successful_login(self, request: HttpRequest, next_page: str) -> HttpResponseRedirect:
+        load_user_preferences_from_database(request)
+        return HttpResponseRedirect(next_page)
+
+
+# TODO: not sure if it will work as I couldn't test it because of failed migration
+# Overriding logout view to save user preferences to database before logout
+class CustomLogoutView(cas_views.LogoutView):
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
+        save_user_preferences_to_database(request)
+        return super().dispatch(request, *args, **kwargs)
 
 
 @login_required

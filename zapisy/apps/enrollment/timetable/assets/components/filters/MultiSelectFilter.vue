@@ -4,7 +4,11 @@ import { defineComponent } from "vue";
 import { mapMutations } from "vuex";
 import Multiselect from "vue-multiselect";
 
-import { Filter } from "@/enrollment/timetable/assets/store/filters";
+import {
+  Filter,
+  getSearchParams,
+  LAST_FILTER_KEY,
+} from "@/enrollment/timetable/assets/store/filters";
 import { MultiselectFilterDataItem } from "../../models";
 
 class ExactFilter implements Filter {
@@ -74,6 +78,8 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
       type: String,
       default: "label",
     },
+    // Which CourseFilter component is it used on.
+    appID: String,
   },
   data() {
     return {
@@ -81,11 +87,13 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
     };
   },
   created: function () {
-    const searchParams = new URL(window.location.href).searchParams;
-    if (searchParams.has(this.property)) {
-      const property = searchParams.get(this.property);
+    const searchParams = getSearchParams();
+    if (searchParams.has(this.appID + "_" + this.property)) {
+      const property = searchParams.get(this.appID + "_" + this.property);
       if (property && property.length) {
-        const ids = searchParams.get(this.property)!.split(",");
+        const ids = searchParams
+          .get(this.appID + "_" + this.property)!
+          .split(",");
 
         this.selected = ids
           .map((id) =>
@@ -151,13 +159,20 @@ export default defineComponent<Props, any, Data, Computed, Methods>({
         (selectedFilter: Option) => selectedFilter.value
       );
 
-      const url = new URL(window.location.href);
+      const searchParams = getSearchParams();
       if (isEmpty(selectedIds)) {
-        url.searchParams.delete(this.property);
+        searchParams.delete(this.appID + "_" + this.property);
+        sessionStorage.removeItem(LAST_FILTER_KEY);
+        if (searchParams.toString().length != 0) {
+          sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+        }
       } else {
-        url.searchParams.set(this.property, selectedIds.join(","));
+        searchParams.set(
+          this.appID + "_" + this.property,
+          selectedIds.join(",")
+        );
+        sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
       }
-      window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,

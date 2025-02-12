@@ -12,6 +12,10 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
+import {
+  getSearchParams,
+  LAST_FILTER_KEY,
+} from "@/enrollment/timetable/assets/store/filters";
 
 export default Vue.extend({
   components: {
@@ -64,14 +68,34 @@ export default Vue.extend({
       { value: "IN_VOTE", label: "poddany pod głosowanie" },
       { value: "WITHDRAWN", label: "wycofany z oferty" },
     ];
+
+    // Checking for any saved filtering parameters.
+    const searchParams = getSearchParams();
+    // Property "manual" signifies that from this point on
+    // changes in filters are supposed to persist through page refreshes.
+    if (
+      searchParams.toString().length === 0 ||
+      !searchParams.has("proposal_manual")
+    ) {
+      // Delete old parameters.
+      const keys = searchParams.keys();
+      for (const key of keys) {
+        searchParams.delete(key);
+      }
+      // Set the default parameters.
+      searchParams.set("proposal_status", "IN_OFFER,IN_VOTE");
+      searchParams.append("proposal_manual", "1");
+      sessionStorage.removeItem(LAST_FILTER_KEY);
+      sessionStorage.setItem(LAST_FILTER_KEY, searchParams.toString());
+    }
   },
   mounted: function () {
     // Extract filterable properties names from the template.
     const filterableProperties = Object.values(this.$refs)
       .filter((ref: any) => ref.filterKey)
-      .map((filter: any) => filter.property);
+      .map((filter: any) => filter.appID + "_" + filter.property);
     // Expand the filters if there are any initially specified in the search params.
-    const searchParams = new URL(window.location.href).searchParams;
+    const searchParams = getSearchParams();
     if (filterableProperties.some((p: string) => searchParams.has(p))) {
       this.collapsed = false;
     }
@@ -92,6 +116,7 @@ export default Vue.extend({
             property="name"
             placeholder="Nazwa przedmiotu"
             ref="name-filter"
+            appID="proposal"
           />
           <hr />
           <LabelsFilter
@@ -101,6 +126,7 @@ export default Vue.extend({
             :allLabels="allTags"
             onClass="bg-success"
             ref="tags-filter"
+            appID="proposal"
           />
         </div>
         <div class="col-md">
@@ -111,6 +137,7 @@ export default Vue.extend({
             title="Rodzaj przedmiotu"
             placeholder="Wszystkie rodzaje"
             ref="type-filter"
+            appID="proposal"
           />
           <hr />
           <LabelsFilter
@@ -120,6 +147,7 @@ export default Vue.extend({
             :allLabels="allEffects"
             onClass="bg-info"
             ref="effects-filter"
+            appID="proposal"
           />
         </div>
         <div class="col-md">
@@ -130,6 +158,7 @@ export default Vue.extend({
             title="Opiekun przedmiotu"
             placeholder="Wszyscy opiekunowie"
             ref="owner-filter"
+            appID="proposal"
           />
           <MultiSelectFilter
             filterKey="semester-filter"
@@ -138,6 +167,7 @@ export default Vue.extend({
             title="Semestr"
             placeholder="Semestr"
             ref="semester-filter"
+            appID="proposal"
           />
           <MultiSelectFilter
             filterKey="status-filter"
@@ -146,6 +176,7 @@ export default Vue.extend({
             title="Status propozycji"
             placeholder="Wszystkie statusy propozycji"
             ref="status-filter"
+            appID="proposal"
           />
           <hr />
           <CheckFilter
@@ -153,6 +184,7 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
+            appID="proposal"
           />
           <hr />
           <button

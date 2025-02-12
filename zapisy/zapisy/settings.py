@@ -184,6 +184,9 @@ TEMPLATES = [
 # and Authentication both must come before LocalePref which
 # must precede LocaleMiddleware, and Common must go afterwards.
 MIDDLEWARE = [
+    # TODO: uncomment after migration
+    # 'zapisy.middleware.user_preferences.InitUserPreferences',
+
     'zapisy.middleware.report_limiter.RollbarOnly404Limited',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -194,6 +197,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # TODO: I am not sure if below one is neccessary, but may be
+    # "django_pagination_bootstrap.middleware.PaginationMiddleware",
     'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404',
 ]
 
@@ -240,7 +245,10 @@ INSTALLED_APPS = (
     'apps.effects',
     'django_extensions',
     'django_filters',
+    # TODO: error - using deprecated ugettext_lazy
     'bootstrap_pagination',
+    # 'django_pagination_bootstrap', # use this instead ?
+
     'crispy_forms',
     'apps.notifications',
     'django_cas_ng',
@@ -354,7 +362,9 @@ DEBUG_TOOLBAR_CONFIG = {
 
 CACHES = {
     'default': {
+        # TODO: error - uses deleted attribute 'MemcachedCache'.
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        # 'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache', # use this instead ?
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 300,
     }
