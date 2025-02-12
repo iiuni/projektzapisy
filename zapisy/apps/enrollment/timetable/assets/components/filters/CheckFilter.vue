@@ -6,10 +6,7 @@ import { mapMutations } from "vuex";
 import { Filter, LAST_FILTER_KEY, getSearchParams } from "../../store/filters";
 
 class BooleanFilter implements Filter {
-  constructor(
-    public on: boolean,
-    public propertyName: string
-  ) {}
+  constructor(public on: boolean, public propertyName: string) {}
 
   visible(c: Object): boolean {
     if (!this.on) {

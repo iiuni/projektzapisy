@@ -7,10 +7,7 @@ import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 import { KVDict } from "../../models";
 
 class IntersectionFilter implements Filter {
-  constructor(
-    public ids: number[] = [],
-    public propertyName: string
-  ) {}
+  constructor(public ids: number[] = [], public propertyName: string) {}
 
   visible(c: Object): boolean {
     if (isEmpty(this.ids)) {

@@ -7,10 +7,7 @@ import { CourseInfo } from "../../store/courses";
 import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 
 class TextFilter implements Filter {
-  constructor(
-    public pattern: string = "",
-    public propertyName: string
-  ) {}
+  constructor(public pattern: string = "", public propertyName: string) {}
 
   visible(c: CourseInfo): boolean {
     let propGetter = property(this.propertyName) as (c: CourseInfo) => string;
