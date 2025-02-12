@@ -107,14 +107,6 @@ export default Vue.extend({
             onClass="bg-success"
             ref="thematic-tags-filter"
           />
-          <LabelsFilter
-            title="Tagi specjalistyczne (II st.)"
-            filterKey="specialist-tags-filter"
-            property="specialist_tags"
-            :allLabels="allSpecialistTags"
-            onClass="bg-info"
-            ref="specialist-tags-filter"
-          />
         </div>
         <div class="col-md">
           <MultiSelectFilter
@@ -125,6 +117,17 @@ export default Vue.extend({
             placeholder="Wszystkie rodzaje"
             ref="type-filter"
           />
+          <hr />
+          <LabelsFilter
+            title="Tagi specjalistyczne (II st.)"
+            filterKey="specialist-tags-filter"
+            property="specialist_tags"
+            :allLabels="allSpecialistTags"
+            onClass="bg-info"
+            ref="specialist-tags-filter"
+          />
+        </div>
+        <div class="col-md">
           <MultiSelectFilter
             filterKey="owner-filter"
             property="owner"
