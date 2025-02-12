@@ -9,7 +9,7 @@ import { Filter, getSearchParams, LAST_FILTER_KEY } from "../../store/filters";
 class TextFilter implements Filter {
   constructor(
     public pattern: string = "",
-    public propertyName: string,
+    public propertyName: string
   ) {}
 
   visible(c: CourseInfo): boolean {
@@ -43,7 +43,7 @@ export default Vue.extend({
     if (searchParams.has(this.appID + "_" + this.property)) {
       // TypeScript doesn't infer that property is present, manual cast required.
       this.pattern = searchParams.get(
-        this.appID + "_" + this.property,
+        this.appID + "_" + this.property
       ) as string;
     }
 
