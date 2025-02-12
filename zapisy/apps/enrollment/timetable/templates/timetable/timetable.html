@@ -29,7 +29,9 @@
                 </p>
             {% endif %}
         </div>
-        {% include "semester_dropdown.html" with url_pattern_name="my-timetable-semester" %}
+        <nav class="col-lg-3 col-12 d-print-none order-first order-lg-last mb-3">
+            {% include "semester_dropdown.html" with url_pattern_name="my-timetable-semester" %}
+        </nav>
     </div>
 
     <div class="row m-0" id="timetable">

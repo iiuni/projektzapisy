@@ -24,8 +24,13 @@ logger = logging.getLogger()
 
 @login_required
 @external_contractor_forbidden
-def students_view(request, user_id: int = None, semester_id: Optional[int] = None):
-    """View for students list and student profile if user id in URL is provided."""
+def students_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None):
+    """View for students list and student profile if user id in URL is provided.
+
+    By default, the student profile displays the timetable for the upcoming semester.
+    However, if a semester id is provided in URL, the profile displays timetable
+    for the specified semester.
+    """
     students_queryset = Student.get_active_students().select_related('user')
     if not request.user.employee:
         students_queryset = students_queryset.filter(consent__granted=True)
@@ -84,8 +89,13 @@ def students_view(request, user_id: int = None, semester_id: Optional[int] = Non
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request, user_id: int = None, semester_id: Optional[int] = None):
-    """View for employees list and employee profile if user id in URL is provided."""
+def employees_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None):
+    """View for employees list and employee profile if user id in URL is provided.
+
+    By default, the employee profile displays the timetable for the upcoming semester.
+    However, if a semester id is provided in URL, the profile displays timetable
+    for the specified semester.
+    """
     employees_queryset = Employee.get_actives().select_related('user')
     employees = {
         e.pk: {
