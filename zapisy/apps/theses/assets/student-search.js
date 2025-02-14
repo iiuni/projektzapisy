@@ -231,12 +231,14 @@ djangoField.style.display = "none";
 
 const submitButton = document.getElementById("submit-id-submit");
 const titleTextField = document.getElementById("id_title");
-const maxStudentNumberControl = document.getElementById("id_max_number_of_students");
+const maxStudentNumberControl = document.getElementById(
+  "id_max_number_of_students"
+);
 const dateInput = document.getElementById("id_reserved_until");
 
 /**
  * Disable the Submit button if the form is invalid
- * 
+ *
  * The form is invalid if either of these is true:
  * * The title is missing
  * * The assigned students exceed the maximum number allowed
@@ -244,9 +246,12 @@ const dateInput = document.getElementById("id_reserved_until");
  */
 function updateSubmitButton() {
   const titleMissing = titleTextField.value.length === 0;
-  const maxStudentNumberExceeded = maxStudentNumberControl.value < assignedStudents.length;
-  const dateMissingWithStudentsAssigned = dateInput.value.length === 0 && assignedStudents.length !== 0
-  submitButton.disabled = titleMissing || maxStudentNumberExceeded || dateMissingWithStudentsAssigned;
+  const maxStudentNumberExceeded =
+    maxStudentNumberControl.value < assignedStudents.length;
+  const dateMissingWithStudentsAssigned =
+    dateInput.value.length === 0 && assignedStudents.length !== 0;
+  submitButton.disabled =
+    titleMissing || maxStudentNumberExceeded || dateMissingWithStudentsAssigned;
 }
 
 // A related control change might change the validity of the form
