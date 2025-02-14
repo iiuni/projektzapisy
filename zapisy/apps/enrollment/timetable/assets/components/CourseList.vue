@@ -10,6 +10,7 @@
 // This job is handled by the Vuex store (`../store/courses.ts`).
 import Vue from "vue";
 import { mapGetters } from "vuex";
+
 import { CourseInfo } from "../store/courses";
 
 export default Vue.extend({
