@@ -42,14 +42,15 @@ export default Vue.extend({
 
 <template>
   <div>
-    <ul>
+    <ul class="nav d-block">
       <li
         v-for="c in visibleCourses"
         v-bind:key="c.id"
-        class="mb-1"
         v-bind:class="c.status.toLowerCase()"
       >
-        <a :href="c.url">{{ c.name }}</a>
+        <a :href="c.url" class="d-block px-4 py-1 text-decoration-none">{{
+          c.name
+        }}</a>
       </li>
     </ul>
 
