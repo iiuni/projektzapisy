@@ -134,6 +134,9 @@ function assignStudent(student) {
   updateAssignedStudentsList();
   updateDjangoField();
   updateSearchResults();
+
+  // Check if the form is still valid
+  updateSubmitButton();
 }
 
 function unassignStudent(student) {
@@ -148,6 +151,9 @@ function unassignStudent(student) {
   updateAssignedStudentsList();
   updateDjangoField();
   updateSearchResults();
+
+  // Check if the form is still valid
+  updateSubmitButton();
 }
 
 async function fetchStudents(substring) {
@@ -222,3 +228,31 @@ updateAssignedStudentsList();
 
 // Hide the django <select>
 djangoField.style.display = "none";
+
+const submitButton = document.getElementById("submit-id-submit");
+const titleTextField = document.getElementById("id_title");
+const maxStudentNumberControl = document.getElementById("id_max_number_of_students");
+const dateInput = document.getElementById("id_reserved_until");
+
+/**
+ * Disable the Submit button if the form is invalid
+ * 
+ * The form is invalid if either of these is true:
+ * * The title is missing
+ * * The assigned students exceed the maximum number allowed
+ * * Some students are assigned but the date is not set
+ */
+function updateSubmitButton() {
+  const titleMissing = titleTextField.value.length === 0;
+  const maxStudentNumberExceeded = maxStudentNumberControl.value < assignedStudents.length;
+  const dateMissingWithStudentsAssigned = dateInput.value.length === 0 && assignedStudents.length !== 0
+  submitButton.disabled = titleMissing || maxStudentNumberExceeded || dateMissingWithStudentsAssigned;
+}
+
+// A related control change might change the validity of the form
+dateInput.addEventListener("change", updateSubmitButton);
+maxStudentNumberControl.addEventListener("change", updateSubmitButton);
+titleTextField.addEventListener("change", updateSubmitButton);
+
+// The form for a new thesis is initialised with an empty title
+updateSubmitButton();
