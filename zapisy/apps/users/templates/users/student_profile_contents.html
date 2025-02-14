@@ -43,9 +43,9 @@
 		<div class="col-lg-8 col-12 mb-3">
 			<h3 class="subheader">Plan zajęć</h3>
 		</div>
-		<div class="col-lg-4 col-12 d-print-none">
+		<nav class="col-lg-4 col-12 d-print-none">
 			{% include "semester_dropdown.html" with url_pattern_name="student-profile-semester" user_id=student.user_id %}
-		</div>
+		</nav>
 	</div>
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>

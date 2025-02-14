@@ -9,7 +9,7 @@
             <span class="sr-only"></span>
         </button>
         <div class="dropdown-menu" aria-labelledby="semester-dropdown">
-            {% for semester in all_semesters %}    
+            {% for semester in all_semesters %}
                 <a class="dropdown-item semester-link"
                     href="{% if user_id %}
                             {% url url_pattern_name user_id semester.pk %}
