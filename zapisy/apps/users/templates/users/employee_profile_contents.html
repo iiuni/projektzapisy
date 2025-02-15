@@ -38,12 +38,18 @@
 			</tr>
 	</table>
 	{% if employee.consultations %}
-		<h3>Konsultacje:</h3>
+		<h3>Konsultacje</h3>
 		<p>{{ employee.consultations }}</p>
 	{% endif %}
 
-	<h3 class="subheader">Plan zajęć:</h3>
-
+	<div class="row my-4">
+		<div class="col-lg-8 col-12 mb-3">
+			<h3 class="subheader">Plan zajęć</h3>
+		</div>
+		<nav class="col-lg-4 col-12 d-print-none">
+			{% include "semester_dropdown.html" with url_pattern_name="employee-profile-semester" user_id=employee.user_id %}
+		</nav>
+	</div>
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}
