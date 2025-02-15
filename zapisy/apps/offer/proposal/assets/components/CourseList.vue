@@ -35,7 +35,7 @@ export default Vue.extend({
       document.getElementById("courses-data")!.innerHTML
     ) as ProposalInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+    this.visibleCourses = this.courses.filter(this.tester);
 
     this.$store.subscribe((mutation, _) => {
       switch (mutation.type) {

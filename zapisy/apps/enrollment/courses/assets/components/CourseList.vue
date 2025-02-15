@@ -31,7 +31,7 @@ export default Vue.extend({
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+    this.visibleCourses = this.courses.filter(this.tester);
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();
