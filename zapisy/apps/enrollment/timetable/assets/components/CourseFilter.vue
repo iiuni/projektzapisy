@@ -1,4 +1,6 @@
 <script lang="ts">
+// This component is used in the courses-course-list
+// and timetable-prototype-component assets.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 

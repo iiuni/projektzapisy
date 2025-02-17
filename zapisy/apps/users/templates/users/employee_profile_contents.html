@@ -2,14 +2,13 @@
 
 <div id="employee-profile">
 	<h3>{{employee.get_full_name}}</h3>
-	<table class="table table-condensed">
+	<table class="table table-condensed table-infobox">
 		<colgroup>
-			<col class="table-info-type"></col>
-			<col></col>
+			<col class="header-column"></col>
 		</colgroup>
 		{% if user.is_authenticated %}
 			<tr>
-				<th>adres email</th>
+				<th>Adres e-mail</th>
 				<td>
 					{% if employee.user.email %}
 						<a href="mailto:{{employee.user.email}}">
@@ -22,7 +21,7 @@
 			</tr>
 		{% endif %}
 			<tr>
-				<th>strona domowa</th>
+				<th>Strona domowa</th>
 				<td>
 					{% if employee.homepage %}
 						<a href="{{employee.homepage}}">{{employee.homepage}}</a>
@@ -32,19 +31,25 @@
 				</td>
 			</tr>
 			<tr>
-				<th>pokój</th>
+				<th>Pokój</th>
 				<td>
 						{{employee.room|default_if_none:"brak danych"}}
 				</td>
 			</tr>
 	</table>
 	{% if employee.consultations %}
-		<h3>Konsultacje:</h3>
+		<h3>Konsultacje</h3>
 		<p>{{ employee.consultations }}</p>
 	{% endif %}
 
-	<h3 class="subheader">Plan zajęć:</h3>
-
+	<div class="row my-4">
+		<div class="col-lg-8 col-12 mb-3">
+			<h3 class="subheader">Plan zajęć</h3>
+		</div>
+		<nav class="col-lg-4 col-12 d-print-none">
+			{% include "semester_dropdown.html" with url_pattern_name="employee-profile-semester" user_id=employee.user_id %}
+		</nav>
+	</div>
 	<div id="timetable"></div>
 	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}

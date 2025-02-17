@@ -31,6 +31,7 @@
   --btn-outline-info: #af0505;
   --btn-link-focus: #0056b3;
   --colgroup-table-info-type-bg: #ab0202;
+  --table-infobox-th-bg: #f9f9f9;
 }
 
 body.dark-mode {
@@ -60,6 +61,7 @@ body.dark-mode {
   --btn-outline-info: #af0505;
   --btn-link-focus: #0056b3;
   --colgroup-table-info-type-bg: #ab0202;
+  --table-infobox-th-bg: #f9f9f9;
 }
 
 #theme-toggler {
@@ -336,7 +338,9 @@ div.loginbox {
     }
   }
 }
-
+.table-infobox th {
+  background-color: var(--table-infobox-th-bg);
+}
 colgroup col.table-info-type {
   background-color: var(--colgroup-table-info-type-bg);
 }

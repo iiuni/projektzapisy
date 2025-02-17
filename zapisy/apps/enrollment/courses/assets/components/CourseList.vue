@@ -1,4 +1,12 @@
 <script lang="ts">
+// This component is used in the courses-course-list asset.
+//
+// This particular CourseList component extends the functionality of other
+// CourseList components by allowing the chosen filters to persist through
+// changing semesters in the dropdown menu.
+//
+// It achieves this by using the UpdateSemesterLinks function to change
+// the query string of the links.
 import Vue from "vue";
 import { mapGetters } from "vuex";
 
@@ -23,7 +31,7 @@ export default Vue.extend({
       document.getElementById("courses-data")!.innerHTML
     ) as CourseInfo[];
     this.courses = courseData;
-    this.visibleCourses = courseData.filter(this.tester);
+    this.visibleCourses = this.courses.filter(this.tester);
 
     // Append the initial query string to links in the semester dropdown.
     updateSemesterLinks();

@@ -10,17 +10,16 @@
 {% block all-content %}
     <div class="mb-5">
         <h2>Moje dane</h2>
-        <table class="table table-condensed">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
-                <col></col>
+                <col class="header-column"></col>
             </colgroup>
             <tr>
-                <th>login</th>
+                <th>Login</th>
                 <td>{{ request.user.username }}</td>
             </tr>
             <tr>
-                <th>email</th>
+                <th>Adres e-mail</th>
                 <td>{{ request.user.email }}</td>
             </tr>
             {% if user.student %}
@@ -42,19 +41,19 @@
             {% endif %}
             {% if user.employee %}
                 <tr>
-                    <th>pokój</th>
+                    <th>Pokój</th>
                     <td>{{ request.user.employee.room }}</td>
                 </tr>
                 <tr>
-                    <th>strona domowa</th>
+                    <th>Strona domowa</th>
                     <td><a href="{{ homepage }}">{{ request.user.employee.homepage|default:"" }}</a></td>
                 </tr>
                 <tr>
-                    <th>tytuł naukowy</th>
+                    <th>Tytuł naukowy</th>
                     <td>{{ request.user.employee.title }}</td>
                 </tr>
                 <tr>
-                    <th>konsultacje</th>
+                    <th>Konsultacje</th>
                     <td>
                         {{ user.employee.consultations }}
                     </td>
@@ -74,10 +73,9 @@
     {% if user.student %}
     <div class="mb-5">
         <h2>Moje studia</h2>
-        <table class="table table-condensed">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
-                <col></col>
+                <col class="header-column"></col>
             </colgroup>
             <tr>
                 <th>Punkty ECTS uzyskane do końca poprzedniego semestru</th>
@@ -104,10 +102,9 @@
 
     <div class="mb-5">
         <h2>Terminy</h2>
-        <table class="table table-condensed">
+        <table class="table table-condensed table-infobox">
             <colgroup>
-                <col class="table-info-type"></col>
-                <col></col>
+                <col class="header-column"></col>
             </colgroup>
             {% with dateFormatStr="l j E G:i" %}
             <tr>
@@ -172,10 +169,9 @@
     {% if semesters_participated_in_grade %}
         <div class="mb-5">
             <h2>Udział w Ocenie zajęć</h2>
-            <table class="table table-condensed">
+            <table class="table table-condensed table-infobox">
                 <colgroup>
-                    <col class="table-info-type"></col>
-                    <col></col>
+                    <col class="header-column"></col>
                 </colgroup>
                 {% for semester in semesters_participated_in_grade %}
                     <tr>
