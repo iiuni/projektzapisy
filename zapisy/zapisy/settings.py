@@ -215,6 +215,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'zapisy',
     'apps.users',
 
     'django.contrib.messages',
