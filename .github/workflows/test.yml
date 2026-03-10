@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       PYTHON_VERSION: 3.12
-      NODE_VERSION: 20
+      NODE_VERSION: 24
     services:
       postgres:
         image: postgres:12
