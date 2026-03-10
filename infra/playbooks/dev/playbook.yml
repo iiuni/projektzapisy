@@ -12,6 +12,11 @@
       raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
+    - name: Change permissions to /home/vagrant
+      ansible.builtin.file:
+        path: /home/vagrant
+        mode: "775"
+
     - name: Install yarn
       apt:
         pkg:
@@ -45,7 +50,10 @@
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        name: pip
+        name:
+          - pip
+          - wheel
+          - setuptools
         state: latest
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"

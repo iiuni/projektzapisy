@@ -7,7 +7,7 @@
 # you're doing.
 Vagrant.configure(2) do |config|
   config.ssh.shell = "bash"
-  config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/jammy64"
 
   # Installs ansible as it is not yet provided for focal.
   # https://github.com/ansible/ansible/issues/69203
