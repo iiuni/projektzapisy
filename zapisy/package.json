@@ -78,5 +78,6 @@
     "webpack-bundle-tracker": "0.4.3",
     "webpack-cli": "3.3.12",
     "zod": "3.24.2"
-  }
+  },
+  "packageManager": "yarn@4.13.0"
 }
