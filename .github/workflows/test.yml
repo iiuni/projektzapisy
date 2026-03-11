@@ -8,8 +8,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env: 
-      PYTHON_VERSION: 3.8
-      NODE_VERSION: 12
+      PYTHON_VERSION: 3.12
+      NODE_VERSION: 24
     services:
       postgres:
         image: postgres:12
@@ -37,21 +37,21 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - uses: actions/cache@v2
+      - uses: actions/cache@v5
         with:
           path: zapisy/.yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('zapisy/yarn.lock') }}
@@ -73,6 +73,8 @@ jobs:
         run: |
           cd zapisy
           yarn dev:tc
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
       - name: Run Tests
         run: |
           mv env/.env_ci env/.env

@@ -19,7 +19,7 @@ prompt-toolkit==3.0.50
 ipython==7.34.0
 pycryptodome==3.21.0
 rollbar==0.16.3
-newrelic==5.24.0.153
+newrelic
 gunicorn==20.1.0
 python-dateutil==2.9.0.post0
 python-memcached==1.62
@@ -27,7 +27,7 @@ more-itertools==8.14.0
 # PyYAML is used for fixtures.
 pyyaml==6.0.2
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==2.4.3
+bokeh==3.8.2
 
 gspread==3.7.0
 typing-extensions==3.10.0.2
