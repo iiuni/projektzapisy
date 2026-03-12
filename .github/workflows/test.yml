@@ -73,8 +73,6 @@ jobs:
         run: |
           cd zapisy
           yarn dev:tc
-        env:
-          NODE_OPTIONS: --openssl-legacy-provider
       - name: Run Tests
         run: |
           mv env/.env_ci env/.env
