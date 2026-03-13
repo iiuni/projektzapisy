@@ -15,7 +15,7 @@
     # we want to have a recent Node version (the default Ubuntu version is not)
     - name: Install Node - step 1
       ansible.builtin.get_url:
-        url: https://deb.nodesource.com/setup_24.x
+        url: https://deb.nodesource.com/setup_18.x
         dest: /tmp/nodesource_setup.sh
         mode: "0755"
       become: yes
