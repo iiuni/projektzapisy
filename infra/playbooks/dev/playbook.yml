@@ -4,6 +4,7 @@
   vars:
     PYTHON: "/usr/bin/python3"
     ansible_python_interpreter: "/usr/bin/python3"
+    node_version: 18
 
   tasks:
 
@@ -12,10 +13,11 @@
       raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
-    # we want to have a recent Node version (the default Ubuntu version is not)
+    # we want to have a newer Node than what Ubuntu installs by default (12)
+    # but (temporarily) not too new so legacy SSL options are supported (18 is good for this)
     - name: Install Node - step 1
       ansible.builtin.get_url:
-        url: https://deb.nodesource.com/setup_24.x
+        url: "https://deb.nodesource.com/setup_{{ node_version }}.x"
         dest: /tmp/nodesource_setup.sh
         mode: "0755"
       become: yes
