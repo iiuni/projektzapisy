@@ -32,10 +32,20 @@ new Vue({
         if (event.target.closest(".semester-link")) {
           event.preventDefault();
           const targetUrl = event.target.getAttribute("href");
-          await this.fetch_new_groups(targetUrl);
+          await this.fetch_new_semester(targetUrl);
           this.update_groups();
+          history.pushState({url: targetUrl}, "", targetUrl);
         }
       }, true);
+      window.addEventListener("popstate", async (event) => {
+        if (event.state && event.state.url){
+          await this.fetch_new_semester(event.state.url);
+          this.update_groups();
+        } else {
+          await this.fetch_new_semester(window.location.pathname);
+          this.update_groups();
+        }
+      })
     }
   },
   methods: {
@@ -48,7 +58,7 @@ new Vue({
         this.groups.push(new Group(groupDump));
       }
     },
-    fetch_new_groups: async function (url) {
+    fetch_new_semester: async function (url) {
       const response = await fetch(url);
       if (!response.ok){
         return;
