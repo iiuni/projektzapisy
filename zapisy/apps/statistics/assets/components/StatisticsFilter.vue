@@ -2,13 +2,14 @@
 import Vue from "vue";
 
 import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue";
-import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
+import CheckFilterElastic from "./filters/CheckFilterElastic.vue";
 import { mapMutations } from "vuex";
+
 
 export default Vue.extend({
   components: {
     TextFilter,
-    CheckFilter,
+    CheckFilterElastic,
   },
   data: function () {
     return {
@@ -75,14 +76,29 @@ export default Vue.extend({
             </select>
           </div>
         </div>
-        <div class="col-lg-3">
-          <CheckFilter
-            filterKey="available-filter"
-            property="max_of_waiting_students"
+      </div>
+      <div class="row">
+          <CheckFilterElastic
+            filterKey="filter-has-waiting-students"
             label="Pokaż jedynie przedmioty z oczekującymi studentami"
+            :predicate="c => c.max_of_waiting_students > 0"
+          />
+          <CheckFilterElastic
+            filterKey="filter-no-math-subjects"
+            label="Ukryj przedmioty matematyczne"
+            :predicate="c => !c.course_name.includes('[IM]')"
+          />
+          <CheckFilterElastic
+            filterKey="filter-has-guaranteed-spots"
+            label="Pokaż jedynie przedmioty z miejscami gwarantowanymi"
+            :predicate="c => c.groups.some(g => g.guaranteed_spots && g.guaranteed_spots.length > 0)"
+          />
+          <CheckFilterElastic
+            filterKey="filter-has-group-below-ten"
+            label="Pokaż jedynie przedmioty z przynajmniej jedną grupą poniżej 10 osób"
+            :predicate="c => c.groups.some(g => g.enrolled < 10)"
           />
         </div>
-      </div>
     </div>
   </div>
 </template>
