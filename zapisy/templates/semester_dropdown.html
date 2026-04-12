@@ -1,14 +1,14 @@
 <div class="dropdown">
     <div class="btn-group btn-block mb-3 w-100">
         <button class="btn btn-light" disabled>
-            <strong>Semestr {{ semester }}</strong>
+            <strong id="semester-dropdown-title">Semestr {{ semester }}</strong>
         </button>
         <button class="btn btn-light dropdown-toggle dropdown-toggle-split"
                 href="#" role="button" id="semester-dropdown" 
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="sr-only"></span>
         </button>
-        <div class="dropdown-menu" aria-labelledby="semester-dropdown">
+        <div class="dropdown-menu" id="semester-dropdown-menu" aria-labelledby="semester-dropdown">
             {% for semester in all_semesters %}
                 <a class="dropdown-item semester-link"
                     href="{% if user_id %}

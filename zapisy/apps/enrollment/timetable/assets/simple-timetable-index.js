@@ -26,9 +26,21 @@ new Vue({
   },
   created: function () {
     this.update_groups();
+    const semester_dropdown = document.getElementById("semester-dropdown-menu");
+    if (semester_dropdown !== null) {
+      semester_dropdown.addEventListener("click", async (event) => {
+        if (event.target.closest(".semester-link")) {
+          event.preventDefault();
+          const targetUrl = event.target.getAttribute("href");
+          await this.fetch_new_groups(targetUrl);
+          this.update_groups();
+        }
+      }, true);
+    }
   },
   methods: {
     update_groups: function () {
+      this.groups = [];
       const groupsDump = JSON.parse(
         document.getElementById("timetable-data").innerHTML
       );
@@ -36,5 +48,18 @@ new Vue({
         this.groups.push(new Group(groupDump));
       }
     },
+    fetch_new_groups: async function (url) {
+      const response = await fetch(url);
+      if (!response.ok){
+        return;
+      }
+      const html = await response.text();
+      const parser = new DOMParser();
+      const DOMData = parser.parseFromString(html, "text/html");
+      const timetableData = DOMData.getElementById("timetable-data").innerHTML;
+      const dropdownTitle = DOMData.getElementById("semester-dropdown-title").innerText;
+      document.getElementById("timetable-data").innerHTML = timetableData;
+      document.getElementById("semester-dropdown-title").innerText = dropdownTitle;
+    }
   },
 });
