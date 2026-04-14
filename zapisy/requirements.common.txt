@@ -27,7 +27,9 @@ more-itertools==8.14.0
 # PyYAML is used for fixtures.
 pyyaml==6.0.2
 # Bokeh - library used for plotting in views displaying Poll results
-bokeh==3.1.1
+bokeh==2.4.3
+# NumPy for Bokeh (downgraded on purpose)
+numpy==1.23.5
 
 gspread==3.7.0
 typing-extensions==3.10.0.2
