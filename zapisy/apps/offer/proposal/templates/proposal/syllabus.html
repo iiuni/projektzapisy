@@ -119,19 +119,15 @@
         <tr>
             <th class="number-cell" rowspan="2" scope="rowgroup">11.</th>
             <th>Forma zajęć i liczba godzin</th>
-            <td id="hours">
-                <style>
-                    #hours span + span::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
-                {% if proposal.hours_lecture %}<span>{{ proposal.hours_lecture }} (wyk.)</span>{% endif %}
-                {% if proposal.hours_exercise %}<span>{{ proposal.hours_exercise }} (ćw.)</span>{% endif %}
-                {% if proposal.hours_lab %}<span>{{ proposal.hours_lab }} (prac.)</span>{% endif %}
-                {% if proposal.hours_exercise_lab %}<span>{{ proposal.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
-                {% if proposal.hours_seminar %}<span>{{ proposal.hours_seminar }} (sem.)</span>{% endif %}
-                {% if proposal.hours_recap %}<span>{{ proposal.hours_recap }} (rep.)</span>{% endif %}
+            <td class="hours-list">
+                <ul>
+                    {% if proposal.hours_lecture %}<li>{{ proposal.hours_lecture }} (wyk.)</li>{% endif %}
+                    {% if proposal.hours_exercise %}<li>{{ proposal.hours_exercise }} (ćw.)</li>{% endif %}
+                    {% if proposal.hours_lab %}<li>{{ proposal.hours_lab }} (prac.)</li>{% endif %}
+                    {% if proposal.hours_exercise_lab %}<li>{{ proposal.hours_exercise_lab }} (ćw-prac.)</li>{% endif %}
+                    {% if proposal.hours_seminar %}<li>{{ proposal.hours_seminar }} (sem.)</li>{% endif %}
+                    {% if proposal.hours_recap %}<li>{{ proposal.hours_recap }} (rep.)</li>{% endif %}
+                </ul>
             </td>
         </tr>
         <tr>
