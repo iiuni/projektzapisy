@@ -11,7 +11,7 @@ from apps.users.decorators import employee_required
 
 from .forms import EditProposalForm
 from .models import Proposal, ProposalStatus
-
+from apps.users.models import is_student, is_employee
 
 def offer(request, slug=None):
     """Shows offer main page (with proposals listed in the sidebar).
@@ -26,6 +26,10 @@ def offer(request, slug=None):
 
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
     qs = Proposal.objects.filter(status__in=filter_statuses).order_by('name')
+
+    if is_student(request.user):
+        qs = qs.filter(owner__user__is_active=True)
+
     proposal_list = []
     for p in qs.prefetch_related('effects', 'tags'):
         proposal_dict = p.__json__()
@@ -33,6 +37,7 @@ def offer(request, slug=None):
             'status': ProposalStatus(p.status)._name_,
             'semester': p.semester,
             'url': reverse('offer-page', args=(p.slug,)),
+            'isOwnerActive': p.owner.user.is_active if p.owner else False,
         })
         proposal_list.append(proposal_dict)
     filter_data = Proposal.prepare_filter_data(qs)
@@ -41,6 +46,7 @@ def offer(request, slug=None):
         "proposal": proposal,
         "proposals": json.dumps(proposal_list),
         "filters_json": json.dumps(filter_data),
+        "is_employee": is_employee(request.user),
     })
 
 
