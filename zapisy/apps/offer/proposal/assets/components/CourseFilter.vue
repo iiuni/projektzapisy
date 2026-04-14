@@ -45,15 +45,23 @@ export default Vue.extend({
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([id, [firstname, lastname, isActive]], [id2, [firstname2, lastname2, isActive2]]) => {
-        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
-        return lastNamesComparison === 0
-          ? firstname.localeCompare(firstname2, "pl")
-          : lastNamesComparison;
-      })
+      .sort(
+        (
+          [id, [firstname, lastname, isActive]],
+          [id2, [firstname2, lastname2, isActive2]]
+        ) => {
+          const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+          return lastNamesComparison === 0
+            ? firstname.localeCompare(firstname2, "pl")
+            : lastNamesComparison;
+        }
+      )
       .map(([id, [firstname, lastname, isActive]]) => {
         const inactivityInfo = isActive === false ? "(konto nieaktywne)" : "";
-        return { value: Number(id), label: `${firstname} ${lastname} ${inactivityInfo}` };
+        return {
+          value: Number(id),
+          label: `${firstname} ${lastname} ${inactivityInfo}`,
+        };
       });
     this.allTypes = Object.keys(filtersData.allTypes).map(
       (typeKey: string) => ({
