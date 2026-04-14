@@ -31,23 +31,29 @@ export default Vue.extend({
       allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
+      isEmployee: false,
     };
   },
   created: function () {
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
+    const isEmployeeElement = document.getElementById("is-employee-data");
+    if (isEmployeeElement) {
+      this.isEmployee = JSON.parse(isEmployeeElement.innerHTML);
+    }
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
+      .sort(([id, [firstname, lastname, isActive]], [id2, [firstname2, lastname2, isActive2]]) => {
         const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
         return lastNamesComparison === 0
           ? firstname.localeCompare(firstname2, "pl")
           : lastNamesComparison;
       })
-      .map(([id, [firstname, lastname]]) => {
-        return { value: Number(id), label: `${firstname} ${lastname}` };
+      .map(([id, [firstname, lastname, isActive]]) => {
+        const inactivityInfo = isActive === false ? "(konto nieaktywne)" : "";
+        return { value: Number(id), label: `${firstname} ${lastname} ${inactivityInfo}` };
       });
     this.allTypes = Object.keys(filtersData.allTypes).map(
       (typeKey: string) => ({
@@ -154,6 +160,13 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
+          />
+          <CheckFilter
+            v-if="isEmployee"
+            filterKey="hide-inactive-filter"
+            property="isOwnerActive"
+            label="Ukryj propozycje należące do kont nieaktywnych"
+            ref="hide-inactive-filter"
           />
           <hr />
           <button
