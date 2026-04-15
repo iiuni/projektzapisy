@@ -17,7 +17,6 @@
 {% block top-content %}
 <script id="courses-data" type="application/json">{{ proposals|safe }}</script>
 <script id="filters-data" type="application/json">{{ filters_json|safe }}</script>
-<script id="is-employee-data" type="application/json">{{ is_employee|yesno:"true,false" }}</script>
 <div id="course-filter"></div>
 {% endblock %}
 

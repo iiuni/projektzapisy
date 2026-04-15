@@ -31,17 +31,13 @@ export default Vue.extend({
       allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
-      isEmployee: false,
+      hasInactiveOwner: false,
     };
   },
   created: function () {
     const filtersData = JSON.parse(
       document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
-    const isEmployeeElement = document.getElementById("is-employee-data");
-    if (isEmployeeElement) {
-      this.isEmployee = JSON.parse(isEmployeeElement.innerHTML);
-    }
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
     this.allOwners = toPairs(filtersData.allOwners)
@@ -57,10 +53,13 @@ export default Vue.extend({
         }
       )
       .map(([id, [firstname, lastname, isActive]]) => {
-        const inactivityInfo = isActive === false ? "(konto nieaktywne)" : "";
+        if (isActive === false) {
+          this.hasInactiveOwner = true;
+        }
+        const inactivityInfo = isActive === false ? " (konto nieaktywne)" : "";
         return {
           value: Number(id),
-          label: `${firstname} ${lastname} ${inactivityInfo}`,
+          label: `${firstname} ${lastname}${inactivityInfo}`,
         };
       });
     this.allTypes = Object.keys(filtersData.allTypes).map(
@@ -170,7 +169,7 @@ export default Vue.extend({
             ref="freshmen-filter"
           />
           <CheckFilter
-            v-if="isEmployee"
+            v-if="hasInactiveOwner"
             filterKey="hide-inactive-filter"
             property="isOwnerActive"
             label="Ukryj propozycje należące do kont nieaktywnych"

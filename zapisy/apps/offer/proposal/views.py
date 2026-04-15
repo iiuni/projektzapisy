@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.users.decorators import employee_required
-from apps.users.models import is_student, is_employee
+from apps.users.models import is_employee
 
 from .forms import EditProposalForm
 from .models import Proposal, ProposalStatus
@@ -28,7 +28,7 @@ def offer(request, slug=None):
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
     qs = Proposal.objects.filter(status__in=filter_statuses).order_by('name')
 
-    if is_student(request.user):
+    if not is_employee(request.user):
         qs = qs.filter(owner__user__is_active=True)
 
     proposal_list = []
@@ -47,7 +47,6 @@ def offer(request, slug=None):
         "proposal": proposal,
         "proposals": json.dumps(proposal_list),
         "filters_json": json.dumps(filter_data),
-        "is_employee": is_employee(request.user),
     })
 
 
