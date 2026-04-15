@@ -191,7 +191,7 @@ export interface KVDict {
 }
 
 export interface PersonDict {
-  [key: number]: [string, string];
+  [key: number]: [string, string, boolean];
 }
 
 export interface FilterDataJSON {

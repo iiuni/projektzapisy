@@ -8,10 +8,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.users.decorators import employee_required
+from apps.users.models import is_student, is_employee
 
 from .forms import EditProposalForm
 from .models import Proposal, ProposalStatus
-from apps.users.models import is_student, is_employee
+
 
 def offer(request, slug=None):
     """Shows offer main page (with proposals listed in the sidebar).
