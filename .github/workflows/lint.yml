@@ -39,7 +39,7 @@ jobs:
       - name: Install Node Dependencies
         run: |
           cd zapisy
-          yarnpkg install
+          yarnpkg install --immutable
       - name: Lint Node assets
         run: |
           cd zapisy

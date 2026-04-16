@@ -10,6 +10,13 @@
   "pip_requirements": {
     "fileMatch": ["^zapisy/requirements\\.([\\w]*)\\.txt$"]
   },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "pip_requirements": {
+    "fileMatch": ["^zapisy/requirements\\.([\\w]*)\\.txt$"]
+  },
   "vulnerabilityAlerts": {
     "enabled": true,
     "addLabels": ["security"]

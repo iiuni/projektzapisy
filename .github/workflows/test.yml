@@ -68,7 +68,7 @@ jobs:
       - name: Install Node Dependencies
         run: |
           cd zapisy
-          yarnpkg install
+          yarnpkg install --immutable
       - name: Build Node assets
         run: |
           cd zapisy
