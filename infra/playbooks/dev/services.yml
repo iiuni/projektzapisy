@@ -77,3 +77,7 @@
         enabled: yes
         state: started
       become: yes
+
+    - name: Reload systemd definitions
+      systemd_service:
+        daemon_reload: true

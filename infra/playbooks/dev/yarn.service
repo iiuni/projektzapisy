@@ -8,7 +8,7 @@ TimeoutStartSec=900
 WorkingDirectory=/vagrant/zapisy/
 ExecStart=/usr/bin/yarn run build
 Type=oneshot
-Environment=NODE_OPTIONS="--openssl-legacy-provider"
+Environment="NODE_OPTIONS=--openssl-legacy-provider"
 
 [Install]
 WantedBy=vagrant.mount
