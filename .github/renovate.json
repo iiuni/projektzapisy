@@ -7,6 +7,7 @@
   "prConcurrentLimit": 50,
   "stabilityDays": 7,
   "labels": ["dependencies"],
+  "rangeStrategy": "update-lockfile",
   "pip_requirements": {
     "fileMatch": ["^zapisy/requirements\\.([\\w]*)\\.txt$"]
   },
