@@ -2,7 +2,7 @@
   "extends": ["config:base"],
   "automergeType": "pr",
   "dependencyDashboard": true,
-  "prCreation": "not-pending",
+  "prCreation": "immediate"
   "prHourlyLimit": 0,
   "branchConcurrentLimit": 0,
   "prConcurrentLimit": 0,
@@ -25,13 +25,6 @@
     {
       "description": "Automerge patches",
       "matchUpdateTypes": ["patch"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge some minor updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "excludePackagePatterns": ["^Django$", "^sass$"],
-      "matchCurrentVersion": "!/^0\\./",
       "automerge": true
     },
     {
