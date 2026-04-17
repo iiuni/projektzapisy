@@ -16,18 +16,18 @@
     # the following 3 tasks are to be removed once we migrate to a newer Ubuntu version
     # offering recent Node.js by default (not something like 10); this is a temporary workaround
     - name: Install Node - step 1
-      ansible.builtin.get_url:
+      get_url:
         url: "https://deb.nodesource.com/setup_{{ node_version }}.x"
         dest: /tmp/nodesource_setup.sh
         mode: "0755"
       become: yes
 
     - name: Install Node - step 2
-      ansible.builtin.command: /tmp/nodesource_setup.sh
+      command: /tmp/nodesource_setup.sh
       become: yes
 
     - name: Install Node - step 3
-      ansible.builtin.apt:
+      apt:
         name: nodejs
         state: latest
         update_cache: yes
