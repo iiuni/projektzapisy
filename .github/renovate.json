@@ -1,5 +1,6 @@
 {
   "extends": ["config:base"],
+  "baseBranches": ["1828-test"],
   "automergeType": "pr",
   "dependencyDashboard": true,
   "prCreation": "not-pending",
