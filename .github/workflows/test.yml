@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       PYTHON_VERSION: 3.8
-      NODE_VERSION: 12
+      NODE_VERSION: 18
+      NODE_OPTIONS: --openssl-legacy-provider # to be removed once legacy dependencies get upgraded (ASAP)
     services:
       postgres:
         image: postgres:12
