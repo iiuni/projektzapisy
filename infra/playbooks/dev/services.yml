@@ -79,5 +79,5 @@
       become: yes
 
     - name: Reload systemd definitions
-      systemd_service:
+      systemd:
         daemon_reload: true
