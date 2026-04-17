@@ -6,7 +6,7 @@
   "prHourlyLimit": 0,
   "branchConcurrentLimit": 0,
   "prConcurrentLimit": 0,
-  "stabilityDays": 7,
+  "stabilityDays": 0,
   "labels": ["dependencies"],
   "rangeStrategy": "update-lockfile",
   "pip_requirements": {
