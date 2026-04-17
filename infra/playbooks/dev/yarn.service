@@ -6,7 +6,7 @@ User=vagrant
 Group=vagrant
 TimeoutStartSec=900
 WorkingDirectory=/vagrant/zapisy/
-ExecStart=/usr/bin/yarnpkg
+ExecStart=/usr/bin/yarn run build
 Type=oneshot
 Environment=NODE_OPTIONS=--openssl-legacy-provider
 
