@@ -2,7 +2,7 @@
   "extends": ["config:base"],
   "automergeType": "pr",
   "dependencyDashboard": true,
-  "prCreation": "immediate"
+  "prCreation": "immediate",
   "prHourlyLimit": 0,
   "branchConcurrentLimit": 0,
   "prConcurrentLimit": 0,
