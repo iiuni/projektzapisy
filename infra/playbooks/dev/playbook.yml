@@ -33,8 +33,6 @@
         update_cache: yes
       become: yes
 
-    # Ubuntu offers a laughably old yarn version as well, so we need a similar workaround
-    # (also to be removed once Ubuntu gets their act together)
     - name: Install yarn
       command: corepack enable
       become: yes
