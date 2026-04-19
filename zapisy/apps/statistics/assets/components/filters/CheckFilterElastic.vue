@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapMutations } from "vuex";
+import { PropType } from "vue";
 
 import { Filter } from "../../store/filters";
 
@@ -20,7 +21,7 @@ export default Vue.extend({
   props: {
     filterKey: String, //unique label
     label: String, //display label
-    predicate: (c:any) => boolean, //boolean funct on an object - if true, element will be shown.
+    predicate:  Function as PropType<(c: any) => boolean>, //boolean funct on an object - if true, element will be shown.
   },
   data: () => {
     return {
