@@ -4,6 +4,8 @@
 // reads information about the groups that should be displayed from <script
 // type="application/json"></script> element. The data is expected to be a list
 // of GroupJSON objects as defined in `models.ts`.
+// Now it also listens for timetable-change custom events and updates groups
+// property in response.
 
 import Vue from "vue";
 import SimpleTimetable from "./components/SimpleTimetable.vue";
@@ -26,50 +28,19 @@ new Vue({
   },
   created: function () {
     this.update_groups();
-    const semester_dropdown = document.getElementById("semester-dropdown-menu");
-    if (semester_dropdown !== null) {
-      semester_dropdown.addEventListener("click", async (event) => {
-        if (event.target.closest(".semester-link")) {
-          event.preventDefault();
-          const targetUrl = event.target.getAttribute("href");
-          await this.fetch_new_semester(targetUrl);
-          this.update_groups();
-          history.pushState({url: targetUrl}, "", targetUrl);
-        }
-      }, true);
-      window.addEventListener("popstate", async (event) => {
-        if (event.state && event.state.url){
-          await this.fetch_new_semester(event.state.url);
-          this.update_groups();
-        } else {
-          await this.fetch_new_semester(window.location.pathname);
-          this.update_groups();
-        }
-      })
-    }
+    window.addEventListener("timetable-change", (event) => {
+      this.update_groups();
+    });
   },
   methods: {
     update_groups: function () {
       this.groups = [];
       const groupsDump = JSON.parse(
-        document.getElementById("timetable-data").innerHTML
+        document.getElementById("timetable-data").innerHTML,
       );
       for (const groupDump of groupsDump) {
         this.groups.push(new Group(groupDump));
       }
     },
-    fetch_new_semester: async function (url) {
-      const response = await fetch(url);
-      if (!response.ok){
-        return;
-      }
-      const html = await response.text();
-      const parser = new DOMParser();
-      const DOMData = parser.parseFromString(html, "text/html");
-      const timetableData = DOMData.getElementById("timetable-data").innerHTML;
-      const dropdownTitle = DOMData.getElementById("semester-dropdown-title").innerText;
-      document.getElementById("timetable-data").innerHTML = timetableData;
-      document.getElementById("semester-dropdown-title").innerText = dropdownTitle;
-    }
   },
 });

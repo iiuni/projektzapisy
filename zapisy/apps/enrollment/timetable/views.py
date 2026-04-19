@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.core.serializers.json import DjangoJSONEncoder
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import decode_class_type_singular
@@ -101,7 +102,7 @@ def student_timetable_data(student: Student, semester: Optional[Semester]):
     data = {
         'groups': groups,
         'sum_points': sum(points_for_courses.values()),
-        'groups_dicts': group_dicts,
+        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
     return data
 
@@ -113,7 +114,7 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
             'term', 'term__classrooms', 'guaranteed_spots', 'guaranteed_spots__role')
     group_dicts = build_group_list(groups)
     data = {
-        'groups_dicts': group_dicts,
+        'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
     }
     return data
 

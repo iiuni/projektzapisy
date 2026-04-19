@@ -36,13 +36,13 @@
 
     <div class="row m-0" id="timetable">
     </div>
-    {{ groups_dicts|json_script:"timetable-data" }}
+    <script id="timetable-data" class="semester-dependent" type="application/json">{{ groups_json|safe }}</script>
     {% render_bundle 'timetable-timetable-component' %}
     
     {% if user.student %}
     <h3>Twoje przedmioty</h3>
     <div class="table-responsive">
-    <table id="enr-schedule-listByCourse" class="table table-striped">
+    <table id="enr-schedule-listByCourse" class="table table-striped semester-dependent">
         <thead>
             <tr>
                 {# Translators: Tytuł kolumny w tabelce #}

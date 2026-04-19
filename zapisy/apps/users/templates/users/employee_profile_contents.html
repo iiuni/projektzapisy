@@ -51,6 +51,6 @@
 		</nav>
 	</div>
 	<div id="timetable"></div>
-	<script id="timetable-data" type="application/json">{{ groups_json|safe }}</script>
+	<script id="timetable-data" class="semester-dependent" type="application/json">{{ groups_json|safe }}</script>
 	{% render_bundle 'timetable-timetable-component' %}
 </div>
