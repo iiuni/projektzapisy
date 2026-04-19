@@ -20,7 +20,7 @@ export default Vue.extend({
   props: {
     filterKey: String, //unique label
     label: String, //display label
-    predicate: Function, //boolean funct on an object - if true, element will be shown.
+    predicate: (c:any) => boolean, //boolean funct on an object - if true, element will be shown.
   },
   data: () => {
     return {
