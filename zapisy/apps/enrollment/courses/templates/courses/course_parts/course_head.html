@@ -109,3 +109,27 @@
     <h2>Opis przedmiotu:</h2>
     {% markdown course.description|default:"Brak" %}
 </div>
+
+{% if user.student %}
+<div class="mt-3">
+    {% if existing_withdrawal %}
+        <div class="alert alert-info d-inline-block py-1 px-3">
+            Wniosek o wypis dyrektorski:
+            {% if existing_withdrawal.is_pending %}
+                <strong>oczekuje na decyzję administratora</strong>
+            {% elif existing_withdrawal.is_approved %}
+                <strong class="text-success">zatwierdzony</strong>
+            {% endif %}
+        </div>
+    {% elif withdrawal_allowed %}
+        <form action="{% url 'withdrawals:request' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="course_id" value="{{ course.pk }}"/>
+            <button type="submit" class="btn btn-warning btn-sm"
+                    onclick="return confirm('Czy na pewno chcesz złożyć wniosek o wypis dyrektorski z tego przedmiotu? Wniosek wymaga zatwierdzenia przez administratora.');">
+                Złóż wniosek o wypis dyrektorski
+            </button>
+        </form>
+    {% endif %}
+</div>
+{% endif %}

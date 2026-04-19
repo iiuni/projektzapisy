@@ -28,6 +28,7 @@ class StudentAdmin(admin.ModelAdmin):
         (None, {'fields': ['user', 'matricula', 'is_active']}),
         ('Studia', {'fields': ['program', 'semestr', 'ects']}),
         ('Zapisy', {'fields': ['records_opening_bonus_minutes']}),
+        ('Wypisy dyrektorskie', {'fields': ['withdrawal_limit']}),
     ]
     search_fields = ('user__first_name', 'user__last_name', 'matricula')
     list_filter = ('program', 'is_active', 'semestr')

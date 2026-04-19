@@ -29,6 +29,13 @@ class Semester(models.Model):
         null=True, blank=True, verbose_name='Czas zamkniecia zapisów')
     records_ending = models.DateTimeField(
         null=True, blank=True, verbose_name='Czas zamknięcia wypisów')
+    director_withdrawal_deadline = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Termin składania wniosków o wypis dyrektorski',
+        help_text='Ostatni dzień, w którym student może złożyć wniosek o wypis dyrektorski. '
+                  'Domyślnie: 30 listopada (semestr zimowy) / 30 kwietnia (semestr letni).',
+    )
 
     lectures_beginning = models.DateField(
         null=True, blank=True, verbose_name='Dzień rozpoczęcia zajęć')
