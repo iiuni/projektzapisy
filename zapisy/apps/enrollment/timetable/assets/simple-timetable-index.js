@@ -36,7 +36,7 @@ new Vue({
     update_groups: function () {
       this.groups = [];
       const groupsDump = JSON.parse(
-        document.getElementById("timetable-data").innerHTML,
+        document.getElementById("timetable-data").innerHTML
       );
       for (const groupDump of groupsDump) {
         this.groups.push(new Group(groupDump));
