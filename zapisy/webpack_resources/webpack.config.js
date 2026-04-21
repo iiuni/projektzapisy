@@ -76,10 +76,11 @@ const RULES = [
   // Other files are copied raw.
   {
     test: /.(jpg|png|woff(2)?|eot|ttf|svg)$/,
-    loader: require.resolve("file-loader"),
-    options: {
+    type: "asset/resource",
+    generator: {
       publicPath: "/static/",
-    },
+      filename: "assets/[name]_[contenthash][ext]"
+    }
   },
 ];
 
@@ -111,6 +112,7 @@ const WEBPACK_CONFIG = {
   output: {
     path: path.resolve(BUNDLE_OUTPUT_DIR),
     filename: DEV_MODE ? "[name]_[hash].js" : "[name]_[hash].min.js",
+    publicPath: "/static/"
   },
   module: {
     rules: RULES,
@@ -156,9 +158,12 @@ const WEBPACK_CONFIG = {
       new TerserPlugin({
         terserOptions: {
           ecma: 8,
-          comments: false,
           compress: false,
+          format: {
+           comments: false,
+          },
         },
+        extractComments: false,
       }),
     ],
   },
