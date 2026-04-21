@@ -6,7 +6,10 @@ function syncFormDisplay() {
   const formCourse = document.getElementById("form-course");
   const formEvents = document.querySelectorAll(".form-event");
 
-  if (!(formType instanceof HTMLSelectElement) || !(formCourse instanceof HTMLElement)) {
+  if (
+    !(formType instanceof HTMLSelectElement) ||
+    !(formCourse instanceof HTMLElement)
+  ) {
     return;
   }
 

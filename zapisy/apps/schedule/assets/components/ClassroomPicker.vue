@@ -5,7 +5,7 @@ import axios from "axios";
 import { TermDisplay, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
 
-type ReservationTerm ={
+type ReservationTerm = {
   day: string;
   start: string;
   end: string;
@@ -188,50 +188,54 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
 
     const encodedDate = encodeURIComponent(date);
 
-    axios.get<Record<string, ClassroomApiItem>>("/classrooms/get_terms/" + encodedDate + "/").then((response) => {
-      this.classrooms = [];
-      for (const item of Object.values(response.data)) {
-        const termsLayer: TermDisplay[] = [];
-        const mergedOccupied = this.mergeOccupied([
-          ...item.occupied,
-          ...this.getLocalOccupiedForRoom(item.id, date),
-        ]);
+    axios
+      .get<Record<string, ClassroomApiItem>>(
+        "/classrooms/get_terms/" + encodedDate + "/"
+      )
+      .then((response) => {
+        this.classrooms = [];
+        for (const item of Object.values(response.data)) {
+          const termsLayer: TermDisplay[] = [];
+          const mergedOccupied = this.mergeOccupied([
+            ...item.occupied,
+            ...this.getLocalOccupiedForRoom(item.id, date),
+          ]);
 
-        let lastFree = "08:00";
+          let lastFree = "08:00";
 
-        for (const occ of mergedOccupied) {
-          const emptyWidth = calculateLength(lastFree, occ.begin);
-          termsLayer.push({
-            width: emptyWidth,
-            occupied: false,
+          for (const occ of mergedOccupied) {
+            const emptyWidth = calculateLength(lastFree, occ.begin);
+            termsLayer.push({
+              width: emptyWidth,
+              occupied: false,
+            });
+
+            const width = calculateLength(occ.begin, occ.end);
+            termsLayer.push({
+              width: width,
+              occupied: true,
+            });
+            lastFree = occ.end;
+          }
+
+          if (lastFree < "22:00") {
+            termsLayer.push({
+              width: calculateLength(lastFree, "22:00"),
+              occupied: false,
+            });
+          }
+
+          this.classrooms.push({
+            label: item.number,
+            type: item.type,
+            id: item.id,
+            capacity: item.capacity,
+            termsLayer: termsLayer,
+            rawOccupied: mergedOccupied,
           });
-
-          const width = calculateLength(occ.begin, occ.end);
-          termsLayer.push({
-            width: width,
-            occupied: true,
-          });
-          lastFree = occ.end;
         }
-
-        if (lastFree < "22:00") {
-          termsLayer.push({
-            width: calculateLength(lastFree, "22:00"),
-            occupied: false,
-          });
-        }
-
-        this.classrooms.push({
-          label: item.number,
-          type: item.type,
-          id: item.id,
-          capacity: item.capacity,
-          termsLayer: termsLayer,
-          rawOccupied: mergedOccupied,
-        });
-      }
-      this.refreshReservationLayer();
-    });
+        this.refreshReservationLayer();
+      });
   }
 
   onSelectRoom(payload: { roomId: number; label: string }) {
@@ -244,15 +248,13 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
   <div>
     <h3>Filtruj sale</h3>
     <div class="form-check mb-3">
-        <input
-          type="checkbox"
-          class="form-check-input"
-          id="showOccupied"
-          v-model="showOccupied"
-        />
-        <label class="form-check-label" for="showOccupied"
-          >Pokaż zajęte</label
-        >
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="showOccupied"
+        v-model="showOccupied"
+      />
+      <label class="form-check-label" for="showOccupied">Pokaż zajęte</label>
     </div>
     <ClassroomField
       v-for="item in displayedClassrooms"
