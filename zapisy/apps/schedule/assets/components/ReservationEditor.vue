@@ -102,7 +102,15 @@ export default class ReservationEditor extends Vue {
   addTerm(): void {
     const base = this.activeTerm;
     const newTerm: Term = base
-      ? { id: null, day: base.day, start: base.start, end: base.end, roomId: null, place: "", deleted: false }
+      ? {
+          id: null,
+          day: base.day,
+          start: base.start,
+          end: base.end,
+          roomId: null,
+          place: "",
+          deleted: false,
+        }
       : createEmptyTerm();
     this.terms.push(newTerm);
 
