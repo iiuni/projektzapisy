@@ -31,6 +31,7 @@ from .forms import DoorChartForm, TableReportForm
 from .fullcalendar import FullCalendarView
 from .models.message import EventModerationMessage
 
+
 def build_reservation_editor_data(formset):
     terms = []
     for form in formset.forms:
@@ -101,7 +102,7 @@ def new_reservation(request, event_id=None):
     else:
         form = EventForm(request.user)
         formset = NewTermFormSet(form_kwargs={'user': request.user})
-    
+
     reservation_editor_data = build_reservation_editor_data(formset)
     return render(request,
                   'schedule/reservation.html',
