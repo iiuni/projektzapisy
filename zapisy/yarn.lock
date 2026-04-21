@@ -2398,7 +2398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10":
+"autoprefixer@npm:^10.5.0":
   version: 10.5.0
   resolution: "autoprefixer@npm:10.5.0"
   dependencies:
@@ -4146,7 +4146,7 @@ __metadata:
     "@types/markdown-it": "npm:10.0.3"
     "@types/punycode": "npm:^2"
     ContentTools: "npm:1.6.16"
-    autoprefixer: "npm:10"
+    autoprefixer: "npm:^10.5.0"
     axios: "npm:0.21.4"
     babel-loader: "npm:8.4.1"
     big-integer: "npm:1.6.52"
