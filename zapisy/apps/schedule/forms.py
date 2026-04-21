@@ -61,21 +61,27 @@ class TermForm(forms.ModelForm):
             self.instance.ignore_conflicts = True
 
         self.helper.layout = Layout(
-            Div(Row(
-                Column('day', css_class='col-3 col-lg-2 mb-0 px-1'),
-                Column('start', css_class='form-group col-2 mb-0 px-1'),
-                Column('end', css_class='form-group col-2 mb-0 px-1'),
-                Column('place', css_class='form-group col-2 col-lg-3 mb-0 px-1'),
-                Column(HTML(
-                    '<button class="btn btn-primary edit-term-form mb-1"> Edytuj </button> '
-                    '<button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
+            Div(
+                Row(
+                    Column('day', css_class='col-3 col-lg-2 mb-0 px-1'),
+                    Column('start', css_class='form-group col-2 mb-0 px-1'),
+                    Column('end', css_class='form-group col-2 mb-0 px-1'),
+                    Column('place', css_class='form-group col-2 col-lg-3 mb-0 px-1'),
+                    Column(
+                        HTML(
+                            '<button class="btn btn-primary edit-term-form mb-1">Edytuj</button> '
+                            '<button class="btn btn-danger delete-term-form mb-1">Usuń</button>'
+                        ),
+                        css_class='col-3 mb-0'
+                    ),
+                    css_class='row p-2'
                 ),
-                    css_class='col-3 mb-0'),
-                css_class='row p-2'),
                 'room',
                 'id',
                 Div('DELETE', css_class='d-none'),
-                css_class="term-form d-none"))
+                css_class="term-form d-none"
+            )
+        )
 
 
 # Number of extra term forms is kept in this variable, as it is send to the form

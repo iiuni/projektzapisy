@@ -1,6 +1,6 @@
 {% extends "schedule/base.html" %}
 {% load render_bundle from webpack_loader %}
-{% load static %} 
+{% load static %}
 {% load crispy_forms_tags %}
 {% block schedule_reservation %} class="active"{% endblock %}
 
@@ -24,13 +24,10 @@
 {% endblock %}
 
 {% block js %}
-
-{% render_bundle "schedule-reservation" %}
 {% endblock %}
 
 {% block all-content %}
 <h2>{% if is_edit %}Edytuj rezerwację{% else %}Nowa rezerwacja{% endif %}</h2>
-<input id="extra-terms-number" class="d-none" value="{{ extra_terms_number }}">
 <form method="POST" class="post-form" id="main-form">
     <div class="alert alert-info alert-dismissible fade show" role="alert"><dl><dt>Egzaminy, Kolokwia</dt><dd class="ms-2">prowadzący może zarezerwować salę, rezerwacja nie wymaga potwierdzenia.</dd><dt>Wydarzenia</dt><dd class="ms-2">każdy zalogowany może zgłosić chęć rezerwacji; rezerwacja zostaje potwierdzona lub odrzucona przez administratora sal.</dd></dl><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
     {% csrf_token %}
@@ -40,90 +37,8 @@
 
     <h3 id="term-forms">Terminy</h3>
 
-    <div class="container">
-        <div class="row font-weight-bold mb-2 border-bottom">
-            <div class="col-3 col-lg-2 p-2 border">
-                Dzień
-            </div>
-            <div class="col-2 p-2 border">
-                Początek
-            </div>
-            <div class="col-2 p-2 border">
-                Koniec
-            </div>
-            <div class="col-2 col-lg-3 p-2 border">
-                Lokalizacja
-            </div>
-            <div class="col-3 p-2 border">
-                Działania
-            </div>
-        </div>
-    </div>
-    <div id="term-formset" class="mb-5">
-        {{ formset.management_form }}
-        {% for term_form in formset %}
-            {% crispy term_form %}
-        {% endfor %}
-        <button class="btn btn-primary" id="new-term-form">Dodaj nowy termin</button>
-    </div>
-    <div>
-        <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a
-                class="nav-item nav-link active"
-                id="nav-place-in-tab"
-                data-bs-toggle="tab"
-                href="#nav-place-in"
-                role="tab"
-                aria-controls="nav-place-in"
-                aria-selected="false"
-            >Sala Instytutu</a>
-            <a
-                class="nav-item nav-link"
-                id="nav-place-out-tab"
-                data-bs-toggle="tab"
-                href="#nav-place-out"
-                role="tab"
-                aria-controls="nav-place-out"
-                aria-selected="true"
-            >Miejsce zewnętrzne</a>
-            </div>
-        </nav>
-  
-        <div class="tab-content mt-3" id="nav-tabContent">
-            <div
-            class="tab-pane fade show active"
-            id="nav-place-in"
-            role="tabpanel"
-            aria-labelledby="nav-place-in-tab"
-            >
-                <div id="reservation-widget" ></div>
-            </div>
-            <div
-            class="tab-pane fade"
-            id="nav-place-out"
-            role="tabpanel"
-            aria-labelledby="nav-place-out-tab"
-            >
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    Musisz samemu zatroszczyć się o rezerwację!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <div id="inputplacediv" class="container">
-                    <div class="form-group row">
-                        <label for="inputplace" class="col-sm-2 col-form-label">Miejsce</label>
-                        <div class="col-sm-10 input-group">
-                            <input type="text" class="form-control" id="inputplace" 
-                            placeholder="np. Instytut Matematyczny, Sala HS">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-info" id="add-outside-location">Wybierz</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="reservation-editor" class="mb-5"></div>
+    {{ reservation_editor_data|json_script:"reservation-editor-data" }}
     
     <hr>
     <button type="submit" class="save btn btn-success mt-3" id="save-event">Zapisz</button>
