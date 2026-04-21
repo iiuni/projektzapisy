@@ -12,10 +12,8 @@ Public API:
 import logging
 from datetime import datetime
 
-from apps.enrollment.courses.models import CourseInstance, Semester
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
-from apps.users.models import Student
 
 from .models import DirectorWithdrawal, WithdrawalStatus
 

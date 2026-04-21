@@ -1,7 +1,5 @@
 """Views for director's withdrawal requests (student-facing)."""
 
-from datetime import datetime
-
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import redirect, render
@@ -9,10 +7,9 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.users.decorators import student_required
-from apps.users.models import Student
 
 from . import services
-from .models import DirectorWithdrawal, WithdrawalStatus
+from .models import DirectorWithdrawal
 
 
 @student_required
