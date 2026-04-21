@@ -95,9 +95,13 @@ def can_request_withdrawal(student, course, time=None):
             f'({used_total}/{student.withdrawal_limit}).'
         )
 
-    # Max 1 per semester
-    used_in_semester = get_withdrawals_used_in_semester(student, semester)
-    if used_in_semester >= 1:
+    # Max 1 per semester — block if there's already a pending or approved request in this semester
+    existing_in_semester = DirectorWithdrawal.objects.filter(
+        student=student,
+        course__semester=semester,
+        status__in=[WithdrawalStatus.PENDING, WithdrawalStatus.APPROVED],
+    ).exists()
+    if existing_in_semester:
         return False, 'Możliwy jest tylko jeden wypis dyrektorski w semestrze.'
 
     return True, ''
