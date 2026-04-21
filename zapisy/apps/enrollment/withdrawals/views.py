@@ -2,33 +2,13 @@
 
 from django.contrib import messages
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.users.decorators import student_required
 
 from . import services
-from .models import DirectorWithdrawal
-
-
-@student_required
-def withdrawal_list(request):
-    """Shows the student their director withdrawal requests and remaining quota."""
-    student = request.user.student
-
-    withdrawals = DirectorWithdrawal.objects.filter(student=student)
-    withdrawals = withdrawals.select_related('course', 'course__semester', 'decided_by')
-
-    used_total = services.get_withdrawals_used_total(student)
-    remaining = max(0, student.withdrawal_limit - used_total)
-
-    return render(request, 'withdrawals/withdrawal_list.html', {
-        'withdrawals': withdrawals,
-        'used_total': used_total,
-        'withdrawal_limit': student.withdrawal_limit,
-        'remaining': remaining,
-    })
 
 
 @student_required
@@ -53,4 +33,4 @@ def request_withdrawal(request):
     except ValueError as e:
         messages.error(request, str(e))
 
-    return redirect('withdrawals:list')
+    return redirect('course-page', slug=course.slug)
