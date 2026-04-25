@@ -6,7 +6,7 @@
 
 - name: Add New Relic APT Repository
   apt_repository:
-    repo: deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt bionic main
+    repo: deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt jammy main
     state: present
     filename: newrelic
 
