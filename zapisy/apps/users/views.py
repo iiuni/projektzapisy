@@ -4,7 +4,6 @@ from typing import Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404, Http404, redirect, render, reverse
 from django.views.decorators.http import require_POST
 
@@ -82,7 +81,7 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
 
         data.update({
             'student': student,
-            'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+            'groups_dicts': group_dicts,
             'semester': semester,
             'all_semesters': Semester.objects.filter(visible=True)
         })
@@ -138,7 +137,7 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
 
         data.update({
             'employee': employee,
-            'groups_json': json.dumps(group_dicts, cls=DjangoJSONEncoder),
+            'groups_dicts': group_dicts,
             'semester': semester,
             'all_semesters': Semester.objects.filter(visible=True)
         })

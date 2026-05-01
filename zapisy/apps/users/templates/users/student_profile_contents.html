@@ -43,10 +43,12 @@
 			<h3 class="subheader">Plan zajęć</h3>
 		</div>
 		<nav class="col-lg-4 col-12 d-print-none">
-			{% include "semester_dropdown.html" with url_pattern_name="student-profile-semester" user_id=student.user_id %}
+			{% include "timetable/semester_dropdown.html" with url_pattern_name="student-profile-semester" user_id=student.user_id async_fetch=True %}
 		</nav>
 	</div>
 	<div id="timetable"></div>
-	<script id="timetable-data" class="semester-dependent" type="application/json">{{ groups_json|safe }}</script>
+	<div id="timetable-data-div" data-js-sem-depend>
+		{{ groups_dicts|json_script:"timetable-data" }}
+	</div>
 	{% render_bundle 'timetable-timetable-component' %}
 </div>
