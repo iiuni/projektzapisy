@@ -4,7 +4,7 @@ import Vue from "vue";
 import { mapMutations } from "vuex";
 
 import { Filter } from "../../store/filters";
-
+//TO DELETE???
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
 
@@ -25,7 +25,7 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    label: String,
+    label: String, //ref????
   },
   data: () => {
     return {

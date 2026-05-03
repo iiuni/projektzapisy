@@ -3,7 +3,8 @@ import { every, invokeMap, values } from "lodash";
 import { CourseInfo } from "./courses";
 
 export interface Filter {
-  visible(c: any): boolean;//previously c: CourseInfo. Now more universal.
+  //previously c: CourseInfo. Now more universal.
+  visible(c: any): boolean;
 }
 
 interface State {

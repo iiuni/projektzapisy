@@ -2,14 +2,14 @@
 import Vue from "vue";
 
 import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue";
-import CheckFilterElastic from "./filters/CheckFilterElastic.vue";
+import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
 import { mapMutations } from "vuex";
 
 
 export default Vue.extend({
   components: {
     TextFilter,
-    CheckFilterElastic,
+    CheckFilter,
   },
   data: function () {
     return {
@@ -52,6 +52,51 @@ export default Vue.extend({
         });
       }
     },
+    totalGuaranteed: function(course){
+    return (course.groups || []).reduce((total, g) => {
+      return total + (g.guaranteed_spots || []).reduce((sum, s) => sum + (s.limit || 0), 0);
+    }, 0);
+    },
+    totalEnrolled: function(course){
+      return (course.groups || []).reduce((sum, group) => sum + (group.enrolled || 0), 0);
+    },
+    totalLimit: function(course){
+      return (course.groups || []).reduce((sum, group) => sum + (group.limit || 0), 0);
+    },
+    totalAvailable: function(course)
+    {
+      return this.totalLimit(course) - this.totalEnrolled(course);
+    },
+    totalWaiting: function(course){
+      return (course.groups || []).reduce((sum, group) => sum + (group.queued || 0), 0);
+    },
+    hasGroupBelowTen: function(course){
+      return course.groups.some(g => g.enrolled < 10);
+    },
+    mathTest: function(course){
+      return course.course_type != "Matematyczny"
+    },
+    hasTypeWithDeficit: function (course){
+      const groups = course.groups || [];
+
+      const grouped = groups.reduce((acc, g) => {
+        if (!acc[g.type_name]) {
+          acc[g.type_name] = [];
+        }
+        acc[g.type_name].push(g);
+        return acc;
+      }, {} as Record<string, any[]>);//any can be replaced with GroupInfo if imported
+
+      return Object.values(grouped).some(groupList=> {
+        const totalLimit = groupList.reduce((sum, g) => sum + (g.limit || 0), 0);
+        const totalEnrolled = groupList.reduce((sum, g) => sum + (g.enrolled || 0), 0);
+        const totalWaiting = groupList.reduce((sum, g) => sum + (g.queued || 0), 0);
+
+        const totalAvailable = totalLimit - totalEnrolled;
+
+        return totalWaiting > totalAvailable;
+      });
+    },
   },
 });
 </script>
@@ -60,45 +105,61 @@ export default Vue.extend({
   <div class="card bg-light">
     <div class="card-body">
       <div class="row">
-        <div class="col-lg-5">
-          <TextFilter
-            filterKey="title-filter"
-            :properties="['course_name']"
-            placeholder="Nazwa przedmiotu"
-          />
-        </div>
-        <div class="col-lg-4">
-          <div class="input-group mb-2">
-            <select class="form-select" v-model="selected">
-              <option v-for="[k, o] of sortingModes" :value="k">
-                {{ o }}
-              </option>
-            </select>
+        <div class="col-lg-6">
+          <div class="row">
+            <div class="col-12">
+              <TextFilter
+                filterKey="title-filter"
+                :properties="['course_name']"
+                placeholder="Nazwa przedmiotu"
+              />
+            </div>
+            <div class="col-12">
+              <div class="input-group mb-2">
+                <select class="form-select" v-model="selected">
+                  <option v-for="[k, o] of sortingModes" :value="k">
+                    {{ o }}
+                  </option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row">
-          <CheckFilterElastic
+        <div class="col-lg-6">
+          <CheckFilter
             filterKey="filter-has-waiting-students"
             label="Pokaż jedynie przedmioty z oczekującymi studentami"
-            :predicate="c => c.max_of_waiting_students > 0"
+            :predicate="c => totalWaiting(c) > 0"
           />
-          <CheckFilterElastic
+          <CheckFilter
             filterKey="filter-no-math-subjects"
-            label="Ukryj przedmioty matematyczne"
+            label="Ukryj przedmioty matematyczne" 
             :predicate="c => !c.course_name.includes('[IM]')"
+            :defaultOn="true"
           />
-          <CheckFilterElastic
+          <CheckFilter
             filterKey="filter-has-guaranteed-spots"
             label="Pokaż jedynie przedmioty z miejscami gwarantowanymi"
-            :predicate="c => c.groups.some(g => g.guaranteed_spots && g.guaranteed_spots.length > 0)"
+            :predicate="c => totalGuaranteed(c) > 0"
           />
-          <CheckFilterElastic
+          <CheckFilter
+            filterKey="filter-has-more-waiting-than-free"
+            label="Ukryj przedmioty z większą liczbą wolnych miejsc niż liczbą oczekujących"
+            :predicate="c => totalAvailable(c) < totalWaiting(c)"
+          />
+          <CheckFilter
             filterKey="filter-has-group-below-ten"
             label="Pokaż jedynie przedmioty z przynajmniej jedną grupą poniżej 10 osób"
-            :predicate="c => c.groups.some(g => g.enrolled < 10)"
+            :predicate="hasGroupBelowTen"
+          />
+          <CheckFilter
+            filterKey="test-filter"
+            label="Filtr Testowy (Free > Waiting)" 
+            :predicate="hasTypeWithDeficit"
+            :defaultOn="true"
           />
         </div>
+      </div>
     </div>
   </div>
 </template>

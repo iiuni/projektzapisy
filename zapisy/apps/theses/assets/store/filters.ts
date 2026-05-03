@@ -3,9 +3,9 @@ import { every, invokeMap, values } from "lodash";
 import { ThesisInfo } from "./theses";
 
 export interface Filter {
-  visible(c: ThesisInfo): boolean;
+  //previously c: ThesisInfo. Now more universal.
+  visible(c: any): boolean;
 }
-
 interface State {
   filters: { [id: string]: Filter };
 }

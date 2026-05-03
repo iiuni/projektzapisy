@@ -9,7 +9,7 @@ import { mapMutations } from "vuex";
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
-import CheckFilter from "./filters/CheckFilter.vue";
+import CheckFilter from "@/theses/assets/components/filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
 
 export default Vue.extend({
@@ -65,6 +65,9 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
+    firstYearRecommended: function(course: any){
+      return course.recommendedForFirstYear == true
+    },
   },
 });
 </script>
@@ -121,8 +124,8 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            :predicate = "firstYearRecommended"
             ref="freshmen-filter"
           />
           <hr />

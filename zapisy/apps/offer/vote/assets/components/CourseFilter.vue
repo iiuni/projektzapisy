@@ -18,7 +18,7 @@ import { mapGetters } from "vuex";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
-import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
+import CheckFilter from "@/theses/assets/components/filters/CheckFilter.vue";
 import {
   FilterDataJSON,
   MultiselectFilterData,
@@ -98,6 +98,11 @@ export default Vue.extend({
       }
     });
   },
+  methods:{
+    firstYearRecommended: function(course: any){
+      return course.recommendedForFirstYear == true
+    },
+  }
 });
 </script>
 
@@ -161,8 +166,8 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
-            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            label="Pokaż tylko przedmioty zalecane dla pierwszego roku VOTE"
+            :predicate = "firstYearRecommended"
             ref="freshmen-filter"
           />
         </div>
