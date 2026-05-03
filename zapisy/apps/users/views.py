@@ -13,6 +13,8 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
+from apps.enrollment.withdrawals import services as withdrawal_services
+from apps.enrollment.withdrawals.models import DirectorWithdrawal, WithdrawalStatus
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
@@ -199,8 +201,18 @@ def my_profile(request):
     if semester and request.user.student:
         student: Student = request.user.student
         done_effects = CompletedCourses.get_completed_effects(student)
+
+        withdrawal_used = withdrawal_services.get_withdrawals_used_total(student)
+        active_withdrawals = DirectorWithdrawal.objects.filter(
+            student=student,
+            status__in=[WithdrawalStatus.PENDING, WithdrawalStatus.APPROVED],
+        ).select_related('course', 'course__semester')
+
         data.update({
             'effects': done_effects,
+            'withdrawal_used': withdrawal_used,
+            'withdrawal_limit': student.withdrawal_limit,
+            'active_withdrawals': active_withdrawals,
         })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
