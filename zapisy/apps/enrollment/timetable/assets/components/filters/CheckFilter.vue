@@ -25,7 +25,7 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    label: String,
+    label: String, //ref????
   },
   data: () => {
     return {

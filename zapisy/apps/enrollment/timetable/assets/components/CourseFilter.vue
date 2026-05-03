@@ -66,8 +66,13 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
+<<<<<<< HEAD
     firstYearRecommended: function (course: CourseInfo) {
       return course.recommendedForFirstYear == true;
+=======
+    firstYearRecommended: function(course: any){
+      return course.recommendedForFirstYear == true
+>>>>>>> 30c996d9 (Issue 1812: Late Pull Request - CheckFilter was changed to work like ChekfilterElastic from previous commit, and all usages of it in other apps were adjusted. This commit still includes the old Checkfilter in enrollment/timetable, and the Checkfilter in the Voting module still hasn't been tested.)
     },
   },
 });
@@ -126,7 +131,11 @@ export default Vue.extend({
           <CheckFilter
             filterKey="freshmen-filter"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+<<<<<<< HEAD
             :predicate="firstYearRecommended"
+=======
+            :predicate = "firstYearRecommended"
+>>>>>>> 30c996d9 (Issue 1812: Late Pull Request - CheckFilter was changed to work like ChekfilterElastic from previous commit, and all usages of it in other apps were adjusted. This commit still includes the old Checkfilter in enrollment/timetable, and the Checkfilter in the Voting module still hasn't been tested.)
             ref="freshmen-filter"
           />
           <hr />
