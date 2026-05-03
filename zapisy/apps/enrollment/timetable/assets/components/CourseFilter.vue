@@ -31,7 +31,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML
+      document.getElementById("filters-data")!.innerHTML,
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -49,7 +49,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      })
+      }),
     );
   },
   mounted: function () {
@@ -65,8 +65,8 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
-    firstYearRecommended: function(course: any){
-      return course.recommendedForFirstYear == true
+    firstYearRecommended: function (course: any) {
+      return course.recommendedForFirstYear == true;
     },
   },
 });
@@ -125,7 +125,7 @@ export default Vue.extend({
           <CheckFilter
             filterKey="freshmen-filter"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
-            :predicate = "firstYearRecommended"
+            :predicate="firstYearRecommended"
             ref="freshmen-filter"
           />
           <hr />

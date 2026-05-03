@@ -5,7 +5,6 @@ import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue
 import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
 import { mapMutations } from "vuex";
 
-
 export default Vue.extend({
   components: {
     TextFilter,
@@ -53,30 +52,39 @@ export default Vue.extend({
       }
     },
     //I still have doubts about how legal inserting type:any into everything is, but it works for now.
-    totalGuaranteed: function(course:any){ 
-    return (course.groups || []).reduce((total:number, g:any) => {
-      return total + (g.guaranteed_spots || []).reduce((sum:number, s:any) => sum + (s.limit || 0), 0);
-    }, 0);
+    totalGuaranteed: function (course: any) {
+      return (course.groups || []).reduce((total: number, g: any) => {
+        return (
+          total +
+          (g.guaranteed_spots || []).reduce(
+            (sum: number, s: any) => sum + (s.limit || 0),
+            0,
+          )
+        );
+      }, 0);
     },
-    guaranteedGTZ: function(course:any){
-      return(this.totalGuaranteed(course) > 0);
+    guaranteedGTZ: function (course: any) {
+      return this.totalGuaranteed(course) > 0;
     },
-    totalWaiting: function(course:any){
-      return (course.groups || []).reduce((sum:number, group:any) => sum + (group.queued || 0), 0);
+    totalWaiting: function (course: any) {
+      return (course.groups || []).reduce(
+        (sum: number, group: any) => sum + (group.queued || 0),
+        0,
+      );
     },
-    waitingGTZ: function(course:any){
-      return(this.totalWaiting(course) > 0);
+    waitingGTZ: function (course: any) {
+      return this.totalWaiting(course) > 0;
     },
-    hasGroupBelowTen: function(course:any){
-      return course.groups.some((g:any) => g.enrolled < 10);
+    hasGroupBelowTen: function (course: any) {
+      return course.groups.some((g: any) => g.enrolled < 10);
     },
-    isNotMat: function(course:any){
+    isNotMat: function (course: any) {
       return course.is_math == false;
     },
-    hasTypeWithDeficit: function (course:any){
+    hasTypeWithDeficit: function (course: any) {
       const groups = course.groups || [];
 
-      const grouped = groups.reduce((acc:any, g:any) => {
+      const grouped = groups.reduce((acc: any, g: any) => {
         if (!acc[g.type_name]) {
           acc[g.type_name] = [];
         }
@@ -84,14 +92,23 @@ export default Vue.extend({
         return acc;
       }, {} as Record<string, any[]>);
 
-      return Object.values(grouped).some((groupList:any)=> {
-        const totalLimit = groupList.reduce((sum:number, g:any) => sum + (g.limit || 0), 0);
-        const totalEnrolled = groupList.reduce((sum:number, g:any) => sum + (g.enrolled || 0), 0);
-        const totalWaiting = groupList.reduce((sum:number, g:any) => sum + (g.queued || 0), 0);
+      return Object.values(grouped).some((groupList: any) => {
+        const totalLimit = groupList.reduce(
+          (sum: number, g: any) => sum + (g.limit || 0),
+          0,
+        );
+        const totalEnrolled = groupList.reduce(
+          (sum: number, g: any) => sum + (g.enrolled || 0),
+          0,
+        );
+        const totalWaiting = groupList.reduce(
+          (sum: number, g: any) => sum + (g.queued || 0),
+          0,
+        );
 
         const totalAvailable = totalLimit - totalEnrolled;
 
-        return totalWaiting > totalAvailable;//>= or >?
+        return totalWaiting > totalAvailable; //>= or >?
       });
     },
   },
@@ -130,7 +147,7 @@ export default Vue.extend({
           />
           <CheckFilter
             filterKey="filter-no-math-subjects"
-            label="Ukryj przedmioty matematyczne" 
+            label="Ukryj przedmioty matematyczne"
             :predicate="isNotMat"
             :defaultOn="true"
           />

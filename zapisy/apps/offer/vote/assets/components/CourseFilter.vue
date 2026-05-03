@@ -47,7 +47,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML
+      document.getElementById("filters-data")!.innerHTML,
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -65,7 +65,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      })
+      }),
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
@@ -100,11 +100,11 @@ export default Vue.extend({
       }
     });
   },
-  methods:{
-    firstYearRecommended: function(course: any){
-      return course.recommendedForFirstYear == true
+  methods: {
+    firstYearRecommended: function (course: any) {
+      return course.recommendedForFirstYear == true;
     },
-  }
+  },
 });
 </script>
 
@@ -168,8 +168,8 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            label="Pokaż tylko przedmioty zalecane dla pierwszego roku" 
-            :predicate = "firstYearRecommended"
+            label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            :predicate="firstYearRecommended"
             ref="freshmen-filter"
           />
         </div>
