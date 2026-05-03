@@ -75,7 +75,8 @@ def groups(request):
             'course_name': courses[course_id][0].course.name,
             'groups': course_groups,
             'waiting_students': waiting_by_class_type,
-            'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0)
+            'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0),
+            'is_math': courses[course_id][0].course.course_type.short_name == 'MAT'
         })
 
     return render(request, 'statistics/groups_list.html', {

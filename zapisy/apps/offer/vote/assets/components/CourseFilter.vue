@@ -10,6 +10,8 @@
 //
 // The function called to update the filters is the refreshFun function,
 // which is defined in `../point-counter.ts`.
+
+//The checkfilter here still remains to be tested.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -166,7 +168,7 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            label="Pokaż tylko przedmioty zalecane dla pierwszego roku VOTE"
+            label="Pokaż tylko przedmioty zalecane dla pierwszego roku" 
             :predicate = "firstYearRecommended"
             ref="freshmen-filter"
           />

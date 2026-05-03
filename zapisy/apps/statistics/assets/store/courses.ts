@@ -19,6 +19,7 @@ export interface CourseInfo {
   groups: GroupInfo[];
   waiting_students: [{ name: string; number: string }];
   max_of_waiting_students: number;
+  is_math: boolean;
 }
 
 interface State {

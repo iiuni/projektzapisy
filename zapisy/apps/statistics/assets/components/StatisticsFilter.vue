@@ -52,49 +52,46 @@ export default Vue.extend({
         });
       }
     },
-    totalGuaranteed: function(course){
-    return (course.groups || []).reduce((total, g) => {
-      return total + (g.guaranteed_spots || []).reduce((sum, s) => sum + (s.limit || 0), 0);
+    //I still have doubts about how legal inserting type:any into everything is, but it works for now.
+    totalGuaranteed: function(course:any){ 
+    return (course.groups || []).reduce((total:number, g:any) => {
+      return total + (g.guaranteed_spots || []).reduce((sum:number, s:any) => sum + (s.limit || 0), 0);
     }, 0);
     },
-    totalEnrolled: function(course){
-      return (course.groups || []).reduce((sum, group) => sum + (group.enrolled || 0), 0);
+    guaranteedGTZ: function(course:any){
+      return(this.totalGuaranteed(course) > 0);
     },
-    totalLimit: function(course){
-      return (course.groups || []).reduce((sum, group) => sum + (group.limit || 0), 0);
+    totalWaiting: function(course:any){
+      return (course.groups || []).reduce((sum:number, group:any) => sum + (group.queued || 0), 0);
     },
-    totalAvailable: function(course)
-    {
-      return this.totalLimit(course) - this.totalEnrolled(course);
+    waitingGTZ: function(course:any){
+      return(this.totalWaiting(course) > 0);
     },
-    totalWaiting: function(course){
-      return (course.groups || []).reduce((sum, group) => sum + (group.queued || 0), 0);
+    hasGroupBelowTen: function(course:any){
+      return course.groups.some((g:any) => g.enrolled < 10);
     },
-    hasGroupBelowTen: function(course){
-      return course.groups.some(g => g.enrolled < 10);
+    isNotMat: function(course:any){
+      return course.is_math == false;
     },
-    mathTest: function(course){
-      return course.course_type != "Matematyczny"
-    },
-    hasTypeWithDeficit: function (course){
+    hasTypeWithDeficit: function (course:any){
       const groups = course.groups || [];
 
-      const grouped = groups.reduce((acc, g) => {
+      const grouped = groups.reduce((acc:any, g:any) => {
         if (!acc[g.type_name]) {
           acc[g.type_name] = [];
         }
         acc[g.type_name].push(g);
         return acc;
-      }, {} as Record<string, any[]>);//any can be replaced with GroupInfo if imported
+      }, {} as Record<string, any[]>);
 
-      return Object.values(grouped).some(groupList=> {
-        const totalLimit = groupList.reduce((sum, g) => sum + (g.limit || 0), 0);
-        const totalEnrolled = groupList.reduce((sum, g) => sum + (g.enrolled || 0), 0);
-        const totalWaiting = groupList.reduce((sum, g) => sum + (g.queued || 0), 0);
+      return Object.values(grouped).some((groupList:any)=> {
+        const totalLimit = groupList.reduce((sum:number, g:any) => sum + (g.limit || 0), 0);
+        const totalEnrolled = groupList.reduce((sum:number, g:any) => sum + (g.enrolled || 0), 0);
+        const totalWaiting = groupList.reduce((sum:number, g:any) => sum + (g.queued || 0), 0);
 
         const totalAvailable = totalLimit - totalEnrolled;
 
-        return totalWaiting > totalAvailable;
+        return totalWaiting > totalAvailable;//>= or >?
       });
     },
   },
@@ -129,34 +126,28 @@ export default Vue.extend({
           <CheckFilter
             filterKey="filter-has-waiting-students"
             label="Pokaż jedynie przedmioty z oczekującymi studentami"
-            :predicate="c => totalWaiting(c) > 0"
+            :predicate="waitingGTZ"
           />
           <CheckFilter
             filterKey="filter-no-math-subjects"
             label="Ukryj przedmioty matematyczne" 
-            :predicate="c => !c.course_name.includes('[IM]')"
+            :predicate="isNotMat"
             :defaultOn="true"
           />
           <CheckFilter
             filterKey="filter-has-guaranteed-spots"
             label="Pokaż jedynie przedmioty z miejscami gwarantowanymi"
-            :predicate="c => totalGuaranteed(c) > 0"
+            :predicate="guaranteedGTZ"
           />
           <CheckFilter
             filterKey="filter-has-more-waiting-than-free"
             label="Ukryj przedmioty z większą liczbą wolnych miejsc niż liczbą oczekujących"
-            :predicate="c => totalAvailable(c) < totalWaiting(c)"
+            :predicate="hasTypeWithDeficit"
           />
           <CheckFilter
             filterKey="filter-has-group-below-ten"
             label="Pokaż jedynie przedmioty z przynajmniej jedną grupą poniżej 10 osób"
             :predicate="hasGroupBelowTen"
-          />
-          <CheckFilter
-            filterKey="test-filter"
-            label="Filtr Testowy (Free > Waiting)" 
-            :predicate="hasTypeWithDeficit"
-            :defaultOn="true"
           />
         </div>
       </div>
