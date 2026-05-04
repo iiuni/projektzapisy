@@ -90,7 +90,6 @@ export default Vue.extend({
             filterKey="filter-has-waiting-students"
             label="Pokaż jedynie przedmioty z oczekującymi studentami"
             :predicate="waitingGTZ"
-            :onByDefault = "true"
           />
           <CheckFilter
             filterKey="filter-no-math-subjects"
