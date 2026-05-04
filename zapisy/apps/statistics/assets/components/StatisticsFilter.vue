@@ -52,65 +52,11 @@ export default Vue.extend({
       }
     },
     //I still have doubts about how legal inserting type:any into everything is, but it works for now.
-    totalGuaranteed: function (course: any) {
-      return (course.groups || []).reduce((total: number, g: any) => {
-        return (
-          total +
-          (g.guaranteed_spots || []).reduce(
-            (sum: number, s: any) => sum + (s.limit || 0),
-            0,
-          )
-        );
-      }, 0);
-    },
-    guaranteedGTZ: function (course: any) {
-      return this.totalGuaranteed(course) > 0;
-    },
-    totalWaiting: function (course: any) {
-      return (course.groups || []).reduce(
-        (sum: number, group: any) => sum + (group.queued || 0),
-        0,
-      );
-    },
-    waitingGTZ: function (course: any) {
-      return this.totalWaiting(course) > 0;
-    },
-    hasGroupBelowTen: function (course: any) {
-      return course.groups.some((g: any) => g.enrolled < 10);
-    },
-    isNotMat: function (course: any) {
-      return course.is_math == false;
-    },
-    hasTypeWithDeficit: function (course: any) {
-      const groups = course.groups || [];
-
-      const grouped = groups.reduce((acc: any, g: any) => {
-        if (!acc[g.type_name]) {
-          acc[g.type_name] = [];
-        }
-        acc[g.type_name].push(g);
-        return acc;
-      }, {} as Record<string, any[]>);
-
-      return Object.values(grouped).some((groupList: any) => {
-        const totalLimit = groupList.reduce(
-          (sum: number, g: any) => sum + (g.limit || 0),
-          0,
-        );
-        const totalEnrolled = groupList.reduce(
-          (sum: number, g: any) => sum + (g.enrolled || 0),
-          0,
-        );
-        const totalWaiting = groupList.reduce(
-          (sum: number, g: any) => sum + (g.queued || 0),
-          0,
-        );
-
-        const totalAvailable = totalLimit - totalEnrolled;
-
-        return totalWaiting > totalAvailable; //>= or >?
-      });
-    },
+    guaranteedGTZ: function (course: any) { return course.totalGuaranteed > 0; },
+    waitingGTZ: function (course: any) { return course.totalWaiting > 0; },
+    hasGroupBelowTen: function (course: any) { return course.smallest_group < 10; },
+    isNotMat: function (course: any) { return course.is_math == false; },
+    hasTypeWithDeficit: function (course: any) { return course.has_deficit; },
   },
 });
 </script>
