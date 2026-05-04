@@ -24,10 +24,16 @@ export default Vue.extend({
     predicate: Function as PropType<(c: any) => boolean>, //boolean funct on an object - if true, element will be shown.
     onByDefault: { type: Boolean, default: false },
   },
-  data: () => {
+  data() {
     return {
-      on: false,
+      on: this.onByDefault,
     };
+  },
+  mounted() {
+    this.registerFilter({
+      k: this.filterKey,
+      f: new BooleanFilter(this.on, this.predicate),
+    });
   },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
