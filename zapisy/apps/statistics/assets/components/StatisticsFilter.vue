@@ -52,11 +52,21 @@ export default Vue.extend({
         });
       }
     },
-    guaranteedGTZ: function (course: CourseInfo) { return course.totalGuaranteed > 0; },
-    waitingGTZ: function (course: CourseInfo) { return course.totalWaiting > 0; },
-    hasGroupBelowTen: function (course: CourseInfo) { return course.smallest_group < 10; },
-    isNotMat: function (course: CourseInfo) { return course.is_math == false; },
-    hasTypeWithDeficit: function (course: CourseInfo) { return course.has_deficit; },
+    guaranteedGTZ: function (course: CourseInfo) {
+      return course.totalGuaranteed > 0;
+    },
+    waitingGTZ: function (course: CourseInfo) {
+      return course.totalWaiting > 0;
+    },
+    hasGroupBelowTen: function (course: CourseInfo) {
+      return course.smallest_group < 10;
+    },
+    isNotMat: function (course: CourseInfo) {
+      return course.is_math == false;
+    },
+    hasTypeWithDeficit: function (course: CourseInfo) {
+      return course.has_deficit;
+    },
   },
 });
 </script>

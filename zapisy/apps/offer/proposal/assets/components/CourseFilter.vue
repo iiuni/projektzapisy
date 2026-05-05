@@ -13,6 +13,7 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
+import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
 export default Vue.extend({
   components: {
@@ -79,7 +80,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
-    firstYearRecommended: function (course: any) {
+    firstYearRecommended: function (course: CourseInfo) {
       return course.recommendedForFirstYear == true;
     },
   },
