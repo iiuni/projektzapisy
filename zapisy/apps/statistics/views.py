@@ -86,7 +86,7 @@ def groups(request):
             'groups': course_groups,
             'waiting_students': waiting_by_class_type,
             'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0),
-            'totalWaiting': sum(s['number'] for s in waiting_by_class_type),
+            'totalWaiting': sum(group.queued for group in courses[course_id]),
             'totalGuaranteed': sum(
                 gs.limit
                 for group in courses[course_id]

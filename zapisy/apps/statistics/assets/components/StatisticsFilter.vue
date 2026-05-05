@@ -4,6 +4,7 @@ import Vue from "vue";
 import TextFilter from "../../../theses/assets/components/filters/TextFilter.vue";
 import CheckFilter from "../../../theses/assets/components/filters/CheckFilter.vue";
 import { mapMutations } from "vuex";
+import { CourseInfo } from "../store/courses";
 
 export default Vue.extend({
   components: {
@@ -51,12 +52,11 @@ export default Vue.extend({
         });
       }
     },
-    //I still have doubts about how legal inserting type:any into everything is, but it works for now.
-    guaranteedGTZ: function (course: any) { return course.totalGuaranteed > 0; },
-    waitingGTZ: function (course: any) { return course.totalWaiting > 0; },
-    hasGroupBelowTen: function (course: any) { return course.smallest_group < 10; },
-    isNotMat: function (course: any) { return course.is_math == false; },
-    hasTypeWithDeficit: function (course: any) { return course.has_deficit; },
+    guaranteedGTZ: function (course: CourseInfo) { return course.totalGuaranteed > 0; },
+    waitingGTZ: function (course: CourseInfo) { return course.totalWaiting > 0; },
+    hasGroupBelowTen: function (course: CourseInfo) { return course.smallest_group < 10; },
+    isNotMat: function (course: CourseInfo) { return course.is_math == false; },
+    hasTypeWithDeficit: function (course: CourseInfo) { return course.has_deficit; },
   },
 });
 </script>
