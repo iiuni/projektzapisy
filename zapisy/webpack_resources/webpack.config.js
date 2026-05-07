@@ -79,8 +79,8 @@ const RULES = [
     type: "asset/resource",
     generator: {
       publicPath: "/static/",
-      filename: "assets/[name]_[contenthash][ext]"
-    }
+      filename: "assets/[name]_[contenthash][ext]",
+    },
   },
 ];
 
@@ -112,7 +112,7 @@ const WEBPACK_CONFIG = {
   output: {
     path: path.resolve(BUNDLE_OUTPUT_DIR),
     filename: DEV_MODE ? "[name]_[hash].js" : "[name]_[hash].min.js",
-    publicPath: "/static/"
+    publicPath: "/static/",
   },
   module: {
     rules: RULES,
@@ -160,7 +160,7 @@ const WEBPACK_CONFIG = {
           ecma: 8,
           compress: false,
           format: {
-           comments: false,
+            comments: false,
           },
         },
         extractComments: false,
