@@ -2,10 +2,11 @@
   "extends": ["config:base"],
   "automergeType": "pr",
   "dependencyDashboard": true,
-  "prCreation": "not-pending",
+  "prCreation": "immediate",
   "prHourlyLimit": 0,
-  "prConcurrentLimit": 50,
-  "stabilityDays": 7,
+  "branchConcurrentLimit": 0,
+  "prConcurrentLimit": 0,
+  "stabilityDays": 0,
   "labels": ["dependencies"],
   "pip_requirements": {
     "fileMatch": ["^zapisy/requirements\\.([\\w]*)\\.txt$"]
@@ -23,13 +24,6 @@
     {
       "description": "Automerge patches",
       "matchUpdateTypes": ["patch"],
-      "automerge": true
-    },
-    {
-      "description": "Automerge some minor updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "excludePackagePatterns": ["^Django$", "^sass$"],
-      "matchCurrentVersion": "!/^0\\./",
       "automerge": true
     },
     {
