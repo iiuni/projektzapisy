@@ -50,4 +50,4 @@ jobs:
 
       - name: Run Ansible
         run: |
-          ansible-playbook -D infra/playbooks/dev/playbook.yml -i localhost,
+          ansible-playbook -D infra/playbooks/dev/playbook.yml -i localhost, -c local
