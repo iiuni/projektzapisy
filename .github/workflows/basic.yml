@@ -6,9 +6,9 @@ on:
 
 jobs:
   basic:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env: 
-      PYTHON_VERSION: 3.11
+      PYTHON_VERSION: 3.10
       NODE_VERSION: 18
     steps:
       - name: Checkout code
