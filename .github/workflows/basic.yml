@@ -6,6 +6,7 @@ on:
 
 jobs:
   basic:
+    name: basic
     runs-on: ubuntu-20.04
     env: 
       PYTHON_VERSION: 3.10
