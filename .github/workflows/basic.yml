@@ -1,0 +1,16 @@
+name: lint
+
+on: 
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-focal
+    env: 
+      PYTHON_VERSION: 3.8
+      NODE_VERSION: 18
+    steps:
+      - name: Run Ansible
+        run: |
+          ansible-playbook -D infra/playbooks/dev/playbook.yml
