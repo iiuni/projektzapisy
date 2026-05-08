@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  lint:
+  basic:
     runs-on: ubuntu-focal
     env: 
       PYTHON_VERSION: 3.8
