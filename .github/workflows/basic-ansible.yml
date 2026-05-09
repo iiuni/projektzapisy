@@ -49,6 +49,10 @@ jobs:
           sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
           ls -la /vagrant
 
+      - name: Create the /home/vagrant symlink
+        run: |
+          ln -s /home/runner /home/vagrant
+
       - name: Install Ansible
         run: |
           sudo apt-get update -qq
