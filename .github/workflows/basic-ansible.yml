@@ -1,13 +1,13 @@
 name: basic
 
-on: 
+on:
   - push
   - pull_request
 
 jobs:
   basic:
     runs-on: ubuntu-22.04
-    env: 
+    env:
       PYTHON_VERSION: "3.10"
       NODE_VERSION: "18"
     steps:
@@ -51,7 +51,7 @@ jobs:
 
       - name: Create the /home/vagrant symlink
         run: |
-          ln -s /home/runner /home/vagrant
+          sudo ln -s /home/runner /home/vagrant
 
       - name: Install Ansible
         run: |
