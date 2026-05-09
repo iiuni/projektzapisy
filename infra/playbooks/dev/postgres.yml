@@ -24,6 +24,13 @@
         state: present
       become: yes
 
+    - name: Ensure PostgreSQL is running
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+      become: yes
+
     - name: Create the database user
       become: yes
       become_user: postgres
