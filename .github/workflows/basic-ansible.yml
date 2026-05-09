@@ -43,6 +43,12 @@ jobs:
           cd zapisy
           yarnpkg install --immutable
 
+      - name: Mount the repo at /vagrant/zapisy
+        run: |
+          sudo mkdir -p /vagrant
+          sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
+          ls -la /vagrant
+
       - name: Install Ansible
         run: |
           sudo apt-get update -qq
