@@ -1,11 +1,9 @@
 name: common
 
-env:
+inputs:
   UBUNTU_VERSION: "ubuntu-latest"
   PYTHON_VERSION: "3.14"
   NODE_VERSION: "24"
-
-  python-version: "3.14"
 
 runs:
   using: "composite"
