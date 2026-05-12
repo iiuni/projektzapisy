@@ -69,6 +69,9 @@
       file:
         path: /vagrant/zapisy/logs
         state: directory
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
       become: yes
 
 - name: Include playbook with postgres configuration
