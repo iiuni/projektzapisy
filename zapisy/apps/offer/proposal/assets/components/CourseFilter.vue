@@ -36,24 +36,24 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML,
+      document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.hasInactiveOwner = filtersData.allOwners.some(
-      ([id, [firstname, lastname, isActive]]) => isActive === false,
+    this.hasInactiveOwner = Object.values(filtersData.allOwners).some(
+      ([firstname, lastname, isActive]: any) => isActive === false
     );
     this.allOwners = toPairs(filtersData.allOwners)
       .sort(
         (
           [id, [firstname, lastname, isActive]],
-          [id2, [firstname2, lastname2, isActive2]],
+          [id2, [firstname2, lastname2, isActive2]]
         ) => {
           const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
           return lastNamesComparison === 0
             ? firstname.localeCompare(firstname2, "pl")
             : lastNamesComparison;
-        },
+        }
       )
       .map(([id, [firstname, lastname, isActive]]) => {
         const inactivityInfo = isActive === false ? " (konto nieaktywne)" : "";
@@ -66,7 +66,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      }),
+      })
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },
