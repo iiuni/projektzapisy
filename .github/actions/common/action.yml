@@ -17,11 +17,11 @@ runs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ inputs.PYTHON_VERSION }}
 
     - uses: actions/setup-node@v6
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: ${{ inputs.NODE_VERSION }}
 
     - uses: actions/cache@v5
       with:
