@@ -52,6 +52,9 @@ jobs:
       - name: Create the vagrant user
         run: |
           sudo useradd -m vagrant
+          sudo usermod -aG sudo vagrant
+          echo 'vagrant ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/vagrant
+          sudo chmod 440 /etc/sudoers.d/vagrant
 
       - name: Install Ansible
         run: |
