@@ -1,9 +1,12 @@
 name: common
 
 inputs:
-  UBUNTU_VERSION: "ubuntu-latest"
-  PYTHON_VERSION: "3.14"
-  NODE_VERSION: "24"
+  UBUNTU_VERSION: 
+    default: "ubuntu-latest"
+  PYTHON_VERSION:
+    default: "3.14"
+  NODE_VERSION:
+    default: "24"
 
 runs:
   using: "composite"
