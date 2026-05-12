@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='student',
-            name='withdrawal_limit',
+            name='discharge_limit',
             field=models.PositiveIntegerField(
                 default=2,
                 help_text='Łączna liczba wypisów dyrektorskich, z których student może skorzystać.',

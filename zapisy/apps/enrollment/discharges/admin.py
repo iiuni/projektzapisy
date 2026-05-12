@@ -1,13 +1,13 @@
-"""Django Admin for director's withdrawal requests."""
+"""Django Admin for director's discharge requests."""
 
 from django.contrib import admin, messages
 
 from . import services
-from .models import DirectorWithdrawal, WithdrawalStatus
+from .models import DirectorDischarge, DischargeStatus
 
 
-@admin.register(DirectorWithdrawal)
-class DirectorWithdrawalAdmin(admin.ModelAdmin):
+@admin.register(DirectorDischarge)
+class DirectorDischargeAdmin(admin.ModelAdmin):
     list_display = (
         'student', 'course', 'get_semester', 'status', 'created', 'decided_by', 'decided_at',
     )
@@ -41,8 +41,8 @@ class DirectorWithdrawalAdmin(admin.ModelAdmin):
     get_semester.admin_order_field = 'course__semester'
 
     def approve_selected(self, request, queryset):
-        """Approves selected PENDING withdrawal requests."""
-        pending = queryset.filter(status=WithdrawalStatus.PENDING)
+        """Approves selected PENDING discharge requests."""
+        pending = queryset.filter(status=DischargeStatus.PENDING)
         if not pending.exists():
             self.message_user(
                 request,
@@ -53,12 +53,12 @@ class DirectorWithdrawalAdmin(admin.ModelAdmin):
 
         approved_count = 0
         errors = []
-        for withdrawal in pending.select_related('student', 'course', 'course__semester'):
+        for discharge in pending.select_related('student', 'course', 'course__semester'):
             try:
-                services.approve_withdrawal(withdrawal, request.user)
+                services.approve_discharge(discharge, request.user)
                 approved_count += 1
             except Exception as e:
-                errors.append(f'{withdrawal}: {e}')
+                errors.append(f'{discharge}: {e}')
 
         if approved_count:
             self.message_user(
@@ -72,8 +72,8 @@ class DirectorWithdrawalAdmin(admin.ModelAdmin):
     approve_selected.short_description = 'Zatwierdź wybrane wnioski'
 
     def reject_selected(self, request, queryset):
-        """Rejects selected PENDING withdrawal requests."""
-        pending = queryset.filter(status=WithdrawalStatus.PENDING)
+        """Rejects selected PENDING discharge requests."""
+        pending = queryset.filter(status=DischargeStatus.PENDING)
         if not pending.exists():
             self.message_user(
                 request,
@@ -84,12 +84,12 @@ class DirectorWithdrawalAdmin(admin.ModelAdmin):
 
         rejected_count = 0
         errors = []
-        for withdrawal in pending.select_related('student', 'course'):
+        for discharge in pending.select_related('student', 'course'):
             try:
-                services.reject_withdrawal(withdrawal, request.user)
+                services.reject_discharge(discharge, request.user)
                 rejected_count += 1
             except Exception as e:
-                errors.append(f'{withdrawal}: {e}')
+                errors.append(f'{discharge}: {e}')
 
         if rejected_count:
             self.message_user(

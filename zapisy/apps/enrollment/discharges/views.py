@@ -1,4 +1,4 @@
-"""Views for director's withdrawal requests (student-facing)."""
+"""Views for director's discharge requests (student-facing)."""
 
 from django.contrib import messages
 from django.http import Http404
@@ -13,8 +13,8 @@ from . import services
 
 @student_required
 @require_POST
-def request_withdrawal(request):
-    """Submits a director withdrawal request for a course."""
+def request_discharge(request):
+    """Submits a director discharge request for a course."""
     student = request.user.student
 
     try:
@@ -24,7 +24,7 @@ def request_withdrawal(request):
         raise Http404
 
     try:
-        services.request_withdrawal(student, course)
+        services.request_discharge(student, course)
         messages.success(
             request,
             f'Wniosek o wypis dyrektorski z przedmiotu „{course.name}" '

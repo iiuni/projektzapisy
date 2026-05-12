@@ -46,7 +46,7 @@ class SemesterAdmin(admin.ModelAdmin):
         ('Czas trwania zapisów', {
             'fields': [
                 'records_opening', 'records_ects_limit_abolition', 'records_ending',
-                'records_closing', 'director_withdrawal_deadline',
+                'records_closing', 'director_discharge_deadline',
             ]
         }),
     ]

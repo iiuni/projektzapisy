@@ -222,7 +222,7 @@ INSTALLED_APPS = (
     'apps.enrollment.courses',
     'apps.enrollment.records',
     'apps.enrollment.timetable',
-    'apps.enrollment.withdrawals',
+    'apps.enrollment.discharges',
     'apps.statistics',
     'apps.news',
     'apps.offer.preferences',

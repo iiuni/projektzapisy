@@ -13,8 +13,8 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.enrollment.withdrawals import services as withdrawal_services
-from apps.enrollment.withdrawals.models import DirectorWithdrawal, WithdrawalStatus
+from apps.enrollment.discharges import services as discharge_services
+from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
@@ -202,17 +202,17 @@ def my_profile(request):
         student: Student = request.user.student
         done_effects = CompletedCourses.get_completed_effects(student)
 
-        withdrawal_used = withdrawal_services.get_withdrawals_used_total(student)
-        active_withdrawals = DirectorWithdrawal.objects.filter(
+        discharge_used = discharge_services.get_discharges_used_total(student)
+        active_discharges = DirectorDischarge.objects.filter(
             student=student,
-            status__in=[WithdrawalStatus.PENDING, WithdrawalStatus.APPROVED],
+            status__in=[DischargeStatus.PENDING, DischargeStatus.APPROVED],
         ).select_related('course', 'course__semester')
 
         data.update({
             'effects': done_effects,
-            'withdrawal_used': withdrawal_used,
-            'withdrawal_limit': student.withdrawal_limit,
-            'active_withdrawals': active_withdrawals,
+            'discharge_used': discharge_used,
+            'discharge_limit': student.discharge_limit,
+            'active_discharges': active_discharges,
         })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(

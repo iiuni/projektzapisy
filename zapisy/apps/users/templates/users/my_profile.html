@@ -109,10 +109,10 @@
             </colgroup>
             <tr>
                 <th>Wykorzystane wypisy</th>
-                <td>{{ withdrawal_used }} / {{ withdrawal_limit }}</td>
+                <td>{{ discharge_used }} / {{ discharge_limit }}</td>
             </tr>
         </table>
-        {% if active_withdrawals %}
+        {% if active_discharges %}
         <table class="table">
             <thead>
                 <tr>
@@ -123,7 +123,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for w in active_withdrawals %}
+                {% for w in active_discharges %}
                 <tr>
                     <td>{{ w.course.name }}</td>
                     <td>{{ w.course.semester }}</td>

@@ -29,7 +29,7 @@ class Semester(models.Model):
         null=True, blank=True, verbose_name='Czas zamkniecia zapisów')
     records_ending = models.DateTimeField(
         null=True, blank=True, verbose_name='Czas zamknięcia wypisów')
-    director_withdrawal_deadline = models.DateTimeField(
+    director_discharge_deadline = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name='Termin składania wniosków o wypis dyrektorski',

@@ -112,17 +112,17 @@
 
 {% if user.student %}
 <div class="mt-3">
-    {% if existing_withdrawal %}
+    {% if existing_discharge %}
         <div class="alert alert-info d-inline-block py-1 px-3">
             Wniosek o wypis dyrektorski:
-            {% if existing_withdrawal.is_pending %}
+            {% if existing_discharge.is_pending %}
                 <strong>oczekuje na decyzję administratora</strong>
-            {% elif existing_withdrawal.is_approved %}
+            {% elif existing_discharge.is_approved %}
                 <strong class="text-success">zatwierdzony</strong>
             {% endif %}
         </div>
-    {% elif withdrawal_allowed %}
-        <form action="{% url 'withdrawals:request' %}" method="post" class="d-inline">
+    {% elif discharge_allowed %}
+        <form action="{% url 'discharges:request' %}" method="post" class="d-inline">
             {% csrf_token %}
             <input type="hidden" name="course_id" value="{{ course.pk }}"/>
             <button type="submit" class="btn btn-warning btn-sm"

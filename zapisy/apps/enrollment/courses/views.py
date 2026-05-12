@@ -15,8 +15,8 @@ from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
-from apps.enrollment.withdrawals import services as withdrawal_services
-from apps.enrollment.withdrawals.models import DirectorWithdrawal, WithdrawalStatus
+from apps.enrollment.discharges import services as discharge_services
+from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
 
@@ -111,22 +111,22 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     if request.user.employee:
         waiting_students = Record.list_waiting_students([course])[course.id]
 
-    # Withdrawal context for student
-    withdrawal_allowed = False
-    existing_withdrawal = None
+    # Discharge context for student
+    discharge_allowed = False
+    existing_discharge = None
     if student is not None:
-        withdrawal_allowed, _reason = withdrawal_services.can_request_withdrawal(student, course)
-        existing_withdrawal = DirectorWithdrawal.objects.filter(
+        discharge_allowed, _reason = discharge_services.can_request_discharge(student, course)
+        existing_discharge = DirectorDischarge.objects.filter(
             student=student, course=course
-        ).exclude(status=WithdrawalStatus.REJECTED).first()
+        ).exclude(status=DischargeStatus.REJECTED).first()
 
     data = {
         'course': course,
         'teachers': teachers,
         'groups': groups,
         'waiting_students': waiting_students,
-        'withdrawal_allowed': withdrawal_allowed,
-        'existing_withdrawal': existing_withdrawal,
+        'discharge_allowed': discharge_allowed,
+        'existing_discharge': existing_discharge,
     }
     return course, data
 

@@ -91,7 +91,7 @@ class Student(models.Model):
 
     usos_id = models.PositiveIntegerField(
         null=True, blank=True, unique=True, verbose_name='Kod studenta w systemie USOS')
-    withdrawal_limit = models.PositiveIntegerField(
+    discharge_limit = models.PositiveIntegerField(
         default=2,
         verbose_name='Limit wypisów dyrektorskich',
         help_text='Łączna liczba wypisów dyrektorskich, z których student może skorzystać.'
