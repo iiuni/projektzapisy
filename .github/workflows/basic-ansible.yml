@@ -60,4 +60,5 @@ jobs:
 
       - name: Run Ansible
         run: |
-          sudo -u vagrant ansible-playbook -D infra/playbooks/dev/playbook.yml -i localhost, -c local
+          sudo -u vagrant ansible-playbook -D /vagrant/infra/playbooks/dev/playbook.yml -i localhost, -c local
+
