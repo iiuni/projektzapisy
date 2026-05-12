@@ -1,11 +1,12 @@
 name: common
 
+env:
+  UBUNTU_VERSION: "ubuntu-latest"
+  PYTHON_VERSION: "3.14"
+  NODE_VERSION: "24"
+
 runs:
   using: "composite"
-  env:
-    PYTHON_VERSION: 3.14
-    NODE_VERSION: 24
-  runs-on: ${{ vars.RUNNER_OS }}
   steps:
     - name: Checkout code
       uses: actions/checkout@v6
