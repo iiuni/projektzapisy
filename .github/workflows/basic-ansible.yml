@@ -43,19 +43,19 @@ jobs:
           cd zapisy
           yarnpkg install --immutable
 
-      - name: Mount the repo at /vagrant/zapisy
-        run: |
-          sudo mkdir -p /vagrant
-          sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
-          sudo chown -R vagrant:vagrant /vagrant
-          ls -la /vagrant
-
       - name: Create the vagrant user
         run: |
           sudo useradd -m vagrant
           sudo usermod -aG sudo vagrant
           echo 'vagrant ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/vagrant
           sudo chmod 440 /etc/sudoers.d/vagrant
+
+      - name: Mount the repo at /vagrant/zapisy
+        run: |
+          sudo mkdir -p /vagrant
+          sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
+          sudo chown -R vagrant:vagrant /vagrant
+          ls -la /vagrant
 
       - name: Install Ansible
         run: |
