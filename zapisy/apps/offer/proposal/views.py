@@ -41,7 +41,7 @@ def offer(request, slug=None):
             'isOwnerActive': p.owner.user.is_active if p.owner else False,
         })
         proposal_list.append(proposal_dict)
-    filter_data = Proposal.prepare_filter_data(qs)
+    filter_data = Proposal.prepare_filter_data(qs, include_owner_activity=True)
 
     return render(request, 'proposal/offer.html', {
         "proposal": proposal,

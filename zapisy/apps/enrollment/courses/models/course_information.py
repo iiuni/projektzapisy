@@ -128,7 +128,7 @@ class CourseInformation(models.Model):
         return self.short_name or self.name
 
     @staticmethod
-    def prepare_filter_data(qs: models.QuerySet) -> Dict:
+    def prepare_filter_data(qs: models.QuerySet, include_owner_activity: bool = False) -> Dict:
         """Prepares the data for course filter based on a given queryset."""
         all_effects = Effects.objects.all().values_list('id', 'group_name', named=True)
         all_tags = Tag.objects.all().values_list('id', 'full_name', named=True)
@@ -140,8 +140,11 @@ class CourseInformation(models.Model):
             'allEffects': {e.id: e.group_name for e in all_effects},
             'allTags': {t.id: t.full_name for t in all_tags},
             'allOwners': {
-                o.owner: [o.owner__user__first_name, o.owner__user__last_name,
-                          o.owner__user__is_active] for o in all_owners
+                o.owner: (
+                    [o.owner__user__first_name, o.owner__user__last_name, o.owner__user__is_active]
+                    if include_owner_activity
+                    else [o.owner__user__first_name, o.owner__user__last_name]
+                ) for o in all_owners
             },
             'allTypes': {c.course_type: c.course_type__name for c in all_types},
         }
