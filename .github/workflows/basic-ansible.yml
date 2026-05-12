@@ -54,6 +54,7 @@ jobs:
         run: |
           sudo mkdir -p /vagrant
           sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
+          sudo mkdir -p /vagrant/zapisy/logs
           sudo chown -R vagrant:vagrant /vagrant
           ls -la /vagrant
           ls -la /vagrant/zapisy/logs
