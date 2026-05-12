@@ -40,8 +40,8 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.hasInactiveOwner = this.allOwners.some(
-      (item) => item.isActive === false,
+    this.hasInactiveOwner = filtersData.allOwners.some(
+      ([id, [firstname, lastname, isActive]]) => isActive === false,
     );
     this.allOwners = toPairs(filtersData.allOwners)
       .sort(
