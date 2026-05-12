@@ -1,6 +1,6 @@
 name: lint
 
-on: 
+on:
   - push
   - pull_request
 
@@ -8,9 +8,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-     - uses: ./.github/actions/common
-       
-     - name: Lint Node assets
+      - uses: ./.github/actions/common
+
+      - name: Lint Node assets
         run: |
           cd zapisy
           yarn lint

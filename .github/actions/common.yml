@@ -1,12 +1,12 @@
 name: common
 
 runs:
-  using: 'composite'
-    env: 
-      PYTHON_VERSION: 3.14
-      NODE_VERSION: 24
+  using: "composite"
+  env:
+    PYTHON_VERSION: 3.14
+    NODE_VERSION: 24
+  runs-on: ${{ vars.RUNNER_OS }}
   steps:
-    runs-on: ${{ vars.RUNNER_OS }}
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Set up Python
