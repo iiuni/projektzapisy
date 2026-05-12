@@ -49,9 +49,9 @@ jobs:
           sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
           ls -la /vagrant
 
-      - name: Create the /home/vagrant symlink
+      - name: Create the vagrant user
         run: |
-          sudo ln -s /home/runner /home/vagrant
+          sudo useradd -m vagrant
 
       - name: Install Ansible
         run: |
@@ -60,4 +60,4 @@ jobs:
 
       - name: Run Ansible
         run: |
-          ansible-playbook -D infra/playbooks/dev/playbook.yml -i localhost, -c local
+          sudo -u vagrant ansible-playbook -D infra/playbooks/dev/playbook.yml -i localhost, -c local
