@@ -47,6 +47,7 @@ jobs:
         run: |
           sudo mkdir -p /vagrant
           sudo mount --bind "$GITHUB_WORKSPACE" /vagrant
+          sudo chown -R vagrant:vagrant /vagrant
           ls -la /vagrant
 
       - name: Create the vagrant user
