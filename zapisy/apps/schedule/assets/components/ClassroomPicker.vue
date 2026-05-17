@@ -83,6 +83,8 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
   }
 
   getLocalOccupiedForRoom(roomId: number, day: string): OccupiedInterval[] {
+    // Include other unsaved rows from the same editor so a room picked in one
+    // term immediately blocks overlapping ranges in the remaining terms.
     return this.terms
       .filter((term, index) => {
         return (
@@ -125,6 +127,8 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
   }
 
   onActiveTermChanged() {
+    // Any edit of the currently selected row (date, time, chosen room) changes
+    // which classrooms should be shown, so we rebuild the picker from scratch.
     this.refreshClassrooms();
   }
 
@@ -144,6 +148,8 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     let end = this.activeTerm.end;
 
     if (!start || !end || start > end || end < "08:00" || start > "22:00") {
+      // Until the row contains a sensible interval, we keep the blue overlay
+      // hidden and show all rooms from the fetched list instead of filtering.
       this.reservationLayer = [];
       this.unoccupiedClassrooms = [...this.classrooms];
       return;
@@ -193,9 +199,14 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
         "/classrooms/get_terms/" + encodedDate + "/"
       )
       .then((response) => {
+        // We fetch availability only for the active day; the selected time range
+        // is applied locally afterwards so changing hours does not require
+        // another API format or any server-side overlap calculation here.
         this.classrooms = [];
         for (const item of Object.values(response.data)) {
           const termsLayer: TermDisplay[] = [];
+          // The API only knows about persisted reservations, so we merge it with
+          // local editor state before drawing the occupancy bar and availability.
           const mergedOccupied = this.mergeOccupied([
             ...item.occupied,
             ...this.getLocalOccupiedForRoom(item.id, date),

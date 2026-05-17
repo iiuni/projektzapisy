@@ -14,6 +14,8 @@ function syncFormDisplay() {
   }
 
   const isEvent = formType.value === "2";
+  // These sections are still rendered by Django outside of Vue, so we keep them
+  // in sync with the selected reservation type using a small DOM bridge.
   formCourse.classList.toggle("d-none", isEvent);
   formEvents.forEach((element) => {
     if (!(element instanceof HTMLElement)) {

@@ -24,6 +24,8 @@ function createEmptyTerm(): Term {
   const timeStampFrom = dayjs();
   const timeStampTo = timeStampFrom.add(dayjs.duration({ minutes: 30 }));
 
+  // Pre-fill a short slot only when it stays within one calendar day; otherwise
+  // leave the date/time empty and let the user choose a valid reservation window.
   const day =
     timeStampFrom.date() === timeStampTo.date()
       ? timeStampFrom.format("YYYY-MM-DD")
@@ -80,6 +82,8 @@ export default class ReservationEditor extends Vue {
 
   created(): void {
     const initialTerms = this.initialTerms.map((term: Term) => ({ ...term }));
+    // We work on a local copy so the editor can freely mutate rows before the
+    // final HTML form submit sends everything back to Django.
     this.terms = initialTerms.length > 0 ? initialTerms : [createEmptyTerm()];
     this.ensureValidActiveTerm();
     this.syncLocationTabWithActiveTerm();
@@ -101,6 +105,9 @@ export default class ReservationEditor extends Vue {
 
   addTerm(): void {
     const base = this.activeTerm;
+    // "Add term" copies the currently edited date/time to speed up entering a
+    // series of reservations, but it intentionally clears the location so each
+    // new row must choose a room/place on its own.
     const newTerm: Term = base
       ? {
           id: null,
@@ -141,6 +148,8 @@ export default class ReservationEditor extends Vue {
       return;
     }
 
+    // Vue updates the visible editor state first; hidden inputs are derived from
+    // `terms` in the template, so the Django formset receives the same values on submit.
     this.$set(this.terms[index], field, target.value);
   }
 
@@ -149,6 +158,8 @@ export default class ReservationEditor extends Vue {
       return;
     }
 
+    // Picking an internal classroom writes both the foreign key used by Django
+    // and the human-readable label shown in the read-only location column.
     this.activeTerm.roomId = roomId;
     this.activeTerm.place = `Sala ${label}`;
     this.activeLocationTab = "inside";
@@ -159,6 +170,8 @@ export default class ReservationEditor extends Vue {
       return;
     }
 
+    // External locations are represented only by free text, so we clear `roomId`
+    // to make the submitted row unambiguously different from a classroom booking.
     this.activeTerm.roomId = null;
     this.activeTerm.place = place;
     this.outsidePlaceInput = place;
@@ -188,6 +201,8 @@ export default class ReservationEditor extends Vue {
       return;
     }
 
+    // Django formsets still expect at least one row, so after deletions we always
+    // move focus to the next visible term and recreate an empty one if needed.
     const firstVisibleIndex = this.terms.findIndex(
       (term: Term) => !term.deleted
     );
@@ -220,6 +235,9 @@ export default class ReservationEditor extends Vue {
       return;
     }
 
+    // The tab selection is derived from the serialized term fields so reopening
+    // or switching rows preserves whether the place comes from a classroom pick
+    // or a free-text external location.
     if (this.activeTerm.roomId === null && this.activeTerm.place) {
       this.activeLocationTab = "outside";
       this.outsidePlaceInput = this.activeTerm.place;
@@ -231,6 +249,7 @@ export default class ReservationEditor extends Vue {
   }
 
   fieldName(index: number, field: string): string {
+    // Names must exactly match Django formset conventions: term_set-<row>-<field>.
     return `term_set-${index}-${field}`;
   }
 
