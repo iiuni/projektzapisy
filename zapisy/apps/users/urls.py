@@ -10,7 +10,11 @@ urlpatterns = [
     path('students/', views.students_view, name='students-list'),
     path('employees/<int:user_id>/', views.employees_view, name='employee-profile'),
     path('employees/<int:user_id>/semester/<int:semester_id>/', views.employees_view, name='employee-profile-semester'),
+    path('employees/<int:user_id>/semester/<int:semester_id>/fetch/',
+         views.employees_view, {"sem_fetch": True}, name='employee-fetch-semester'),
     path('students/<int:user_id>/', views.students_view, name='student-profile'),
     path('students/<int:user_id>/semester/<int:semester_id>/', views.students_view, name='student-profile-semester'),
+    path('students/<int:user_id>/semester/<int:semester_id>/fetch/',
+         views.students_view, {"sem_fetch": True}, name='student-fetch-semester'),
     path('personal-data-consent/', views.personal_data_consent, name='personal_data_consent'),
 ]

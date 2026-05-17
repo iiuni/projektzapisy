@@ -12,37 +12,35 @@ async function fetch_new_semester(url: string) {
   if (!response.ok) {
     return;
   }
-  const html = await response.text();
-  const parser = new DOMParser();
-  const DOMData = parser.parseFromString(html, "text/html");
-  let semesterDependentElements = document.querySelectorAll(
-    "[data-js-sem-depend]"
-  );
-  for (let elem of semesterDependentElements) {
-    if (!elem.id) {
-      continue;
-    }
-    let elemData = DOMData.getElementById(elem.id);
-    let elemContainer = document.getElementById(elem.id);
-    if (elemData && elemContainer) {
-      elemContainer.innerHTML = elemData.innerHTML;
-    }
+  const dataJSON = await response.text();
+  const data = JSON.parse(dataJSON);
+  let dropdownTitle = document.getElementById("semester-dropdown-title");
+  if (dropdownTitle && data["semester"]) {
+    dropdownTitle.innerText = "Semestr " + data["semester"];
+  }
+  let timetableData = document.getElementById("timetable-data");
+  if (timetableData && data["groups_dicts"]) {
+    timetableData.innerText = JSON.stringify(data["groups_dicts"]);
   }
 }
-let semesterDropdown = document.getElementById("semester-dropdown-div");
+let semesterDropdown = document.getElementById("semester-dropdown-menu");
 if (semesterDropdown !== null) {
   semesterDropdown.addEventListener(
     "click",
     async (event) => {
       const target = event.target;
       if (target instanceof HTMLElement && target.closest("[data-js-link]")) {
-        let targetUrl = target.getAttribute("href");
-        if (targetUrl !== null) {
+        let capturedUrl = target.getAttribute("href");
+        if (capturedUrl !== null) {
           event.preventDefault();
-          targetUrl = targetUrl.trim();
+          capturedUrl = capturedUrl.trim();
+          if (capturedUrl === window.location.pathname) {
+            return;
+          }
+          let targetUrl = capturedUrl + "fetch/";
           await fetch_new_semester(targetUrl);
           window.dispatchEvent(timetableChangeEvent);
-          history.pushState({}, "", targetUrl);
+          history.pushState({}, "", capturedUrl);
         }
       }
     },
@@ -51,7 +49,8 @@ if (semesterDropdown !== null) {
   window.addEventListener("popstate", async (event) => {
     event.preventDefault();
     let destUrl = window.location.pathname;
-    await fetch_new_semester(destUrl);
+    let targetUrl = destUrl + "fetch/";
+    await fetch_new_semester(targetUrl);
     window.dispatchEvent(timetableChangeEvent);
   });
 }

@@ -30,21 +30,19 @@
             {% endif %}
         </div>
         <nav class="col-lg-3 col-12 d-print-none order-first order-lg-last mb-3">
-            {% include "timetable/semester_dropdown.html" with url_pattern_name="my-timetable-semester" async_fetch=True %}
+            {% include "timetable/semester_dropdown.html" with url_pattern_name="my-timetable-semester" %}
         </nav>
     </div>
 
     <div class="row m-0" id="timetable">
     </div>
-    <div id="timetable-data-div" data-js-sem-depend>
-        {{ groups_dicts|json_script:"timetable-data" }}
-    </div>
+    {{ groups_dicts|json_script:"timetable-data" }}
     {% render_bundle 'timetable-timetable-component' %}
     
     {% if user.student %}
     <h3>Twoje przedmioty</h3>
     <div class="table-responsive">
-    <table id="enr-schedule-listByCourse" class="table table-striped" data-js-sem-depend>
+    <table id="enr-schedule-listByCourse" class="table table-striped">
         <thead>
             <tr>
                 {# Translators: Tytuł kolumny w tabelce #}

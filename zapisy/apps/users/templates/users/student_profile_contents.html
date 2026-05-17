@@ -47,8 +47,6 @@
 		</nav>
 	</div>
 	<div id="timetable"></div>
-	<div id="timetable-data-div" data-js-sem-depend>
-		{{ groups_dicts|json_script:"timetable-data" }}
-	</div>
+	{{ groups_dicts|json_script:"timetable-data" }}
 	{% render_bundle 'timetable-timetable-component' %}
 </div>
