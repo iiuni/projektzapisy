@@ -13,7 +13,6 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.enrollment.discharges import services as discharge_services
 from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
@@ -202,7 +201,7 @@ def my_profile(request):
         student: Student = request.user.student
         done_effects = CompletedCourses.get_completed_effects(student)
 
-        discharge_used = discharge_services.get_discharges_used_total(student)
+        discharge_used = DirectorDischarge.get_used_total(student)
         active_discharges = DirectorDischarge.objects.filter(
             student=student,
             status__in=[DischargeStatus.PENDING, DischargeStatus.APPROVED],

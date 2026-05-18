@@ -2,7 +2,6 @@
 
 from django.contrib import admin, messages
 
-from . import services
 from .models import DirectorDischarge, DischargeStatus
 
 
@@ -55,7 +54,7 @@ class DirectorDischargeAdmin(admin.ModelAdmin):
         errors = []
         for discharge in pending.select_related('student', 'course', 'course__semester'):
             try:
-                services.approve_discharge(discharge, request.user)
+                discharge.approve(request.user)
                 approved_count += 1
             except Exception as e:
                 errors.append(f'{discharge}: {e}')
@@ -86,7 +85,7 @@ class DirectorDischargeAdmin(admin.ModelAdmin):
         errors = []
         for discharge in pending.select_related('student', 'course'):
             try:
-                services.reject_discharge(discharge, request.user)
+                discharge.reject(request.user)
                 rejected_count += 1
             except Exception as e:
                 errors.append(f'{discharge}: {e}')

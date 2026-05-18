@@ -1,19 +1,19 @@
 """Views for director's discharge requests (student-facing)."""
 
 from django.contrib import messages
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance
 from apps.users.decorators import student_required
 
-from . import services
+from .models import DirectorDischarge, DischargeStatus
 
 
 @student_required
 @require_POST
-def request_discharge(request):
+def request_discharge(request: HttpRequest) -> HttpResponse:
     """Submits a director discharge request for a course."""
     student = request.user.student
 
@@ -23,14 +23,19 @@ def request_discharge(request):
     except (KeyError, CourseInstance.DoesNotExist):
         raise Http404
 
-    try:
-        services.request_discharge(student, course)
+    allowed, msg = DirectorDischarge.can_request(student, course)
+    if not allowed:
+        messages.error(request, msg)
+    else:
+        DirectorDischarge.objects.create(
+            student=student,
+            course=course,
+            status=DischargeStatus.PENDING,
+        )
         messages.success(
             request,
             f'Wniosek o wypis dyrektorski z przedmiotu „{course.name}" '
             'został złożony i oczekuje na decyzję administratora.'
         )
-    except ValueError as e:
-        messages.error(request, str(e))
 
     return redirect('course-page', slug=course.slug)

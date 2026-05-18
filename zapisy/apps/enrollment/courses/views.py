@@ -15,7 +15,6 @@ from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
-from apps.enrollment.discharges import services as discharge_services
 from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
 from apps.users.decorators import employee_required
 from apps.users.models import Student, is_external_contractor
@@ -115,7 +114,7 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
     discharge_allowed = False
     existing_discharge = None
     if student is not None:
-        discharge_allowed, _reason = discharge_services.can_request_discharge(student, course)
+        discharge_allowed, _reason = DirectorDischarge.can_request(student, course)
         existing_discharge = DirectorDischarge.objects.filter(
             student=student, course=course
         ).exclude(status=DischargeStatus.REJECTED).first()
