@@ -300,27 +300,7 @@ div.loginbox {
   background-color: $gray-200;
 }
 
-.hours-list ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-}
-
-.hours-list ul li {
-  float: left;
-}
-
-.hours-list ul li + li::before {
-  content: "+";
-  margin: 0 0.5em;
-}
-
-.hours-list ul::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
+.hours-list ul,
 .badges ul {
   padding: 0;
   margin: 0;
@@ -328,4 +308,15 @@ div.loginbox {
   li {
     float: left;
   }
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }
+
+.hours-list ul li + li::before {
+  content: "+";
+  margin: 0 0.5em;
+}
+
