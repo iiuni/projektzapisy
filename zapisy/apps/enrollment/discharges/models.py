@@ -6,6 +6,8 @@ administrator approval before the student is removed from all groups in that
 course.
 """
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
