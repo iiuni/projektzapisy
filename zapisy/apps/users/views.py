@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
+from apps.enrollment.timetable.views import render_timetable_elements
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
@@ -22,30 +23,35 @@ logger = logging.getLogger()
 
 @login_required
 @external_contractor_forbidden
-def students_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None):
+def students_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None, sem_fetch: bool = False):
     """View for students list and student profile if user id in URL is provided.
 
     By default, the student profile displays the timetable for the upcoming semester.
     However, if a semester id is provided in URL, the profile displays timetable
     for the specified semester.
     """
-    students_queryset = Student.get_active_students().select_related('user')
-    if not request.user.employee:
-        students_queryset = students_queryset.filter(consent__granted=True)
-    students = {
-        s.pk: {
-            'last_name': s.user.last_name,
-            'first_name': s.user.first_name,
-            'id': s.user.id,
-            'album': s.matricula,
-            'email': s.user.email
+    if not sem_fetch:
+        students_queryset = Student.get_active_students().select_related('user')
+        if not request.user.employee:
+            students_queryset = students_queryset.filter(consent__granted=True)
+        students = {
+            s.pk: {
+                'last_name': s.user.last_name,
+                'first_name': s.user.first_name,
+                'id': s.user.id,
+                'album': s.matricula,
+                'email': s.user.email
+            }
+            for s in students_queryset
         }
-        for s in students_queryset
-    }
-    data = {
-        'students': students,
-        'user_link': reverse('students-list'),
-    }
+        data = {
+            'students': students,
+            'user_link': reverse('students-list'),
+        }
+
+    # Should never have happened
+    elif user_id is None:
+        raise Http404
 
     if user_id is not None:
         try:
@@ -78,6 +84,13 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
 
         group_dicts = build_group_list(groups)
 
+        if sem_fetch:
+            data = {
+                'groups_dicts': group_dicts,
+                'semester': semester
+            }
+            return render_timetable_elements(data, [])
+
         data.update({
             'student': student,
             'groups_dicts': group_dicts,
@@ -87,28 +100,32 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None):
+def employees_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None, sem_fetch: bool = False):
     """View for employees list and employee profile if user id in URL is provided.
 
     By default, the employee profile displays the timetable for the upcoming semester.
     However, if a semester id is provided in URL, the profile displays timetable
     for the specified semester.
     """
-    employees_queryset = Employee.get_actives().select_related('user')
-    employees = {
-        e.pk: {
-            'last_name': e.user.last_name,
-            'first_name': e.user.first_name,
-            'id': e.user.id,
-            'email': e.user.email,
+    if not sem_fetch:
+        employees_queryset = Employee.get_actives().select_related('user')
+        employees = {
+            e.pk: {
+                'last_name': e.user.last_name,
+                'first_name': e.user.first_name,
+                'id': e.user.id,
+                'email': e.user.email,
+            }
+            for e in employees_queryset
         }
-        for e in employees_queryset
-    }
-    data = {
-        'employees': employees_queryset,
-        'employees_dict': employees,
-        'user_link': reverse('employees-list'),
-    }
+        data = {
+            'employees': employees_queryset,
+            'employees_dict': employees,
+            'user_link': reverse('employees-list'),
+        }
+    # Should never have happened
+    elif user_id is None:
+        raise Http404
 
     if user_id is not None:
         try:
@@ -133,6 +150,13 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
             g.is_enrolled = g.pk in viewer_groups
 
         group_dicts = build_group_list(groups)
+
+        if sem_fetch:
+            data = {
+                'groups_dicts': group_dicts,
+                'semester': semester
+            }
+            return render_timetable_elements(data, [])
 
         data.update({
             'employee': employee,

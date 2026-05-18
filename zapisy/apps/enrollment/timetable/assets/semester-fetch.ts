@@ -12,9 +12,8 @@ async function fetch_new_semester(url: string) {
   if (!response.ok) {
     return;
   }
-  const html = await response.text();
-  const parser = new DOMParser();
-  const DOMData = parser.parseFromString(html, "text/html");
+  const dataJSON = await response.text();
+  const dataObj = JSON.parse(dataJSON);
   let semesterDependentElements = document.querySelectorAll(
     "[data-js-sem-depend]"
   );
@@ -22,27 +21,31 @@ async function fetch_new_semester(url: string) {
     if (!elem.id) {
       continue;
     }
-    let elemData = DOMData.getElementById(elem.id);
+    let elemData = dataObj[elem.id];
     let elemContainer = document.getElementById(elem.id);
     if (elemData && elemContainer) {
-      elemContainer.innerHTML = elemData.innerHTML;
+      elemContainer.innerHTML = elemData;
     }
   }
 }
-let semesterDropdown = document.getElementById("semester-dropdown-div");
+let semesterDropdown = document.getElementById("semester-dropdown-menu");
 if (semesterDropdown !== null) {
   semesterDropdown.addEventListener(
     "click",
     async (event) => {
       const target = event.target;
       if (target instanceof HTMLElement && target.closest("[data-js-link]")) {
-        let targetUrl = target.getAttribute("href");
-        if (targetUrl !== null) {
+        let capturedUrl = target.getAttribute("href");
+        if (capturedUrl !== null) {
           event.preventDefault();
-          targetUrl = targetUrl.trim();
+          capturedUrl = capturedUrl.trim();
+          if (capturedUrl === window.location.pathname) {
+            return;
+          }
+          const targetUrl = capturedUrl + "fetch/";
           await fetch_new_semester(targetUrl);
           window.dispatchEvent(timetableChangeEvent);
-          history.pushState({}, "", targetUrl);
+          history.pushState({}, "", capturedUrl);
         }
       }
     },
@@ -50,7 +53,7 @@ if (semesterDropdown !== null) {
   );
   window.addEventListener("popstate", async (event) => {
     event.preventDefault();
-    let destUrl = window.location.pathname;
+    let destUrl = window.location.pathname + "fetch/";
     await fetch_new_semester(destUrl);
     window.dispatchEvent(timetableChangeEvent);
   });

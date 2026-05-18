@@ -2,7 +2,7 @@
 import collections
 import csv
 import json
-from typing import List, Optional
+from typing import List, Optional, Mapping, Tuple, Any
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.template import engines, Template
+from django.template.loader import get_template
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import decode_class_type_singular
@@ -118,8 +120,26 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     return data
 
 
+def render_timetable_elements(context: Mapping[str, Any], other_templates: List[Tuple[str, Template]]):
+    """Renders timetable related HTML elements from django templates.
+
+    Additional elements are expected as pairs (HTML id, _BaseTemplate).
+    Minimum context contents are 'groups_dicts' (as return value of build_group_list)
+    and 'semester' (as Semester object or string of semester name).
+    Returns JSON response with mappings HTML id: HTML-correct string.
+    """
+    engine = engines['django']
+    base_templates = [
+        ('timetable-data-div', engine.from_string('{{groups_dicts|json_script:"timetable-data"}}')),
+        ('semester-dropdown-title', engine.from_string('<strong>Semestr {{ semester }}</strong>')),
+    ]
+    base_templates.extend(other_templates)
+    response = {id: template.render(context) for id, template in base_templates}
+    return JsonResponse(response)
+
+
 @login_required
-def my_timetable(request, semester_id: Optional[int] = None):
+def my_timetable(request, semester_id: Optional[int] = None, sem_fetch: bool = False):
     """Shows the student/employee his own timetable page."""
     # Counter will add elements key-wise. Numbers will be added, lists will be
     # extended.
@@ -136,6 +156,12 @@ def my_timetable(request, semester_id: Optional[int] = None):
         data.update(employee_timetable_data(request.user.employee, semester))
     data['semester'] = semester
     data['all_semesters'] = all_semesters
+
+    if sem_fetch:
+        other_templates = []
+        if request.user.student:
+            other_templates.append(('courses-table', get_template('timetable/courses_table.html')))
+        return render_timetable_elements(data, other_templates)
 
     return render(request, 'timetable/timetable.html', data)
 
