@@ -48,7 +48,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML,
+      document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -66,7 +66,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      }),
+      })
     );
     this.allSemesters = [
       { value: "z", label: "zimowy" },

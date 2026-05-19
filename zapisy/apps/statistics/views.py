@@ -69,7 +69,7 @@ def groups(request):
         waiting_by_class_type = [{'name': decode_class_type_plural(class_type),
                                   'number': waiting_students[course_id][class_type]}
                                  for class_type in waiting_students[course_id]]
-        
+
         grouped = defaultdict(list)
         for g in course_groups:
             grouped[g['type_name']].append(g)
@@ -78,7 +78,6 @@ def groups(request):
             sum(g['queued'] for g in group_list) >
             (sum(g['limit'] for g in group_list) - sum(g['enrolled'] for g in group_list))
             for group_list in grouped.values())
-
 
         courses_list.append({
             'id': course_id,
@@ -94,7 +93,7 @@ def groups(request):
             ),
             'is_math': courses[course_id][0].course.course_type.short_name == 'MAT',
             'has_deficit': has_deficit,
-            'smallest_group': min((group.enrolled for group in courses[course_id]),default=0)
+            'smallest_group': min((group.enrolled for group in courses[course_id]), default=0)
         })
 
     return render(request, 'statistics/groups_list.html', {
