@@ -154,7 +154,7 @@ export default Vue.extend({
           />
           <hr />
           <CheckFilter
-            ffilterKey="freshmen-filter"
+            filterKey="freshmen-filter"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             :predicate="firstYearRecommended"
             ref="freshmen-filter"
