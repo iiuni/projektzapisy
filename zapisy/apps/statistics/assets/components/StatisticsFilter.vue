@@ -29,6 +29,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("sorting", ["changeSorting"]),
+    ...mapMutations("filters", ["clearFilters"]),
     sort: function (newSelected: string) {
       if (newSelected === "waiting_students_desc") {
         this.changeSorting({
@@ -92,6 +93,15 @@ export default Vue.extend({
                   </option>
                 </select>
               </div>
+            </div>
+            <div class="col-12">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                @click="clearFilters()"
+              >
+                Wyczyść filtry
+              </button>
             </div>
           </div>
         </div>

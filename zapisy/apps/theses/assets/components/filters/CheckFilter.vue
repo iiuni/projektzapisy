@@ -29,6 +29,13 @@ export default Vue.extend({
       on: this.onByDefault,
     };
   },
+  created() {
+    this.$store.subscribe((mutation) => {
+      if (mutation.type === "filters/clearFilters") {
+        this.on = false;
+      }
+    });
+  },
   mounted() {
     this.registerFilter({
       k: this.filterKey,

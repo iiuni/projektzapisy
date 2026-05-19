@@ -4,7 +4,7 @@ import Vue from "vue";
 import { mapMutations } from "vuex";
 
 import { Filter } from "../../store/filters";
-//TO DELETE???
+//WARNING: This file became obsolete as of issue 1812. However, trying to remove it caused errors in tsconfig.json
 class BooleanFilter implements Filter {
   constructor(public on: boolean, public propertyName: string) {}
 
@@ -25,7 +25,7 @@ export default Vue.extend({
     property: String,
     // Every filter needs a unique identifier.
     filterKey: String,
-    label: String, //ref????
+    label: String,
   },
   data: () => {
     return {
