@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group, Semester
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
-from apps.enrollment.timetable.views import render_timetable_elements
+from apps.enrollment.timetable.views import render_timetable_json
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
@@ -28,8 +28,13 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
 
     By default, the student profile displays the timetable for the upcoming semester.
     However, if a semester id is provided in URL, the profile displays timetable
-    for the specified semester.
+    for the specified semester. If sem_fetch is True sends only necessary data to switch
+    displayed semester.
     """
+    # Should never have happened
+    if user_id is None and sem_fetch:
+        raise Http404
+
     if not sem_fetch:
         students_queryset = Student.get_active_students().select_related('user')
         if not request.user.employee:
@@ -48,10 +53,8 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
             'students': students,
             'user_link': reverse('students-list'),
         }
-
-    # Should never have happened
-    elif user_id is None:
-        raise Http404
+    else:
+        data = {}
 
     if user_id is not None:
         try:
@@ -85,11 +88,11 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
         group_dicts = build_group_list(groups)
 
         if sem_fetch:
-            data = {
+            data.update({
                 'groups_dicts': group_dicts,
                 'semester': semester
-            }
-            return render_timetable_elements(data, [])
+            })
+            return render_timetable_json(data, [])
 
         data.update({
             'student': student,
@@ -105,8 +108,13 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
 
     By default, the employee profile displays the timetable for the upcoming semester.
     However, if a semester id is provided in URL, the profile displays timetable
-    for the specified semester.
+    for the specified semester. If sem_fetch is True sends only necessary data to switch
+    displayed semester.
     """
+    # Should never have happened
+    if user_id is None and sem_fetch:
+        raise Http404
+
     if not sem_fetch:
         employees_queryset = Employee.get_actives().select_related('user')
         employees = {
@@ -123,9 +131,8 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
             'employees_dict': employees,
             'user_link': reverse('employees-list'),
         }
-    # Should never have happened
-    elif user_id is None:
-        raise Http404
+    else:
+        data = {}
 
     if user_id is not None:
         try:
@@ -152,11 +159,11 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
         group_dicts = build_group_list(groups)
 
         if sem_fetch:
-            data = {
+            data.update({
                 'groups_dicts': group_dicts,
                 'semester': semester
-            }
-            return render_timetable_elements(data, [])
+            })
+            return render_timetable_json(data, [])
 
         data.update({
             'employee': employee,

@@ -120,12 +120,12 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     return data
 
 
-def render_timetable_elements(context: Mapping[str, Any], other_templates: List[Tuple[str, Template]]):
+def render_timetable_json(context: Mapping[str, Any], other_templates: List[Tuple[str, Template]]):
     """Renders timetable related HTML elements from django templates.
 
-    Additional elements are expected as pairs (HTML id, _BaseTemplate).
     Minimum context contents are 'groups_dicts' (as return value of build_group_list)
     and 'semester' (as Semester object or string of semester name).
+    Additional elements are expected as pairs (HTML id, Template).
     Returns JSON response with mappings HTML id: HTML-correct string.
     """
     engine = engines['django']
@@ -140,7 +140,10 @@ def render_timetable_elements(context: Mapping[str, Any], other_templates: List[
 
 @login_required
 def my_timetable(request, semester_id: Optional[int] = None, sem_fetch: bool = False):
-    """Shows the student/employee his own timetable page."""
+    """Shows the student/employee his own timetable page.
+
+    If sem_fetch is True sends only necessary data to switch displayed semester.
+    """
     # Counter will add elements key-wise. Numbers will be added, lists will be
     # extended.
     semester: Optional[Semester]
@@ -158,10 +161,11 @@ def my_timetable(request, semester_id: Optional[int] = None, sem_fetch: bool = F
     data['all_semesters'] = all_semesters
 
     if sem_fetch:
-        other_templates = []
         if request.user.student:
-            other_templates.append(('courses-table', get_template('timetable/courses_table.html')))
-        return render_timetable_elements(data, other_templates)
+            other_templates = [('courses-table', get_template('timetable/courses_table.html'))]
+        else:
+            other_templates = []
+        return render_timetable_json(data, other_templates)
 
     return render(request, 'timetable/timetable.html', data)
 
