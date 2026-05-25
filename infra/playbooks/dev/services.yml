@@ -78,8 +78,3 @@
         state: started
       become: yes
 
-        #  - name: Reload systemd definitions
-        #    systemd:
-        #      daemon_reload: true
-        #    become: yes
-
