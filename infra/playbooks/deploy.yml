@@ -131,6 +131,8 @@
         keep_releases: 2
 
     - name: Get revision
+      become: yes
+      become_user: "{{ deploy_user }}"
       shell: git rev-parse HEAD
       register: git_rev
       args:
