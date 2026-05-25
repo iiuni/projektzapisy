@@ -44,7 +44,7 @@
       become: yes
 
     - name: Enable and run Django Runserver service
-      service:
+      systemd:
         name: runserver
         enabled: yes
         state: started
@@ -58,28 +58,28 @@
       become: yes
 
     - name: Enable and run yarn_dev_watch service
-      service:
+      systemd:
         name: yarn_dev_watch
         enabled: yes
         state: started
       become: yes
 
     - name: Enable and run rqworker1 service
-      service:
+      systemd:
         name: rqworker1
         enabled: yes
         state: started
       become: yes
 
     - name: Enable and run rqworker2 service
-      service:
+      systemd:
         name: rqworker2
         enabled: yes
         state: started
       become: yes
 
-    - name: Reload systemd definitions
-      systemd:
-        daemon_reload: true
-      become: yes
+        #  - name: Reload systemd definitions
+        #    systemd:
+        #      daemon_reload: true
+        #    become: yes
 
