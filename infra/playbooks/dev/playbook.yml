@@ -6,7 +6,7 @@
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
-    - name: Change permissions to /home/vagrant
+    - name: Ensure /home/vagrant has correct permissions
       ansible.builtin.file:
         path: /home/vagrant
         mode: "775"
